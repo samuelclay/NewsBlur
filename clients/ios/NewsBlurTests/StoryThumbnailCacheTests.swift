@@ -4,6 +4,208 @@ import UIKit
 @testable import NewsBlur
 
 final class Test_StoryThumbnailCache: XCTestCase {
+    func test_prefetchCapturesDisplayTraitsAndCancelsAnOlderSameHashPreparationWhenTheyChange() {
+        let queue = DispatchQueue(label: "test.thumbnail-display.traits")
+        let firstTraits = UITraitCollection(traitsFrom: [UITraitCollection(displayScale: 2), UITraitCollection(displayGamut: .SRGB)])
+        let nextTraits = UITraitCollection(traitsFrom: [UITraitCollection(displayScale: 3), UITraitCollection(displayGamut: .P3)])
+        let entered = expectation(description: "First display preparation is active")
+        let resume = DispatchSemaphore(value: 0)
+        var seen = [(CGFloat, UIDisplayGamut)]()
+        var canceled = [Bool]()
+        let prefetcher = StoryThumbnailPrefetcher(worker: queue) { _, operation in
+            seen.append((UITraitCollection.current.displayScale, UITraitCollection.current.displayGamut))
+            if seen.count == 1 {
+                entered.fulfill()
+                _ = resume.wait(timeout: .now() + 3)
+            }
+            canceled.append(operation.isCancelled)
+        }
+        firstTraits.performAsCurrent { prefetcher.prefetchStoryHashes(["story"]) }
+        wait(for: [entered], timeout: 1)
+        nextTraits.performAsCurrent { prefetcher.prefetchStoryHashes(["story"]) }
+        resume.signal()
+        queue.sync {}
+        XCTAssertEqual(seen.map(\.0), [2, 3])
+        XCTAssertEqual(seen.map(\.1), [.SRGB, .P3])
+        XCTAssertEqual(canceled, [true, false], "The same story hash must be prepared again for a changed display")
+    }
+
+    func test_preparedMemoryThumbnailFallsBackToOriginalWhenDisplayScaleOrGamutChanges() throws {
+        for changedTrait in [UITraitCollection(displayScale: 3), UITraitCollection(displayGamut: .P3)] {
+            let (app, cache) = makeCache()
+            let originalTraits = UITraitCollection(traitsFrom: [UITraitCollection(displayScale: 2), UITraitCollection(displayGamut: .SRGB)])
+            let prepared = makeImage()
+            let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(prepared.cgImage), scale: prepared.scale, orientation: prepared.imageOrientation)
+            source.preparation = { prepared }
+            cache.diskCache.setObject(source, forKey: "story")
+            let queue = DispatchQueue(label: "test.thumbnail-display.trait-cache")
+            queue.async {
+                originalTraits.performAsCurrent { app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation()) }
+            }
+            queue.sync {}
+            originalTraits.performAsCurrent { XCTAssertTrue(app.cachedImage(forStoryHash: "story") === prepared) }
+            XCTAssertEqual(cache.diskCache.readCount, 1)
+            UITraitCollection(traitsFrom: [originalTraits, changedTrait]).performAsCurrent {
+                XCTAssertTrue(app.cachedImage(forStoryHash: "story") === source, "Prepared pixels must not be reused on an incompatible display")
+                XCTAssertTrue(app.cachedImage(forStoryHash: "story") === source)
+            }
+            XCTAssertEqual(cache.diskCache.readCount, 2)
+            XCTAssertTrue(cache.diskCache.object(forKey: "story") as? UIImage === source)
+        }
+    }
+
+    func test_diskPrefetchPreparesTheBitmapOnItsWorkerWithoutRewritingTheOriginal() throws {
+        let (app, cache) = makeCache()
+        let prepared = makeImage()
+        let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(prepared.cgImage), scale: prepared.scale, orientation: prepared.imageOrientation)
+        var preparationThreads = [Bool]()
+        source.preparation = {
+            preparationThreads.append(Thread.isMainThread)
+            return prepared
+        }
+        cache.diskCache.setObject(source, forKey: "story")
+        let queue = DispatchQueue(label: "test.thumbnail-display.worker")
+        let prefetcher = StoryThumbnailPrefetcher(worker: queue) { hash, operation in
+            app.prefetchCachedStoryImage(forStoryHash: hash, operation: operation)
+        }
+        prefetcher.prefetchStoryHashes(["story"])
+        queue.sync {}
+        let bitmap = try XCTUnwrap(prepared.cgImage)
+        XCTAssertEqual(preparationThreads, [false], "Disk unarchiving alone leaves image decoding until the Core Animation draw")
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === prepared)
+        XCTAssertEqual(cache.memoryCache.cost(forKey: "story"), UInt(bitmap.bytesPerRow * bitmap.height))
+        XCTAssertTrue(cache.diskCache.object(forKey: "story") as? UIImage === source, "Display preparation must not replace the original disk representation")
+        prefetcher.prefetchStoryHashes(["story"])
+        queue.sync {}
+        XCTAssertEqual(preparationThreads, [false], "Already prepared memory images must not be decoded repeatedly")
+    }
+
+    func test_failedDisplayPreparationRetainsTheOriginalAndForegroundFallbackStaysSynchronous() throws {
+        let (app, cache) = makeCache()
+        let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(makeImage().cgImage))
+        var preparations = 0
+        source.preparation = { preparations += 1; return nil }
+        cache.diskCache.setObject(source, forKey: "story")
+        XCTAssertTrue(app.cachedImage(forStoryHash: "story") === source)
+        XCTAssertEqual(preparations, 0, "An outrun prefetch must retain the immediate original image without adding foreground preparation work")
+        cache.memoryCache.removeAllObjects()
+        let queue = DispatchQueue(label: "test.thumbnail-display.failure")
+        queue.async {
+            app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation())
+        }
+        queue.sync {}
+        XCTAssertEqual(preparations, 1)
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === source)
+        XCTAssertTrue(cache.diskCache.object(forKey: "story") as? UIImage === source)
+    }
+
+    @MainActor func test_displayPreparationCannotPublishAfterCancellationNewerSaveRemovalAccountOrMemoryRelease() throws {
+        for invalidation in ["cancel", "save", "save_then_evict", "remove", "account", "memory"] {
+            let (app, cache) = makeCache()
+            let prepared = makeImage()
+            let newer = makeImage()
+            let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(prepared.cgImage))
+            let entered = expectation(description: "Display preparation started: \(invalidation)")
+            let resume = DispatchSemaphore(value: 0)
+            source.preparation = {
+                entered.fulfill()
+                _ = resume.wait(timeout: .now() + 3)
+                return prepared
+            }
+            cache.diskCache.setObject(source, forKey: "story")
+            let operation = BlockOperation()
+            let queue = DispatchQueue(label: "test.thumbnail-display.invalidation")
+            queue.async { app.prefetchCachedStoryImage(forStoryHash: "story", operation: operation) }
+            wait(for: [entered], timeout: 1)
+            switch invalidation {
+            case "cancel": operation.cancel()
+            case "save", "save_then_evict":
+                app.cacheStoryImage(newer, forStoryHash: "story")
+                if invalidation == "save_then_evict" { cache.memoryCache.removeAllObjects() }
+            case "remove": app.removeCachedStoryImage(forStoryHash: "story")
+            case "account": app.dictFeeds = nil
+            default: app.didReceiveMemoryWarning()
+            }
+            resume.signal()
+            queue.sync {}
+            if invalidation == "save" {
+                XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === newer)
+            } else {
+                XCTAssertNil(cache.memoryCache.object(forKey: "story"), invalidation)
+            }
+            if invalidation == "cancel" {
+                // StoryThumbnailCacheTests.swift ensures a canceled decode does not permanently suppress a later nearby retry.
+                source.preparation = { prepared }
+                queue.async { app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation()) }
+                queue.sync {}
+                XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === prepared)
+            }
+        }
+    }
+
+    @MainActor func test_preparedDiskThumbnailsPreserveExactCellPixelsAcrossColorOrientationScaleAndReadStates() throws {
+        let defaults = UserDefaults.standard
+        let previousPreference = defaults.object(forKey: "story_list_preview_images_size")
+        defer {
+            if let previousPreference { defaults.set(previousPreference, forKey: "story_list_preview_images_size") }
+            else { defaults.removeObject(forKey: "story_list_preview_images_size") }
+        }
+        let (app, cache) = makeCache()
+        app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(13)
+        app.recentlyReadStories = NSMutableDictionary()
+        let queue = DispatchQueue(label: "test.thumbnail-display.pixel-parity")
+        for colorSpaceName in [CGColorSpace.sRGB, CGColorSpace.displayP3] {
+            let colorSpace = try XCTUnwrap(CGColorSpace(name: colorSpaceName))
+            let context = try XCTUnwrap(CGContext(data: nil, width: 63, height: 45, bitsPerComponent: 8, bytesPerRow: 0,
+                                                space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+            for x in 0..<63 {
+                context.setFillColor(try XCTUnwrap(CGColor(colorSpace: colorSpace, components: [CGFloat(x) / 62, 0.25, 1 - CGFloat(x) / 62, x < 20 ? 0.35 : 1])))
+                context.fill(CGRect(x: x, y: 0, width: 1, height: 45))
+            }
+            let encoded = try XCTUnwrap(UIImage(cgImage: try XCTUnwrap(context.makeImage())).pngData())
+            let decoded = try XCTUnwrap(UIImage(data: encoded)?.cgImage)
+            for orientation in [UIImage.Orientation.up, .left, .rightMirrored] {
+                for scale in [CGFloat(1), CGFloat(3)] {
+                    let source = UIImage(cgImage: decoded, scale: scale, orientation: orientation)
+                    cache.memoryCache.removeAllObjects()
+                    cache.diskCache.setObject(source, forKey: "story")
+                    queue.async { app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation()) }
+                    queue.sync {}
+                    let actual = try XCTUnwrap(cache.memoryCache.object(forKey: "story") as? UIImage)
+                    XCTAssertEqual(actual.size, source.size)
+                    XCTAssertEqual(actual.scale, source.scale)
+                    XCTAssertEqual(actual.imageOrientation, source.imageOrientation)
+                    let bitmap = try XCTUnwrap(actual.cgImage)
+                    XCTAssertEqual(cache.memoryCache.cost(forKey: "story"), UInt(bitmap.bytesPerRow * bitmap.height))
+                    XCTAssertTrue(cache.diskCache.object(forKey: "story") as? UIImage === source)
+                    for imageStyle in ["small_right", "large_left"] {
+                        defaults.set(imageStyle, forKey: "story_list_preview_images_size")
+                        for state in 0..<3 {
+                            func cellPNG(_ image: UIImage) -> Data? {
+                                cache.memoryCache.setObject(image, forKey: "story")
+                                let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+                                cell.setValue(app, forKey: "appDelegate")
+                                cell.storyHash = "story"
+                                cell.storyTitle = "Exact thumbnail display preparation"
+                                cell.storyContent = "Retain the original crop, colors, alpha, and read dimming."
+                                cell.storyAuthor = "Fixture"
+                                cell.storyDate = "3m"
+                                cell.textSize = FeedDetailTextSize(rawValue: 0)!
+                                cell.isRead = state > 0
+                                cell.isHighlighted = state == 2
+                                let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: 180))
+                                view.cell = cell
+                                view.appDelegate = app
+                                return UIGraphicsImageRenderer(size: view.bounds.size).image { _ in view.draw(view.bounds) }.pngData()
+                            }
+                            XCTAssertEqual(cellPNG(actual), cellPNG(source), "\(colorSpaceName), orientation=\(orientation.rawValue), scale=\(scale), \(imageStyle), state=\(state)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @MainActor func test_reversePrefetchRestoresEvictedDiskThumbnailBeforeTheOlderCellDraws() throws {
         let defaults = UserDefaults.standard
         let imagePreference = defaults.object(forKey: "story_list_preview_images_size")
@@ -875,6 +1077,14 @@ private final class ThumbnailLookupRaceAppDelegate: NewsBlurAppDelegate {
         afterLookup = nil
         completion?()
         return result
+    }
+}
+
+private final class ThumbnailPreparationImage: UIImage {
+    var preparation: (() -> UIImage?)?
+
+    override func preparingForDisplay() -> UIImage? {
+        preparation?()
     }
 }
 
