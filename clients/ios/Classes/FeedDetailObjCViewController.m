@@ -63,7 +63,7 @@ static NSString * const FeedDetailVisibleRowStoryLocationKey = @"story_location"
 static NSString * const FeedDetailVisibleRowClusterStoryKey = @"cluster_story";
 static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 
-@interface FeedDetailObjCViewController ()
+@interface FeedDetailObjCViewController () <UITableViewDataSourcePrefetching>
 
 @property (nonatomic) NSInteger oldLocation;
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
@@ -106,6 +106,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, copy) NSDictionary *renderedStoryAppendContext;
 @property (nonatomic, strong) NSCache<NSString *, NSString *> *storyPreviewTextCache;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
+@property (nonatomic, strong) StoryTextLayoutCache *storyTextLayoutCache;
+@property (nonatomic, copy) NSArray<NSIndexPath *> *storyTextLayoutPrefetchRows;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSNumber *> *storyRowHeightCache;
 @property (nonatomic) CGFloat storyRowHeightWidth;
 @property (nonatomic) FeedDetailTextSize storyRowHeightTextSize;
@@ -204,6 +206,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xD4C8B8, 0x383838, 0x222222);
     self.storyTitlesTable.accessibilityIdentifier = @"story-titles-list";
+    self.storyTitlesTable.prefetchDataSource = self;
     if (@available(iOS 15.0, *)) {
         self.storyTitlesTable.allowsFocus = NO;
         self.storyTitlesTable.sectionHeaderTopPadding = 0;
@@ -1632,6 +1635,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)clearStoryRenderCaches {
+    [_storyTextLayoutCache removeAllLayouts];
+    self.storyTextLayoutPrefetchRows = nil;
     self.storyRenderCacheGeneration += 1;
     self.storyRowHeightCache = nil;
     self.renderedStoryLocationIds = nil;
@@ -1734,6 +1739,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
             for (NSArray<NSString *> *entry in previewEntries) {
                 [weakSelf.storyPreviewTextCache setObject:entry[1] forKey:entry[0]];
+            }
+            if (weakSelf.storyTextLayoutPrefetchRows.count) {
+                [weakSelf tableView:weakSelf.storyTitlesTable prefetchRowsAtIndexPaths:weakSelf.storyTextLayoutPrefetchRows];
             }
         });
     });
@@ -3470,6 +3478,83 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 #pragma mark -
 #pragma mark Table View - Feed List
 
+- (StoryTextLayoutCache *)storyTextLayoutCache {
+    if (!_storyTextLayoutCache) _storyTextLayoutCache = [[StoryTextLayoutCache alloc] init];
+    return _storyTextLayoutCache;
+}
+
+- (void)tableView:(UITableView *)tableView prefetchRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+    if (tableView != self.storyTitlesTable || !self.isLegacyTable || self.isDashboard ||
+        storiesCollection.isDailyBriefing || CGRectGetWidth(tableView.bounds) <= 0) return;
+
+    NSMutableArray<NSIndexPath *> *requestedRows = [self.storyTextLayoutPrefetchRows mutableCopy] ?: [NSMutableArray array];
+    for (NSIndexPath *indexPath in indexPaths) {
+        [requestedRows removeObject:indexPath];
+        [requestedRows addObject:indexPath];
+    }
+    if (requestedRows.count > 24) [requestedRows removeObjectsInRange:NSMakeRange(0, requestedRows.count - 24)];
+    self.storyTextLayoutPrefetchRows = requestedRows;
+
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *imageStyle = [preferences stringForKey:@"story_list_preview_images_size"] ?: @"";
+    CGFloat comfortMargin = [[preferences stringForKey:@"feed_list_spacing"] isEqualToString:@"compact"] ? 0 : 10;
+    BOOL river = storiesCollection.isRiverView || storiesCollection.isSavedView ||
+        storiesCollection.isReadView || storiesCollection.isWidgetView || storiesCollection.isSocialView ||
+        storiesCollection.isSocialRiverView;
+    CGFloat riverPadding = (river ? 20 : -10) + comfortMargin;
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraphStyle.alignment = NSTextAlignmentLeft;
+    paragraphStyle.lineHeightMultiple = 0.95f;
+    BOOL shortTitles = [self isShortTitles];
+
+    // FeedDetailObjCViewController.m snapshots only nearby regular rows; clusters keep their existing drawing path.
+    for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
+        NSDictionary *descriptor = [self storyRowDescriptorForIndexPath:indexPath];
+        if (!descriptor || [descriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory) continue;
+        NSInteger location = [self storyLocationForIndexPath:indexPath];
+        NSDictionary *story = [self getStoryAtLocation:location];
+        if (!story) continue;
+        NSString *title = [story[@"story_title"] isKindOfClass:[NSString class]] ?
+            [story[@"story_title"] stringByDecodingHTMLEntities] : @"";
+        NSString *preview = @"";
+        if (self.textSize != FeedDetailTextSizeTitleOnly) {
+            preview = [self.storyPreviewTextCache objectForKey:[self storyRenderCacheKeyForStory:story location:location]];
+            // FeedDetailObjCViewController.m retries after background HTML warming instead of parsing during prefetch.
+            if (!preview) continue;
+        }
+        CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
+        NSMutableArray<StoryTextLayoutRequest *> *requests = [NSMutableArray arrayWithCapacity:2];
+        // FeedDetailObjCViewController.m prepares both widths so thumbnail arrival cannot delay or change the text.
+        NSInteger variants = [imageStyle isEqualToString:@"none"] ? 1 : 2;
+        for (NSInteger variant = 0; variant < variants; variant++) {
+            BOOL hasImage = variant == 1;
+            CGFloat width = [StoryTextLayoutRequest contentWidthForBoundsWidth:CGRectGetWidth(tableView.bounds)
+                                                                   imageStyle:imageStyle hasImage:hasImage];
+            [requests addObject:[[StoryTextLayoutRequest alloc]
+                initWithTitle:title preview:preview ?: @"" contentWidth:width boundsHeight:height
+                fontPointSize:fontDescriptor.pointSize textSize:self.textSize shortTitles:shortTitles
+                river:river comfortMargin:comfortMargin riverPadding:riverPadding
+                hasImage:hasImage paragraphStyle:paragraphStyle]];
+        }
+        NSString *identifier = [NSString stringWithFormat:@"%ld:%ld", (long)indexPath.section, (long)indexPath.row];
+        [self.storyTextLayoutCache prefetch:requests identifier:identifier];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView cancelPrefetchingForRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+    if (tableView != self.storyTitlesTable) return;
+    NSMutableArray<NSIndexPath *> *requestedRows = [self.storyTextLayoutPrefetchRows mutableCopy];
+    [requestedRows removeObjectsInArray:indexPaths];
+    self.storyTextLayoutPrefetchRows = requestedRows;
+    NSMutableArray<NSString *> *identifiers = [NSMutableArray arrayWithCapacity:indexPaths.count];
+    for (NSIndexPath *indexPath in indexPaths) {
+        [identifiers addObject:[NSString stringWithFormat:@"%ld:%ld", (long)indexPath.section, (long)indexPath.row]];
+    }
+    [_storyTextLayoutCache cancelPrefetch:identifiers];
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (!self.messageView.hidden) {
         return 0;
@@ -3732,6 +3817,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     cell.textSize = self.textSize;
     cell.isShort = NO;
     cell.isClusterStory = isClusterRow;
+    cell.storyTextLayoutCache = self.isLegacyTable && !isClusterRow && !storiesCollection.isDailyBriefing ?
+        self.storyTextLayoutCache : nil;
     cell.isDailyBriefingSummary = !isClusterRow && [story[@"is_daily_briefing_summary"] boolValue];
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
