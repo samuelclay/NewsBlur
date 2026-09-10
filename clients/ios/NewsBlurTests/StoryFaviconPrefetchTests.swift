@@ -140,6 +140,28 @@ import UIKit
         XCTAssertEqual(fixture.storage.diskCache.mainReads, 0)
     }
 
+    func test_reusedCellClearsPreparedArtworkForNilWorldAndOrdinaryImageAssignments() throws {
+        let fixture = try makeFixture()
+        defer { fixture.close() }
+        let path = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 997))
+        let cell = try fixture.cell(at: path)
+        let setter = NSSelectorFromString("setPreparedSiteFavicon:")
+        guard cell.responds(to: setter) else {
+            return XCTFail("The cell needs an explicit prepared-artwork setter that preserves the original setter contract.")
+        }
+        let roundedSelector = NSSelectorFromString("roundedSiteFaviconImage")
+        let prepared = try XCTUnwrap(Utilities.roundCorneredImage(fixture.sources["1"], radius: 4, convertTo: CGSize(width: 16, height: 16)))
+        for replacement in [nil, UIImage(named: "world.png"), fixture.sources["2"], prepared] {
+            cell.perform(setter, with: prepared)
+            XCTAssertTrue(cell.perform(roundedSelector)?.takeUnretainedValue() as? UIImage === prepared)
+            cell.siteFavicon = replacement
+            let actual = cell.perform(roundedSelector)?.takeUnretainedValue() as? UIImage
+            let expected = Utilities.roundCorneredImage(replacement, radius: 4, convertTo: CGSize(width: 16, height: 16))
+            XCTAssertEqual(actual?.pngData(), expected?.pngData())
+            XCTAssertEqual(cell.value(forKey: "siteFaviconPrepared") as? Bool, false)
+        }
+    }
+
     private func makeFixture() throws -> StoryFaviconFixture {
         let app = NewsBlurAppDelegate()
         app.isPremium = true
