@@ -232,12 +232,14 @@ static UIFont *indicatorFont = nil;
         titleBoundingRows = MIN(((bounds.size.height - 24) / titleFont.pointSize) - 2, 4);
     }
 
+    CFTimeInterval titleLayoutStarted = [ReaderPerformance start];
     self.cachedRegularTitleSize = [cell.storyTitle
                                    boundingRectWithSize:CGSizeMake(contentRect.size.width, titleFont.pointSize * titleBoundingRows)
                                    options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                                    attributes:@{NSFontAttributeName: titleFont,
                                                 NSParagraphStyleAttributeName: paragraphStyle}
                                    context:nil].size;
+    if (titleLayoutStarted > 0) [ReaderPerformance finish:@"story.title.layout" since:titleLayoutStarted];
 
     self.cachedRegularContentSize = CGSizeZero;
     self.cachedRegularContentGap = 0;
@@ -251,12 +253,14 @@ static UIFont *indicatorFont = nil;
             contentBoundingRows = MAX(3, (bounds.size.height - 30 - comfortMargin - defaultTitleBottom) / contentFont.pointSize);
         }
 
+        CFTimeInterval previewLayoutStarted = [ReaderPerformance start];
         self.cachedRegularContentSize = [cell.storyContent
                                          boundingRectWithSize:CGSizeMake(contentRect.size.width, contentFont.pointSize * contentBoundingRows)
                                          options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                                          attributes:@{NSFontAttributeName: contentFont,
                                                       NSParagraphStyleAttributeName: paragraphStyle}
                                          context:nil].size;
+        if (previewLayoutStarted > 0) [ReaderPerformance finish:@"story.preview.layout" since:previewLayoutStarted];
 
         CGFloat dateY = bounds.size.height - 18 - comfortMargin;
         CGFloat topEdge = cell.isRiverOrSocial ? riverPadding : 0;
@@ -583,7 +587,9 @@ static UIFont *indicatorFont = nil;
             
             CGContextClipToRect(context, imageFrame);
             
+            CFTimeInterval imageDrawStarted = [ReaderPerformance start];
             [cachedImage drawInRect:drawingFrame blendMode:0 alpha:alpha];
+            if (imageDrawStarted > 0) [ReaderPerformance finish:@"story.thumbnail.draw" since:imageDrawStarted];
             
             if (!isLeft) {
                 rect.size.width -= imageFrame.size.width;
@@ -628,10 +634,12 @@ static UIFont *indicatorFont = nil;
                                      NSForegroundColorAttributeName: textColor,
                                      NSParagraphStyleAttributeName: paragraphStyle}];
         
+        CFTimeInterval faviconDrawStarted = [ReaderPerformance start];
         UIImage *siteIcon = [cell roundedSiteFaviconImage];
         [siteIcon drawInRect:CGRectMake(leftMargin - feedOffset, siteTitleY, 16.0, 16.0)
                    blendMode:0
                        alpha:(cell.isRead ? 0.25f : 1.0f)];
+        if (faviconDrawStarted > 0) [ReaderPerformance finish:@"story.favicon.draw" since:faviconDrawStarted];
     }
     
     // story title
@@ -681,12 +689,14 @@ static UIFont *indicatorFont = nil;
     }
     CGRect storyTitleFrame = CGRectMake(storyTitleX, storyTitleY,
                                         rect.size.width - storyTitleX + leftMargin, theSize.height);
+    CFTimeInterval titleDrawStarted = [ReaderPerformance start];
     [cell.storyTitle drawWithRect:storyTitleFrame
                           options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                        attributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}
                           context:nil];
+    if (titleDrawStarted > 0) [ReaderPerformance finish:@"story.title.draw" since:titleDrawStarted];
     
 //    CGContextStrokeRect(context, storyTitleFrame);
     
@@ -713,6 +723,7 @@ static UIFont *indicatorFont = nil;
         CGFloat dateY = r.size.height - 18 - comfortMargin;
         int storyContentY = (int)(bottomOfTitle + (dateY - bottomOfTitle - contentSize.height) / 2);
 
+        CFTimeInterval previewDrawStarted = [ReaderPerformance start];
         [cell.storyContent
          drawWithRect:CGRectMake(storyTitleX, storyContentY,
                                  rect.size.width - storyTitleX + leftMargin, contentSize.height)
@@ -721,6 +732,7 @@ static UIFont *indicatorFont = nil;
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}
          context:nil];
+        if (previewDrawStarted > 0) [ReaderPerformance finish:@"story.preview.draw" since:previewDrawStarted];
         
 //        CGContextStrokeRect(context, CGRectMake(storyTitleX, storyContentY,
 //                                                rect.size.width - storyTitleX + leftMargin, contentSize.height));
@@ -808,6 +820,7 @@ static UIFont *indicatorFont = nil;
     CGFloat storyIndicatorX = storyIndicatorBase + (isHighlighted ? 2 : 0);
     CGFloat storyIndicatorY = storyTitleFrame.origin.y + (fontDescriptor.pointSize / 2);
     
+    CFTimeInterval indicatorDrawStarted = [ReaderPerformance start];
     UIImage *unreadIcon;
     CGFloat size = 12;
     if (cell.storyScore == -1) {
@@ -820,6 +833,7 @@ static UIFont *indicatorFont = nil;
     }
     
     [unreadIcon drawInRect:CGRectMake(storyIndicatorX, storyIndicatorY - (size / 2) + 1, size, size) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
+    if (indicatorDrawStarted > 0) [ReaderPerformance finish:@"story.indicator.draw" since:indicatorDrawStarted];
 }
 
 @end
