@@ -2389,7 +2389,8 @@
             CGFloat savedFraction = 0;
             while ([cursor next]) {
                 id scroll = [[cursor resultDictionary] objectForKey:@"scroll"];
-                if (![scroll isKindOfClass:[NSNull class]]) savedFraction = [scroll floatValue] / 1000.f;
+                // NewsBlurAppDelegate.m persists an explicit top position as the legacy value one.
+                if (![scroll isKindOfClass:[NSNull class]] && [scroll integerValue] > 1) savedFraction = [scroll floatValue] / 1000.f;
             }
             [cursor close];
             dispatch_async(dispatch_get_main_queue(), ^{
