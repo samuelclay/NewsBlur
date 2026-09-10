@@ -637,6 +637,13 @@ extension FeedDetailViewController {
             return
         }
 
+        // FeedDetailViewController.swift: the native table reads StoriesCollection directly.
+        // Only build StoryCache's complete SwiftUI models when a SwiftUI layout uses them.
+        if isLegacyTable {
+            reloadTable()
+            return
+        }
+
         if isDashboard {
             storyCache.redrawDashboard()
             
@@ -655,10 +662,6 @@ extension FeedDetailViewController {
 //            storyCache.selected = findingStory
 //            findingStory = nil
 //        }
-        
-        if isLegacyTable {
-            reloadTable()
-        }
         
 //        if pageFinished, dashboardAwaitingFinish, dashboardIndex >= 0 {
 //            dashboardAwaitingFinish = false
