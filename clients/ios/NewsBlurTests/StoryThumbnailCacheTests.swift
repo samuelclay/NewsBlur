@@ -202,7 +202,10 @@ final class Test_StoryThumbnailCache: XCTestCase {
                                 let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: 180))
                                 view.cell = cell
                                 view.appDelegate = app
-                                return UIGraphicsImageRenderer(size: view.bounds.size).image { _ in view.draw(view.bounds) }.pngData()
+                                let rendered = UIGraphicsImageRenderer(size: view.bounds.size).image { _ in view.draw(view.bounds) }.pngData()
+                                XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === image,
+                                              "Pixel parity must use this exact image, without falling back to the original during the draw")
+                                return rendered
                             }
                             XCTAssertEqual(try XCTUnwrap(cellPNG(actual)), try XCTUnwrap(cellPNG(source)), "\(colorSpaceName), orientation=\(orientation.rawValue), scale=\(scale), \(imageStyle), state=\(state)")
                         }
@@ -210,6 +213,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
                 }
             }
         }
+        print("THUMBNAIL_PREPARATION_NATIVE prepared_sources=\(preparedCount) total_sources=12")
         XCTAssertGreaterThan(preparedCount, 0, "The real native preparation path must run for supported bitmap sources, so parity cannot pass by always returning the original")
     }
 
