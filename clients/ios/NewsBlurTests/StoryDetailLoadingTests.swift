@@ -167,6 +167,23 @@ import XCTest
         XCTAssertTrue(fixture.web.loads.last?.html.contains("Fixture article body") == true)
     }
 
+    func test_reusingPageDoesNotApplyTheFormerArticlesBootstrapDeadline() async throws {
+        let fixture = makeFixture()
+        fixture.page.perform(NSSelectorFromString("clearWebView"))
+        let bootstrap = try XCTUnwrap(fixture.web.loads.last?.navigation)
+        fixture.page.drawStory()
+        await delay(0.6)
+        fixture.page.activeStory = story("second", body: "Latest waiting article")
+        fixture.page.drawStory()
+        await delay(0.55)
+
+        XCTAssertEqual(fixture.page.value(forKey: "failedWebViewFontPreparation") as? Bool, false)
+        XCTAssertEqual(fixture.web.loads.count, 1)
+        fixture.page.webView(fixture.web, didFinish: bootstrap)
+        XCTAssertTrue(fixture.web.loads.last?.html.contains("Latest waiting article") == true)
+        XCTAssertEqual(fixture.web.loads.count, 2)
+    }
+
     func test_firstNavigationAlreadyContainsCompleteStoryAndHTTPSOrigin() async {
         let fixture = makeFixture()
         fixture.page.drawStory()
