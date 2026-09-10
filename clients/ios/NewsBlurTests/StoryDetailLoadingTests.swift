@@ -215,7 +215,13 @@ import XCTest
     }
 
     func test_delayedScrollRestoreCannotOverrideManualScrolling() async {
-        let fixture = makeFixture()
+        let app = StoryLoadAppDelegate()
+        let pages = StoryLoadToolbarPages(nibName: nil, bundle: nil)
+        app.testPages = pages
+        defer { app.testPages = nil }
+        pages.appDelegate = app
+        let fixture = makeFixture(app: app)
+        pages.currentPage = fixture.page
         let database = HeldStoryScrollQueue()
         fixture.app.setValue(database, forKey: "database")
         fixture.page.drawStory()
@@ -225,27 +231,51 @@ import XCTest
 
         fixture.web.trackedScroll.simulatesDragging = true
         fixture.web.scrollView.contentOffset = CGPoint(x: 0, y: 120)
+        fixture.page.observeValue(forKeyPath: "contentOffset", of: fixture.web.scrollView,
+                                  change: [.oldKey: NSValue(cgPoint: .zero),
+                                           .newKey: NSValue(cgPoint: CGPoint(x: 0, y: 120))], context: nil)
+        fixture.web.trackedScroll.simulatesDragging = false
         database.release()
         await delay(0.05)
 
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 120)
-        fixture.web.trackedScroll.simulatesDragging = false
     }
 
     func test_stalledWebKitSubresourceDoesNotKeepReadableStoryHidden() async throws {
+        try await checkStalledStoryRendering(restoresPosition: false)
+    }
+
+    func test_DOMReadyRestoresSavedPositionAfterNativeWebKitLayout() async throws {
+        try await checkStalledStoryRendering(restoresPosition: true)
+    }
+
+    private func checkStalledStoryRendering(restoresPosition: Bool) async throws {
         let resource = HeldStoryResource()
         let configuration = WKWebViewConfiguration()
         configuration.setURLSchemeHandler(resource, forURLScheme: "nb-story-test")
         let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: configuration)
         let page = makePage(web: web)
+        page.allowsAppearanceCallbacks = false
+        if restoresPosition { page.appDelegate.setValue(ImmediateStoryScrollQueue(), forKey: "database") }
         page.shareHTML = "<img src='nb-story-test://resource/avatar.png' width='30' height='30'>"
-        page.activeStory = story("web", body: String(repeating: "<p>Readable article paragraph.</p>", count: 150))
-        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        page.activeStory = story("first", body: String(repeating: "<p>Readable article paragraph.</p>", count: 150))
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
         window.rootViewController = UIViewController()
         window.rootViewController?.view.addSubview(page.view)
-        window.isHidden = false
-        defer { window.isHidden = true }
+        window.makeKeyAndVisible()
+        defer {
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
         web.navigationDelegate = page
+        // StoryDetailObjCViewController.m initializes every WKWebView with clearWebView before drawing a story.
+        page.perform(NSSelectorFromString("clearWebView"))
+        for _ in 0..<60 where page.finishedNavigations == 0 { await delay(0.05) }
+        XCTAssertEqual(page.finishedNavigations, 1)
+        page.finishedNavigations = 0
         let ready = expectation(description: "Full story DOM is ready while its image remains pending")
         page.readyObserver = { ready.fulfill() }
         page.drawStory()
@@ -261,13 +291,66 @@ import XCTest
         let body = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Readable article paragraph") == true)
         XCTAssertEqual(page.finishedNavigations, 0)
+        let layout = try await web.evaluateJavaScript("JSON.stringify({ready:document.readyState,body:document.body.scrollHeight,viewport:window.innerHeight,fonts:document.fonts.status,font:getComputedStyle(document.querySelector('#NB-story')).fontFamily,story:document.querySelector('#NB-story').getBoundingClientRect().height})")
+        print("STORY_HELD_RESOURCE_LAYOUT native=\(web.scrollView.contentSize) frame=\(web.frame) inWindow=\(web.window != nil) scene=\(window.windowScene?.activationState.rawValue ?? -1) dom=\(layout)")
+        let snapshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: false)
+        }
+        let attachment = XCTAttachment(image: snapshot)
+        attachment.name = "Readable story while image remains pending"
+        attachment.lifetime = .keepAlways
+        add(attachment)
         XCTAssertGreaterThan(web.scrollView.contentSize.height, web.bounds.height + 500)
-        web.scrollView.contentOffset = CGPoint(x: 0, y: 250)
-        XCTAssertEqual(web.scrollView.contentOffset.y, 250, accuracy: 2)
+        let readingPosition: CGFloat
+        if restoresPosition {
+            readingPosition = floor(web.scrollView.contentSize.height / 2)
+            await delay(0.4)
+        } else {
+            readingPosition = 250
+            web.scrollView.contentOffset = CGPoint(x: 0, y: readingPosition)
+        }
+        XCTAssertEqual(web.scrollView.contentOffset.y, readingPosition, accuracy: 2)
         resource.finish()
         await delay(0.15)
-        XCTAssertEqual(web.scrollView.contentOffset.y, 250, accuracy: 2)
+        XCTAssertEqual(web.scrollView.contentOffset.y, readingPosition, accuracy: 2)
         page.webView = nil
+    }
+
+    func test_plainWebKitCanRenderWhileAnImageRemainsPending() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: false)
+    }
+
+    func test_plainWebKitCanRenderAfterCancelledDOMReadyNavigation() async throws {
+        try await checkPlainWebKitRendering(notifiesNative: true)
+    }
+
+    private func checkPlainWebKitRendering(notifiesNative: Bool) async throws {
+        let resource = HeldStoryResource()
+        let configuration = WKWebViewConfiguration()
+        configuration.setURLSchemeHandler(resource, forURLScheme: "nb-story-test")
+        let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: configuration)
+        let navigationDelegate = PlainStoryNavigationDelegate()
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIViewController()
+        window.rootViewController?.view.addSubview(web)
+        window.makeKeyAndVisible()
+        defer {
+            resource.finish()
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
+        web.isHidden = false
+        web.navigationDelegate = navigationDelegate
+        let notify = notifiesNative ? "<script>document.addEventListener('DOMContentLoaded',function(){window.location='http://ios.newsblur.com/notify-loaded';});</script>" : ""
+        web.loadHTMLString("<html><body><img src='nb-story-test://resource/avatar.png' width='30' height='30'>" + String(repeating: "<p>Plain WebKit control paragraph.</p>", count: 150) + notify + "</body></html>", baseURL: nil)
+        for _ in 0..<60 where web.scrollView.contentSize.height < web.bounds.height + 500 {
+            await delay(0.05)
+        }
+        print("STORY_PLAIN_WEBKIT native=\(web.scrollView.contentSize) notify=\(notifiesNative) pending=\(resource.pendingCount) suppressed=\(configuration.suppressesIncrementalRendering)")
+        XCTAssertEqual(resource.pendingCount, 1)
+        XCTAssertGreaterThan(web.scrollView.contentSize.height, web.bounds.height + 500)
     }
 
     private func makeFixture(app: NewsBlurAppDelegate = NewsBlurAppDelegate()) -> (page: StoryLoadPage, web: RecordedStoryLoadWebView, app: NewsBlurAppDelegate) {
@@ -346,15 +429,25 @@ private final class StoryLoadAppDelegate: NewsBlurAppDelegate {
     var finishedNavigations = 0
     var shareHTML = "Fixture sharing"
     var readyObserver: (() -> Void)?
+    var allowsAppearanceCallbacks = true
 
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
     override func viewWillLayoutSubviews() {}
+    override func viewWillAppear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewWillAppear(animated) } }
+    override func viewWillDisappear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewWillDisappear(animated) } }
+    override func viewDidAppear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewDidAppear(animated) } }
+    override func viewDidDisappear(_ animated: Bool) { if allowsAppearanceCallbacks { super.viewDidDisappear(animated) } }
+    override func drawStory() {
+        if webView is RealStoryLoadWebView { print("STORY_REAL_DRAW \(Thread.callStackSymbols.prefix(10))") }
+        super.drawStory()
+    }
     override func getHeader() -> String! { "<h1>Fixture header</h1>" }
     override func getShareBar() -> String! { shareHTML }
     override func getComments() -> String! { "Fixture comments" }
     override func changeWebViewWidth() { widthUpdates += 1 }
     override func checkTryFeedStory() {}
+    @objc(storeScrollPosition:) func ignorePositionStorage(_ queue: Bool) {}
     @objc(getSideOptions) func fixtureSideOptions() -> String { "Fixture side options" }
     @objc(applyClassifierHighlights) func recordClassifierHighlights() {
         classifierUpdates += 1
@@ -441,6 +534,10 @@ private final class StoryScrollDatabase: NSObject {
     @objc(executeQuery:) func executeQuery(_ sql: String) -> StoryScrollCursor { StoryScrollCursor() }
 }
 
+private final class ImmediateStoryScrollQueue: NSObject {
+    @objc(inDatabase:) func inDatabase(_ block: (AnyObject) -> Void) { block(StoryScrollDatabase()) }
+}
+
 private final class StoryScrollCursor: NSObject {
     private var read = false
     @objc func next() -> Bool { defer { read = true }; return !read }
@@ -451,7 +548,14 @@ private final class StoryScrollCursor: NSObject {
 @MainActor private final class RealStoryLoadWebView: WKWebView {
     override func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation? {
         // StoryDetailLoadingTests.swift uses a local scheme origin solely to hold a subresource without live network access.
-        super.loadHTMLString(string, baseURL: URL(string: "nb-story-test://document/"))
+        print("STORY_REAL_SUBMISSION length=\(string.count) plain=\(string.contains("Plain WebKit")) full=\(string.contains("Readable article")) trace=\(Thread.callStackSymbols.prefix(8))")
+        return super.loadHTMLString(string, baseURL: URL(string: "nb-story-test://document/"))
+    }
+}
+
+@MainActor private final class PlainStoryNavigationDelegate: NSObject, WKNavigationDelegate {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(navigationAction.request.url?.host == "ios.newsblur.com" ? .cancel : .allow)
     }
 }
 
@@ -460,6 +564,12 @@ private final class StoryScrollCursor: NSObject {
     var pendingCount: Int { pending.count }
 
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+        guard urlSchemeTask.request.url?.host == "resource", urlSchemeTask.request.url?.path == "/avatar.png" else {
+            print("STORY_UNEXPECTED_RESOURCE \(urlSchemeTask.request.url?.absoluteString ?? "nil")")
+            urlSchemeTask.didFailWithError(NSError(domain: NSURLErrorDomain, code: NSURLErrorResourceUnavailable))
+            return
+        }
+        print("STORY_HELD_RESOURCE \(urlSchemeTask.request.url?.absoluteString ?? "nil") mime=image/png")
         pending[ObjectIdentifier(urlSchemeTask)] = urlSchemeTask
     }
     func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
