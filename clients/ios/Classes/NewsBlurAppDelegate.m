@@ -809,7 +809,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 #if !TARGET_OS_MACCATALYST
     // Release any cached data, images, etc that aren't in use.
     // Only clear memory caches, not disk caches
-    [cachedStoryImages.memoryCache removeAllObjects];
+    @synchronized (cachedStoryImages) {
+        // NewsBlurAppDelegate.m releases bitmaps in publication order without discarding verified source metadata.
+        self.storyImageCacheGeneration++;
+        [cachedStoryImages.memoryCache removeAllObjects];
+    }
     NSCache *missingFavicons = self.missingFavicons;
     @synchronized (missingFavicons) {
         self.faviconCacheGeneration++;
@@ -6484,6 +6488,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 //    NSLog(@"Pre-cached %d images", cached);
 }
 
+- (NSUInteger)storyImageMemoryCost:(UIImage *)image {
+    CGImageRef bitmap = image.CGImage;
+    if (bitmap) return CGImageGetBytesPerRow(bitmap) * CGImageGetHeight(bitmap);
+    return MAX(1, (NSUInteger)(image.size.width * image.scale * image.size.height * image.scale * 4));
+}
+
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
     if (!storyHash.length) return nil;
 
@@ -6509,10 +6519,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if (generation != self.storyImageCacheGeneration) return nil;
 
         if ([image isKindOfClass:[UIImage class]]) {
-            CGImageRef cgImage = [(UIImage *)image CGImage];
-            NSUInteger cost = cgImage ? CGImageGetBytesPerRow(cgImage) * CGImageGetHeight(cgImage) : 1;
             [self.missingStoryImages removeObjectForKey:storyHash];
-            [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
+            [cache.memoryCache setObject:image forKey:storyHash withCost:[self storyImageMemoryCost:image]];
             return image;
         }
 
@@ -6547,10 +6555,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if (operation.isCancelled || generation != self.storyImageCacheGeneration ||
             [[cache.memoryCache objectForKey:storyHash] isKindOfClass:[UIImage class]]) return;
         if ([image isKindOfClass:[UIImage class]]) {
-            CGImageRef cgImage = [(UIImage *)image CGImage];
-            NSUInteger cost = cgImage ? CGImageGetBytesPerRow(cgImage) * CGImageGetHeight(cgImage) : 1;
             [self.missingStoryImages removeObjectForKey:storyHash];
-            [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
+            [cache.memoryCache setObject:image forKey:storyHash withCost:[self storyImageMemoryCost:image]];
         } else {
             if (!self.missingStoryImages) {
                 self.missingStoryImages = [[NSCache alloc] init];
@@ -6631,9 +6637,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     @synchronized (cache) {
         // NewsBlurAppDelegate.m serializes saves with disk promotion while warm reads remain independent.
         self.storyImageCacheGeneration++;
-        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
         [self.missingStoryImages removeObjectForKey:storyHash];
-        [cache.memoryCache setObject:image forKey:storyHash withCost:cost];
+        [cache.memoryCache setObject:image forKey:storyHash withCost:[self storyImageMemoryCost:image]];
         // NewsBlurAppDelegate.m publishes source ownership with the shared bitmap so another controller cannot leave an obsolete completed-source match.
         [self.storyImageSources removeObjectForKey:storyHash];
         if (sourceURLs.count) {
