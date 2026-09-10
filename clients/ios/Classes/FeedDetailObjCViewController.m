@@ -100,6 +100,10 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, copy) NSDictionary *renderedStoryAppendContext;
 @property (nonatomic, strong) NSCache<NSString *, NSString *> *storyPreviewTextCache;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSNumber *> *storyRowHeightCache;
+@property (nonatomic) CGFloat storyRowHeightWidth;
+@property (nonatomic) FeedDetailTextSize storyRowHeightTextSize;
+@property (nonatomic) BOOL storyRowHeightShortTitles;
 @property (nonatomic, strong) NSCache<NSString *, NSArray *> *completedStoryImageSources;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSDictionary *> *pendingStoryImageRequests;
 @property (nonatomic, assign) NSUInteger storyRenderCacheGeneration;
@@ -741,6 +745,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)rememberStoryAppendState {
+    if (!self.isLegacyTable || self.isDashboard || storiesCollection.isDailyBriefing) {
+        self.renderedStoryLocationIds = nil;
+        self.renderedStoryAppendContext = nil;
+        return;
+    }
     self.renderedStoryLocationIds = storiesCollection.activeFeedStoryLocationIds;
     self.renderedStoryAppendContext = [self storyAppendContext];
 }
@@ -764,18 +773,18 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     NSArray<NSDictionary *> *newRows = [self buildVisibleStoryRowsFromLocation:previousStoryCount];
-    if (newRows.count) {
-        NSInteger firstRow = self.visibleStoryRows.count;
-        self.visibleStoryRows = [self.visibleStoryRows arrayByAddingObjectsFromArray:newRows];
-        NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray arrayWithCapacity:newRows.count];
-        for (NSInteger row = firstRow; row < self.visibleStoryRows.count; row++) {
-            [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:0]];
-        }
-        // FeedDetailObjCViewController.m inserts before the loading row, preserving cells and the scroll-read anchor.
-        [UIView performWithoutAnimation:^{
-            [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
-        }];
+    // FeedDetailObjCViewController.m reloads a fully filtered page so willDisplay can advance pagination again.
+    if (!newRows.count) return NO;
+    NSInteger firstRow = self.visibleStoryRows.count;
+    self.visibleStoryRows = [self.visibleStoryRows arrayByAddingObjectsFromArray:newRows];
+    NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray arrayWithCapacity:newRows.count];
+    for (NSInteger row = firstRow; row < self.visibleStoryRows.count; row++) {
+        [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:0]];
     }
+    // FeedDetailObjCViewController.m inserts before the loading row, preserving cells and the scroll-read anchor.
+    [UIView performWithoutAnimation:^{
+        [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+    }];
     [self rememberStoryAppendState];
     [self warmStoryPreviewCacheAroundLocation:previousStoryCount];
     [self updateBottomNextFeedControlForScroll:self.storyTitlesTable];
@@ -1608,6 +1617,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)clearStoryRenderCaches {
     self.storyRenderCacheGeneration += 1;
+    self.storyRowHeightCache = nil;
     self.renderedStoryLocationIds = nil;
     self.renderedStoryAppendContext = nil;
     [self.storyPreviewTextCache removeAllObjects];
@@ -3653,6 +3663,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     if (self.isLegacyTable) {
+        // FeedDetailObjCViewController.m may rebuild cluster positions while reloading an individual story.
+        self.storyRowHeightCache = nil;
         self.visibleStoryRows = [self buildVisibleStoryRows];
         NSArray<NSIndexPath *> *indexPaths = [self indexPathsForStoryLocationIncludingClusterRows:location];
         if (indexPaths.count) {
@@ -3943,6 +3955,23 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    BOOL cacheRowHeight = tableView == self.storyTitlesTable && self.isLegacyTable &&
+        !storiesCollection.isDailyBriefing && indexPath.section == 0 &&
+        indexPath.row >= 0 && indexPath.row < self.visibleStoryRows.count;
+    if (cacheRowHeight) {
+        CGFloat width = CGRectGetWidth(tableView.bounds);
+        BOOL shortTitles = [self isShortTitles];
+        if (width != self.storyRowHeightWidth || self.textSize != self.storyRowHeightTextSize ||
+            shortTitles != self.storyRowHeightShortTitles) {
+            self.storyRowHeightCache = nil;
+            self.storyRowHeightWidth = width;
+            self.storyRowHeightTextSize = self.textSize;
+            self.storyRowHeightShortTitles = shortTitles;
+        }
+        // FeedDetailObjCViewController.m keeps only scalar geometry for loaded rows; the loading row is never cached.
+        NSNumber *cachedRowHeight = self.storyRowHeightCache[@(indexPath.row)];
+        if (cachedRowHeight) return cachedRowHeight.doubleValue;
+    }
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
     NSInteger location = [self storyLocationForIndexPath:indexPath];
@@ -4080,6 +4109,10 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
 
 finish_height_measurement:
+    if (cacheRowHeight) {
+        if (!self.storyRowHeightCache) self.storyRowHeightCache = [NSMutableDictionary dictionary];
+        self.storyRowHeightCache[@(indexPath.row)] = @(rowHeight);
+    }
     if (shouldMeasureRender) {
         double elapsedMs = NBDailyBriefingElapsedMs(renderStartedAt);
         self.dailyBriefingHeightCallCount += 1;
