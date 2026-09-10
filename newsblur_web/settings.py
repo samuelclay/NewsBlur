@@ -331,6 +331,16 @@ SCRAPINGBEE_HOST_DAILY_CREDIT_CAP = 1000
 # forbidden feeds belong to accounts idle for over a year (September 2026 audit). See
 # Feed.has_dormant_sole_subscriber in apps/rss_feeds/models.py.
 SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS = 365
+# Per-user share of the ScrapingBee plan. Every proxied feed fetch is charged to the feed's
+# subscribers (up to 20 of them), and a feed is only proxied while at least one of its
+# subscribers is under budget, so no reader can drain the pool for everyone else. Leave
+# SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET at None to split the credits left in the billing
+# period evenly across the users charged in the last week (never assuming fewer than
+# SCRAPINGBEE_USER_BUDGET_MIN_USERS of them), or set a fixed number of credits per user
+# per period. Skips show as status="user_budget" on the dashboard. See
+# RScrapingBee.user_period_budget in apps/statistics/rscrapingbee.py.
+SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET = None
+SCRAPINGBEE_USER_BUDGET_MIN_USERS = 5000
 
 DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
     # 10,600+ distinct channels/hour; actual traffic goes to the YouTube Data API

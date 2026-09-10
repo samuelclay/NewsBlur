@@ -24,6 +24,9 @@ class Test_ScrapingBeeMonitor(TestCase):
             "sbDomains:*",
             "sbDomainCredits:*",
             "sbUsage",
+            "sbUserCredits:*",
+            "sbUsersCharged:*",
+            "sbUserBudget",
         ):
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
@@ -63,6 +66,9 @@ class Test_ScrapingBeeMonitor(TestCase):
         self.assertIn('scrapingbee_usage{metric="credits_used_pct"} 90.1', body)
         self.assertIn('scrapingbee_usage{metric="days_to_renewal"} 20.5', body)
         self.assertIn('scrapingbee_usage{metric="credits_per_day_remaining"} 4949', body)
+        self.assertIn('scrapingbee_usage{metric="user_budget"} ', body)
+        self.assertIn('scrapingbee_usage{metric="users_charged_period"} 0', body)
+        self.assertIn('scrapingbee_usage{metric="users_over_budget"} 0', body)
 
     @patch(
         "apps.monitor.views.newsblur_scrapingbee.RScrapingBee.get_account_usage",

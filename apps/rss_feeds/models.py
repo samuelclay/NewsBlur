@@ -3065,6 +3065,19 @@ class Feed(models.Model):
         subscription_count = UserSubscription.objects.filter(user_id=user_ids[0], active=True).count()
         return subscription_count > Profile.PREMIUM_FEED_LIMIT
 
+    def proxy_budget_subscriber_ids(self, limit=20):
+        """The readers a proxied (ScrapingBee) fetch of this feed is charged to, capped at
+        `limit` so a popular feed doesn't cost a pipeline of thousands of Redis writes. See
+        RScrapingBee.users_over_budget in apps/statistics/rscrapingbee.py.
+        """
+        from apps.reader.models import UserSubscription
+
+        return list(
+            UserSubscription.objects.filter(feed=self)
+            .order_by("pk")
+            .values_list("user_id", flat=True)[:limit]
+        )
+
     def has_dormant_sole_subscriber(self, days=None):
         """True when nobody who is still around reads this feed: it has at most one
         subscriber and that subscriber hasn't been seen in `days` (default
