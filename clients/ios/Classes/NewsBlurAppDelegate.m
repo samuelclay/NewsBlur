@@ -4843,6 +4843,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)setDictFeeds:(NSMutableDictionary *)feeds {
     dictFeeds = feeds;
+    [_feedIconRenderer cancelPreparation];
     NSCache *missingFavicons = self.missingFavicons;
     @synchronized (missingFavicons) {
         self.faviconCacheGeneration++;
@@ -4878,6 +4879,17 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }];
 }
 
+- (void)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests {
+    __weak typeof(self) weakSelf = self;
+    [self.feedIconRenderer prepare:requests loader:^UIImage *(NSString *key) {
+        return [weakSelf faviconImageForKey:key promoteOriginal:NO];
+    }];
+}
+
+- (void)cancelFaviconPreparation {
+    [_feedIconRenderer cancelPreparation];
+}
+
 - (NSUInteger)faviconMemoryCost:(UIImage *)image {
     if (image.CGImage) {
         return CGImageGetBytesPerRow(image.CGImage) * CGImageGetHeight(image.CGImage);
@@ -4886,6 +4898,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (UIImage *)faviconImageForKey:(NSString *)filename {
+    return [self faviconImageForKey:filename promoteOriginal:YES];
+}
+
+- (UIImage *)faviconImageForKey:(NSString *)filename promoteOriginal:(BOOL)promoteOriginal {
     if (![filename isKindOfClass:[NSString class]] || filename.length == 0) return nil;
 
     // NewsBlurAppDelegate.m bypasses PINCache's disk timestamp write on every memory hit.
@@ -4910,7 +4926,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         // NewsBlurAppDelegate.m must not publish an old disk result over a concurrent favicon save.
         if (writeGeneration != self.faviconWriteGeneration) return image;
         if (image) {
-            [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:[self faviconMemoryCost:image]];
+            // NewsBlurAppDelegate.m keeps proactive preparation from filling memory with large originals.
+            if (promoteOriginal) {
+                [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:[self faviconMemoryCost:image]];
+            }
         } else {
             [missingFavicons setObject:@YES forKey:filename];
         }
