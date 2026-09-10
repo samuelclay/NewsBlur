@@ -1443,6 +1443,11 @@
 		PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
 		PREM1EW5W1FT000000000002 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
 		PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
+		452F7CC253F066DDE7A3E212 /* ReaderPerformance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E966198BD700C25CF4103B /* ReaderPerformance.swift */; };
+		78C134BF5A92B4328336073C /* ReaderPerformance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E966198BD700C25CF4103B /* ReaderPerformance.swift */; };
+		1F0927750264F19490AA37A8 /* CustomIconRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1957BBC9B048502B8B43FE49 /* CustomIconRendererTests.swift */; };
+		ACC369B47D786C776D484A25 /* FaviconCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC678062DD4F7322E5339412 /* FaviconCacheTests.swift */; };
+		6272E9F4868AFC518EC2DDDE /* StoryListReloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1494,6 +1499,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = FF8A94961DE3BB77000A4C31;
 			remoteInfo = "Story Notification Service Extension";
+		};
+		E5D7C9B10516273849A00005 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 175790592930605500490924;
+			remoteInfo = "NewsBlur Alpha";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2438,6 +2450,11 @@
 		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 		KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		PREM1EW5W1FT000000000001 /* PremiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumView.swift; sourceTree = "<group>"; };
+		23E966198BD700C25CF4103B /* ReaderPerformance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderPerformance.swift; sourceTree = "<group>"; };
+		1957BBC9B048502B8B43FE49 /* CustomIconRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomIconRendererTests.swift; sourceTree = "<group>"; };
+		EC678062DD4F7322E5339412 /* FaviconCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaviconCacheTests.swift; sourceTree = "<group>"; };
+		6E05B405D8AB39D269C812A8 /* NewsBlurAlphaPerformanceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewsBlurAlphaPerformanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListReloadTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2566,6 +2583,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5D7C9B10516273849A00002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B2C3D4E5F60718293A0006 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -2598,6 +2623,7 @@
 				AABB1122334455667788CCDD /* AddSite */,
 				8CB4A9B8E48F436D53F119DB /* Network */,
 				A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */,
+				23E966198BD700C25CF4103B /* ReaderPerformance.swift */,
 				1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */,
 				0BA641879DDE49DEE45A226C /* SyncNotifierView.swift */,
 				D1E2F3A40516273849A00003 /* NewsBlurUITestHarness.swift */,
@@ -2740,6 +2766,7 @@
 				175792E42930605500490924 /* NB Alpha.app */,
 				17654E452B02C08700F61B2B /* NewsBlur Alpha Widget.appex */,
 				B1C2D3E4F5061728394A0001 /* NewsBlurTests.xctest */,
+				6E05B405D8AB39D269C812A8 /* NewsBlurAlphaPerformanceTests.xctest */,
 				D1E2F3A40516273849A00001 /* NewsBlurUITests.xctest */,
 			);
 			name = Products;
@@ -3546,6 +3573,9 @@
 				B1C2D3E4F5061728394A0002 /* AppDelegateHelperTests.swift */,
 				B1C2D3E4F5061728394A0004 /* LoginViewControllerTests.swift */,
 				B1C2D3E4F5061728394A0005 /* ReadTimeTrackerTests.swift */,
+				567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */,
+				EC678062DD4F7322E5339412 /* FaviconCacheTests.swift */,
+				1957BBC9B048502B8B43FE49 /* CustomIconRendererTests.swift */,
 				B1C2D3E4F5061728394A0003 /* ThemeManagerTests.swift */,
 			);
 			path = NewsBlurTests;
@@ -4081,6 +4111,24 @@
 			productReference = FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		E5D7C9B10516273849A00007 /* NewsBlurAlphaPerformanceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5D7C9B10516273849A00008 /* Build configuration list for PBXNativeTarget "NewsBlurAlphaPerformanceTests" */;
+			buildPhases = (
+				E5D7C9B10516273849A00003 /* Sources */,
+				E5D7C9B10516273849A00002 /* Frameworks */,
+				E5D7C9B10516273849A00004 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E5D7C9B10516273849A00006 /* PBXTargetDependency */,
+			);
+			name = NewsBlurAlphaPerformanceTests;
+			productName = NewsBlurAlphaPerformanceTests;
+			productReference = 6E05B405D8AB39D269C812A8 /* NewsBlurAlphaPerformanceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4183,6 +4231,7 @@
 				173CB30C26BCE94700BA872A /* NewsBlur Widget */,
 				17654E312B02C08700F61B2B /* NewsBlur Alpha Widget */,
 				C1D2E3F40516273849A00007 /* NewsBlurTests */,
+				E5D7C9B10516273849A00007 /* NewsBlurAlphaPerformanceTests */,
 				D1E2F3A40516273849A00007 /* NewsBlurUITests */,
 			);
 		};
@@ -5194,6 +5243,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5D7C9B10516273849A00004 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -5421,6 +5477,7 @@
 				9448849E19C4D612FEA6B1E8 /* VoiceRecorder.swift in Sources */,
 				07B1415392C062FCBFD79577 /* NewsBlurSocketClient.swift in Sources */,
 				06CB30FD8F4CA002CBB1CBFF /* CustomIconRenderer.swift in Sources */,
+				452F7CC253F066DDE7A3E212 /* ReaderPerformance.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5C /* CatalystModalDismissal.swift in Sources */,
 				FF5E1E05A010F0C272F68B3D /* SyncNotifierView.swift in Sources */,
 				D1E2F3A40516273849A00013 /* NewsBlurUITestHarness.swift in Sources */,
@@ -5654,6 +5711,7 @@
 				70FF70BB9A71026A0ACC8B2B /* VoiceRecorder.swift in Sources */,
 				7BED42F2556D90C4F19AE089 /* NewsBlurSocketClient.swift in Sources */,
 				FED20A379D2BC5FBF9BF711C /* CustomIconRenderer.swift in Sources */,
+				78C134BF5A92B4328336073C /* ReaderPerformance.swift in Sources */,
 				D5E6F708192A3B4C5D6E7F80 /* CatalystModalDismissal.swift in Sources */,
 				95D27D08DCDA57CA45C41955 /* SyncNotifierView.swift in Sources */,
 				D1E2F3A40516273849A00014 /* NewsBlurUITestHarness.swift in Sources */,
@@ -5688,6 +5746,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF8A949B1DE3BB77000A4C31 /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E5D7C9B10516273849A00003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6272E9F4868AFC518EC2DDDE /* StoryListReloadTests.swift in Sources */,
+				1F0927750264F19490AA37A8 /* CustomIconRendererTests.swift in Sources */,
+				ACC369B47D786C776D484A25 /* FaviconCacheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5731,6 +5799,11 @@
 			platformFilter = ios;
 			target = FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */;
 			targetProxy = FF8A949D1DE3BB77000A4C31 /* PBXContainerItemProxy */;
+		};
+		E5D7C9B10516273849A00006 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 175790592930605500490924 /* NewsBlur */;
+			targetProxy = E5D7C9B10516273849A00005 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -6697,6 +6770,59 @@
 			};
 			name = Release;
 		};
+		E5D7C9B10516273849A00009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaPerformanceTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NB Alpha.app/NB Alpha";
+				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/NB Alpha.app/Contents/MacOS/NB Alpha";
+				TEST_TARGET_NAME = "NewsBlur Alpha";
+			};
+			name = Debug;
+		};
+		E5D7C9B10516273849A0000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaPerformanceTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NB Alpha.app/NB Alpha";
+				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/NB Alpha.app/Contents/MacOS/NB Alpha";
+				TEST_TARGET_NAME = "NewsBlur Alpha";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -6786,6 +6912,15 @@
 			buildConfigurations = (
 				FF8A94A01DE3BB77000A4C31 /* Debug */,
 				FF8A94A11DE3BB77000A4C31 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E5D7C9B10516273849A00008 /* Build configuration list for PBXNativeTarget "NewsBlurAlphaPerformanceTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5D7C9B10516273849A00009 /* Debug */,
+				E5D7C9B10516273849A0000A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

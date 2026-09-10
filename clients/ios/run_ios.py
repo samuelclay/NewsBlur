@@ -14,6 +14,10 @@ Actions:
     tap:<x>,<y>           - Tap at coordinates
     sleep:<seconds>       - Wait for specified seconds
     swipe:<x1>,<y1>,<x2>,<y2> - Swipe from point to point
+    swipe:<x1>,<y1>,<x2>,<y2>,<seconds> - Swipe with an explicit duration
+    capture:<directory>   - Record video, CPU samples, and optional app measurements
+    fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
+    describe              - Print simulator accessibility elements
     screenshot:<path>     - Take screenshot and save to path
     launch                - Launch the NewsBlur app
     terminate             - Terminate the NewsBlur app
@@ -30,9 +34,13 @@ Environment:
 """
 
 import os
+import json
+import random
 import re
 import shlex
+import shutil
 import site
+import signal
 import subprocess
 import sys
 import time
@@ -44,6 +52,10 @@ APP_PATH = os.environ.get(
     "IOS_APP_PATH",
     "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app",
 )
+
+# run_ios.py keeps measurement tools alive across a sequence of UI actions.
+CAPTURES = []
+CAPTURE_DIRECTORIES = []
 
 
 def prepend_to_path(path):
@@ -116,12 +128,89 @@ def do_sleep(seconds):
 def do_swipe(coords):
     """Swipe from x1,y1 to x2,y2."""
     parts = coords.split(",")
-    if len(parts) != 4:
-        print(f"  Error: swipe requires 4 coordinates (x1,y1,x2,y2)")
-        return
-    x1, y1, x2, y2 = parts
+    if len(parts) not in (4, 5):
+        raise ValueError("swipe requires x1,y1,x2,y2[,duration]")
+    x1, y1, x2, y2 = parts[:4]
+    duration = float(parts[4]) if len(parts) == 5 else 0.3
     print(f"  Swipe: ({x1},{y1}) -> ({x2},{y2})")
-    run_cmd(f"idb ui swipe --udid {UDID} {x1} {y1} {x2} {y2}")
+    subprocess.run(["idb", "ui", "swipe", "--udid", UDID, x1, y1, x2, y2,
+                    "--duration", str(duration)], check=True)
+
+
+def do_capture(path):
+    """Record video and CPU samples until run_ios.py finishes its actions."""
+    os.makedirs(path, exist_ok=True)
+    launch_output = subprocess.check_output(
+        ["xcrun", "simctl", "launch", UDID, BUNDLE_ID], text=True
+    )
+    pid = str(int(launch_output.rsplit(":", 1)[1].strip()))
+    commands = [
+        ("video", ["xcrun", "simctl", "io", UDID, "recordVideo", "--codec=h264",
+                   os.path.join(path, "scroll.mp4")]),
+        ("profile", ["sample", pid, "120", "1", "-file", os.path.join(path, "cpu.txt")]),
+    ]
+    if os.environ.get("IOS_USE_XCTRACE") == "1":
+        commands.append(("instruments", ["xcrun", "xctrace", "record", "--template", "Time Profiler",
+                                        "--device", UDID, "--attach", pid, "--no-prompt",
+                                        "--output", os.path.join(path, "cpu.trace")]))
+    for name, command in commands:
+        log = open(os.path.join(path, name + ".log"), "w")
+        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT)
+        CAPTURES.append((process, log))
+    time.sleep(4)
+    for process, _ in CAPTURES:
+        if process.poll() is not None:
+            raise RuntimeError("Capture failed to start; inspect capture logs")
+    metadata = {"udid": UDID, "bundle_id": BUNDLE_ID, "pid": pid, "started_at": time.time()}
+    with open(os.path.join(path, "session.json"), "w") as file:
+        json.dump(metadata, file, indent=2)
+    CAPTURE_DIRECTORIES.append(path)
+
+
+def do_fuzz(arguments):
+    """Replay bounded vertical gestures; never tap read-state controls."""
+    seed, count = map(int, arguments.split(","))
+    rng = random.Random(seed)
+    for index in range(count):
+        # run_ios.py uses safe content coordinates on the portrait iPhone 17e.
+        x = rng.randint(135, 260)
+        low, high = rng.randint(600, 720), rng.randint(220, 300)
+        start, end = (high, low) if index % 4 == 3 else (low, high)
+        duration = rng.choice([0.12, 0.18, 0.3, 0.6])
+        print(json.dumps({"seed": seed, "gesture": index, "x": x,
+                          "start_y": start, "end_y": end, "duration": duration}), flush=True)
+        do_swipe(f"{x},{start},{x},{end},{duration}")
+        time.sleep(0.25)
+
+
+def stop_captures():
+    ended_at = time.time()
+    for process, _ in CAPTURES:
+        if process.poll() is None:
+            process.send_signal(signal.SIGINT)
+    for process, log in CAPTURES:
+        try:
+            process.wait(timeout=60)
+        except subprocess.TimeoutExpired:
+            process.terminate()
+            process.wait(timeout=10)
+        finally:
+            log.close()
+    CAPTURES.clear()
+    for path in CAPTURE_DIRECTORIES:
+        metadata_path = os.path.join(path, "session.json")
+        with open(metadata_path) as file:
+            metadata = json.load(file)
+        metadata["ended_at"] = ended_at
+        with open(metadata_path, "w") as file:
+            json.dump(metadata, file, indent=2)
+        container = subprocess.check_output(
+            ["xcrun", "simctl", "get_app_container", UDID, BUNDLE_ID, "data"], text=True
+        ).strip()
+        measurements = os.path.join(container, "Documents", "scroll-performance.jsonl")
+        if os.path.exists(measurements):
+            shutil.copy2(measurements, os.path.join(path, "measurements.jsonl"))
+    CAPTURE_DIRECTORIES.clear()
 
 
 def do_screenshot(path):
@@ -167,6 +256,12 @@ def parse_and_execute(action):
         do_sleep(arg)
     elif cmd == "swipe":
         do_swipe(arg)
+    elif cmd == "capture":
+        do_capture(arg)
+    elif cmd == "fuzz":
+        do_fuzz(arg)
+    elif cmd == "describe":
+        subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
     elif cmd == "screenshot":
         do_screenshot(arg)
     elif cmd == "launch":
@@ -219,8 +314,11 @@ def main():
     print(f"iOS Simulator Control (UDID: {UDID})")
     print("=" * 60)
 
-    for action in actions:
-        parse_and_execute(action)
+    try:
+        for action in actions:
+            parse_and_execute(action)
+    finally:
+        stop_captures()
 
     print("=" * 60)
     print("Done!")
