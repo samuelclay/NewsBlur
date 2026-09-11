@@ -145,6 +145,70 @@ static UIFont *indicatorFont = nil;
     self.delegate = nil;
 }
 
+- (BOOL)readStateAnimationsEnabled {
+    return !UIAccessibilityIsReduceMotionEnabled();
+}
+
+- (BOOL)isRead {
+    return isRead;
+}
+
+- (void)setIsRead:(BOOL)read {
+    // FeedDetailTableCell.m uses Core Animation's reserved key because CATransition ignores custom keys.
+    [cellContent.layer removeAnimationForKey:kCATransition];
+    isRead = read;
+}
+
+- (void)setRead:(BOOL)read animated:(BOOL)animated {
+    if (isRead == read) return;
+
+    BOOL shouldAnimate = animated && self.readStateAnimationsEnabled && self.window &&
+        !self.hidden && !self.window.hidden &&
+        CGRectIntersectsRect([self convertRect:self.bounds toView:self.window], self.window.bounds);
+    if (shouldAnimate) {
+        // FeedDetailTableCell.m finishes pending unread drawing before capturing the existing layer contents.
+        [self.layer displayIfNeeded];
+        [cellContent.layer displayIfNeeded];
+        shouldAnimate = cellContent.layer.contents != nil;
+    }
+
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.isRead = read;
+    if (shouldAnimate) {
+        CATransition *fade = [CATransition animation];
+        fade.type = kCATransitionFade;
+        fade.duration = 0.2;
+        fade.beginTime = [cellContent.layer convertTime:CACurrentMediaTime() fromLayer:nil];
+        fade.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        [cellContent.layer addAnimation:fade forKey:kCATransition];
+    }
+    [self setNeedsDisplay];
+    if (shouldAnimate) {
+        // FeedDetailTableCell.m changes all read artwork in the same transaction as its fade, without a row reload.
+        [self.layer displayIfNeeded];
+        [cellContent.layer displayIfNeeded];
+    }
+    [CATransaction commit];
+}
+
+- (void)setStoryHash:(NSString *)newStoryHash {
+    if (storyHash != newStoryHash && ![storyHash isEqualToString:newStoryHash]) {
+        [cellContent.layer removeAnimationForKey:kCATransition];
+    }
+    storyHash = newStoryHash;
+}
+
+- (void)prepareForReuse {
+    [cellContent.layer removeAnimationForKey:kCATransition];
+    [super prepareForReuse];
+}
+
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+    if (!self.window) [cellContent.layer removeAnimationForKey:kCATransition];
+}
+
 - (void)setSiteFavicon:(UIImage *)newSiteFavicon {
     if (siteFavicon == newSiteFavicon && !self.siteFaviconPrepared) {
         return;
