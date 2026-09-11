@@ -3928,10 +3928,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
-    if (!self.storyPagesViewController.previousPage || !self.storyPagesViewController.currentPage || !self.storyPagesViewController.nextPage) return;
-    for (StoryDetailViewController *page in @[self.storyPagesViewController.previousPage,
-                                              self.storyPagesViewController.currentPage,
-                                              self.storyPagesViewController.nextPage]) {
+    StoryDetailViewController *pages[] = {self.storyPagesViewController.previousPage,
+                                        self.storyPagesViewController.currentPage,
+                                        self.storyPagesViewController.nextPage};
+    for (NSUInteger index = 0; index < 3; index++) {
+        StoryDetailViewController *page = pages[index];
+        if (!page) continue;
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
@@ -3945,10 +3947,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
-    if (!self.storyPagesViewController.previousPage || !self.storyPagesViewController.currentPage || !self.storyPagesViewController.nextPage) return;
-    for (StoryDetailViewController *page in @[self.storyPagesViewController.previousPage,
-                                              self.storyPagesViewController.currentPage,
-                                              self.storyPagesViewController.nextPage]) {
+    StoryDetailViewController *pages[] = {self.storyPagesViewController.previousPage,
+                                        self.storyPagesViewController.currentPage,
+                                        self.storyPagesViewController.nextPage};
+    for (NSUInteger index = 0; index < 3; index++) {
+        StoryDetailViewController *page = pages[index];
+        if (!page) continue;
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
