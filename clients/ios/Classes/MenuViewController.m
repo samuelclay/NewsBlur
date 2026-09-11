@@ -57,6 +57,18 @@ NSString * const MenuHandler = @"handler";
     self.menuTableView.scrollEnabled = self.preferredContentSize.height > self.view.frame.size.height;
 }
 
+- (void)setCheckedRow:(NSInteger)checkedRow {
+    if (_checkedRow == checkedRow) return;
+    _checkedRow = checkedRow;
+    if (!self.isViewLoaded) return;
+
+    // MenuViewController.m updates persistent submenu checks without replacing their visible cells.
+    for (NSIndexPath *indexPath in self.menuTableView.indexPathsForVisibleRows) {
+        UITableViewCell *cell = [self.menuTableView cellForRowAtIndexPath:indexPath];
+        cell.accessoryType = indexPath.row == checkedRow ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    }
+}
+
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
     return YES;
@@ -119,6 +131,7 @@ NSString * const MenuHandler = @"handler";
     
     [self addTitle:title iconImage:image iconColor:iconColor destructive:NO selectionShouldDismiss:NO handler:^{
         MenuViewController *viewController = [MenuViewController new];
+        __weak MenuViewController *weakSubmenuController = viewController;
         viewController.title = title;
         id selectedValue = overrideSelectedValue ?: [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey] ?: defaultValue;
         
@@ -129,6 +142,7 @@ NSString * const MenuHandler = @"handler";
             
             [viewController addTitle:submenuTitle iconName:nil iconColor:iconColor selectionShouldDismiss:selectionShouldDismiss handler:^{
                 [[NSUserDefaults standardUserDefaults] setObject:submenuValue forKey:preferenceKey];
+                weakSubmenuController.checkedRow = idx;
                 handler(submenuValue);
             }];
             
