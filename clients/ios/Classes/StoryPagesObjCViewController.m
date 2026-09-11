@@ -1125,7 +1125,9 @@
         return 0;
     }
 
-    UIWindow *window = self.view.window ?: self.pendingPresentationPage.webView.window ?: appDelegate.detailViewController.view.window;
+    // StoryPagesObjCViewController.m still uses the presenting window after WebKit leaves its host and before the page attaches.
+    UIWindow *window = self.view.window ?: self.pendingPresentationPage.webView.window ?:
+        appDelegate.feedsNavigationController.viewIfLoaded.window ?: appDelegate.detailViewController.view.window;
 
     // Use window's safe area insets for the status bar area (most reliable)
     CGFloat safeAreaTop = window.safeAreaInsets.top;
