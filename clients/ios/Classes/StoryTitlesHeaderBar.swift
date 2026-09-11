@@ -60,11 +60,22 @@ class StoryTitlesHeaderBar: NSObject {
     private var faviconViews: [UIImageView] = []
     private var storedFavicons: [UIImage] = []
     private var discoverWidthConstraint: NSLayoutConstraint?
-    private var searchWidthConstraint: NSLayoutConstraint?
     private var headerHeightConstraint: NSLayoutConstraint?
+    private var markReadWidthConstraint: NSLayoutConstraint?
     private var isSearchCompact = false
-    private var isDiscoverCompact = false
     private var isDailyBriefingMode = false
+    private var filterText = "ALL"
+    private var orderText = "NEWEST"
+    private var fullOptionsWidth: CGFloat = 0
+    private var compactOptionsWidth: CGFloat = 0
+    private let markReadWidth: CGFloat = 98
+    private var appliedDiscoverLayout: String?
+    private lazy var relatedIconWidth = measuredPillWidth(title: nil, image: discoverImage, leadingInset: 14, trailingInset: 14)
+    private lazy var relatedTextWidth = measuredPillWidth(title: "RELATED SITES", image: discoverImage, leadingInset: 14, trailingInset: 12)
+    private lazy var briefingTextWidth = measuredPillWidth(title: "BRIEFING SETTINGS", image: dailyBriefingPillImage(), leadingInset: 14, trailingInset: 12)
+    private lazy var searchIconWidth = measuredPillWidth(title: nil, image: sym("magnifyingglass", size: 12), leadingInset: 14, trailingInset: 14)
+    private lazy var searchTextWidth = measuredPillWidth(title: "SEARCH", image: sym("magnifyingglass", size: 11), leadingInset: 14, trailingInset: 14)
+    private lazy var discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
 
     // MARK: - State
 
@@ -109,28 +120,21 @@ class StoryTitlesHeaderBar: NSObject {
         }.withRenderingMode(.alwaysTemplate)
     }
 
-    private func estimatedPillWidth(
-        title: String?,
-        imageWidth: CGFloat,
-        leadingInset: CGFloat,
-        trailingInset: CGFloat,
-        imagePadding: CGFloat = 4
-    ) -> CGFloat {
-        var width = leadingInset + trailingInset
+    /// StoryTitlesHeaderBar.swift measures an unconstrained button with the same platform API as the displayed pills.
+    private func measuredPillWidth(title: String?, image: UIImage?, trailingImage: Bool = false,
+                                   leadingInset: CGFloat, trailingInset: CGFloat) -> CGFloat {
+        let button = Self.makePillButton()
+        setPillContent(button, title: title, image: image, trailingImage: trailingImage,
+                       leadingInset: leadingInset, trailingInset: trailingInset, lineBreakMode: .byClipping)
+        return ceil(button.intrinsicContentSize.width)
+    }
 
-        if imageWidth > 0 {
-            width += imageWidth
-        }
-
-        if let title, !title.isEmpty {
-            if imageWidth > 0 {
-                width += imagePadding
-            }
-
-            width += ceil((title as NSString).size(withAttributes: [.font: pillFont]).width)
-        }
-
-        return ceil(width)
+    private func measureOptionsWidths() {
+        let image = sym("chevron.down", size: 8, weight: .bold)
+        fullOptionsWidth = measuredPillWidth(title: "\(filterText) · \(orderText)", image: image,
+                                             trailingImage: true, leadingInset: 16, trailingInset: 14)
+        compactOptionsWidth = measuredPillWidth(title: filterText, image: image,
+                                                trailingImage: true, leadingInset: 16, trailingInset: 14)
     }
 
     private func dailyBriefingPillImage() -> UIImage? {
@@ -148,24 +152,6 @@ class StoryTitlesHeaderBar: NSObject {
         )
         discoverPill.contentHorizontalAlignment = .center
         discoverPill.accessibilityLabel = "Daily Briefing Settings"
-    }
-
-    private func estimatedDailyBriefingPillWidth(compact: Bool) -> CGFloat {
-        estimatedPillWidth(
-            title: compact ? nil : "BRIEFING SETTINGS",
-            imageWidth: 14,
-            leadingInset: 14,
-            trailingInset: compact ? 14 : 12
-        )
-    }
-
-    private func estimatedSearchPillWidth(compact: Bool) -> CGFloat {
-        estimatedPillWidth(
-            title: compact ? nil : "SEARCH",
-            imageWidth: compact ? 12 : 11,
-            leadingInset: 14,
-            trailingInset: 14
-        )
     }
 
     // MARK: - Platform-Adaptive Pill API
@@ -323,7 +309,8 @@ class StoryTitlesHeaderBar: NSObject {
         setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
                        leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
         configurePillAppearance(discoverPill)
-        discoverPill.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        discoverPill.accessibilityLabel = "Related Sites"
+        discoverPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         pillStack.addArrangedSubview(discoverPill)
 
         NSLayoutConstraint.activate([
@@ -336,6 +323,7 @@ class StoryTitlesHeaderBar: NSObject {
                        image: sym("chevron.down", size: 8, weight: .bold),
                        trailingImage: true, leadingInset: 16, trailingInset: 14)
         configurePillAppearance(optionsPill)
+        measureOptionsWidths()
         optionsPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         pillStack.addArrangedSubview(optionsPill)
 
@@ -393,9 +381,12 @@ class StoryTitlesHeaderBar: NSObject {
         // Tap on main button fires markReadTapHandler
         markReadPill.addTarget(self, action: #selector(handleMarkReadTap), for: .touchUpInside)
 
+        let widthConstraint = markReadContainer.widthAnchor.constraint(equalToConstant: markReadWidth)
+        widthConstraint.priority = UILayoutPriority(999) // StoryTitlesHeaderBar.swift allows UIStackView to hide this compound control.
+        markReadWidthConstraint = widthConstraint
         NSLayoutConstraint.activate([
             markReadContainer.heightAnchor.constraint(equalToConstant: 28),
-            markReadContainer.widthAnchor.constraint(equalToConstant: 98),
+            widthConstraint,
 
             markReadExpandButton.leadingAnchor.constraint(equalTo: markReadContainer.leadingAnchor),
             markReadExpandButton.topAnchor.constraint(equalTo: markReadContainer.topAnchor),
@@ -411,7 +402,6 @@ class StoryTitlesHeaderBar: NSObject {
             markReadPill.topAnchor.constraint(equalTo: markReadContainer.topAnchor),
             markReadPill.bottomAnchor.constraint(equalTo: markReadContainer.bottomAnchor),
             markReadPill.trailingAnchor.constraint(equalTo: markReadContainer.trailingAnchor),
-            markReadPill.widthAnchor.constraint(equalToConstant: 66),
         ])
 
         updateMarkReadMenu(title: "all stories")
@@ -533,13 +523,13 @@ class StoryTitlesHeaderBar: NSObject {
 
     func setDailyBriefingMode(_ enabled: Bool) {
         isDailyBriefingMode = enabled
+        appliedDiscoverLayout = nil
         for fv in faviconViews { fv.removeFromSuperview() }
         faviconViews.removeAll()
         discoverWidthConstraint?.isActive = false
         discoverWidthConstraint = nil
 
         if enabled {
-            isDiscoverCompact = false
             applyDailyBriefingPill(compact: false)
             discoverPill.isHidden = false
             optionsPill.isHidden = false
@@ -564,14 +554,21 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Updates the options pill text to reflect current order and read filter.
     func updateOptionsPill(order: String, readFilter: String) {
-        let filterText = readFilter == "unread" ? "UNREAD" : "ALL"
-        let orderText = order == "oldest" ? "OLDEST" : "NEWEST"
-        let title = "\(filterText) \u{00B7} \(orderText)"
+        filterText = readFilter == "unread" ? "UNREAD" : "ALL"
+        orderText = order == "oldest" ? "OLDEST" : "NEWEST"
+        measureOptionsWidths()
+        if headerContainer.bounds.width <= 0 { applyOptionsTitle(compact: false) }
+        relayoutPills()
+    }
 
+    private func applyOptionsTitle(compact: Bool) {
+        let fullTitle = "\(filterText) · \(orderText)"
+        let title = compact ? filterText : fullTitle
+        optionsPill.accessibilityLabel = fullTitle
         #if targetEnvironment(macCatalyst)
-        optionsPill.setTitle(title, for: .normal)
+        if optionsPill.title(for: .normal) != title { optionsPill.setTitle(title, for: .normal) }
         #else
-        guard var config = optionsPill.configuration else { return }
+        guard var config = optionsPill.configuration, config.title != title else { return }
         config.title = title
         config.titleTextAttributesTransformer = pillFontTransformer()
         optionsPill.configuration = config
@@ -582,6 +579,7 @@ class StoryTitlesHeaderBar: NSObject {
     /// Stores favicons and checks available width; falls back to text if too tight.
     func updateDiscoverPill(favicons: [UIImage]) {
         storedFavicons = favicons
+        appliedDiscoverLayout = nil
         relayoutPills()
 
         // Re-check after layout pass when bounds are known
@@ -592,106 +590,74 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Called from ObjC after layout changes (e.g. rotation) to re-check pill fit.
     func relayoutPills() {
-        if isDailyBriefingMode {
-            layoutDailyBriefingPill()
-            layoutSearchPill()
-            discoverPill.invalidateIntrinsicContentSize()
-            optionsPill.invalidateIntrinsicContentSize()
-            searchPill.invalidateIntrinsicContentSize()
-            pillStack.setNeedsLayout()
-            return
+        let availableWidth = headerContainer.bounds.width
+        guard availableWidth > 0 else { return }
+
+        let visibleCount = [discoverPill, optionsPill, searchPill, markReadContainer].filter { !$0.isHidden }.count
+        // StoryTitlesHeaderBar.swift counts only visible stack gaps, including the flexible spacer, and actual compound width.
+        let gapsAndEdges = CGFloat(visibleCount) * pillStack.spacing + 16
+        var fixedWidth = gapsAndEdges + (markReadContainer.isHidden ? 0 : markReadWidth)
+        let minimumDiscoverWidth = discoverPill.isHidden ? 0 : relatedIconWidth
+        let minimumSearchWidth = searchPill.isHidden ? 0 : searchIconWidth
+        let compactOptions = !optionsPill.isHidden &&
+            fixedWidth + minimumDiscoverWidth + minimumSearchWidth + fullOptionsWidth > availableWidth
+        applyOptionsTitle(compact: compactOptions)
+        let optionsWidth = optionsPill.isHidden ? 0 : (compactOptions ? compactOptionsWidth : fullOptionsWidth)
+        if !markReadContainer.isHidden {
+            // StoryTitlesHeaderBar.swift gives up only empty mark-read padding at narrower divider widths.
+            let minimumMarkReadWidth = 26 + 1 / UIScreen.main.scale + 40
+            let remainingWidth = availableWidth - gapsAndEdges - minimumDiscoverWidth - minimumSearchWidth - optionsWidth
+            let fittedMarkReadWidth = max(minimumMarkReadWidth, min(markReadWidth, remainingWidth))
+            if markReadWidthConstraint?.constant != fittedMarkReadWidth { markReadWidthConstraint?.constant = fittedMarkReadWidth }
+            fixedWidth = gapsAndEdges + fittedMarkReadWidth
         }
 
-        layoutSearchPill()
-        layoutDiscoverPill()
+        let discoverDisplay = UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
+        let faviconWidth = CGFloat(min(storedFavicons.count, 5)) * 14 + 36
+        let prefersFavicons = !isDailyBriefingMode && discoverDisplay == "with_icons" && !storedFavicons.isEmpty
+        let fullDiscoverWidth = isDailyBriefingMode ? briefingTextWidth : (prefersFavicons ? faviconWidth : relatedTextWidth)
+        let preferredDiscoverWidth = discoverPill.isHidden ? 0 : fullDiscoverWidth
+        let compactSearch = fixedWidth + optionsWidth + preferredDiscoverWidth + (searchPill.isHidden ? 0 : searchTextWidth) > availableWidth
+        layoutSearchPill(compact: compactSearch)
+        let searchWidth = searchPill.isHidden ? 0 : (compactSearch ? searchIconWidth : searchTextWidth)
+        let discoverSpace = availableWidth - fixedWidth - optionsWidth - searchWidth
 
-        // Force pills to recalculate their intrinsic sizes after layout changes
-        optionsPill.invalidateIntrinsicContentSize()
-        discoverPill.invalidateIntrinsicContentSize()
-        searchPill.invalidateIntrinsicContentSize()
-        pillStack.setNeedsLayout()
+        if discoverPill.isHidden {
+            discoverWidthConstraint?.isActive = false
+            appliedDiscoverLayout = nil
+            return
+        }
+        if isDailyBriefingMode {
+            let compact = briefingTextWidth > discoverSpace
+            let layout = compact ? "briefing-icon" : "briefing-text"
+            guard appliedDiscoverLayout != layout else { return }
+            appliedDiscoverLayout = layout
+            applyDailyBriefingPill(compact: compact)
+        } else {
+            let showFavicons = prefersFavicons && faviconWidth <= discoverSpace
+            let showText = !showFavicons && relatedTextWidth <= discoverSpace
+            let layout = showFavicons ? "favicons" : (showText ? "related-text" : "related-icon")
+            guard appliedDiscoverLayout != layout else { return }
+            appliedDiscoverLayout = layout
+            layoutDiscoverPill(showFavicons: showFavicons, showText: showText)
+        }
     }
 
     // MARK: - Search Pill Adaptive Layout
 
-    /// Shows or hides the "SEARCH" text based on available width.
-    private func layoutSearchPill() {
-        let shouldBeCompact = !canFitSearchText()
-        guard shouldBeCompact != isSearchCompact else { return }
-        isSearchCompact = shouldBeCompact
-
-        searchWidthConstraint?.isActive = false
-        searchWidthConstraint = nil
-
-        if shouldBeCompact {
-            setPillContent(searchPill, title: nil,
-                           image: sym("magnifyingglass", size: 12),
-                           leadingInset: 14, trailingInset: 14)
-        } else {
-            setPillContent(searchPill, title: "SEARCH",
-                           image: sym("magnifyingglass", size: 11),
-                           leadingInset: 14, trailingInset: 14)
-        }
-    }
-
-    /// Returns true if the "SEARCH" text fits alongside other pills.
-    private func canFitSearchText() -> Bool {
-        let availableWidth = headerContainer.bounds.width
-        guard availableWidth > 0 else { return true }
-
-        let discoverWidth = discoverPill.isHidden ? 0 : estimateDiscoverWidth()
-        let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchFullWidth = estimatedSearchPillWidth(compact: false)
-        let markReadWidth: CGFloat = markReadContainer.isHidden ? 0 : 108
-        let gaps: CGFloat = 4 * 6
-        let edges: CGFloat = 16
-
-        let total = discoverWidth + optionsWidth + searchFullWidth + markReadWidth + gaps + edges
-        return total <= availableWidth
-    }
-
-    /// Estimates the width the discover pill needs (compact, text, or favicon mode).
-    private func estimateDiscoverWidth() -> CGFloat {
-        if isDailyBriefingMode {
-            return estimatedDailyBriefingPillWidth(compact: isDiscoverCompact)
-        }
-
-        if isDiscoverCompact {
-            return estimatedPillWidth(title: nil, imageWidth: 14, leadingInset: 14, trailingInset: 14)
-        }
-        if !storedFavicons.isEmpty {
-            let maxFavicons = min(storedFavicons.count, 5)
-            return CGFloat(maxFavicons) * 14 + 28 + 8
-        }
-        return estimatedPillWidth(title: "RELATED SITES", imageWidth: 14, leadingInset: 14, trailingInset: 12)
+    private func layoutSearchPill(compact: Bool) {
+        guard compact != isSearchCompact else { return }
+        isSearchCompact = compact
+        setPillContent(searchPill, title: compact ? nil : "SEARCH",
+                       image: sym("magnifyingglass", size: compact ? 12 : 11),
+                       leadingInset: 14, trailingInset: 14)
+        // StoryTitlesHeaderBar.swift preserves active search colors when replacing its content configuration.
+        applySearchPillColors(active: isSearchActive)
     }
 
     // MARK: - Discover Pill Adaptive Layout
 
-    private func layoutDailyBriefingPill() {
-        let shouldBeCompact = !canFitDailyBriefingText()
-        guard shouldBeCompact != isDiscoverCompact else { return }
-
-        isDiscoverCompact = shouldBeCompact
-        applyDailyBriefingPill(compact: shouldBeCompact)
-    }
-
-    private func canFitDailyBriefingText() -> Bool {
-        let availableWidth = headerContainer.bounds.width
-        guard availableWidth > 0 else { return true }
-
-        let discoverWidth = estimatedDailyBriefingPillWidth(compact: false)
-        let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchWidth = searchPill.isHidden ? 0 : estimatedSearchPillWidth(compact: false)
-        let markReadWidth: CGFloat = markReadContainer.isHidden ? 0 : 108
-        let gaps: CGFloat = 4 * 6
-        let edges: CGFloat = 16
-
-        let total = discoverWidth + optionsWidth + searchWidth + markReadWidth + gaps + edges
-        return total <= availableWidth
-    }
-
-    private func layoutDiscoverPill() {
+    private func layoutDiscoverPill(showFavicons: Bool, showText: Bool) {
         // Remove old favicon views
         for fv in faviconViews { fv.removeFromSuperview() }
         faviconViews.removeAll()
@@ -700,13 +666,10 @@ class StoryTitlesHeaderBar: NSObject {
         discoverWidthConstraint?.isActive = false
         discoverWidthConstraint = nil
 
-        let discoverDisplay = UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
         let favicons = storedFavicons
-        let showFavicons = discoverDisplay == "with_icons" && !favicons.isEmpty && canFitFavicons()
 
         if showFavicons {
             // Favicon mode: icon + up to 5 favicons
-            isDiscoverCompact = false
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
             setPillContent(discoverPill, title: nil, image: discoverImage,
                            leadingInset: 14, trailingInset: 12)
@@ -737,16 +700,14 @@ class StoryTitlesHeaderBar: NSObject {
             let wc = discoverPill.widthAnchor.constraint(equalToConstant: faviconWidth)
             wc.isActive = true
             discoverWidthConstraint = wc
-        } else if canFitDiscoverText() {
+        } else if showText {
             // Text mode: icon + "RELATED SITES"
-            isDiscoverCompact = false
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
             setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
             discoverPill.contentHorizontalAlignment = .center
         } else {
             // Compact mode: icon only (like search pill)
-            isDiscoverCompact = true
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
             setPillContent(discoverPill, title: nil, image: discoverImage,
                            leadingInset: 14, trailingInset: 14)
@@ -754,51 +715,19 @@ class StoryTitlesHeaderBar: NSObject {
         }
     }
 
-    /// Returns true if the "DISCOVER" text fits alongside other pills.
-    private func canFitDiscoverText() -> Bool {
-        let availableWidth = headerContainer.bounds.width
-        guard availableWidth > 0 else { return true }
-
-        let discoverTextWidth = estimatedPillWidth(title: "RELATED SITES", imageWidth: 14, leadingInset: 14, trailingInset: 12)
-        let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchWidth = estimatedSearchPillWidth(compact: isSearchCompact)
-        let markReadWidth: CGFloat = markReadContainer.isHidden ? 0 : 108
-        let gaps: CGFloat = 4 * 6
-        let edges: CGFloat = 16
-
-        let total = discoverTextWidth + optionsWidth + searchWidth + markReadWidth + gaps + edges
-        return total <= availableWidth
-    }
-
-    /// Checks whether there is enough horizontal space for the favicon version of the discover pill.
-    private func canFitFavicons() -> Bool {
-        let availableWidth = headerContainer.bounds.width
-        guard availableWidth > 0 else { return true }
-
-        let maxFavicons = min(storedFavicons.count, 5)
-        let faviconPillWidth: CGFloat = CGFloat(maxFavicons) * 14 + 28 + 8
-
-        let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchWidth = estimatedSearchPillWidth(compact: isSearchCompact)
-        let markReadWidth: CGFloat = markReadContainer.isHidden ? 0 : 108
-        let gaps: CGFloat = 4 * 6
-        let edges: CGFloat = 16
-
-        let totalNeeded = faviconPillWidth + optionsWidth + searchWidth + markReadWidth + gaps + edges
-        return totalNeeded <= availableWidth
-    }
-
     /// Shows or hides the discover pill based on feed type and user preference.
     func updateDiscoverVisibility(isRiver: Bool, isEverything: Bool, isSocial: Bool, isSaved: Bool, isRead: Bool, isWidget: Bool, isInfrequent: Bool) {
         let discoverDisplay = UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
         if discoverDisplay == "hidden" {
             discoverPill.isHidden = true
+            relayoutPills()
             return
         }
 
         // Hide on all special views regardless of river mode
         let shouldHide = isEverything || isSocial || isSaved || isRead || isWidget || isInfrequent
         discoverPill.isHidden = shouldHide
+        relayoutPills()
     }
 
     /// Enables or disables the mark-read pill.
