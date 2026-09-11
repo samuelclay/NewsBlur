@@ -3024,10 +3024,15 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)deferredChangePage:(NSDictionary *)params {
-    [self.storyPagesViewController changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
-    [self.storyPagesViewController animateIntoPlace:YES];
-    [self showDetailViewController:self.detailViewController sender:self];
-    [self.detailViewController collapseFeedListIfNeededForStory];
+    __weak typeof(self) weakSelf = self;
+    [self.storyPagesViewController preparePageForPresentation:[params[@"location"] integerValue] completion:^(NSInteger location) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf.storyPagesViewController changePage:location animated:[params[@"animated"] boolValue]];
+        [strongSelf.storyPagesViewController animateIntoPlace:YES];
+        [strongSelf showDetailViewController:strongSelf.detailViewController sender:strongSelf];
+        [strongSelf.detailViewController collapseFeedListIfNeededForStory];
+    }];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -3247,6 +3252,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showFeedsListAnimated:(BOOL)animated {
+    [self.storyPagesViewController cancelPendingStoryPresentation];
     if (self.splitViewController.isCollapsed) {
         [self.feedsNavigationController popToRootViewControllerAnimated:YES];
     } else {

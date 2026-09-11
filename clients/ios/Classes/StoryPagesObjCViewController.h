@@ -126,6 +126,10 @@
 - (void)advanceToNextUnread;
 - (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail;
 - (void)animateIntoPlace:(BOOL)animated;
+- (void)preparePageForPresentation:(NSInteger)pageIndex completion:(void (^)(NSInteger location))completion;
+- (void)cancelPendingStoryPresentation;
+- (void)storyDetailReadyForPresentation:(StoryDetailViewController *)page;
+- (void)storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)page;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 

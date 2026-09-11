@@ -308,6 +308,346 @@ import XCTest
         XCTAssertTrue(body?.contains("Article must exist") == true)
     }
 
+    func test_nativeSelectionKeepsCurrentArticleUntilSelectedDocumentIsPrepared() async throws {
+        let fixture = makePresentationFixture()
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        await drainMainQueue()
+
+        XCTAssertTrue(fixture.pages.currentPage === fixture.original)
+        XCTAssertEqual(fixture.pages.pageChanges, [])
+        XCTAssertEqual(fixture.app.presentations, 0)
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        let token = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+        sendReady(to: selected, token: token, mainFrame: true)
+        await delay(0.1)
+
+        XCTAssertTrue(fixture.pages.currentPage === selected)
+        XCTAssertEqual(fixture.pages.currentPage.activeStoryId, "item-3")
+        XCTAssertEqual(fixture.pages.pageChanges, [1], "Native navigation takes the visible location, not raw index 3")
+        XCTAssertEqual(fixture.app.presentations, 1)
+        XCTAssertEqual(fixture.pages.hiddenAtNavigation, [false])
+        XCTAssertEqual(fixture.pages.unreadyAtNavigation, [false])
+    }
+
+    func test_rapidNativeSelectionsOnlyPresentLatestDocument() async throws {
+        let fixture = makePresentationFixture()
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        let old = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+        fixture.app.activeStory = fixture.stories[9] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 2, "animated": true])
+        await drainMainQueue()
+        let latest = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+        sendReady(to: selected, token: old, mainFrame: true)
+        await drainMainQueue()
+        XCTAssertEqual(fixture.app.presentations, 0)
+        XCTAssertTrue(fixture.pages.currentPage === fixture.original)
+        sendReady(to: selected, token: latest, mainFrame: true)
+        await delay(0.1)
+        XCTAssertEqual(fixture.pages.pageChanges, [2])
+        XCTAssertEqual(fixture.pages.currentPage.activeStoryId, "item-9")
+        XCTAssertEqual(fixture.app.presentations, 1)
+    }
+
+    func test_returnToFeedsCancelsNativePresentationAndReleasesStagingView() async throws {
+        let fixture = makePresentationFixture()
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        let token = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+        fixture.app.showFeedsList(animated: false)
+        sendReady(to: selected, token: token, mainFrame: true)
+        await delay(0.1)
+        XCTAssertEqual(fixture.app.presentations, 0)
+        XCTAssertTrue(fixture.pages.currentPage === fixture.original)
+        XCTAssertNil(fixture.pages.value(forKey: "storyPreparationHost"))
+        XCTAssertNil(fixture.pages.value(forKey: "pendingPresentationCompletion"))
+    }
+
+    func test_changedFeedRequestCannotPresentAnOldPreparedArticle() async throws {
+        let fixture = makePresentationFixture()
+        let feed = FeedDetailViewController()
+        fixture.app.testFeed = feed
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        let token = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+        feed.fetchRequestId += 1
+        sendReady(to: selected, token: token, mainFrame: true)
+        await delay(0.1)
+        XCTAssertEqual(fixture.app.presentations, 0)
+        XCTAssertTrue(fixture.pages.currentPage === fixture.original)
+        XCTAssertNil(fixture.pages.value(forKey: "storyPreparationHost"))
+    }
+
+    func test_preparationUsesTargetViewportAndRechecksGeometryBeforeNativePresentation() async throws {
+        for width: CGFloat in [375, 390, 768] {
+            let fixture = makePresentationFixture(width: width)
+            fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+            fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+            await drainMainQueue()
+            let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+            let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+            XCTAssertEqual(web.bounds.width, width)
+            let token = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+            web.defersAsyncJavaScript = true
+            sendReady(to: selected, token: token, mainFrame: true)
+            await drainMainQueue()
+            XCTAssertEqual(fixture.app.presentations, 0)
+            XCTAssertFalse(web.asyncCompletions.isEmpty)
+            fixture.pages.scrollView.frame.size.width = width - 20
+            let completion = try XCTUnwrap(web.asyncCompletions.first)
+            web.asyncCompletions.removeFirst()
+            completion(true, nil)
+            XCTAssertEqual(fixture.app.presentations, 0, "An obsolete viewport must not release native presentation")
+            for _ in 0..<4 where !web.asyncCompletions.isEmpty {
+                web.asyncCompletions.removeFirst()(true, nil)
+                await drainMainQueue()
+            }
+            XCTAssertEqual(web.bounds.width, width - 20)
+            XCTAssertEqual(fixture.app.presentations, 1)
+            XCTAssertEqual(fixture.pages.unreadyAtNavigation, [false])
+        }
+    }
+
+    func test_stagedArticleSurvivesNeighborRelayoutWithoutBeingReplacedOrMoved() async throws {
+        let fixture = makePresentationFixture()
+        fixture.app.activeStory = fixture.stories[9] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 2, "animated": true])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        let originalFrame = selected.view.frame
+        fixture.pages.applyNewIndex(1, pageController: selected)
+        XCTAssertEqual(selected.activeStoryId, "item-9")
+        XCTAssertEqual(selected.pageIndex, 2)
+        XCTAssertEqual(selected.view.frame, originalFrame)
+        fixture.pages.cancelPendingStoryPresentation()
+    }
+
+    func test_explicitNextOrSwipeCancelsStagedSelectionBeforeNormalPageNavigation() throws {
+        // StoryDetailLoadingTests.swift keeps Objective-C navigation exceptions visible to synchronous XCTest.
+        func settle() { RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02)) }
+        for swipe in [false, true] {
+            let fixture = makePresentationFixture()
+            fixture.app.activeStory = fixture.stories[9] as? [AnyHashable: Any]
+            fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 2, "animated": true])
+            settle()
+            let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+            let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+            let stale = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+            XCTAssertEqual(selected.pageIndex, 2)
+            if swipe {
+                fixture.pages.scrollViewWillBeginDragging(fixture.pages.scrollView)
+                let bounds = fixture.pages.scrollView.bounds
+                fixture.pages.scrollView.contentOffset = fixture.pages.isHorizontal ? CGPoint(x: bounds.width, y: 0) : CGPoint(x: 0, y: bounds.height)
+                fixture.pages.scrollViewDidScroll(fixture.pages.scrollView)
+                XCTAssertEqual(fixture.pages.currentPage.pageIndex, 1)
+                XCTAssertEqual(fixture.pages.currentPage.activeStoryId, "item-3")
+            } else {
+                fixture.pages.changeToNextPage(nil)
+                XCTAssertEqual(fixture.pages.pageChanges, [1])
+            }
+            XCTAssertNil(fixture.pages.value(forKey: "pendingPresentationCompletion"))
+            XCTAssertNil(fixture.pages.value(forKey: "storyPreparationHost"))
+            XCTAssertTrue(selected.view.superview === fixture.pages.scrollView)
+            settle()
+            sendReady(to: selected, token: stale, mainFrame: true)
+            settle()
+            XCTAssertEqual(fixture.app.presentations, 0)
+        }
+    }
+
+    func test_failedSelectedNavigationReleasesStagingAndCanBeRetried() async throws {
+        for provisional in [false, true] {
+            let fixture = makePresentationFixture()
+            fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+            fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+            await drainMainQueue()
+            let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+            let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+            let failed = try XCTUnwrap(web.loads.last?.navigation)
+            let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotLoadFromNetwork)
+            if provisional { selected.webView(web, didFailProvisionalNavigation: failed, withError: error) }
+            else { selected.webView(web, didFail: failed, withError: error) }
+            XCTAssertEqual(fixture.app.presentations, 0)
+            XCTAssertTrue(fixture.pages.currentPage === fixture.original)
+            XCTAssertNil(fixture.pages.value(forKey: "pendingPresentationCompletion"))
+            XCTAssertNil(fixture.pages.value(forKey: "storyPreparationHost"))
+            fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+            await drainMainQueue()
+            // StoryDetailLoadingTests.swift rejects the earlier navigation failure during the fresh retry.
+            selected.webView(web, didFail: failed, withError: error)
+            XCTAssertNotNil(fixture.pages.value(forKey: "pendingPresentationCompletion"))
+            sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
+            await delay(0.1)
+            XCTAssertEqual(fixture.app.presentations, 1)
+        }
+    }
+
+    func test_stagedPhoneUsesItsActualWindowSafeAreaBeforeNativePresentation() async throws {
+        let fixture = makePresentationFixture(width: 375)
+        fixture.pages.storyToolbar = StoryToolbar()
+        fixture.pages.toolbarScrollHandler = StoryToolbarScrollHandler()
+        fixture.pages.toolbarScrollHandler.setOffset(44)
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = StoryPresentationWindow(windowScene: scene)
+        let navigation = UINavigationController(rootViewController: UIViewController())
+        fixture.app.feedsNavigationController = navigation
+        window.rootViewController = navigation
+        window.makeKeyAndVisible()
+        defer {
+            fixture.pages.cancelPendingStoryPresentation()
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        XCTAssertNil(fixture.pages.view.window)
+        XCTAssertTrue(selected.webView.window === window)
+        XCTAssertEqual(fixture.pages.toolbarScrollHandler.toolbarOffset, 0)
+        XCTAssertEqual(selected.webView.scrollView.contentInset.top, 64, accuracy: 0.5)
+    }
+
+    func test_restorationJavaScriptErrorDoesNotStrandCurrentDocumentPresentation() async throws {
+        let fixture = makePresentationFixture()
+        fixture.app.setValue(ImmediateStoryScrollQueue(hasSavedPosition: false), forKey: "database")
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        let token = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+        web.defersAsyncJavaScript = true
+        sendReady(to: selected, token: token, mainFrame: true)
+        for _ in 0..<30 where web.asyncCompletions.isEmpty { await drainMainQueue() }
+        let restore = try XCTUnwrap(web.asyncCompletions.first)
+        web.asyncCompletions.removeFirst()
+        restore(nil, NSError(domain: WKErrorDomain, code: WKError.javaScriptExceptionOccurred.rawValue))
+        XCTAssertEqual(selected.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false)
+        XCTAssertEqual(fixture.app.presentations, 0)
+        let render = try XCTUnwrap(web.asyncCompletions.first)
+        web.asyncCompletions.removeFirst()
+        render(true, nil)
+        XCTAssertEqual(fixture.app.presentations, 1)
+    }
+
+    func test_realWebKitPaintsStagedArticleBeforeNativePushWhileImageIsPending() async throws {
+        let resource = try HeldHTTPStoryResource()
+        for _ in 0..<60 where resource.port == nil { await delay(0.05) }
+        let imageURL = try XCTUnwrap(resource.imageURL)
+        let fixture = makePresentationFixture()
+        let collection = fixture.app.storiesCollection
+        let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
+        let page = makePage(web: web, app: fixture.app)
+        fixture.app.storiesCollection = collection
+        page.allowsAppearanceCallbacks = false
+        page.shareHTML = "<img src='\(imageURL)' width='30' height='30'>"
+        fixture.stories[3]["story_content"] = String(repeating: "<p>Readable prepared article paragraph.</p>", count: 150)
+        fixture.pages.nextPage.willMove(toParent: nil)
+        fixture.pages.nextPage.view.removeFromSuperview()
+        fixture.pages.nextPage.removeFromParent()
+        fixture.pages.nextPage = page
+        fixture.pages.addChild(page)
+        fixture.pages.scrollView.addSubview(page.view)
+        page.didMove(toParent: fixture.pages)
+        web.navigationDelegate = page
+        page.perform(NSSelectorFromString("clearWebView"))
+        for _ in 0..<60 where page.value(forKey: "preparedWebViewFonts") as? Bool != true { await delay(0.05) }
+        XCTAssertEqual(page.value(forKey: "preparedWebViewFonts") as? Bool, true)
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        let titles = UIViewController()
+        titles.view.backgroundColor = .magenta
+        let navigation = UINavigationController(rootViewController: titles)
+        fixture.app.feedsNavigationController = navigation
+        fixture.pages.navigationForPresentation = navigation
+        window.rootViewController = navigation
+        window.makeKeyAndVisible()
+        defer {
+            fixture.pages.cancelPendingStoryPresentation()
+            resource.stop()
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+            page.webView = nil
+        }
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        for _ in 0..<100 where fixture.app.presentations == 0 { await delay(0.02) }
+        XCTAssertEqual(fixture.app.presentations, 1)
+        XCTAssertTrue(navigation.topViewController === fixture.pages)
+        XCTAssertGreaterThan(resource.pendingCount, 0)
+        XCTAssertTrue(fixture.pages.currentPage === page)
+        XCTAssertEqual(fixture.pages.unreadyAtNavigation, [false])
+        // StoryDetailLoadingTests.swift captures the actual native push, with the controlled remote image still held.
+        await delay(0.1)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.preferredRange = .standard
+        let snapshot = UIGraphicsImageRenderer(bounds: window.bounds, format: format).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: false)
+        }
+        let attachment = XCTAttachment(image: snapshot)
+        attachment.name = "Prepared article during native push with pending image"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        let hasBody = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent.includes('Readable prepared')") as? Bool
+        XCTAssertEqual(hasBody, true)
+        let paint = try await web.evaluateJavaScript("JSON.stringify({paint:performance.getEntriesByType('paint'),width:window.innerWidth,body:document.body.scrollHeight})")
+        print("STORY_PREPARED_NATIVE_PUSH \(paint)")
+    }
+
+    private func makePresentationFixture(width: CGFloat = 390) -> (app: StoryPresentationApp, pages: StoryPresentationPages, original: StoryLoadPage, stories: [NSMutableDictionary]) {
+        let app = StoryPresentationApp()
+        let pages = StoryPresentationPages()
+        pages.appDelegate = app
+        app.storyPagesViewController = pages
+        app.detailViewController = StoryPresentationDetail()
+        let allPages = (0..<3).map { _ -> StoryLoadPage in
+            let page = makeFixture(app: app).page
+            page.allowsAppearanceCallbacks = false
+            page.setValue(true, forKey: "preparedWebViewFonts")
+            return page
+        }
+        let stories = (0..<10).map { story("item-\($0)", body: "Article \($0)") }
+        app.storiesCollection.activeFeedStories = stories
+        app.storiesCollection.storyCount = Int32(stories.count)
+        app.storiesCollection.storyLocationsCount = 3
+        app.storiesCollection.activeFeedStoryLocationIds = NSMutableArray(array: ["item-0", "item-3", "item-9"])
+        app.storiesCollection.activeFeedStoryLocations = NSMutableArray(array: [0, 3, 9])
+        app.activeStory = stories[0] as? [AnyHashable: Any]
+        pages.loadViewIfNeeded()
+        pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: width, height: 844))
+        pages.scrollView.contentSize = CGSize(width: width * 3, height: 844 * 3)
+        pages.view.addSubview(pages.scrollView)
+        pages.currentPage = allPages[0]
+        pages.nextPage = allPages[1]
+        pages.previousPage = allPages[2]
+        for (index, page) in allPages.enumerated() {
+            page.pageIndex = index == 0 ? 0 : -2
+            pages.addChild(page)
+            pages.scrollView.addSubview(page.view)
+            page.didMove(toParent: pages)
+        }
+        allPages[0].activeStory = stories[0]
+        allPages[0].activeStoryId = "item-0"
+        allPages[0].hasStory = true
+        allPages[0].webView.isHidden = false
+        return (app, pages, allPages[0], stories)
+    }
+
     func test_hideCancelsAlreadyScheduledReveal() async {
         let fixture = makeFixture()
         fixture.page.drawStory()
@@ -352,16 +692,19 @@ import XCTest
         let fixture = makeFixture()
         fixture.page.drawStory()
         await drainMainQueue()
-        let token = try tokenFromHTML(try XCTUnwrap(fixture.web.loads.first?.html))
-        await delay(0.15)
+        let initial = try tokenFromHTML(try XCTUnwrap(fixture.web.loads.first?.html))
+        sendReady(to: fixture.page, token: initial, mainFrame: true)
+        // StoryDetailLoadingTests.swift models a visible Text/RSS redraw covered by a modal before the replacement DOM finishes.
+        fixture.page.drawStory()
+        await drainMainQueue()
+        let replacement = try tokenFromHTML(try XCTUnwrap(fixture.web.loads.last?.html))
         XCTAssertFalse(fixture.web.isHidden)
-
         fixture.page.viewWillDisappear(false)
         fixture.page.viewWillAppear(false)
-        sendReady(to: fixture.page, token: token, mainFrame: true)
+        sendReady(to: fixture.page, token: replacement, mainFrame: true)
 
-        XCTAssertEqual(fixture.page.classifierUpdates, 1)
-        XCTAssertEqual(fixture.web.loads.count, 1)
+        XCTAssertEqual(fixture.page.classifierUpdates, 2)
+        XCTAssertEqual(fixture.web.loads.count, 2)
     }
 
     func test_returningFromPresentationPreservesRestoredPositionWithHiddenToolbar() async {
@@ -639,17 +982,17 @@ import XCTest
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 0)
     }
 
-    func test_disappearingAtZeroOffsetCannotOverwriteAPendingSavedPosition() async {
+    func test_disappearingAtZeroOffsetCannotOverwriteAPendingSavedPosition() async throws {
         let app = StoryScrollStoreAppDelegate()
         let fixture = makeFixture(app: app)
         let database = HeldStoryScrollQueue()
         app.setValue(database, forKey: "database")
         fixture.page.recordsPosition = true
         fixture.page.drawStory()
-        await delay(0.15)
+        await drainMainQueue()
+        sendReady(to: fixture.page, token: try tokenFromHTML(XCTUnwrap(fixture.web.loads.last).html), mainFrame: true)
         fixture.web.scrollView.contentInset = .zero
         fixture.web.scrollView.contentOffset = .zero
-        restoreScroll(on: fixture.page)
         await fulfillment(of: [database.started], timeout: 2)
 
         fixture.page.viewWillDisappear(false)
@@ -1108,7 +1451,7 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     }
 }
 
-@MainActor private final class StoryLoadToolbarPages: StoryPagesViewController {
+@MainActor private class StoryLoadToolbarPages: StoryPagesViewController {
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
     override func viewWillAppear(_ animated: Bool) {}
@@ -1120,6 +1463,51 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     override func setTextButton(_ storyViewController: StoryDetailViewController!) {}
     override func resizeScrollView() {}
     override func updateUITestTraverseFadeProbe() {}
+}
+
+@MainActor private final class StoryPresentationApp: NewsBlurAppDelegate {
+    var testPages: StoryPagesViewController?
+    var testDetail: DetailViewController?
+    var testFeed: FeedDetailViewController?
+    override var feedDetailViewController: FeedDetailViewController! { testFeed }
+    var presentations = 0
+    override var storyPagesViewController: StoryPagesViewController! {
+        get { testPages }
+        set { testPages = newValue }
+    }
+    override var detailViewController: DetailViewController! {
+        get { testDetail }
+        set { testDetail = newValue }
+    }
+    override func showDetailViewController(_ vc: UIViewController, sender: Any?) { presentations += 1 }
+    override func isFeed(inTextView feedId: Any!) -> Bool { false }
+    override func show(_ column: UISplitViewController.Column, debugInfo: String!, animated: Bool) {}
+}
+
+@MainActor private final class StoryPresentationWindow: UIWindow {
+    override var safeAreaInsets: UIEdgeInsets { UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0) }
+}
+
+@MainActor private final class StoryPresentationDetail: DetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
+    override func collapseFeedListIfNeededForStory() {}
+}
+
+@MainActor private final class StoryPresentationPages: StoryLoadToolbarPages {
+    weak var navigationForPresentation: UINavigationController?
+    var pageChanges: [Int] = []
+    var hiddenAtNavigation: [Bool] = []
+    var unreadyAtNavigation: [Bool] = []
+    override func changePage(_ pageIndex: Int, animated: Bool) {
+        pageChanges.append(pageIndex)
+        hiddenAtNavigation.append(currentPage.webView.isHidden)
+        unreadyAtNavigation.append(!currentPage.readyForPresentation)
+        navigationForPresentation?.pushViewController(self, animated: animated)
+    }
+    override func animate(intoPlace animated: Bool) {}
+    // StoryDetailLoadingTests.swift supplies no storyboard toolbar and keeps navigation on the isolated account.
+    override func updateStoryTitleNavigationButtons() {}
 }
 
 @MainActor private final class StoryLoadPage: StoryDetailViewController {
