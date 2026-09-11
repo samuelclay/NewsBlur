@@ -40,6 +40,10 @@
 @property (nonatomic) BOOL restoredStoryScrollPosition;
 @property (nonatomic) BOOL awaitingStoryScrollRestoration;
 @property (nonatomic) BOOL preparedWebViewFonts;
+@property (nonatomic, readwrite) BOOL readyForPresentation;
+@property (nonatomic) BOOL preparingStoryPresentation;
+@property (nonatomic) NSUInteger presentationLayoutGeneration;
+@property (nonatomic) BOOL checkingPresentationLayout;
 @property (nonatomic) BOOL failedWebViewFontPreparation;
 @property (nonatomic, strong) WKNavigation *fontWarmupNavigation;
 @property (nonatomic, strong) WKNavigation *measuredFontWarmupNavigation;
@@ -174,7 +178,7 @@
     self.pageIndex = -2;
     self.inTextView = NO;
     
-    _orientation = self.view.window.windowScene.interfaceOrientation;
+    _orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -369,8 +373,8 @@
         }
     }
 
-    if (_orientation != self.view.window.windowScene.interfaceOrientation) {
-        _orientation = self.view.window.windowScene.interfaceOrientation;
+    if (_orientation != (self.view.window ?: self.webView.window).windowScene.interfaceOrientation) {
+        _orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
     }
 
@@ -399,7 +403,7 @@
 //          self.webView.scrollView.contentSize.height);
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        self->_orientation = self.view.window.windowScene.interfaceOrientation;
+        self->_orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
         [self changeWebViewWidth];
         [self drawFeedGradient];
         [self scrollToLastPosition:NO];
@@ -408,7 +412,7 @@
 }
 
 - (void)viewWillLayoutSubviews {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
     [super viewWillLayoutSubviews];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.appDelegate.storyPagesViewController layoutForInterfaceOrientation:orientation];
@@ -462,6 +466,9 @@
 
 - (void)invalidateStoryLoad {
     self.storyLoadGeneration++;
+    self.readyForPresentation = NO;
+    self.presentationLayoutGeneration++;
+    self.checkingPresentationLayout = NO;
     self.fullStoryHTML = nil;
     self.fallbackStoryHeaderHTML = nil;
     self.storyLoadHash = nil;
@@ -655,7 +662,7 @@
 }
 
 - (void)drawStory {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
     [self drawStory:NO withOrientation:orientation];
 }
 
@@ -2371,6 +2378,11 @@
     if (hasScrolled) return;
     hasScrolled = YES;
     self.awaitingStoryScrollRestoration = YES;
+    if (!self.appDelegate.database) {
+        self.awaitingStoryScrollRestoration = NO;
+        [self finishPreparingStoryPresentation];
+        return;
+    }
     
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     NSUInteger generation = self.storyLoadGeneration;
@@ -2395,18 +2407,25 @@
             [cursor close];
             dispatch_async(dispatch_get_main_queue(), ^{
                 // StoryDetailObjCViewController.m must not apply an old database result after page reuse or a user's scroll.
-                if (![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
-                    scrollActivity != strongSelf.storyScrollActivityGeneration ||
-                    restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
-                    restoringWebView.scrollView.isDecelerating) return;
+                if (![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView) return;
+                if (scrollActivity != strongSelf.storyScrollActivityGeneration || restoringWebView.scrollView.isTracking ||
+                    restoringWebView.scrollView.isDragging || restoringWebView.scrollView.isDecelerating) {
+                    strongSelf.awaitingStoryScrollRestoration = NO;
+                    [strongSelf finishPreparingStoryPresentation];
+                    return;
+                }
                 // StoryDetailObjCViewController.m can receive DOM readiness before WK publishes its native content size.
                 [restoringWebView callAsyncJavaScript:@"await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); return true;"
                                            arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
                                    completionHandler:^(id result, NSError *error) {
-                    if (error || ![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView ||
-                        scrollActivity != strongSelf.storyScrollActivityGeneration ||
+                    if (![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView) return;
+                    if (error || scrollActivity != strongSelf.storyScrollActivityGeneration ||
                         restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
-                        restoringWebView.scrollView.isDecelerating) return;
+                        restoringWebView.scrollView.isDecelerating) {
+                        strongSelf.awaitingStoryScrollRestoration = NO;
+                        [strongSelf finishPreparingStoryPresentation];
+                        return;
+                    }
                     strongSelf.awaitingStoryScrollRestoration = NO;
                     if (!strongSelf->scrollPct) strongSelf->scrollPct = savedFraction;
                     NSInteger position = floor(strongSelf->scrollPct * restoringWebView.scrollView.contentSize.height);
@@ -2414,7 +2433,7 @@
                     if (position > maxPosition) position = maxPosition;
                     if (position > 0) {
                         strongSelf.restoredStoryScrollPosition = YES;
-                        [restoringWebView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
+                        [restoringWebView.scrollView setContentOffset:CGPointMake(0, position) animated:animated && !strongSelf.preparingStoryPresentation];
                     } else if (strongSelf->scrollPct == 0) {
                         // StoryDetailObjCViewController.m restores an explicit zero or missing row below the native toolbar.
                         // A new WK document can reset to y=0 even though the fixed toolbar inset is already installed.
@@ -2424,6 +2443,7 @@
                         if (pagesVC.isCustomToolbarActive) top += pagesVC.toolbarScrollHandler.toolbarOffset;
                         [restoringWebView.scrollView setContentOffset:CGPointMake(0, top) animated:NO];
                     }
+                    [strongSelf finishPreparingStoryPresentation];
                 }];
             });
             
@@ -2826,10 +2846,22 @@
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [self finishFontPreparationForWebView:webView navigation:navigation error:error];
+    if (self.preparingStoryPresentation && webView == self.webView && navigation == self.storyNavigation &&
+        [self isCurrentStoryLoad:self.storyLoadGeneration]) {
+        [self.appDelegate.storyPagesViewController storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)self];
+        [self invalidateStoryLoad];
+        self.hasStory = NO;
+    }
 }
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [self finishFontPreparationForWebView:webView navigation:navigation error:error];
+    if (self.preparingStoryPresentation && webView == self.webView && navigation == self.storyNavigation &&
+        [self isCurrentStoryLoad:self.storyLoadGeneration]) {
+        [self.appDelegate.storyPagesViewController storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)self];
+        [self invalidateStoryLoad];
+        self.hasStory = NO;
+    }
 }
 
 - (void)loadStory {
@@ -2887,44 +2919,104 @@
                        });
     }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (![self isCurrentStoryLoad:generation] || !self.hasStory) return;
-        self.webView.hidden = NO;
-        [self.webView setNeedsDisplay];
+}
 
-        // Initialize content inset for edge-to-edge layout
-        [self updateContentInsetForNavigationBarAlpha:self.appDelegate.storyPagesViewController.navigationBarFadeAlpha];
+- (void)revealCurrentStory {
+    NSUInteger generation = self.storyLoadGeneration;
+    if (![self isCurrentStoryLoad:generation] || !self.hasStory) return;
+    self.webView.hidden = NO;
+    [self.webView setNeedsDisplay];
 
-        // Adjust initial scroll position for hidden toolbar. After setting the
-        // inset, the scroll view rests at -contentInset.top (full toolbar space).
-        // If the toolbar is partially/fully hidden, scroll down to fill the gap.
-        StoryPagesObjCViewController *pagesVC = self.appDelegate.storyPagesViewController;
-        if (pagesVC.isCustomToolbarActive) {
-            CGFloat toolbarOffset = pagesVC.toolbarScrollHandler.toolbarOffset;
-            if (toolbarOffset > 0 && !self.restoredStoryScrollPosition && !self.hasScrolledAwayFromTop) {
-                UIScrollView *sv = self.webView.scrollView;
-                CGFloat topRest = -sv.contentInset.top;
-                sv.contentOffset = CGPointMake(sv.contentOffset.x, topRest + toolbarOffset);
-            }
+    // Initialize content inset for edge-to-edge layout
+    [self updateContentInsetForNavigationBarAlpha:self.appDelegate.storyPagesViewController.navigationBarFadeAlpha];
+
+    // Adjust initial scroll position for hidden toolbar. After setting the
+    // inset, the scroll view rests at -contentInset.top (full toolbar space).
+    // If the toolbar is partially/fully hidden, scroll down to fill the gap.
+    StoryPagesObjCViewController *pagesVC = self.appDelegate.storyPagesViewController;
+    if (pagesVC.isCustomToolbarActive) {
+        CGFloat toolbarOffset = pagesVC.toolbarScrollHandler.toolbarOffset;
+        if (toolbarOffset > 0 && !self.restoredStoryScrollPosition && !self.hasScrolledAwayFromTop) {
+            UIScrollView *sv = self.webView.scrollView;
+            CGFloat topRest = -sv.contentInset.top;
+            sv.contentOffset = CGPointMake(sv.contentOffset.x, topRest + toolbarOffset);
         }
+    }
 
-        if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhoneOrCompact && self.appDelegate.detailViewController.storyTitlesInGridView) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                if (![self isCurrentStoryLoad:generation] || !self.hasStory) return;
+    if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhoneOrCompact && self.appDelegate.detailViewController.storyTitlesInGridView) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (![self isCurrentStoryLoad:generation] || !self.hasStory) return;
 //                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
-                [self.appDelegate.feedDetailViewController reload];
-            });
-        }
-    });
+            [self.appDelegate.feedDetailViewController reload];
+        });
+    }
 }
 
 - (void)webViewNotifyLoaded {
     if (!self.hasStory || ![self isCurrentStoryLoad:self.storyLoadGeneration] ||
         self.readyStoryLoadGeneration == self.storyLoadGeneration) return;
     self.readyStoryLoadGeneration = self.storyLoadGeneration;
+    [self revealCurrentStory];
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
     [self applyClassifierHighlights];
+    [self finishPreparingStoryPresentation];
+}
+
+- (void)prepareCurrentStoryForPresentation {
+    self.preparingStoryPresentation = YES;
+    self.readyForPresentation = NO;
+    self.presentationLayoutGeneration++;
+    self.checkingPresentationLayout = NO;
+    if (self.readyStoryLoadGeneration == self.storyLoadGeneration && self.hasStory) {
+        [self revealCurrentStory];
+        [self changeWebViewWidth];
+        [self finishPreparingStoryPresentation];
+    }
+}
+
+- (void)finishStoryPresentation {
+    self.preparingStoryPresentation = NO;
+}
+
+- (void)finishPreparingStoryPresentation {
+    NSUInteger generation = self.storyLoadGeneration;
+    if (!self.preparingStoryPresentation || self.readyForPresentation || self.checkingPresentationLayout ||
+        !self.hasStory || self.webView.hidden || self.awaitingStoryScrollRestoration ||
+        self.readyStoryLoadGeneration != generation || ![self isCurrentStoryLoad:generation]) return;
+
+    [self.view layoutIfNeeded];
+    [self.webView layoutIfNeeded];
+    [self changeWebViewWidth];
+    CGSize size = self.webView.bounds.size;
+    UIEdgeInsets inset = self.webView.scrollView.adjustedContentInset;
+    CGPoint offset = self.webView.scrollView.contentOffset;
+    WKWebView *preparingWebView = self.webView;
+    NSUInteger layoutGeneration = self.presentationLayoutGeneration;
+    self.checkingPresentationLayout = YES;
+    __weak typeof(self) weakSelf = self;
+    // StoryDetailObjCViewController.m waits for rendering opportunities after the final native viewport and reading offset.
+    [preparingWebView callAsyncJavaScript:@"await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); return document.querySelector('#NB-story') !== null;"
+                               arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
+                       completionHandler:^(id result, NSError *error) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || strongSelf.webView != preparingWebView || ![strongSelf isCurrentStoryLoad:generation] ||
+            layoutGeneration != strongSelf.presentationLayoutGeneration) return;
+        strongSelf.checkingPresentationLayout = NO;
+        if (!strongSelf.preparingStoryPresentation) return;
+        if (error || ![result boolValue]) {
+            [strongSelf.appDelegate.storyPagesViewController storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)strongSelf];
+            return;
+        }
+        if (!CGSizeEqualToSize(size, preparingWebView.bounds.size) ||
+            !UIEdgeInsetsEqualToEdgeInsets(inset, preparingWebView.scrollView.adjustedContentInset) ||
+            !CGPointEqualToPoint(offset, preparingWebView.scrollView.contentOffset)) {
+            [strongSelf finishPreparingStoryPresentation];
+            return;
+        }
+        strongSelf.readyForPresentation = YES;
+        [strongSelf.appDelegate.storyPagesViewController storyDetailReadyForPresentation:(StoryDetailViewController *)strongSelf];
+    }];
 }
 
 - (void)applyClassifierHighlights {
@@ -3551,7 +3643,7 @@
     // CATALYST: probably will want to add custom CSS for Macs.
     contentWidthClass = @"NB-mac NB-ipad-pro-12-wide";
 #else
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
     
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         if (iPadPro12) {
