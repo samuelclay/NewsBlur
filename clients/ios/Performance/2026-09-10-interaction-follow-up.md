@@ -45,3 +45,13 @@ The signed Release build of `00ed50ba6` passes signature verification. Its execu
 ClayPad Air successfully launches the updated app with performance probes disabled. ClayPhone's first launch request is denied because the device is locked, after its installation succeeds. Local install/launch results are `/tmp/newsblur-clayphone-interaction-{install,launch}-30.json` and `/tmp/newsblur-claypad-interaction-{install,launch}-30.json`; the signed build log is `/tmp/newsblur-interaction-device-build-30.log`.
 
 A ClayPhone launch retry at 20:31 is also denied because the phone remains locked (`/tmp/newsblur-clayphone-interaction-launch-31.json`). After the user unlocks the phone, the updated app successfully launches in the foreground with performance probes disabled, PID 41020 (`/tmp/newsblur-clayphone-interaction-launch-32.json`). Installation and foreground launch verification are complete on both devices.
+
+## Preference submenu selection follow-up
+
+The later iPad report of unresponsive mark-read settings reproduces in the shared native menu on the existing simulator. Tapping Only on selection saves the preference but leaves the checkmark beside On scroll or selection. Returning to the parent menu and reopening the submenu reveals the saved selection. Before screenshots are `ipad-settings-selection-before-33.png` and `ipad-settings-persisted-before-33.png`.
+
+Test-first commit `1f5e43ba3` adds six focused regressions. Three fail on the stale selection in `menu-selection-red-35.xcresult`, while persistence, ordinary action menus, and controller release controls pass. Commit `54b945709` updates the checked row and existing visible accessories immediately using a weak submenu reference. It does not reload or close the menu. All six cases pass in `menu-selection-after-36.xcresult`, including all ten timing values and the reader's corresponding timing policy. This follow-up runs the focused suite; the earlier 291-test result remains the preceding full-suite checkpoint.
+
+Live taps verify Only on selection and After 5 seconds, then restore On scroll or selection. Inspected evidence is `menu-selection-after-37.png`, `menu-delay-after-37.png`, and `menu-restored-after-37.png`. The simulator returns to samuel's Unread feed list (`menu-final-feed-list-37.png`).
+
+The signed Release build succeeds and passes signature verification. Executable SHA-256: `463a938d0994dc636a4cfd957b1460cecab88d0a98af35564d472254c3e74591`. The updated NB Alpha installs successfully on ClayPad Air at 21:03; foreground launch is denied because the device is locked. Evidence is `/tmp/newsblur-menu-device-build-37.log` and `/tmp/newsblur-claypad-menu-{install,launch}-37.json`. This menu update has not been installed on ClayPhone.
