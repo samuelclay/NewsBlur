@@ -231,6 +231,82 @@ import XCTest
         XCTAssertTrue(fixture.web.isHidden)
     }
 
+    func test_elapsedRevealDelayDoesNotExposeAnUnreadyArticle() async throws {
+        let fixture = makeFixture()
+        fixture.page.drawStory()
+        await drainMainQueue()
+        let token = try tokenFromHTML(XCTUnwrap(fixture.web.loads.last).html)
+        await delay(0.15)
+
+        XCTAssertTrue(fixture.web.isHidden, "Submitting HTML and waiting 100 ms does not establish a drawable article")
+        sendReady(to: fixture.page, token: token, mainFrame: true)
+        await delay(0.15)
+        XCTAssertFalse(fixture.web.isHidden, "The current ready article must still become visible")
+    }
+
+    func test_staleDOMReadinessDoesNotExposeAReplacementArticle() async throws {
+        let fixture = makeFixture()
+        fixture.page.drawStory()
+        await drainMainQueue()
+        let previous = try tokenFromHTML(XCTUnwrap(fixture.web.loads.last).html)
+        fixture.page.clearStory()
+        fixture.page.activeStory = story("second", body: "Latest body")
+        fixture.page.drawStory()
+        await drainMainQueue()
+        let current = try tokenFromHTML(XCTUnwrap(fixture.web.loads.last).html)
+
+        sendReady(to: fixture.page, token: previous, mainFrame: true)
+        sendReady(to: fixture.page, token: current, mainFrame: false)
+        await delay(0.15)
+        XCTAssertTrue(fixture.web.isHidden, "Only the current main-frame document may release presentation")
+        sendReady(to: fixture.page, token: current, mainFrame: true)
+        await delay(0.15)
+        XCTAssertFalse(fixture.web.isHidden)
+    }
+
+    func test_actualWebKitDoesNotRevealWhileTheArticleParserIsBlocked() async throws {
+        let resource = try HeldHTTPStoryResource(servesScript: true)
+        for _ in 0..<60 where resource.port == nil { await delay(0.05) }
+        let scriptURL = try XCTUnwrap(resource.imageURL)
+        let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
+        let page = makePage(web: web)
+        page.allowsAppearanceCallbacks = false
+        // StoryDetailLoadingTests.swift holds a parser-blocking resource, unlike the existing nonblocking image cases.
+        page.shareHTML = "<script src='\(scriptURL)'></script>"
+        page.activeStory = story("blocked-parser", body: "<p>Article must exist before it becomes visible.</p>")
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.frame = web.frame
+        window.rootViewController = UIViewController()
+        window.rootViewController?.view.addSubview(web)
+        window.makeKeyAndVisible()
+        defer {
+            resource.stop()
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+            page.webView = nil
+        }
+        web.navigationDelegate = page
+        page.perform(NSSelectorFromString("clearWebView"))
+        for _ in 0..<60 where page.value(forKey: "preparedWebViewFonts") as? Bool != true { await delay(0.05) }
+        XCTAssertEqual(page.value(forKey: "preparedWebViewFonts") as? Bool, true)
+        page.drawStory()
+        for _ in 0..<60 where resource.pendingCount == 0 { await delay(0.05) }
+        XCTAssertGreaterThan(resource.pendingCount, 0)
+        await delay(0.15)
+        XCTAssertTrue(web.isHidden, "The real WKWebView must not expose its blank, unfinished document")
+
+        let ready = expectation(description: "The unblocked current article completes DOM preparation")
+        page.readyObserver = { ready.fulfill() }
+        resource.finish()
+        await fulfillment(of: [ready], timeout: 5)
+        await delay(0.15)
+        XCTAssertFalse(web.isHidden)
+        let body = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
+        XCTAssertTrue(body?.contains("Article must exist") == true)
+    }
+
     func test_hideCancelsAlreadyScheduledReveal() async {
         let fixture = makeFixture()
         fixture.page.drawStory()
@@ -1218,10 +1294,12 @@ private final class StoryScrollCursor: NSObject {
     private let listener: NWListener
     private var connections = [ObjectIdentifier: NWConnection]()
     private var pending = [ObjectIdentifier: NWConnection]()
-    private let data = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).pngData { context in
+    private let servesScript: Bool
+    private let imageData = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).pngData { context in
         UIColor.clear.setFill()
         context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
     }
+    private var data: Data { servesScript ? Data("void 0;".utf8) : imageData }
     var port: UInt16? {
         guard let value = listener.port?.rawValue, value > 0 else { return nil }
         return value
@@ -1229,7 +1307,8 @@ private final class StoryScrollCursor: NSObject {
     var imageURL: String? { port.map { "http://localhost:\($0)/avatar.png" } }
     var pendingCount: Int { pending.count }
 
-    init() throws {
+    init(servesScript: Bool = false) throws {
+        self.servesScript = servesScript
         let parameters = NWParameters.tcp
         parameters.requiredLocalEndpoint = .hostPort(host: "127.0.0.1", port: .any)
         listener = try NWListener(using: parameters)
@@ -1259,7 +1338,7 @@ private final class StoryScrollCursor: NSObject {
             guard headers.hasPrefix("GET /avatar.png HTTP/") else { connection.cancel(); return }
             print("STORY_HELD_HTTP_IMAGE \(self.imageURL ?? "")")
             self.pending[ObjectIdentifier(connection)] = connection
-            let response = "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: \(self.data.count)\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n"
+            let response = "HTTP/1.1 200 OK\r\nContent-Type: \(self.servesScript ? "application/javascript" : "image/png")\r\nContent-Length: \(self.data.count)\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n"
             connection.send(content: Data(response.utf8), completion: .contentProcessed { _ in })
         }
     }
