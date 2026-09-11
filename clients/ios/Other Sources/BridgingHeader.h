@@ -17,6 +17,7 @@
 #import "PremiumManager.h"
 #import "StoriesCollection.h"
 #import "BaseViewController.h"
+#import "MenuViewController.h"
 #import "FeedsObjCViewController.h"
 #import "FeedDetailObjCViewController.h"
 #import "StoryPagesObjCViewController.h"
