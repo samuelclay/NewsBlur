@@ -1420,6 +1420,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
+    if (self.isMovingFromParentViewController || self.isBeingDismissed) {
+        [appDelegate.storyPagesViewController cancelPendingStoryPresentation];
+    }
+
     [appDelegate cancelFaviconPreparation:self.storyFaviconPreparation];
     self.storyFaviconPreparation = nil;
 
