@@ -543,6 +543,54 @@ import XCTest
         XCTAssertEqual(fixture.app.presentations, 1)
     }
 
+    func test_firstFolderArticleKeepsPreparedInsetThroughNativeHandoff() async throws {
+        try await assertFirstArticleInsetThroughNativeHandoff(isRiver: true)
+    }
+
+    func test_firstSingleFeedArticleKeepsPreparedInsetThroughNativeHandoff() async throws {
+        try await assertFirstArticleInsetThroughNativeHandoff(isRiver: false)
+    }
+
+    private func assertFirstArticleInsetThroughNativeHandoff(isRiver: Bool) async throws {
+        let fixture = makePresentationFixture(width: 375)
+        fixture.app.storiesCollection.isRiverView = isRiver
+        fixture.pages.storyToolbar = StoryToolbar()
+        fixture.pages.toolbarScrollHandler = StoryToolbarScrollHandler()
+        fixture.pages.runsActualPageChanges = true
+        fixture.app.setValue(ImmediateStoryScrollQueue(hasSavedPosition: false), forKey: "database")
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = StoryPresentationWindow(windowScene: scene)
+        let navigation = UINavigationController(rootViewController: UIViewController())
+        fixture.app.feedsNavigationController = navigation
+        window.rootViewController = navigation
+        window.makeKeyAndVisible()
+        defer {
+            fixture.pages.cancelPendingStoryPresentation()
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
+
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        XCTAssertEqual(web.scrollView.contentInset.top, 64, accuracy: 0.5)
+        sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
+        for _ in 0..<60 where fixture.app.presentations == 0 { await delay(0.02) }
+
+        XCTAssertEqual(fixture.app.presentations, 1)
+        XCTAssertTrue(fixture.pages.currentPage === selected)
+        XCTAssertNil(selected.webView.window)
+        XCTAssertNotNil(navigation.view.window)
+        print("FIRST_ARTICLE_HANDOFF river=\(isRiver) inset=\(web.scrollView.contentInset.top) offset=\(web.scrollView.contentOffset.y) resolved=\(fixture.pages.topInset(forNavigationBarAlpha: 1))")
+        // StoryDetailLoadingTests.swift exercises the real page change after WebKit leaves its preparation host, before the native push attaches the controller.
+        XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 1), 64, accuracy: 0.5)
+        XCTAssertEqual(web.scrollView.contentInset.top, 64, accuracy: 0.5)
+        XCTAssertEqual(web.scrollView.contentOffset.y, -64, accuracy: 0.5)
+    }
+
     func test_realWebKitPaintsStagedArticleBeforeNativePushWhileImageIsPending() async throws {
         let resource = try HeldHTTPStoryResource()
         for _ in 0..<60 where resource.port == nil { await delay(0.05) }
@@ -1499,10 +1547,12 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     var pageChanges: [Int] = []
     var hiddenAtNavigation: [Bool] = []
     var unreadyAtNavigation: [Bool] = []
+    var runsActualPageChanges = false
     override func changePage(_ pageIndex: Int, animated: Bool) {
         pageChanges.append(pageIndex)
         hiddenAtNavigation.append(currentPage.webView.isHidden)
         unreadyAtNavigation.append(!currentPage.readyForPresentation)
+        if runsActualPageChanges { super.changePage(pageIndex, animated: animated) }
         navigationForPresentation?.pushViewController(self, animated: animated)
     }
     override func animate(intoPlace animated: Bool) {}
