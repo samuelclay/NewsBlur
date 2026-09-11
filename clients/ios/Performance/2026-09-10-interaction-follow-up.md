@@ -55,3 +55,5 @@ Test-first commit `1f5e43ba3` adds six focused regressions. Three fail on the st
 Live taps verify Only on selection and After 5 seconds, then restore On scroll or selection. Inspected evidence is `menu-selection-after-37.png`, `menu-delay-after-37.png`, and `menu-restored-after-37.png`. The simulator returns to samuel's Unread feed list (`menu-final-feed-list-37.png`).
 
 The signed Release build succeeds and passes signature verification. Executable SHA-256: `463a938d0994dc636a4cfd957b1460cecab88d0a98af35564d472254c3e74591`. The updated NB Alpha installs successfully on ClayPad Air at 21:03; foreground launch is denied because the device is locked. Evidence is `/tmp/newsblur-menu-device-build-37.log` and `/tmp/newsblur-claypad-menu-{install,launch}-37.json`. This menu update has not been installed on ClayPhone.
+
+After the user unlocks ClayPad Air, the updated NB Alpha successfully launches in the foreground with performance probes disabled, PID 1337. The executable matches the new installation path; launch evidence is `/tmp/newsblur-claypad-menu-launch-38.json`.
