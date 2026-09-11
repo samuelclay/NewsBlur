@@ -71,6 +71,118 @@ import UIKit
         }
     }
 
+    func test_focusFeedKeepsItsRetainedRowWhenOnlyNeutralStoriesRemain() {
+        let fixture = makeFixture()
+        fixture.appDelegate.selectedIntelligence = 1
+        fixture.controller.viewShowingAllFeeds = false
+        fixture.appDelegate.dictUnreadCounts["1"] = ["ps": 1, "nt": 7]
+        let path = IndexPath(row: 0, section: 2)
+        let height = fixture.controller.tableView(fixture.table, heightForRowAt: path)
+        XCTAssertGreaterThan(height, 0)
+
+        fixture.appDelegate.dictUnreadCounts["1"] = ["ps": 0, "nt": 7]
+        XCTAssertFalse(fixture.controller.isFeedVisible("1"))
+        let cell = fixture.controller.tableView(fixture.table, cellForRowAt: path)
+        XCTAssertEqual(cell.accessibilityIdentifier, "feed-row-1")
+        XCTAssertEqual(cell.value(forKey: "neutralCount") as? Int, 7)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), height)
+        fixture.controller.tableView(fixture.table, prefetchRowsAt: [path])
+        XCTAssertEqual(fixture.queue.operationsAdded, 1)
+    }
+
+    func test_explicitReloadHidesAReadFeedAndStopsPreparingItsArtwork() {
+        let fixture = makeFixture()
+        fixture.controller.viewShowingAllFeeds = false
+        let path = IndexPath(row: 0, section: 2)
+        XCTAssertGreaterThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
+        fixture.appDelegate.dictUnreadCounts["1"] = ["nt": 0]
+
+        fixture.controller.reloadFeedTitlesTable()
+
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, cellForRowAt: path).reuseIdentifier, "BlankCellIdentifier")
+        fixture.controller.tableView(fixture.table, prefetchRowsAt: [path])
+        XCTAssertEqual(fixture.queue.operationsAdded, 0)
+        XCTAssertFalse(fixture.appDelegate.proactiveRequests.contains { $0.key == "1" })
+    }
+
+    func test_reloadAppliesCollapseAndSearchVisibilityToPreviouslyCachedRows() {
+        let fixture = makeFixture()
+        let path = IndexPath(row: 0, section: 3)
+        XCTAssertGreaterThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
+        fixture.appDelegate.collapsedFolders = ["Parent": "Parent"]
+        fixture.controller.reloadFeedTitlesTable()
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, cellForRowAt: path).reuseIdentifier, "BlankCellIdentifier")
+
+        fixture.controller.searchFeedIds = ["2"]
+        fixture.controller.reloadFeedTitlesTable()
+        XCTAssertGreaterThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, cellForRowAt: path).accessibilityIdentifier, "feed-row-2")
+
+        fixture.controller.searchFeedIds = ["1"]
+        fixture.controller.reloadFeedTitlesTable()
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, cellForRowAt: path).reuseIdentifier, "BlankCellIdentifier")
+    }
+
+    func test_explicitReloadPreservesFeedsMarkedToRemainVisibleAfterReading() {
+        let fixture = makeFixture()
+        fixture.controller.viewShowingAllFeeds = false
+        let path = IndexPath(row: 0, section: 2)
+        fixture.controller.stillVisibleFeeds = ["1": path]
+        fixture.appDelegate.dictUnreadCounts["1"] = ["nt": 0]
+
+        fixture.controller.reloadFeedTitlesTable()
+
+        XCTAssertGreaterThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), 0)
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, cellForRowAt: path).accessibilityIdentifier, "feed-row-1")
+        XCTAssertTrue(fixture.appDelegate.proactiveRequests.contains { $0.key == "1" })
+    }
+
+    func test_deselectRemovesAReadFeedWhenShowAfterReadingIsDisabled() throws {
+        assertDeselectVisibility(showAfterReading: false)
+    }
+
+    func test_deselectRetainsReadFeedsWhenShowAfterReadingIsEnabled() {
+        assertDeselectVisibility(showAfterReading: true)
+    }
+
+    private func assertDeselectVisibility(showAfterReading: Bool) {
+        let preferences = UserDefaults.standard
+        let original = preferences.object(forKey: "show_feeds_after_being_read")
+        preferences.set(showAfterReading, forKey: "show_feeds_after_being_read")
+        defer { preferences.set(original, forKey: "show_feeds_after_being_read") }
+        let fixture = makeFixture()
+        fixture.controller.viewShowingAllFeeds = false
+        let paths = [IndexPath(row: 0, section: 2), IndexPath(row: 0, section: 3)]
+        fixture.controller.stillVisibleFeeds = ["1": paths[0], "2": paths[1]]
+        fixture.controller.view = UIView(frame: fixture.table.frame)
+        fixture.controller.view.addSubview(fixture.table)
+        fixture.table.dataSource = fixture.controller
+        fixture.table.delegate = fixture.controller
+        fixture.table.reloadData()
+        fixture.table.layoutIfNeeded()
+        let originalHeights = paths.map { fixture.table.rectForRow(at: $0).height }
+        XCTAssertTrue(originalHeights.allSatisfy { $0 > 0 })
+        fixture.table.selectRow(at: paths[0], animated: false, scrollPosition: .none)
+        fixture.appDelegate.dictUnreadCounts["1"] = ["nt": 0]
+        fixture.appDelegate.dictUnreadCounts["2"] = ["nt": 0]
+
+        fixture.controller.fadeSelectedCell()
+        fixture.table.layoutIfNeeded()
+
+        for (index, path) in paths.enumerated() {
+            let feedID = String(index + 1)
+            let expectedHeight = showAfterReading ? originalHeights[index] : 0
+            XCTAssertEqual(fixture.controller.stillVisibleFeeds[feedID] != nil, showAfterReading)
+            XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), expectedHeight)
+            XCTAssertEqual(fixture.table.rectForRow(at: path).height, expectedHeight)
+            let cell = fixture.controller.tableView(fixture.table, cellForRowAt: path)
+            XCTAssertEqual(cell.reuseIdentifier == "BlankCellIdentifier", !showAfterReading)
+        }
+    }
+
     private func attachTable(_ table: UITableView, name: String) {
         func display(_ layer: CALayer) {
             layer.displayIfNeeded()
