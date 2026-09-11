@@ -647,13 +647,13 @@ static BOOL NBBoolPreferenceValue(id value) {
                 NSLog(@"Found inadvertantly still visible feed: %@", feedId);
                 [paths addObject:[self.stillVisibleFeeds objectForKey:feedId]];
             }
+            // FeedsObjCViewController.m recomputes visibility only for rows deliberately hidden on deselection.
+            [self.stillVisibleFeeds removeAllObjects];
+            [self.rowHeights removeObjectsForKeys:paths];
         }
         [self.feedTitlesTable reloadRowsAtIndexPaths:paths
                                     withRowAnimation:UITableViewRowAnimationFade];
         [self.feedTitlesTable endUpdates];
-        if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
-            [self.stillVisibleFeeds removeAllObjects];
-        }
     }
 }
 
@@ -2017,16 +2017,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
     NSArray *folder = appDelegate.dictFolders[folderName];
     if (indexPath.row >= folder.count) return nil;
+    // FeedsObjCViewController.m uses the table's retained geometry until an explicit visibility update.
     if ([self tableView:tableView heightForRowAtIndexPath:indexPath] <= 0) return nil;
     NSString *identifier = [NSString stringWithFormat:@"%@", folder[indexPath.row]];
-    BOOL savedSearch = [appDelegate isSavedSearch:identifier];
     NSString *feedID = [appDelegate feedIdWithoutSearchQuery:identifier];
     if ([appDelegate isSavedFeed:feedID]) return nil;
-    if (self.searchFeedIds) {
-        if (![self.searchFeedIds containsObject:feedID]) return nil;
-    } else if ([appDelegate isFolderCollapsed:folderName] || !([self isFeedVisible:feedID] || savedSearch)) {
-        return nil;
-    }
     BOOL social = [appDelegate isSocialFeed:feedID];
     NSDictionary *customIcon = appDelegate.dictFeedIcons[feedID];
     if (!social && customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) return nil;
@@ -2132,7 +2127,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    // FeedsObjCViewController.m retains hidden descendants and subfolder duplicates as zero-height data source rows.
+    // FeedsObjCViewController.m retains row visibility with its height; count changes must not create positive-height blanks.
     if ([self tableView:tableView heightForRowAtIndexPath:indexPath] <= 0) {
         return [self blankFeedCellForTableView:tableView];
     }
@@ -2152,18 +2147,9 @@ static BOOL NBBoolPreferenceValue(id value) {
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     BOOL isInactive = appDelegate.dictInactiveFeeds[feedIdStr] != nil;
-    BOOL isOmitted = false;
     NSString *CellIdentifier;
     
-    if (self.searchFeedIds && !isSaved) {
-        isOmitted = ![self.searchFeedIds containsObject:feedIdStr];
-    } else {
-        isOmitted = [appDelegate isFolderCollapsed:folderName] || !([self isFeedVisible:feedIdStr] || isSavedSearch);
-    }
-    
-    if (isOmitted) {
-        return [self blankFeedCellForTableView:tableView];
-    } else if (indexPath.section == 0 || indexPath.section == 1) {
+    if (indexPath.section == 0 || indexPath.section == 1) {
         CellIdentifier = @"BlurblogCellIdentifier";
     } else if (isSaved) {
         CellIdentifier = @"SavedCellIdentifier";
