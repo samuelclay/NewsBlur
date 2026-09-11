@@ -59,6 +59,28 @@ import UIKit
         XCTAssertEqual(fixture.table.reloads, 0)
     }
 
+    func test_existingCellActuallyPaintsItsNewBadge() throws {
+        let fixture = try makeFixture()
+        let cell = try fixture.cell(row: 0)
+        let before = renderedImage(of: cell)
+        let badge = try XCTUnwrap(cell.value(forKey: "unreadCount") as? NSObject)
+        XCTAssertEqual(badge.value(forKey: "ntCount") as? Int, 10)
+        fixture.app.dictUnreadCounts["1"] = ["nt": 9, "ps": 3, "ng": 2]
+
+        fixture.controller.refreshFeedCounts()
+        let after = renderedImage(of: cell)
+
+        XCTAssertEqual(badge.value(forKey: "ntCount") as? Int, 9, "FeedUnreadCountRefreshTests.swift must observe the badge actually drawn by the retained cell")
+        XCTAssertNotEqual(before.pngData(), after.pngData())
+        for (name, image) in [("feed-count-before", before), ("feed-count-after", after)] {
+            let attachment = XCTAttachment(image: image)
+            attachment.name = name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        XCTAssertEqual(fixture.table.reloads, 0)
+    }
+
     func test_savedIntelligenceModeKeepsSavedCountInsteadOfUnreadBadge() throws {
         let fixture = try makeFixture(savedMode: true)
         let cell = try fixture.cell(row: 0)
@@ -184,6 +206,18 @@ import UIKit
         table.layoutIfNeeded()
         table.reloads = 0
         return CountFixture(app: app, controller: controller, pages: pages, table: table)
+    }
+
+    private func renderedImage(of view: UIView) -> UIImage {
+        view.layoutIfNeeded()
+        func displayPendingLayers(_ layer: CALayer) {
+            layer.displayIfNeeded()
+            layer.sublayers?.forEach(displayPendingLayers)
+        }
+        displayPendingLayers(view.layer)
+        return UIGraphicsImageRenderer(bounds: view.bounds).image { context in
+            view.layer.render(in: context.cgContext)
+        }
     }
 }
 
