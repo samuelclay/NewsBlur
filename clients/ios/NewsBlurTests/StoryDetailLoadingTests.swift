@@ -551,13 +551,49 @@ import XCTest
         try await assertFirstArticleInsetThroughNativeHandoff(isRiver: false)
     }
 
-    private func assertFirstArticleInsetThroughNativeHandoff(isRiver: Bool) async throws {
+    func test_savedReadingPositionSurvivesTheDetachedNativeHandoff() async throws {
+        try await assertFirstArticleInsetThroughNativeHandoff(isRiver: false, savedPosition: 100)
+    }
+
+    func test_hiddenToolbarKeepsItsOffsetThroughTheDetachedNativeHandoff() async throws {
+        try await assertFirstArticleInsetThroughNativeHandoff(isRiver: true, toolbarOffset: 44)
+    }
+
+    func test_attachedArticleWindowTakesPriorityOverThePresentingNavigationWindow() throws {
+        let fixture = makePresentationFixture(width: 375)
+        fixture.pages.storyToolbar = StoryToolbar()
+        fixture.pages.toolbarScrollHandler = StoryToolbarScrollHandler()
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let articleWindow = StoryPresentationWindow(windowScene: scene)
+        let sourceWindow = StoryPresentationWindow(windowScene: scene)
+        sourceWindow.testSafeAreaTop = 47
+        let navigation = UINavigationController(rootViewController: UIViewController())
+        fixture.app.feedsNavigationController = navigation
+        sourceWindow.rootViewController = navigation
+        sourceWindow.isHidden = false
+        articleWindow.rootViewController = fixture.pages
+        articleWindow.makeKeyAndVisible()
+        defer {
+            articleWindow.isHidden = true
+            sourceWindow.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
+        XCTAssertTrue(fixture.pages.view.window === articleWindow)
+        XCTAssertTrue(navigation.view.window === sourceWindow)
+        XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 1), 64, accuracy: 0.5)
+        XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 0), 64, accuracy: 0.5)
+        articleWindow.testSafeAreaTop = 24
+        XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 1), 68, accuracy: 0.5)
+    }
+
+    private func assertFirstArticleInsetThroughNativeHandoff(isRiver: Bool, savedPosition: Int? = nil, toolbarOffset: CGFloat = 0) async throws {
         let fixture = makePresentationFixture(width: 375)
         fixture.app.storiesCollection.isRiverView = isRiver
         fixture.pages.storyToolbar = StoryToolbar()
         fixture.pages.toolbarScrollHandler = StoryToolbarScrollHandler()
         fixture.pages.runsActualPageChanges = true
-        fixture.app.setValue(ImmediateStoryScrollQueue(hasSavedPosition: false), forKey: "database")
+        fixture.app.setValue(ImmediateStoryScrollQueue(hasSavedPosition: savedPosition != nil, position: savedPosition ?? 0), forKey: "database")
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
         let window = StoryPresentationWindow(windowScene: scene)
@@ -577,6 +613,7 @@ import XCTest
         let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
         let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
         XCTAssertEqual(web.scrollView.contentInset.top, 64, accuracy: 0.5)
+        fixture.pages.toolbarScrollHandler.setOffset(toolbarOffset)
         sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
         for _ in 0..<60 where fixture.app.presentations == 0 { await delay(0.02) }
 
@@ -588,7 +625,9 @@ import XCTest
         // StoryDetailLoadingTests.swift exercises the real page change after WebKit leaves its preparation host, before the native push attaches the controller.
         XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 1), 64, accuracy: 0.5)
         XCTAssertEqual(web.scrollView.contentInset.top, 64, accuracy: 0.5)
-        XCTAssertEqual(web.scrollView.contentOffset.y, -64, accuracy: 0.5)
+        let expectedOffset = savedPosition.map { floor(CGFloat($0) / 1000 * web.scrollView.contentSize.height) } ?? (-64 + toolbarOffset)
+        XCTAssertEqual(web.scrollView.contentOffset.y, expectedOffset, accuracy: 0.5)
+        XCTAssertEqual(fixture.pages.toolbarScrollHandler.toolbarOffset, toolbarOffset, accuracy: 0.5)
     }
 
     func test_realWebKitPaintsStagedArticleBeforeNativePushWhileImageIsPending() async throws {
@@ -1533,7 +1572,8 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class StoryPresentationWindow: UIWindow {
-    override var safeAreaInsets: UIEdgeInsets { UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0) }
+    var testSafeAreaTop: CGFloat = 20
+    override var safeAreaInsets: UIEdgeInsets { UIEdgeInsets(top: testSafeAreaTop, left: 0, bottom: 0, right: 0) }
 }
 
 @MainActor private final class StoryPresentationDetail: DetailViewController {
