@@ -318,6 +318,7 @@ class FeedsViewController: FeedsObjCViewController {
     }
 
     @objc func refreshFeedCounts() {
+        refreshVisibleFeedCounts()
         refreshFolderCounts()
         refreshHeaderCounts()
     }

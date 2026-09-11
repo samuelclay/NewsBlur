@@ -123,6 +123,8 @@ static BOOL NBBoolPreferenceValue(id value) {
 @property (nonatomic, strong) NSOperationQueue *faviconPrefetchQueue;
 @property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSBlockOperation *> *faviconPrefetchOperations;
 
+- (BOOL)updateUnreadCountsForCell:(FeedTableCell *)cell feedID:(NSString *)feedID;
+
 @end
 
 @implementation FeedsObjCViewController
@@ -2149,7 +2151,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
-    BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode && [self.appDelegate savedStoriesCountForFeed:feedIdStr] > 0;
     BOOL isInactive = appDelegate.dictInactiveFeeds[feedIdStr] != nil;
     BOOL isOmitted = false;
     NSString *CellIdentifier;
@@ -2184,8 +2185,6 @@ static BOOL NBBoolPreferenceValue(id value) {
                          isSaved ?
                          [appDelegate.dictSavedStoryTags objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
-    NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
-
     // Check for custom feed icon (only for regular feeds, not social or saved)
     UIImage *customFeedIcon = nil;
     if (!isSocial && !isSaved) {
@@ -2217,38 +2216,15 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     
     if (searchQuery != nil) {
-        cell.positiveCount = 0;
-        cell.neutralCount = 0;
-        cell.negativeCount = 0;
-        cell.savedStoriesCount = 0;
         cell.feedTitle = [NSString stringWithFormat:@"\"%@\" in %@", cell.searchQuery, cell.feedTitle];
         
         if (searchFolder != nil) {
             cell.feedFavicon = [appDelegate folderIcon:searchFolder];
             cell.feedTitle = [NSString stringWithFormat:@"\"%@\" in %@", cell.searchQuery, [appDelegate folderTitle:searchFolder]];
         }
-    } else if (isInactive) {
-        cell.positiveCount = 0;
-        cell.neutralCount = 0;
-        cell.negativeCount = 0;
-        cell.savedStoriesCount = 0;
-    } else if (isSavedStoriesFeed) {
-        cell.positiveCount = 0;
-        cell.neutralCount = 0;
-        cell.negativeCount = 0;
-        cell.savedStoriesCount = (int)[self.appDelegate savedStoriesCountForFeed:feedIdStr];
-    } else {
-        cell.positiveCount = [[unreadCounts objectForKey:@"ps"] intValue];
-        cell.neutralCount  = [[unreadCounts objectForKey:@"nt"] intValue];
-        cell.negativeCount = [[unreadCounts objectForKey:@"ng"] intValue];
-        cell.savedStoriesCount = 0;
     }
     
-    if (cell.neutralCount) {
-        cell.accessibilityLabel = [NSString stringWithFormat:@"%@ feed, %@ unread stories", cell.feedTitle, @(cell.neutralCount)];
-    } else {
-        cell.accessibilityLabel = [NSString stringWithFormat:@"%@ feed", cell.feedTitle];
-    }
+    [self updateUnreadCountsForCell:cell feedID:feedIdStr];
     cell.accessibilityIdentifier = [NSString stringWithFormat:@"feed-row-%@", feedIdStr];
     
     [cell setNeedsDisplay];
@@ -2416,6 +2392,53 @@ static BOOL NBBoolPreferenceValue(id value) {
 
     for (NSNumber *section in self.folderTitleViews) {
         [self.folderTitleViews[section] setNeedsDisplay];
+    }
+}
+
+- (BOOL)updateUnreadCountsForCell:(FeedTableCell *)cell feedID:(NSString *)feedID {
+    int positiveCount = 0;
+    int neutralCount = 0;
+    int negativeCount = 0;
+    int savedStoriesCount = 0;
+    if (cell.searchQuery == nil && !cell.isInactive) {
+        NSInteger savedCount = appDelegate.isSavedStoriesIntelligenceMode ? [appDelegate savedStoriesCountForFeed:feedID] : 0;
+        if (savedCount > 0) {
+            savedStoriesCount = (int)savedCount;
+        } else {
+            NSDictionary *unreadCounts = appDelegate.dictUnreadCounts[feedID];
+            positiveCount = [unreadCounts[@"ps"] intValue];
+            neutralCount = [unreadCounts[@"nt"] intValue];
+            negativeCount = [unreadCounts[@"ng"] intValue];
+        }
+    }
+    NSString *accessibilityLabel = neutralCount ?
+        [NSString stringWithFormat:@"%@ feed, %@ unread stories", cell.feedTitle, @(neutralCount)] :
+        [NSString stringWithFormat:@"%@ feed", cell.feedTitle];
+    BOOL changed = cell.positiveCount != positiveCount || cell.neutralCount != neutralCount ||
+        cell.negativeCount != negativeCount || cell.savedStoriesCount != savedStoriesCount ||
+        ![cell.accessibilityLabel isEqualToString:accessibilityLabel];
+    cell.positiveCount = positiveCount;
+    cell.neutralCount = neutralCount;
+    cell.negativeCount = negativeCount;
+    cell.savedStoriesCount = savedStoriesCount;
+    cell.accessibilityLabel = accessibilityLabel;
+    return changed;
+}
+
+- (void)refreshVisibleFeedCounts {
+    if (!self.isViewLoaded) return;
+
+    for (NSIndexPath *indexPath in self.feedTitlesTable.indexPathsForVisibleRows) {
+        UITableViewCell *visibleCell = [self.feedTitlesTable cellForRowAtIndexPath:indexPath];
+        if (![visibleCell isKindOfClass:[FeedTableCell class]] || indexPath.section >= appDelegate.dictFoldersArray.count) continue;
+        NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
+        NSArray *folder = appDelegate.dictFolders[folderName];
+        if (indexPath.row >= folder.count) continue;
+        NSString *feedID = [appDelegate feedIdWithoutSearchQuery:[NSString stringWithFormat:@"%@", folder[indexPath.row]]];
+        FeedTableCell *cell = (FeedTableCell *)visibleCell;
+        if ([self updateUnreadCountsForCell:cell feedID:feedID]) {
+            [cell setNeedsDisplay];
+        }
     }
 }
 
