@@ -5102,36 +5102,47 @@ finish_height_measurement:
         return;
     }
     [self fetchNextPageForCurrentViewport];
-    
-    CGPoint topRowPoint = self.storyTitlesTable.contentOffset;
-    topRowPoint.y = topRowPoint.y + (self.textSize != FeedDetailTextSizeTitleOnly ? 80.f : 60.f);
-    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:topRowPoint];
-    BOOL markReadOnScroll = self.isMarkReadOnScroll;
-    
-    if (indexPath && markReadOnScroll) {
-        NSInteger topRow = [self storyLocationForScrollingAtIndexPath:indexPath];
-        if (topRow == NSNotFound) {
-            return;
-        }
-        
-        if (self.scrollingMarkReadRow == NSNotFound) {
-            self.scrollingMarkReadRow = topRow;
-        } else if (topRow > self.scrollingMarkReadRow) {
-            NSMutableIndexSet *readLocations = [NSMutableIndexSet indexSet];
-            for (NSInteger thisRow = self.scrollingMarkReadRow; thisRow < topRow; thisRow++) {
-                NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
-                NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-                
-                if ([self markStoryReadIfNeeded:story isScrolling:YES]) {
-                    [readLocations addIndex:thisRow];
-                }
+    if (!self.isMarkReadOnScroll) return;
+
+    UITableView *table = self.storyTitlesTable;
+    CGFloat visibleTop = table.contentOffset.y + table.adjustedContentInset.top;
+    CGPoint topPoint = CGPointMake(CGRectGetMidX(table.bounds), visibleTop);
+    NSIndexPath *indexPath = [table indexPathForRowAtPoint:topPoint];
+    NSInteger nextLocation = 0;
+    if (indexPath) {
+        nextLocation = [self storyLocationForScrollingAtIndexPath:indexPath];
+        if (nextLocation == NSNotFound) return;
+        NSDictionary *row = [self storyRowDescriptorForIndexPath:indexPath];
+        if (row) {
+            // FeedDetailObjCViewController.m measures the parent cell, including its preview.
+            // Every Match/Related row follows that parent, so its midpoint is already behind us.
+            BOOL isChild = [row[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
+            if (isChild || visibleTop >= CGRectGetMidY([table rectForRowAtIndexPath:indexPath])) {
+                nextLocation += 1;
             }
-            
-            self.scrollingMarkReadRow = topRow;
-            [self refreshVisibleReadStateForStoryLocations:readLocations];
         }
+    } else {
+        // Establish the first cursor while the visible top is in a header or top bounce.
+        // Waiting for a row hit would skip earlier parents on the first fast scroll.
+        if (storiesCollection.isDailyBriefing || [table numberOfRowsInSection:0] == 0) return;
+        CGRect firstRow = [table rectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        if (visibleTop >= CGRectGetMinY(firstRow)) return;
     }
 
+    if (self.scrollingMarkReadRow == NSNotFound) {
+        self.scrollingMarkReadRow = nextLocation;
+    } else if (nextLocation > self.scrollingMarkReadRow) {
+        NSMutableIndexSet *readLocations = [NSMutableIndexSet indexSet];
+        for (NSInteger location = self.scrollingMarkReadRow; location < nextLocation; location++) {
+            NSInteger storyIndex = [storiesCollection indexFromLocation:location];
+            NSDictionary *story = storiesCollection.activeFeedStories[storyIndex];
+            if ([self markStoryReadIfNeeded:story isScrolling:YES]) {
+                [readLocations addIndex:location];
+            }
+        }
+        self.scrollingMarkReadRow = nextLocation;
+        [self refreshVisibleReadStateForStoryLocations:readLocations];
+    }
 }
 
 - (void)refreshVisibleReadStateForStoryLocations:(NSIndexSet *)locations {
