@@ -1476,6 +1476,7 @@
 		6272E9F4868AFC518EC2DDDE /* StoryListReloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */; };
 		B11924FAD010202609100001 /* StoryReadStateAnimationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11924FAD010202609100002 /* StoryReadStateAnimationTests.swift */; };
 		B11924FAD010202609100031 /* MenuPreferenceSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11924FAD010202609100032 /* MenuPreferenceSelectionTests.swift */; };
+		B11924FAD010202609100041 /* FeedUnreadCountRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11924FAD010202609100042 /* FeedUnreadCountRefreshTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2506,6 +2507,7 @@
 		567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListReloadTests.swift; sourceTree = "<group>"; };
 		B11924FAD010202609100002 /* StoryReadStateAnimationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReadStateAnimationTests.swift; sourceTree = "<group>"; };
 		B11924FAD010202609100032 /* MenuPreferenceSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPreferenceSelectionTests.swift; sourceTree = "<group>"; };
+		B11924FAD010202609100042 /* FeedUnreadCountRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedUnreadCountRefreshTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -3632,6 +3634,7 @@
 				567499FE02F2A645A8DF21B8 /* StoryListReloadTests.swift */,
 				B11924FAD010202609100002 /* StoryReadStateAnimationTests.swift */,
 				B11924FAD010202609100032 /* MenuPreferenceSelectionTests.swift */,
+				B11924FAD010202609100042 /* FeedUnreadCountRefreshTests.swift */,
 				EC678062DD4F7322E5339412 /* FaviconCacheTests.swift */,
 				D74E3909427F4B3AAF85A002 /* StoryDetailScrollPerformanceTests.swift */,
 				D74E3909427F4B3AAF85A004 /* StoryThumbnailCacheTests.swift */,
@@ -5840,6 +5843,7 @@
 				6272E9F4868AFC518EC2DDDE /* StoryListReloadTests.swift in Sources */,
 				B11924FAD010202609100001 /* StoryReadStateAnimationTests.swift in Sources */,
 				B11924FAD010202609100031 /* MenuPreferenceSelectionTests.swift in Sources */,
+				B11924FAD010202609100041 /* FeedUnreadCountRefreshTests.swift in Sources */,
 				1F0927750264F19490AA37A8 /* CustomIconRendererTests.swift in Sources */,
 				ACC369B47D786C776D484A25 /* FaviconCacheTests.swift in Sources */,
 				D74E3909427F4B3AAF85A001 /* StoryDetailScrollPerformanceTests.swift in Sources */,
