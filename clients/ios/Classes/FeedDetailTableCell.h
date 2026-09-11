@@ -70,6 +70,8 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (nonatomic) UIColor *feedColorBarTopBorder;
 
 @property (readwrite) BOOL isRead;
+@property (nonatomic, readonly) BOOL readStateAnimationsEnabled;
+- (void)setRead:(BOOL)read animated:(BOOL)animated;
 @property (readwrite) BOOL isReadAvailable;
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;

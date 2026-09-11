@@ -5167,8 +5167,7 @@ finish_height_measurement:
         NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
         BOOL isRead = clusterStory ? [self isClusterStoryRead:clusterStory parentStory:story] : ![storiesCollection isStoryUnread:story];
         if (cell.isRead != isRead) {
-            cell.isRead = isRead;
-            [cell setNeedsDisplay];
+            [cell setRead:isRead animated:YES];
         }
     }
 }
