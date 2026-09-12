@@ -141,39 +141,22 @@ class SessionDataSource private constructor(
 
     /**
      * @return The next non empty folder and its feeds based on the given folder name.
-     * If the next folder doesn't have feeds, it will call itself with the new folder name
-     * until it finds a non empty folder or it will get to the end of the folder list.
+     * SessionDataSource.kt checks at most one complete wrap, including the starting folder
+     * only after all other folders, so sessions without an eligible target terminate.
      */
-    private fun getNextNonEmptyFolder(folderName: String): Pair<String, List<Feed>>? =
-        with(folders.indexOf(folderName)) {
-            val nextIndex =
-                if (this == folders.size - 1) {
-                    0 // first folder if EOL
-                } else if (this in folders.indices) {
-                    this + 1 // next folder
-                } else {
-                    this // no folder found
-                }
+    private fun getNextNonEmptyFolder(folderName: String): Pair<String, List<Feed>>? {
+        val folderIndex = folders.indexOf(folderName)
+        if (folderIndex < 0 || folders.size < 2) return null
 
-            val nextFolderName =
-                if (nextIndex in folders.indices) {
-                    folders[nextIndex]
-                } else {
-                    null
-                }
-
-            if (nextFolderName == null || nextFolderName == folderName) {
-                return null
-            }
-
+        for (offset in 1..folders.size) {
+            val nextFolderName = folders[(folderIndex + offset) % folders.size]
             val feeds = foldersChildrenMap[nextFolderName]
-            if (feeds.isNullOrEmpty() || !feeds.hasNextUnreadTarget()) {
-                // try and get the next non empty folder name
-                getNextNonEmptyFolder(nextFolderName)
-            } else {
-                nextFolderName to feeds
+            if (!feeds.isNullOrEmpty() && feeds.hasNextUnreadTarget()) {
+                return nextFolderName to feeds
             }
         }
+        return null
+    }
 
     fun peekNextSession(): Session? =
         if (session.feedSet.isFolder) {
