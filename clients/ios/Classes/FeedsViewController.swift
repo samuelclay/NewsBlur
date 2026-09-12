@@ -123,6 +123,16 @@ class FeedsViewController: FeedsObjCViewController {
     
     var dashboardTimer: Timer?
     
+    @objc func cancelPendingFeedListWorkForAccountChange() {
+        loadWorkItem?.cancel()
+        loadWorkItem = nil
+        reloadWorkItem?.cancel()
+        reloadWorkItem = nil
+        dashWorkItem?.cancel()
+        dashWorkItem = nil
+        clearDashboard()
+    }
+
     @objc func clearDashboard() {
         NSLog("🎛️ clearDashboard")
         
