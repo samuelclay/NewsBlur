@@ -44,6 +44,7 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 @property (nonatomic, readonly) BOOL readyForPresentation;
 - (void)prepareCurrentStoryForPresentation;
 - (void)finishStoryPresentation;
+- (void)receiveStoryReadyMessage:(WKScriptMessage *)message;
 @property (nonatomic) BOOL lastDragDirectionDown;
 @property (nonatomic,  readonly) BOOL isSinglePage;
 

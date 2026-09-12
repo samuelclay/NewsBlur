@@ -7,6 +7,23 @@
 //
 
 import UIKit
+import WebKit
+
+/// StoryDetailObjCViewController.m installs this bridge without retaining its page through WebKit.
+@objc(StoryReadyMessageHandler)
+final class StoryReadyMessageHandler: NSObject, WKScriptMessageHandler {
+    private weak var page: StoryDetailObjCViewController?
+
+    @objc(initWithPage:)
+    init(page: StoryDetailObjCViewController) {
+        self.page = page
+        super.init()
+    }
+
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        page?.receiveStoryReadyMessage(message)
+    }
+}
 
 /// An individual story.
 class StoryDetailViewController: StoryDetailObjCViewController {

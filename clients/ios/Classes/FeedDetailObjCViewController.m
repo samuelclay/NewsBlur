@@ -4518,10 +4518,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-    if (self.isLegacyTable && rowIndex != NSNotFound) {
-        [self reloadStoryRowsForLocation:rowIndex rowAnimation:UITableViewRowAnimationNone];
+    if (self.isLegacyTable) {
+        if (rowIndex < 0 || rowIndex >= storiesCollection.storyLocationsCount) return;
+        // FeedDetailObjCViewController.m keeps an active title reveal intact while read/save/share artwork changes.
+        [self refreshVisibleReadStateForStoryLocations:[NSIndexSet indexSetWithIndex:(NSUInteger)rowIndex]];
         NSIndexPath *storyIndexPath = [self indexPathForStoryLocation:rowIndex];
-        if (storyIndexPath) {
+        if (storyIndexPath && ![storyIndexPath isEqual:self.storyTitlesTable.indexPathForSelectedRow]) {
             [self.storyTitlesTable selectRowAtIndexPath:storyIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
         return;
@@ -5555,10 +5557,26 @@ finish_height_measurement:
 
         NSDictionary *story = [self getStoryAtLocation:location];
         NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
+        NSString *clusterHash = [clusterStory[@"story_hash"] isKindOfClass:NSString.class] ? clusterStory[@"story_hash"] : nil;
+        if (clusterHash.length && [story[@"cluster_stories"] isKindOfClass:NSArray.class]) {
+            // FeedDetailObjCViewController.m refreshes replaced child state without rebuilding the visible row descriptors.
+            for (id candidate in story[@"cluster_stories"]) {
+                if ([candidate isKindOfClass:NSDictionary.class] && [clusterHash isEqual:candidate[@"story_hash"]]) {
+                    clusterStory = candidate;
+                    break;
+                }
+            }
+        }
         BOOL isRead = clusterStory ? [self isClusterStoryRead:clusterStory parentStory:story] : ![storiesCollection isStoryUnread:story];
+        BOOL isSaved = !clusterStory && [story[@"starred"] boolValue];
+        BOOL isShared = !clusterStory && [story[@"shared"] boolValue];
+        BOOL badgesChanged = cell.isSaved != isSaved || cell.isShared != isShared;
+        cell.isSaved = isSaved;
+        cell.isShared = isShared;
         if (cell.isRead != isRead) {
             [cell setRead:isRead animated:YES];
         }
+        if (badgesChanged) [cell setNeedsDisplay];
     }
 }
 

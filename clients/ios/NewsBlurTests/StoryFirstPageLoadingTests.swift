@@ -7,6 +7,56 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryFirstPageLoading: XCTestCase {
+    func test_nextReadRefreshKeepsPartlyVisibleTitleRevealContinuous() async throws {
+        for estimate: CGFloat in [0, 44] {
+            let fixture = makeFixture()
+            let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+            defer { presentation.close() }
+            fixture.controller.testRowHeight = 200
+            fixture.table.estimatedRowHeight = estimate
+            fixture.table.contentInsetAdjustmentBehavior = .never
+            fixture.controller.view.frame.size.height = 700
+            fixture.table.frame = fixture.controller.view.bounds
+            try await prime(fixture, stories: makeStories(0..<30))
+            fixture.controller.pageFinished = true
+            fixture.table.layoutIfNeeded()
+            fixture.app.activeStory = fixture.stories.activeFeedStories[2] as? [AnyHashable: Any]
+            fixture.table.selectRow(at: IndexPath(row: 2, section: 0), animated: false, scrollPosition: .none)
+            let target = IndexPath(row: 3, section: 0)
+            XCTAssertTrue(fixture.table.bounds.intersects(fixture.table.rectForRow(at: target)))
+            XCTAssertFalse(fixture.table.bounds.contains(fixture.table.rectForRow(at: target)))
+            let before = XCTAttachment(image: UIGraphicsImageRenderer(bounds: fixture.table.bounds).image { context in
+                fixture.table.layer.render(in: context.cgContext)
+            })
+            before.name = "Next reveal before: fourth title partly visible, estimate \(estimate)"
+            before.lifetime = .keepAlways
+            add(before)
+            let table = try XCTUnwrap(fixture.table as? FirstPageLoadingTable)
+            table.rowReloads = 0
+            let recorder = NextTitleRevealRecorder(table: table)
+            recorder.start()
+            // StoryFirstPageLoadingTests.swift exercises the real list callbacks, in the
+            // same order as StoryPagesObjCViewController.m's Next/page-swipe completion.
+            fixture.app.activeStory = fixture.stories.activeFeedStories[3] as? [AnyHashable: Any]
+            fixture.controller.changeActiveFeedDetailRow()
+            fixture.app.recentlyReadStories["first-page-3"] = true
+            fixture.controller.redrawUnreadStory()
+            let finished = expectation(description: "Next title reveal finishes")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { finished.fulfill() }
+            await fulfillment(of: [finished], timeout: 2)
+            recorder.stop()
+            let samples = recorder.offsets
+            print("NEXT_TITLE_REVEAL estimate=\(estimate) reloads=\(table.rowReloads) offsets=\(samples)")
+            XCTAssertEqual(table.rowReloads, 0, "Marking the Next story read must not rebuild rows during its reveal animation")
+            XCTAssertEqual(table.indexPathForSelectedRow, target)
+            XCTAssertGreaterThan(samples.max() ?? 0, 0)
+            XCTAssertGreaterThan(Set(samples.map { Int($0) }).count, 5, "The title must visibly scroll instead of jumping")
+            for (earlier, later) in zip(samples, samples.dropFirst()) {
+                XCTAssertGreaterThanOrEqual(later + 0.5, earlier, "The reveal must not jump backwards while moving to the next title")
+            }
+        }
+    }
+
     func test_notificationFindsAnAlreadyReadOlderStoryInItsFeedAndKeepsLaterPagesConsistent() async throws {
         for exactOutcome in ["failure", "empty"] {
             try await assertNotificationPaginationFallback(exactOutcome: exactOutcome)
@@ -1604,6 +1654,21 @@ private final class FirstPageLoadingStories: StoriesCollection {
         rowReloads += 1
         super.reloadRows(at: indexPaths, with: animation)
     }
+}
+
+@MainActor private final class NextTitleRevealRecorder: NSObject {
+    let table: UITableView
+    var offsets: [CGFloat] = []
+    private var link: CADisplayLink?
+    init(table: UITableView) { self.table = table }
+    func start() {
+        offsets = [table.contentOffset.y]
+        let link = CADisplayLink(target: self, selector: #selector(sample))
+        link.add(to: .main, forMode: .common)
+        self.link = link
+    }
+    @objc private func sample() { offsets.append(table.layer.presentation()?.bounds.origin.y ?? table.contentOffset.y) }
+    func stop() { link?.invalidate(); link = nil }
 }
 
 private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {

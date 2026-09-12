@@ -607,12 +607,7 @@ public enum DailyBriefingSectionLayoutDecision {
         presentation: FullscreenSidebarPresentation,
         isMac: Bool
     ) -> Bool {
-        guard !isPhoneOrCompact, !isMac else {
-            return true
-        }
-
-        let _ = usesNativeFullscreenSidebar
-        return presentation == .fullscreen
+        true
     }
 }
 

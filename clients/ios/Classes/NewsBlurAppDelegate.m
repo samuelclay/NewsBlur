@@ -3106,7 +3106,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)deferredChangePage:(NSDictionary *)params {
     __weak typeof(self) weakSelf = self;
-    [self.storyPagesViewController preparePageForPresentation:[params[@"location"] integerValue] completion:^(NSInteger location) {
+    [self.storyPagesViewController preparePageForPresentation:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue] completion:^(NSInteger location) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) return;
         [strongSelf.storyPagesViewController changePage:location animated:[params[@"animated"] boolValue]];
