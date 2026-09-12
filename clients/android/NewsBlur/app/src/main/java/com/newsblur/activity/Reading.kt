@@ -1575,6 +1575,10 @@ abstract class Reading :
 
     private fun completeInteractiveReaderBackSwipe() {
         val surface = interactiveBackSurface()
+        // Reading.kt must disarm pending entrances before the committed Back animation starts.
+        waitingForPreparedEntrance = false
+        preparedEntranceTimeout?.let(surface::removeCallbacks)
+        preparedEntranceTimeout = null
         val targetTranslation =
             if (surface.width > 0) {
                 surface.width.toFloat()
