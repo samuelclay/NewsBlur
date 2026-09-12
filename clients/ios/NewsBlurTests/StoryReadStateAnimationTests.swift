@@ -48,6 +48,73 @@ import UIKit
         XCTAssertEqual(fixture.table.reloadCount, 0)
     }
 
+
+    func test_selectedStoryRefreshPreservesReadSaveShareAndRelatedArtworkWithoutReloading() {
+        for markRelated in [false, true] {
+            let fixture = makeFixture(markRelated: markRelated)
+            defer { fixture.window.isHidden = true }
+            let stories = fixture.controller.storiesCollection!
+            fixture.app.storiesCollection = stories
+            fixture.app.activeStory = stories.activeFeedStories[0] as? [AnyHashable: Any]
+            fixture.app.recentlyReadStories["read-fade-parent"] = true
+            var updated = fixture.app.activeStory!
+            updated["starred"] = true
+            updated["shared"] = true
+            stories.setStories([updated, stories.activeFeedStories[1]])
+            stories.calculateStoryLocations()
+            fixture.app.activeStory = updated
+            fixture.table.parent.isSaved = false
+            fixture.table.parent.isShared = false
+            fixture.table.related.isSaved = false
+            fixture.table.related.isShared = false
+
+            fixture.controller.redrawUnreadStory()
+
+            XCTAssertEqual(fixture.table.reloadCount, 0)
+            XCTAssertTrue(fixture.table.parent.isRead)
+            XCTAssertTrue(fixture.table.parent.isSaved)
+            XCTAssertTrue(fixture.table.parent.isShared)
+            XCTAssertEqual(fixture.table.related.isRead, markRelated)
+            XCTAssertFalse(fixture.table.related.isSaved)
+            XCTAssertFalse(fixture.table.related.isShared)
+            XCTAssertFalse(fixture.table.other.isRead)
+            updated["starred"] = false
+            updated["shared"] = false
+            stories.setStories([updated, stories.activeFeedStories[1]])
+            fixture.app.activeStory = updated
+
+            fixture.controller.redrawUnreadStory()
+
+            XCTAssertFalse(fixture.table.parent.isSaved)
+            XCTAssertFalse(fixture.table.parent.isShared)
+            XCTAssertEqual(fixture.table.reloadCount, 0)
+        }
+    }
+
+    func test_selectedStoryRefreshUsesLatestIndividualRelatedReadStatus() {
+        let fixture = makeFixture(markRelated: false)
+        defer { fixture.window.isHidden = true }
+        let stories = fixture.controller.storiesCollection!
+        fixture.app.storiesCollection = stories
+        var parent = stories.activeFeedStories[0] as! [String: Any]
+        parent["cluster_stories"] = [["story_hash": "related-changed", "read_status": 1]]
+        stories.setStories([parent, stories.activeFeedStories[1]])
+        stories.calculateStoryLocations()
+        fixture.app.activeStory = parent
+        fixture.controller.setValue([
+            ["type": 0, "story_location": 0],
+            ["type": 1, "story_location": 0,
+             "cluster_story": ["story_hash": "related-changed", "read_status": 0]],
+            ["type": 0, "story_location": 1]
+        ], forKey: "visibleStoryRows")
+
+        fixture.controller.redrawUnreadStory()
+
+        XCTAssertFalse(fixture.table.parent.isRead)
+        XCTAssertTrue(fixture.table.related.isRead, "Related read updates must use the current model even when the parent remains unread")
+        XCTAssertEqual(fixture.table.reloadCount, 0)
+    }
+
     func test_relatedPreferenceOffLeavesRelatedArtworkAndAnimationUntouched() {
         let fixture = makeFixture(markRelated: false)
         defer { fixture.window.isHidden = true }
@@ -285,6 +352,8 @@ import UIKit
         ], forKey: "visibleStoryRows")
 
         let host = UIViewController()
+        // StoryReadStateAnimationTests.swift supplies the visible hierarchy without storyboard toolbar outlets.
+        controller.view = UIView(frame: table.frame)
         let window = UIWindow(frame: table.frame)
         window.rootViewController = host
         host.view.addSubview(table)
@@ -331,6 +400,7 @@ import UIKit
 
 @MainActor private final class ReadFadeController: FeedDetailViewController {
     override var isLegacyTable: Bool { true }
+    override func viewDidLoad() {}
 }
 
 @MainActor private struct ReadFadeFixture {
@@ -354,6 +424,12 @@ import UIKit
     let other = ReadFadeCell(style: .default, reuseIdentifier: "other")
     var reloadCount = 0
     var reloadOrigins = [String]()
+    private var selectedPath: IndexPath?
+    override var indexPathForSelectedRow: IndexPath? { selectedPath }
+    override func selectRow(at indexPath: IndexPath?, animated: Bool, scrollPosition: UITableView.ScrollPosition) {
+        // StoryReadStateAnimationTests.swift isolates artwork; StoryDetailLoadingTests.swift exercises real table selection.
+        selectedPath = indexPath
+    }
 
     override var indexPathsForVisibleRows: [IndexPath]? {
         (0..<3).map { IndexPath(row: $0, section: 0) }

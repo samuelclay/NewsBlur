@@ -40,6 +40,15 @@
 @property (nonatomic) NSUInteger pendingPresentationFetch;
 @property (nonatomic, weak) UIViewController *pendingPresentationSource;
 @property (nonatomic, strong) UIView *storyPreparationHost;
+@property (nonatomic) BOOL pendingPresentationAnimated;
+@property (nonatomic, strong) StoryDetailViewController *pendingIntermediatePage;
+@property (nonatomic, strong) UIView *storyIntermediatePreparationHost;
+@property (nonatomic, strong) UIView *storySelectionTransitionHost;
+@property (nonatomic, strong) UIViewPropertyAnimator *storySelectionAnimator;
+@property (nonatomic, strong) NSArray<StoryDetailViewController *> *storySelectionTransitionPages;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, StoryDetailViewController *> *deferredSelectionRedraws;
+@property (nonatomic, strong) UIView *storySelectionRedrawCover;
+@property (nonatomic) BOOL refreshAfterStorySelection;
 @property (nonatomic) BOOL isRepositioningFirstPage;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
@@ -51,6 +60,11 @@
 @property (nonatomic, strong) UIView *uiTestTraverseFadeProbeView;
 
 - (void)resetTraverseFadeForStoryChange;
+- (void)completePendingStoryPresentationCallingCompletion:(BOOL)callCompletion;
+- (void)finishStorySelectionAnimation;
+- (void)animatePreparedStorySelection:(StoryDetailViewController *)page location:(NSInteger)location;
+- (void)prepareSelectionReplacement:(StoryDetailViewController *)page redraw:(BOOL)redraw;
+- (void)cancelPendingStoryPresentationWithoutRedraw;
 
 @end
 
@@ -648,6 +662,14 @@
 }
 
 - (void)viewDidLayoutSubviews {
+    if (self.storySelectionRedrawCover) {
+        self.storySelectionRedrawCover.frame = [self.scrollView.superview convertRect:self.scrollView.bounds fromView:self.scrollView];
+        self.storySelectionRedrawCover.subviews.firstObject.frame = self.storySelectionRedrawCover.bounds;
+    }
+    if (self.storySelectionTransitionHost &&
+        !CGSizeEqualToSize(self.storySelectionTransitionHost.bounds.size, self.scrollView.bounds.size)) {
+        [self finishStorySelectionAnimation];
+    }
     CGRect frame = self.scrollView.frame;
     
     if (frame.size.width != floor(frame.size.width)) {
@@ -681,6 +703,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+
+    if (self.storySelectionTransitionHost || self.storySelectionRedrawCover) [self cancelPendingStoryPresentationForNavigation];
 
     [[ReadTimeTracker shared] harvestAndFlush];
 
@@ -1273,6 +1297,10 @@
 }
 
 - (void)refreshPages {
+    if (self.pendingPresentationPage) {
+        self.refreshAfterStorySelection = YES;
+        return;
+    }
     if (![StoryPageRefreshDecision shouldBeginRefreshWithIsRefreshInProgress:self.isRefreshingPages]) {
         return;
     }
@@ -1529,7 +1557,9 @@
        pageController:(StoryDetailViewController *)pageController
         supressRedraw:(BOOL)suppressRedraw {
     // StoryPagesObjCViewController.m keeps normal neighbor/layout callbacks from replacing the staged selection.
-    if (pageController == self.pendingPresentationPage && self.storyPreparationHost) return;
+    if ((pageController == self.pendingPresentationPage && self.storyPreparationHost) ||
+        (pageController == self.pendingIntermediatePage && self.storyIntermediatePreparationHost) ||
+        [self.storySelectionTransitionPages containsObject:pageController]) return;
     BOOL retainedCurrentPage = pageController && pageController == currentPage &&
         [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
     if (retainedCurrentPage) {
@@ -1653,6 +1683,9 @@
                     return;
                 }
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    if ((blockPageController == self.pendingPresentationPage && self.storyPreparationHost) ||
+                        (blockPageController == self.pendingIntermediatePage && self.storyIntermediatePreparationHost) ||
+                        [self.storySelectionTransitionPages containsObject:blockPageController]) return;
                     [blockPageController initStory];
                     [blockPageController drawStory];
                     [blockPageController showTextOrStoryView];
@@ -1681,7 +1714,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-    if (inRotation || self.isRepositioningFirstPage) return;
+    if (inRotation || self.isRepositioningFirstPage || self.storySelectionTransitionHost) return;
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self setStoryFromScroll]; return; }
     NSInteger currentPageIndex = currentPage.pageIndex;
     CGSize size = self.scrollView.bounds.size;
@@ -1834,6 +1867,7 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
+    if (self.storySelectionTransitionHost) return;
     [self lockScrollViewToNearestPage];
     self.isDraggingScrollview = NO;
     [self setWebViewsScrollEnabled:YES];
@@ -1891,7 +1925,7 @@
 }
 
 - (void)alignScrollViewToCurrentPageIfNeeded {
-    if (self.isDraggingScrollview || inRotation) {
+    if (self.isDraggingScrollview || inRotation || self.storySelectionTransitionHost) {
         return;
     }
 
@@ -1954,6 +1988,7 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
+    if (self.storySelectionTransitionHost) return;
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
@@ -2005,30 +2040,155 @@
     }
 }
 
+- (UIView *)preparationHostForPage:(StoryDetailViewController *)page viewport:(CGSize)viewport window:(UIWindow *)window {
+    UIView *host = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewport.width, viewport.height)];
+    host.userInteractionEnabled = NO;
+    host.accessibilityElementsHidden = YES;
+    [window insertSubview:host atIndex:0];
+    CGRect pageFrame = page.view.frame;
+    pageFrame.size = viewport;
+    page.view.frame = pageFrame;
+    // StoryPagesObjCViewController.m keeps controller containment while WebKit paints behind the visible app.
+    [host addSubview:page.webView];
+    page.webView.frame = host.bounds;
+    [page.webView layoutIfNeeded];
+    return host;
+}
+
+- (void)restorePreparedPage:(StoryDetailViewController *)page fromHost:(UIView *)host {
+    if (!host) return;
+    [page.view addSubview:page.webView];
+    page.webView.frame = page.view.bounds;
+    [host removeFromSuperview];
+    [self applyNewIndex:page.pageIndex pageController:page supressRedraw:YES];
+}
+
+- (void)restoreStorySelectionViews {
+    UIViewPropertyAnimator *animator = self.storySelectionAnimator;
+    self.storySelectionAnimator = nil;
+    if (animator.state == UIViewAnimatingStateActive) [animator stopAnimation:YES];
+    UIView *host = self.storySelectionTransitionHost;
+    NSArray<StoryDetailViewController *> *pages = self.storySelectionTransitionPages;
+    self.storySelectionTransitionHost = nil;
+    self.storySelectionTransitionPages = nil;
+    for (StoryDetailViewController *page in pages) {
+        [self.scrollView addSubview:page.view];
+        [self applyNewIndex:page.pageIndex pageController:page supressRedraw:YES];
+    }
+    [host removeFromSuperview];
+}
+
+- (BOOL)deferStoryRedrawDuringSelection:(StoryDetailViewController *)page {
+    if (![self.storySelectionTransitionPages containsObject:page]) return NO;
+    NSString *hash = page.activeStory[@"story_hash"];
+    if (!hash.length) return NO;
+    if (!self.deferredSelectionRedraws) self.deferredSelectionRedraws = [NSMutableDictionary dictionary];
+    for (NSString *previousHash in self.deferredSelectionRedraws.allKeys) {
+        if (self.deferredSelectionRedraws[previousHash] == page) [self.deferredSelectionRedraws removeObjectForKey:previousHash];
+    }
+    // StoryPagesObjCViewController.m keeps the painted document intact until its live-view movement is finished.
+    self.deferredSelectionRedraws[hash] = page;
+    return YES;
+}
+
+- (void)prepareSelectionReplacement:(StoryDetailViewController *)page redraw:(BOOL)redraw {
+    UIView *snapshot = [page.view snapshotViewAfterScreenUpdates:NO];
+    if (!snapshot) {
+        UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:page.view.bounds.size];
+        UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+            [page.view drawViewHierarchyInRect:page.view.bounds afterScreenUpdates:NO];
+        }];
+        snapshot = [[UIImageView alloc] initWithImage:image];
+    }
+    UIView *parent = self.scrollView.superview;
+    UIView *cover = [[UIView alloc] initWithFrame:[parent convertRect:self.scrollView.bounds fromView:self.scrollView]];
+    cover.clipsToBounds = YES;
+    cover.userInteractionEnabled = NO;
+    cover.accessibilityElementsHidden = YES;
+    snapshot.frame = cover.bounds;
+    snapshot.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [cover addSubview:snapshot];
+    [parent insertSubview:cover aboveSubview:self.storySelectionTransitionHost ?: self.scrollView];
+    [self.storySelectionRedrawCover removeFromSuperview];
+    self.storySelectionRedrawCover = cover;
+    [self restoreStorySelectionViews];
+    self.pendingPresentationAnimated = NO;
+    self.storyPreparationHost = [self preparationHostForPage:page viewport:self.scrollView.bounds.size window:self.view.window];
+    [self.deferredSelectionRedraws removeObjectForKey:page.activeStory[@"story_hash"]];
+    // StoryPagesObjCViewController.m covers only a late replacement while its fresh document passes the normal paint gate.
+    if (redraw) [page drawStory];
+    [page prepareCurrentStoryForPresentation];
+}
+
+- (void)replayDeferredSelectionRedraws:(NSDictionary<NSString *, StoryDetailViewController *> *)redraws excludingPage:(StoryDetailViewController *)excludedPage {
+    [redraws enumerateKeysAndObjectsUsingBlock:^(NSString *storyHash, StoryDetailViewController *page, BOOL *stop) {
+        if (page != excludedPage && [storyHash isEqualToString:page.activeStoryId] &&
+            [storyHash isEqualToString:page.activeStory[@"story_hash"]]) [page drawStory];
+    }];
+}
+
 - (void)cancelPendingStoryPresentation {
+    NSDictionary *redraws = self.deferredSelectionRedraws;
+    [self cancelPendingStoryPresentationWithoutRedraw];
+    // StoryPagesObjCViewController.m applies late text to restored pages without reviving the cancelled presentation.
+    [self replayDeferredSelectionRedraws:redraws excludingPage:nil];
+}
+
+- (void)cancelPendingStoryPresentationWithoutRedraw {
+    [self restoreStorySelectionViews];
     StoryDetailViewController *page = self.pendingPresentationPage;
+    StoryDetailViewController *intermediate = self.pendingIntermediatePage;
+    UIView *host = self.storyPreparationHost;
+    UIView *intermediateHost = self.storyIntermediatePreparationHost;
     self.pendingPresentationCompletion = nil;
     self.pendingPresentationHash = nil;
     self.pendingPresentationPage = nil;
     self.pendingPresentationCollection = nil;
     self.pendingPresentationSource = nil;
+    self.pendingPresentationAnimated = NO;
+    self.pendingIntermediatePage = nil;
+    self.storyPreparationHost = nil;
+    self.storyIntermediatePreparationHost = nil;
+    self.refreshAfterStorySelection = NO;
+    self.deferredSelectionRedraws = nil;
+    [self.storySelectionRedrawCover removeFromSuperview];
+    self.storySelectionRedrawCover = nil;
     [page finishStoryPresentation];
-    if (self.storyPreparationHost) {
-        [page.view addSubview:page.webView];
-        page.webView.frame = page.view.bounds;
-        [self.storyPreparationHost removeFromSuperview];
-        self.storyPreparationHost = nil;
-        [self applyNewIndex:page.pageIndex pageController:page supressRedraw:YES];
-    }
+    [intermediate finishStoryPresentation];
+    [self restorePreparedPage:page fromHost:host];
+    [self restorePreparedPage:intermediate fromHost:intermediateHost];
 }
 
 - (void)preparePageForPresentation:(NSInteger)pageIndex completion:(void (^)(NSInteger))completion {
-    [self cancelPendingStoryPresentation];
+    [self preparePageForPresentation:pageIndex animated:NO completion:completion];
+}
+
+- (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated completion:(void (^)(NSInteger))completion {
+    BOOL continuingSelection = self.pendingPresentationCollection == appDelegate.storiesCollection &&
+        self.pendingPresentationFetch == appDelegate.feedDetailViewController.fetchRequestId;
+    if (self.storySelectionTransitionHost) {
+        // StoryPagesObjCViewController.m settles the already-painted destination before a rapid tap, without firing its old completion.
+        [self completePendingStoryPresentationCallingCompletion:NO];
+    }
+    NSMutableDictionary *deferredRedraws = continuingSelection ? self.deferredSelectionRedraws : nil;
+    UIView *redrawCover = continuingSelection ? self.storySelectionRedrawCover : nil;
+    BOOL refreshAfterSelection = continuingSelection && self.refreshAfterStorySelection;
+    if (redrawCover) self.storySelectionRedrawCover = nil;
+    [self cancelPendingStoryPresentationWithoutRedraw];
+    self.deferredSelectionRedraws = deferredRedraws;
+    self.storySelectionRedrawCover = redrawCover;
+    self.refreshAfterStorySelection = refreshAfterSelection;
     NSInteger index = [appDelegate.storiesCollection indexFromLocation:pageIndex];
-    if (index < 0 || index >= appDelegate.storiesCollection.activeFeedStories.count) return;
+    if (index < 0 || index >= appDelegate.storiesCollection.activeFeedStories.count) {
+        [self cancelPendingStoryPresentation];
+        return;
+    }
     NSDictionary *story = appDelegate.storiesCollection.activeFeedStories[index];
     NSString *hash = story[@"story_hash"];
-    if (hash.length == 0) return;
+    if (hash.length == 0) {
+        [self cancelPendingStoryPresentation];
+        return;
+    }
 
     [self.view layoutIfNeeded];
     UINavigationController *navigation = appDelegate.feedsNavigationController;
@@ -2039,7 +2199,16 @@
     }
     [self resizeScrollView];
     CGSize viewport = self.scrollView.bounds.size;
-    if (viewport.width <= 0 || viewport.height <= 0) return;
+    if (viewport.width <= 0 || viewport.height <= 0) {
+        [self cancelPendingStoryPresentation];
+        return;
+    }
+    BOOL animateSelection = animated && !redrawCover && !self.isPhoneOrCompact && !UIAccessibilityIsReduceMotionEnabled() &&
+        self.view.window && currentPage.hasStory && !currentPage.webView.hidden &&
+        !self.isDraggingScrollview && !self.scrollView.dragging && !self.scrollView.decelerating &&
+        currentPage.pageIndex >= 0 && ![currentPage.activeStoryId isEqualToString:hash];
+    BOOL distantSelection = animateSelection && labs(pageIndex - currentPage.pageIndex) > 1;
+    BOOL forward = pageIndex > currentPage.pageIndex;
 
     StoryDetailViewController *page = nil;
     for (StoryDetailViewController *candidate in @[currentPage, nextPage, previousPage]) {
@@ -2048,13 +2217,14 @@
             break;
         }
     }
-    if (!page) page = nextPage;
+    if (!page) page = distantSelection ? (forward ? previousPage : nextPage) : nextPage;
     self.pendingPresentationPage = page;
     self.pendingPresentationHash = hash;
     self.pendingPresentationCollection = appDelegate.storiesCollection;
     self.pendingPresentationFetch = appDelegate.feedDetailViewController.fetchRequestId;
     self.pendingPresentationSource = navigation.visibleViewController;
     self.pendingPresentationCompletion = completion;
+    self.pendingPresentationAnimated = animateSelection;
 
     // StoryPagesObjCViewController.m prepares the same native toolbar geometry that viewWillAppear will use.
     if (self.useCustomToolbar && self.view.window == nil) {
@@ -2066,19 +2236,18 @@
 
     UIWindow *window = self.view.window ?: navigation.view.window ?: appDelegate.detailViewController.view.window;
     if (page != currentPage || self.view.window == nil) {
-        // StoryPagesObjCViewController.m keeps the real article behind the visible app while WebKit paints at its target size.
-        UIView *host = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewport.width, viewport.height)];
-        host.userInteractionEnabled = NO;
-        host.accessibilityElementsHidden = YES;
-        [window insertSubview:host atIndex:0];
-        self.storyPreparationHost = host;
-        CGRect pageFrame = page.view.frame;
-        pageFrame.size = viewport;
-        page.view.frame = pageFrame;
-        // StoryPagesObjCViewController.m retains controller containment; only its WebKit view moves into the rendering host.
-        [host addSubview:page.webView];
-        page.webView.frame = host.bounds;
-        [page.webView layoutIfNeeded];
+        self.storyPreparationHost = [self preparationHostForPage:page viewport:viewport window:window];
+    }
+    StoryDetailViewController *intermediate = forward ? nextPage : previousPage;
+    NSInteger intermediateLocation = intermediate.activeStoryId.length ?
+        [appDelegate.storiesCollection locationOfStoryId:intermediate.activeStoryId] : -1;
+    if (distantSelection && intermediate != page && intermediate.hasStory && !intermediate.webView.hidden &&
+        intermediateLocation == currentPage.pageIndex + (forward ? 1 : -1)) {
+        self.pendingIntermediatePage = intermediate;
+        intermediate.pageIndex = intermediateLocation;
+        self.storyIntermediatePreparationHost = [self preparationHostForPage:intermediate viewport:viewport window:window];
+        [intermediate updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+        [intermediate prepareCurrentStoryForPresentation];
     }
     BOOL needsDocument = !page.hasStory || ![page.activeStoryId isEqualToString:hash];
     page.pageIndex = pageIndex;
@@ -2108,9 +2277,17 @@
 
 - (void)storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)page {
     if (page == self.pendingPresentationPage) [self cancelPendingStoryPresentation];
+    else if (page == self.pendingIntermediatePage) {
+        UIView *host = self.storyIntermediatePreparationHost;
+        self.pendingIntermediatePage = nil;
+        self.storyIntermediatePreparationHost = nil;
+        [page finishStoryPresentation];
+        [self restorePreparedPage:page fromHost:host];
+    }
 }
 
 - (void)storyDetailReadyForPresentation:(StoryDetailViewController *)page {
+    if (self.storySelectionTransitionHost) return;
     if (page != self.pendingPresentationPage || !page.readyForPresentation || !self.pendingPresentationCompletion) return;
     NSString *hash = self.pendingPresentationHash;
     UINavigationController *navigation = appDelegate.feedsNavigationController;
@@ -2135,15 +2312,125 @@
         return;
     }
 
-    void (^completion)(NSInteger) = self.pendingPresentationCompletion;
-    [self cancelPendingStoryPresentation];
-    // StoryPagesObjCViewController.m promotes one of its existing three controllers only after its document is prepared.
+    if (self.pendingPresentationAnimated && !UIAccessibilityIsReduceMotionEnabled() &&
+        page != currentPage && currentPage.hasStory && !currentPage.webView.hidden && self.view.window) {
+        [self animatePreparedStorySelection:page location:location];
+    } else {
+        [self completePendingStoryPresentationCallingCompletion:YES];
+    }
+}
+
+- (void)animatePreparedStorySelection:(StoryDetailViewController *)page location:(NSInteger)location {
+    CGSize viewport = self.scrollView.bounds.size;
+    NSInteger sourceLocation = [appDelegate.storiesCollection locationOfStoryId:currentPage.activeStoryId];
+    if (sourceLocation < 0 || sourceLocation == location) {
+        [self completePendingStoryPresentationCallingCompletion:YES];
+        return;
+    }
+    currentPage.pageIndex = sourceLocation;
+    page.pageIndex = location;
+    BOOL forward = location > sourceLocation;
+    StoryDetailViewController *intermediate = self.pendingIntermediatePage;
+    NSInteger intermediateLocation = intermediate.activeStoryId.length ?
+        [appDelegate.storiesCollection locationOfStoryId:intermediate.activeStoryId] : -1;
+    BOOL includeIntermediate = intermediate.readyForPresentation && intermediate.hasStory && !intermediate.webView.hidden &&
+        CGSizeEqualToSize(intermediate.webView.bounds.size, viewport) &&
+        (forward ? intermediateLocation > sourceLocation && intermediateLocation < location :
+                   intermediateLocation < sourceLocation && intermediateLocation > location);
+    if (includeIntermediate) intermediate.pageIndex = intermediateLocation;
+
+    UIView *preparationHost = self.storyPreparationHost;
+    UIView *intermediateHost = self.storyIntermediatePreparationHost;
+    self.storyPreparationHost = nil;
+    self.storyIntermediatePreparationHost = nil;
+    [self restorePreparedPage:page fromHost:preparationHost];
+    [self restorePreparedPage:intermediate fromHost:intermediateHost];
+    [page finishStoryPresentation];
+    [intermediate finishStoryPresentation];
+
+    NSArray<StoryDetailViewController *> *sequence = includeIntermediate ? @[currentPage, intermediate, page] : @[currentPage, page];
+    NSArray<StoryDetailViewController *> *ordered = forward ? sequence : sequence.reverseObjectEnumerator.allObjects;
+    UIView *parent = self.scrollView.superview;
+    UIView *host = [[UIView alloc] initWithFrame:[parent convertRect:self.scrollView.bounds fromView:self.scrollView]];
+    host.clipsToBounds = YES;
+    host.userInteractionEnabled = NO;
+    host.accessibilityElementsHidden = YES;
+    host.backgroundColor = self.scrollView.backgroundColor;
+    [parent insertSubview:host aboveSubview:self.scrollView];
+    self.storySelectionTransitionHost = host;
+    self.storySelectionTransitionPages = ordered;
+
+    CGFloat amount = self.isHorizontal ? viewport.width : viewport.height;
+    CGFloat travel = (ordered.count - 1) * amount;
+    UIView *track = [[UIView alloc] initWithFrame:CGRectMake(0, 0,
+        self.isHorizontal ? viewport.width * ordered.count : viewport.width,
+        self.isHorizontal ? viewport.height : viewport.height * ordered.count)];
+    [host addSubview:track];
+    [ordered enumerateObjectsUsingBlock:^(StoryDetailViewController *visiblePage, NSUInteger index, BOOL *stop) {
+        [track addSubview:visiblePage.view];
+        visiblePage.view.hidden = NO;
+        visiblePage.view.frame = CGRectMake(self.isHorizontal ? index * amount : 0,
+                                           self.isHorizontal ? 0 : index * amount,
+                                           viewport.width, viewport.height);
+    }];
+    CGFloat start = forward ? 0 : -travel;
+    CGFloat end = forward ? -travel : 0;
+    track.transform = CGAffineTransformMakeTranslation(self.isHorizontal ? start : 0, self.isHorizontal ? 0 : start);
+    NSTimeInterval duration = includeIntermediate ? .42 : (labs(location - sourceLocation) > 1 ? .34 : .28);
+    // StoryPagesObjCViewController.m animates only painted views, never the logical offsets of intervening stories.
+    UIViewPropertyAnimator *animator = [[UIViewPropertyAnimator alloc] initWithDuration:duration curve:UIViewAnimationCurveEaseInOut animations:^{
+        track.transform = CGAffineTransformMakeTranslation(self.isHorizontal ? end : 0, self.isHorizontal ? 0 : end);
+    }];
+    self.storySelectionAnimator = animator;
+    __weak typeof(self) weakSelf = self;
+    __weak UIViewPropertyAnimator *weakAnimator = animator;
+    [animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || strongSelf.storySelectionAnimator != weakAnimator) return;
+        strongSelf.storySelectionAnimator = nil;
+        [strongSelf completePendingStoryPresentationCallingCompletion:YES];
+    }];
+    [animator startAnimation];
+}
+
+- (void)finishStorySelectionAnimation {
+    UIViewPropertyAnimator *animator = self.storySelectionAnimator;
+    if (animator.state != UIViewAnimatingStateActive) return;
+    [animator stopAnimation:NO];
+    [animator finishAnimationAtPosition:UIViewAnimatingPositionEnd];
+}
+
+- (void)completePendingStoryPresentationCallingCompletion:(BOOL)callCompletion {
+    StoryDetailViewController *page = self.pendingPresentationPage;
+    NSString *hash = self.pendingPresentationHash;
+    NSInteger location = hash.length ? [appDelegate.storiesCollection locationOfStoryId:hash] : -1;
+    UINavigationController *navigation = appDelegate.feedsNavigationController;
+    BOOL obsolete = !page || self.pendingPresentationCollection != appDelegate.storiesCollection ||
+        self.pendingPresentationFetch != appDelegate.feedDetailViewController.fetchRequestId ||
+        ![hash isEqualToString:page.activeStoryId] ||
+        (callCompletion && ![hash isEqualToString:appDelegate.activeStory[@"story_hash"]]) ||
+        (self.isPhoneOrCompact && self.pendingPresentationSource != navigation.visibleViewController);
+    if (obsolete || location < 0) {
+        [self cancelPendingStoryPresentation];
+        return;
+    }
+    BOOL redraw = self.deferredSelectionRedraws[hash] == page;
+    if (callCompletion && (redraw || !page.readyForPresentation)) {
+        [self prepareSelectionReplacement:page redraw:redraw];
+        return;
+    }
+    void (^completion)(NSInteger) = callCompletion ? self.pendingPresentationCompletion : nil;
+    BOOL refresh = self.refreshAfterStorySelection;
+    NSMutableDictionary<NSString *, StoryDetailViewController *> *deferredRedraws = self.deferredSelectionRedraws;
+    [self cancelPendingStoryPresentationWithoutRedraw];
+    // StoryPagesObjCViewController.m promotes one of its existing three controllers after painting and visual movement finish.
     if (page != currentPage) {
         if (page == nextPage) nextPage = currentPage;
         else previousPage = currentPage;
         currentPage = page;
     }
     page.pageIndex = location;
+    CGSize viewport = self.scrollView.bounds.size;
     BOOL repositioning = self.isRepositioningFirstPage;
     self.isRepositioningFirstPage = YES;
     [self applyNewIndex:location pageController:page supressRedraw:YES];
@@ -2154,7 +2441,13 @@
     [self.scrollView setContentOffset:position animated:NO];
     self.isRepositioningFirstPage = repositioning;
     [self ensureCurrentPageViewIsFrontmost];
-    completion(location);
+    if (!callCompletion) {
+        self.deferredSelectionRedraws = deferredRedraws;
+        self.refreshAfterStorySelection = refresh;
+    }
+    if (completion) completion(location);
+    if (refresh && callCompletion) [self refreshPages];
+    if (callCompletion) [self replayDeferredSelectionRedraws:deferredRedraws excludingPage:currentPage];
 }
 
 - (void)changePage:(NSInteger)pageIndex {
@@ -2295,7 +2588,7 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
-    if (self.isRepositioningFirstPage) return;
+    if (self.isRepositioningFirstPage || self.storySelectionTransitionHost) return;
     BOOL retainedFirstPageStory = [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
     if (retainedFirstPageStory && !self.scrollView.dragging && !self.scrollView.decelerating) return;
     CGSize size = self.scrollView.bounds.size;

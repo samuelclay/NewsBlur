@@ -236,10 +236,10 @@ function attachFastClick() {
 }
 
 function notifyLoaded() {
-    var url = "http://ios.newsblur.com/notify-loaded";
     var load = document.querySelector('meta[name="newsblur-story-load"]');
-    if (load) url += "?load_id=" + encodeURIComponent(load.getAttribute("content"));
-    window.location = url;
+    if (load && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.newsblurStoryReady) {
+        window.webkit.messageHandlers.newsblurStoryReady.postMessage(load.getAttribute("content"));
+    }
 }
 
 function scoreIconHtml(score) {
