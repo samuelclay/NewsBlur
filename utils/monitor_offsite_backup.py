@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 """
 monitor_offsite_backup.py - Dead man's switch for the off-site backup pull.
 
@@ -8,6 +8,9 @@ top of every pull and offsite_backup/completed.json at the end. This script runs
 daily from cron on a task server (see ansible/roles/celery_task/tasks/main.yml)
 and emails the admin if either marker is stale or the newest MongoDB dump is
 too old.
+
+The shebang uses env so the task image's /venv python (which has boto3) runs
+this, not the bare /usr/local/bin/python3 that ships without site-packages.
 
 The alerting lives here, off the backup box, on purpose. The pull script's own
 failure emails only fire when the pull runs, so a dead cron or an add-on update
