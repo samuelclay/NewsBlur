@@ -4151,6 +4151,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sender:(id)sender {
+#if TARGET_OS_MACCATALYST
+    if ([sender conformsToProtocol:@protocol(UIPopoverPresentationControllerSourceItem)] &&
+        ![sender isKindOfClass:[UIBarButtonItem class]] && ![sender isKindOfClass:[UIView class]]) {
+        [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceItem:sender sourceView:nil sourceRect:CGRectZero permittedArrowDirections:UIPopoverArrowDirectionAny];
+        return;
+    }
+#endif
     if ([sender isKindOfClass:[UITableViewCell class]]) {
         UITableViewCell *cell = (UITableViewCell *)sender;
 
@@ -4183,6 +4190,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+    [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:barButtonItem sourceItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:permittedArrowDirections];
+}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceItem:(id<UIPopoverPresentationControllerSourceItem>)sourceItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
     if (viewController == self.navigationControllerForPopover.presentedViewController) {
         return; // nothing to do, already showing this controller
     }
@@ -4220,7 +4231,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 #endif
     
-    if (barButtonItem) {
+    if (sourceItem) {
+        // NewsBlurAppDelegate.m lets Catalyst track the native toolbar item through window and sidebar changes.
+        popoverPresentationController.sourceItem = sourceItem;
+    } else if (barButtonItem) {
         popoverPresentationController.barButtonItem = barButtonItem;
     } else {
         popoverPresentationController.sourceView = sourceView;

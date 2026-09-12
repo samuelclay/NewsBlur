@@ -5732,7 +5732,13 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UINavigationController *menuNavController = [[UINavigationController alloc] initWithRootViewController:viewController];
     menuNavController.navigationBarHidden = YES;
     menuNavController.delegate = viewController;
-    [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
+    if ([sender isKindOfClass:[UIView class]] ||
+        ([sender conformsToProtocol:@protocol(UIPopoverPresentationControllerSourceItem)] && ![sender isKindOfClass:[UIBarButtonItem class]])) {
+        // FeedDetailObjCViewController.m preserves the actual clicked control instead of estimating its toolbar position.
+        [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sender:sender];
+    } else {
+        [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
+    }
 #else
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 #endif

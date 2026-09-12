@@ -158,9 +158,11 @@ import UIKit
             XCTAssertTrue(bar.markReadExpandButton.menu === expandMenu)
             XCTAssertTrue(bar.markReadPill.menu === mainMenu)
             XCTAssertTrue(bar.markReadExpandButton.showsMenuAsPrimaryAction)
-            XCTAssertEqual(bar.markReadContainer.bounds.width, 98, accuracy: 0.01)
+            // StoryTitlesHeaderBarLayoutTests.swift permits one display pixel of Catalyst stack rounding.
+            XCTAssertEqual(bar.markReadContainer.bounds.width, 98, accuracy: 1 / max(1, bar.markReadContainer.traitCollection.displayScale))
             XCTAssertEqual(bar.markReadExpandButton.frame.width, 26, accuracy: 0.01)
-            XCTAssertEqual(bar.markReadPill.frame.maxX, bar.markReadContainer.bounds.width, accuracy: 0.01)
+            XCTAssertEqual(bar.markReadPill.frame.maxX, bar.markReadContainer.bounds.width,
+                           accuracy: 1 / max(1, bar.markReadContainer.traitCollection.displayScale))
             XCTAssertGreaterThan(bar.markReadPill.frame.minX, bar.markReadExpandButton.frame.maxX)
             XCTAssertLessThanOrEqual(bar.markReadPill.frame.minX - bar.markReadExpandButton.frame.maxX, 1)
             assertVisibleControlsFit(bar)
