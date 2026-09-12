@@ -1,6 +1,7 @@
 package com.newsblur.service
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -12,11 +13,12 @@ internal class SyncJobRunner {
 
     fun launchIn(
         scope: CoroutineScope,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit,
     ): Job =
-        scope.launch {
-            // SyncService.kt cancels superseded generations, but blocking network/Gson work
-            // can still run. Keep the permit until that work and all its children finish.
+        scope.launch(start = start) {
+            // SyncService.kt cancellation cannot interrupt blocking network/Gson work.
+            // Keep the permit until that work and all its children finish.
             execution.withLock {
                 coroutineScope(block)
             }

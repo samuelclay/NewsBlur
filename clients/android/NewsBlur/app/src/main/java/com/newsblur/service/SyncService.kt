@@ -96,8 +96,11 @@ open class SyncService :
     lateinit var syncServiceState: SyncServiceState
 
     private val serviceJob = SupervisorJob()
+    private val syncRequests = SyncRequestCoordinator(primarySyncRunner)
     private var mainJob: Job? = null
     private var scheduledJob: Job? = null
+    private var foregroundRequested = false
+    private var metadataSubSyncPending = false
 
     override val coroutineContext: CoroutineContext =
         CoroutineName("SyncService") +
@@ -144,8 +147,8 @@ open class SyncService :
             return false
         }
         Log.d(this, "onStartJob")
-        mainJob?.cancel()
-        val job = primarySyncRunner.launchIn(this) { sync() }
+        val job = requestPrimarySync()
+        if (mainJob !== job) foregroundRequested = false
         job.invokeOnCompletion {
             // SyncService.kt must finish scheduled jobs even when canceled before acquiring the runner.
             jobFinished(params, false)
@@ -169,8 +172,8 @@ open class SyncService :
             stopSelf(startId)
             return START_NOT_STICKY
         }
-        mainJob?.cancel()
-        mainJob = primarySyncRunner.launchIn(this) { sync() }
+        mainJob = requestPrimarySync()
+        foregroundRequested = true
         return START_NOT_STICKY
     }
 
@@ -178,9 +181,10 @@ open class SyncService :
         Log.d(this, "onStopJob")
         val stoppedJob = scheduledJob
         scheduledJob = null
-        stoppedJob?.cancel()
-        // SyncService.kt can have a newer foreground request after the scheduled job was superseded.
-        if (mainJob === stoppedJob) {
+        // SyncService.kt coalesces scheduled and foreground wakeups onto the same worker.
+        // A scheduler stop must not cancel an active UI request that joined that worker.
+        if (mainJob === stoppedJob && !foregroundRequested) {
+            stoppedJob?.cancel()
             syncServiceState.setServiceState(ServiceState.Idle)
             mainJob = null
         }
@@ -192,7 +196,16 @@ open class SyncService :
         Log.d(this, "onNetworkChanged")
     }
 
-    private suspend fun sync() =
+    private fun requestPrimarySync(): Job {
+        var prefetchAllowed = false
+        return syncRequests.request(
+            this,
+            foreground = { prefetchAllowed = syncForeground() },
+            background = { if (prefetchAllowed) syncBackground() },
+        )
+    }
+
+    private suspend fun syncForeground(): Boolean =
         supervisorScope {
             Log.d(this, "Starting primary sync")
             ensureActive()
@@ -205,23 +218,17 @@ open class SyncService :
 
             if (!NetworkUtils.isOnline(this@SyncService)) {
                 Log.d(this.javaClass.name, "Skipping sync: device is offline")
-                return@supervisorScope
+                return@supervisorScope false
             }
 
             if (!isAppForeground && !prefsRepo.isBackgroundNeeded(this@SyncService)) {
                 Log.d(this.javaClass.name, "Skipping sync: device is in the background and background sync is disabled")
-                return@supervisorScope
+                return@supervisorScope false
             }
 
             if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
                 Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
-                return@supervisorScope
-            }
-
-            val subSyncJobs = mutableListOf<Job>()
-
-            fun trackSubSync(job: Job) {
-                subSyncJobs += job
+                return@supervisorScope false
             }
 
             // first: catch up
@@ -229,7 +236,7 @@ open class SyncService :
             ensureActive()
 
             // if MD is stale, sync it first so unreads don't get backwards with story unread state
-            syncMetadata(this, ::trackSubSync)
+            syncMetadata()
             ensureActive()
 
             // handle fetching of stories that are actively being requested by the live UI
@@ -243,16 +250,27 @@ open class SyncService :
             // after all actions, double-check local state vs remote state consistency
             checkRecounts()
             ensureActive()
+            true
+        }
+
+    private suspend fun syncBackground() =
+        supervisorScope {
+            val subSyncJobs = mutableListOf<Job>()
+            if (metadataSubSyncPending) {
+                subSyncJobs += cleanupSubService.launchIn(this)
+                subSyncJobs += starredSubService.launchIn(this)
+            }
 
             // async story and image prefetch are lower priority and don't affect active reading, do them last
-            unreadsSubService.launchIn(this).also { trackSubSync(it) }
-            imagePrefetchSubService.launchIn(this).also { trackSubSync(it) }
+            subSyncJobs += unreadsSubService.launchIn(this)
+            subSyncJobs += imagePrefetchSubService.launchIn(this)
 
             // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
             // here in case some made it through the feed sync loop first
             pushNotifications()
 
             subSyncJobs.joinAll()
+            metadataSubSyncPending = false
 
             Log.d(this, "Finishing primary sync")
 
@@ -385,10 +403,7 @@ open class SyncService :
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private suspend fun syncMetadata(
-        scope: CoroutineScope,
-        trackSubSync: (Job) -> Unit,
-    ) {
+    private suspend fun syncMetadata() {
         currentCoroutineContext().ensureActive()
         if (backoffBackgroundCalls()) return
 
@@ -541,9 +556,7 @@ open class SyncService :
             Log.i(this.javaClass.name, "got feed list")
 
             unreadsSubService.doMetadata()
-            unreadsSubService.launchIn(scope).also { trackSubSync(it) }
-            cleanupSubService.launchIn(scope).also { trackSubSync(it) }
-            starredSubService.launchIn(scope).also { trackSubSync(it) }
+            metadataSubSyncPending = true
         } catch (e: CancellationException) {
             syncServiceState.doFeedsFolders = true
             throw e
