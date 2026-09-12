@@ -1,0 +1,331 @@
+import XCTest
+
+@testable import NewsBlur
+
+@MainActor final class Test_StoryTitleSwipe: XCTestCase {
+    private let keys = ["story_title_swipe_right", "story_title_swipe_left", "enable_feed_cell_swipe"]
+    private var previous: [Any?] = []
+
+    override func setUp() {
+        super.setUp()
+        previous = keys.map { UserDefaults.standard.object(forKey: $0) }
+        UserDefaults.standard.removeObject(forKey: keys[0])
+        UserDefaults.standard.removeObject(forKey: keys[1])
+        UserDefaults.standard.set(true, forKey: keys[2])
+    }
+
+    override func tearDown() {
+        for (key, value) in zip(keys, previous) {
+            if let value { UserDefaults.standard.set(value, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+        }
+        super.tearDown()
+    }
+
+    func test_defaultKeepsCurrentGestures() {
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        cell.setupGestures()
+        XCTAssertFalse(cell.shouldDrag)
+    }
+
+    private func selectActions() {
+        UserDefaults.standard.set("save", forKey: keys[0])
+        UserDefaults.standard.set("read", forKey: keys[1])
+    }
+
+    func test_directSaveAndReadSwipes() {
+        selectActions()
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        cell.isReadAvailable = true
+        cell.setupGestures()
+        XCTAssertTrue(cell.shouldDrag)
+        XCTAssertEqual(cell.mode, .switch)
+        XCTAssertNotNil(cell.delegate)
+        XCTAssertEqual(cell.firstIconName, "saved-stories")
+        XCTAssertEqual(cell.thirdIconName, "indicator-unread")
+    }
+
+    func test_reusedCellFollowsPreferenceInBothDirections() {
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        for style in ["save", "back", "share", "unknown"] {
+            UserDefaults.standard.set(style, forKey: keys[0])
+            cell.setupGestures()
+            XCTAssertEqual(cell.shouldDrag, ["save", "share"].contains(style))
+        }
+    }
+
+    func test_disabledSwipesAndClusterRowsNeverPerformClassicActions() {
+        selectActions()
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        cell.isClusterStory = true
+        cell.setupGestures()
+        XCTAssertFalse(cell.shouldDrag)
+        cell.isClusterStory = false
+        UserDefaults.standard.set(false, forKey: keys[2])
+        cell.setupGestures()
+        XCTAssertFalse(cell.shouldDrag)
+    }
+
+    func test_savedStoriesKeepSaveActionWithoutReadAction() {
+        selectActions()
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        cell.isReadAvailable = false
+        cell.setupGestures()
+        XCTAssertEqual(cell.firstIconName, "saved-stories")
+        XCTAssertNil(cell.thirdIconName)
+    }
+
+    func test_classicActionsResolveStoryLocationsInsteadOfTableRows() {
+        let fixture = ClassicSwipeCallbackFixture()
+        fixture.table.currentIndexPath = IndexPath(row: 2, section: 0)
+        fixture.controller.mappedLocation = 1
+        fixture.cell.storyHash = "classic-story-1"
+        fixture.begin()
+        fixture.end(state: 1)
+
+        XCTAssertEqual(fixture.stories.savedHashes, ["classic-story-1"])
+        XCTAssertEqual(fixture.controller.reloaded, [IndexPath(row: 2, section: 0)])
+        XCTAssertNil(fixture.controller.swipingIndexPath)
+        XCTAssertNil(fixture.controller.swipingStoryHash)
+
+        fixture.table.currentIndexPath = IndexPath(row: 2, section: 3)
+        fixture.stories.isDailyBriefing = true
+        fixture.begin()
+        fixture.end(state: 3)
+        XCTAssertEqual(fixture.stories.readHashes, ["classic-story-1"])
+        XCTAssertEqual(fixture.controller.reloaded.last, IndexPath(row: 2, section: 3))
+    }
+
+    func test_classicActionsCompareStoryHashesByValue() {
+        let fixture = ClassicSwipeCallbackFixture()
+        fixture.cell.setValue(NSMutableString(string: "classic-story-0"), forKey: "storyHash")
+        fixture.begin()
+        fixture.table.currentIndexPath = IndexPath(indexes: [0, 0])
+        fixture.end(state: 1)
+
+        XCTAssertEqual(fixture.stories.savedHashes, ["classic-story-0"])
+    }
+
+    func test_classicActionsIgnoreReusedCells() {
+        let fixture = ClassicSwipeCallbackFixture()
+        fixture.begin()
+        fixture.cell.storyHash = "replacement-story"
+        fixture.end(state: 1)
+
+        XCTAssertTrue(fixture.stories.savedHashes.isEmpty)
+        XCTAssertTrue(fixture.controller.reloaded.isEmpty)
+        XCTAssertNil(fixture.controller.swipingIndexPath)
+        XCTAssertNil(fixture.controller.swipingStoryHash)
+    }
+
+    func test_classicActionsIgnoreMovedAndRemovedCells() {
+        for endedPath in [IndexPath(row: 1, section: 0), nil] {
+            let fixture = ClassicSwipeCallbackFixture()
+            fixture.begin()
+            fixture.table.currentIndexPath = endedPath
+            fixture.end(state: 3)
+
+            XCTAssertTrue(fixture.stories.readHashes.isEmpty)
+            XCTAssertTrue(fixture.controller.reloaded.isEmpty)
+            XCTAssertNil(fixture.controller.swipingIndexPath)
+            XCTAssertNil(fixture.controller.swipingStoryHash)
+        }
+    }
+
+    func test_classicActionsIgnoreMissingAndNonStoryLocations() {
+        let briefing = ClassicSwipeCallbackFixture()
+        briefing.stories.isDailyBriefing = true
+        briefing.table.currentIndexPath = IndexPath(row: 20, section: 3)
+        briefing.controller.mappedLocation = 1
+        briefing.cell.storyHash = "classic-story-1"
+        briefing.begin()
+        briefing.end(state: 3)
+        XCTAssertEqual(briefing.stories.readHashes, ["classic-story-1"])
+
+        for location in [NSNotFound, -1, 50] {
+            let fixture = ClassicSwipeCallbackFixture()
+            fixture.controller.mappedLocation = location
+            fixture.begin()
+            fixture.end(state: 1)
+            XCTAssertTrue(fixture.stories.savedHashes.isEmpty)
+            XCTAssertTrue(fixture.controller.reloaded.isEmpty)
+        }
+
+        let fixture = ClassicSwipeCallbackFixture()
+        fixture.begin()
+        fixture.stories.activeFeedStories = []
+        fixture.end(state: 3)
+        XCTAssertTrue(fixture.stories.readHashes.isEmpty)
+        XCTAssertNil(fixture.controller.swipingIndexPath)
+        XCTAssertNil(fixture.controller.swipingStoryHash)
+    }
+
+    func test_changingPreferenceWithCachedListDoesNotDisableAnotherScreensNavigation() throws {
+        let controller = CachedSwipeTestController()
+        controller.view = UIView()
+        let navigation = UINavigationController()
+        navigation.viewControllers = [UIViewController(), controller]
+        navigation.loadViewIfNeeded()
+        let content = try XCTUnwrap(navigation.interactiveContentPopGestureRecognizer)
+        content.isEnabled = true
+
+        selectActions()
+        controller.updateStoryTitleSwipePreference()
+
+        XCTAssertTrue(content.isEnabled)
+    }
+
+    func test_classicSuppressesBothFullScreenBackGesturesAndKeepsEdgeBack() throws {
+        let controller = FeedDetailObjCViewController()
+        controller.view = UIView()
+        let navigation = UINavigationController()
+        navigation.viewControllers = [UIViewController(), controller]
+        navigation.loadViewIfNeeded()
+        let fullScreen = UIPanGestureRecognizer()
+        controller.setValue(fullScreen, forKey: "fullScreenPopGesture")
+        let edge = try XCTUnwrap(navigation.interactivePopGestureRecognizer)
+        let content = try XCTUnwrap(navigation.interactiveContentPopGestureRecognizer)
+        content.isEnabled = true
+
+        for style in ["save", "back", "share", "read", "menu"] {
+            UserDefaults.standard.set(style, forKey: keys[0])
+            controller.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+            XCTAssertEqual(fullScreen.isEnabled, style == "back")
+            XCTAssertEqual(content.isEnabled, style == "back")
+            if style != "back" { XCTAssertTrue(edge.isEnabled) }
+        }
+
+        controller.perform(NSSelectorFromString("restoreContentPopGesture"))
+        XCTAssertTrue(content.isEnabled, "StoryTitleSwipeTests.swift keeps other screens' navigation unchanged")
+    }
+
+    func test_swipeActionsCanBeReversed() {
+        let fixture = ClassicSwipeCallbackFixture()
+        UserDefaults.standard.set("read", forKey: keys[0])
+        UserDefaults.standard.set("save", forKey: keys[1])
+        fixture.begin()
+        fixture.end(state: 1)
+        fixture.begin()
+        fixture.end(state: 3)
+        XCTAssertEqual(fixture.stories.readHashes, ["classic-story-0"])
+        XCTAssertEqual(fixture.stories.savedHashes, ["classic-story-0"])
+    }
+
+    func test_menusAndBackDoNotCompeteWithDirectRowGestures() {
+        for action in StoryTitleSwipePreference.actions {
+            UserDefaults.standard.set(action.value, forKey: keys[0])
+            UserDefaults.standard.set(action.value, forKey: keys[1])
+            XCTAssertEqual(StoryTitleSwipePreference.usesRowSwipe(right: true, canMarkRead: true),
+                           [.save, .read, .share].contains(action))
+            XCTAssertEqual(StoryTitleSwipePreference.usesRowSwipe(right: false, canMarkRead: true), action != .menu)
+        }
+        UserDefaults.standard.set("read", forKey: keys[0])
+        XCTAssertFalse(StoryTitleSwipePreference.usesRowSwipe(right: true, canMarkRead: false))
+    }
+
+    func test_legacyChoiceMigratesWithoutOverwritingNewChoices() {
+        let suite = "StoryTitleSwipeTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        let registration = defaults.volatileDomain(forName: UserDefaults.registrationDomain)
+        let arguments = defaults.volatileDomain(forName: UserDefaults.argumentDomain)
+        defer {
+            defaults.removePersistentDomain(forName: suite)
+            defaults.setVolatileDomain(registration, forName: UserDefaults.registrationDomain)
+            defaults.setVolatileDomain(arguments, forName: UserDefaults.argumentDomain)
+        }
+        var testArguments = arguments
+        for key in [keys[0], keys[1], "story_title_swipe_style"] { testArguments.removeValue(forKey: key) }
+        defaults.setVolatileDomain(testArguments, forName: UserDefaults.argumentDomain)
+        defaults.register(defaults: [keys[0]: "back", keys[1]: "menu"])
+        defaults.set("classic", forKey: "story_title_swipe_style")
+        defaults.set("share", forKey: keys[1])
+        StoryTitleSwipePreference.migrateLegacyStyle(in: defaults, persistentDomainName: suite)
+        XCTAssertEqual(defaults.string(forKey: keys[0]), "save")
+        XCTAssertEqual(defaults.string(forKey: keys[1]), "share")
+        XCTAssertNil(defaults.object(forKey: "story_title_swipe_style"))
+
+        defaults.setPersistentDomain([
+            "story_title_swipe_style": "classic", keys[0]: "back", keys[1]: "menu"
+        ], forName: suite)
+        StoryTitleSwipePreference.migrateLegacyStyle(in: defaults, persistentDomainName: suite)
+        XCTAssertEqual(defaults.string(forKey: keys[0]), "back")
+        XCTAssertEqual(defaults.string(forKey: keys[1]), "menu")
+
+        defaults.setPersistentDomain(["story_title_swipe_style": "classic"], forName: suite)
+        testArguments[keys[0]] = "share"
+        defaults.setVolatileDomain(testArguments, forName: UserDefaults.argumentDomain)
+        StoryTitleSwipePreference.migrateLegacyStyle(in: defaults, persistentDomainName: suite)
+        XCTAssertEqual(defaults.string(forKey: keys[0]), "share")
+        XCTAssertNil(defaults.persistentDomain(forName: suite)?[keys[0]])
+        XCTAssertEqual(defaults.string(forKey: keys[1]), "read")
+
+        testArguments.removeValue(forKey: keys[0])
+        defaults.setVolatileDomain(testArguments, forName: UserDefaults.argumentDomain)
+        defaults.removePersistentDomain(forName: suite)
+        StoryTitleSwipePreference.migrateLegacyStyle(in: defaults, persistentDomainName: suite)
+        XCTAssertNil(defaults.persistentDomain(forName: suite)?[keys[0]])
+        XCTAssertNil(defaults.persistentDomain(forName: suite)?[keys[1]])
+    }
+}
+
+private final class CachedSwipeTestController: FeedDetailObjCViewController {
+    override func reload() {}
+}
+
+// StoryTitleSwipeTests.swift isolates row identity from network and database mutations.
+@MainActor private final class ClassicSwipeCallbackFixture {
+    let controller = ClassicSwipeCallbackController()
+    let table = ClassicSwipeCallbackTable()
+    let stories = ClassicSwipeCallbackStories()
+    let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+
+    init() {
+        UserDefaults.standard.set("save", forKey: "story_title_swipe_right")
+        UserDefaults.standard.set("read", forKey: "story_title_swipe_left")
+        stories.activeFeedStories = (0..<3).map { ["story_hash": "classic-story-\($0)"] }
+        stories.activeFeedStoryLocations = NSMutableArray(array: [0, 1, 2])
+        stories.storyLocationsCount = 3
+        controller.storiesCollection = stories
+        controller.storyTitlesTable = table
+        cell.storyHash = "classic-story-0"
+    }
+
+    func begin() {
+        controller.swipeTableViewCellDidStartSwiping(cell)
+    }
+
+    func end(state: UInt) {
+        controller.swipeTableViewCell(cell,
+            didEndSwipingSwipingWith: MCSwipeTableViewCellState(rawValue: state)!, mode: .switch)
+    }
+}
+
+@MainActor private final class ClassicSwipeCallbackController: FeedDetailObjCViewController {
+    var mappedLocation = 0
+    var reloaded = [IndexPath]()
+
+    override func storyLocation(for indexPath: IndexPath!) -> Int { mappedLocation }
+    override func reload(_ indexPath: IndexPath!, with rowAnimation: UITableView.RowAnimation) {
+        reloaded.append(indexPath)
+    }
+}
+
+@MainActor private final class ClassicSwipeCallbackTable: UITableView {
+    var currentIndexPath: IndexPath? = IndexPath(row: 0, section: 0)
+
+    override func indexPath(for cell: UITableViewCell) -> IndexPath? { currentIndexPath }
+}
+
+@MainActor private final class ClassicSwipeCallbackStories: StoriesCollection {
+    var savedHashes = [String]()
+    var readHashes = [String]()
+
+    override func toggleStorySaved(_ story: [AnyHashable: Any]!) -> Bool {
+        savedHashes.append(story["story_hash"] as! String)
+        return true
+    }
+
+    override func toggleStoryUnread(_ story: [AnyHashable: Any]!) {
+        readHashes.append(story["story_hash"] as! String)
+    }
+}
