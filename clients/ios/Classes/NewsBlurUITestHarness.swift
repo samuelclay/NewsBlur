@@ -37,7 +37,7 @@ final class NewsBlurUITestHarness {
         guard isEnabled, !didPrepareLaunchEnvironment else { return }
 
         didPrepareLaunchEnvironment = true
-        UIView.setAnimationsEnabled(false)
+        UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
 
         if let requestedStoryTitlesStyle {
             UserDefaults.standard.set(requestedStoryTitlesStyle, forKey: DetailViewController.Key.style)
@@ -66,7 +66,7 @@ final class NewsBlurUITestHarness {
     static func configureIfNeeded(appDelegate: NewsBlurAppDelegate) {
         guard isEnabled, !didScheduleScenario else { return }
 
-        UIView.setAnimationsEnabled(false)
+        UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
 
         switch requestedScreen {
         case "add-site":

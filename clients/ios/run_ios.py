@@ -11,6 +11,7 @@ Options:
 
 Actions:
     list                  - List available simulators with UDIDs
+    boot                  - Boot the specified simulator if it is not already booted
     tap:<x>,<y>           - Tap at coordinates
     text:<text>          - Type into the focused field
     key:<code>           - Send a hardware key code (40 is Return)
@@ -38,6 +39,7 @@ Environment:
     IOS_SIM_UDID     - Simulator UDID (alternative to --udid flag)
     IOS_BUNDLE_ID    - App bundle identifier (defaults to NewsBlur)
     IOS_APP_PATH     - Path to the built .app for install
+    IOS_LAUNCH_ARGUMENTS - Optional shell-quoted launch arguments (for UI test fixtures)
     IOS_USE_XCTRACE  - Also record an Instruments trace when set to 1
     IOS_SAMPLE_SECONDS - Maximum CPU profile duration (defaults to 600)
 """
@@ -118,6 +120,15 @@ def do_list():
     print()
     print("Usage: python3 run_ios.py --udid <UDID> <actions...>")
     print("   or: IOS_SIM_UDID=<UDID> python3 run_ios.py <actions...>")
+
+
+def do_boot():
+    """Boot the explicitly selected simulator without creating a new device."""
+    devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
+    selected = next(device for group in devices["devices"].values() for device in group if device["udid"] == UDID)
+    if selected["state"] != "Booted":
+        subprocess.run(["xcrun", "simctl", "boot", UDID], check=True)
+    subprocess.run(["xcrun", "simctl", "bootstatus", UDID, "-b"], check=True)
 
 
 def do_tap(coords):
@@ -253,8 +264,10 @@ def do_screenshot(path):
 def do_launch():
     """Launch the NewsBlur app."""
     print("  Launching NewsBlur...")
-    result = run_cmd(f"xcrun simctl launch {UDID} {BUNDLE_ID}")
-    print(f"  {result}")
+    arguments = shlex.split(os.environ.get("IOS_LAUNCH_ARGUMENTS", ""))
+    result = subprocess.run(["xcrun", "simctl", "launch", UDID, BUNDLE_ID, *arguments],
+                            check=True, capture_output=True, text=True)
+    print(f"  {result.stdout.strip()}")
 
 
 def do_terminate():
@@ -281,7 +294,9 @@ def parse_and_execute(action):
         cmd = action
         arg = None
 
-    if cmd == "tap":
+    if cmd == "boot":
+        do_boot()
+    elif cmd == "tap":
         do_tap(arg)
     elif cmd == "text":
         subprocess.run(["idb", "ui", "text", "--udid", UDID, arg], check=True)
