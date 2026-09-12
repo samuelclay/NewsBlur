@@ -43,6 +43,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 import java.lang.ref.WeakReference;
+import java.text.NumberFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -75,6 +76,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private ActivityMainBinding binding;
     private MainContextMenuDelegate contextMenuDelegate;
     private KeyboardManager keyboardManager;
+    private final NumberFormat unreadCountFormatter = NumberFormat.getIntegerInstance();
     private boolean hasSeenActiveSyncStatus = false;
     private boolean isShowingDoneSyncStatus = false;
     private boolean isShowingLoadingSyncPlaceholder = true;
@@ -292,8 +294,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
-        binding.mainUnreadCountNeutText.setText(Integer.toString(neutCount));
-        binding.mainUnreadCountPosiText.setText(Integer.toString(posiCount));
+        binding.mainUnreadCountNeutText.setText(unreadCountFormatter.format(neutCount));
+        binding.mainUnreadCountPosiText.setText(unreadCountFormatter.format(posiCount));
     }
 
     /**
