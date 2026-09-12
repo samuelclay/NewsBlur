@@ -1,11 +1,625 @@
 import ObjectiveC.runtime
 import UIKit
+import UserNotifications
 import WebKit
 import XCTest
 
 @testable import NewsBlur
 
 @MainActor final class Test_StoryFirstPageLoading: XCTestCase {
+    func test_notificationFindsAnAlreadyReadOlderStoryInItsFeedAndKeepsLaterPagesConsistent() async throws {
+        for exactOutcome in ["failure", "empty"] {
+            try await assertNotificationPaginationFallback(exactOutcome: exactOutcome)
+        }
+    }
+
+    private func assertNotificationPaginationFallback(exactOutcome: String) async throws {
+        let fixture = makeFixture()
+        let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+        defer { presentation.close() }
+        let defaults = UserDefaults.standard
+        let filterKey = presentation.filterKey
+        let window = presentation.window
+
+        let selected = expectation(description: "Production notification lookup presents the older read story after exact \(exactOutcome)")
+        fixture.app.storyPresented = { selected.fulfill() }
+        fixture.app.receiveNotification(["story_feed_id": 1, "story_hash": "first-page-17"])
+        fixture.controller.finishedAnimatingIn = true
+        XCTAssertEqual(fixture.app.notificationCompletions, 1)
+        XCTAssertEqual(fixture.stories.activeFeedIdStr, "1")
+        XCTAssertFalse(fixture.stories.isRiverView)
+        XCTAssertTrue(fixture.app.inFindingStoryMode)
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        let exactRequest = try exactNotificationRequest("first-page-17", in: fixture)
+        let firstRequest = try feedPageRequest(1, in: fixture)
+        fixture.app.reply(to: firstRequest, with: response())
+        await settle()
+        XCTAssertNil(fixture.app.activeStory)
+        XCTAssertTrue(fixture.app.inFindingStoryMode)
+
+        // StoryFirstPageLoadingTests.swift gives a slow failed/empty exact request its own
+        // elapsed time; the fallback must still get a useful interval to search normal pages.
+        fixture.app.findingStoryStartDate = Date(timeIntervalSinceNow: -20)
+        if exactOutcome == "failure" { fixture.app.fail(to: exactRequest) }
+        else { fixture.app.reply(to: exactRequest, with: response(stories: [])) }
+        fixture.controller.testForTryFeed()
+        XCTAssertTrue(fixture.app.inFindingStoryMode, "A slow exact \(exactOutcome) must not immediately expire paginated fallback")
+        XCTAssertEqual(fixture.app.tryFeedStoryId, "first-page-17")
+
+        // StoryFirstPageLoadingTests.swift advances the real lookup through a second feed page,
+        // with an already-read target that the saved unread-only filter would otherwise omit.
+        fixture.controller.checkScroll()
+        let secondRequest = try feedPageRequest(2, in: fixture)
+        var olderStories = makeStories(12..<24)
+        olderStories[5]["read_status"] = 1
+        olderStories[5]["story_title"] = "An older notification opens this exact story"
+        fixture.app.reply(to: secondRequest, with: response(stories: olderStories))
+        await fulfillment(of: [selected], timeout: 4)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-17")
+        XCTAssertEqual(fixture.app.activeStory?["read_status"] as? Int, 1)
+        XCTAssertFalse(fixture.app.inFindingStoryMode)
+        XCTAssertNil(fixture.app.tryFeedStoryId)
+        XCTAssertTrue(fixture.controller.markedHashes.isEmpty,
+                      "Finding an older notification must not mark the intervening stories as read during its automatic scroll.")
+        XCTAssertEqual(fixture.stories.activeReadFilter, "all")
+        XCTAssertEqual(defaults.string(forKey: filterKey), "unread")
+        let selectedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 17))
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, selectedPath)
+        XCTAssertNotNil(fixture.table.cellForRow(at: selectedPath), "The target must be visible, not merely loaded in the model")
+        let visibleTop = fixture.table.contentOffset.y + fixture.table.adjustedContentInset.top
+        let firstVisible = try XCTUnwrap(fixture.table.indexPathForRow(at: CGPoint(x: 20, y: visibleTop)))
+        let initialCutoff = firstVisible.row + (visibleTop >= fixture.table.rectForRow(at: firstVisible).midY ? 1 : 0)
+        XCTAssertGreaterThan(initialCutoff, 0, "The automatic jump must actually have skipped some stories")
+        XCTAssertEqual(fixture.controller.value(forKey: "scrollingMarkReadRow") as? Int, initialCutoff,
+                       "The read cursor must follow the automatic jump without marking skipped stories")
+
+        window.layoutIfNeeded()
+        let image = UIGraphicsImageRenderer(bounds: window.bounds).image { context in
+            window.layer.render(in: context.cgContext)
+        }
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "Notification selected older read story in its feed"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        fixture.controller.fetchNextPage(nil)
+        let thirdRequest = try feedPageRequest(3, in: fixture)
+        fixture.app.reply(to: thirdRequest, with: response(stories: makeStories(24..<36)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (0..<36).map { "first-page-\($0)" })
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, selectedPath)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-17")
+        XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+        let passedRow = initialCutoff + 3
+        let forwardPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: passedRow))
+        fixture.table.setContentOffset(CGPoint(x: 0, y: fixture.table.rectForRow(at: forwardPath).midY + 1), animated: false)
+        fixture.controller.checkScroll()
+        // StoryFirstPageLoadingTests.swift now represents a forward user scroll from the
+        // visible destination. Only newly passed cells count; the earlier jump stays unread.
+        XCTAssertEqual(fixture.controller.markedHashes, (initialCutoff...passedRow).map { "first-page-\($0)" })
+        XCTAssertFalse(fixture.controller.markedHashes.contains { hash in
+            (0..<initialCutoff).contains { hash == "first-page-\($0)" }
+        })
+        // StoryFirstPageLoadingTests.swift permits viewport prefetch after a forward scroll.
+        let feedRequests = fixture.app.requests.filter { query("h", in: $0.url) == nil }
+        for (index, request) in feedRequests.enumerated() {
+            let components = try XCTUnwrap(URLComponents(string: request.url))
+            XCTAssertEqual(components.path, "/reader/feed/1/")
+            XCTAssertEqual(components.queryItems?.first { $0.name == "page" }?.value, String(index + 1))
+            XCTAssertEqual(components.queryItems?.first { $0.name == "read_filter" }?.value, "all")
+        }
+    }
+
+    func test_storyPagerDoesNotAutomaticallyFetchAcrossANotificationGapButAllowsExplicitNavigation() async throws {
+        for mode in ["automatic", "explicit next", "dragging", "ordinary feed"] {
+            let fixture = makeFixture()
+            let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+            defer { presentation.close() }
+            let notification = mode != "ordinary feed"
+            if notification {
+                let selected = expectation(description: "The exact target is open before pager neighbor setup: \(mode)")
+                fixture.app.storyPresented = { selected.fulfill() }
+                await openNotification("first-page-100", in: fixture)
+                let exactRequest = try exactNotificationRequest("first-page-100", in: fixture)
+                fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response())
+                var target = makeStories(100..<101)[0]
+                target["read_status"] = 1
+                fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+                await fulfillment(of: [selected], timeout: 4)
+            } else {
+                // StoryFirstPageLoadingTests.swift keeps the list away from its prefetch
+                // threshold so the pager itself owns the page-two callback in this control.
+                fixture.table.frame.size.height = 80
+                try await prime(fixture)
+                fixture.app.activeStory = (fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.last
+            }
+            XCTAssertEqual(fixture.app.requests.filter { query("h", in: $0.url) == nil }.compactMap { query("page", in: $0.url) }, ["1"])
+            let targetLocation = fixture.hashes.count - 1
+            let pages = FirstPageLoadingPages()
+            pages.appDelegate = fixture.app
+            let current = FirstPageLoadingStoryPage()
+            current.appDelegate = fixture.app
+            current.activeStory = NSMutableDictionary(dictionary: fixture.app.activeStory ?? [:])
+            current.activeStoryId = fixture.app.activeStory?["story_hash"] as? String
+            current.pageIndex = targetLocation - 1
+            pages.currentPage = current
+            let next = FirstPageLoadingStoryPage()
+            next.appDelegate = fixture.app
+            pages.nextPage = next
+            pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+            pages.scrollView.contentSize = CGSize(width: 390 * 40, height: 844 * 40)
+            pages.isDraggingScrollview = mode == "dragging"
+            pages.scrollingToPage = mode == "explicit next" ? targetLocation + 1 : -1
+            fixture.app.testPages = pages
+
+            // StoryFirstPageLoadingTests.swift supplies an actual next-page controller;
+            // the real preservation path must not page through the missing gap while idle.
+            let selector = NSSelectorFromString("preserveCurrentPageAtLocation:")
+            typealias Preserve = @convention(c) (AnyObject, Selector, Int) -> Void
+            let preserve = unsafeBitCast(pages.method(for: selector), to: Preserve.self)
+            preserve(pages, selector, targetLocation)
+            await settle()
+            let feedPages = fixture.app.requests.filter { query("h", in: $0.url) == nil }.compactMap { query("page", in: $0.url) }
+            XCTAssertEqual(feedPages, mode == "automatic" ? ["1"] : ["1", "2"], mode)
+            XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, notification ? "first-page-100" : "first-page-11", mode)
+            XCTAssertEqual(current.pageIndex, targetLocation, mode)
+            XCTAssertTrue(fixture.controller.markedHashes.isEmpty, mode)
+        }
+    }
+
+    func test_storyPagerResolvesTheRequestedSuccessorAfterPagesInsertBeforeANotificationTarget() async throws {
+        for notification in [true, false] {
+            let fixture = makeFixture()
+            let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+            defer { presentation.close() }
+            if notification {
+                let selected = expectation(description: "The older notification is open before explicit next-page navigation")
+                fixture.app.storyPresented = { selected.fulfill() }
+                await openNotification("first-page-100", in: fixture)
+                let exactRequest = try exactNotificationRequest("first-page-100", in: fixture)
+                fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response())
+                var target = makeStories(100..<101)[0]
+                target["read_status"] = 1
+                fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+                await fulfillment(of: [selected], timeout: 4)
+            } else {
+                fixture.table.frame.size.height = 80
+                try await prime(fixture)
+                fixture.app.activeStory = (fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.last
+            }
+            XCTAssertEqual(fixture.app.requests.filter { query("h", in: $0.url) == nil }.compactMap { query("page", in: $0.url) }, ["1"])
+
+            let targetLocation = fixture.hashes.count - 1
+            let pages = FirstPageLoadingPages()
+            pages.appDelegate = fixture.app
+            let current = FirstPageLoadingStoryPage()
+            current.appDelegate = fixture.app
+            current.activeStory = NSMutableDictionary(dictionary: fixture.app.activeStory ?? [:])
+            current.activeStoryId = fixture.app.activeStory?["story_hash"] as? String
+            current.pageIndex = targetLocation - 1
+            pages.currentPage = current
+            let next = FirstPageLoadingStoryPage()
+            next.appDelegate = fixture.app
+            var renderedHashes: [String] = []
+            next.storyDrawn = { [weak next] in renderedHashes.append(next?.activeStory?["story_hash"] as? String ?? "missing") }
+            defer { next.storyDrawn = nil }
+            pages.nextPage = next
+            pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+            pages.scrollView.contentSize = CGSize(width: 390 * 50, height: 844 * 50)
+            pages.scrollingToPage = targetLocation + 1
+            fixture.app.testPages = pages
+
+            // StoryFirstPageLoadingTests.swift preserves real neighbor selection and fetch
+            // callbacks; only the final HTML drawing is observed through storyDrawn.
+            let selector = NSSelectorFromString("preserveCurrentPageAtLocation:")
+            typealias Preserve = @convention(c) (AnyObject, Selector, Int) -> Void
+            let preserve = unsafeBitCast(pages.method(for: selector), to: Preserve.self)
+            preserve(pages, selector, targetLocation)
+            fixture.app.reply(to: try feedPageRequest(2, in: fixture), with: response(stories: makeStories(12..<24)))
+            await settle()
+
+            if notification {
+                XCTAssertEqual(current.pageIndex, 24)
+                XCTAssertNil(next.activeStory, "A newer-only page cannot satisfy navigation to the older target's successor")
+                XCTAssertTrue(renderedHashes.isEmpty, "A stale numeric row must never be drawn as the requested successor")
+                let thirdRequest = fixture.app.requests.firstIndex { request in
+                    URLComponents(string: request.url)?.path == "/reader/feed/1/" && query("page", in: request.url) == "3"
+                }
+                XCTAssertNotNil(thirdRequest, "Explicit navigation must continue through a newer-only page until it reaches the successor")
+                guard let thirdRequest else { continue }
+                fixture.app.reply(to: thirdRequest, with: response(stories: makeStories(24..<36) + makeStories(100..<102)))
+                await settle()
+                XCTAssertEqual(fixture.hashes, (0..<36).map { "first-page-\($0)" } + ["first-page-100", "first-page-101"])
+            }
+
+            let expectedHash = notification ? "first-page-101" : "first-page-12"
+            let expectedLocation = notification ? 37 : 12
+            XCTAssertEqual(next.activeStory?["story_hash"] as? String, expectedHash)
+            XCTAssertEqual(next.activeStoryId, expectedHash)
+            XCTAssertEqual(next.pageIndex, expectedLocation)
+            XCTAssertFalse(renderedHashes.isEmpty)
+            XCTAssertTrue(renderedHashes.allSatisfy { $0 == expectedHash })
+            XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, notification ? "first-page-100" : "first-page-11")
+            XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+        }
+    }
+
+    func test_notificationKeepsTheRequestedStoryWhenPaginationMovesItsRowBeforeDeferredPresentation() async throws {
+        let fixture = makeFixture()
+        let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+        defer { presentation.close() }
+        let presented = expectation(description: "The notification's requested hash reaches article presentation")
+        var presentedHashes: [String] = []
+        fixture.app.storyPresented = {
+            presentedHashes.append(fixture.app.activeStory?["story_hash"] as? String ?? "missing")
+            presented.fulfill()
+        }
+        await openNotification("first-page-100", in: fixture)
+        let exactRequest = try exactNotificationRequest("first-page-100", in: fixture)
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response())
+        var target = makeStories(100..<101)[0]
+        target["read_status"] = 1
+        target["story_title"] = "The older notification must remain selected while newer pages arrive"
+        fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+        XCTAssertTrue(presentedHashes.isEmpty, "The production one-second presentation delay must still be pending")
+        XCTAssertEqual(fixture.hashes.firstIndex(of: "first-page-100"), 12)
+        let originalPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 12))
+        let targetOffset = fixture.table.rectForRow(at: originalPath).minY - fixture.table.contentOffset.y
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, originalPath)
+
+        // StoryFirstPageLoadingTests.swift delivers another normal page inside the real
+        // one-second selection delay. The target moves; its earlier index now names another story.
+        fixture.controller.fetchNextPage(nil)
+        fixture.app.reply(to: try feedPageRequest(2, in: fixture), with: response(stories: makeStories(12..<24)))
+        XCTAssertEqual(fixture.hashes.firstIndex(of: "first-page-100"), 24)
+        XCTAssertEqual(fixture.hashes[12], "first-page-12")
+        let movedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 24))
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, movedPath, "The pending target must stay selected while its row moves")
+        XCTAssertEqual(fixture.table.rectForRow(at: movedPath).minY - fixture.table.contentOffset.y, targetOffset, accuracy: 0.5)
+        XCTAssertNotNil(fixture.table.cellForRow(at: movedPath))
+        fixture.controller.checkScroll()
+        XCTAssertEqual(fixture.app.requests.filter { query("h", in: $0.url) == nil }.compactMap { query("page", in: $0.url) }, ["1", "2"],
+                       "A pending notification jump must not launch more automatic pages across the gap")
+        await fulfillment(of: [presented], timeout: 4)
+        XCTAssertEqual(presentedHashes, ["first-page-100"], "Presentation must resolve the requested hash after pagination, never reuse its stale row")
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-100")
+        XCTAssertEqual(fixture.app.activeStory?["story_title"] as? String, target["story_title"] as? String)
+        XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+        let image = UIGraphicsImageRenderer(bounds: presentation.window.bounds).image { context in
+            presentation.window.layer.render(in: context.cgContext)
+        }
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "Notification target after pagination during deferred presentation"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    func test_notificationExactHashFindsAnOlderReadStoryWhetherItArrivesBeforeOrAfterPageOne() async throws {
+        for (order, exactFirst) in [("newest", true), ("newest", false), ("oldest", true), ("oldest", false)] {
+            let fixture = makeFixture()
+            fixture.stories.order = order
+            let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+            defer { presentation.close() }
+            let selected = expectation(description: "Exact notification target selected; \(order), exact response first: \(exactFirst)")
+            fixture.app.storyPresented = { selected.fulfill() }
+            let targetIndex = order == "newest" ? 100 : 0
+            let targetHash = "first-page-\(targetIndex)"
+            let firstStories = order == "newest" ? makeStories(0..<12) : Array(makeStories(100..<112).reversed())
+            await openNotification(targetHash, in: fixture)
+            let exactRequest = try exactNotificationRequest(targetHash, in: fixture)
+            let firstRequest = try feedPageRequest(1, in: fixture)
+            fixture.app.findingStoryStartDate = Date(timeIntervalSinceNow: -20)
+            fixture.controller.testForTryFeed()
+            XCTAssertTrue(fixture.app.inFindingStoryMode, "A pending exact request must survive the old fifteen-second paging timeout")
+            XCTAssertEqual(fixture.app.tryFeedStoryId, targetHash)
+            var target = makeStories(targetIndex..<(targetIndex + 1))[0]
+            target["read_status"] = 1
+            target["story_title"] = "An older notification beyond the first several pages"
+            if exactFirst {
+                fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+                await settle()
+                XCTAssertNil(fixture.app.activeStory, "The retained target waits for the first feed page")
+                XCTAssertEqual(fixture.stories.feedPage, 1)
+            }
+            fixture.app.reply(to: firstRequest, with: response(stories: firstStories))
+            if !exactFirst {
+                await settle()
+                fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+            }
+            await fulfillment(of: [selected], timeout: 4)
+            XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, targetHash)
+            XCTAssertEqual(fixture.app.activeStory?["read_status"] as? Int, 1)
+            XCTAssertEqual(fixture.stories.activeFeedIdStr, "1")
+            XCTAssertFalse(fixture.stories.isRiverView)
+            XCTAssertFalse(fixture.app.inFindingStoryMode)
+            XCTAssertEqual(fixture.stories.feedPage, 1, "An exact lookup is not a feed pagination response")
+            XCTAssertEqual(fixture.hashes, firstStories.compactMap { $0["story_hash"] as? String } + [targetHash])
+            XCTAssertEqual(fixture.stories.activeReadFilter, "all")
+            XCTAssertEqual(UserDefaults.standard.string(forKey: presentation.filterKey), "unread")
+            XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+            let targetPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 12))
+            XCTAssertEqual(fixture.table.indexPathForSelectedRow, targetPath)
+            XCTAssertNotNil(fixture.table.cellForRow(at: targetPath))
+
+            // StoryFirstPageLoadingTests.swift repeatedly checks the retained destination's
+            // viewport: an unloaded gap must not cause an endless automatic page fetch loop.
+            for _ in 0..<3 {
+                fixture.controller.checkScroll()
+                await settle()
+            }
+            XCTAssertEqual(fixture.app.requests.count, 2, "Only the first feed page and exact target should be requested automatically")
+            let image = UIGraphicsImageRenderer(bounds: presentation.window.bounds).image { context in
+                presentation.window.layer.render(in: context.cgContext)
+            }
+            let attachment = XCTAttachment(image: image)
+            attachment.name = "Exact notification target selected; \(order), exact response first \(exactFirst)"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    func test_notificationExactHashOpensTheTargetAfterAnEmptyFirstFeedPage() async throws {
+        let fixture = makeFixture()
+        let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+        defer { presentation.close() }
+        let selected = expectation(description: "The exact older notification survives an empty feed page")
+        fixture.app.storyPresented = { selected.fulfill() }
+        await openNotification("first-page-100", in: fixture)
+        let exactRequest = try exactNotificationRequest("first-page-100", in: fixture)
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: []))
+        await settle()
+        XCTAssertTrue(fixture.controller.pageFinished)
+        var target = makeStories(100..<101)[0]
+        target["read_status"] = 1
+        fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+        await fulfillment(of: [selected], timeout: 4)
+        XCTAssertEqual(fixture.hashes, ["first-page-100"])
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-100")
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, fixture.controller.indexPath(forStoryLocation: 0))
+        XCTAssertTrue(fixture.controller.pageFinished, "The injected target must not reopen pagination after an empty server page")
+        XCTAssertEqual(fixture.stories.feedPage, 1)
+        fixture.controller.fetchNextPage(nil)
+        fixture.controller.checkScroll()
+        await settle()
+        XCTAssertEqual(fixture.app.requests.count, 2)
+        XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+    }
+
+    func test_notificationExactHashRejectsStaleOrMismatchedResponses() async throws {
+        for change in ["navigation", "account", "hash", "feed", "empty"] {
+            let fixture = makeFixture()
+            let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+            defer { presentation.close() }
+            var selections = 0
+            fixture.app.storyPresented = { selections += 1 }
+            await openNotification("first-page-100", in: fixture)
+            let exactRequest = try exactNotificationRequest("first-page-100", in: fixture)
+            let firstRequest = try feedPageRequest(1, in: fixture)
+            fixture.app.reply(to: firstRequest, with: response())
+            await settle()
+            if change == "navigation" {
+                fixture.app.dictFeeds["2"] = ["id": 2, "feed_title": "Second feed", "active": 1]
+                fixture.app.loadFeed("2", withStory: "second-feed-story", animated: false)
+            } else if change == "account" {
+                fixture.app.activeUsername = "another-notification-account"
+            }
+            var target = makeStories(100..<101)[0]
+            target["read_status"] = 1
+            if change == "hash" { target["story_hash"] = "first-page-wrong-hash" }
+            if change == "feed" { target["story_feed_id"] = 2 }
+            fixture.app.reply(to: exactRequest, with: response(stories: change == "empty" ? [] : [target]))
+            await settle()
+            XCTAssertEqual(selections, 0, change)
+            XCTAssertNil(fixture.app.activeStory, change)
+            XCTAssertFalse(fixture.hashes.contains("first-page-100"), change)
+            XCTAssertFalse(fixture.hashes.contains("first-page-wrong-hash"), change)
+            XCTAssertEqual(fixture.stories.activeFeedIdStr, change == "navigation" ? "2" : "1", change)
+            XCTAssertTrue(fixture.controller.markedHashes.isEmpty, change)
+        }
+    }
+
+    func test_notificationExactTargetPreservesArticleAndViewportWhenLaterPagesInsertAndDeduplicateIt() async throws {
+        let fixture = makeFixture()
+        let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+        defer { presentation.close() }
+        let selected = expectation(description: "The exact older notification is open before normal pagination resumes")
+        fixture.app.storyPresented = { selected.fulfill() }
+        await openNotification("first-page-100", in: fixture)
+        let exactRequest = try exactNotificationRequest("first-page-100", in: fixture)
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response())
+        var target = makeStories(100..<101)[0]
+        target["read_status"] = 1
+        fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+        await fulfillment(of: [selected], timeout: 4)
+
+        let pages = FirstPageLoadingPages()
+        pages.appDelegate = fixture.app
+        let article = FirstPageLoadingStoryPage()
+        article.appDelegate = fixture.app
+        article.pageIndex = 12
+        article.activeStory = NSMutableDictionary(dictionary: fixture.app.activeStory ?? [:])
+        article.webView = WKWebView(frame: article.view.bounds)
+        article.webView.scrollView.addObserver(article, forKeyPath: "contentOffset", options: [], context: nil)
+        article.view.addSubview(article.webView)
+        article.webView.loadHTMLString("""
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <body style="margin:0"><div style="height:4000px">Exact notification article reading position</div></body>
+            """, baseURL: nil)
+        for _ in 0..<30 {
+            if article.webView.scrollView.contentSize.height >= 4_000 { break }
+            await settle()
+        }
+        XCTAssertGreaterThanOrEqual(article.webView.scrollView.contentSize.height, 4_000)
+        article.webView.scrollView.contentOffset.y = 215
+        pages.currentPage = article
+        pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        pages.scrollView.contentSize = CGSize(width: 390 * 40, height: 844 * 40)
+        pages.scrollView.addSubview(article.view)
+        fixture.app.testPages = pages
+        let webView = article.webView
+        let beforePath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 12))
+        let beforeOffset = fixture.table.rectForRow(at: beforePath).minY - fixture.table.contentOffset.y
+
+        fixture.controller.fetchNextPage(nil)
+        let secondRequest = try feedPageRequest(2, in: fixture)
+        XCTAssertEqual(query("read_filter", in: fixture.app.requests[secondRequest].url), "all")
+        fixture.app.reply(to: secondRequest, with: response(stories: makeStories(12..<24)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (0..<24).map { "first-page-\($0)" } + ["first-page-100"])
+        XCTAssertEqual(fixture.stories.feedPage, 2)
+        let afterPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 24))
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, afterPath)
+        XCTAssertEqual(fixture.table.rectForRow(at: afterPath).minY - fixture.table.contentOffset.y, beforeOffset, accuracy: 0.5)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-100")
+        XCTAssertTrue(pages.currentPage === article)
+        XCTAssertTrue(article.webView === webView)
+        XCTAssertEqual(article.pageIndex, 24)
+        XCTAssertEqual(article.webView.scrollView.contentOffset.y, 215, accuracy: 0.5)
+        XCTAssertTrue(pages.pageChanges.isEmpty)
+        XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+        fixture.controller.checkScroll()
+        await settle()
+        XCTAssertEqual(fixture.app.requests.filter { query("h", in: $0.url) == nil }.count, 2,
+                       "The retained target still represents a gap after page two")
+
+        fixture.controller.fetchNextPage(nil)
+        let thirdRequest = try feedPageRequest(3, in: fixture)
+        fixture.app.reply(to: thirdRequest, with: response(stories: makeStories(24..<36) + [target]))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (0..<36).map { "first-page-\($0)" } + ["first-page-100"])
+        XCTAssertNil(fixture.stories.notificationStory, "The naturally paginated target closes the temporary gap")
+        fixture.controller.checkScroll()
+        // StoryFirstPageLoadingTests.swift distinguishes applied page three from the next
+        // requested page: normal viewport prefetch resumes once the gap closes.
+        let feedRequests = fixture.app.requests.filter { query("h", in: $0.url) == nil }
+        XCTAssertEqual(feedRequests.compactMap { query("page", in: $0.url) }, ["1", "2", "3", "4"])
+        XCTAssertTrue(feedRequests.allSatisfy { query("read_filter", in: $0.url) == "all" })
+        XCTAssertEqual(fixture.stories.feedPage, 4)
+        let deduplicatedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 36))
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, deduplicatedPath)
+        XCTAssertEqual(fixture.table.rectForRow(at: deduplicatedPath).minY - fixture.table.contentOffset.y, beforeOffset, accuracy: 0.5)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-100")
+        XCTAssertTrue(pages.currentPage === article)
+        XCTAssertTrue(article.webView === webView)
+        XCTAssertEqual(article.pageIndex, 36)
+        XCTAssertEqual(article.webView.scrollView.contentOffset.y, 215, accuracy: 0.5)
+        XCTAssertTrue(pages.pageChanges.isEmpty)
+        XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+    }
+
+    func test_notificationTargetRemainsVisibleAfterPagesReloadAnOffscreenTableWithEstimatedHeights() async throws {
+        for detached in [false, true] {
+            try await assertNotificationTargetSurvivesEstimatedHeightReloads(detached: detached)
+        }
+    }
+
+    private func assertNotificationTargetSurvivesEstimatedHeightReloads(detached: Bool) async throws {
+        let mode = detached ? "detached" : "attached"
+        let fixture = makeFixture()
+        let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+        defer { presentation.close() }
+        fixture.table.estimatedRowHeight = 44
+        let selected = expectation(description: "The older notification's row is visible before \(mode) table reloads")
+        fixture.app.storyPresented = { selected.fulfill() }
+        await openNotification("first-page-100", in: fixture)
+        let exactRequest = try exactNotificationRequest("first-page-100", in: fixture)
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response())
+        var target = makeStories(100..<101)[0]
+        target["read_status"] = 1
+        fixture.app.reply(to: exactRequest, with: response(stories: [target]))
+        await fulfillment(of: [selected], timeout: 4)
+        let originalPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 12))
+        let originalOffset = fixture.table.rectForRow(at: originalPath).minY - fixture.table.contentOffset.y
+        XCTAssertNotNil(fixture.table.cellForRow(at: originalPath), "The initial exact selection must already be visible: \(mode)")
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, originalPath, mode)
+        XCTAssertEqual(fixture.controller.value(forKey: "notificationSelectionAnchorHash") as? String, "first-page-100", mode)
+        XCTAssertEqual((fixture.controller.value(forKey: "notificationSelectionAnchorOffset") as? NSNumber)?.doubleValue ?? .nan,
+                       Double(-originalOffset), accuracy: 0.5, "Remember the measured selection before UIKit can clamp it on detach: \(mode)")
+        fixture.controller.checkScroll()
+        XCTAssertEqual(fixture.app.requests.filter { query("h", in: $0.url) == nil }.compactMap { query("page", in: $0.url) }, ["1"],
+                       "Initial selection must not launch viewport pagination across the gap: \(mode)")
+
+        // StoryFirstPageLoadingTests.swift covers both a visible list while its article
+        // prepares and the detached list behind it. Both reload through UIKit's estimates.
+        let parent = try XCTUnwrap(fixture.controller.view.superview)
+        if detached { fixture.controller.view.removeFromSuperview() }
+        XCTAssertEqual(fixture.table.window == nil, detached)
+        for page in 2...3 {
+            fixture.controller.fetchNextPage(nil)
+            let request = try feedPageRequest(page, in: fixture)
+            fixture.app.reply(to: request, with: response(stories: makeStories(((page - 1) * 12)..<(page * 12))))
+            await settle()
+            XCTAssertEqual(fixture.table.window == nil, detached)
+            XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-100", mode)
+            if !detached {
+                let movedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: page * 12))
+                XCTAssertEqual(fixture.table.indexPathForSelectedRow, movedPath)
+                XCTAssertNotNil(fixture.table.cellForRow(at: movedPath), "Attached target must remain visible after page \(page)")
+                XCTAssertEqual(fixture.table.rectForRow(at: movedPath).minY - fixture.table.contentOffset.y, originalOffset, accuracy: 0.5,
+                               "Attached target must retain its offset after page \(page)")
+                fixture.controller.checkScroll()
+                XCTAssertEqual(fixture.app.requests.filter { query("h", in: $0.url) == nil }.compactMap { query("page", in: $0.url) },
+                               (1...page).map(String.init), "Estimated layout must not start another viewport request after page \(page)")
+            }
+        }
+
+        if detached { parent.addSubview(fixture.controller.view) }
+        presentation.window.layoutIfNeeded()
+        fixture.table.layoutIfNeeded()
+        fixture.controller.fadeSelectedCell(false)
+        await settle()
+        let returnedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 36))
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, returnedPath, mode)
+        XCTAssertNotNil(fixture.table.cellForRow(at: returnedPath), "Back must reveal the notification target rather than unrelated newer rows: \(mode)")
+        XCTAssertEqual(fixture.table.rectForRow(at: returnedPath).minY - fixture.table.contentOffset.y, originalOffset, accuracy: 0.5, mode)
+        XCTAssertNil(fixture.controller.value(forKey: "pendingNotificationAnchorHash"), "A measured returning target must finish restoring: \(mode)")
+        XCTAssertEqual(fixture.app.requests.filter { query("h", in: $0.url) == nil }.compactMap { query("page", in: $0.url) },
+                       ["1", "2", "3"], "Returning estimates must not launch viewport pagination across the gap: \(mode)")
+        XCTAssertTrue(fixture.controller.markedHashes.isEmpty)
+        let image = UIGraphicsImageRenderer(bounds: presentation.window.bounds).image { context in
+            presentation.window.layer.render(in: context.cgContext)
+        }
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "Notification row after \(mode) estimated-height reloads and return"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        // StoryFirstPageLoadingTests.swift also verifies that a genuine final boundary
+        // completes restoration instead of leaving automatic scrolling permanently blocked.
+        fixture.controller.setValue("first-page-100", forKey: "pendingNotificationAnchorHash")
+        fixture.controller.setValue(CGFloat(1_000), forKey: "pendingNotificationAnchorOffset")
+        fixture.controller.perform(NSSelectorFromString("restorePendingNotificationViewport"))
+        let maximumOffset = max(-fixture.table.adjustedContentInset.top,
+                                fixture.table.contentSize.height - fixture.table.bounds.height + fixture.table.adjustedContentInset.bottom)
+        XCTAssertNil(fixture.controller.value(forKey: "pendingNotificationAnchorHash"), "A genuine content boundary must finish restoring: \(mode)")
+        XCTAssertNotNil(fixture.table.cellForRow(at: returnedPath), "The boundary clamp must retain the target: \(mode)")
+        XCTAssertEqual(fixture.table.contentOffset.y, maximumOffset, accuracy: 0.5, mode)
+
+        for statusBar in [false, true] {
+            fixture.controller.setValue("first-page-100", forKey: "pendingNotificationAnchorHash")
+            fixture.controller.setValue("first-page-100", forKey: "notificationSelectionAnchorHash")
+            if statusBar {
+                XCTAssertEqual(fixture.table.delegate?.scrollViewShouldScrollToTop?(fixture.table), true)
+            } else {
+                fixture.table.delegate?.scrollViewWillBeginDragging?(fixture.table)
+            }
+            XCTAssertNil(fixture.controller.value(forKey: "pendingNotificationAnchorHash"))
+            XCTAssertNil(fixture.controller.value(forKey: "notificationSelectionAnchorHash"),
+                         "User scrolling must supersede the old notification position: statusBar=\(statusBar), \(mode)")
+        }
+
+        fixture.controller.setValue("first-page-100", forKey: "notificationSelectionAnchorHash")
+        fixture.controller.setValue("first-page-100", forKey: "pendingNotificationAnchorHash")
+        fixture.app.storyPresented = {}
+        fixture.controller.loadStory(atRow: 0)
+        XCTAssertNil(fixture.controller.value(forKey: "notificationSelectionAnchorHash"),
+                     "Selecting another story must not reuse the notification's old viewport: \(mode)")
+        XCTAssertNil(fixture.controller.value(forKey: "pendingNotificationAnchorHash"),
+                     "Selecting another story must cancel unfinished notification restoration: \(mode)")
+    }
+
     func test_reopenedFeedShowsCachedRowsBeforeQueuedReadAndSaveFlushesFinish() async throws {
         let fixture = makeFixture()
         try await prime(fixture)
@@ -228,8 +842,12 @@ import XCTest
             let fixture = makeFixture()
             fixture.stories.readFilter = "unread"
             try await prime(fixture)
+            let cacheLoaded = expectation(description: "The reopened feed applies its cached first page")
+            fixture.controller.cacheLookupFinished = { cacheLoaded.fulfill() }
             fixture.open()
-            await settle()
+            // StoryFirstPageLoadingTests.swift waits for the utility-queue cache callback, not a main-queue delay.
+            await fulfillment(of: [cacheLoaded], timeout: 5)
+            fixture.controller.cacheLookupFinished = nil
             let cached = try XCTUnwrap(fixture.stories.activeFeedStories as? [[AnyHashable: Any]])
             fixture.app.activeStory = cached[5]
             let pages = FirstPageLoadingPages()
@@ -586,7 +1204,17 @@ import XCTest
         current.webView = WKWebView(frame: current.view.bounds)
         current.webView.scrollView.addObserver(current, forKeyPath: "contentOffset", options: [], context: nil)
         current.view.addSubview(current.webView)
-        current.webView.scrollView.contentSize = CGSize(width: 390, height: 4_000)
+        // StoryFirstPageLoadingTests.swift waits for actual document geometry; an unloaded
+        // WKWebView can replace a manually assigned contentSize with its blank-page size.
+        current.webView.loadHTMLString("""
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <body style="margin:0"><div style="height:4000px">Retained article scroll fixture</div></body>
+            """, baseURL: nil)
+        for _ in 0..<20 {
+            if current.webView.scrollView.contentSize.height >= 4_000 { break }
+            await settle()
+        }
+        XCTAssertGreaterThanOrEqual(current.webView.scrollView.contentSize.height, 4_000)
         current.webView.scrollView.contentOffset.y = 321
         pages.currentPage = current
         pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
@@ -598,6 +1226,8 @@ import XCTest
         await settle()
         fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(1..<4)))
         await settle()
+        XCTAssertEqual(current.webView.scrollView.contentOffset.y, 321, accuracy: 0.5,
+                       "StoryFirstPageLoadingTests.swift must retain its seeded document offset before testing reorientation")
         pages.scrollView.bounds.size = CGSize(width: 844, height: 390)
         pages.reorientPages()
         XCTAssertFalse(current.view.isHidden)
@@ -736,6 +1366,35 @@ import XCTest
         }
     }
 
+    private func query(_ name: String, in url: String) -> String? {
+        URLComponents(string: url)?.queryItems?.first { $0.name == name }?.value
+    }
+
+    private func feedPageRequest(_ page: Int, in fixture: FirstPageFixture) throws -> Int {
+        try XCTUnwrap(fixture.app.requests.firstIndex {
+            URLComponents(string: $0.url)?.path == "/reader/feed/1/" && query("page", in: $0.url) == String(page)
+        }, "Missing real individual-feed page \(page) request")
+    }
+
+    private func exactNotificationRequest(_ hash: String, in fixture: FirstPageFixture) throws -> Int {
+        let index = try XCTUnwrap(fixture.app.requests.firstIndex { query("h", in: $0.url) == hash },
+                                 "An older notification needs one exact-hash lookup instead of relying on reaching its page")
+        let request = fixture.app.requests[index]
+        XCTAssertEqual(URLComponents(string: request.url)?.path.trimmingCharacters(in: CharacterSet(charactersIn: "/")),
+                       "reader/river_stories")
+        XCTAssertEqual(query("page", in: request.url), "0")
+        XCTAssertEqual(query("include_hidden", in: request.url), "true")
+        return index
+    }
+
+    private func openNotification(_ hash: String, in fixture: FirstPageFixture) async {
+        fixture.app.receiveNotification(["story_feed_id": 1, "story_hash": hash])
+        fixture.controller.finishedAnimatingIn = true
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+    }
+
     private func settleSearchDebounce() async {
         let reloaded = expectation(description: "Real search debounce submits the latest edit")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.15) { reloaded.fulfill() }
@@ -784,7 +1443,7 @@ import XCTest
         controller.storiesCollection = stories
         controller.dashboardIndex = -1
         app.testController = controller
-        let table = UITableView(frame: CGRect(x: 0, y: 0, width: 390, height: 320), style: .plain)
+        let table = FirstPageLoadingTable(frame: CGRect(x: 0, y: 0, width: 390, height: 320), style: .plain)
         table.estimatedRowHeight = 0
         controller.storyTitlesTable = table
         controller.view = UIView(frame: table.frame)
@@ -809,6 +1468,58 @@ import XCTest
                        "story_timestamp": 1_800_000_000 - $0, "read_status": 0,
                        "starred": false, "user_tags": [], "image_urls": [],
                        "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0]] }
+    }
+}
+
+@MainActor private final class FirstPageNotificationPresentation {
+    let fixture: FirstPageFixture
+    let filterKey: String
+    let previousFilter: Any?
+    let previousKeyWindow: UIWindow?
+    let window: UIWindow
+
+    init(fixture: FirstPageFixture) throws {
+        self.fixture = fixture
+        fixture.stories.useProductionReadFilter = true
+        filterKey = try XCTUnwrap(fixture.stories.readFilterKey)
+        previousFilter = UserDefaults.standard.object(forKey: filterKey)
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        previousKeyWindow = scene.windows.first(where: \.isKeyWindow)
+        window = UIWindow(windowScene: scene)
+        UserDefaults.standard.set("unread", forKey: filterKey)
+        window.frame = CGRect(x: 0, y: 0, width: 390, height: 660)
+        let root = UIViewController()
+        root.view.backgroundColor = .systemBackground
+        window.rootViewController = root
+        fixture.controller.view.frame = CGRect(x: 0, y: 52, width: 390, height: 608)
+        fixture.table.frame = fixture.controller.view.bounds
+        root.view.addSubview(fixture.controller.view)
+        let header = UILabel(frame: CGRect(x: 16, y: 8, width: 358, height: 36))
+        header.text = "First feed"
+        header.font = .preferredFont(forTextStyle: .headline)
+        root.view.addSubview(header)
+        window.makeKeyAndVisible()
+        fixture.app.storyPresented = {}
+    }
+
+    func close() {
+        let selectedHash = fixture.app.activeStory?["story_hash"] as? String
+        fixture.app.inFindingStoryMode = false
+        fixture.controller.resetFeedDetail()
+        for request in fixture.app.requests { request.task?.cancel() }
+        fixture.app.requests.removeAll()
+        fixture.app.readFlushes.removeAll()
+        fixture.app.savedFlushes.removeAll()
+        fixture.app.storyPresented = nil
+        fixture.app.testPages = nil
+        if let selectedHash, ReadTimeTracker.shared.currentStoryHash == selectedHash {
+            ReadTimeTracker.shared.stopTracking()
+            _ = ReadTimeTracker.shared.getAndResetReadTime(storyHash: selectedHash)
+        }
+        window.isHidden = true
+        previousKeyWindow?.makeKey()
+        if let previousFilter { UserDefaults.standard.set(previousFilter, forKey: filterKey) }
+        else { UserDefaults.standard.removeObject(forKey: filterKey) }
     }
 }
 
@@ -837,25 +1548,39 @@ import XCTest
 private final class FirstPageLoadingStories: StoriesCollection {
     var readFilter = "all"
     var order = "newest"
-    override var activeReadFilter: String! { readFilter }
+    var useProductionReadFilter = false
+    override var activeReadFilter: String! { useProductionReadFilter ? super.activeReadFilter : readFilter }
     override var activeOrder: String! { order }
 }
 
 @MainActor private final class FirstPageLoadingController: FeedDetailViewController {
+    var testRowHeight: CGFloat = 80
     var markedHashes: [String] = []
     var holdCache = false
     var heldCache: [() -> Void] = []
+    var cacheLookupFinished: (() -> Void)?
     func releaseCache() { if !heldCache.isEmpty { heldCache.removeFirst()() } }
     @objc(lookupFirstPageRequest:completion:)
     func lookupSnapshot(_ request: StoryFirstPageRequest, completion: @escaping (StoryFirstPageSnapshot?) -> Void) {
+        let finished = cacheLookupFinished
         StoryFirstPageCache.shared.lookup(request) { snapshot in
-            if self.holdCache { self.heldCache.append { completion(snapshot) } }
-            else { completion(snapshot) }
+            let apply = {
+                completion(snapshot)
+                finished?()
+            }
+            if self.holdCache { self.heldCache.append(apply) }
+            else { apply() }
         }
     }
     override var isLegacyTable: Bool { true }
     override var isMarkReadOnScroll: Bool { true }
     override func viewDidLoad() {}
+    // StoryFirstPageLoadingTests.swift supplies its own outlets and delegate; appearance must
+    // not replace them with UIApplication's delegate or construct the absent navigation bar.
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
     override func reload() { reloadTable() }
     override func loadingFeed() {}
     override func updateStoryTitlesHeaderPillState() {}
@@ -866,16 +1591,57 @@ private final class FirstPageLoadingStories: StoriesCollection {
         if isScrolling, let hash = story["story_hash"] as? String { markedHashes.append(hash) }
         return false
     }
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 80 }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { testRowHeight }
     @objc(beginOfflineTimer) func suppressUnownedSQLiteFallback() {}
     @objc(cacheImagesForStories:) func suppressImageDownloads(_ stories: Any?) {}
     @objc(warmStoryPreviewCacheAroundLocation:) func suppressWarmup(_ location: Int) {}
     @objc(updateBottomNextFeedControlForScroll:) func suppressNavigationControls(_ scroll: UIScrollView) {}
 }
 
+@MainActor private final class FirstPageLoadingTable: UITableView {
+    var rowReloads = 0
+    override func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
+        rowReloads += 1
+        super.reloadRows(at: indexPaths, with: animation)
+    }
+}
+
 private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
+    var notificationCompletions = 0
+    var storyPresented: (() -> Void)?
+    override func popToRoot(completion: (() -> Void)!) { completion?() }
+    override func reloadFeedsView(_ showLoader: Bool) {
+        if storyPresented == nil { super.reloadFeedsView(showLoader) }
+    }
+    override func loadStoryDetailView(animated: Bool) {
+        if let storyPresented { storyPresented() }
+        else { super.loadStoryDetailView(animated: animated) }
+    }
+    override func loadStoryDetailView(atLocation location: Int, animated: Bool) {
+        if let storyPresented { storyPresented() }
+        else { super.loadStoryDetailView(atLocation: location, animated: animated) }
+    }
+    @objc(presentFeedDetailAfterFeedSelection)
+    func presentNotificationFeed() {
+        let selector = NSSelectorFromString("loadFeedDetailView:")
+        typealias Load = @convention(c) (AnyObject, Selector, Bool) -> Void
+        let implementation = unsafeBitCast(method(for: selector), to: Load.self)
+        implementation(self, selector, false)
+    }
+    func receiveNotification(_ content: [String: Any]) {
+        // StoryFirstPageLoadingTests.swift uses the same production entry point as a notification response;
+        // only network delivery and navigation presentation are intercepted by this fixture.
+        let selector = NSSelectorFromString("processNotification:action:withCompletionHandler:")
+        typealias Process = @convention(c) (AnyObject, Selector, NSDictionary, NSString, AnyObject) -> Void
+        let implementation = unsafeBitCast(method(for: selector), to: Process.self)
+        let completion: @convention(block) () -> Void = { self.notificationCompletions += 1 }
+        implementation(self, selector, content as NSDictionary, UNNotificationDefaultActionIdentifier as NSString,
+                       completion as AnyObject)
+    }
+
     struct CapturedRequest {
         let url: String
+        let task: URLSessionDataTask?
         let success: (URLSessionDataTask?, Any?) -> Void
         let failure: (URLSessionDataTask?, NSError?) -> Void
     }
@@ -928,11 +1694,13 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     func releaseSavedFlush() { if !savedFlushes.isEmpty { savedFlushes.removeFirst()() } }
     func reply(to index: Int, with response: [String: Any]) {
         guard requests.indices.contains(index) else { XCTFail("Missing intercepted page request \(index)"); return }
+        requests[index].task?.cancel()
         requests[index].success(nil, response)
     }
 
     func fail(to index: Int, code: Int = NSURLErrorNotConnectedToInternet) {
         guard requests.indices.contains(index) else { XCTFail("Missing intercepted request"); return }
+        requests[index].task?.cancel()
         requests[index].failure(nil, NSError(domain: NSURLErrorDomain, code: code))
     }
 
@@ -952,8 +1720,16 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     @objc(nb_test_GET:parameters:success:failure:)
     func captureGET(_ url: String, parameters: Any?, success: @escaping (URLSessionDataTask?, Any?) -> Void,
                     failure: @escaping (URLSessionDataTask?, NSError?) -> Void) -> URLSessionDataTask? {
-        requests.append(CapturedRequest(url: url, success: success, failure: failure))
-        return nil
+        // StoryFirstPageLoadingTests.swift needs a cancellable in-flight token for exact
+        // lookups. This task is never resumed; synthetic callbacks still deliver every response.
+        var task: URLSessionDataTask?
+        if let components = URLComponents(string: url),
+           components.queryItems?.contains(where: { $0.name == "h" }) == true,
+           let requestURL = components.url {
+            task = URLSession.shared.dataTask(with: requestURL)
+        }
+        requests.append(CapturedRequest(url: url, task: task, success: success, failure: failure))
+        return task
     }
     @objc(nb_test_readFlush:callback:)
     func holdReadFlush(_ force: Bool, callback: @escaping () -> Void) { readFlushes.append(callback) }
@@ -974,9 +1750,14 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class FirstPageLoadingStoryPage: StoryDetailViewController {
+    var storyDrawn: (() -> Void)?
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {}
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
+    override func drawStory() {
+        if let storyDrawn { storyDrawn() }
+        else { super.drawStory() }
+    }
 }
 
 @MainActor private final class FirstPageGestureScroll: UIScrollView {
