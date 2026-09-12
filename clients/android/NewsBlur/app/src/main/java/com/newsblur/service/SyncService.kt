@@ -574,10 +574,9 @@ open class SyncService :
         // track whether we actually tried to handle the feedset and found we had nothing
         // more to do, in which case we will clear it
         var finished = false
+        var totalStoriesSeen = 0
 
-        val fs = syncServiceState.pendingFeed
-
-        try {
+        val request = synchronized(syncServiceState.pendingFeedMutex) {
             // see if we need to quickly reset fetch state for a feed. we
             // do this before the loop to prevent-mid loop state corruption
             synchronized(syncServiceState.resetFeedMutex) {
@@ -593,41 +592,49 @@ open class SyncService :
                     dbHelper.sessionFeedSet = null
                 }
             }
-
-            if (fs == null) {
-                Log.d(this.javaClass.name, "No feed set to sync")
-                return
+            syncServiceState.pendingFeed?.let {
+                StoryPageRequest.capture(syncServiceState, CursorFilters(prefsRepo, it), prefsRepo.getInfrequentCutoff())
             }
+        } ?: return
+        val fs = request.feedSet
+        val cursorFilters = request.cursorFilters
 
-            prepareReadingSession(prefsRepo, dbHelper, fs)
+        fun commitCurrent(requireReadySession: Boolean = false, commit: () -> Unit): Boolean =
+            request.commitIfCurrent(
+                syncServiceState,
+                CursorFilters(prefsRepo, fs),
+                prefsRepo.getInfrequentCutoff(),
+                sessionReady = { generationContext.isActive && (!requireReadySession || dbHelper.isFeedSetReady(fs)) },
+                commit = commit,
+            )
 
-            syncServiceState.lastFeedSet = fs
-
-            if (syncServiceState.exhaustedFeeds.contains(fs)) {
-                Log.i(this.javaClass.name, "No more stories for feed set: $fs")
-                finished = true
-                return
-            }
-
-            if (!syncServiceState.feedPagesSeen.containsKey(fs)) {
-                syncServiceState.addFeedPagesSeen(fs, 0)
-                syncServiceState.addFeedStoriesSeen(fs, 0)
-                syncServiceState.workaroundReadStoryTimestamp = (Date()).time
-                syncServiceState.workaroundGlobalSharedStoryTimestamp = (Date()).time
-            }
-            var pageNumber: Int = syncServiceState.feedPagesSeen[fs]!!
-            var totalStoriesSeen: Int = syncServiceState.feedStoriesSeen[fs]!!
-
-            val cursorFilters = CursorFilters(prefsRepo, fs)
+        try {
+            var pageNumber = 0
+            if (!commitCurrent {
+                prepareReadingSession(prefsRepo, dbHelper, fs)
+                syncServiceState.lastFeedSet = fs
+                if (syncServiceState.exhaustedFeeds.contains(fs)) {
+                    finished = true
+                } else {
+                    if (!syncServiceState.feedPagesSeen.containsKey(fs)) {
+                        syncServiceState.addFeedPagesSeen(fs, 0)
+                        syncServiceState.addFeedStoriesSeen(fs, 0)
+                        syncServiceState.workaroundReadStoryTimestamp = (Date()).time
+                        syncServiceState.workaroundGlobalSharedStoryTimestamp = (Date()).time
+                    }
+                    pageNumber = syncServiceState.feedPagesSeen[fs]!!
+                    totalStoriesSeen = syncServiceState.feedStoriesSeen[fs]!!
+                }
+            }) return
+            if (finished) return
 
             syncServiceState.setServiceState(ServiceState.StorySync)
             sendSyncUpdate(UPDATE_STATUS)
 
-            while (totalStoriesSeen < syncServiceState.pendingFeedTarget) {
-                // bail if the active view has changed
-                if (fs != syncServiceState.pendingFeed) {
-                    return
-                }
+            while (true) {
+                var needsPage = false
+                if (!commitCurrent { needsPage = totalStoriesSeen < syncServiceState.pendingFeedTarget }) return
+                if (!needsPage) break
 
                 // SyncService.kt is itself a CoroutineScope; check the current generation,
                 // not the service's still-active SupervisorJob.
@@ -640,29 +647,28 @@ open class SyncService :
                         pageNumber,
                         cursorFilters.storyOrder,
                         cursorFilters.readFilter,
-                        prefsRepo.getInfrequentCutoff(),
+                        request.infrequentCutoff,
                     )
                 currentCoroutineContext().ensureActive()
 
                 if (!isStoryResponseGood(apiResponse)) return
 
-                if (fs != syncServiceState.pendingFeed) {
-                    return
-                }
-
-                insertStories(apiResponse!!, fs, cursorFilters.stateFilter)
+                // SyncService.kt validates and inserts under the same session lock used by resets.
+                if (!commitCurrent(requireReadySession = true) {
+                    insertStories(apiResponse!!, fs, cursorFilters.stateFilter)
+                    syncServiceState.addFeedPagesSeen(fs, pageNumber)
+                    totalStoriesSeen += apiResponse.stories.size
+                    syncServiceState.addFeedStoriesSeen(fs, totalStoriesSeen)
+                    if (apiResponse.stories.isEmpty()) {
+                        syncServiceState.addFeedSetExhausted(fs)
+                        finished = true
+                    }
+                }) return
                 // re-do any very recent actions that were incorrectly overwritten by this page
                 finishActions()
                 sendSyncUpdate(UPDATE_STORY or UPDATE_STATUS)
 
-                syncServiceState.addFeedPagesSeen(fs, pageNumber)
-                totalStoriesSeen += apiResponse.stories.size
-                syncServiceState.addFeedStoriesSeen(fs, totalStoriesSeen)
-                if (apiResponse.stories.size == 0) {
-                    syncServiceState.addFeedSetExhausted(fs)
-                    finished = true
-                    return
-                }
+                if (finished) return
 
                 // don't let the page loop block actions
                 if (dbHelper.getUntriedActionCount() > 0) return
@@ -671,9 +677,12 @@ open class SyncService :
             finished = true
         } finally {
             sendSyncUpdate(UPDATE_STATUS)
-            synchronized(syncServiceState.pendingFeedMutex) {
-                if (finished && generationContext.isActive && fs == syncServiceState.pendingFeed) {
-                    syncServiceState.pendingFeed = null
+            if (finished) {
+                commitCurrent {
+                    // SyncService.kt keeps a larger target requested after the last page check.
+                    if (syncServiceState.exhaustedFeeds.contains(fs) || totalStoriesSeen >= syncServiceState.pendingFeedTarget) {
+                        syncServiceState.pendingFeed = null
+                    }
                 }
             }
         }

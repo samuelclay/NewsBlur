@@ -8,6 +8,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.Log
 import com.newsblur.util.ReadingAction
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.concurrent.Volatile
@@ -25,6 +26,7 @@ interface SyncServiceState {
 
     var pendingFeed: FeedSet?
     var pendingFeedTarget: Int
+    val readingSessionGeneration: Long
 
     /**
      * Feed to reset to zero-state, so it is fetched fresh, presumably with new filters.
@@ -155,7 +157,17 @@ class DefaultSyncServiceState
         override var lastApiFailure: Long = 0L
         override var lastActionCount: Int = 0
 
+        private val sessionGeneration = AtomicLong()
+        override val readingSessionGeneration: Long get() = sessionGeneration.get()
+
+        @Volatile
         override var pendingFeed: FeedSet? = null
+            set(value) {
+                synchronized(pendingFeedMutex) {
+                    if (field != value) sessionGeneration.incrementAndGet()
+                    field = value
+                }
+            }
         override var pendingFeedTarget: Int = 0
 
         @Volatile
@@ -215,9 +227,12 @@ class DefaultSyncServiceState
         }
 
         override fun resetFetchState(fs: FeedSet?) {
-            synchronized(resetFeedMutex) {
-                Log.d(SyncServiceState::class.java.name, "requesting feed fetch state reset")
-                resetFeed = fs
+            synchronized(pendingFeedMutex) {
+                synchronized(resetFeedMutex) {
+                    sessionGeneration.incrementAndGet()
+                    Log.d(SyncServiceState::class.java.name, "requesting feed fetch state reset")
+                    resetFeed = fs
+                }
             }
         }
 
@@ -322,13 +337,16 @@ class DefaultSyncServiceState
         }
 
         override fun clearState() {
-            pendingFeed = null
-            resetFeed = null
-            _followupActions.clear()
-            _recountCandidates.clear()
-            _exhaustedFeeds.clear()
-            _feedPagesSeen.clear()
-            _feedStoriesSeen.clear()
+            synchronized(pendingFeedMutex) {
+                sessionGeneration.incrementAndGet()
+                pendingFeed = null
+                resetFeed = null
+                _followupActions.clear()
+                _recountCandidates.clear()
+                _exhaustedFeeds.clear()
+                _feedPagesSeen.clear()
+                _feedStoriesSeen.clear()
+            }
 
             UnreadsSubService.clear()
             ImagePrefetchSubService.clear()
@@ -383,6 +401,7 @@ class DefaultSyncServiceState
         override fun resetReadingSession(dbHelper: BlurDatabaseHelper) {
             Log.d(SyncServiceState::class.simpleName, "requesting reading session reset")
             synchronized(pendingFeedMutex) {
+                sessionGeneration.incrementAndGet()
                 pendingFeed = null
                 dbHelper.sessionFeedSet = null
             }
