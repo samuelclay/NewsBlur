@@ -295,17 +295,136 @@ class SessionDataSourceTest {
         } ?: Assert.fail("Next session is null for F5 feedSetFolder")
     }
 
+    @Test
+    fun `next unread folder stops when a filtered session contains only read feeds`() {
+        val feed = createFeed("20")
+        val sessionDs =
+            SessionDataSource(
+                Session(FeedSet.singleFeed("20"), "F2", feed),
+                listOf("F1", "F2"),
+                listOf(emptyList(), listOf(feed)),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        Assert.assertNull(sessionDs.peekNextSession())
+        Assert.assertNull(sessionDs.getNextSession())
+    }
+
+    @Test
+    fun `next folder stops for zero folders or a single empty folder`() {
+        for (names in listOf(emptyList(), listOf("F1"))) {
+            val sessionDs =
+                SessionDataSource(
+                    Session(FeedSet.folder("F1", emptySet())),
+                    names,
+                    names.map { emptyList<Feed>() },
+                )
+            Assert.assertNull(sessionDs.peekNextSession())
+            Assert.assertNull(sessionDs.getNextSession())
+        }
+    }
+
+    @Test
+    fun `next folder stops after visiting an entirely empty folder list`() {
+        val sessionDs =
+            SessionDataSource(
+                Session(FeedSet.folder("F2", emptySet())),
+                folders,
+                folders.map { emptyList<Feed>() },
+            )
+        Assert.assertNull(sessionDs.peekNextSession())
+        Assert.assertNull(sessionDs.getNextSession())
+    }
+
+    @Test
+    fun `next folder stops when every feed is excluded by the state filter`() {
+        for (filter in listOf(StateFilter.BEST, StateFilter.SAVED)) {
+            val sessionDs =
+                SessionDataSource(
+                    Session(FeedSet.folder("F1", setOf("10"))),
+                    listOf("F1", "F2"),
+                    listOf(listOf(createFeed("10", neutralCount = 2)), listOf(createFeed("20", neutralCount = 1))),
+                    filter,
+                    emptySet(),
+                )
+            Assert.assertNull(sessionDs.peekNextSession())
+        }
+    }
+
+    @Test
+    fun `next unread folder wraps past empty and ineligible folders`() {
+        val sessionDs =
+            SessionDataSource(
+                Session(FeedSet.folder("F5", setOf("50"))),
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(createFeed("20", positiveCount = 1), createFeed("21")),
+                    emptyList(),
+                    emptyList(),
+                    listOf(createFeed("50")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+        Assert.assertEquals("F2", sessionDs.peekNextSession()?.folderName)
+        Assert.assertEquals(setOf("20", "21"), sessionDs.getNextSession()?.feedSet?.flatFeedIds)
+    }
+
+    @Test
+    fun `eligible origin remains the wrap target when all other folders are empty`() {
+        val feed = createFeed("20", neutralCount = 1)
+        val sessionDs =
+            SessionDataSource(
+                Session(FeedSet.folder("F2", setOf("20"))),
+                listOf("F1", "F2", "F3"),
+                listOf(emptyList(), listOf(feed), emptyList()),
+                StateFilter.ALL,
+                emptySet(),
+            )
+        Assert.assertEquals("F2", sessionDs.peekNextSession()?.folderName)
+        Assert.assertEquals(setOf("20"), sessionDs.getNextSession()?.feedSet?.flatFeedIds)
+    }
+
+    @Test
+    fun `single eligible folder and unknown folder still have no next folder`() {
+        for ((activeFolder, names) in listOf("F1" to listOf("F1"), "Missing Folder" to listOf("F1", "F2"))) {
+            val sessionDs =
+                SessionDataSource(
+                    Session(FeedSet.folder(activeFolder, setOf("10"))),
+                    names,
+                    names.map { listOf(createFeed("10", positiveCount = 1)) },
+                    StateFilter.ALL,
+                    emptySet(),
+                )
+            Assert.assertNull(sessionDs.peekNextSession())
+        }
+    }
+
+    @Test
+    fun `next folder tolerates missing children for some folder names`() {
+        val sessionDs =
+            SessionDataSource(
+                Session(FeedSet.folder("F1", emptySet())),
+                folders,
+                listOf(emptyList()),
+                StateFilter.ALL,
+                emptySet(),
+            )
+        Assert.assertNull(sessionDs.peekNextSession())
+    }
+
     private fun createFeed(
         id: String,
         positiveCount: Int = 0,
         neutralCount: Int = 0,
         negativeCount: Int = 0,
-    ) =
-        Feed().apply {
-            feedId = id
-            title = "Feed #$id"
-            this.positiveCount = positiveCount
-            this.neutralCount = neutralCount
-            this.negativeCount = negativeCount
-        }
+    ) = Feed().apply {
+        feedId = id
+        title = "Feed #$id"
+        this.positiveCount = positiveCount
+        this.neutralCount = neutralCount
+        this.negativeCount = negativeCount
+    }
 }
