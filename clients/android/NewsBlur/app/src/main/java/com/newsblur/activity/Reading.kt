@@ -904,22 +904,25 @@ abstract class Reading :
 
     override fun onPageSelected(position: Int) {
         val isRestoringSelection = isRestoringState
+        val story = readingAdapter?.getStory(position)
+        if (story != null) {
+            // Reading.kt updates navigation immediately; already-read pages may never send another read-state update.
+            synchronized(pageHistory) {
+                if (pageHistory.lastOrNull() != story) {
+                    pageHistory.add(story)
+                }
+            }
+            traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+        }
         lifecycleScope.executeAsyncTask(
             doInBackground = {
                 readingAdapter?.let { readingAdapter ->
-                    val story = readingAdapter.getStory(position)
                     if (story != null) {
                         logReaderRestore(
                             "onPageSelected position=$position story=${storyDebug(story)} " +
                                 "restoring=$isRestoringSelection current=${pager?.currentItem ?: -1} count=${readingAdapter.count}",
                         )
                         beginReadTimeTracking(story.storyHash)
-                        synchronized(pageHistory) {
-                            // if the history is just starting out or the last entry in it isn't this page, add this page
-                            if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
-                                pageHistory.add(story)
-                            }
-                        }
 
                         // Don't mark stories read during activity recreation (e.g., rotation).
                         // The user is still on the same story, not navigating to a new one.
