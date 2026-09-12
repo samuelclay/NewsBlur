@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 @testable import NewsBlur
 
@@ -103,6 +104,57 @@ import XCTest
         XCTAssertNil(releasedMenu)
     }
 
+    #if targetEnvironment(macCatalyst)
+    func test_catalystSettingsPopoverRetainsTheActualNativeToolbarAnchorAtDifferentWidths() throws {
+        let fixture = makeAnchorFixture()
+        defer { fixture.app.feedsNavigationController = nil; fixture.navigation.capturedPresentation = nil }
+        let toolbar = NSToolbar(identifier: "MenuPreferenceSelectionTests")
+        let item = try XCTUnwrap(ToolbarDelegate().toolbar(toolbar, itemForItemIdentifier: .feedDetailSettings, willBeInsertedIntoToolbar: false))
+        let action = try XCTUnwrap(item.action)
+        XCTAssertTrue(fixture.reader.responds(to: action))
+        for width: CGFloat in [340, 700, 1100, 340] {
+            fixture.navigation.view.frame.size.width = width
+            fixture.reader.perform(action, with: item)
+            let presentation = try XCTUnwrap(fixture.navigation.capturedPresentation)
+            let popover = try XCTUnwrap(presentation.popoverPresentationController)
+            XCTAssertEqual(presentation.modalPresentationStyle, .popover)
+            XCTAssertTrue(popover.sourceItem === item, "MenuPreferenceSelectionTests.swift must retain the real toolbar source as its position changes with the window")
+        }
+    }
+
+    func test_catalystSettingsPopoverAnchorsToTheActualViewSenderAfterItMoves() throws {
+        let fixture = makeAnchorFixture()
+        defer { fixture.app.feedsNavigationController = nil; fixture.navigation.capturedPresentation = nil }
+        let button = UIButton(type: .custom)
+        fixture.reader.view.addSubview(button)
+        for origin in [CGPoint(x: 18, y: 24), CGPoint(x: 245, y: 62), CGPoint(x: 80, y: 30)] {
+            button.frame = CGRect(origin: origin, size: CGSize(width: 28, height: 28))
+            fixture.reader.openSettingsMenu(button)
+            let presentation = try XCTUnwrap(fixture.navigation.capturedPresentation)
+            let popover = try XCTUnwrap(presentation.popoverPresentationController)
+            XCTAssertTrue(popover.sourceView === button)
+            XCTAssertTrue(popover.sourceRect.isNull || popover.sourceRect == button.bounds)
+        }
+    }
+
+    private func makeAnchorFixture() -> (app: MenuAnchorAppDelegate, reader: MenuAnchorFeedController, navigation: MenuAnchorNavigationController) {
+        let app = MenuAnchorAppDelegate()
+        let reader = MenuAnchorFeedController()
+        app.testFeed = reader
+        reader.appDelegate = app
+        let collection = StoriesCollection()
+        collection.isRiverView = true
+        collection.activeFolder = "everything"
+        app.storiesCollection = collection
+        reader.storiesCollection = collection
+        let navigation = MenuAnchorNavigationController(rootViewController: reader)
+        app.feedsNavigationController = navigation
+        navigation.loadViewIfNeeded()
+        reader.loadViewIfNeeded()
+        return (app, reader, navigation)
+    }
+    #endif
+
     private func select(_ row: Int, in menu: MenuViewController) {
         menu.tableView(menu.menuTableView, didSelectRowAt: IndexPath(row: row, section: 0))
         menu.view.layoutIfNeeded()
@@ -134,3 +186,27 @@ import XCTest
         pushViewController(vc, animated: false)
     }
 }
+
+#if targetEnvironment(macCatalyst)
+@MainActor private final class MenuAnchorAppDelegate: NewsBlurAppDelegate {
+    weak var testFeed: MenuAnchorFeedController?
+    override var feedDetailViewController: FeedDetailViewController! { testFeed }
+}
+
+@MainActor private final class MenuAnchorFeedController: FeedDetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 340, height: 600)) }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+}
+
+@MainActor private final class MenuAnchorNavigationController: UINavigationController {
+    var capturedPresentation: UIViewController?
+    override func present(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        // MenuPreferenceSelectionTests.swift observes real popover configuration without showing UI or using the live account.
+        capturedPresentation = viewControllerToPresent
+        completion?()
+    }
+}
+#endif
