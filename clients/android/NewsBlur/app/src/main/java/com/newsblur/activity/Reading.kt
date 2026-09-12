@@ -222,6 +222,7 @@ abstract class Reading :
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
     private var unreadSearchActive = false
+    private var navigationIntentGeneration = 0L
     private var restoredStoryScrollPosRel = 0f
     private var pendingConfigChangeRestore: ReadingConfigChangeRestore? = null
     private var restoredCurrentStory: Story? = null
@@ -407,6 +408,7 @@ abstract class Reading :
     }
 
     override fun onPause() {
+        cancelUnreadSearch()
         readerIsPaused = true
         if (isFinishing) {
             preparedPageNavigation?.cancel(releaseSnapshot = false)
@@ -842,6 +844,7 @@ abstract class Reading :
     }
 
     private fun navigateToStory(position: Int, isHistoryBack: Boolean = false) {
+        cancelUnreadSearch()
         val activePager = pager ?: return
         val adapter = readingAdapter ?: return
         val destination = adapter.getStory(position) ?: return
@@ -1044,6 +1047,7 @@ abstract class Reading :
     // interface OnPageChangeListener
     override fun onPageScrollStateChanged(arg0: Int) {
         if (arg0 == ViewPager.SCROLL_STATE_DRAGGING) {
+            cancelUnreadSearch()
             clearCurrentStoryPins()
         }
     }
@@ -1289,10 +1293,7 @@ abstract class Reading :
 
             OverlayRightAction.FINISH_READING -> finish()
 
-            OverlayRightAction.NEXT_UNREAD ->
-                lifecycleScope.executeAsyncTask(
-                    doInBackground = { nextUnread() },
-                )
+            OverlayRightAction.NEXT_UNREAD -> nextUnread()
         }
     }
 
@@ -1300,76 +1301,60 @@ abstract class Reading :
      * Search our set of stories for the next unread one.
      */
     private fun nextUnread() {
+        // Reading.kt records taps on main before dispatching work, so a slow Next cannot undo a newer Previous.
+        cancelUnreadSearch()
+        val intentGeneration = navigationIntentGeneration
         clearCurrentStoryPins()
         unreadSearchActive = true
 
         // if we somehow got tapped before construction or are running during destruction, stop and
         // let either finish. search will happen when the cursor is pushed.
-        if (pager == null || readingAdapter == null) return
-
-        var unreadFound = false
-        // start searching just after the current story
+        val adapter = readingAdapter ?: return
+        if (pager == null || stopLoading || isFinishing || isDestroyed) return
         val currentIndex = requestedReadingPosition()
-        var candidate = currentIndex + 1
-        unreadSearch@ while (!unreadFound) {
-            // if we've reached the end of the list, start searching backward from the current story
-            if (candidate >= readingAdapter!!.count) {
-                candidate = currentIndex - 1
-            }
-            // if we have looked all the way back to the first story, there aren't any left
-            if (candidate < 0) {
-                break@unreadSearch
-            }
-            val story = readingAdapter!!.getStory(candidate)
-            if (stopLoading) {
-                // this activity was ended before we finished. just stop.
-                unreadSearchActive = false
-                return
-            }
-            // iterate through the stories in our cursor until we find an unread one
-            if (story != null) {
-                unreadFound =
-                    if (story.read) {
-                        if (candidate > currentIndex) {
-                            // if we are still searching past the current story, search forward
-                            candidate++
-                        } else {
-                            // if we hit the end and re-started before the current story, search backward
-                            candidate--
-                        }
-                        continue@unreadSearch
-                    } else {
-                        true
-                    }
-            }
-            // if we didn't continue or break, the cursor probably changed out from under us, so stop.
-            break@unreadSearch
-        }
+        // Reading.kt only retries on a new batch after this search actually needs more stories.
+        unreadSearchActive = false
+        lifecycleScope.executeAsyncTask(
+            doInBackground = { findNextUnreadHash(adapter, currentIndex) },
+            onPostExecute = { targetHash ->
+                if (intentGeneration != navigationIntentGeneration || stopLoading || isFinishing || isDestroyed) {
+                    if (BuildConfig.DEBUG) Log.d("NB.Reader", "page_search_discarded")
+                    return@executeAsyncTask
+                }
+                // Reading.kt resolves by hash again: a sync batch may have reordered the adapter during the search.
+                val position = targetHash?.let { readingAdapter?.findHash(it) } ?: -1
+                if (position >= 0) {
+                    navigateToStory(position)
+                } else if (unreadCount > 0) {
+                    unreadSearchActive = true
+                    checkStoryCount((readingAdapter?.count ?: 0) + 1)
+                }
+            },
+        )
+    }
 
-        if (unreadFound) {
-            // jump to the story we found
-            val page = candidate
-            runOnUiThread { navigateToStory(page) }
-            // disable the search flag, as we are done
-            unreadSearchActive = false
-        } else {
-            // We didn't find a story, so we should trigger a check to see if the API can load any more.
-            // First, though, double check that there are even any left, as there may have been a delay
-            // between marking an earlier one and double-checking counts.
-            if (unreadCount <= 0) {
-                unreadSearchActive = false
-            } else {
-                // trigger a check to see if there are any more to search before proceeding. By leaving the
-                // unreadSearchActive flag high, this method will be called again when a new cursor is loaded
-                checkStoryCount(readingAdapter!!.count + 1)
-            }
+    private fun findNextUnreadHash(adapter: ReadingAdapter, currentIndex: Int): String? {
+        for (candidate in currentIndex + 1 until adapter.count) {
+            val story = adapter.getStory(candidate) ?: return null
+            if (!story.read) return story.storyHash
         }
+        for (candidate in currentIndex - 1 downTo 0) {
+            val story = adapter.getStory(candidate) ?: return null
+            if (!story.read) return story.storyHash
+        }
+        return null
+    }
+
+    private fun cancelUnreadSearch() {
+        navigationIntentGeneration++
+        unreadSearchActive = false
     }
 
     /**
      * Click handler for the lefthand overlay nav button.
      */
     private fun overlayLeftClick() {
+        cancelUnreadSearch()
         if (preparedPageNavigation?.isPreparing == true) {
             val target = preparedPageNavigation?.requestedTarget ?: return
             val backHash = if (target.isHistoryBack) {
@@ -1556,6 +1541,7 @@ abstract class Reading :
     }
 
     private fun nextStory() {
+        cancelUnreadSearch()
         if (pager == null) return
         clearCurrentStoryPins()
         val nextPosition = requestedReadingPosition() + 1
@@ -1569,6 +1555,7 @@ abstract class Reading :
     }
 
     private fun previousStory() {
+        cancelUnreadSearch()
         if (pager == null) return
         clearCurrentStoryPins()
         val nextPosition = requestedReadingPosition() - 1
@@ -1688,6 +1675,7 @@ abstract class Reading :
      * passes back the last read item position from the pager
      */
     override fun finish() {
+        cancelUnreadSearch()
         if (!allowImmediateFinish && shouldAnimateReaderBackFinish()) {
             completeInteractiveReaderBackSwipe()
             return
@@ -1784,6 +1772,7 @@ abstract class Reading :
     }
 
     private fun completeInteractiveReaderBackSwipe() {
+        cancelUnreadSearch()
         val surface = interactiveBackSurface()
         preparedPageNavigation?.cancel(releaseSnapshot = false)
         readerPageSnapshot?.freezeForExit()
