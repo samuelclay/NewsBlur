@@ -11,7 +11,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
-/** Serializes StoriesViewModel.kt cursor work and discards superseded refresh requests. */
+/** Serializes AllFoldersViewModel.kt/StoriesViewModel.kt queries and StoryViewAdapter.kt diffs without starving an active snapshot. */
 internal class LatestStoryLoadRunner<Request, Result>(
     scope: CoroutineScope,
     queryDispatcher: CoroutineDispatcher,
@@ -86,13 +86,22 @@ internal class LatestStoryLoadRunner<Request, Result>(
         cancel(pending.request)
     }
 
-    fun close() {
-        if (closed) return
-        closed = true
+    fun invalidate() {
         val previous = latest
         latest = null
         active?.let(::cancelPending)
         previous?.let(::cancelPending)
+        activeQuery?.cancel()
+        while (true) {
+            val pending = requests.tryReceive().getOrNull() ?: break
+            cancelPending(pending)
+        }
+    }
+
+    fun close() {
+        if (closed) return
+        closed = true
+        invalidate()
         requests.close()
         worker.cancel()
     }

@@ -294,23 +294,16 @@ public class ItemSetFragment extends NbFragment {
 
         if (!dbHelper.isFeedSetReady(getFeedSet())) {
             com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
-            updateAdapter(Collections.emptyList(), storyBatch.getLoadId());
+            updateAdapter(Collections.emptyList(), storyBatch.getLoadId(), -1);
             triggerRefresh(1, null);
         } else {
             dataSeenYet = true;
-            com.newsblur.util.Log.d(this.getClass().getName(), "loaded stories count: ${batch.stories.size}");
-            updateAdapter(storyBatch.getStories(), storyBatch.getLoadId());
+            updateAdapter(storyBatch.getStories(), storyBatch.getLoadId(), storyBatch.getIndexOfLastUnread());
             if (storyBatch.getStories().isEmpty()) {
                 triggerRefresh(1, 0);
             }
-            storyThawCompleted(storyBatch.getIndexOfLastUnread());
         }
         updateLoadingIndicators();
-        updateBottomNextFeedControl();
-        ItemsList activity = (ItemsList) getActivity();
-        if (activity != null) {
-            activity.refreshStoryStatusIndicators();
-        }
     }
 
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
@@ -427,21 +420,27 @@ public class ItemSetFragment extends NbFragment {
         return (adapter != null) && (adapter.getRawStoryCount() > 0);
     }
 
-    private void updateAdapter(@NonNull List<Story> stories, Long loadId) {
-        adapter.updateFeedSet(getFeedSet());
-        adapter.submitStories(stories, loadId, binding.itemgridfragmentGrid, gridState, skipBackFillingStories);
+    private void updateAdapter(@NonNull List<Story> stories, Long loadId, int lastUnreadIndex) {
+        FeedSet submittedFeed = FeedSet.fromCompactSerial(getFeedSet().toCompactSerial());
+        RecyclerView submittedGrid = binding.itemgridfragmentGrid;
+        adapter.updateFeedSet(submittedFeed);
+        adapter.submitStories(stories, loadId, submittedGrid, gridState, skipBackFillingStories, () -> {
+            if (!isAdded() || binding == null || binding.itemgridfragmentGrid != submittedGrid ||
+                    submittedGrid.getAdapter() != adapter || !submittedFeed.equals(getFeedSet())) return;
+
+            // ItemSetFragment.java must use committed rows: a pre-diff zero count makes
+            // SyncServiceState.kt restart pagination, producing another batch that cancels the initial diff.
+            boolean empty = adapter.getRawStoryCount() == 0;
+            submittedGrid.setVisibility(empty ? View.INVISIBLE : View.VISIBLE);
+            binding.emptyView.setVisibility(empty ? View.VISIBLE : View.INVISIBLE);
+            storyThawCompleted(lastUnreadIndex);
+            ensureSufficientStories();
+            updateLoadingIndicators();
+            updateBottomNextFeedControl();
+            ItemsList activity = (ItemsList) getActivity();
+            if (activity != null) activity.refreshStoryStatusIndicators();
+        });
         gridState = null;
-
-        if (stories.isEmpty()) {
-            binding.itemgridfragmentGrid.setVisibility(View.INVISIBLE);
-            binding.emptyView.setVisibility(View.VISIBLE);
-        } else {
-            binding.itemgridfragmentGrid.setVisibility(View.VISIBLE);
-            binding.emptyView.setVisibility(View.INVISIBLE);
-        }
-
-        ensureSufficientStories();
-        updateBottomNextFeedControl();
     }
 
     private void updateLoadingIndicators() {
@@ -961,6 +960,8 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void ensureSufficientStories() {
+        // StoryViewAdapter.kt may have committed an intermediate snapshot while a fresher one is queued.
+        if (adapter.isUpdatingStories()) return;
         // don't ask the list for how many rows it actually has - it may still be thawing from the cursor
         int totalCount = adapter.getRawStoryCount();
         int visibleCount = layoutManager.getChildCount();

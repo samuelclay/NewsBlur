@@ -17,6 +17,29 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class LatestStoryLoadRunnerTest {
     @Test
+    fun invalidatingCancelsActiveAndQueuedWorkWithoutClosingTheRunner() = runTest {
+        val delivered = mutableListOf<Int>()
+        val cancelled = mutableListOf<Int>()
+        val runner = LatestStoryLoadRunner(backgroundScope, StandardTestDispatcher(testScheduler), { request: Int ->
+            delay(100)
+            request
+        }, cancelled::add, delivered::add, sameQuery = { _, _ -> true }) { throw it }
+
+        runner.submit(1)
+        runCurrent()
+        runner.submit(2)
+        runner.invalidate()
+        runner.submit(3)
+        runCurrent()
+        advanceTimeBy(100)
+        runCurrent()
+
+        assertEquals(listOf(1, 2), cancelled)
+        assertEquals(listOf(3), delivered)
+        runner.close()
+    }
+
+    @Test
     fun aSameFeedRefreshPublishesTheActiveSnapshotThenOnlyTheNewestPendingRevision() = runTest {
         val delivered = mutableListOf<Int>()
         val queries = mutableListOf<Int>()

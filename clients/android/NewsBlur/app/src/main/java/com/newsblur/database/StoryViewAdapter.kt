@@ -70,14 +70,12 @@ import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.util.storyRowLayout
 import com.newsblur.view.StoryThumbnailView
+import com.newsblur.viewModel.LatestStoryLoadRunner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -126,11 +124,17 @@ class StoryViewAdapter(
     private val titleCache = StoryTitleCache { SpannedString(UIUtils.fromHtml(it)) }
     private val useHardwareRowLayers: Boolean
 
-    @Volatile
     private var lastLoadId: Long = -1L
+    private var committedLoadId: Long = -1L
+    private var diffGeneration = 0L
+    private var diffFeedSet: FeedSet? = FeedSet.fromCompactSerial(fs.toCompactSerial())
+    private val adapterScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val diffDispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
+    private var diffRunner: LatestStoryLoadRunner<StorySubmission, StoryDifference>? = null
+    private var latestSubmission: StorySubmission? = null
 
-    private val adapterScope = CoroutineScope(SupervisorJob() + Dispatchers.Default.limitedParallelism(1))
-    private var diffJob: Job? = null
+    val isUpdatingStories: Boolean
+        get() = lastLoadId != committedLoadId
 
     init {
         this.fs = fs
@@ -208,14 +212,27 @@ class StoryViewAdapter(
     }
 
     fun updateFeedSet(fs: FeedSet?) {
+        if (fs != diffFeedSet) {
+            invalidateStoryDiffs()
+            oldScrollState = null
+            pendingScrollStoryHash = null
+            pendingHighlightStoryHash = null
+            diffFeedSet = fs?.let { FeedSet.fromCompactSerial(it.toCompactSerial()) }
+        }
         this.fs = fs
+    }
+
+    private fun invalidateStoryDiffs() {
+        diffGeneration++
+        diffRunner?.invalidate()
+        latestSubmission = null
+        lastLoadId = -1L
+        committedLoadId = -1L
     }
 
     @Synchronized
     fun clearStoriesNow() {
-        diffJob?.cancel()
-        diffJob = null
-        lastLoadId = -1L
+        invalidateStoryDiffs()
         oldScrollState = null
         pendingScrollStoryHash = null
         pendingHighlightStoryHash = null
@@ -273,80 +290,111 @@ class StoryViewAdapter(
         return displayItems.getOrNull(position)?.stableId ?: 0L
     }
 
+    @JvmOverloads
     fun submitStories(
         stories: List<Story>,
         loadId: Long,
         rv: RecyclerView,
         oldScrollState: Parcelable?,
         skipBackFillingStories: Boolean,
+        onCommitted: Runnable? = null,
     ) {
         lastLoadId = loadId
-        activeFeedIds = null
-        clusterThumbnailUrls.clear()
-
+        // StoryViewAdapter.kt keeps explicit restoration even when its batch is superseded in the queue.
         oldScrollState?.let { this.oldScrollState = it }
+        val runner = diffRunner ?: newDiffRunner().also { diffRunner = it }
+        val submission = StorySubmission(stories, loadId, rv, skipBackFillingStories, diffGeneration, onCommitted)
+        latestSubmission = submission
+        runner.submit(submission)
+    }
 
-        diffJob?.cancel()
-        diffJob =
-            adapterScope.launch {
-                val filtered = applySkipBackfill(incoming = stories, skip = skipBackFillingStories)
-                val newDisplayItems = buildDisplayItems(filtered)
-                val oldDisplayItems = synchronized(this@StoryViewAdapter) { displayItems.toList() }
+    private fun newDiffRunner() =
+        LatestStoryLoadRunner(
+            scope = adapterScope,
+            queryDispatcher = diffDispatcher,
+            load = ::calculateStoryDiff,
+            cancel = {},
+            publish = ::commitStoryDiff,
+            sameQuery = { first, second -> first.generation == second.generation && first.grid === second.grid },
+            onError = { error -> Log.e(this, "error diffing: ${error.message}", error) },
+        )
 
-                val diff =
-                    try {
-                        DiffUtil.calculateDiff(DisplayItemDiffer(oldDisplayItems, newDisplayItems), false)
-                    } catch (e: Exception) {
-                        Log.e(this@StoryViewAdapter, "error diffing: ${e.message}", e)
-                        return@launch
-                    }
+    private fun calculateStoryDiff(submission: StorySubmission): StoryDifference {
+        val startedAt = if (BuildConfig.DEBUG) SystemClock.elapsedRealtime() else 0L
+        if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "start id=${submission.loadId} rows=${submission.stories.size}")
+        activeFeedIds = null
+        val filtered = applySkipBackfill(submission.stories, submission.skipBackfill)
+        val newItems = buildDisplayItems(filtered)
+        val oldItems = synchronized(this) { displayItems.toList() }
+        val diff = DiffUtil.calculateDiff(DisplayItemDiffer(oldItems, newItems), false)
+        if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "end id=${submission.loadId} rows=${newItems.size} elapsedMs=${SystemClock.elapsedRealtime() - startedAt}")
+        return StoryDifference(submission, filtered, newItems, diff)
+    }
 
-                if (loadId != lastLoadId) return@launch
-
-                withContext(Dispatchers.Main) {
-                    if (loadId != lastLoadId) return@withContext
-                    synchronized(this@StoryViewAdapter) {
-                        this@StoryViewAdapter.stories.clear()
-                        this@StoryViewAdapter.stories.addAll(filtered)
-                        this@StoryViewAdapter.displayItems.clear()
-                        this@StoryViewAdapter.displayItems.addAll(newDisplayItems)
-                        rebuildStoryDisplayPositions()
-                        diff.dispatchUpdatesTo(this@StoryViewAdapter)
-                        val lm = rv.layoutManager
-                        if (lm != null) {
-                            // StoryViewAdapter.kt restores only a requested navigation/configuration state.
-                            // DiffUtil already preserves the visible anchor during ordinary read/sync updates.
-                            this@StoryViewAdapter.oldScrollState?.let {
-                                lm.onRestoreInstanceState(it)
-                                this@StoryViewAdapter.oldScrollState = null
-                            }
-                            val pendingHash = pendingScrollStoryHash
-                            if (pendingHash != null) {
-                                pendingScrollStoryHash = null
-                                val pos = getDisplayPositionForStoryHash(pendingHash)
-                                if (pos >= 0) {
-                                    val llm = lm as? LinearLayoutManager
-                                    val first = llm?.findFirstVisibleItemPosition() ?: -1
-                                    val last = llm?.findLastVisibleItemPosition() ?: -1
-                                    if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
-                                        val topOffset = (rv.height * 0.15f).toInt()
-                                        llm?.scrollToPositionWithOffset(pos, topOffset)
-                                    }
-                                }
-                            }
-                        }
-                        val highlightHash = pendingHighlightStoryHash
-                        if (highlightHash != null) {
-                            pendingHighlightStoryHash = null
-                            val highlightPos = getDisplayPositionForStoryHash(highlightHash)
-                            if (highlightPos >= 0) {
-                                animateReturnHighlight(rv, highlightPos)
-                            }
+    private fun commitStoryDiff(result: StoryDifference) {
+        val submission = result.submission
+        val rv = submission.grid
+        if (submission.generation != diffGeneration || rv.adapter !== this) return
+        synchronized(this) {
+            clusterThumbnailUrls.clear()
+            stories.clear()
+            stories.addAll(result.stories)
+            displayItems.clear()
+            displayItems.addAll(result.items)
+            rebuildStoryDisplayPositions()
+            committedLoadId = submission.loadId
+            result.diff.dispatchUpdatesTo(this)
+            val lm = rv.layoutManager
+            if (lm != null && !isUpdatingStories) {
+                // StoryViewAdapter.kt restores only requested navigation/configuration state.
+                // Wait for the newest snapshot so a partial one cannot consume its saved position.
+                // DiffUtil preserves the visible anchor during ordinary read/sync updates.
+                oldScrollState?.let {
+                    lm.onRestoreInstanceState(it)
+                    oldScrollState = null
+                }
+                val pendingHash = pendingScrollStoryHash
+                if (pendingHash != null) {
+                    pendingScrollStoryHash = null
+                    val pos = getDisplayPositionForStoryHash(pendingHash)
+                    if (pos >= 0) {
+                        val llm = lm as? LinearLayoutManager
+                        val first = llm?.findFirstVisibleItemPosition() ?: -1
+                        val last = llm?.findLastVisibleItemPosition() ?: -1
+                        if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
+                            val topOffset = (rv.height * 0.15f).toInt()
+                            llm?.scrollToPositionWithOffset(pos, topOffset)
                         }
                     }
                 }
             }
+            val highlightHash = pendingHighlightStoryHash
+            if (highlightHash != null && !isUpdatingStories) {
+                pendingHighlightStoryHash = null
+                val highlightPos = getDisplayPositionForStoryHash(highlightHash)
+                if (highlightPos >= 0) animateReturnHighlight(rv, highlightPos)
+            }
+        }
+        if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "commit id=${submission.loadId} rows=${result.items.size} pending=$isUpdatingStories")
+        if (latestSubmission === submission) latestSubmission = null
+        submission.onCommitted?.run()
     }
+
+    internal data class StorySubmission(
+        val stories: List<Story>,
+        val loadId: Long,
+        val grid: RecyclerView,
+        val skipBackfill: Boolean,
+        val generation: Long,
+        val onCommitted: Runnable?,
+    )
+
+    internal data class StoryDifference(
+        val submission: StorySubmission,
+        val stories: List<Story>,
+        val items: List<DisplayItem>,
+        val diff: DiffUtil.DiffResult,
+    )
 
     private fun buildDisplayItems(stories: List<Story>): List<DisplayItem> {
         val showClusterRows = listStyle == StoryListStyle.LIST && StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo)
@@ -523,8 +571,9 @@ class StoryViewAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        diffJob?.cancel()
-        adapterScope.cancel()
+        invalidateStoryDiffs()
+        diffRunner?.close()
+        diffRunner = null
     }
 
     open inner class StoryViewHolder(
@@ -1469,8 +1518,15 @@ class StoryViewAdapter(
     }
 
     fun notifyAllItemsChanged() {
+        // StoryViewAdapter.kt must not apply a diff calculated against the row shape this replaces.
+        // Keep the latest pending data so an initial layout/preference change cannot drop its first batch.
+        val pending = latestSubmission
+        invalidateStoryDiffs()
         rebuildDisplayItemsFromCurrentStories()
         notifyDataSetChanged()
+        pending?.let {
+            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted)
+        }
     }
 
     private fun backgroundResourceFor(story: Story): Int {
