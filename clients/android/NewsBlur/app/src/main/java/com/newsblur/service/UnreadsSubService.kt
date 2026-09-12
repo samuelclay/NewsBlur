@@ -4,6 +4,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
 import com.newsblur.util.StoryOrder
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
@@ -26,7 +27,13 @@ class UnreadsSubService(
                 setServiceState(ServiceState.UnreadsSync)
 
                 if (doMeta.getAndSet(false)) {
-                    syncUnreadList()
+                    try {
+                        syncUnreadList()
+                    } catch (e: CancellationException) {
+                        // UnreadsSubService.kt retries metadata consumed by a canceled generation.
+                        doMeta.set(true)
+                        throw e
+                    }
                 }
 
                 ensureActive()
@@ -141,6 +148,7 @@ class UnreadsSubService(
 
             currentCoroutineContext().ensureActive()
             val response = storyApi.getStoriesByHash(hashBatch)
+            currentCoroutineContext().ensureActive()
             if (!SyncServiceUtil.isStoryResponseGood(response)) {
                 Log.e(this, "error fetching unreads batch, abandoning sync.")
                 break@unreadSyncLoop

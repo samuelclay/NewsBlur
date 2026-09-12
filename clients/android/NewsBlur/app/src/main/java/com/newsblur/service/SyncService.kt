@@ -44,6 +44,7 @@ import com.newsblur.util.doLocal
 import com.newsblur.util.doRemote
 import com.newsblur.util.toContentValues
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -51,10 +52,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import java.util.Date
 import javax.inject.Inject
@@ -96,6 +97,7 @@ open class SyncService :
 
     private val serviceJob = SupervisorJob()
     private var mainJob: Job? = null
+    private var scheduledJob: Job? = null
 
     override val coroutineContext: CoroutineContext =
         CoroutineName("SyncService") +
@@ -143,14 +145,13 @@ open class SyncService :
         }
         Log.d(this, "onStartJob")
         mainJob?.cancel()
-        mainJob =
-            launch {
-                try {
-                    sync()
-                } finally {
-                    jobFinished(params, false)
-                }
-            }
+        val job = primarySyncRunner.launchIn(this) { sync() }
+        job.invokeOnCompletion {
+            // SyncService.kt must finish scheduled jobs even when canceled before acquiring the runner.
+            jobFinished(params, false)
+        }
+        mainJob = job
+        scheduledJob = job
         return true // async
     }
 
@@ -169,15 +170,20 @@ open class SyncService :
             return START_NOT_STICKY
         }
         mainJob?.cancel()
-        mainJob = launch { sync() }
+        mainJob = primarySyncRunner.launchIn(this) { sync() }
         return START_NOT_STICKY
     }
 
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(this, "onStopJob")
-        syncServiceState.setServiceState(ServiceState.Idle)
-        mainJob?.cancel()
-        mainJob = null
+        val stoppedJob = scheduledJob
+        scheduledJob = null
+        stoppedJob?.cancel()
+        // SyncService.kt can have a newer foreground request after the scheduled job was superseded.
+        if (mainJob === stoppedJob) {
+            syncServiceState.setServiceState(ServiceState.Idle)
+            mainJob = null
+        }
         return false
     }
 
@@ -220,18 +226,23 @@ open class SyncService :
 
             // first: catch up
             syncActions()
+            ensureActive()
 
             // if MD is stale, sync it first so unreads don't get backwards with story unread state
             syncMetadata(this, ::trackSubSync)
+            ensureActive()
 
             // handle fetching of stories that are actively being requested by the live UI
             syncPendingFeedStories()
+            ensureActive()
 
             // re-apply the local state of any actions executed before local UI interaction
             finishActions()
+            ensureActive()
 
             // after all actions, double-check local state vs remote state consistency
             checkRecounts()
+            ensureActive()
 
             // async story and image prefetch are lower priority and don't affect active reading, do them last
             unreadsSubService.launchIn(this).also { trackSubSync(it) }
@@ -297,6 +308,7 @@ open class SyncService :
     }
 
     private suspend fun syncActions() {
+        currentCoroutineContext().ensureActive()
         if (backoffBackgroundCalls()) return
 
         var c: Cursor? = null
@@ -310,6 +322,7 @@ open class SyncService :
             val stateFilter = prefsRepo.getStateFilter()
 
             actionsLoop@ while (c.moveToNext()) {
+                currentCoroutineContext().ensureActive()
                 sendSyncUpdate(UPDATE_STATUS)
                 val id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID))
                 val ra: ReadingAction?
@@ -328,6 +341,9 @@ open class SyncService :
                 val response: NewsBlurResponse?
                 try {
                     response = ra.doRemote(syncServiceState, feedApi, storyApi, dbHelper, stateFilter)
+                } catch (e: CancellationException) {
+                    // SyncService.kt keeps canceled actions queued for the next generation.
+                    throw e
                 } catch (e: Exception) {
                     Log.e(this.javaClass.name, "Discarding reading action that threw unexpected exception", e)
                     dbHelper.clearAction(id)
@@ -373,6 +389,7 @@ open class SyncService :
         scope: CoroutineScope,
         trackSubSync: (Job) -> Unit,
     ) {
+        currentCoroutineContext().ensureActive()
         if (backoffBackgroundCalls()) return
 
         val untriedActions = dbHelper.getUntriedActionCount()
@@ -402,6 +419,7 @@ open class SyncService :
 
         try {
             val feedResponse = feedApi.getFolderFeedMapping(true)
+            currentCoroutineContext().ensureActive()
 
             if (feedResponse == null) {
                 noteHardAPIFailure()
@@ -526,6 +544,9 @@ open class SyncService :
             unreadsSubService.launchIn(scope).also { trackSubSync(it) }
             cleanupSubService.launchIn(scope).also { trackSubSync(it) }
             starredSubService.launchIn(scope).also { trackSubSync(it) }
+        } catch (e: CancellationException) {
+            syncServiceState.doFeedsFolders = true
+            throw e
         } finally {
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
         }
@@ -535,6 +556,8 @@ open class SyncService :
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
     private suspend fun syncPendingFeedStories() {
+        val generationContext = currentCoroutineContext()
+        generationContext.ensureActive()
         // track whether we actually tried to handle the feedset and found we had nothing
         // more to do, in which case we will clear it
         var finished = false
@@ -587,14 +610,15 @@ open class SyncService :
             syncServiceState.setServiceState(ServiceState.StorySync)
             sendSyncUpdate(UPDATE_STATUS)
 
-            ensureActive()
-            while (isActive && totalStoriesSeen < syncServiceState.pendingFeedTarget) {
+            while (totalStoriesSeen < syncServiceState.pendingFeedTarget) {
                 // bail if the active view has changed
                 if (fs != syncServiceState.pendingFeed) {
                     return
                 }
 
-                ensureActive()
+                // SyncService.kt is itself a CoroutineScope; check the current generation,
+                // not the service's still-active SupervisorJob.
+                currentCoroutineContext().ensureActive()
 
                 pageNumber++
                 val apiResponse =
@@ -605,6 +629,7 @@ open class SyncService :
                         cursorFilters.readFilter,
                         prefsRepo.getInfrequentCutoff(),
                     )
+                currentCoroutineContext().ensureActive()
 
                 if (!isStoryResponseGood(apiResponse)) return
 
@@ -629,11 +654,14 @@ open class SyncService :
                 // don't let the page loop block actions
                 if (dbHelper.getUntriedActionCount() > 0) return
             }
+            currentCoroutineContext().ensureActive()
             finished = true
         } finally {
             sendSyncUpdate(UPDATE_STATUS)
             synchronized(syncServiceState.pendingFeedMutex) {
-                if (finished && fs == syncServiceState.pendingFeed) syncServiceState.pendingFeed = null
+                if (finished && generationContext.isActive && fs == syncServiceState.pendingFeed) {
+                    syncServiceState.pendingFeed = null
+                }
             }
         }
     }
@@ -909,6 +937,9 @@ open class SyncService :
     fun isDisabledFeed(feedId: String): Boolean = disabledFeedIds.contains(feedId)
 
     companion object {
+        // SyncService.kt can be recreated while a canceled blocking request is winding down.
+        private val primarySyncRunner = SyncJobRunner()
+
         fun stop(context: Context) {
             Log.i(SyncService::class.java.name, "Stop service")
             val stopIntent = Intent(context, SyncService::class.java)
