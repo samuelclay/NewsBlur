@@ -2,6 +2,8 @@ package com.newsblur.database
 
 import android.os.Parcelable
 import android.os.SystemClock
+import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.domain.Story
 import com.newsblur.util.FeedSet
@@ -22,6 +24,62 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoryViewAdapterCommitTest {
+    @Test
+    fun firstStoriesReplaceTheFooterAnchorWithTheTopStoryOnlyOnce() = runTest {
+        withFixture { fixture ->
+            assertEquals("The empty list already contains a full-height footer", 1, fixture.adapter.itemCount)
+            assertEquals(0, fixture.adapter.rawStoryCount)
+            fixture.submit("1:first", 1)
+            runCurrent()
+            fixture.submit("1:updated", 2)
+            runCurrent()
+
+            verify(exactly = 1) { fixture.layoutManager.scrollToPositionWithOffset(0, 0) }
+        }
+    }
+
+    @Test
+    fun anExplicitSavedPositionTakesPriorityOverTheInitialFooterAnchor() = runTest {
+        withFixture { fixture ->
+            val state = mockk<Parcelable>()
+            fixture.submit("1:first", 1, state)
+            runCurrent()
+
+            verify(exactly = 1) { fixture.layoutManager.onRestoreInstanceState(state) }
+            verify(exactly = 0) { fixture.layoutManager.scrollToPositionWithOffset(any(), any()) }
+        }
+    }
+
+    @Test
+    fun anEmptyPrimingBatchDoesNotConsumeExplicitRestorationBeforeStoriesArrive() = runTest {
+        withFixture { fixture ->
+            val state = mockk<Parcelable>()
+            fixture.adapter.submitStories(emptyList(), 0, fixture.grid, state, false, null)
+            runCurrent()
+            verify(exactly = 0) { fixture.layoutManager.onRestoreInstanceState(state) }
+
+            fixture.submit("1:first", 1)
+            runCurrent()
+            verify(exactly = 1) { fixture.layoutManager.onRestoreInstanceState(state) }
+            verify(exactly = 0) { fixture.layoutManager.scrollToPositionWithOffset(0, 0) }
+        }
+    }
+
+    @Test
+    fun aReturnedStoryTargetUsesItsOwnOffsetEvenWhenTheOldFooterOccupiedItsPosition() = runTest {
+        withFixture { fixture ->
+            fixture.adapter.setPendingScrollStoryHash("1:first")
+            every { fixture.grid.height } returns 1000
+            every { fixture.layoutManager.findFirstVisibleItemPosition() } returns 0
+            every { fixture.layoutManager.findLastVisibleItemPosition() } returns 0
+            fixture.submit("1:first", 1)
+            runCurrent()
+
+            verify(exactly = 1) { fixture.layoutManager.scrollToPositionWithOffset(0, 150) }
+            verify(exactly = 0) { fixture.layoutManager.scrollToPositionWithOffset(0, 0) }
+        }
+    }
+
     @Test
     fun refreshesWhileTheFirstDiffIsRunningCommitThatSnapshotThenTheNewestPendingOne() = runTest {
         withFixture { fixture ->
@@ -196,6 +254,7 @@ class StoryViewAdapterCommitTest {
     private class Fixture(scope: TestScope) {
         val adapter = mockk<StoryViewAdapter>(relaxed = true)
         val grid = mockk<RecyclerView>(relaxed = true)
+        val layoutManager = mockk<GridLayoutManager>(relaxed = true)
         val commits = mutableListOf<String>()
         val builds = mutableListOf<String>()
         val pendingAtCommit = mutableListOf<Boolean>()
@@ -210,20 +269,26 @@ class StoryViewAdapterCommitTest {
             setField("stories", mutableListOf<Story>())
             setField("displayItems", items)
             setField("storyDisplayPositions", mutableListOf<Int>())
+            setField("footerViews", mutableListOf(mockk<View>(relaxed = true)))
             setField("titleCache", StoryTitleCache { it })
             every { grid.adapter } returns adapter
+            every { grid.layoutManager } returns layoutManager
             every { adapter.submitStories(any(), any(), any(), any(), any(), any()) } answers { callOriginal() }
             every { adapter.updateFeedSet(any()) } answers { callOriginal() }
             every { adapter.clearStoriesNow() } answers { callOriginal() }
             every { adapter.notifyAllItemsChanged() } answers { callOriginal() }
             every { adapter.onDetachedFromRecyclerView(any()) } answers { callOriginal() }
             every { adapter.rawStoryCount } answers { callOriginal() }
+            every { adapter.itemCount } answers { callOriginal() }
+            every { adapter.setPendingScrollStoryHash(any()) } answers { callOriginal() }
+            every { adapter.getDisplayPositionForStoryHash(any()) } answers { callOriginal() }
             every { adapter.isUpdatingStories } answers { callOriginal() }
             every { adapter["invalidateStoryDiffs"]() } answers { callOriginal() }
             every { adapter["newDiffRunner"]() } answers { callOriginal() }
             every { adapter["calculateStoryDiff"](any<StoryViewAdapter.StorySubmission>()) } answers { callOriginal() }
             every { adapter["commitStoryDiff"](any<StoryViewAdapter.StoryDifference>()) } answers { callOriginal() }
             every { adapter["rebuildDisplayItemsFromCurrentStories"]() } answers { callOriginal() }
+            every { adapter["visibleDisplayItemCount"]() } answers { items.size }
             every { adapter["applySkipBackfill"](any<List<Story>>(), any<Boolean>()) } answers { firstArg<List<Story>>() }
             every { adapter["buildDisplayItems"](any<List<Story>>()) } answers {
                 val incoming = firstArg<List<Story>>()
