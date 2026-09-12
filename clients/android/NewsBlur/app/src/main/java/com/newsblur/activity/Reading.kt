@@ -21,6 +21,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
@@ -264,6 +265,7 @@ abstract class Reading :
     private var predictiveBackInProgress = false
     private var waitingForPreparedEntrance = false
     private var preparedEntranceTimeout: Runnable? = null
+    private var preparedEntranceLoading: Snackbar? = null
     private var preparedEntranceStartedAt = 0L
 
     // Guard against marking stories read during activity recreation (e.g., rotation).
@@ -291,8 +293,9 @@ abstract class Reading :
         if (waitingForPreparedEntrance) {
             // Reading.kt keeps the titles underneath until the local article can join the entrance animation.
             preparedEntranceStartedAt = SystemClock.uptimeMillis()
-            prepareReaderSurface(interactiveBackSurface())
-            val timeout = Runnable { revealPreparedEntrance("timeout") }
+            prepareReaderSurface(binding.root)
+            binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+            val timeout = Runnable { showPreparedEntranceLoading() }
             preparedEntranceTimeout = timeout
             interactiveBackSurface().postDelayed(timeout, 1000L)
         }
@@ -397,7 +400,10 @@ abstract class Reading :
             waitingForPreparedEntrance = false
             preparedEntranceTimeout?.let(interactiveBackSurface()::removeCallbacks)
             preparedEntranceTimeout = null
-            interactiveBackSurface().alpha = 1f
+            binding.root.alpha = 1f
+            binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+            preparedEntranceLoading?.dismiss()
+            preparedEntranceLoading = null
         }
         if (!isFinishing) {
             resetInteractiveReaderBackSwipe(cancelAnimation = true)
@@ -745,26 +751,43 @@ abstract class Reading :
             )
         }
         if (!shouldRevealPreparedReader(waitingForPreparedEntrance, storyHash, activeHash, readyStoryHash)) return
-        interactiveBackSurface().postOnAnimation { revealPreparedEntrance("visual_ready") }
+        // Reading.kt waits for the native header/layout pass too, after the WebView compositor is ready.
+        interactiveBackSurface().doOnPreDraw { revealPreparedEntrance("visual_ready") }
     }
 
     private fun revealPreparedEntrance(reason: String) {
-        if (!waitingForPreparedEntrance || isFinishing || isDestroyed) return
+        if (reason != "visual_ready" || !waitingForPreparedEntrance || isFinishing || isDestroyed) return
+        val activePosition = pager?.currentItem ?: return
+        if (readingAdapter?.getExistingItem(activePosition)?.isReadyForDisplay() != true) return
         waitingForPreparedEntrance = false
         val surface = interactiveBackSurface()
         preparedEntranceTimeout?.let(surface::removeCallbacks)
         preparedEntranceTimeout = null
+        preparedEntranceLoading?.dismiss()
+        preparedEntranceLoading = null
         if (BuildConfig.DEBUG) {
             Log.d("NB.Reader", "entrance reason=$reason elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}")
         }
         surface.translationX = surface.width.toFloat()
-        surface.alpha = 1f
+        binding.root.alpha = 1f
+        binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
         surface
             .animate()
             .translationX(0f)
             .setDuration(READING_BACK_SWIPE_SETTLE_DURATION_MS)
             .setInterpolator(READING_BACK_SWIPE_INTERPOLATOR)
             .start()
+    }
+
+    private fun showPreparedEntranceLoading() {
+        if (!waitingForPreparedEntrance || isFinishing || isDestroyed || preparedEntranceLoading != null) return
+        // Reading.kt keeps this affordance outside its hidden root, so the titles remain visible and Cancel works.
+        preparedEntranceLoading = Snackbar.make(interactiveBackSurface(), R.string.loading, Snackbar.LENGTH_INDEFINITE)
+            .setAction(android.R.string.cancel) { finish() }
+            .setActionTextColor(traverseBar.palette.tintColor)
+            .setTextColor(traverseBar.palette.tintColor)
+            .setBackgroundTint(traverseBar.palette.groupBackgroundColor)
+            .also { it.show() }
     }
 
     /*
@@ -1579,6 +1602,8 @@ abstract class Reading :
         waitingForPreparedEntrance = false
         preparedEntranceTimeout?.let(surface::removeCallbacks)
         preparedEntranceTimeout = null
+        preparedEntranceLoading?.dismiss()
+        preparedEntranceLoading = null
         val targetTranslation =
             if (surface.width > 0) {
                 surface.width.toFloat()

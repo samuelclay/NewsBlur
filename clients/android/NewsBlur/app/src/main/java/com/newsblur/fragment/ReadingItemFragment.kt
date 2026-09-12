@@ -1639,7 +1639,9 @@ class ReadingItemFragment :
         story?.storyHash?.let { (activity as? Reading)?.onReaderPageVisualReady(it) }
     }
 
-    fun isReadyForDisplay(): Boolean = hasWebViewContent && isWebVisualStateReady
+    fun isReadyForDisplay(): Boolean =
+        hasWebViewContent && isWebVisualStateReady &&
+            readingWebview?.let { it.width > 0 && it.height > 0 && !it.isLayoutRequested } == true
 
     fun releaseWebViewForBackground() {
         if (!::binding.isInitialized || isWebViewReleasedForBackground || readingWebview == null) return
