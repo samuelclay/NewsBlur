@@ -90,6 +90,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) UIPanGestureRecognizer *feedListSwipeGesture;
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *feedListEdgeSwipeGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *fullScreenPopGesture;
+@property (nonatomic, weak) UIGestureRecognizer *suppressedContentPopGesture;
+@property (nonatomic) BOOL contentPopWasEnabled;
 @property (nonatomic) CGFloat feedListRevealWidth;
 @property (nonatomic) BOOL feedListRevealActive;
 @property (nonatomic) BOOL feedListRevealBouncing;
@@ -454,6 +456,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (!StoryTitleSwipePreference.usesFullScreenBack &&
+        (gestureRecognizer == self.feedListSwipeGesture || gestureRecognizer == self.fullScreenPopGesture)) {
+        return NO;
+    }
     if (gestureRecognizer == self.feedListSwipeGesture ||
         gestureRecognizer == self.feedListEdgeSwipeGesture ||
         gestureRecognizer == self.fullScreenPopGesture) {
@@ -1149,6 +1155,21 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     navController.interactivePopGestureRecognizer.enabled = YES;
     navController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
 
+    if (@available(iOS 26.0, *)) {
+        // FeedDetailObjCViewController.m also suppresses UIKit's content-wide swipe when swipe right performs an action.
+        UIGestureRecognizer *contentPop = navController.interactiveContentPopGestureRecognizer;
+        if (!StoryTitleSwipePreference.usesFullScreenBack) {
+            if (self.suppressedContentPopGesture != contentPop) {
+                [self restoreContentPopGesture];
+                self.suppressedContentPopGesture = contentPop;
+                self.contentPopWasEnabled = contentPop.enabled;
+            }
+            contentPop.enabled = NO;
+        } else {
+            [self restoreContentPopGesture];
+        }
+    }
+
     if (self.storyTitlesTable.panGestureRecognizer) {
         [self.storyTitlesTable.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
     }
@@ -1160,7 +1181,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     if (self.isPhoneOrCompact) {
-        [self configureFullScreenPopGesture];
+        [self configureInteractivePopGesture];
+        if (!StoryTitleSwipePreference.usesFullScreenBack) {
+            self.fullScreenPopGesture.enabled = NO;
+        } else {
+            [self configureFullScreenPopGesture];
+        }
         return;
     }
 
@@ -1194,6 +1220,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
     }
 
+    self.feedListSwipeGesture.enabled = StoryTitleSwipePreference.usesFullScreenBack;
     if (self.feedListSwipeGesture != nil) {
         if (self.feedListEdgeSwipeGesture != nil || self.isMac) {
             return;
@@ -1210,6 +1237,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.feedListSwipeGesture.allowedScrollTypesMask = UIScrollTypeMaskAll;
 #endif
         [self.view addGestureRecognizer:self.feedListSwipeGesture];
+        self.feedListSwipeGesture.enabled = StoryTitleSwipePreference.usesFullScreenBack;
     }
 
     if (!self.isMac && self.feedListEdgeSwipeGesture == nil) {
@@ -1227,11 +1255,13 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)configureFullScreenPopGesture {
+    UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
     if (self.fullScreenPopGesture != nil) {
+        self.fullScreenPopGesture.enabled = YES;
+        navController.interactivePopGestureRecognizer.enabled = NO;
         return;
     }
 
-    UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
     if (!navController || !navController.interactivePopGestureRecognizer) {
         return;
     }
@@ -1253,6 +1283,19 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (self.storyTitlesTable.panGestureRecognizer) {
         [self.storyTitlesTable.panGestureRecognizer requireGestureRecognizerToFail:self.fullScreenPopGesture];
     }
+}
+
+- (void)updateStoryTitleSwipePreference {
+    if (!self.isViewLoaded) return;
+    [self.storyTitlesTable setEditing:NO animated:NO];
+    // FeedDetailObjCViewController.m must not change another screen's navigation from a cached list.
+    if (self.view.window) [self setupStoryTitlesSwipeGestures];
+    [self reload];
+}
+
+- (void)restoreContentPopGesture {
+    self.suppressedContentPopGesture.enabled = self.contentPopWasEnabled;
+    self.suppressedContentPopGesture = nil;
 }
 
 - (UIView *)feedListRevealContainerForSplitView:(SplitViewController *)splitViewController {
@@ -1450,6 +1493,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self restoreContentPopGesture];
 
     if (self.isMovingFromParentViewController || self.isBeingDismissed) {
         [appDelegate.storyPagesViewController cancelPendingStoryPresentation];
@@ -4404,6 +4448,17 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     
     [cell setupGestures];
+    if (cell.shouldDrag) {
+        cell.delegate = self;
+        // FeedDetailObjCViewController.m gives edge navigation priority over configured row actions.
+        UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
+        UIGestureRecognizer *edgeGesture = self.isPhoneOrCompact ? navController.interactivePopGestureRecognizer : self.feedListEdgeSwipeGesture;
+        for (UIGestureRecognizer *gesture in cell.gestureRecognizers) {
+            if (edgeGesture && [gesture isKindOfClass:UIPanGestureRecognizer.class]) {
+                [gesture requireGestureRecognizerToFail:edgeGesture];
+            }
+        }
+    }
     
     [cell setNeedsDisplay];
     if (shouldMeasureRender) {
@@ -4661,7 +4716,18 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
 trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView != self.storyTitlesTable) {
+    if (StoryTitleSwipePreference.leftAction != StoryTitleSwipeActionMenu) return nil;
+    return [self storySwipeMenuForTable:tableView indexPath:indexPath];
+}
+
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (StoryTitleSwipePreference.rightAction != StoryTitleSwipeActionMenu) return nil;
+    return [self storySwipeMenuForTable:tableView indexPath:indexPath];
+}
+
+- (UISwipeActionsConfiguration *)storySwipeMenuForTable:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath {
+    if (tableView != self.storyTitlesTable || !StoryTitleSwipePreference.actionsEnabled) {
         return nil;
     }
     
@@ -5700,29 +5766,41 @@ finish_height_measurement:
 didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                       mode:(MCSwipeTableViewCellMode)mode {
     NSIndexPath *endedOnIndexPath = [self.storyTitlesTable indexPathForCell:cell];
-    NSInteger storyIndex = [storiesCollection indexFromLocation:self.swipingIndexPath.row];
-    NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-    
-    if (endedOnIndexPath != self.swipingIndexPath || story[@"story_hash"] != self.swipingStoryHash) {
-        NSLog(@"Swipe started at row %@ (%@) but ended at %@ (%@) for %@", @(self.swipingIndexPath.row), self.swipingStoryHash, @(endedOnIndexPath.row), story[@"story_hash"], story[@"story_title"]);  // log
-        
-        self.swipingIndexPath = nil;
-        self.swipingStoryHash = nil;
-        
-        return;
-    }
-    
+    NSIndexPath *startedOnIndexPath = self.swipingIndexPath;
+    NSString *startedStoryHash = self.swipingStoryHash;
     self.swipingIndexPath = nil;
     self.swipingStoryHash = nil;
+
+    if (![endedOnIndexPath isEqual:startedOnIndexPath] || startedStoryHash.length == 0) return;
+
+    FeedDetailTableCell *feedCell = (FeedDetailTableCell *)cell;
+    if (![feedCell.storyHash isEqualToString:startedStoryHash]) return;
+
+    NSInteger storyLocation = [self storyLocationForIndexPath:endedOnIndexPath];
+    NSDictionary *story = storyLocation == NSNotFound ? nil : [self getStoryAtLocation:storyLocation];
+    if (![story[@"story_hash"] isEqualToString:startedStoryHash]) return;
     
-    if (state == MCSwipeTableViewCellState1) {
-        // Saved
-        [storiesCollection toggleStorySaved:story];
-        [self reloadIndexPath:endedOnIndexPath withRowAnimation:UITableViewRowAnimationFade];
-    } else if (state == MCSwipeTableViewCellState3) {
-        // Read
-        [storiesCollection toggleStoryUnread:story];
-        [self reloadIndexPath:endedOnIndexPath withRowAnimation:UITableViewRowAnimationFade];
+    if (state != MCSwipeTableViewCellState1 && state != MCSwipeTableViewCellState3) return;
+    StoryTitleSwipeAction action = state == MCSwipeTableViewCellState1 ?
+        StoryTitleSwipePreference.rightAction : StoryTitleSwipePreference.leftAction;
+    switch (action) {
+        case StoryTitleSwipeActionSave:
+            [storiesCollection toggleStorySaved:story];
+            [self reloadIndexPath:endedOnIndexPath withRowAnimation:UITableViewRowAnimationFade];
+            break;
+        case StoryTitleSwipeActionRead:
+            [storiesCollection toggleStoryUnread:story];
+            [self reloadIndexPath:endedOnIndexPath withRowAnimation:UITableViewRowAnimationFade];
+            break;
+        case StoryTitleSwipeActionShare:
+            appDelegate.activeStory = story;
+            [appDelegate showSendTo:self sender:cell];
+            break;
+        case StoryTitleSwipeActionBack:
+            [appDelegate showFeedsListAnimated:YES];
+            break;
+        case StoryTitleSwipeActionMenu:
+            break;
     }
 }
 

@@ -49,6 +49,8 @@
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
+
+- (void)updateStoryTitleSwipePreference;
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic) NSIndexPath *swipingIndexPath;
