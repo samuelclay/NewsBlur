@@ -3,7 +3,7 @@
 
 Runs on the HA box after offsite_pull.sh. Checks:
 1. Size anomaly detection: alerts if newest backup is >40% smaller than previous
-2. Staleness: alerts if no backup exists from the last 3 days
+2. Staleness: alerts if no backup exists from the last 3 days (8 for the weekly MongoDB dump)
 3. File integrity: gunzip -t for compressed files, pg_restore --list for postgres
 
 Writes results to verify_status.json for offsite_status.py to display.
@@ -27,8 +27,11 @@ ALERT_EMAIL = "samuel@newsblur.com"
 # Size drop threshold: alert if newest is less than this fraction of previous
 SIZE_DROP_THRESHOLD = 0.60  # 40% drop
 
-# Staleness: alert if no backup newer than this many days
+# Staleness: alert if no backup newer than this many days. Services can override
+# with a "staleness_days" key below; MongoDB is dumped weekly (offsite_pull.sh
+# MONGO_BACKUP_DAY), so it gets a week plus a day of slack instead of 3 days.
 STALENESS_DAYS = 3
+MONGO_STALENESS_DAYS = 8
 
 # Same structure as offsite_status.py SERVICES
 SERVICES = [
@@ -38,6 +41,7 @@ SERVICES = [
         "pattern": "mongodump_full_*.gz",
         "date_regex": r"mongodump_full_(\d{4}-\d{2}-\d{2})\.gz",
         "integrity_cmd": "gunzip",
+        "staleness_days": MONGO_STALENESS_DAYS,
     },
     {
         "name": "PostgreSQL",
@@ -134,7 +138,7 @@ def check_size_anomaly(service_name, backups):
     return True, "size: %s (vs prev %s)" % (newest_fmt, prev_fmt)
 
 
-def check_staleness(service_name, backups):
+def check_staleness(service_name, backups, staleness_days=STALENESS_DAYS):
     """Check if most recent backup is too old. Returns (ok, message)."""
     if not backups:
         return False, "no backups found"
@@ -144,7 +148,7 @@ def check_staleness(service_name, backups):
     if not newest_date:
         return False, "could not parse date: %s" % newest_date_str
 
-    cutoff = datetime.now() - timedelta(days=STALENESS_DAYS)
+    cutoff = datetime.now() - timedelta(days=staleness_days)
     if newest_date < cutoff:
         age_days = (datetime.now() - newest_date).days
         return False, "newest backup is %d days old (%s)" % (age_days, newest_date_str)
@@ -267,7 +271,7 @@ def main():
         all_ok = True
 
         # 1. Staleness
-        ok, msg = check_staleness(name, backups)
+        ok, msg = check_staleness(name, backups, service.get("staleness_days", STALENESS_DAYS))
         checks.append(("PASS" if ok else "FAIL") + " " + msg)
         if not ok:
             all_ok = False

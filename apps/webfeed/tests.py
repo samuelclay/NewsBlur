@@ -1,8 +1,9 @@
+import datetime
 import hashlib
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
@@ -729,3 +730,126 @@ class Test_InitialFetchIsForced(TestCase):
         with patch("apps.rss_feeds.models.Feed.get_by_id", return_value=feed):
             FetchWebFeed(feed_id=101, user_id=1)
         feed.update.assert_called_once_with(force=True)
+
+
+class Test_WebFeedProxySkips(TestCase):
+    """Bot challenges and the per-host daily credit cap in WebFeedFetcher._fetch_html
+    (utils/webfeed_fetcher.py): neither should cost a ScrapingBee credit or count as a failure."""
+
+    URL = "https://www.abebooks.com/servlet/SearchResults?an=keynes"
+
+    def _fetcher(self, last_direct_fetch=None):
+        fetcher = WebFeedFetcher.__new__(WebFeedFetcher)
+        fetcher.feed = MagicMock(log_title="AbeBooks: keynes")
+        fetcher.url = self.URL
+        fetcher.config = MWebFeedConfig(
+            feed_id=99999,
+            url=self.URL,
+            story_container_xpath="//div",
+            title_xpath=".//h2/text()",
+            link_xpath=".//a/@href",
+            last_direct_fetch=last_direct_fetch,
+        )
+        fetcher.config.save = MagicMock()
+        fetcher.config.record_failure = MagicMock()
+        fetcher.skip_reason = None
+        return fetcher
+
+    def _response(self, status_code, body=b"<html>Just a moment</html>"):
+        response = MagicMock()
+        response.status_code = status_code
+        response.content = body
+        response.headers = {"Content-Type": "text/html; charset=utf-8"}
+        response.text = body.decode("utf-8")
+        return response
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_challenge_on_a_site_other_servers_reach_skips_the_proxy(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget
+    ):
+        mock_direct.return_value = self._response(202)
+        fetcher = self._fetcher(last_direct_fetch=datetime.datetime.utcnow() - datetime.timedelta(minutes=10))
+
+        result = fetcher.fetch()
+
+        self.assertIsNone(result)
+        mock_proxy.assert_not_called()
+        fetcher.config.record_failure.assert_not_called()
+        self.assertIn("bot challenge (202)", fetcher.skip_reason)
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.record_response")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_challenge_on_a_site_that_blocks_every_server_still_uses_the_proxy(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget, mock_record
+    ):
+        mock_direct.return_value = self._response(403)
+        mock_proxy.return_value = self._response(
+            200, b"<html><div><h2>Title</h2><a href='/x'>x</a></div></html>"
+        )
+        fetcher = self._fetcher(last_direct_fetch=None)
+
+        html = fetcher._fetch_html()
+
+        self.assertIn("Title", html)
+        mock_proxy.assert_called_once()
+        self.assertIsNone(fetcher.skip_reason)
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.record_response")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_stale_direct_fetch_means_the_site_blocks_every_server(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget, mock_record
+    ):
+        mock_direct.return_value = self._response(202)
+        mock_proxy.return_value = self._response(200, b"<html><div><h2>Title</h2></div></html>")
+        fetcher = self._fetcher(last_direct_fetch=datetime.datetime.utcnow() - datetime.timedelta(days=2))
+
+        html = fetcher._fetch_html()
+
+        self.assertIn("Title", html)
+        mock_proxy.assert_called_once()
+
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_direct_success_records_last_direct_fetch(self, mock_validate, mock_direct, mock_proxy):
+        mock_direct.return_value = self._response(200, b"<html><div><h2>Title</h2></div></html>")
+        fetcher = self._fetcher(last_direct_fetch=None)
+
+        html = fetcher._fetch_html()
+
+        self.assertIn("Title", html)
+        mock_proxy.assert_not_called()
+        age = datetime.datetime.utcnow() - fetcher.config.last_direct_fetch
+        self.assertLess(age, datetime.timedelta(minutes=1))
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.record_capped")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=True)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_host_over_daily_credit_cap_skips_proxies_without_failing(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget, mock_capped
+    ):
+        mock_direct.return_value = self._response(403)
+        fetcher = self._fetcher(last_direct_fetch=None)
+
+        result = fetcher.fetch()
+
+        self.assertIsNone(result)
+        mock_proxy.assert_not_called()
+        fetcher.config.record_failure.assert_not_called()
+        mock_capped.assert_called_once_with("webfeed", url=self.URL)
+        self.assertIn("daily proxy credit cap", fetcher.skip_reason)

@@ -46,6 +46,7 @@ from apps.rss_feeds.icon_importer import IconImporter
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
+from apps.statistics.rscrapingbee import RScrapingBee
 
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(["iframe"])
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(["text"])
@@ -165,6 +166,13 @@ HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per 
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 
+# Forbidden feeds are fetched through ScrapingBee, which bills a credit per successful
+# request. Once a feed has failed this many fetches in a row (errors_since_good), the
+# paid proxies are skipped, with a small chance to retry so a recovered feed is noticed.
+# See FetchFeed.should_skip_paid_proxy.
+SCRAPINGBEE_SKIP_AFTER_ERRORS = 3
+SCRAPINGBEE_RETRY_CHANCE = 0.1
+
 NO_UNDERSCORE_ADDRESSES = ["jwz"]
 
 # Everything a broken or hostile server can make feedparser (and the urllib/http/ssl
@@ -223,10 +231,12 @@ def fetch_url_with_scrapingbee(url):
 
     try:
         response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
+        RScrapingBee.record_response("discovery", response, url=url)
         if response.status_code == 200 and response.content:
             return response.status_code, smart_str(response.content)
         return response.status_code, None
     except Exception as e:
+        RScrapingBee.record("discovery", None, url=url)
         logging.debug("   ***> ScrapingBee standalone fetch error for %s: %s" % (url, e))
         return None, None
 
@@ -237,6 +247,19 @@ class FetchFeed:
         self.options = options
         self.fpf = None
         self.raw_feed = None
+        # ETag / Last-Modified returned by the last ScrapingBee fetch, see fetch_scrapingbee
+        self.proxy_validators = {}
+        # Set by should_skip_paid_proxy when the host is over its daily credit cap, so the
+        # forbidden fetch doesn't record an error for a fetch that was never attempted
+        self.skipped_for_credit_cap = False
+        # Set by should_skip_paid_proxy when the feed's only subscriber hasn't been seen in
+        # a year (Feed.has_dormant_sole_subscriber), likewise never attempted
+        self.skipped_for_dormant_subscriber = False
+        # Set by should_skip_paid_proxy when every subscriber has spent their share of the
+        # plan for this billing period (RScrapingBee.users_over_budget), also never attempted
+        self.skipped_for_user_budget = False
+        # The subscribers a billed proxy fetch is charged to, looked up by should_skip_paid_proxy
+        self.proxy_user_ids = None
 
     def openrss_corrected_address(self, address):
         """Rewrite a legacy Open RSS preview address to its actual /feed/ form.
@@ -457,6 +480,17 @@ class FetchFeed:
                         "   ***> [%-30s] ~FRForbidden feed fetch failed: %s"
                         % (self.feed.log_title[:30], address)
                     )
+                    # Record the failure so errors_since_good grows and the feed backs off
+                    # instead of spending a proxy credit at its normal cadence forever.
+                    # Enough of these in a row also stop the paid proxy, see fetch_forbidden.
+                    # A host over its daily credit cap, or a feed nobody active reads, wasn't
+                    # attempted at all, so it just waits for its next scheduled fetch.
+                    if not (
+                        self.skipped_for_credit_cap
+                        or self.skipped_for_dormant_subscriber
+                        or self.skipped_for_user_budget
+                    ):
+                        self.feed.save_feed_history(forbidden_status or 500, "Forbidden feed fetch failed")
                     return FEED_ERRHTTP, None
                 # Apply encoding preprocessing to special feed content
                 processed_forbidden_feed = preprocess_feed_encoding(forbidden_feed)
@@ -471,6 +505,7 @@ class FetchFeed:
                     logging.debug(
                         "   ***> [%-30s] ~FRForbidden feed parse error: %s" % (self.feed.log_title[:30], e)
                     )
+                self.inject_proxy_validators(forbidden_status)
 
         if not self.fpf:
             try:
@@ -696,12 +731,19 @@ class FetchFeed:
                 logging.debug("   ***> [%-30s] ~FRFetch failed: %s." % (self.feed.log_title[:30], e))
 
         # ScrapingBee fallback: all normal fetch methods exhausted
-        if not self.fpf:
+        if not self.fpf and not self.should_skip_paid_proxy():
             logging.debug(
                 "   ***> [%-30s] ~FYAll fetch methods failed, trying ScrapingBee fallback"
                 % (self.feed.log_title[:30])
             )
             sb_status, sb_body = self.fetch_scrapingbee()
+            if sb_status == 304:
+                # The proxy reached the site and the feed hasn't changed while every direct
+                # fetch failed, so the site is blocking us: remember that and skip the parse.
+                if not self.feed.is_forbidden:
+                    self.feed = self.feed.set_is_forbidden()
+                self.feed.save_feed_history(304, "Not modified")
+                return FEED_SAME, None
             if sb_status == 200 and sb_body:
                 processed_body = preprocess_feed_encoding(sb_body)
                 try:
@@ -711,6 +753,7 @@ class FetchFeed:
                         "   ***> [%-30s] ~FRScrapingBee parse error: %s" % (self.feed.log_title[:30], e)
                     )
                     self.fpf = None
+                self.inject_proxy_validators(sb_status)
                 if self.fpf and (
                     self.fpf.entries or getattr(self.fpf.feed, "title", None) or self.fpf.version
                 ):
@@ -779,15 +822,20 @@ class FetchFeed:
             "return_page_source": "true",
         }
 
-        # Add etag and last-modified headers for conditional requests
-        # ScrapingBee requires spb- prefix and forward_headers enabled
+        # Conditional request headers. ScrapingBee forwards any spb-* request header to
+        # the site (with forward_headers enabled), so these have to be the request-side
+        # validators If-None-Match / If-Modified-Since. Sending spb-etag / spb-last-modified
+        # forwarded ETag / Last-Modified, which are response headers a site ignores, so no
+        # forbidden feed ever came back 304 and every fetch cost a credit.
+        # A forced refresh wants the full feed, so it sends no validators.
         headers = {}
-        if self.feed.etag or self.feed.last_modified:
+        send_validators = not self.options.get("force")
+        if send_validators and (self.feed.etag or self.feed.last_modified):
             params["forward_headers"] = "true"
 
-        if self.feed.etag:
-            headers["spb-etag"] = self.feed.etag
-        if self.feed.last_modified:
+        if send_validators and self.feed.etag:
+            headers["spb-if-none-match"] = self.feed.etag
+        if send_validators and self.feed.last_modified:
             modified = self.feed.last_modified.utctimetuple()[:7]
             short_weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
             months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -800,7 +848,7 @@ class FetchFeed:
                 modified[4],
                 modified[5],
             )
-            headers["spb-last-modified"] = modified_header
+            headers["spb-if-modified-since"] = modified_header
 
         logging.debug(
             "   ***> [%-30s] ~FRForbidden feed fetch with ScrapingBee%s: %s"
@@ -809,19 +857,41 @@ class FetchFeed:
 
         try:
             response = requests.get(url, params=params, headers=headers, timeout=15)
+            status_code = self.scrapingbee_status(response)
+            RScrapingBee.record(
+                "feed",
+                status_code,
+                url=self.feed.feed_address,
+                credits=RScrapingBee.credits_for_response(response),
+                user_ids=self.proxy_user_ids,
+            )
 
-            if response.status_code == 304:
+            # The site's own ETag / Last-Modified come back prefixed with Spb-. Keep them so
+            # inject_proxy_validators can put them on the parsed feed and the next fetch can
+            # send them back as If-None-Match / If-Modified-Since.
+            self.proxy_validators = {}
+            if response.headers.get("Spb-etag"):
+                self.proxy_validators["etag"] = response.headers.get("Spb-etag")
+            if response.headers.get("Spb-last-modified"):
+                self.proxy_validators["modified"] = response.headers.get("Spb-last-modified")
+
+            if status_code == 304:
                 logging.debug(
                     "   ***> [%-30s] ~FGScrapingBee returned 304 Not Modified" % (self.feed.log_title[:30],)
                 )
-                return response.status_code, None
+                return status_code, None
 
-            if response.status_code != 200:
+            if status_code != 200:
+                site_status = response.headers.get("Spb-initial-status-code")
                 logging.debug(
-                    "   ***> [%-30s] ~FRScrapingBee fetch failed with status %s"
-                    % (self.feed.log_title[:30], response.status_code)
+                    "   ***> [%-30s] ~FRScrapingBee fetch failed with status %s%s"
+                    % (
+                        self.feed.log_title[:30],
+                        status_code,
+                        " (site returned %s)" % site_status if site_status else "",
+                    )
                 )
-                return response.status_code, None
+                return status_code, None
 
             body = smart_str(response.content)
             if not body:
@@ -837,6 +907,7 @@ class FetchFeed:
             )
             return response.status_code, body
         except Exception as e:
+            RScrapingBee.record("feed", None, url=self.feed.feed_address)
             logging.debug(
                 "   ***> [%-30s] ~FRScrapingBee fetch error: %s" % (self.feed.log_title[:30], str(e))
             )
@@ -930,6 +1001,80 @@ class FetchFeed:
             )
             return None, None
 
+    @staticmethod
+    def scrapingbee_status(response):
+        """
+        ScrapingBee answers 500 whenever the target site didn't return 2xx and reports the
+        site's real status in Spb-initial-status-code, so a 304 Not Modified arrives as a
+        500 (verified against the live API). Unwrap it so a conditional request that worked
+        counts as unchanged instead of as a failed fetch.
+        """
+        if response.status_code == 500 and response.headers.get("Spb-initial-status-code") == "304":
+            return 304
+        return response.status_code
+
+    def should_skip_paid_proxy(self):
+        """
+        Feeds that keep failing even through ScrapingBee (dead services, feeds that redirect
+        to a homepage, 404s) aren't worth a credit on every fetch. After a few consecutive
+        errors the paid proxies are skipped, with a small random chance to retry so a feed
+        that comes back is picked up again. Mirrors the 10% is_forbidden re-check in fetch().
+        A host that has already spent its daily credit cap (apps/statistics/rscrapingbee.py)
+        is skipped outright, and so is a feed whose only subscriber hasn't been seen in a
+        year (Feed.has_dormant_sole_subscriber): a credit for a reader who isn't reading.
+        Finally each reader has a share of the plan for the billing period
+        (RScrapingBee.users_over_budget); a feed waits once all of its readers spent theirs.
+        """
+        if RScrapingBee.host_over_budget(self.feed.feed_address):
+            RScrapingBee.record_capped("feed", url=self.feed.feed_address)
+            self.skipped_for_credit_cap = True
+            logging.debug(
+                "   ***> [%-30s] ~FYSkipping paid proxy, host is over its daily credit cap: %s"
+                % (self.feed.log_title[:30], self.feed.feed_address)
+            )
+            return True
+        if self.feed.has_dormant_sole_subscriber():
+            RScrapingBee.record_skip("feed", "dormant", url=self.feed.feed_address)
+            self.skipped_for_dormant_subscriber = True
+            logging.debug(
+                "   ***> [%-30s] ~FYSkipping paid proxy, only subscriber hasn't been seen in a year: %s"
+                % (self.feed.log_title[:30], self.feed.feed_address)
+            )
+            return True
+        self.proxy_user_ids = self.feed.proxy_budget_subscriber_ids()
+        if RScrapingBee.users_over_budget(self.proxy_user_ids):
+            RScrapingBee.record_skip("feed", "user_budget", url=self.feed.feed_address)
+            self.skipped_for_user_budget = True
+            logging.debug(
+                "   ***> [%-30s] ~FYSkipping paid proxy, every subscriber spent their credit share this period: %s"
+                % (self.feed.log_title[:30], self.feed.feed_address)
+            )
+            return True
+        if (self.feed.errors_since_good or 0) < SCRAPINGBEE_SKIP_AFTER_ERRORS:
+            return False
+        if random.random() <= SCRAPINGBEE_RETRY_CHANCE:
+            return False
+        logging.debug(
+            "   ***> [%-30s] ~FYSkipping paid proxy after %s consecutive errors: %s"
+            % (self.feed.log_title[:30], self.feed.errors_since_good, self.feed.feed_address)
+        )
+        return True
+
+    def inject_proxy_validators(self, status_code):
+        """
+        feedparser.parse(string) never sets status/etag/modified, so after a proxy fetch they
+        are injected here from the Spb-* response headers kept by fetch_scrapingbee. Without
+        this, ProcessFeed.compare_feed_attribute_changes would wipe the stored validators and
+        the next conditional request would have nothing to send.
+        """
+        if not self.fpf:
+            return
+        self.fpf["status"] = status_code
+        if self.proxy_validators.get("etag"):
+            self.fpf["etag"] = self.proxy_validators["etag"]
+        if self.proxy_validators.get("modified"):
+            self.fpf["modified"] = self.proxy_validators["modified"]
+
     def fetch_forbidden(self, js_scrape=False):
         # First, try plain UA without browser suffix. Feeds may have been
         # incorrectly marked forbidden because the browser UA triggered a
@@ -952,6 +1097,9 @@ class FetchFeed:
                     return plain_resp.status_code, smart_str(plain_resp.content)
         except Exception:
             pass
+
+        if self.should_skip_paid_proxy():
+            return None, None
 
         # Try ScrapingBee first
         status_code, body = self.fetch_scrapingbee(js_scrape=js_scrape)

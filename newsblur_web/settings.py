@@ -319,6 +319,29 @@ DOMAIN_FETCHES_PER_MINUTE = 30
 # whose volume is breadth, not hammering, plus large single sites with power users
 # whose many feeds deserve better than the default. Values chosen from measured
 # production rates (utils/domain_fetch_limiter.py has the methodology).
+# SCRAPINGBEE_HOST_DAILY_CREDIT_CAP is the most ScrapingBee credits any single target
+# host may spend per day across every proxy call site; past it the paid proxies are
+# skipped and the skip shows up as status="capped" on the ScrapingBee Usage dashboard
+# row. Only the hottest few hosts spend even half this normally, while one user's
+# 1,700 AbeBooks search feeds hit ~43K/day. See apps/statistics/rscrapingbee.py.
+SCRAPINGBEE_HOST_DAILY_CREDIT_CAP = 1000
+# SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS: a forbidden feed whose only subscriber hasn't been
+# seen in this many days isn't fetched through the paid proxy until they come back (the
+# skip shows as status="dormant" on the dashboard). Half of the 237K single-subscriber
+# forbidden feeds belong to accounts idle for over a year (September 2026 audit). See
+# Feed.has_dormant_sole_subscriber in apps/rss_feeds/models.py.
+SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS = 365
+# Per-user share of the ScrapingBee plan. Every proxied feed fetch is charged to the feed's
+# subscribers (up to 20 of them), and a feed is only proxied while at least one of its
+# subscribers is under budget, so no reader can drain the pool for everyone else. Leave
+# SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET at None to split the credits left in the billing
+# period evenly across the users charged in the last week (never assuming fewer than
+# SCRAPINGBEE_USER_BUDGET_MIN_USERS of them), or set a fixed number of credits per user
+# per period. Skips show as status="user_budget" on the dashboard. See
+# RScrapingBee.user_period_budget in apps/statistics/rscrapingbee.py.
+SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET = None
+SCRAPINGBEE_USER_BUDGET_MIN_USERS = 5000
+
 DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
     # 10,600+ distinct channels/hour; actual traffic goes to the YouTube Data API
     # at googleapis.com (utils/youtube_fetcher.py), which has its own quota. All
@@ -332,9 +355,11 @@ DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
     # 2026); 120/min cycles every search roughly every 15-20 minutes.
     "news.google.com": 120,
     # Amazon-owned book marketplace with a Pro bookseller watching 1,700 search
-    # feeds. 120/min (2 fetches/sec) cycles their feeds every 15-20 minutes
-    # instead of the 3-4 hours the default budget was stretching them to.
-    "abebooks.com": 120,
+    # feeds. At 120/min AbeBooks started answering bot-challenge pages to some task
+    # server IPs (September 2026), and every challenged fetch was proxied through
+    # ScrapingBee at a credit apiece. 60/min still cycles their feeds every ~15
+    # minutes (the limiter's deferral cap is an hour) while halving the hammering.
+    "abebooks.com": 60,
     # Matches REDDIT_API_REQUESTS_PER_MINUTE in utils/reddit_fetcher.py. The OAuth
     # budget there remains the true gate on API calls; this just converts overflow
     # into silent deferral instead of 429s in fetch history.
