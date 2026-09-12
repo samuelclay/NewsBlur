@@ -691,9 +691,16 @@ grafana-dashboards:
 # Backup drive: WD 12TB at /media/newsblur-backup (ext4, label=newsblur-backup)
 #   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, mounted on-demand (not at boot — prevents 24/7 spinning)
 # Scripts/keys persist in /config/scripts/ (/root/.ssh/ is ephemeral, don't use it)
-# Python venv at /config/scripts/venv (boto3 for S3 downloads)
+# Python venv at /config/scripts/venv (boto3 for S3 downloads); setup_cron.sh rebuilds it
+#   whenever an add-on update ships a new Python (3.12 -> 3.14 orphaned it in 2026)
 # Cron job in SSH add-on: nightly 6am, mounts drive, runs backup, unmounts+deauthorizes USB
-# Installed by /config/scripts/setup_cron.sh (runs on add-on startup via init_commands)
+# Installed by /config/scripts/setup_cron.sh, which MUST run on add-on startup via the
+#   add-on's init_commands option: the crontab and crond live inside the add-on container
+#   and vanish on every add-on auto-update or reboot. init_commands was never set and
+#   backups silently stopped Apr-Sep 2026. setup_cron.sh now sets it via the Supervisor API.
+# Dead man's switch: offsite_pull.sh uploads offsite_backup/{started,completed}.json to the
+#   S3 backup bucket; utils/monitor_offsite_backup.py (daily cron on htask-work-1, see
+#   ansible/roles/celery_task) emails if they go stale, so a dead cron here gets noticed.
 # HAOS gotchas:
 #   - SSH add-on runs in a container, not on the host
 #   - For host-level ops (mount, fdisk): docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -- <cmd>
@@ -704,6 +711,7 @@ grafana-dashboards:
 #   ssh root@192.168.1.27 "tail -50 /media/newsblur-backup/backup.log"
 #   ssh root@192.168.1.27 "du -sh /media/newsblur-backup/*"
 #   ssh root@192.168.1.27 "df -h /media/newsblur-backup"
+#   ssh root@192.168.1.27 "crontab -l; pgrep -x crond"   (empty crontab = init_commands not run)
 HA_HOST := root@192.168.1.27
 HA_SCRIPTS := /config/scripts
 
@@ -734,12 +742,19 @@ offsite-backup-install:
 	ssh $(HA_HOST) "$(HA_SCRIPTS)/setup_cron.sh"
 	@$(call log,~FG---> Off-site backup installed. Cron runs nightly at 6am.~ST)
 
+# Pass MONGO=1 to force a full MongoDB dump on a day other than the weekly
+# MONGO_BACKUP_DAY in offsite_pull.sh (takes 12+ hours, so run it detached):
+#   make offsite-backup MONGO=1
 offsite-backup:
 	@$(call log,~FB---> Running off-site backup pull~ST)
-	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh"
+	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh $(if $(MONGO),--force-mongo)"
 
+# The pgrep pattern is bracketed ('[o]ffsite_pull.sh') so it doesn't match the
+# remote shell running this very command, which also contains the script name.
+# Without the bracket, pgrep -f always matched itself, the status always said
+# "backup in progress", and the drive was never unmounted after a status check.
 offsite-backup-status:
-	@ssh $(HA_HOST) "$(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null && (echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py); if pgrep -f offsite_pull.sh > /dev/null 2>&1; then echo '  (drive left mounted — backup in progress)'; else $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; fi"
+	@ssh $(HA_HOST) "$(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null && (echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py); if pgrep -f '[o]ffsite_pull.sh' > /dev/null 2>&1; then echo '  (drive left mounted — backup in progress)'; else $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; fi"
 
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)

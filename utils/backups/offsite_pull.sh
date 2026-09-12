@@ -8,7 +8,9 @@
 # Each section runs independently — a failure in one (e.g. broken venv)
 # does not prevent the others from completing.
 #
-# Usage: ./offsite_pull.sh
+# Usage: ./offsite_pull.sh [--force-mongo]
+#   --force-mongo  Dump MongoDB today even if it isn't MONGO_BACKUP_DAY
+#                  (used by `make offsite-backup MONGO=1` to catch up after missed weeks)
 
 set -uo pipefail  # No -e: sections handle errors independently
 
@@ -56,12 +58,31 @@ S3_REDIS_PREFIXES=(
     "backup_hdb_redis_session_2/backup_hdb_redis_session_2"
 )
 
+# Dead man's switch: heartbeat markers uploaded to S3 at the start and end of
+# every pull. utils/monitor_offsite_backup.py (daily cron on the task servers,
+# see ansible/roles/celery_task) emails the admin if they go stale, so a dead
+# cron on this box still gets noticed even though nothing here is left to notice it.
+S3_HEARTBEAT_PREFIX="offsite_backup"
+
 # Local retention: how many backups to keep per type
 MONGO_FULL_KEEP=4  # Weekly backups, keep ~1 month
 POSTGRES_KEEP=8
 REDIS_KEEP=8
 
 # --- End Configuration ---
+
+# --- Arguments ---
+FORCE_MONGO=false
+for arg in "$@"; do
+    case "${arg}" in
+        --force-mongo) FORCE_MONGO=true ;;
+        *)
+            echo "Unknown argument: ${arg}"
+            echo "Usage: $0 [--force-mongo]"
+            exit 1
+            ;;
+    esac
+done
 
 LOG_FILE="${BACKUP_DRIVE}/backup.log"
 SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -i ${SSH_KEY}"
@@ -100,6 +121,62 @@ send_failure_alert() {
     fi
 }
 
+# Date of the newest completed MongoDB dump on the drive (YYYY-MM-DD), or empty.
+# Reported in the heartbeat so the off-box monitor can flag a stale weekly dump.
+newest_mongo_dump_date() {
+    ls -t "${BACKUP_DRIVE}"/mongo_full/mongodump_full_*.gz 2>/dev/null \
+        | head -1 \
+        | sed -E 's/.*mongodump_full_([0-9]{4}-[0-9]{2}-[0-9]{2})\.gz$/\1/'
+}
+
+# Upload a heartbeat marker (started|completed) to S3 for utils/monitor_offsite_backup.py.
+# The completed marker also carries verify_status.json so the monitor email can
+# say what the last pull actually verified.
+s3_put_heartbeat() {
+    local name="$1"
+    if [[ "${S3_AVAILABLE}" != "true" ]]; then
+        log "  WARNING: S3 unavailable, skipping ${name} heartbeat"
+        return 1
+    fi
+    if HEARTBEAT_NAME="${name}" \
+       HEARTBEAT_STARTED_AT="${PULL_STARTED_AT}" \
+       HEARTBEAT_FAILURES="${FAILURES}" \
+       HEARTBEAT_NEWEST_MONGO="$(newest_mongo_dump_date)" \
+       HEARTBEAT_VERIFY_FILE="${BACKUP_DRIVE}/verify_status.json" \
+       "${VENV_PYTHON}" -c "
+import boto3, datetime, json, os, socket
+
+name = os.environ['HEARTBEAT_NAME']
+body = {
+    'marker': name,
+    'host': socket.gethostname(),
+    'started_at': os.environ['HEARTBEAT_STARTED_AT'],
+    'written_at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+    'failures': os.environ.get('HEARTBEAT_FAILURES', ''),
+    'newest_mongo_dump': os.environ.get('HEARTBEAT_NEWEST_MONGO', ''),
+}
+verify_file = os.environ.get('HEARTBEAT_VERIFY_FILE', '')
+if name == 'completed' and os.path.exists(verify_file):
+    try:
+        with open(verify_file) as f:
+            body['verify'] = json.load(f)
+    except Exception as e:
+        body['verify_error'] = str(e)
+
+s3 = boto3.client('s3',
+    aws_access_key_id='${AWS_ACCESS_KEY_ID}',
+    aws_secret_access_key='${AWS_SECRET_ACCESS_KEY}')
+key = '${S3_HEARTBEAT_PREFIX}/%s.json' % name
+s3.put_object(Bucket='${S3_BUCKET}', Key=key,
+    Body=json.dumps(body, indent=2).encode(), ContentType='application/json')
+print('Heartbeat uploaded: s3://${S3_BUCKET}/%s' % key)
+" 2>&1 | while read line; do log "  $line"; done; then
+        return 0
+    fi
+    log "  WARNING: Failed to upload ${name} heartbeat to S3"
+    return 1
+}
+
 # Check that backup drive is mounted
 if [[ ! -d "${BACKUP_DRIVE}" ]]; then
     echo "ERROR: Backup drive not mounted at ${BACKUP_DRIVE}"
@@ -112,7 +189,9 @@ mkdir -p "${BACKUP_DRIVE}/mongo_full"
 mkdir -p "${BACKUP_DRIVE}/postgres"
 mkdir -p "${BACKUP_DRIVE}/redis"
 
+PULL_STARTED_AT=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
 log "=== Starting NewsBlur off-site backup pull ==="
+s3_put_heartbeat started
 
 # --- 1. PostgreSQL + Redis (download from S3) ---
 # Done first since they're fast; mongo dump takes 12+ hours.
@@ -231,19 +310,30 @@ fi
 # NOTE: No -t flag on docker exec — TTY mangles binary streams.
 log "--- MongoDB full dump (streaming from server) ---"
 
+# Clean up stale .partial files older than 24h (killed/failed dumps, not in-progress).
+# Done before starting today's dump so offsite_status.py doesn't report a dead
+# .partial from a previous run as the one in progress.
+find "${BACKUP_DRIVE}/mongo_full/" -name "*.partial" -mmin +1440 -print 2>/dev/null | while read f; do
+    log "  Removing stale partial dump: $(basename "${f}")"
+    rm -f "${f}"
+done
+
 CURRENT_DOW=$(date '+%w')  # 0=Sunday, 6=Saturday
 
 DUMP_DATE=$(date '+%Y-%m-%d')
 DUMP_FILE="${BACKUP_DRIVE}/mongo_full/mongodump_full_${DUMP_DATE}.gz"
 DUMP_TMP="${DUMP_FILE}.partial"
 
-if [[ "${CURRENT_DOW}" != "${MONGO_BACKUP_DAY}" ]] && [[ ! -f "${DUMP_TMP}" ]]; then
-    log "Skipping MongoDB dump (runs on day ${MONGO_BACKUP_DAY}, today is day ${CURRENT_DOW})"
+if [[ "${CURRENT_DOW}" != "${MONGO_BACKUP_DAY}" ]] && [[ "${FORCE_MONGO}" != "true" ]] && [[ ! -f "${DUMP_TMP}" ]]; then
+    log "Skipping MongoDB dump (runs on day ${MONGO_BACKUP_DAY}, today is day ${CURRENT_DOW}; pass --force-mongo to override)"
 elif [[ -f "${DUMP_FILE}" ]]; then
     log "MongoDB dump already exists for today: $(basename ${DUMP_FILE}). Skipping."
 elif [[ -f "${DUMP_TMP}" ]]; then
     log "MongoDB dump already in progress: $(basename ${DUMP_TMP}). Skipping."
 else
+    if [[ "${FORCE_MONGO}" == "true" ]]; then
+        log "MongoDB dump forced with --force-mongo (today is day ${CURRENT_DOW})"
+    fi
     log "Streaming full mongodump from ${MONGO_SECONDARY} (timeout: ${MONGO_DUMP_TIMEOUT})..."
     # Write to .partial first, rename on success to avoid keeping truncated dumps
     # mongodump progress (stderr) flows through to the caller's stderr (backup_run.log via nohup)
@@ -294,8 +384,6 @@ if [[ ${MONGO_COUNT} -gt ${MONGO_FULL_KEEP} ]]; then
         rm -f "${f}"
     done
 fi
-# Clean up stale .partial files older than 24h (failed dumps, not in-progress)
-find "${BACKUP_DRIVE}/mongo_full/" -name "*.partial" -mmin +1440 -delete 2>/dev/null || true
 
 # Postgres dumps: keep N most recent files
 cd "${BACKUP_DRIVE}/postgres"
@@ -352,6 +440,9 @@ ${FAILURES}
 Check the backup log for details:
   ssh root@192.168.1.27 'tail -50 /media/newsblur-backup/backup.log'"
 fi
+
+# Completed heartbeat goes last so it carries the final FAILURES summary.
+s3_put_heartbeat completed
 
 # --- 6. Unmount backup drive ---
 # Unmount so the drive can spin down and rest between backups.
