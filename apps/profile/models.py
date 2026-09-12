@@ -4677,8 +4677,18 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
     if profile:
         logging.user(profile.user, "~BC~SB~FBStripe checkout subscription signup")
         profile.retrieve_stripe_ids()
+        # A first-time Stripe customer has no stripe_id until this handler stores it.
+        # Stripe fires customer.subscription.created, charge.succeeded and
+        # customer.subscription.updated a few seconds *before* checkout.session.completed,
+        # and those handlers look the profile up by stripe_id, so for a new customer they
+        # can't find it and bail. Sync from Stripe here so the paid tier is activated no
+        # matter which webhook lands first. (apps/profile/models.py)
+        profile.setup_premium_history()
     else:
-        logging.user(profile.user, "~BR~SB~FRCouldn't find Stripe user: ~FW%s" % full_json)
+        logging.debug(
+            " ---> Couldn't find Stripe user for checkout: user_id=%s stripe_id=%s"
+            % (newsblur_user_id, stripe_id)
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
@@ -4719,6 +4729,12 @@ def stripe_signup(sender, full_json, **kwargs):
         profile.cancel_premium_paypal()
         profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
+        # New customers land here when this webhook beats checkout.session.completed,
+        # which is what stores the stripe_id. The checkout handler syncs the tier itself.
+        logging.debug(
+            " ---> Stripe subscription created for unknown stripe_id=%s (plan %s), "
+            "deferring to checkout.session.completed" % (stripe_id, plan_id)
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
@@ -4769,6 +4785,10 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
         else:
             profile.setup_premium_history()
     except Profile.DoesNotExist:
+        logging.debug(
+            " ---> Stripe subscription updated for unknown stripe_id=%s (plan %s), "
+            "deferring to checkout.session.completed" % (stripe_id, plan_id)
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
@@ -4782,6 +4802,10 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
         logging.user(profile.user, "~BC~SB~FBStripe subscription payment")
         profile.setup_premium_history()
     except Profile.DoesNotExist:
+        logging.debug(
+            " ---> Stripe charge for unknown stripe_id=%s, deferring to checkout.session.completed"
+            % stripe_id
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
