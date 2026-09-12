@@ -34,6 +34,10 @@ final class ReaderUITests: XCTestCase {
         verifyStoryListSwipeBack(classic: false, experimental: false)
     }
 
+    func test_currentExperimentalTitlesKeepFullScreenSwipeBack() {
+        verifyStoryListSwipeBack(classic: false, experimental: true)
+    }
+
     func test_classicStoryActionsAreReversible() {
         verifyClassicActions(experimental: false)
     }
