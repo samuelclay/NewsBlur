@@ -62,6 +62,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
+import com.newsblur.view.AnimatedFolderListView;
 
 /**
  * Custom adapter to display a nested folder/feed list in an ExpandableListView.
@@ -77,7 +78,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private final static float NONZERO_UNREADS_ALPHA = 0.87f;
     private final static float ZERO_UNREADS_ALPHA = 0.70f;
-    private final static long INDICATOR_ANIMATION_DURATION_MS = 180L;
     private final static float INDICATOR_COLLAPSED_ROTATION = 0f;
     private final static float INDICATOR_EXPANDED_ROTATION = 180f;
 
@@ -283,33 +283,36 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (list == null) return;
 
         boolean isExpanded = list.isGroupExpanded(groupPosition);
-        animateIndicator(indicatorView, !isExpanded);
-
-        if (isExpanded) {
-            list.collapseGroup(groupPosition);
+        Runnable change = () -> {
+            if (isExpanded) {
+                list.collapseGroup(groupPosition);
+            } else {
+                // AnimatedFolderListView.kt owns movement; ExpandableListView's optional animation is a separate scroll.
+                list.expandGroup(groupPosition, false);
+            }
+        };
+        if (list instanceof AnimatedFolderListView) {
+            ((AnimatedFolderListView) list).animateGroupChange(groupPosition, !isExpanded, change);
         } else {
-            list.expandGroup(groupPosition, true);
+            change.run();
         }
     }
 
     private void toggleAllFolders(@NonNull ImageView indicatorView) {
-        boolean areAllVisibleFoldersCollapsed = areAllVisibleFoldersCollapsed();
-        animateIndicator(indicatorView, areAllVisibleFoldersCollapsed);
         if (toggleAllFoldersClickListener != null) {
-            toggleAllFoldersClickListener.run();
+            ExpandableListView list = listBackref.get();
+            if (list instanceof AnimatedFolderListView) {
+                ((AnimatedFolderListView) list).animateGroupChange(getRootFolderIndex(),
+                        areAllVisibleFoldersCollapsed(), toggleAllFoldersClickListener);
+            } else {
+                toggleAllFoldersClickListener.run();
+            }
         }
     }
 
     private void bindIndicatorRotation(@NonNull ImageView indicatorView, boolean expanded) {
         indicatorView.animate().cancel();
         indicatorView.setRotation(expanded ? INDICATOR_EXPANDED_ROTATION : INDICATOR_COLLAPSED_ROTATION);
-    }
-
-    private void animateIndicator(@NonNull ImageView indicatorView, boolean expanded) {
-        indicatorView.animate()
-                .rotation(expanded ? INDICATOR_EXPANDED_ROTATION : INDICATOR_COLLAPSED_ROTATION)
-                .setDuration(INDICATOR_ANIMATION_DURATION_MS)
-                .start();
     }
 
 	@Override
