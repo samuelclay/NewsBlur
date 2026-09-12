@@ -48,6 +48,137 @@ import UIKit
         XCTAssertEqual(fixture.table.reloadCount, 0)
     }
 
+#if targetEnvironment(macCatalyst)
+    func test_macRelatedReadTitleAndDateUseTheSameGray() throws {
+        let fixture = makeFixture(markRelated: true)
+        defer { fixture.window.isHidden = true }
+        (fixture.app as? ReadFadeAppDelegate)?.image = nil
+        let cell = fixture.table.related
+        cell.storyTitle = "MMMMMM"
+        cell.storyDate = "MMMMMM"
+        cell.clusterTier = nil
+        cell.isRead = true
+        for theme in ["light", "sepia", "medium", "dark"] {
+            defaults.set(theme, forKey: "theme_style")
+            for selected in [false, true] {
+                cell.setSelected(selected, animated: false)
+                let image = drawTypography(cell)
+                let title = try dominantInk(in: image, rect: CGRect(x: 72, y: 75, width: 90, height: 30))
+                let date = try dominantInk(in: image, rect: CGRect(x: 315, y: 75, width: 50, height: 30))
+                XCTAssertEqual(title, date, "Related read title/date must match: \(theme) selected=\(selected)")
+            }
+        }
+    }
+
+    func test_macBylineUsesTheRegularPreviewWeight() throws {
+        defaults.set("none", forKey: "story_list_preview_images_size")
+        let fixture = makeFixture(markRelated: true)
+        defer { fixture.window.isHidden = true }
+        let cell = fixture.table.parent
+        let text = "MMMMmmmm by Reporter"
+        cell.storyAuthor = ""
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineBreakMode = .byWordWrapping
+        paragraph.alignment = .left
+        paragraph.lineHeightMultiple = 0.95
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 3
+        format.preferredRange = .standard
+        for selected in [false, true] {
+            cell.setSelected(selected, animated: false)
+            for read in [false, true] {
+                cell.isRead = read
+                cell.storyDate = text
+                let actual = drawTypography(cell)
+                cell.storyDate = ""
+                let color = ThemeManager.color(fromRGB: read ? [0xB8B8B8] : [selected ? 0x888785 : 0x404040])
+                let reference = UIGraphicsImageRenderer(size: cell.canvas.bounds.size, format: format).image { _ in
+                    cell.canvas.draw(cell.canvas.bounds)
+                    // StoryReadStateAnimationTests.swift compares actual byline glyphs with the same regular face as the preview.
+                    (text as NSString).draw(in: CGRect(x: selected ? 36 : 34, y: 152, width: 336, height: 15),
+                        withAttributes: [.font: UIFont(name: "WhitneySSm-Book", size: 11)!,
+                                         .foregroundColor: color, .paragraphStyle: paragraph])
+                }
+                let crop = CGRect(x: 32 * 3, y: 150 * 3, width: 300 * 3, height: 20 * 3)
+                let actualCrop = try XCTUnwrap(actual.cgImage?.cropping(to: crop))
+                let expectedCrop = try XCTUnwrap(reference.cgImage?.cropping(to: crop))
+                XCTAssertEqual(UIImage(cgImage: actualCrop).pngData(), UIImage(cgImage: expectedCrop).pngData(),
+                               "The byline must use regular glyphs, selected=\(selected) read=\(read)")
+            }
+        }
+    }
+
+    func test_macReadTextUsesOneColorAndUnreadHeadingsMatchAcrossThemes() throws {
+        defaults.set("none", forKey: "story_list_preview_images_size")
+        let fixture = makeFixture(markRelated: true)
+        defer { fixture.window.isHidden = true }
+        let cell = fixture.table.parent
+        cell.isSaved = false
+        cell.isShared = false
+        for read in [false, true] {
+            cell.isRead = read
+            let example = XCTAttachment(image: drawTypography(cell))
+            example.name = "Mac story row example read=\(read)"
+            example.lifetime = .keepAlways
+            add(example)
+        }
+        cell.storyTitle = "MMMMMMMMMMMM"
+        cell.siteTitle = "MMMMMMMMMMMM"
+        cell.storyContent = "MMMMMMMMMMMM"
+        cell.storyDate = "MMMMMMMMMMMM"
+        cell.storyAuthor = ""
+        for theme in ["light", "sepia", "medium", "dark"] {
+            defaults.set(theme, forKey: "theme_style")
+            for selected in [false, true] {
+                cell.setSelected(selected, animated: false)
+                for read in [false, true] {
+                    cell.isRead = read
+                    let image = drawTypography(cell)
+                    let attachment = XCTAttachment(image: image)
+                    attachment.name = "Mac text \(theme) selected=\(selected) read=\(read)"
+                    attachment.lifetime = .keepAlways
+                    add(attachment)
+                    let feed = try dominantInk(in: image, rect: CGRect(x: 60, y: 10, width: 160, height: 22))
+                    let title = try dominantInk(in: image, rect: CGRect(x: 36, y: 40, width: 180, height: 48))
+                    let preview = try dominantInk(in: image, rect: CGRect(x: 36, y: 95, width: 180, height: 45))
+                    let byline = try dominantInk(in: image, rect: CGRect(x: 36, y: 150, width: 180, height: 20))
+                    let state = "\(theme) selected=\(selected) read=\(read)"
+                    print("MAC_TEXT_COLORS \(state) feed=\(feed) title=\(title) preview=\(preview) byline=\(byline)")
+                    XCTAssertEqual(feed, title, "Feed and story title must match: \(state)")
+                    XCTAssertEqual(preview, byline, "Preview and byline must match: \(state)")
+                    if read {
+                        XCTAssertEqual(title, preview, "All read text must share one gray: \(state)")
+                    }
+                }
+            }
+        }
+    }
+
+    private func drawTypography(_ cell: ReadFadeCell) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 3
+        format.preferredRange = .standard
+        return UIGraphicsImageRenderer(size: cell.canvas.bounds.size, format: format).image { _ in
+            // StoryReadStateAnimationTests.swift records the real native draw pass without resampling cached layer contents.
+            cell.canvas.draw(cell.canvas.bounds)
+        }
+    }
+
+    private func dominantInk(in image: UIImage, rect: CGRect) throws -> UInt32 {
+        let bitmap = try XCTUnwrap(image.cgImage?.cropping(to: CGRect(x: rect.minX * image.scale,
+            y: rect.minY * image.scale, width: rect.width * image.scale, height: rect.height * image.scale)))
+        var pixels = [UInt32](repeating: 0, count: bitmap.width * bitmap.height)
+        let context = try XCTUnwrap(CGContext(data: &pixels, width: bitmap.width, height: bitmap.height,
+            bitsPerComponent: 8, bytesPerRow: bitmap.width * 4, space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        context.draw(bitmap, in: CGRect(x: 0, y: 0, width: bitmap.width, height: bitmap.height))
+        let counts = pixels.reduce(into: [UInt32: Int]()) { $0[$1, default: 0] += 1 }
+        let ranked = counts.sorted { $0.value > $1.value }
+        XCTAssertGreaterThan(ranked.count, 1, "The crop must contain text, not just its background")
+        // StoryReadStateAnimationTests.swift excludes the flat row background and samples solid glyph interiors at 3x.
+        return try XCTUnwrap(ranked.dropFirst().first?.key)
+    }
+#endif
 
     func test_selectedStoryRefreshPreservesReadSaveShareAndRelatedArtworkWithoutReloading() {
         for markRelated in [false, true] {
