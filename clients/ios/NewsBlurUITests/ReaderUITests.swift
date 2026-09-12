@@ -109,10 +109,12 @@ final class ReaderUITests: XCTestCase {
 
     private func verifyConfiguredBack(experimental: Bool, leftBack: Bool) {
         launchSwipes(experimental: experimental, right: leftBack ? "save" : "back", left: leftBack ? "back" : "save")
+        attachScreenshot(named: "configured-back-before")
         let origin = app.coordinate(withNormalizedOffset: .zero)
         origin.withOffset(CGVector(dx: leftBack ? 330 : 80, dy: 195)).press(forDuration: 0.05,
             thenDragTo: origin.withOffset(CGVector(dx: leftBack ? 100 : 350, dy: 195)),
             withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "configured-back-after")
         XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
     }
 
