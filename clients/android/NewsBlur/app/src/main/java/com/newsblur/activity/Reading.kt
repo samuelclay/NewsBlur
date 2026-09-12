@@ -267,6 +267,12 @@ abstract class Reading :
     private var preparedEntranceTimeout: Runnable? = null
     private var preparedEntranceLoading: Snackbar? = null
     private var preparedEntranceStartedAt = 0L
+    private var preparedPageNavigation: PreparedReaderNavigation? = null
+    private var readerPageSnapshot: ReaderPageSnapshot? = null
+    private var preparedPageStartedAt = 0L
+    private var readerIsPaused = false
+    private var preparedVisibleStory: Story? = null
+    private var preparedVisibleScrollPosition: Float? = null
 
     // Guard against marking stories read during activity recreation (e.g., rotation).
     // When the activity is recreated, ViewPager state restoration can fire onPageSelected
@@ -372,8 +378,7 @@ abstract class Reading :
         if (startingUnreadCount != 0) {
             savedInstanceState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount)
         }
-        readingFragment
-            ?.currentScrollPosRel()
+        (preparedVisibleScrollPosition ?: readingFragment?.currentScrollPosRel())
             ?.takeIf { it > 0f }
             ?.let { savedInstanceState.putFloat(BUNDLE_CURRENT_SCROLL_POS_REL, it) }
         currentStoryForSave
@@ -383,6 +388,7 @@ abstract class Reading :
 
     override fun onResume() {
         super.onResume()
+        readerIsPaused = false
         if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
         stopLoading = false
@@ -393,18 +399,22 @@ abstract class Reading :
         keyboardManager.addListener(this)
         resumeCurrentStoryReadTimeTracking()
         updateBackSwipeGestureExclusion()
+        preparedPageNavigation?.resume()
+        if (waitingForPreparedEntrance || preparedPageNavigation?.isPreparing == true) schedulePreparedLoading()
+        if (waitingForPreparedEntrance) {
+            pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }?.let(::onReaderPageVisualReady)
+        }
     }
 
     override fun onPause() {
-        if (waitingForPreparedEntrance) {
-            waitingForPreparedEntrance = false
-            preparedEntranceTimeout?.let(interactiveBackSurface()::removeCallbacks)
-            preparedEntranceTimeout = null
-            binding.root.alpha = 1f
-            binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-            preparedEntranceLoading?.dismiss()
-            preparedEntranceLoading = null
+        readerIsPaused = true
+        if (isFinishing) {
+            preparedPageNavigation?.cancel(releaseSnapshot = false)
+            readerPageSnapshot?.freezeForExit()
+        } else {
+            preparedPageNavigation?.pause()
         }
+        clearPreparedLoading()
         if (!isFinishing) {
             resetInteractiveReaderBackSwipe(cancelAnimation = true)
         }
@@ -420,9 +430,21 @@ abstract class Reading :
 
     override fun onStop() {
         if (!isChangingConfigurations) {
-            readingAdapter?.releaseBackgroundWebViews(currentReadingStory()?.storyHash)
+            val activeHash = if (preparedPageNavigation?.isActive == true) {
+                pagerReadingStory()?.storyHash
+            } else {
+                currentReadingStory()?.storyHash
+            }
+            readingAdapter?.releaseBackgroundWebViews(activeHash)
         }
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        preparedPageNavigation?.cancel()
+        readerPageSnapshot = null
+        clearPreparedLoading()
+        super.onDestroy()
     }
 
     override fun onTrimMemory(level: Int) {
@@ -511,7 +533,8 @@ abstract class Reading :
         )
     }
 
-    private fun currentReadingStory(): Story? = recentlyMarkedReadStory ?: activeReadingStory() ?: pagerReadingStory()
+    private fun currentReadingStory(): Story? =
+        preparedVisibleStory ?: recentlyMarkedReadStory ?: activeReadingStory() ?: pagerReadingStory()
 
     private fun activeReadingStory(): Story? = readingAdapter?.getActiveStory()
 
@@ -744,19 +767,31 @@ abstract class Reading :
 
     fun onReaderPageVisualReady(readyStoryHash: String) {
         val activeHash = pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }
+        if (preparedPageNavigation?.isPreparing == true && activeHash == readyStoryHash) {
+            binding.content.doOnPreDraw {
+                val position = pager?.currentItem
+                if (!isFinishing && !isDestroyed && position != null &&
+                    readingAdapter?.getStory(position)?.storyHash == readyStoryHash &&
+                    readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true
+                ) {
+                    preparedPageNavigation?.ready(readyStoryHash)
+                }
+            }
+            binding.content.invalidate()
+        }
         if (BuildConfig.DEBUG) {
             Log.d(
                 "NB.Reader",
                 "visual_ready active=${activeHash == readyStoryHash} waiting=$waitingForPreparedEntrance elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}",
             )
         }
-        if (!shouldRevealPreparedReader(waitingForPreparedEntrance, storyHash, activeHash, readyStoryHash)) return
+        if (!shouldRevealPreparedReader(waitingForPreparedEntrance, storyHash, activeHash, readyStoryHash, readerIsPaused)) return
         // Reading.kt waits for the native header/layout pass too, after the WebView compositor is ready.
         interactiveBackSurface().doOnPreDraw { revealPreparedEntrance("visual_ready") }
     }
 
     private fun revealPreparedEntrance(reason: String) {
-        if (reason != "visual_ready" || !waitingForPreparedEntrance || isFinishing || isDestroyed) return
+        if (reason != "visual_ready" || !waitingForPreparedEntrance || readerIsPaused || isFinishing || isDestroyed) return
         val activePosition = pager?.currentItem ?: return
         if (readingAdapter?.getExistingItem(activePosition)?.isReadyForDisplay() != true) return
         waitingForPreparedEntrance = false
@@ -780,7 +815,9 @@ abstract class Reading :
     }
 
     private fun showPreparedEntranceLoading() {
-        if (!waitingForPreparedEntrance || isFinishing || isDestroyed || preparedEntranceLoading != null) return
+        if ((!waitingForPreparedEntrance && preparedPageNavigation?.isPreparing != true) ||
+            isFinishing || isDestroyed || preparedEntranceLoading != null
+        ) return
         // Reading.kt keeps this affordance outside its hidden root, so the titles remain visible and Cancel works.
         preparedEntranceLoading = Snackbar.make(interactiveBackSurface(), R.string.loading, Snackbar.LENGTH_INDEFINITE)
             .setAction(android.R.string.cancel) { finish() }
@@ -788,6 +825,121 @@ abstract class Reading :
             .setTextColor(traverseBar.palette.tintColor)
             .setBackgroundTint(traverseBar.palette.groupBackgroundColor)
             .also { it.show() }
+    }
+
+    private fun clearPreparedLoading() {
+        preparedEntranceTimeout?.let(interactiveBackSurface()::removeCallbacks)
+        preparedEntranceTimeout = null
+        preparedEntranceLoading?.dismiss()
+        preparedEntranceLoading = null
+    }
+
+    private fun schedulePreparedLoading() {
+        clearPreparedLoading()
+        val timeout = Runnable { showPreparedEntranceLoading() }
+        preparedEntranceTimeout = timeout
+        interactiveBackSurface().postDelayed(timeout, 1000L)
+    }
+
+    private fun navigateToStory(position: Int, isHistoryBack: Boolean = false) {
+        val activePager = pager ?: return
+        val adapter = readingAdapter ?: return
+        val destination = adapter.getStory(position) ?: return
+        val sourcePosition = activePager.currentItem
+        val source = adapter.getStory(sourcePosition) ?: return
+        val navigation = preparedPageNavigation ?: return
+        if (!navigation.isActive) preparedPageStartedAt = SystemClock.uptimeMillis()
+        if (BuildConfig.DEBUG) {
+            Log.d("NB.Reader", "page_request distance=${position - sourcePosition} active=${navigation.isActive}")
+        }
+        if (!navigation.isActive && abs(position - sourcePosition) <= 1 &&
+            adapter.getExistingItem(position)?.isReadyForDisplay() == true
+        ) {
+            if (isHistoryBack) trimHistoryToStory(destination.storyHash)
+            activePager.setCurrentItem(position, true)
+            return
+        }
+        navigation.request(
+            ReaderPageTarget(source.storyHash, sourcePosition),
+            ReaderPageTarget(destination.storyHash, position, isHistoryBack),
+        )
+        if (navigation.isPreparing) {
+            traverseBar.updatePreviousEnabled(true)
+            updateOverlayText()
+        }
+    }
+
+    private fun trimHistoryToStory(targetHash: String) {
+        synchronized(pageHistory) {
+            val targetIndex = pageHistory.indexOfLast { it.storyHash == targetHash }
+            if (targetIndex >= 0) {
+                pageHistory.subList(targetIndex + 1, pageHistory.size).clear()
+            }
+        }
+    }
+
+    private fun commitPreparedPage(target: ReaderPageTarget) {
+        val position = readingAdapter?.findHash(target.storyHash) ?: -1
+        if (position < 0) return
+        if (target.isHistoryBack) trimHistoryToStory(target.storyHash)
+        onPageSelected(position)
+    }
+
+    private fun setupPreparedPageNavigation(pager: ViewPager) {
+        val snapshot = ReaderPageSnapshot(this, binding, pager)
+        readerPageSnapshot = snapshot
+        preparedPageNavigation = PreparedReaderNavigation(
+            capture = { completion ->
+                preparedVisibleStory = pagerReadingStory()
+                preparedVisibleScrollPosition = readingFragment?.currentScrollPosRel()
+                schedulePreparedLoading()
+                snapshot.capture { success ->
+                    if (BuildConfig.DEBUG) {
+                        Log.d("NB.Reader", "page_capture success=$success elapsed=${SystemClock.uptimeMillis() - preparedPageStartedAt}")
+                    }
+                    completion(success)
+                }
+            },
+            prepare = { target ->
+                if (BuildConfig.DEBUG) {
+                    Log.d("NB.Reader", "page_prepare elapsed=${SystemClock.uptimeMillis() - preparedPageStartedAt}")
+                }
+                val position = readingAdapter?.findHash(target.storyHash) ?: -1
+                if (position >= 0) {
+                    pager.setCurrentItem(position, false)
+                    if (readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true) {
+                        onReaderPageVisualReady(target.storyHash)
+                    }
+                }
+            },
+            commit = { target ->
+                clearPreparedLoading()
+                preparedVisibleStory = null
+                preparedVisibleScrollPosition = null
+                if (BuildConfig.DEBUG) {
+                    Log.d("NB.Reader", "page_reveal elapsed=${SystemClock.uptimeMillis() - preparedPageStartedAt}")
+                }
+                commitPreparedPage(target)
+                updateOverlayText()
+            },
+            animate = snapshot::animate,
+            release = {
+                clearPreparedLoading()
+                preparedVisibleStory = null
+                preparedVisibleScrollPosition = null
+                snapshot.release()
+                if (!isFinishing && !isDestroyed) {
+                    traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+                    updateOverlayText()
+                }
+            },
+            captureFailed = {
+                Snackbar.make(binding.root, R.string.story_navigation_failed, Snackbar.LENGTH_LONG)
+                    .setTextColor(traverseBar.palette.tintColor)
+                    .setBackgroundTint(traverseBar.palette.groupBackgroundColor)
+                    .show()
+            },
+        )
     }
 
     /*
@@ -819,6 +971,7 @@ abstract class Reading :
         var sourceUserId: String? = null
         if (fs!!.singleSocialFeed != null) sourceUserId = fs!!.singleSocialFeed.key
         readingAdapter = ReadingAdapter(childFragmentManager, sourceUserId, showFeedMetadata, this)
+        setupPreparedPageNavigation(pager)
 
         pager.adapter = readingAdapter
 
@@ -903,6 +1056,7 @@ abstract class Reading :
     }
 
     override fun onPageSelected(position: Int) {
+        if (preparedPageNavigation?.isPreparing == true) return
         val isRestoringSelection = isRestoringState
         val story = readingAdapter?.getStory(position)
         if (story != null) {
@@ -1010,7 +1164,7 @@ abstract class Reading :
         if (currentUnreadCount > startingUnreadCount) {
             startingUnreadCount = currentUnreadCount
         }
-        traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+        traverseBar.updatePreviousEnabled(preparedPageNavigation?.isPreparing == true || getLastReadPosition(false) != -1)
         traverseBar.updateNextShowDone(currentUnreadCount <= 0)
 
         if (startingUnreadCount == 0) {
@@ -1031,6 +1185,13 @@ abstract class Reading :
     private fun updateOverlayText() {
         runOnUiThread(
             Runnable {
+                val enabled = preparedPageNavigation?.isPreparing != true
+                binding.readingOverlayText.isEnabled = enabled
+                binding.readingOverlayText.alpha = if (enabled) 1f else 0.4f
+                traverseBar.updateSendEnabled(enabled)
+                binding.readingOverlayProgressTapArea.isEnabled = enabled
+                findViewById<View>(R.id.toolbar_settings_button)?.isEnabled = enabled
+                if (!enabled) return@Runnable
                 val item = readingFragment ?: return@Runnable
                 val inTextView = item.selectedViewMode != DefaultFeedView.STORY
                 traverseBar.updateTextInTextView(inTextView, enabled = true)
@@ -1148,7 +1309,7 @@ abstract class Reading :
 
         var unreadFound = false
         // start searching just after the current story
-        val currentIndex = pager!!.currentItem
+        val currentIndex = requestedReadingPosition()
         var candidate = currentIndex + 1
         unreadSearch@ while (!unreadFound) {
             // if we've reached the end of the list, start searching backward from the current story
@@ -1188,7 +1349,7 @@ abstract class Reading :
         if (unreadFound) {
             // jump to the story we found
             val page = candidate
-            runOnUiThread { pager!!.setCurrentItem(page, true) }
+            runOnUiThread { navigateToStory(page) }
             // disable the search flag, as we are done
             unreadSearchActive = false
         } else {
@@ -1209,10 +1370,24 @@ abstract class Reading :
      * Click handler for the lefthand overlay nav button.
      */
     private fun overlayLeftClick() {
-        val targetPosition = getLastReadPosition(true)
+        if (preparedPageNavigation?.isPreparing == true) {
+            val target = preparedPageNavigation?.requestedTarget ?: return
+            val backHash = if (target.isHistoryBack) {
+                synchronized(pageHistory) {
+                    val index = pageHistory.indexOfLast { it.storyHash == target.storyHash }
+                    pageHistory.getOrNull(index - 1)?.storyHash
+                }
+            } else {
+                preparedPageNavigation?.outgoingTarget?.storyHash
+            }
+            val position = backHash?.let { readingAdapter?.findHash(it) } ?: -1
+            if (position >= 0) navigateToStory(position, isHistoryBack = target.isHistoryBack)
+            return
+        }
+        val targetPosition = getLastReadPosition(false)
         if (targetPosition != -1) {
             clearCurrentStoryPins()
-            pager!!.setCurrentItem(targetPosition, true)
+            navigateToStory(targetPosition, isHistoryBack = true)
         } else {
             Log.e(this.javaClass.name, "reading history contained item not found in cursor.")
         }
@@ -1245,6 +1420,7 @@ abstract class Reading :
      * Click handler for the progress indicator on the righthand overlay nav button.
      */
     private fun overlayProgressCountClick() {
+        if (preparedPageNavigation?.isPreparing == true) return
         showUnreadSnackbar()
     }
 
@@ -1303,16 +1479,19 @@ abstract class Reading :
     }
 
     private fun overlaySendClick() {
+        if (preparedPageNavigation?.isPreparing == true) return
         if (readingAdapter == null || pager == null) return
         feedUtils.sendStoryUrl(currentReadingStory(), this)
     }
 
     private fun overlayTextClick() {
+        if (preparedPageNavigation?.isPreparing == true) return
         val item = readingFragment ?: return
         item.switchSelectedViewMode()
     }
 
     private fun openStorySettingsMenu(anchor: View) {
+        if (preparedPageNavigation?.isPreparing == true) return
         readingFragment?.showStoryContextMenu(anchor)
     }
 
@@ -1379,10 +1558,10 @@ abstract class Reading :
     private fun nextStory() {
         if (pager == null) return
         clearCurrentStoryPins()
-        val nextPosition = pager!!.currentItem + 1
+        val nextPosition = requestedReadingPosition() + 1
         if (nextPosition < readingAdapter!!.count) {
             try {
-                pager!!.currentItem = nextPosition
+                navigateToStory(nextPosition)
             } catch (_: Exception) {
                 // Just in case cursor changes.
             }
@@ -1392,15 +1571,19 @@ abstract class Reading :
     private fun previousStory() {
         if (pager == null) return
         clearCurrentStoryPins()
-        val nextPosition = pager!!.currentItem - 1
+        val nextPosition = requestedReadingPosition() - 1
         if (nextPosition >= 0) {
             try {
-                pager!!.currentItem = nextPosition
+                navigateToStory(nextPosition)
             } catch (e: Exception) {
                 // Just in case cursor changes.
             }
         }
     }
+
+    private fun requestedReadingPosition(): Int =
+        preparedPageNavigation?.requestedTarget?.let { readingAdapter?.findHash(it.storyHash) }
+            ?.takeIf { it >= 0 } ?: pager?.currentItem ?: 0
 
     override fun onKeyUp(
         keyCode: Int,
@@ -1475,6 +1658,9 @@ abstract class Reading :
     }
 
     override fun onKeyboardEvent(event: KeyboardEvent) {
+        if (preparedPageNavigation?.isPreparing == true &&
+            event != KeyboardEvent.NextStory && event != KeyboardEvent.PreviousStory && event != KeyboardEvent.NextUnreadStory
+        ) return
         when (event) {
             KeyboardEvent.NextStory -> nextStory()
             KeyboardEvent.PreviousStory -> previousStory()
@@ -1510,11 +1696,14 @@ abstract class Reading :
         setResult(
             RESULT_OK,
             Intent().apply {
-                pager?.currentItem?.let { position ->
+                pager?.currentItem?.let { pagerPosition ->
+                    val visibleStory = currentReadingStory()
+                    val position = visibleStory?.storyHash?.let { readingAdapter?.findHash(it) }
+                        ?.takeIf { it >= 0 } ?: pagerPosition
                     com.newsblur.util.Log
                         .d(this@Reading.javaClass.name, "Finish reading at position $position")
                     putExtra(LAST_READING_POS, position)
-                    (currentReadingStory() ?: readingAdapter?.getStory(position))?.storyHash?.let { storyHash ->
+                    (visibleStory ?: readingAdapter?.getStory(position))?.storyHash?.let { storyHash ->
                         putExtra(LAST_READING_STORY_HASH, storyHash)
                     }
                 }
@@ -1541,12 +1730,7 @@ abstract class Reading :
     }
 
     private fun resumeCurrentStoryReadTimeTracking() {
-        val currentStory =
-            if (pager == null || readingAdapter == null) {
-                null
-            } else {
-                readingAdapter!!.getStory(pager!!.currentItem)
-            }
+        val currentStory = currentReadingStory()
         beginReadTimeTracking(currentStory?.storyHash)
     }
 
@@ -1601,6 +1785,8 @@ abstract class Reading :
 
     private fun completeInteractiveReaderBackSwipe() {
         val surface = interactiveBackSurface()
+        preparedPageNavigation?.cancel(releaseSnapshot = false)
+        readerPageSnapshot?.freezeForExit()
         // Reading.kt must disarm pending entrances before the committed Back animation starts.
         waitingForPreparedEntrance = false
         preparedEntranceTimeout?.let(surface::removeCallbacks)

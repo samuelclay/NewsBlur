@@ -31,6 +31,7 @@ people together to talk about the world.</string>
     <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
+    <string name="story_navigation_failed">Couldn\'t open the story. Please try again.</string>
     <string name="orig_text_loading">Fetching story text…</string>
 
     <string name="follow_error">There was a problem following the user.</string>
