@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 final class ReaderUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -19,6 +20,175 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910001"), in: feedsList))
         XCTAssertTrue(reveal(feedCell("910002"), in: feedsList))
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
+    }
+
+    func test_classicTitlesKeepEdgeSwipeBack() {
+        verifyStoryListSwipeBack(classic: true, experimental: false)
+    }
+
+    func test_classicExperimentalTitlesKeepEdgeSwipeBack() {
+        verifyStoryListSwipeBack(classic: true, experimental: true)
+    }
+
+    func test_currentTitlesKeepFullScreenSwipeBack() {
+        verifyStoryListSwipeBack(classic: false, experimental: false)
+    }
+
+    func test_classicStoryActionsAreReversible() {
+        verifyClassicActions(experimental: false)
+    }
+
+    func test_classicExperimentalStoryActionsAreReversible() {
+        verifyClassicActions(experimental: true)
+    }
+
+    func test_reversedStorySwipeActions() {
+        verifyClassicActions(experimental: false, reversed: true)
+    }
+
+    func test_reversedExperimentalStorySwipeActions() {
+        verifyClassicActions(experimental: true, reversed: true)
+    }
+
+    func test_saveSwipeWithLeftMenu() { verifySwipeMenu(experimental: false, rightMenu: false) }
+    func test_experimentalSaveSwipeWithLeftMenu() { verifySwipeMenu(experimental: true, rightMenu: false) }
+    func test_rightMenuWithReadSwipe() { verifySwipeMenu(experimental: false, rightMenu: true) }
+    func test_experimentalRightMenuWithReadSwipe() { verifySwipeMenu(experimental: true, rightMenu: true) }
+    func test_shareSwipes() { verifyShareSwipes(experimental: false) }
+    func test_experimentalShareSwipes() { verifyShareSwipes(experimental: true) }
+    func test_leftSwipeBack() { verifyConfiguredBack(experimental: false, leftBack: true) }
+    func test_experimentalLeftSwipeBack() { verifyConfiguredBack(experimental: true, leftBack: true) }
+    func test_rightSwipeBackWithLeftAction() { verifyConfiguredBack(experimental: false, leftBack: false) }
+    func test_experimentalRightSwipeBackWithLeftAction() { verifyConfiguredBack(experimental: true, leftBack: false) }
+
+    private func launchSwipes(experimental: Bool, right: String, left: String) {
+        app = XCUIApplication()
+        app.launchArguments = ["-story_title_swipe_right", right, "-story_title_swipe_left", left,
+                               "-newsblur-ui-test-animations", "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+    }
+
+    private func swipeFirstStory(right: Bool) {
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: right ? 80 : 330, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: right ? 230 : 180, dy: 195)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+    }
+
+    private func assertFirstStoryState(_ value: String) {
+        expectation(for: NSPredicate(format: "value == %@", value), evaluatedWith: storyRow("ui-story-swift-1"))
+        waitForExpectations(timeout: 3)
+    }
+
+    private func verifySwipeMenu(experimental: Bool, rightMenu: Bool) {
+        launchSwipes(experimental: experimental, right: rightMenu ? "menu" : "save", left: rightMenu ? "read" : "menu")
+        if !rightMenu {
+            swipeFirstStory(right: true)
+            assertFirstStoryState("Unread, Saved")
+        }
+        swipeFirstStory(right: rightMenu)
+        let save = app.buttons[rightMenu ? "Save" : "Unsave"].firstMatch
+        XCTAssertTrue(save.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["Share"].firstMatch.exists)
+        XCTAssertTrue(app.buttons["Mark Read"].firstMatch.exists)
+        save.tap()
+        assertFirstStoryState(rightMenu ? "Unread, Saved" : "Unread, Unsaved")
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+    }
+
+    private func verifyShareSwipes(experimental: Bool) {
+        for right in [true, false] {
+            launchSwipes(experimental: experimental, right: right ? "share" : "back", left: right ? "menu" : "share")
+            swipeFirstStory(right: right)
+            // ReaderUITests.swift accepts the system share sheet's activity cell accessibility type.
+            XCTAssertTrue(app.descendants(matching: .any)["Copy Link"].firstMatch.waitForExistence(timeout: 8), app.debugDescription)
+            attachScreenshot(named: right ? "swipe-right-share" : "swipe-left-share")
+        }
+    }
+
+    private func verifyConfiguredBack(experimental: Bool, leftBack: Bool) {
+        launchSwipes(experimental: experimental, right: leftBack ? "save" : "back", left: leftBack ? "back" : "save")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: leftBack ? 330 : 80, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: leftBack ? 100 : 350, dy: 195)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+    }
+
+    private func verifyClassicActions(experimental: Bool, reversed: Bool = false) {
+        app.launchArguments += ["-story_title_swipe_right", reversed ? "read" : "save",
+                                "-story_title_swipe_left", reversed ? "save" : "read", "-newsblur-ui-test-animations",
+                                "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let row = storyRow("ui-story-swift-1")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        func swipe(_ from: CGFloat, _ to: CGFloat) {
+            origin.withOffset(CGVector(dx: from, dy: 195)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: to, dy: 195)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+        }
+        func assertState(_ value: String) {
+            let predicate = NSPredicate(format: "value == %@", value)
+            expectation(for: predicate, evaluatedWith: row)
+            waitForExpectations(timeout: 3)
+        }
+        func saveSwipe() { swipe(reversed ? 330 : 80, reversed ? 180 : 230) }
+        func readSwipe() { swipe(reversed ? 80 : 330, reversed ? 230 : 180) }
+        assertState("Unread, Unsaved")
+        let rowFrame = row.frame
+        func rowImageData() -> Data {
+            let image = app.screenshot().image
+            let scale = CGFloat(image.cgImage!.width) / app.frame.width
+            let crop = rowFrame.applying(CGAffineTransform(scaleX: scale, y: scale)).integral
+            return UIImage(cgImage: image.cgImage!.cropping(to: crop)!).pngData()!
+        }
+        let initialRowImage = experimental ? rowImageData() : nil
+        saveSwipe()
+        assertState("Unread, Saved")
+        attachScreenshot(named: experimental ? "experimental-classic-saved" : "classic-saved")
+        if let initialRowImage {
+            XCTAssertNotEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires a visible saved indicator")
+        }
+        saveSwipe()
+        assertState("Unread, Unsaved")
+        if let initialRowImage {
+            XCTAssertEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires the saved indicator to disappear")
+        }
+        readSwipe()
+        assertState("Read, Unsaved")
+        attachScreenshot(named: experimental ? "experimental-classic-read" : "classic-read")
+        if let initialRowImage {
+            XCTAssertNotEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires visible read-state dimming")
+        }
+        readSwipe()
+        assertState("Unread, Unsaved")
+        if let initialRowImage {
+            XCTAssertEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires unread appearance to return")
+        }
+        swipe(80, 115)
+        assertState("Unread, Unsaved")
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+        tapElementCenter(row)
+        let currentStory = currentStoryProbe()
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+    }
+
+    private func verifyStoryListSwipeBack(classic: Bool, experimental: Bool) {
+        app.launchArguments += ["-story_title_swipe_right", classic ? "save" : "back",
+                                "-story_title_swipe_left", classic ? "read" : "menu",
+                                "-newsblur-ui-test-animations"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        attachScreenshot(named: classic ? "classic-before-edge-back" : "current-before-swipe-back")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: classic ? 2 : 85, dy: 300))
+        let end = origin.withOffset(CGVector(dx: 350, dy: 300))
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+        attachScreenshot(named: classic ? "classic-after-edge-back" : "current-after-swipe-back")
     }
 
     func test_goodReadsAppearsAtBottomAndLoadsTrendingStories() {
