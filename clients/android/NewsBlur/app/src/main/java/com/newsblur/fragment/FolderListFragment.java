@@ -130,14 +130,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper, prefsRepo);
         adapter.setToggleAllFoldersClickListener(this::toggleAllFolders);
         feedUtils.currentFolderName = null;
-        // NB: it is by design that loaders are not started until we get a
-        // ping from the sync service indicating that it has initialised
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupObservers();
+        // InitActivity.kt upgrades the database before Main.java opens. Cached feeds can load immediately.
+        loadData();
     }
 
     @Override

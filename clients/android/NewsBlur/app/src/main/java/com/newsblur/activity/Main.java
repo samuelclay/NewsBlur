@@ -354,12 +354,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             return;
         }
 
+        // FolderListFragment.java may still be reading cached feeds before the service reports any status.
+        if (!folderFeedList.firstCursorSeenYet) {
+            isShowingLoadingSyncPlaceholder = true;
+            showSyncStatusIndicator(getString(R.string.loading), SyncStatusAccessory.SPINNER);
+            return;
+        }
+
         if (hasSeenActiveSyncStatus) {
-            if (!folderFeedList.firstCursorSeenYet) {
-                isShowingLoadingSyncPlaceholder = true;
-                showSyncStatusIndicator(getString(R.string.loading), SyncStatusAccessory.SPINNER);
-                return;
-            }
             hasSeenActiveSyncStatus = false;
             shouldTrackActiveSyncStatus = false;
             isShowingLoadingSyncPlaceholder = false;
