@@ -4,7 +4,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
@@ -14,6 +16,63 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LatestStoryLoadRunnerTest {
+    @Test
+    fun aSameFeedRefreshPublishesTheActiveSnapshotThenOnlyTheNewestPendingRevision() = runTest {
+        val delivered = mutableListOf<Int>()
+        val queries = mutableListOf<Int>()
+        val runner =
+            LatestStoryLoadRunner(
+                scope = backgroundScope,
+                queryDispatcher = StandardTestDispatcher(testScheduler),
+                load = { request: Pair<Int, Int> ->
+                    queries.add(request.second)
+                    delay(100)
+                    request.second
+                },
+                cancel = {},
+                publish = delivered::add,
+                sameQuery = { first, second -> first.first == second.first },
+                onError = { throw it },
+            )
+
+        runner.submit(1 to 1)
+        runCurrent()
+        runner.submit(1 to 2)
+        runner.submit(1 to 3)
+        advanceTimeBy(100)
+        runCurrent()
+        assertEquals(listOf(1), delivered)
+        assertEquals(listOf(1, 3), queries)
+        advanceTimeBy(100)
+        runCurrent()
+        assertEquals(listOf(1, 3), delivered)
+        runner.close()
+    }
+
+    @Test
+    fun recurringRefreshesForTheSameFeedDoNotStarveItsFirstSnapshot() = runTest {
+        val delivered = mutableListOf<Int>()
+        var queriesStarted = 0
+        val runner = LatestStoryLoadRunner(backgroundScope, StandardTestDispatcher(testScheduler), { request: Int ->
+            queriesStarted++
+            // StoriesViewModel.kt may receive sync/read notifications while a large cursor is still parsing.
+            repeat(10) { delay(10) }
+            request
+        }, {}, delivered::add) { throw it }
+
+        runner.submit(1)
+        runCurrent()
+        repeat(9) {
+            advanceTimeBy(20)
+            runner.submit(1)
+            runCurrent()
+        }
+
+        assertEquals("A useful snapshot must publish before refresh notifications stop", listOf(1), delivered)
+        assertEquals("Refreshes coalesce behind the active query", 2, queriesStarted)
+        runner.close()
+    }
+
     @Test
     fun refreshBurstReadsOnlyTheLastRequestedSnapshot() = runTest {
         val queries = mutableListOf<Int>()
