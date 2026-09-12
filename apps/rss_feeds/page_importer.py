@@ -20,6 +20,7 @@ from pyasn1.error import PyAsn1Error
 from sentry_sdk import capture_exception, flush
 
 from apps.rss_feeds.models import MFeedPage
+from apps.statistics.rscrapingbee import RScrapingBee
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
 from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
@@ -342,6 +343,7 @@ class PageImporter(object):
 
         try:
             response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
+            RScrapingBee.record_response("original_story", response, url=url)
             if response.status_code == 200 and response.content:
                 logging.user(
                     self.request,
@@ -353,6 +355,7 @@ class PageImporter(object):
                 "~SN~FRScrapingBee original story fetch failed: status %s" % response.status_code,
             )
         except Exception as e:
+            RScrapingBee.record("original_story", None, url=url)
             logging.user(
                 self.request,
                 "~SN~FRScrapingBee original story fetch error: %s" % e,

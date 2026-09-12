@@ -3065,6 +3065,51 @@ class Feed(models.Model):
         subscription_count = UserSubscription.objects.filter(user_id=user_ids[0], active=True).count()
         return subscription_count > Profile.PREMIUM_FEED_LIMIT
 
+    def proxy_budget_subscriber_ids(self, limit=20):
+        """The readers a proxied (ScrapingBee) fetch of this feed is charged to, capped at
+        `limit` so a popular feed doesn't cost a pipeline of thousands of Redis writes. See
+        RScrapingBee.users_over_budget in apps/statistics/rscrapingbee.py.
+        """
+        from apps.reader.models import UserSubscription
+
+        return list(
+            UserSubscription.objects.filter(feed=self)
+            .order_by("pk")
+            .values_list("user_id", flat=True)[:limit]
+        )
+
+    def has_dormant_sole_subscriber(self, days=None):
+        """True when nobody who is still around reads this feed: it has at most one
+        subscriber and that subscriber hasn't been seen in `days` (default
+        settings.SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS), or it has no subscription at all.
+
+        Forbidden feeds are fetched through ScrapingBee at a credit apiece
+        (utils/feed_fetcher.py), and half of the 237K single-subscriber forbidden feeds
+        belong to accounts idle for over a year (September 2026 audit), so the paid proxy
+        is skipped for them. The check runs on every fetch, so the proxy resumes as soon
+        as the reader is seen again; loading the feed list also schedules their stale
+        feeds right away (apps/reader/views.py). Feeds with 2+ subscribers are never
+        affected, and the real subscription rows win over a stale num_subscribers.
+        """
+        from apps.profile.models import Profile
+        from apps.reader.models import UserSubscription
+
+        if self.num_subscribers is not None and self.num_subscribers > 1:
+            return False
+        if days is None:
+            days = getattr(settings, "SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS", 365)
+
+        user_ids = list(UserSubscription.objects.filter(feed=self).values_list("user_id", flat=True)[:2])
+        if len(user_ids) > 1:
+            return False
+        if not user_ids:
+            return True
+
+        last_seen = Profile.objects.filter(user_id=user_ids[0]).values_list("last_seen_on", flat=True).first()
+        if not last_seen:
+            return True
+        return last_seen < datetime.datetime.now() - datetime.timedelta(days=days)
+
     def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False, pro_speed=False):
         if self.min_to_decay and not force and not premium_speed:
             if verbose:
@@ -3253,7 +3298,8 @@ class Feed(models.Model):
                 % (before_mega, total)
             )
 
-        # Forbidden feeds get a min of 6 hours
+        # Forbidden feeds are fetched through ScrapingBee (utils/feed_fetcher.py), which
+        # bills a credit per fetch, so they get a minimum interval scaled by audience.
         if self.is_forbidden:
             before_forbidden = total
             if self.num_subscribers > 1000:
@@ -3263,7 +3309,9 @@ class Feed(models.Model):
             elif self.num_subscribers > 1:
                 hours = 12
             else:
-                hours = 18
+                # Most forbidden feeds have exactly one subscriber; a single reader isn't
+                # worth a proxy credit more than once a day.
+                hours = 24
             total = max(total, hours * 60)
             if before_forbidden != total:
                 adjustments.append(
