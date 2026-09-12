@@ -23,6 +23,8 @@ Actions:
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
     describe              - Print simulator accessibility elements
     crashes               - Show recent app exception messages from the simulator
+    logs                  - Show recent NewsBlur logs from the simulator
+    push:<payload.apns>    - Deliver a local notification payload to the selected app
     screenshot:<path>     - Take screenshot and save to path
     launch                - Launch the NewsBlur app
     terminate             - Terminate the NewsBlur app
@@ -299,6 +301,11 @@ def parse_and_execute(action):
         do_fuzz(arg)
     elif cmd == "describe":
         subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
+    elif cmd == "push":
+        subprocess.run(["xcrun", "simctl", "push", UDID, BUNDLE_ID, arg], check=True)
+    elif cmd == "logs":
+        subprocess.run(["xcrun", "simctl", "spawn", UDID, "log", "show", "--last", "10m",
+                        "--style", "compact", "--predicate", 'process == "NB Alpha" OR process == "NewsBlur"'], check=True)
     elif cmd == "crashes":
         predicate = '(process == "NB Alpha" OR process == "NewsBlur") AND (eventMessage CONTAINS "unrecognized selector" OR eventMessage CONTAINS "uncaught exception")'
         subprocess.run(["xcrun", "simctl", "spawn", UDID, "log", "show", "--last", "10m",

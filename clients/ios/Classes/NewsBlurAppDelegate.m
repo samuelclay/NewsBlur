@@ -679,34 +679,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
             BOOL isDailyBriefing = [[content objectForKey:@"is_daily_briefing"] boolValue];
             if (isDailyBriefing) {
+                self.pendingNotificationStory = nil;
                 [self openDailyBriefingWithStoryHash:storyHash];
                 if (completionHandler) completionHandler();
             } else {
                 [self popToRootWithCompletion:^{
-                    // Check if user has any feeds with notifications enabled
-                    NSMutableArray *notificationFeeds = [NSMutableArray array];
-                    for (NSString *fid in self.dictActiveFeeds) {
-                        NSDictionary *feed = [self.dictActiveFeeds objectForKey:fid];
-                        if (![feed isKindOfClass:[NSDictionary class]]) continue;
-                        NSArray *types = [feed objectForKey:@"notification_types"];
-                        if (types && [types count] > 0) {
-                            [notificationFeeds addObject:fid];
-                        }
-                    }
-
-                    if (notificationFeeds.count > 0) {
-                        // Open notification river with story finding mode
-                        self.inFindingStoryMode = YES;
-                        self.findingStoryStartDate = [NSDate date];
-                        self.findingStoryDictionary = nil;
-                        self.tryFeedStoryId = storyHash;
-                        self.tryFeedFeedId = feedIdStr;
-                        self.tryFeedStoryTitle = nil;
-                        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"notifications"];
-                    } else {
-                        // Fallback: no notification feeds, open individual feed
-                        [self loadFeed:feedIdStr withStory:storyHash animated:NO];
-                    }
+                    // NewsBlurAppDelegate.m keeps a notification's lookup within its source feed.
+                    self.pendingFolder = nil;
+                    self.pendingDailyBriefingStoryHash = nil;
+                    self.pendingNotificationStory = @{@"feedId": feedIdStr, @"storyHash": storyHash ?: @""};
+                    [self loadFeed:feedIdStr withStory:storyHash animated:NO];
                     if (completionHandler) completionHandler();
                 }];
             }
@@ -983,16 +965,24 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)popToRootWithCompletion:(void (^)(void))completion {
-    if (completion) {
-        [CATransaction begin];
-        [CATransaction setCompletionBlock:completion];
-    }
-    
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
     [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"popToRootWithCompletion" animated:YES];
-    
-    if (completion) {
-        [CATransaction commit];
+
+    if (!completion) return;
+
+    // NewsBlurAppDelegate.m waits for navigation, independent of repeating loading or toolbar animations.
+    id<UIViewControllerTransitionCoordinator> coordinator = self.detailViewController.isCompact ?
+        self.feedsNavigationController.transitionCoordinator : self.splitViewController.transitionCoordinator;
+    __block BOOL completed = NO;
+    void (^completeOnce)(void) = ^{
+        if (completed) return;
+        completed = YES;
+        completion();
+    };
+    if (![coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        completeOnce();
+    }]) {
+        completeOnce();
     }
 }
 
@@ -2307,11 +2297,14 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
        withStory:(NSString *)contentId
       storyTitle:(NSString *)storyTitle
         animated:(BOOL)animated {
+    BOOL openingNotification = [self.pendingNotificationStory[@"feedId"] isEqualToString:feedId] &&
+                               [self.pendingNotificationStory[@"storyHash"] isEqualToString:contentId];
+    if (!openingNotification) self.pendingNotificationStory = nil;
     NSDictionary *feed = [self getFeed:feedId];
     NSLog(@"loadFeed: %@", feed);
     
     if (!feed || [feed isKindOfClass:[NSNull class]]) {
-        if (self.tryFeedFeedId) {
+        if (self.tryFeedFeedId && !openingNotification) {
             self.tryFeedStoryId = nil;
             self.tryFeedFeedId = nil;
             self.tryFeedStoryTitle = nil;
@@ -2332,6 +2325,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.tryFeedStoryTitle = storyTitle;
     
     [self.storiesCollection reset];
+    if (openingNotification) {
+        self.storiesCollection.readFilterOverride = @"all";
+        self.storiesCollection.notificationStoryHash = contentId;
+        self.pendingNotificationStory = nil;
+    }
     
     storiesCollection.isSocialView = NO;
     storiesCollection.activeFeed = feed;
@@ -2512,6 +2510,14 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (self.tryFeedFeedId) {
         [self removeTryFeedFromSidebar];
     }
+    if (self.pendingNotificationStory) {
+        self.pendingNotificationStory = nil;
+        self.tryFeedFeedId = nil;
+        self.tryFeedStoryId = nil;
+        self.inFindingStoryMode = NO;
+        self.findingStoryStartDate = nil;
+        self.findingStoryDictionary = nil;
+    }
     self.tryFeedStoryTitle = nil;
     self.isTryFeedView = NO;
 }
@@ -2525,8 +2531,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         self.pendingDailyBriefingStoryHash = nil;
         self.pendingFolder = nil;
         [self openDailyBriefingWithStoryHash:storyHash];
+    } else if (self.pendingNotificationStory) {
+        [self loadFeed:self.pendingNotificationStory[@"feedId"]
+            withStory:self.pendingNotificationStory[@"storyHash"] animated:NO];
     } else if (self.inFindingStoryMode) {
-        if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+        if (storiesCollection.readFilterOverride && !storiesCollection.isRiverOrSocial &&
+            [storiesCollection.activeFeedIdStr isEqualToString:self.tryFeedFeedId]) {
+            // NewsBlurAppDelegate.m leaves an active notification lookup on its current page while feeds refresh.
+            self.pendingFolder = nil;
+            return;
+        } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
             if (!self.isPhone) {
                 [self.feedsViewController selectWidgetStories];
             } else {

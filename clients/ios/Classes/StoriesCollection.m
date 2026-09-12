@@ -62,10 +62,13 @@
 }
 
 - (void)reset {
+    self.notificationStoryHash = nil;
+    self.notificationStory = nil;
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
 
     self.feedPage = 1;
+    self.readFilterOverride = nil;
     self.activeFeed = nil;
     self.activeSavedStoryTag = nil;
     self.activeFolder = nil;
@@ -283,6 +286,11 @@
 }
 
 - (NSString *)activeReadFilter {
+    // StoriesCollection.m keeps notification visits inclusive without changing the saved feed preference.
+    if (self.readFilterOverride) {
+        return self.readFilterOverride;
+    }
+
     if (self.appDelegate.isSavedStoriesIntelligenceMode) {
         return @"starred";
     }
@@ -410,19 +418,55 @@
 
 #pragma mark - Story Management
 
+- (NSArray *)storiesByIncludingNotificationStory:(NSArray *)stories {
+    NSDictionary *target = self.notificationStory;
+    if (!stories || !target || !self.readFilterOverride ||
+        ![[NSString stringWithFormat:@"%@", target[@"story_feed_id"]] isEqualToString:self.activeFeedIdStr]) return stories;
+
+    // StoriesCollection.m retains one exact lookup beyond the loaded pages, without changing their page numbers.
+    BOOL hasCurrentTarget = NO;
+    for (NSDictionary *story in self.activeFeedStories) {
+        if ([story[@"story_hash"] isEqualToString:target[@"story_hash"]]) {
+            target = story;
+            hasCurrentTarget = YES;
+            break;
+        }
+    }
+    NSMutableArray *merged = [NSMutableArray arrayWithCapacity:stories.count + 1];
+    for (NSDictionary *story in stories) {
+        if ([story[@"story_hash"] isEqualToString:target[@"story_hash"]]) {
+            if (!hasCurrentTarget) target = story;
+        } else {
+            [merged addObject:story];
+        }
+    }
+    BOOL oldestFirst = [self.activeOrder isEqualToString:@"oldest"];
+    double timestamp = [target[@"story_timestamp"] doubleValue];
+    NSUInteger insertion = merged.count;
+    for (NSUInteger index = 0; index < merged.count; index++) {
+        double otherTimestamp = [merged[index][@"story_timestamp"] doubleValue];
+        if (oldestFirst ? timestamp < otherTimestamp : timestamp > otherTimestamp) {
+            insertion = index;
+            break;
+        }
+    }
+    [merged insertObject:target atIndex:insertion];
+    return merged;
+}
+
 - (void)addStories:(NSArray *)stories {
     if (self.activeFeedStories == nil) {
         NSLog(@"addStories: activeFeedStories was nil!");
         self.activeFeedStories = [NSMutableArray array];
     }
-    self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
+    self.activeFeedStories = [self storiesByIncludingNotificationStory:[self.activeFeedStories arrayByAddingObjectsFromArray:stories]];
     self.storyCount = (int)[self.activeFeedStories count];
     [self calculateStoryLocations];
     self.storyLocationsCount = (int)[self.activeFeedStoryLocations count];
 }
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
-    self.activeFeedStories = activeFeedStoriesValue;
+    self.activeFeedStories = [self storiesByIncludingNotificationStory:activeFeedStoriesValue];
     self.storyCount = (int)[self.activeFeedStories count];
     appDelegate.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];

@@ -305,6 +305,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
 - (void)prepareViewControllers;
+- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void (^)(void))completionHandler;
 
 - (BOOL)openURL:(NSURL *)url;
 

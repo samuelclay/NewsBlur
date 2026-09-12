@@ -70,6 +70,14 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) StoryFirstPageLoad *firstPageLoad;
 @property (nonatomic) BOOL restoringFirstPageViewport;
 @property (nonatomic) BOOL reconcilingFirstPageArticle;
+@property (nonatomic, strong) NSURLSessionDataTask *notificationStoryLookupTask;
+@property (nonatomic, copy) NSString *notificationStoryLookupHash;
+@property (nonatomic, copy) NSArray *notificationStoryProfiles;
+@property (nonatomic, copy) NSString *pendingNotificationAnchorHash;
+@property (nonatomic) CGFloat pendingNotificationAnchorOffset;
+@property (nonatomic, copy) NSString *notificationSelectionAnchorHash;
+@property (nonatomic) CGFloat notificationSelectionAnchorOffset;
+@property (nonatomic) BOOL notificationFirstPageReceived;
 @property (nonatomic, copy) NSString *retainedFirstPageStoryHash;
 @property (nonatomic, copy) NSArray<NSString *> *retainedFirstPageNeighbors;
 @property (nonatomic) NSInteger retainedFirstPageLocation;
@@ -137,6 +145,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (void)clearTryFeedSearchState;
 - (void)clearStoryRenderCaches;
 - (void)fetchNextPageForCurrentViewport;
+- (void)restorePendingNotificationViewport;
+- (void)rememberNotificationSelectionViewport;
 - (NSString *)normalizedPreviewTextForStory:(NSDictionary *)story;
 - (NSString *)cachedPreviewTextForStory:(NSDictionary *)story location:(NSInteger)location;
 - (void)warmStoryPreviewCacheAroundLocation:(NSInteger)location;
@@ -603,6 +613,15 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (self.isFadingTable) {
         return;
     }
+
+    NSIndexPath *notificationSelection = self.storyTitlesTable.indexPathForSelectedRow;
+    if (storiesCollection.notificationStory && !self.pendingNotificationAnchorHash && notificationSelection &&
+        CGRectIntersectsRect([self.storyTitlesTable rectForRowAtIndexPath:notificationSelection], self.storyTitlesTable.bounds)) {
+        NSInteger location = [self storyLocationForScrollingAtIndexPath:notificationSelection];
+        self.pendingNotificationAnchorHash = [self getStoryAtLocation:location][@"story_hash"];
+        self.pendingNotificationAnchorOffset = self.storyTitlesTable.contentOffset.y -
+            [self.storyTitlesTable rectForRowAtIndexPath:notificationSelection].origin.y;
+    }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
@@ -647,6 +666,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (indexPath && location >= 0 && self.view.window != nil) {
         [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
     }
+
+    [self restorePendingNotificationViewport];
 
     [self updateBottomNextFeedControlForScroll:self.storyTitlesTable];
 }
@@ -1106,6 +1127,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 }
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self restorePendingNotificationViewport];
+}
+
 - (void)configureInteractivePopGesture {
     if (!self.isPhoneOrCompact) {
         return;
@@ -1454,6 +1480,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)fadeSelectedCell:(BOOL)deselect {
     if (self.isLegacyTable) {
+        if (!self.pendingNotificationAnchorHash &&
+            [self.notificationSelectionAnchorHash isEqualToString:appDelegate.activeStory[@"story_hash"]]) {
+            self.pendingNotificationAnchorHash = self.notificationSelectionAnchorHash;
+            self.pendingNotificationAnchorOffset = self.notificationSelectionAnchorOffset;
+        }
         [self reloadTable];
         
         NSInteger location = storiesCollection.locationOfActiveStory;
@@ -1563,6 +1594,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 #pragma mark Initialization
 
 - (void)resetFeedDetail {
+    [self resetNotificationStoryLookup];
+    self.deferredLoadStoryCount = 0;
     self.firstPageLoad = nil;
     self.restoringFirstPageViewport = NO;
     self.reconcilingFirstPageArticle = NO;
@@ -1619,6 +1652,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)reloadStories {
+    [self resetNotificationStoryLookup];
+    self.deferredLoadStoryCount = 0;
     self.firstPageLoad = nil;
     self.restoringFirstPageViewport = NO;
     self.reconcilingFirstPageArticle = NO;
@@ -2335,8 +2370,245 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     return target;
 }
 
+- (void)resetNotificationStoryLookup {
+    [self.notificationStoryLookupTask cancel];
+    self.notificationStoryLookupTask = nil;
+    self.notificationStoryLookupHash = nil;
+    self.notificationStoryProfiles = nil;
+    self.notificationFirstPageReceived = NO;
+    self.pendingNotificationAnchorHash = nil;
+    self.notificationSelectionAnchorHash = nil;
+}
+
+- (void)beginNotificationStoryLookupIfNeeded {
+    NSString *hash = storiesCollection.notificationStoryHash;
+    if (!hash.length || self.notificationStoryLookupHash || !appDelegate.inFindingStoryMode ||
+        ![appDelegate.tryFeedStoryId isEqualToString:hash] || storiesCollection.isRiverOrSocial) return;
+    self.notificationStoryLookupHash = hash;
+    StoriesCollection *collection = storiesCollection;
+    NSString *feedId = collection.activeFeedIdStr;
+    NSString *account = [appDelegate.activeUsername copy];
+    NSString *host = [appDelegate.url copy];
+    NSUInteger generation = self.fetchRequestId;
+    NSURLComponents *url = [NSURLComponents componentsWithString:[host stringByAppendingString:@"/reader/river_stories"]];
+    url.queryItems = @[[NSURLQueryItem queryItemWithName:@"include_hidden" value:@"true"],
+                       [NSURLQueryItem queryItemWithName:@"page" value:@"0"],
+                       [NSURLQueryItem queryItemWithName:@"h" value:hash]];
+    __weak typeof(self) weakSelf = self;
+    BOOL (^isCurrent)(FeedDetailObjCViewController *) = ^BOOL(FeedDetailObjCViewController *controller) {
+        return controller && controller.fetchRequestId == generation && controller.storiesCollection == collection &&
+            [controller.appDelegate.activeUsername isEqualToString:account] &&
+            [controller.appDelegate.url isEqualToString:host] &&
+            [collection.activeFeedIdStr isEqualToString:feedId] &&
+            [collection.notificationStoryHash isEqualToString:hash] &&
+            [controller.notificationStoryLookupHash isEqualToString:hash];
+    };
+    // FeedDetailObjCViewController.m uses the existing exact-hash API without changing the visible feed context.
+    self.notificationStoryLookupTask = [appDelegate GETreturningTask:url.URL.absoluteString parameters:nil success:^(NSURLSessionTask *task, id response) {
+        FeedDetailObjCViewController *controller = weakSelf;
+        if (!isCurrent(controller)) return;
+        controller.notificationStoryLookupTask = nil;
+        if (!controller.appDelegate.inFindingStoryMode || ![controller.appDelegate.tryFeedStoryId isEqualToString:hash]) return;
+        NSDictionary *target = nil;
+        NSArray *results = [response[@"stories"] isKindOfClass:NSArray.class] ? response[@"stories"] : @[];
+        for (NSDictionary *story in results) {
+            if ([story isKindOfClass:NSDictionary.class] && [story[@"story_hash"] isEqualToString:hash] &&
+                [[NSString stringWithFormat:@"%@", story[@"story_feed_id"]] isEqualToString:feedId]) {
+                target = story;
+                break;
+            }
+        }
+        if (!target) {
+            // FeedDetailObjCViewController.m gives paginated fallback its own search window after a slow exact lookup.
+            controller.appDelegate.findingStoryStartDate = [NSDate date];
+            [controller fetchNextPageForCurrentViewport];
+            return;
+        }
+        collection.notificationStory = target;
+        NSDictionary *classifiers = [response[@"classifiers"] isKindOfClass:NSDictionary.class] ? response[@"classifiers"][feedId] : nil;
+        if ([classifiers isKindOfClass:NSDictionary.class]) collection.activeClassifiers[feedId] = classifiers;
+        controller.notificationStoryProfiles = [response[@"user_profiles"] isKindOfClass:NSArray.class] ? response[@"user_profiles"] : @[];
+        [controller mergeNotificationStoryProfiles];
+        if (controller.notificationFirstPageReceived) {
+            [controller updateNotificationStories:^{ [collection addStories:@[]]; }];
+        }
+    } failure:^(NSURLSessionTask *task, NSError *error) {
+        FeedDetailObjCViewController *controller = weakSelf;
+        if (!isCurrent(controller)) return;
+        controller.notificationStoryLookupTask = nil;
+        if (error.code != NSURLErrorCancelled && controller.appDelegate.inFindingStoryMode &&
+            [controller.appDelegate.tryFeedStoryId isEqualToString:hash]) {
+            controller.appDelegate.findingStoryStartDate = [NSDate date];
+            [controller fetchNextPageForCurrentViewport];
+        }
+    }];
+}
+
+- (void)updateNotificationStories:(void (^)(void))update {
+    UITableView *table = self.storyTitlesTable;
+    NSString *openHash = appDelegate.activeStory[@"story_hash"];
+    NSIndexPath *selection = table.indexPathForSelectedRow;
+    NSString *selectedHash = selection ? [self getStoryAtLocation:[self storyLocationForScrollingAtIndexPath:selection]][@"story_hash"] : nil;
+    NSString *selectedChildHash = selection ? [self clusterStoryForIndexPath:selection][@"story_hash"] : nil;
+    NSIndexPath *anchorPath = selection && CGRectIntersectsRect([table rectForRowAtIndexPath:selection], table.bounds) ? selection :
+        [[table.indexPathsForVisibleRows sortedArrayUsingSelector:@selector(compare:)] firstObject];
+    NSInteger anchorLocation = anchorPath ? [self storyLocationForScrollingAtIndexPath:anchorPath] : NSNotFound;
+    NSString *anchorHash = anchorLocation != NSNotFound ? [self getStoryAtLocation:anchorLocation][@"story_hash"] : nil;
+    NSIndexPath *parentPath = anchorHash ? [self indexPathForStoryLocation:anchorLocation] : nil;
+    CGFloat pixelOffset = parentPath ? table.contentOffset.y - [table rectForRowAtIndexPath:parentPath].origin.y : 0;
+    if (!table.window && [self.notificationSelectionAnchorHash isEqualToString:openHash ?: selectedHash]) {
+        // FeedDetailObjCViewController.m preserves the measured selection before detachment can clamp the table against estimates.
+        anchorHash = self.notificationSelectionAnchorHash;
+        pixelOffset = self.notificationSelectionAnchorOffset;
+    }
+    if (!self.pendingNotificationAnchorHash && (openHash || selectedHash) && anchorHash) {
+        // FeedDetailObjCViewController.m retains the measured anchor while a reloaded table uses estimated heights.
+        self.pendingNotificationAnchorHash = anchorHash;
+        self.pendingNotificationAnchorOffset = pixelOffset;
+    }
+    if (self.pendingNotificationAnchorHash) {
+        anchorHash = self.pendingNotificationAnchorHash;
+        pixelOffset = self.pendingNotificationAnchorOffset;
+    }
+    BOOL wasRestoring = self.restoringFirstPageViewport;
+    BOOL wasReconciling = self.reconcilingFirstPageArticle;
+    self.restoringFirstPageViewport = YES;
+    self.reconcilingFirstPageArticle = openHash != nil;
+    update();
+    [self mergeNotificationStoryProfiles];
+    [(FeedDetailViewController *)self resetPendingReloadsForFeedChange];
+    [self reloadImmediately];
+    [table layoutIfNeeded];
+    if (openHash || selectedHash) {
+        // FeedDetailObjCViewController.m preserves the same article and row offset as its first-page reconciliation.
+        NSInteger location = openHash ? [storiesCollection locationOfStoryId:openHash] : -1;
+        if (location >= 0) [appDelegate.storyPagesViewController preserveCurrentPageAtLocation:location];
+        location = anchorHash ? [storiesCollection locationOfStoryId:anchorHash] : -1;
+        NSIndexPath *path = location >= 0 ? [self indexPathForStoryLocation:location] : nil;
+        if (path) {
+            CGFloat y = [table rectForRowAtIndexPath:path].origin.y + pixelOffset;
+            CGFloat minimum = -table.adjustedContentInset.top;
+            CGFloat maximum = MAX(minimum, table.contentSize.height - table.bounds.size.height + table.adjustedContentInset.bottom);
+            [table setContentOffset:CGPointMake(table.contentOffset.x, MIN(maximum, MAX(minimum, y))) animated:NO];
+        }
+        location = selectedHash ? [storiesCollection locationOfStoryId:selectedHash] : -1;
+        if (location >= 0) {
+            NSIndexPath *path = [self indexPathForStoryLocation:location];
+            if (selectedChildHash) {
+                for (NSIndexPath *candidate in [self indexPathsForStoryLocationIncludingClusterRows:location]) {
+                    if ([[self clusterStoryForIndexPath:candidate][@"story_hash"] isEqualToString:selectedChildHash]) { path = candidate; break; }
+                }
+            }
+            [table selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+    }
+    self.scrollingMarkReadRow = NSNotFound;
+    self.restoringFirstPageViewport = wasRestoring;
+    self.reconcilingFirstPageArticle = wasReconciling;
+    [self restorePendingNotificationViewport];
+    if (appDelegate.inFindingStoryMode) [self testForTryFeed];
+    [self checkScroll];
+}
+
+- (void)rememberNotificationSelectionViewport {
+    UITableView *table = self.storyTitlesTable;
+    NSString *hash = storiesCollection.notificationStoryHash;
+    NSIndexPath *selection = table.indexPathForSelectedRow;
+    NSInteger location = selection ? [self storyLocationForScrollingAtIndexPath:selection] : NSNotFound;
+    if (!self.isLegacyTable || !table.window || !hash.length || location == NSNotFound ||
+        ![hash isEqualToString:[self getStoryAtLocation:location][@"story_hash"]]) return;
+    CGRect row = [table rectForRowAtIndexPath:selection];
+    if (!CGRectIntersectsRect(row, table.bounds)) return;
+    self.notificationSelectionAnchorHash = hash;
+    self.notificationSelectionAnchorOffset = table.contentOffset.y - row.origin.y;
+}
+
+- (void)restorePendingNotificationViewport {
+    UITableView *table = self.storyTitlesTable;
+    if (!self.pendingNotificationAnchorHash || !table.window || self.restoringFirstPageViewport ||
+        CGRectGetWidth(table.bounds) <= 0 || CGRectGetHeight(table.bounds) <= 0) return;
+    NSInteger location = [storiesCollection locationOfStoryId:self.pendingNotificationAnchorHash];
+    NSIndexPath *path = location >= 0 ? [self indexPathForStoryLocation:location] : nil;
+    if (!path) {
+        self.pendingNotificationAnchorHash = nil;
+        return;
+    }
+    if (path.section >= table.numberOfSections || path.row >= [table numberOfRowsInSection:path.section]) return;
+
+    self.restoringFirstPageViewport = YES;
+    // FeedDetailObjCViewController.m measures only the returning viewport, then restores its anchor instead of clamping against hidden estimates.
+    [table scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+    [table layoutIfNeeded];
+    for (NSInteger attempt = 0; attempt < 3; attempt++) {
+        CGRect rowFrame = [table rectForRowAtIndexPath:path];
+        CGSize contentSize = table.contentSize;
+        CGSize viewportSize = table.bounds.size;
+        UIEdgeInsets insets = table.adjustedContentInset;
+        CGFloat y = rowFrame.origin.y + self.pendingNotificationAnchorOffset;
+        CGFloat minimum = -table.adjustedContentInset.top;
+        CGFloat maximum = MAX(minimum, table.contentSize.height - table.bounds.size.height + table.adjustedContentInset.bottom);
+        CGFloat target = MIN(maximum, MAX(minimum, y));
+        [table setContentOffset:CGPointMake(table.contentOffset.x, target) animated:NO];
+        [table layoutIfNeeded];
+        CGRect restoredRowFrame = [table rectForRowAtIndexPath:path];
+        CGFloat restored = restoredRowFrame.origin.y + self.pendingNotificationAnchorOffset;
+        CGFloat restoredMinimum = -table.adjustedContentInset.top;
+        CGFloat restoredMaximum = MAX(restoredMinimum, table.contentSize.height - table.bounds.size.height + table.adjustedContentInset.bottom);
+        CGFloat restoredTarget = MIN(restoredMaximum, MAX(restoredMinimum, restored));
+        BOOL visible = [table cellForRowAtIndexPath:path] != nil && CGRectIntersectsRect(restoredRowFrame, table.bounds);
+        BOOL stableGeometry = CGRectEqualToRect(rowFrame, restoredRowFrame) &&
+            CGSizeEqualToSize(contentSize, table.contentSize) && CGSizeEqualToSize(viewportSize, table.bounds.size) &&
+            UIEdgeInsetsEqualToEdgeInsets(insets, table.adjustedContentInset);
+        // FeedDetailObjCViewController.m accepts a real edge clamp only after the target is measured and visible.
+        if (visible && stableGeometry && fabs(restoredTarget - table.contentOffset.y) < 0.5) {
+            [self rememberNotificationSelectionViewport];
+            self.pendingNotificationAnchorHash = nil;
+            break;
+        }
+    }
+    self.scrollingMarkReadRow = NSNotFound;
+    self.restoringFirstPageViewport = NO;
+    if (self.pendingNotificationAnchorHash) [self.view setNeedsLayout];
+    [self checkScroll];
+}
+
+- (void)mergeNotificationStoryProfiles {
+    NSMutableArray *profiles = [storiesCollection.activeFeedUserProfiles mutableCopy] ?: [NSMutableArray array];
+    for (NSDictionary *profile in self.notificationStoryProfiles) {
+        if ([profile isKindOfClass:NSDictionary.class] && ![profiles containsObject:profile]) [profiles addObject:profile];
+    }
+    [storiesCollection setFeedUserProfiles:profiles];
+}
+
 - (void)finishFirstPageResponse:(NSDictionary *)response feedPage:(NSInteger)page feedId:(NSString *)feedId load:(StoryFirstPageLoad *)load {
-    if (!load || page != 1) { [self finishedLoadingFeed:response feedPage:page feedId:feedId]; return; }
+    if (storiesCollection.notificationStory && !storiesCollection.isRiverOrSocial) {
+        NSDictionary *updated = response;
+        if (load && page == 1) {
+            if (![self isCurrentFirstPageLoad:load]) return;
+            if (![[NSString stringWithFormat:@"%@", response[@"feed_id"]] isEqualToString:feedId]) {
+                load.pending = NO;
+                self.pageFetching = NO;
+                return;
+            }
+            // FeedDetailObjCViewController.m caches only the real feed page, before adding its temporary notification target.
+            [StoryFirstPageCache.shared storeAuthoritativeResponse:response request:load.request revision:load.revision];
+            updated = [StoryFirstPageCache.shared overlayResponse:response request:load.request revision:load.revision];
+            load.pending = NO;
+            load.authoritativeReceived = YES;
+        }
+        if (page == 1) self.notificationFirstPageReceived = YES;
+        NSString *targetHash = storiesCollection.notificationStory[@"story_hash"];
+        [self updateNotificationStories:^{ [self finishedLoadingFeed:updated feedPage:page feedId:feedId]; }];
+        for (NSDictionary *story in response[@"stories"]) {
+            if ([story[@"story_hash"] isEqualToString:targetHash]) { storiesCollection.notificationStory = nil; break; }
+        }
+        return;
+    }
+    if (!load || page != 1) {
+        if (page == 1) self.notificationFirstPageReceived = YES;
+        [self finishedLoadingFeed:response feedPage:page feedId:feedId];
+        return;
+    }
     if (![self isCurrentFirstPageLoad:load]) return;
     if (!storiesCollection.isRiverView && ![[NSString stringWithFormat:@"%@", response[@"feed_id"]] isEqualToString:feedId]) {
         load.pending = NO;
@@ -2344,6 +2616,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
     StoryFirstPageCache *cache = StoryFirstPageCache.shared;
+    self.notificationFirstPageReceived = YES;
     [cache storeAuthoritativeResponse:response request:load.request revision:load.revision];
     NSDictionary *updated = [cache overlayResponse:response request:load.request revision:load.revision];
     NSString *anchorHash;
@@ -2516,6 +2789,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
         [self reload];
     }];
+    if (page == 1) [self beginNotificationStoryLookupIfNeeded];
 }
 
 - (void)loadOfflineStories {
@@ -2960,6 +3234,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
     } else {
         self.pageFinished = YES;
+        if (storiesCollection.notificationStory) {
+            if (storiesCollection.feedPage == 1) [storiesCollection setStories:@[]];
+            else [storiesCollection addStories:@[]];
+        }
     }
     
     BOOL isPageAppend = newStoriesCount > 0 && storiesCollection.feedPage > 1 && !premiumRestriction;
@@ -3030,20 +3308,42 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return NO;
     }
 
+    BOOL isNotificationSelection = [storiesCollection.notificationStoryHash isEqualToString:storyHash] &&
+        self.isLegacyTable && self.storyTitlesTable.window != nil;
+    BOOL wasRestoring = self.restoringFirstPageViewport;
+    if (isNotificationSelection) {
+        // FeedDetailObjCViewController.m resolves estimated rows and any intelligence-filter change before jumping to a notification.
+        self.restoringFirstPageViewport = YES;
+        [(FeedDetailViewController *)self resetPendingReloadsForFeedChange];
+        [self reloadImmediately];
+        [self.storyTitlesTable layoutIfNeeded];
+    }
     NSIndexPath *indexPath = [self indexPathForStoryLocation:locationOfStoryId];
     if (!indexPath) {
+        self.restoringFirstPageViewport = wasRestoring;
         return NO;
     }
 
     if (self.isLegacyTable && self.storyTitlesTable.window != nil && indexPath.row < [self.storyTitlesTable numberOfRowsInSection:0]) {
+        if (isNotificationSelection) {
+            [self.storyTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+            [self.storyTitlesTable layoutIfNeeded];
+        }
         [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath
                animated:NO
          scrollPosition:UITableViewScrollPositionMiddle];
+        if (isNotificationSelection) [self.storyTitlesTable layoutIfNeeded];
         [[self.storyTitlesTable cellForRowAtIndexPath:indexPath] setNeedsDisplay];
     }
+    if (isNotificationSelection) {
+        [self rememberNotificationSelectionViewport];
+        self.scrollingMarkReadRow = NSNotFound;
+    }
+    self.restoringFirstPageViewport = wasRestoring;
 
     self.deferredLoadStoryCount = 1;
-    [self deferredLoadStoryAtRow:indexPath];
+    [self deferredLoadStoryWithHash:storyHash];
+    if (isNotificationSelection) [self checkScroll];
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self clearTryFeedSearchState];
@@ -3076,7 +3376,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
     
-    if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 15) {
+    if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 15 &&
+        !self.notificationStoryLookupTask && !storiesCollection.notificationStory) {
         NSLog(@"No longer looking for try feed.");
         if (appDelegate.inFindingStoryMode) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -3143,14 +3444,24 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 }
 
-- (void)deferredLoadStoryAtRow:(NSIndexPath *)indexPath {
+- (void)deferredLoadStoryWithHash:(NSString *)storyHash {
+    NSUInteger requestId = self.fetchRequestId;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.deferredLoadStoryCount * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (self.deferredLoadStoryCount < 10 && self.isLegacyTable && indexPath.row >= [self.storyTitlesTable numberOfRowsInSection:0]) {
-            NSLog(@"⚠️ deferredLoadStoryAtRow %@ is out of range; probably still loading; will retry in %@ seconds", @(indexPath.row), @(self.deferredLoadStoryCount));  // log
+        if (requestId != self.fetchRequestId) return;
+        // FeedDetailObjCViewController.m resolves identity after pagination can move the requested row.
+        NSInteger location = [self.storiesCollection locationOfStoryId:storyHash];
+        if (location < 0) {
+            self.deferredLoadStoryCount = 0;
+            return;
+        }
+        NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+        if (self.deferredLoadStoryCount < 10 && self.isLegacyTable &&
+            (!indexPath || indexPath.row >= [self.storyTitlesTable numberOfRowsInSection:0])) {
+            NSLog(@"⚠️ deferredLoadStoryWithHash %@ is not laid out; will retry in %@ seconds", storyHash, @(self.deferredLoadStoryCount));
             self.deferredLoadStoryCount += 1;
-            [self deferredLoadStoryAtRow:indexPath];
+            [self deferredLoadStoryWithHash:storyHash];
         } else {
-            [self loadStoryAtRow:[self storyLocationForIndexPath:indexPath]];
+            [self loadStoryAtRow:location];
             self.deferredLoadStoryCount = 0;
         }
     });
@@ -3262,6 +3573,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)clearTryFeedSearchState {
+    [self.notificationStoryLookupTask cancel];
+    self.notificationStoryLookupTask = nil;
     appDelegate.inFindingStoryMode = NO;
     appDelegate.findingStoryStartDate = nil;
     appDelegate.findingStoryDictionary = nil;
@@ -4121,6 +4434,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
     NSInteger storyIndex = [storiesCollection indexFromLocation:row];
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+    if ([self.notificationSelectionAnchorHash isEqualToString:appDelegate.activeStory[@"story_hash"]]) {
+        [self rememberNotificationSelectionViewport];
+    } else {
+        self.notificationSelectionAnchorHash = nil;
+        self.pendingNotificationAnchorHash = nil;
+    }
     [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
     [self setTitleForBackButton];
     BOOL shouldAnimateSelection = [StorySelectionAnimationDecision shouldAnimateSelectionWithIsPhoneOrCompact:self.isPhoneOrCompact
@@ -4723,8 +5042,18 @@ finish_height_measurement:
     [self updateBottomNextFeedControlForScroll:scroll];
 }
 
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scroll {
+    if (scroll == self.storyTitlesTable) {
+        self.pendingNotificationAnchorHash = nil;
+        self.notificationSelectionAnchorHash = nil;
+    }
+    return YES;
+}
+
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scroll {
     if (scroll == self.storyTitlesTable) {
+        self.pendingNotificationAnchorHash = nil;
+        self.notificationSelectionAnchorHash = nil;
         self.bottomNextFeedReady = NO;
         self.hasBottomNextFeedActiveDragStartOffset = YES;
         self.bottomNextFeedActiveDragStartOffsetY = scroll.contentOffset.y;
@@ -5119,7 +5448,7 @@ finish_height_measurement:
 }
 
 - (void)fetchNextPageForCurrentViewport {
-    if (!self.isLegacyTable || self.restoringFirstPageViewport) {
+    if (!self.isLegacyTable || self.restoringFirstPageViewport || self.pendingNotificationAnchorHash) {
         return;
     }
     
@@ -5127,6 +5456,15 @@ finish_height_measurement:
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
     if (![storiesCollection.activeFeedStories count]) return;
+
+    if (self.notificationStoryLookupTask) return;
+    if (storiesCollection.notificationStory) {
+        if (self.deferredLoadStoryCount > 0) return;
+        NSInteger targetLocation = [storiesCollection locationOfStoryId:storiesCollection.notificationStory[@"story_hash"]];
+        NSIndexPath *targetPath = targetLocation >= 0 ? [self indexPathForStoryLocation:targetLocation] : nil;
+        // FeedDetailObjCViewController.m does not exhaust an unloaded gap just because its exact target is visible.
+        if (targetPath && CGRectIntersectsRect([self.storyTitlesTable rectForRowAtIndexPath:targetPath], self.storyTitlesTable.bounds)) return;
+    }
     
     CGFloat remainingOffset = maximumOffset - currentOffset;
     // FeedDetailObjCViewController.m gives the next native page three screens of scrolling to arrive.
@@ -5149,7 +5487,7 @@ finish_height_measurement:
 }
 
 - (void)checkScroll {
-    if (!self.isLegacyTable || self.restoringFirstPageViewport || !storiesCollection.activeFeedStories.count) {
+    if (!self.isLegacyTable || self.restoringFirstPageViewport || self.pendingNotificationAnchorHash || !storiesCollection.activeFeedStories.count) {
         return;
     }
     [self fetchNextPageForCurrentViewport];
@@ -5180,7 +5518,8 @@ finish_height_measurement:
         if (visibleTop >= CGRectGetMinY(firstRow)) return;
     }
 
-    if (self.scrollingMarkReadRow == NSNotFound) {
+    if (appDelegate.inFindingStoryMode || self.scrollingMarkReadRow == NSNotFound) {
+        // FeedDetailObjCViewController.m rebases automatic story navigation without marking the skipped rows read.
         self.scrollingMarkReadRow = nextLocation;
     } else if (nextLocation > self.scrollingMarkReadRow) {
         NSMutableIndexSet *readLocations = [NSMutableIndexSet indexSet];
@@ -5762,6 +6101,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
         if (!dashboard || infrequent || !river) {
             [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+                self.appDelegate.storiesCollection.readFilterOverride = nil;
+                self.appDelegate.storiesCollection.notificationStoryHash = nil;
+                self.appDelegate.storiesCollection.notificationStory = nil;
                 if (selectedIndex == 0) {
                     [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
                 } else {
