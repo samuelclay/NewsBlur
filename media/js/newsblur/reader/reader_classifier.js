@@ -6,6 +6,11 @@ NEWSBLUR.ClassifierConstants = {
     // prompt classifiers intentionally aren't included — feed has no
     // filter surface and prompt is AI-only.
     FILTER_TYPES: ['tag', 'author', 'title', 'url', 'text'],
+    // "View matching stories" glyph shared by the trainer rows here
+    // (make_classifier, make_manage_classifier_item) and the story detail
+    // pills in media/js/newsblur/views/story_detail_view.js so every
+    // surface shows the same stacked-stories icon.
+    MATCHING_STORIES_ICON: '<svg aria-hidden="true" viewBox="0 0 256 256" focusable="false"><path d="M224,104v96a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V104A16,16,0,0,1,48,88H208A16,16,0,0,1,224,104ZM56,72H200a8,8,0,0,0,0-16H56a8,8,0,0,0,0,16ZM72,40H184a8,8,0,0,0,0-16H72a8,8,0,0,0,0,16Z"/></svg>',
 
     // Scope toggle icons rendered inside every classifier pill (trainer,
     // manage tab, filter banner). One entry per scope with its tooltip
@@ -2714,7 +2719,7 @@ var classifier_prototype = {
             className: 'NB-classifier-filter-view-btn',
             'aria-label': 'View matching stories',
             'data-tooltip': 'View matching stories'
-        }, '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>');
+        }, NEWSBLUR.ClassifierConstants.MATCHING_STORIES_ICON);
 
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
             $.make('span', { className: css_class }, [
@@ -5224,7 +5229,7 @@ var classifier_prototype = {
             className: 'NB-classifier-filter-view-btn',
             'aria-label': 'View matching stories',
             'data-tooltip': 'View matching stories'
-        }, '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>');
+        }, NEWSBLUR.ClassifierConstants.MATCHING_STORIES_ICON);
 
         var $item = $.make('div', {
             className: 'NB-manage-classifier-item',
