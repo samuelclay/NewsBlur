@@ -148,6 +148,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Nullable
     private StoryHeaderPillAppearanceResolver.Appearance searchPillExpandedAppearance;
     private boolean updatingStoryHeaderPillLabels = false;
+    private String expandedOptionsPillTitle = "";
+    private String compactOptionsPillTitle = "";
     private boolean storySearchRefreshInFlight = false;
     private boolean predictiveBackInProgress = false;
     private boolean suppressNextExitTransition = false;
@@ -590,7 +592,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
 
         int optionsWidth = binding.itemlistOptionsPill.getVisibility() == View.VISIBLE
-                ? measureDesiredWidth(binding.itemlistOptionsPill)
+                ? measureOptionsPillWidth(expandedOptionsPillTitle)
+                : 0;
+        int compactOptionsWidth = binding.itemlistOptionsPill.getVisibility() == View.VISIBLE
+                ? measureOptionsPillWidth(compactOptionsPillTitle)
                 : 0;
         StoryHeaderPillAppearanceResolver.Appearance discoverExpandedAppearance = getDiscoverPillExpandedAppearance();
         StoryHeaderPillAppearanceResolver.Appearance searchExpandedAppearance = getSearchPillExpandedAppearance();
@@ -623,6 +628,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         StoryHeaderPillLayoutDecider.Decision decision = StoryHeaderPillLayoutDecider.decide(
                 availableWidth,
                 optionsWidth,
+                compactOptionsWidth,
                 markReadWidth,
                 discoverFullWidth,
                 discoverCompactWidth,
@@ -635,6 +641,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 binding.itemlistSearchPill.getVisibility() == View.VISIBLE
         );
 
+        binding.itemlistOptionsPill.setText(decision.showFullOptionsTitle() ? expandedOptionsPillTitle : compactOptionsPillTitle);
+        binding.itemlistOptionsPill.setMaxWidth(decision.optionsWidth());
         if (binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE) {
             applyStoryHeaderPillLabel(
                     binding.itemlistDiscoverPill,
@@ -662,6 +670,17 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance expandedAppearance
     ) {
         return measureStoryHeaderPillWidth(binding.itemlistSearchPill, title, showText, expandedAppearance);
+    }
+
+    private int measureOptionsPillWidth(CharSequence title) {
+        CharSequence previousTitle = binding.itemlistOptionsPill.getText();
+        int previousMaxWidth = binding.itemlistOptionsPill.getMaxWidth();
+        binding.itemlistOptionsPill.setMaxWidth(Integer.MAX_VALUE);
+        binding.itemlistOptionsPill.setText(title);
+        int width = measureDesiredWidth(binding.itemlistOptionsPill);
+        binding.itemlistOptionsPill.setText(previousTitle);
+        binding.itemlistOptionsPill.setMaxWidth(previousMaxWidth);
+        return width;
     }
 
     private int measureDiscoverPillWidth(
@@ -694,13 +713,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance expandedAppearance
     ) {
         button.setText(showText ? title : "");
-        if (showText) {
-            button.setIconPadding(expandedAppearance.iconPadding());
-        } else {
-            button.setIconPadding(0);
-            int compactPadding = UIUtils.dp2px(this, STORY_HEADER_COMPACT_PILL_HORIZONTAL_PADDING_DP);
-            button.setPaddingRelative(compactPadding, 0, compactPadding, 0);
-        }
+        applyStoryHeaderPillAppearance(button, StoryHeaderPillAppearanceResolver.resolve(
+                showText, expandedAppearance.paddingStart(), expandedAppearance.paddingTop(),
+                expandedAppearance.paddingEnd(), expandedAppearance.paddingBottom(), expandedAppearance.iconPadding(),
+                UIUtils.dp2px(this, STORY_HEADER_COMPACT_PILL_HORIZONTAL_PADDING_DP)));
     }
 
     private void applyStoryHeaderPillAppearance(
@@ -708,6 +724,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance appearance
     ) {
         button.setIconPadding(appearance.iconPadding());
+        button.setPaddingRelative(appearance.paddingStart(), appearance.paddingTop(), appearance.paddingEnd(), appearance.paddingBottom());
     }
 
     private StoryHeaderPillAppearanceResolver.Appearance captureStoryHeaderPillAppearance(MaterialButton button) {
@@ -755,8 +772,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         String orderText = storyOrder == StoryOrder.OLDEST ? getString(R.string.oldest) : getString(R.string.newest);
         String filterText = readFilter == ReadFilter.UNREAD ? getString(R.string.state_unread) : getString(R.string.state_all);
-        String title = StoryHeaderOptionsTitleFormatter.INSTANCE.format(filterText, orderText, getString(R.string.story_header_options), showReadFilter, showOrder);
-        binding.itemlistOptionsPill.setText(title);
+        expandedOptionsPillTitle = StoryHeaderOptionsTitleFormatter.INSTANCE.format(filterText, orderText, getString(R.string.story_header_options), showReadFilter, showOrder);
+        compactOptionsPillTitle = StoryHeaderOptionsTitleFormatter.INSTANCE.format(filterText, orderText, getString(R.string.story_header_options), showReadFilter, showOrder && !showReadFilter);
+        binding.itemlistOptionsPill.setText(expandedOptionsPillTitle);
+        binding.itemlistOptionsPill.setContentDescription(expandedOptionsPillTitle);
         applyPillStyle(binding.itemlistOptionsPill, storyHeaderPalette().pillBackgroundColor, storyHeaderPalette().pillBorderColor, storyHeaderPalette().pillTextColor);
     }
 
