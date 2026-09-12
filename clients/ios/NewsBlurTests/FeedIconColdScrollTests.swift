@@ -44,18 +44,30 @@ import UIKit
         controller.setValue(NSMutableDictionary(), forKey: "rowHeights")
         controller.setValue(OperationQueue(), forKey: "faviconPrefetchQueue")
         controller.setValue(NSMutableDictionary(), forKey: "faviconPrefetchOperations")
-        let renderer = try XCTUnwrap(app.value(forKey: "feedIconRenderer") as? FeedIconRenderer)
+        let preparationQueue = DispatchQueue(label: "test.cold-feed-icon-preparation", qos: .utility)
+        let renderer = FeedIconRenderer(preparationQueue: preparationQueue)
+        app.setValue(renderer, forKey: "feedIconRenderer")
+        defer { renderer.cancelPreparation() }
         let size = CGSize(width: 16, height: 16)
 
         // FeedIconColdScrollTests.swift enters through the production feed-data reload before the first fast pass.
         let snapshotStarted = CACurrentMediaTime()
         controller.reloadFeedTitlesTable()
         let snapshotMilliseconds = (CACurrentMediaTime() - snapshotStarted) * 1_000
-        let prepared = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            renderer.image(forKey: "\(feedCount)", size: size) { nil } != nil
-        }, object: nil)
+        // FeedIconColdScrollTests.swift fences the real serial worker without blocking main or treating NSCache as a completion signal.
+        let prepared = expectation(description: "The feed reload's preparation worker has completed")
+        preparationQueue.async { prepared.fulfill() }
         wait(for: [prepared], timeout: 10)
         let backgroundReads = cache.diskCache.counts.worker
+        let workerKeys = cache.diskCache.uniqueWorkerKeyCount
+        let pending = renderer.pendingPreparationCount
+        let preparedKeys = (1...feedCount).filter {
+            renderer.image(forKey: "\($0)", size: size) { nil } != nil
+        }.count
+        print("FEED_PREPARATION_CONTEXT requested_keys=\(feedCount) pending=\(pending) prepared_keys=\(preparedKeys) worker_unique_keys=\(workerKeys) worker_disk_reads=\(backgroundReads)")
+        XCTAssertEqual(pending, 0, "The actual preparation queue must drain before cold cells are measured.")
+        XCTAssertEqual(preparedKeys, feedCount, "Completion must retain all requested display-sized images within the preparation budget.")
+        XCTAssertEqual(workerKeys, feedCount)
         let originalPromotions = cache.memoryCache.workerWrites
         cache.diskCache.resetCounts()
         let expected = try XCTUnwrap(Utilities.roundCorneredImage(original, radius: 4, convertTo: size)).pngData()
@@ -121,10 +133,16 @@ private final class ColdFeedDiskStorage: NSObject {
     private let lock = NSLock()
     private var mainReads = 0
     private var workerReads = 0
+    private var workerKeys = Set<String>()
     init(file: URL) { self.file = file }
     @objc(objectForKey:) func object(forKey key: NSString) -> UIImage? {
         lock.lock()
-        if Thread.isMainThread { mainReads += 1 } else { workerReads += 1 }
+        if Thread.isMainThread {
+            mainReads += 1
+        } else {
+            workerReads += 1
+            workerKeys.insert(key as String)
+        }
         lock.unlock()
         guard let data = try? Data(contentsOf: file) else { return nil }
         return UIImage(data: data)
@@ -133,7 +151,13 @@ private final class ColdFeedDiskStorage: NSObject {
         lock.lock()
         mainReads = 0
         workerReads = 0
+        workerKeys.removeAll()
         lock.unlock()
+    }
+    var uniqueWorkerKeyCount: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return workerKeys.count
     }
     var counts: (main: Int, worker: Int) {
         lock.lock()

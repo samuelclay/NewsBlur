@@ -105,6 +105,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, copy) NSArray<NSString *> *renderedStoryLocationIds;
 @property (nonatomic, copy) NSDictionary *renderedStoryAppendContext;
 @property (nonatomic, strong) NSCache<NSString *, NSString *> *storyPreviewTextCache;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *storyLayoutPreviewOverrides;
+@property (nonatomic, copy) NSSet<NSIndexPath *> *storyPreviewPrefetchDeferredRows;
 @property (nonatomic, strong) NSCache<NSString *, NSNumber *> *storyHeightCache;
 @property (nonatomic, strong) StoryTextLayoutCache *storyTextLayoutCache;
 @property (nonatomic, copy) NSArray<NSIndexPath *> *storyTextLayoutPrefetchRows;
@@ -139,6 +141,9 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 - (NSString *)cachedPreviewTextForStory:(NSDictionary *)story location:(NSInteger)location;
 - (void)warmStoryPreviewCacheAroundLocation:(NSInteger)location;
 - (void)warmMissingPrefetchedStoryPreviews;
+- (void)warmMissingStoryPreviewsForRows:(NSArray<NSIndexPath *> *)indexPaths;
+- (BOOL)prepareStoryTextLayoutsForRows:(NSArray<NSIndexPath *> *)indexPaths
+                    preparedPreviews:(NSDictionary<NSString *, NSString *> *)preparedPreviews;
 - (void)updateBottomNextFeedControlForScroll:(UIScrollView *)scroll;
 - (void)resetBottomNextFeedControl;
 - (void)openBottomNextUnreadList;
@@ -1658,6 +1663,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self.storyPreviewPrefetchOperation cancel];
     [_storyTextLayoutCache removeAllLayouts];
     self.storyTextLayoutPrefetchRows = nil;
+    self.storyPreviewPrefetchDeferredRows = nil;
     self.storyRenderCacheGeneration += 1;
     self.storyRowHeightCache = nil;
     self.renderedStoryLocationIds = nil;
@@ -1677,7 +1683,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (NSString *)cachedPreviewTextForStory:(NSDictionary *)story location:(NSInteger)location {
     NSString *cacheKey = [self storyRenderCacheKeyForStory:story location:location];
-    NSString *cachedPreviewText = [self.storyPreviewTextCache objectForKey:cacheKey];
+    NSString *cachedPreviewText = self.storyLayoutPreviewOverrides[cacheKey] ?: [self.storyPreviewTextCache objectForKey:cacheKey];
     if (cachedPreviewText) {
         return cachedPreviewText;
     }
@@ -1769,12 +1775,23 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)warmMissingPrefetchedStoryPreviews {
-    if (self.storyPreviewPrefetchOperation || self.textSize == FeedDetailTextSizeTitleOnly) return;
+    [self warmMissingStoryPreviewsForRows:self.storyTextLayoutPrefetchRows];
+}
+
+- (void)warmMissingStoryPreviewsForRows:(NSArray<NSIndexPath *> *)indexPaths {
+    if (self.textSize == FeedDetailTextSizeTitleOnly) return;
+    if (self.storyPreviewPrefetchOperation) {
+        NSMutableSet<NSIndexPath *> *deferredRows = [self.storyPreviewPrefetchDeferredRows mutableCopy] ?: [NSMutableSet set];
+        [deferredRows addObjectsFromArray:indexPaths ?: @[]];
+        [deferredRows intersectSet:[NSSet setWithArray:self.storyTextLayoutPrefetchRows ?: @[]]];
+        self.storyPreviewPrefetchDeferredRows = deferredRows;
+        return;
+    }
 
     NSMutableArray<NSDictionary *> *snapshots = [NSMutableArray array];
     NSUInteger snapshotCost = 0;
     const NSUInteger costLimit = 4 * 1024 * 1024;
-    for (NSIndexPath *path in self.storyTextLayoutPrefetchRows) {
+    for (NSIndexPath *path in indexPaths) {
         if (snapshots.count == 24) break;
         NSDictionary *descriptor = [self storyRowDescriptorForIndexPath:path];
         if (!descriptor || [descriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory) continue;
@@ -1782,7 +1799,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         NSDictionary *story = [self getStoryAtLocation:location];
         if (!story) continue;
         NSString *cacheKey = [self storyRenderCacheKeyForStory:story location:location];
-        if ([self.storyPreviewTextCache objectForKey:cacheKey]) continue;
+        if (self.storyLayoutPreviewOverrides[cacheKey] || [self.storyPreviewTextCache objectForKey:cacheKey]) continue;
         NSString *source = [story[@"story_content"] isKindOfClass:[NSString class]] ? story[@"story_content"] : @"";
         NSUInteger cost = (source.length + cacheKey.length) * sizeof(unichar) + 256;
         if (cost > costLimit - snapshotCost) continue;
@@ -1802,6 +1819,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSBlockOperation *operation = [[NSBlockOperation alloc] init];
     self.storyPreviewPrefetchOperation = operation;
     self.storyPreviewPrefetchActiveRows = [NSSet setWithArray:[snapshots valueForKey:@"path"]];
+    NSSet<NSIndexPath *> *requestedRowsAtStart = [NSSet setWithArray:self.storyTextLayoutPrefetchRows];
+    NSSet<NSIndexPath *> *attemptedRows = self.storyPreviewPrefetchActiveRows;
+    NSMutableSet<NSIndexPath *> *remainingRows = [NSMutableSet setWithArray:indexPaths];
+    [remainingRows minusSet:attemptedRows];
     NSUInteger generation = self.storyRenderCacheGeneration;
     __weak typeof(self) weakSelf = self;
     __weak NSBlockOperation *weakOperation = operation;
@@ -1826,31 +1847,51 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             __strong typeof(weakSelf) owner = weakSelf;
             NSBlockOperation *finishedOperation = weakOperation;
             if (!owner || owner.storyPreviewPrefetchOperation != finishedOperation) return;
+            NSMutableArray<NSIndexPath *> *preparedRows = [NSMutableArray array];
+            NSMutableDictionary<NSString *, NSString *> *preparedPreviews = [NSMutableDictionary dictionary];
+            NSMutableSet<NSIndexPath *> *retryRows = [NSMutableSet setWithArray:owner.storyTextLayoutPrefetchRows ?: @[]];
+            if (owner.storyRenderCacheGeneration == generation) [retryRows minusSet:requestedRowsAtStart];
+            if (owner.storyPreviewPrefetchDeferredRows) [retryRows unionSet:owner.storyPreviewPrefetchDeferredRows];
+            owner.storyPreviewPrefetchDeferredRows = nil;
             if (owner.storyRenderCacheGeneration == generation) {
+                [retryRows unionSet:remainingRows];
+                if (finishedOperation.cancelled) {
+                    [retryRows unionSet:attemptedRows];
+                }
                 for (NSDictionary *entry in preparedEntries) {
                     NSIndexPath *path = entry[@"path"];
                     if (![owner.storyTextLayoutPrefetchRows containsObject:path]) continue;
                     NSInteger location = [owner storyLocationForIndexPath:path];
-                    if (location != [entry[@"location"] integerValue]) continue;
+                    if (location != [entry[@"location"] integerValue]) {
+                        [retryRows addObject:path];
+                        continue;
+                    }
                     NSDictionary *story = [owner getStoryAtLocation:location];
                     if (!story) continue;
                     NSString *source = [story[@"story_content"] isKindOfClass:[NSString class]] ? story[@"story_content"] : @"";
                     NSString *cacheKey = [owner storyRenderCacheKeyForStory:story location:location];
-                    if (![cacheKey isEqualToString:entry[@"key"]] || ![source isEqualToString:entry[@"source"]]) continue;
+                    if (![cacheKey isEqualToString:entry[@"key"]] || ![source isEqualToString:entry[@"source"]]) {
+                        [retryRows addObject:path];
+                        continue;
+                    }
                     [owner.storyPreviewTextCache setObject:entry[@"preview"] forKey:cacheKey];
+                    preparedPreviews[cacheKey] = entry[@"preview"];
+                    [preparedRows addObject:path];
+                    [retryRows removeObject:path];
                 }
+                // FeedDetailObjCViewController.m consumes this result even when NSCache rejects it; the next draw's layout stays prepared.
+                [owner prepareStoryTextLayoutsForRows:preparedRows preparedPreviews:preparedPreviews];
             }
             pendingSnapshots = nil;
             preparedEntries = nil;
             owner.storyPreviewPrefetchOperation = nil;
             owner.storyPreviewPrefetchActiveRows = nil;
-            // FeedDetailObjCViewController.m releases this batch before a retry can capture another batch's content.
-            dispatch_async(dispatch_get_main_queue(), ^{
-                __strong typeof(weakSelf) current = weakSelf;
-                if (current.storyTextLayoutPrefetchRows.count) {
-                    [current tableView:current.storyTitlesTable prefetchRowsAtIndexPaths:current.storyTextLayoutPrefetchRows];
-                }
-            });
+            // FeedDetailObjCViewController.m retries only newer requests or changed input, never an unchanged rejected cache write.
+            NSMutableArray<NSIndexPath *> *currentRetryRows = [NSMutableArray array];
+            for (NSIndexPath *path in owner.storyTextLayoutPrefetchRows) {
+                if ([retryRows containsObject:path]) [currentRetryRows addObject:path];
+            }
+            [owner warmMissingStoryPreviewsForRows:currentRetryRows];
         });
     };
     [self.storyPreviewPrefetchQueue addOperation:operation];
@@ -3680,6 +3721,17 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         [self.storyPreviewPrefetchOperation cancel];
     }
 
+    if ([self prepareStoryTextLayoutsForRows:indexPaths preparedPreviews:nil]) {
+        [self warmMissingPrefetchedStoryPreviews];
+    }
+}
+
+- (BOOL)prepareStoryTextLayoutsForRows:(NSArray<NSIndexPath *> *)indexPaths
+                    preparedPreviews:(NSDictionary<NSString *, NSString *> *)preparedPreviews {
+    UITableView *tableView = self.storyTitlesTable;
+    if (!indexPaths.count || !self.isLegacyTable || self.isDashboard || storiesCollection.isDailyBriefing ||
+        CGRectGetWidth(tableView.bounds) <= 0) return NO;
+
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *imageStyle = [preferences stringForKey:@"story_list_preview_images_size"] ?: @"";
     CGFloat comfortMargin = [[preferences stringForKey:@"feed_list_spacing"] isEqualToString:@"compact"] ? 0 : 10;
@@ -3694,43 +3746,51 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     paragraphStyle.lineHeightMultiple = 0.95f;
     BOOL shortTitles = [self isShortTitles];
     BOOL needsPreviewPreparation = NO;
+    NSDictionary<NSString *, NSString *> *previousOverrides = self.storyLayoutPreviewOverrides;
+    self.storyLayoutPreviewOverrides = preparedPreviews;
+    @try {
 
-    // FeedDetailObjCViewController.m snapshots only nearby regular rows; clusters keep their existing drawing path.
-    for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
-        NSDictionary *descriptor = [self storyRowDescriptorForIndexPath:indexPath];
-        if (!descriptor || [descriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory) continue;
-        NSInteger location = [self storyLocationForIndexPath:indexPath];
-        NSDictionary *story = [self getStoryAtLocation:location];
-        if (!story) continue;
-        NSString *title = [story[@"story_title"] isKindOfClass:[NSString class]] ?
-            [story[@"story_title"] stringByDecodingHTMLEntities] : @"";
-        NSString *preview = @"";
-        if (self.textSize != FeedDetailTextSizeTitleOnly) {
-            preview = [self.storyPreviewTextCache objectForKey:[self storyRenderCacheKeyForStory:story location:location]];
-            // FeedDetailObjCViewController.m restores evicted previews off main before preparing their exact layouts.
-            if (!preview) {
-                needsPreviewPreparation = YES;
-                continue;
+        // FeedDetailObjCViewController.m snapshots only nearby regular rows; clusters keep their existing drawing path.
+        for (NSIndexPath *indexPath in [indexPaths subarrayWithRange:NSMakeRange(0, MIN(indexPaths.count, 24))]) {
+            NSDictionary *descriptor = [self storyRowDescriptorForIndexPath:indexPath];
+            if (!descriptor || [descriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory) continue;
+            NSInteger location = [self storyLocationForIndexPath:indexPath];
+            NSDictionary *story = [self getStoryAtLocation:location];
+            if (!story) continue;
+            NSString *title = [story[@"story_title"] isKindOfClass:[NSString class]] ?
+                [story[@"story_title"] stringByDecodingHTMLEntities] : @"";
+            NSString *preview = @"";
+            if (self.textSize != FeedDetailTextSizeTitleOnly) {
+                NSString *cacheKey = [self storyRenderCacheKeyForStory:story location:location];
+                preview = preparedPreviews[cacheKey] ?: [self.storyPreviewTextCache objectForKey:cacheKey];
+                // FeedDetailObjCViewController.m restores evicted previews off main before preparing their exact layouts.
+                if (!preview) {
+                    needsPreviewPreparation = YES;
+                    continue;
+                }
             }
+            CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
+            NSMutableArray<StoryTextLayoutRequest *> *requests = [NSMutableArray arrayWithCapacity:2];
+            // FeedDetailObjCViewController.m prepares both widths so thumbnail arrival cannot delay or change the text.
+            NSInteger variants = [imageStyle isEqualToString:@"none"] ? 1 : 2;
+            for (NSInteger variant = 0; variant < variants; variant++) {
+                BOOL hasImage = variant == 1;
+                CGFloat width = [StoryTextLayoutRequest contentWidthForBoundsWidth:CGRectGetWidth(tableView.bounds)
+                                                                       imageStyle:imageStyle hasImage:hasImage];
+                [requests addObject:[[StoryTextLayoutRequest alloc]
+                    initWithTitle:title preview:preview ?: @"" contentWidth:width boundsHeight:height
+                    fontPointSize:fontDescriptor.pointSize textSize:self.textSize shortTitles:shortTitles
+                    river:river comfortMargin:comfortMargin riverPadding:riverPadding
+                    hasImage:hasImage paragraphStyle:paragraphStyle]];
+            }
+            NSString *identifier = [NSString stringWithFormat:@"%ld:%ld", (long)indexPath.section, (long)indexPath.row];
+            [self.storyTextLayoutCache prefetch:requests identifier:identifier];
         }
-        CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
-        NSMutableArray<StoryTextLayoutRequest *> *requests = [NSMutableArray arrayWithCapacity:2];
-        // FeedDetailObjCViewController.m prepares both widths so thumbnail arrival cannot delay or change the text.
-        NSInteger variants = [imageStyle isEqualToString:@"none"] ? 1 : 2;
-        for (NSInteger variant = 0; variant < variants; variant++) {
-            BOOL hasImage = variant == 1;
-            CGFloat width = [StoryTextLayoutRequest contentWidthForBoundsWidth:CGRectGetWidth(tableView.bounds)
-                                                                   imageStyle:imageStyle hasImage:hasImage];
-            [requests addObject:[[StoryTextLayoutRequest alloc]
-                initWithTitle:title preview:preview ?: @"" contentWidth:width boundsHeight:height
-                fontPointSize:fontDescriptor.pointSize textSize:self.textSize shortTitles:shortTitles
-                river:river comfortMargin:comfortMargin riverPadding:riverPadding
-                hasImage:hasImage paragraphStyle:paragraphStyle]];
-        }
-        NSString *identifier = [NSString stringWithFormat:@"%ld:%ld", (long)indexPath.section, (long)indexPath.row];
-        [self.storyTextLayoutCache prefetch:requests identifier:identifier];
+    } @finally {
+        // FeedDetailObjCViewController.m lends only normalized strings to synchronous height calculation, never retains raw sources.
+        self.storyLayoutPreviewOverrides = previousOverrides;
     }
-    if (needsPreviewPreparation) [self warmMissingPrefetchedStoryPreviews];
+    return needsPreviewPreparation;
 }
 
 - (void)tableView:(UITableView *)tableView cancelPrefetchingForRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {

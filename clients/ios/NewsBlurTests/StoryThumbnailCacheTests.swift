@@ -130,6 +130,13 @@ final class Test_StoryThumbnailCache: XCTestCase {
             queue.sync {}
             if invalidation == "save" {
                 XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === newer)
+            } else if invalidation == "memory" {
+                // StoryThumbnailCacheTests.swift observes the existing Catalyst policy of retaining caches on UIKit memory warnings.
+                #if targetEnvironment(macCatalyst)
+                XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === prepared)
+                #else
+                XCTAssertNil(cache.memoryCache.object(forKey: "story"), invalidation)
+                #endif
             } else {
                 XCTAssertNil(cache.memoryCache.object(forKey: "story"), invalidation)
             }
@@ -154,6 +161,10 @@ final class Test_StoryThumbnailCache: XCTestCase {
         app.fontDescriptorTitleSize = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1).withSize(13)
         app.recentlyReadStories = NSMutableDictionary()
         let queue = DispatchQueue(label: "test.thumbnail-display.pixel-parity")
+        let displayTraits = UIScreen.main.traitCollection
+        let prefetcher = StoryThumbnailPrefetcher(worker: queue) { hash, operation in
+            app.prefetchCachedStoryImage(forStoryHash: hash, operation: operation)
+        }
         var preparedCount = 0
         for colorSpaceName in [CGColorSpace.sRGB, CGColorSpace.displayP3] {
             let colorSpace = try XCTUnwrap(CGColorSpace(name: colorSpaceName))
@@ -170,7 +181,8 @@ final class Test_StoryThumbnailCache: XCTestCase {
                     let source = UIImage(cgImage: decoded, scale: scale, orientation: orientation)
                     cache.memoryCache.removeAllObjects()
                     cache.diskCache.setObject(source, forKey: "story")
-                    queue.async { app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation()) }
+                    // StoryThumbnailCacheTests.swift uses the real scheduler so background decoding inherits the drawing display's traits.
+                    displayTraits.performAsCurrent { prefetcher.prefetchStoryHashes(["story"]) }
                     queue.sync {}
                     let actual = try XCTUnwrap(cache.memoryCache.object(forKey: "story") as? UIImage)
                     if actual !== source { preparedCount += 1 }
@@ -202,7 +214,13 @@ final class Test_StoryThumbnailCache: XCTestCase {
                                 let view = FeedDetailTableCellView(frame: CGRect(x: 0, y: 0, width: 390, height: 180))
                                 view.cell = cell
                                 view.appDelegate = app
-                                let rendered = UIGraphicsImageRenderer(size: view.bounds.size).image { _ in view.draw(view.bounds) }.pngData()
+                                let rendered = UIGraphicsImageRenderer(size: view.bounds.size).image { _ in
+                                    // StoryThumbnailCacheTests.swift supplies the view traits that UIKit installs for a real draw callback.
+                                    displayTraits.performAsCurrent {
+                                        XCTAssertTrue(StoryThumbnailPrefetcher.imageMatchesCurrentDisplay(image))
+                                        view.draw(view.bounds)
+                                    }
+                                }.pngData()
                                 XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === image,
                                               "Pixel parity must use this exact image, without falling back to the original during the draw")
                                 return rendered
@@ -300,14 +318,19 @@ final class Test_StoryThumbnailCache: XCTestCase {
         cache.diskCache.onRead = { hash, isMain in
             if hash == "reverse-0" && !isMain { warmed.fulfill() }
         }
-        defer { cache.diskCache.onRead = nil }
+        let promoted = expectation(description: "Decoded reverse thumbnail is published to memory")
+        cache.memoryCache.onWrite = { hash, image in
+            if hash == "reverse-0" {
+                XCTAssertNotNil(image as? UIImage)
+                promoted.fulfill()
+            }
+        }
+        defer { cache.diskCache.onRead = nil; cache.memoryCache.onWrite = nil }
         let prefetcher = try XCTUnwrap(controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(table, prefetchRowsAt: [path])
-        wait(for: [warmed], timeout: 2)
-        let promoted = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            cache.memoryCache.object(forKey: "reverse-0") is UIImage
-        }, object: nil)
-        wait(for: [promoted], timeout: 2)
+        // StoryThumbnailCacheTests.swift waits for actual publication instead of periodically polling while WebKit tests retire their processes.
+        wait(for: [warmed, promoted], timeout: 2)
+        cache.memoryCache.onWrite = nil
         let started = CACurrentMediaTime()
         let actual = try drawOlderCell()
         print("THUMBNAIL_REVERSE_BENCHMARK loaded_stories=1000 main_disk_reads=\(cache.diskCache.mainReadCount) worker_disk_reads=\(cache.diskCache.readCount - cache.diskCache.mainReadCount) first_cell_draw_and_png_ms=\((CACurrentMediaTime() - started) * 1_000)")
@@ -390,12 +413,16 @@ final class Test_StoryThumbnailCache: XCTestCase {
         }
     }
 
-    @MainActor func test_memoryWarningBitmapClearInvalidatesAnEarlierDiskPublication() {
+    @MainActor func test_memoryWarningFollowsPlatformPolicyDuringDiskPublication() {
         let (app, cache) = makeCache()
         cache.diskCache.setObject(makeImage(), forKey: "story")
         cache.diskCache.afterRead = { app.didReceiveMemoryWarning() }
         app.prefetchCachedStoryImage(forStoryHash: "story", operation: BlockOperation())
+        #if targetEnvironment(macCatalyst)
+        XCTAssertNotNil(cache.memoryCache.object(forKey: "story"))
+        #else
         XCTAssertNil(cache.memoryCache.object(forKey: "story"), "Bitmap-only memory release must advance disk-promotion generation")
+        #endif
     }
 
     @MainActor func test_memoryWarningRetainsCompletedSourceOwnershipForLaterDiskReuse() {
@@ -407,7 +434,11 @@ final class Test_StoryThumbnailCache: XCTestCase {
         finish(controller.requests[0], with: image, on: controller)
         app.didReceiveMemoryWarning()
         NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+        #if targetEnvironment(macCatalyst)
+        XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === image)
+        #else
         XCTAssertNil(cache.memoryCache.object(forKey: "story"))
+        #endif
         cacheStories(stories, on: controller)
         XCTAssertEqual(controller.requests.count, 1)
         XCTAssertTrue(cache.memoryCache.object(forKey: "story") as? UIImage === image)
@@ -1172,6 +1203,7 @@ private final class ThumbnailStorageDouble: NSObject {
     var mainReadCount: Int { lock.lock(); defer { lock.unlock() }; return mainReads }
     var afterRead: (() -> Void)?
     var onRead: ((String, Bool) -> Void)?
+    var onWrite: ((String, Any) -> Void)?
 
     func resetReadTracking() {
         lock.lock()
@@ -1204,17 +1236,21 @@ private final class ThumbnailStorageDouble: NSObject {
     @objc(setObject:forKey:)
     func setObject(_ object: Any, forKey key: String) {
         lock.lock()
-        defer { lock.unlock() }
         objects[key] = object
         costs.removeValue(forKey: key)
+        let observer = onWrite
+        lock.unlock()
+        observer?(key, object)
     }
 
     @objc(setObject:forKey:withCost:)
     func setObject(_ object: Any, forKey key: String, withCost cost: UInt) {
         lock.lock()
-        defer { lock.unlock() }
         objects[key] = object
         costs[key] = cost
+        let observer = onWrite
+        lock.unlock()
+        observer?(key, object)
     }
 
     @objc(removeObjectForKey:)
