@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.webkit.WebViewAssetLoader;
 
 import com.newsblur.R;
+import com.newsblur.BuildConfig;
 import com.newsblur.activity.Reading;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.preference.PrefsRepo;
@@ -132,10 +133,37 @@ public class NewsblurWebview extends WebView {
     public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
         activeVisualStateRequestId++;
         completedVisualStateRequestId = -1L;
+        if (BuildConfig.DEBUG) {
+            android.util.Log.d("NB.Reader", "load_html view=" + System.identityHashCode(this)
+                    + " request=" + activeVisualStateRequestId + " chars=" + data.length());
+        }
         super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
     }
 
+    private void requestVisualState() {
+        final long requestId = activeVisualStateRequestId;
+        postVisualStateCallback(requestId, new VisualStateCallback() {
+            @Override
+            public void onComplete(long completedRequestId) {
+                if (completedRequestId != activeVisualStateRequestId) return;
+                if (completedVisualStateRequestId == completedRequestId) return;
+                completedVisualStateRequestId = completedRequestId;
+                if (BuildConfig.DEBUG) {
+                    android.util.Log.d("NB.Reader", "visual_callback view=" + System.identityHashCode(NewsblurWebview.this)
+                            + " request=" + completedRequestId + " width=" + getWidth() + " height=" + getHeight());
+                }
+                if (fragment != null) fragment.onWebVisualStateReady();
+            }
+        });
+    }
+
     class NewsblurWebViewClient extends WebViewClient {
+
+        @Override
+        public void onPageCommitVisible(WebView view, String url) {
+            // NewsblurWebview.java can reveal the local article without waiting for every remote image.
+            requestVisualState();
+        }
 
         @Nullable
         @Override
@@ -225,19 +253,7 @@ public class NewsblurWebview extends WebView {
                     fragment.onWebLoadFinished();
                 }
 
-                final long requestId = activeVisualStateRequestId;
-                postVisualStateCallback(requestId, new VisualStateCallback() {
-                    @Override
-                    public void onComplete(long completedRequestId) {
-                        if (completedRequestId != activeVisualStateRequestId) return;
-                        if (completedVisualStateRequestId == completedRequestId) return;
-
-                        completedVisualStateRequestId = completedRequestId;
-                        if (fragment != null) {
-                            fragment.onWebVisualStateReady();
-                        }
-                    }
-                });
+                requestVisualState();
             }
         }
     }

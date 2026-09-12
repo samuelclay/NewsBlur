@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager.widget.ViewPager
 import com.newsblur.activity.Reading
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
@@ -40,7 +39,10 @@ class ReadingAdapter(
     private val fragments = mutableMapOf<String, ReadingItemFragment>()
 
     // the live list of stories being used by the adapter
-    private val stories = mutableListOf<Story>()
+    @Volatile
+    private var stories: List<Story> = emptyList()
+
+    private var positionsByHash: Map<String, Int> = emptyMap()
 
     // classifiers for each feed seen in the story list
     private val classifiers = mutableMapOf<String, Classifier>()
@@ -51,8 +53,8 @@ class ReadingAdapter(
     ) {
         val validHashes = stories.map { it.storyHash }.toSet()
 
-        this.stories.clear()
-        this.stories.addAll(stories)
+        this.stories = stories.toList()
+        positionsByHash = stories.mapIndexed { position, story -> story.storyHash to position }.toMap()
 
         this.classifiers.clear()
         this.classifiers.putAll(classifiers)
@@ -63,7 +65,7 @@ class ReadingAdapter(
         activity.pagerUpdated()
     }
 
-    fun getStory(position: Int): Story? = if (position in stories.indices) stories[position] else null
+    fun getStory(position: Int): Story? = stories.getOrNull(position)
 
     override fun getCount(): Int = stories.size
 
@@ -80,7 +82,9 @@ class ReadingAdapter(
             showFeedMetadata,
             sourceUserId,
             activity.initialStoryScrollPosRel(story.storyHash),
-        )
+        ).apply {
+            states.remove(story.storyHash)?.let(::setInitialSavedState)
+        }
 
     override fun instantiateItem(
         container: ViewGroup,
@@ -115,11 +119,12 @@ class ReadingAdapter(
         if (curTransaction == null) {
             curTransaction = fm.beginTransaction()
         }
-        curTransaction!!.detach(fragment)
+        // ReadingAdapter.kt owns a bounded page window; detached fragments otherwise retain every visited story.
+        curTransaction!!.remove(fragment)
 
         if (fragment is ReadingItemFragment) {
             fragment.story?.let { story ->
-                if (fragment.isAdded && isNearCurrent(container, story.storyHash)) {
+                if (fragment.isAdded) {
                     states[story.storyHash] = fm.saveFragmentInstanceState(fragment)
                 } else {
                     states.remove(story.storyHash)
@@ -140,14 +145,6 @@ class ReadingAdapter(
             fragment.setMenuVisibility(true)
             lastActiveFragment = fragment
         }
-
-        val keep: Set<String> =
-            buildSet {
-                for (p in (position - 1)..(position + 1)) {
-                    getStory(p)?.storyHash?.let { add(it) }
-                }
-            }
-        states.keys.retainAll(keep) // drop anything not near current
     }
 
     override fun finishUpdate(container: ViewGroup) {
@@ -198,9 +195,9 @@ class ReadingAdapter(
 
         // go one step further than the default pager adapter and also refresh the
         // story object inside each fragment we have active
-        for (s in stories) {
-            fragments[s.storyHash]?.let { rif ->
-                rif.offerStoryUpdate(s)
+        for ((hash, rif) in fragments.toMap()) {
+            getStory(findHash(hash))?.let { story ->
+                rif.offerStoryUpdate(story)
                 rif.handleUpdate(NbSyncManager.UPDATE_STORY)
             }
         }
@@ -217,16 +214,7 @@ class ReadingAdapter(
         return -1
     }
 
-    fun findHash(storyHash: String): Int {
-        var pos = 0
-        while (pos < stories.size) {
-            if (stories[pos].storyHash == storyHash) {
-                return pos
-            }
-            pos++
-        }
-        return -1
-    }
+    fun findHash(storyHash: String): Int = positionsByHash[storyHash] ?: -1
 
     override fun saveState(): Parcelable {
         // Return empty state to avoid TransactionTooLargeException. Fragment arguments
@@ -241,15 +229,5 @@ class ReadingAdapter(
         loader: ClassLoader?,
     ) {
         // Nothing to restore — see saveState().
-    }
-
-    private fun isNearCurrent(
-        container: ViewGroup,
-        storyHash: String,
-    ): Boolean {
-        val vp = container as? ViewPager ?: return false
-        val cur = vp.currentItem
-        val pos = findHash(storyHash)
-        return pos in (cur - 1..cur + 1)
     }
 }
