@@ -336,6 +336,8 @@ class StoryViewAdapter(
         val rv = submission.grid
         if (submission.generation != diffGeneration || rv.adapter !== this) return
         synchronized(this) {
+            val replacingEmptyList = stories.isEmpty() && result.stories.isNotEmpty()
+            val startAtFirstStory = replacingEmptyList && oldScrollState == null && pendingScrollStoryHash == null
             clusterThumbnailUrls.clear()
             stories.clear()
             stories.addAll(result.stories)
@@ -345,7 +347,12 @@ class StoryViewAdapter(
             committedLoadId = submission.loadId
             result.diff.dispatchUpdatesTo(this)
             val lm = rv.layoutManager
-            if (lm != null && !isUpdatingStories) {
+            if (startAtFirstStory) {
+                // StoryViewAdapter.kt initially contains only the footer. Preserving that anchor would
+                // scroll past every inserted story, leaving the viewport on a blank full-height footer.
+                if (lm is LinearLayoutManager) lm.scrollToPositionWithOffset(0, 0) else lm?.scrollToPosition(0)
+            }
+            if (lm != null && !isUpdatingStories && stories.isNotEmpty()) {
                 // StoryViewAdapter.kt restores only requested navigation/configuration state.
                 // Wait for the newest snapshot so a partial one cannot consume its saved position.
                 // DiffUtil preserves the visible anchor during ordinary read/sync updates.
@@ -361,7 +368,7 @@ class StoryViewAdapter(
                         val llm = lm as? LinearLayoutManager
                         val first = llm?.findFirstVisibleItemPosition() ?: -1
                         val last = llm?.findLastVisibleItemPosition() ?: -1
-                        if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
+                        if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
                             val topOffset = (rv.height * 0.15f).toInt()
                             llm?.scrollToPositionWithOffset(pos, topOffset)
                         }
@@ -369,7 +376,7 @@ class StoryViewAdapter(
                 }
             }
             val highlightHash = pendingHighlightStoryHash
-            if (highlightHash != null && !isUpdatingStories) {
+            if (highlightHash != null && !isUpdatingStories && stories.isNotEmpty()) {
                 pendingHighlightStoryHash = null
                 val highlightPos = getDisplayPositionForStoryHash(highlightHash)
                 if (highlightPos >= 0) animateReturnHighlight(rv, highlightPos)
