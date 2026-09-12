@@ -904,6 +904,29 @@ class PreferencesViewModel: ObservableObject {
                         type: .toggle(key: "enable_feed_cell_swipe", defaultValue: true)
                     ),
                     PreferenceItem(
+                        title: "Swipe right on story",
+                        icon: "arrow.right",
+                        iconColor: .indigo,
+                        type: .multiValue(
+                            key: "story_title_swipe_right",
+                            titles: StoryTitleSwipePreference.actions.map { $0.title },
+                            values: StoryTitleSwipePreference.actions.map { $0.value },
+                            defaultValue: "back"
+                        ),
+                        footerText: "Swiping from the left edge always returns to feeds."
+                    ),
+                    PreferenceItem(
+                        title: "Swipe left on story",
+                        icon: "arrow.left",
+                        iconColor: .indigo,
+                        type: .multiValue(
+                            key: "story_title_swipe_left",
+                            titles: StoryTitleSwipePreference.actions.map { $0.title },
+                            values: StoryTitleSwipePreference.actions.map { $0.value },
+                            defaultValue: "menu"
+                        )
+                    ),
+                    PreferenceItem(
                         title: "Double tap story",
                         icon: "hand.tap",
                         iconColor: .blue,
