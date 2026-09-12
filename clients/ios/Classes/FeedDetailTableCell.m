@@ -311,6 +311,13 @@ static UIFont *indicatorFont = nil;
     }
     
     BOOL isHighlighted = cell.highlighted || cell.selected;
+#if TARGET_OS_MACCATALYST
+    // FeedDetailTableCell.m keeps read text consistent without changing cached title and preview metrics.
+    UIColor *readTextColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
+    UIColor *headingTextColor = cell.isRead ? readTextColor : (isHighlighted ?
+        UIColorFromLightDarkRGB(0x686868, 0xA0A0A0) :
+        UIColorFromLightSepiaMediumDarkRGB(0x111111, 0x333333, 0xD0D0D0, 0xCCCCCC));
+#endif
     CGFloat riverPadding = -10;
     CGFloat riverPreview = 4;
     
@@ -359,6 +366,12 @@ static UIFont *indicatorFont = nil;
             titleColor = UIColorFromLightSepiaMediumDarkRGB(0x444444, 0x444444, 0xC6C6C6, 0xBCBCBC);
             metaColor = UIColorFromLightSepiaMediumDarkRGB(0x707070, 0x8B7B6B, 0x8F8F8F, 0x808080);
         }
+#if TARGET_OS_MACCATALYST
+        if (cell.isRead) {
+            titleColor = readTextColor;
+            metaColor = readTextColor;
+        }
+#endif
 
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
         paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -398,6 +411,10 @@ static UIFont *indicatorFont = nil;
 
         NSString *dateText = cell.storyDate ?: @"";
         CGSize dateSize = [dateText sizeWithAttributes:@{NSFontAttributeName: dateFont}];
+#if TARGET_OS_MACCATALYST
+        // FeedDetailTableCell.m preserves the existing related-row date allocation and adjacent image/badge positions.
+        dateFont = [UIFont fontWithName:@"WhitneySSm-Book" size:10];
+#endif
         CGFloat rightPadding = 12.0;
         CGFloat dateX = CGRectGetMaxX(clusterRect) - rightPadding - dateSize.width;
         CGFloat titleRightEdge = dateX - 8.0;
@@ -654,6 +671,9 @@ static UIFont *indicatorFont = nil;
         if (isHighlighted) {
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA0A0A0, 0x808080);
         }
+#if TARGET_OS_MACCATALYST
+        textColor = headingTextColor;
+#endif
         
         NSInteger siteTitleY = (20 + comfortMargin - font.pointSize/2)/2;
         [cell.siteTitle drawInRect:CGRectMake(leftMargin - feedOffset + 24, siteTitleY, rect.size.width - 20, 20)
@@ -680,6 +700,9 @@ static UIFont *indicatorFont = nil;
     if (isHighlighted) {
         textColor = UIColorFromLightDarkRGB(0x686868, 0xA0A0A0);
     }
+#if TARGET_OS_MACCATALYST
+    textColor = headingTextColor;
+#endif
     [self updateRegularLayoutCacheWithBounds:r
                                  contentRect:rect
                               fontDescriptor:fontDescriptor
@@ -768,11 +791,11 @@ static UIFont *indicatorFont = nil;
     // story date
     int storyAuthorDateY = r.size.height - 18 - comfortMargin;
     
-    if (cell.isRead) {
-        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
-    } else {
-        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
-    }
+#if TARGET_OS_MACCATALYST
+    font = [UIFont fontWithName:@"WhitneySSm-Book" size:11];
+#else
+    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
+#endif
     // Story author and date
     NSString *date = cell.storyDate ?: [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];
     NSString *author = cell.storyAuthor.length > 0 ? [NSString stringWithFormat:@" · %@", cell.storyAuthor] : @"";
