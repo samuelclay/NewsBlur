@@ -33,7 +33,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.webkit.WebViewAssetLoader
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
@@ -403,7 +402,6 @@ class ReadingItemFragment :
         super.onViewCreated(view, savedInstanceState)
         view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
 
-        readingItemActionsBinding.markReadStoryButton.setOnClickListener { switchMarkStoryReadState() }
         readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
         readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
         readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
@@ -789,13 +787,6 @@ class ReadingItemFragment :
         }
 
     private fun updateMarkStoryReadState() {
-        if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
-            readingItemActionsBinding.markReadStoryButton.visibility = View.VISIBLE
-            readingItemActionsBinding.markReadStoryButton.setStoryReadState(prefsRepo, story!!.read)
-        } else {
-            readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
-        }
-
         sampledQueue?.add { updateStoryReadTitleState.invoke() }
             ?: updateStoryReadTitleState.invoke()
     }
@@ -2267,20 +2258,3 @@ private data class ReaderAnchorResolution(
     val layoutChanged: Boolean,
 )
 
-private fun MaterialButton.setStoryReadState(
-    prefsRepo: PrefsRepo,
-    isRead: Boolean,
-) {
-    var selectedTheme = prefsRepo.getResolvedTheme(context)
-    val styleResId: Int =
-        when (selectedTheme) {
-            ThemeValue.LIGHT -> if (isRead) R.style.storyButtonsDimmed else R.style.storyButtons
-            ThemeValue.SEPIA -> if (isRead) R.style.storyButtonsDimmed_sepia else R.style.storyButtons_sepia
-            ThemeValue.DARK -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
-            ThemeValue.BLACK -> if (isRead) R.style.storyButtonsDimmed_black else R.style.storyButtons_black
-            ThemeValue.AUTO -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
-        }
-    val stringResId: Int = if (isRead) R.string.story_mark_unread_state else R.string.story_mark_read_state
-    this.text = context.getString(stringResId)
-    this.setTextAppearance(styleResId)
-}
