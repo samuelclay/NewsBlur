@@ -110,6 +110,8 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 @interface FeedsObjCViewController () <PreferencesViewDelegate>
 
+@property (atomic) NSUInteger feedListAccountGeneration;
+@property (nonatomic) BOOL awaitingAuthenticatedFeedList;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
 @property (readwrite) BOOL inPullToRefresh_;
@@ -889,7 +891,43 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
 }
 
+- (void)resetForAccountChange {
+    self.feedListAccountGeneration++;
+    self.awaitingAuthenticatedFeedList = YES;
+    [(FeedsViewController *)self cancelPendingFeedListWorkForAccountChange];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    [self cancelFaviconPrefetch];
+    self.currentRowAtIndexPath = nil;
+    self.lastRowAtIndexPath = nil;
+    self.userLabel.text = nil;
+    self.userLabel.accessibilityLabel = nil;
+    self.userLabel.hidden = YES;
+    self.neutralCount.text = nil;
+    self.neutralCount.accessibilityLabel = nil;
+    self.neutralCount.hidden = YES;
+    self.positiveCount.text = nil;
+    self.positiveCount.accessibilityLabel = nil;
+    self.positiveCount.hidden = YES;
+    self.yellowIcon.hidden = YES;
+    self.greenIcon.hidden = YES;
+    self.userAvatarButton.hidden = YES;
+    [self.userAvatarButton setImage:nil forState:UIControlStateNormal];
+
+    self.searchFeedIds = nil;
+    self.searchField.text = @"";
+    self.stillVisibleFeeds = [NSMutableDictionary dictionary];
+    self.activeFeedLocations = [NSMutableDictionary dictionary];
+    [self.rowHeights removeAllObjects];
+    [self.folderTitleViews removeAllObjects];
+    [self.imageCache removeAllObjects];
+    self.updatedDictFeeds_ = nil;
+    self.updatedDictSocialFeeds_ = nil;
+    self.isOffline = NO;
+    self.inPullToRefresh_ = NO;
+}
+
 -(void)fetchFeedList:(BOOL)showLoader {
+    NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSString *urlFeedList;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
@@ -907,9 +945,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     
     [appDelegate GET:urlFeedList parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (accountGeneration != self.feedListAccountGeneration) return;
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        if (accountGeneration != self.feedListAccountGeneration) return;
         [self finishedWithError:error statusCode:httpResponse.statusCode];
     }];
 
@@ -958,6 +998,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)finishLoadingFeedList:(NSDictionary *)results {
+    NSUInteger accountGeneration = self.feedListAccountGeneration;
+    NSString *responseUsername = [results[@"user"] isKindOfClass:[NSString class]] ? results[@"user"] : nil;
+    self.awaitingAuthenticatedFeedList = NO;
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
     appDelegate.unreadStoryHashes = [NSMutableDictionary dictionary];
@@ -980,12 +1023,14 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
+        if (accountGeneration != self.feedListAccountGeneration) return;
         [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", self.appDelegate.activeUsername];
+            if (accountGeneration != self.feedListAccountGeneration) return;
+            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", responseUsername];
             [db executeUpdate:@"INSERT INTO accounts"
              "(username, download_date, feeds_json) VALUES "
              "(?, ?, ?)",
-             self.appDelegate.activeUsername,
+             responseUsername,
              [NSDate date],
              [results JSONRepresentation]
              ];
@@ -1008,6 +1053,7 @@ static BOOL NBBoolPreferenceValue(id value) {
             }
         }];
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (accountGeneration != self.feedListAccountGeneration) return;
             [self finishLoadingFeedListWithDict:results finished:YES];
         });
     });
@@ -1284,6 +1330,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         // start up the first time user experience
         if ([[results objectForKey:@"social_feeds"] count] == 0 &&
             [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
+            [self layoutHeaderCounts:0];
+            [self refreshHeaderCounts];
             [appDelegate showFirstTimeUser];
             return;
         }
@@ -1372,6 +1420,8 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)loadOfflineFeeds:(BOOL)failed {
+    if (self.awaitingAuthenticatedFeedList) return;
+    NSUInteger accountGeneration = self.feedListAccountGeneration;
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
     NSLog(@"Loading offline feeds: %d", failed);
@@ -1383,6 +1433,7 @@ static BOOL NBBoolPreferenceValue(id value) {
                 return;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    if (accountGeneration != self.feedListAccountGeneration) return;
                     [self fetchFeedList:YES];
                 });
                 return;
@@ -1391,13 +1442,15 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
 
     [self showRefreshNotifier];
+    NSString *accountUsername = [appDelegate.activeUsername copy];
 
     [appDelegate.database inDatabase:^(FMDatabase *db) {
+        if (accountGeneration != self.feedListAccountGeneration) return;
         NSDictionary *results;
 
         
         FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
-                               self.appDelegate.activeUsername];
+                               accountUsername];
         
         while ([cursor next]) {
             NSDictionary *feedsCache = [cursor resultDictionary];
@@ -1411,6 +1464,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         [cursor close];
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (accountGeneration != self.feedListAccountGeneration) return;
             [_self finishLoadingFeedListWithDict:results finished:failed];
             [_self fetchFeedList:NO];
         });
@@ -3821,6 +3875,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)refreshFeedList:(id)feedId {
     // refresh the feed
+    NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSString *urlString;
     
     if (feedId) {
@@ -3836,8 +3891,10 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (accountGeneration != self.feedListAccountGeneration) return;
         [self finishRefreshingFeedList:responseObject feedId:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (accountGeneration != self.feedListAccountGeneration) return;
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
 
         [self finishRefresh];
@@ -3855,6 +3912,7 @@ heightForHeaderInSection:(NSInteger)section {
     }];
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (accountGeneration != self.feedListAccountGeneration) return;
         if (!feedId) {
             [self showCountingNotifier];
         }
@@ -3862,15 +3920,29 @@ heightForHeaderInSection:(NSInteger)section {
     
 }
 
+- (void)dispatchFeedRefreshPublication:(dispatch_block_t)publication {
+    dispatch_async(dispatch_get_main_queue(), publication);
+}
+
 - (void)finishRefreshingFeedList:(NSDictionary *)results feedId:(NSString *)feedId {
+    NSUInteger accountGeneration = self.feedListAccountGeneration;
+    NSInteger intelligenceLevel = self.appDelegate.selectedIntelligence;
+    // FeedsObjCViewController.m computes visibility on snapshots, then publishes on main
+    // only if authentication has not replaced the account while this work was queued.
+    NSDictionary *previousCounts = [[NSDictionary alloc] initWithDictionary:self.appDelegate.dictUnreadCounts ?: @{} copyItems:YES];
+    NSArray *folderNames = [self.appDelegate.dictFoldersArray copy];
+    NSDictionary *folderFeeds = [[NSDictionary alloc] initWithDictionary:self.appDelegate.dictFolders ?: @{} copyItems:YES];
+    NSDictionary *activeLocations = [[NSDictionary alloc] initWithDictionary:self.activeFeedLocations ?: @{} copyItems:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
+        if (accountGeneration != self.feedListAccountGeneration) return;
+        NSMutableDictionary *countUpdates = [NSMutableDictionary dictionary];
+        NSMutableDictionary *visibleUpdates = [NSMutableDictionary dictionary];
         NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
-        NSInteger intelligenceLevel = [self.appDelegate selectedIntelligence];
         for (id feed in newFeedCounts) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-            NSMutableDictionary *unreadCount = [[self.appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
-            NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
+            NSDictionary *unreadCount = [previousCounts objectForKey:feedIdStr];
+            NSDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
 
             if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
 
@@ -3883,13 +3955,14 @@ heightForHeaderInSection:(NSInteger)section {
                   [[unreadCount objectForKey:@"nt"] intValue] > 0) &&
                  [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
                  [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
-                NSIndexPath *indexPath;
-                for (int s=0; s < [self.appDelegate.dictFoldersArray count]; s++) {
-                    NSString *folderName = [self.appDelegate.dictFoldersArray objectAtIndex:s];
-                    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-                    NSArray *originalFolder = [self.appDelegate.dictFolders objectForKey:folderName];
+                NSIndexPath *indexPath = nil;
+                for (NSUInteger s=0; s < folderNames.count; s++) {
+                    NSString *folderName = folderNames[s];
+                    NSArray *activeFolderFeeds = activeLocations[folderName];
+                    NSArray *originalFolder = folderFeeds[folderName];
                     for (int l=0; l < [activeFolderFeeds count]; l++) {
-                        if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
+                        NSUInteger originalIndex = [activeFolderFeeds[l] unsignedIntegerValue];
+                        if (originalIndex < originalFolder.count && [originalFolder[originalIndex] intValue] == [feed intValue]) {
                             indexPath = [NSIndexPath indexPathForRow:l inSection:s];
                             break;
                         }
@@ -3897,29 +3970,31 @@ heightForHeaderInSection:(NSInteger)section {
                     if (indexPath) break;
                 }
                 if (indexPath) {
-                    [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+                    visibleUpdates[feedIdStr] = indexPath;
                 }
             }
-            [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
-            [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
-            [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-            [self.appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
+            countUpdates[feedIdStr] = [newFeedCount dictionaryWithValuesForKeys:@[@"ng", @"nt", @"ps"]];
         }
         
         NSDictionary *newSocialFeedCounts = [results objectForKey:@"social_feeds"];
         for (id feed in newSocialFeedCounts) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-            NSMutableDictionary *unreadCount = [[self.appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
-            NSMutableDictionary *newFeedCount = [newSocialFeedCounts objectForKey:feed];
+            NSDictionary *unreadCount = [previousCounts objectForKey:feedIdStr];
+            NSDictionary *newFeedCount = [newSocialFeedCounts objectForKey:feed];
 
             if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
-            [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
-            [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
-            [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-            [self.appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
+            countUpdates[feedIdStr] = [newFeedCount dictionaryWithValuesForKeys:@[@"ng", @"nt", @"ps"]];
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [self dispatchFeedRefreshPublication:^{
+            if (accountGeneration != self.feedListAccountGeneration) return;
+            for (NSString *feed in countUpdates) {
+                NSMutableDictionary *unreadCount = [self.appDelegate.dictUnreadCounts[feed] mutableCopy];
+                if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
+                [unreadCount addEntriesFromDictionary:countUpdates[feed]];
+                self.appDelegate.dictUnreadCounts[feed] = unreadCount;
+            }
+            [self.stillVisibleFeeds addEntriesFromDictionary:visibleUpdates];
             [self.appDelegate.folderCountCache removeAllObjects];
             [self reloadFeedTitlesTable];
             [self refreshHeaderCounts];
@@ -3933,7 +4008,7 @@ heightForHeaderInSection:(NSInteger)section {
 //                }];
 //
 //            }
-        });
+        }];
     });
 }
 
@@ -4012,10 +4087,12 @@ heightForHeaderInSection:(NSInteger)section {
     avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
     typeof(self) __weak weakSelf = self;
     NSString *currentUserId = userId;
+    NSUInteger avatarAccountGeneration = self.feedListAccountGeneration;
     NewsBlurAppDelegate *appDelegate = self.appDelegate;
     
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
+        if (avatarAccountGeneration != strongSelf.feedListAccountGeneration) return;
         // Cache the original image for future use
         [appDelegate saveUserAvatar:image forUserId:currentUserId];
         // Apply rounded corners for display
@@ -4027,6 +4104,7 @@ heightForHeaderInSection:(NSInteger)section {
         NSLog(@"Could not fetch user avatar: %@", error);
         // If we don't have a cached avatar, show the default
         typeof(weakSelf) __strong strongSelf = weakSelf;
+        if (avatarAccountGeneration != strongSelf.feedListAccountGeneration) return;
         if (![appDelegate getCachedUserAvatar:currentUserId]) {
             UIImage *defaultAvatar = [appDelegate defaultUserAvatar];
             defaultAvatar = [Utilities roundCorneredImage:defaultAvatar radius:6 convertToSize:CGSizeMake(38, 38)];

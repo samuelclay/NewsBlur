@@ -415,6 +415,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openDailyBriefingWithStoryHash:(NSString *)storyHash;
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
+- (void)finishAuthentication;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)showOriginalStory:(NSURL *)url sender:(id)sender;

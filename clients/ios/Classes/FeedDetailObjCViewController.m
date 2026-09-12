@@ -1902,8 +1902,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
     
+    NSUInteger requestId = self.fetchRequestId;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if (self.firstPageLoad.pending) return;
+        if (requestId != self.fetchRequestId || self.firstPageLoad.pending) return;
         if (!self.storiesCollection.storyLocationsCount && !self.pageFinished &&
             self.storiesCollection.feedPage == 1 && self.isOnline) {
             self.isShowingFetching = YES;
@@ -2518,33 +2519,22 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)loadOfflineStories {
+    // FeedDetailObjCViewController.m snapshots the selected query before leaving main;
+    // resetting or authenticating must invalidate both SQLite rows and read-state publication.
+    NSUInteger requestId = self.fetchRequestId;
+    NSInteger page = self.storiesCollection.feedPage;
+    NSArray *feedIds = self.storiesCollection.isRiverView ? [self.storiesCollection.activeFolderFeeds copy] :
+        (self.storiesCollection.activeFeed ? @[self.storiesCollection.activeFeed[@"id"]] : nil);
+    if (!feedIds.count) return;
+    NSString *orderSql = [self.storiesCollection.activeOrder isEqualToString:@"oldest"] ? @"ASC" : @"DESC";
+    NSString *readFilter = self.storiesCollection.activeReadFilter;
+    NSString *readFilterSql = [readFilter isEqualToString:@"unread"] ? @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash" : @"";
+    NSMutableDictionary *unreadStoryHashes = [readFilter isEqualToString:@"all"] ? [NSMutableDictionary dictionary] : nil;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [self.appDelegate.database inDatabase:^(FMDatabase *db) {
-            NSArray *feedIds;
             NSInteger limit = 12;
-            NSInteger offset = (self.storiesCollection.feedPage - 1) * limit;
-            
-            if (self.storiesCollection.isRiverView) {
-                feedIds = self.storiesCollection.activeFolderFeeds;
-            } else if (self.storiesCollection.activeFeed) {
-                feedIds = @[[self.storiesCollection.activeFeed objectForKey:@"id"]];
-            } else {
-                return;
-            }
-            
-            NSString *orderSql;
-            if ([self.storiesCollection.activeOrder isEqualToString:@"oldest"]) {
-                orderSql = @"ASC";
-            } else {
-                orderSql = @"DESC";
-            }
-            NSString *readFilterSql;
-            if ([self.storiesCollection.activeReadFilter isEqualToString:@"unread"]) {
-                readFilterSql = @"INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash";
-            } else {
-                readFilterSql = @"";
-            }
+            NSInteger offset = (page - 1) * limit;
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s %@ WHERE s.story_feed_id IN (%@) ORDER BY s.story_timestamp %@ LIMIT %ld OFFSET %ld",
                              readFilterSql,
                              [feedIds componentsJoinedByString:@","],
@@ -2562,27 +2552,24 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             }
             [cursor close];
             
-            if ([self.storiesCollection.activeReadFilter isEqualToString:@"all"]) {
+            if ([readFilter isEqualToString:@"all"]) {
                 NSString *unreadHashSql = [NSString stringWithFormat:@"SELECT s.story_hash FROM stories s INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash WHERE s.story_feed_id IN (%@)",
                                            [feedIds componentsJoinedByString:@","]];
                 FMResultSet *unreadHashCursor = [db executeQuery:unreadHashSql];
-                NSMutableDictionary *unreadStoryHashes;
-                if (self.storiesCollection.feedPage == 1) {
-                    unreadStoryHashes = [NSMutableDictionary dictionary];
-                } else {
-                    unreadStoryHashes = self.appDelegate.unreadStoryHashes;
-                }
                 while ([unreadHashCursor next]) {
                     [unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:[unreadHashCursor objectForColumnName:@"story_hash"]];
                 }
-                self.appDelegate.unreadStoryHashes = unreadStoryHashes;
                 [unreadHashCursor close];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (self.isOnline) {
+                if (requestId != self.fetchRequestId || self.isOnline) {
                     NSLog(@"Online before offline rendered. Tossing offline stories.");
                     return;
+                }
+                if ([readFilter isEqualToString:@"all"]) {
+                    if (page == 1 || !self.appDelegate.unreadStoryHashes) self.appDelegate.unreadStoryHashes = unreadStoryHashes;
+                    else [self.appDelegate.unreadStoryHashes addEntriesFromDictionary:unreadStoryHashes];
                 }
                 if (![offlineStories count]) {
                     self.pageFinished = YES;
