@@ -29,6 +29,19 @@ test('trainer matching-stories control is an accessible sibling of the classifie
     assert.match(item_rule, /display:\s*inline-flex;/);
     assert.match(button_rule, /position:\s*static;/);
     assert.match(button_rule, /margin-left:\s*2px;/);
+    assert.doesNotMatch(button_rule, /margin-top:/);
+
+    // The button is a sibling of a ~22px pill, so both row containers center
+    // their children and the button reuses the story detail's stacked-stories
+    // glyph instead of a magnifying glass.
+    const container_rule = css_rule(css, '.NB-modal-classifiers .NB-classifier-container');
+    const svg_rule = css_rule(css, '.NB-classifier-filter-view-btn svg');
+    assert.match(container_rule, /align-items:\s*center;/);
+    assert.match(item_rule, /align-items:\s*center;/);
+    assert.match(svg_rule, /fill:\s*currentColor;/);
+    assert.match(js, /MATCHING_STORIES_ICON:\s*'<svg[^']*M224,104v96a16,16,0,0,1-16,16H48/);
+    assert.match(js, /\$\.make\('button', \{[^}]*NB-classifier-filter-view-btn[\s\S]*?\}, NEWSBLUR\.ClassifierConstants\.MATCHING_STORIES_ICON\)/);
+    assert.doesNotMatch(js, /M21 21l-4\.35-4\.35/);
 });
 
 test('story trainer classifier rows include the matching-stories button', function () {
@@ -86,7 +99,8 @@ test('story classifier pills embed browse buttons for matching-story views', fun
     assert.match(js, /aria-label="View matching stories"/);
     assert.match(js, /data-classifier-type=/);
     assert.match(js, /data-classifier-value=/);
-    assert.match(js, /M224,104v96a16,16,0,0,1-16,16H48/);
+    assert.match(js, /NEWSBLUR\.ClassifierConstants\.MATCHING_STORIES_ICON \+/);
+    assert.doesNotMatch(js, /M224,104v96a16,16,0,0,1-16,16H48/);
     assert.doesNotMatch(js, /M237\.22,151\.9l0-\.1/);
     assert.match(js, /\.NB-score-icon, \.NB-score-icon-double, \.NB-pill-view-classifier/);
     assert.doesNotMatch(js, /(?:mouseenter|mousemove) \.NB-feed-story-(?:tag|author|url)/);

@@ -2001,9 +2001,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             'title="View matching stories" aria-label="View matching stories" ' +
             'data-classifier-type="' + escaped_type + '" ' +
             'data-classifier-value="' + escaped_value + '">' +
-            '<svg aria-hidden="true" viewBox="0 0 256 256" focusable="false">' +
-            '<path d="M224,104v96a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V104A16,16,0,0,1,48,88H208A16,16,0,0,1,224,104ZM56,72H200a8,8,0,0,0,0-16H56a8,8,0,0,0,0,16ZM72,40H184a8,8,0,0,0,0-16H72a8,8,0,0,0,0,16Z"/>' +
-            '</svg></button>';
+            // Same glyph as the trainer rows; defined once in
+            // media/js/newsblur/reader/reader_classifier.js.
+            NEWSBLUR.ClassifierConstants.MATCHING_STORIES_ICON +
+            '</button>';
     },
 
     show_classifier_filter_tooltip: function (e) {
