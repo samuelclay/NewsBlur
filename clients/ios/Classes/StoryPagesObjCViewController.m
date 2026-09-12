@@ -1584,14 +1584,36 @@
     
     if (newIndex > 0 && newIndex >= [appDelegate.storiesCollection.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
-        if (appDelegate.storiesCollection.feedPage < 100 &&
+        NSString *notificationHash = appDelegate.storiesCollection.notificationStory[@"story_hash"];
+        // StoryPagesObjCViewController.m leaves an exact notification's unloaded gap for explicit navigation.
+        BOOL isAutomaticNotificationNeighbor = notificationHash &&
+            [notificationHash isEqualToString:currentPage.activeStoryId] &&
+            pageController != currentPage && !self.isDraggingScrollview && self.scrollingToPage != newIndex;
+        if (!isAutomaticNotificationNeighbor && appDelegate.storiesCollection.feedPage < 100 &&
             !appDelegate.feedDetailViewController.pageFinished &&
             !appDelegate.feedDetailViewController.pageFetching) {
+            StoriesCollection *notificationCollection = [notificationHash isEqualToString:currentPage.activeStoryId] ? appDelegate.storiesCollection : nil;
+            NSInteger notificationLocation = notificationCollection ? [notificationCollection locationOfStoryId:notificationHash] : -1;
+            NSInteger neighborOffset = newIndex - notificationLocation;
+            NSUInteger requestId = appDelegate.feedDetailViewController.fetchRequestId;
+            NSString *account = [appDelegate.activeUsername copy];
+            NSString *host = [appDelegate.url copy];
             [appDelegate.feedDetailViewController fetchNextPage:^() {
-//                NSLog(@"Fetched next page, %@ stories", @([appDelegate.storiesCollection.activeFeedStoryLocations count]));
-                [self applyNewIndex:newIndex pageController:pageController];
+                NSInteger requestedIndex = newIndex;
+                if (notificationCollection && notificationLocation >= 0) {
+                    if (notificationCollection != self.appDelegate.storiesCollection ||
+                        requestId != self.appDelegate.feedDetailViewController.fetchRequestId ||
+                        ![account isEqualToString:self.appDelegate.activeUsername] || ![host isEqualToString:self.appDelegate.url] ||
+                        ![notificationHash isEqualToString:self.currentPage.activeStoryId] || pageController != self.nextPage) return;
+                    NSInteger location = [notificationCollection locationOfStoryId:notificationHash];
+                    if (location < 0) return;
+                    // StoryPagesObjCViewController.m keeps explicit navigation relative to the same story as intervening pages arrive.
+                    requestedIndex = location + neighborOffset;
+                    self.scrollingToPage = requestedIndex;
+                }
+                [self applyNewIndex:requestedIndex pageController:pageController];
             }];
-        } else if (!appDelegate.feedDetailViewController.pageFinished &&
+        } else if (!isAutomaticNotificationNeighbor && !appDelegate.feedDetailViewController.pageFinished &&
                    !appDelegate.feedDetailViewController.pageFetching) {
             [appDelegate.feedsNavigationController
              popToViewController:[appDelegate.feedsNavigationController.viewControllers
