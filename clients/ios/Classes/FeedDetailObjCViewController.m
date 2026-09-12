@@ -398,6 +398,22 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return YES;
     }
 
+    if (StoryTitleSwipePreference.usesFullScreenBack &&
+        (gestureRecognizer == self.fullScreenPopGesture || gestureRecognizer == self.feedListSwipeGesture) &&
+        ![otherGestureRecognizer isKindOfClass:[UIScreenEdgePanGestureRecognizer class]]) {
+        // FeedDetailObjCViewController.m lets story rows observe a right swipe while UIKit drives interactive navigation.
+        UIView *otherView = otherGestureRecognizer.view;
+        if (!self.storyTitlesTable.hidden && [otherView isDescendantOfView:self.storyTitlesTable]) {
+            return YES;
+        }
+        for (UIViewController *child in self.childViewControllers) {
+            UIView *contentView = child.viewIfLoaded;
+            if (contentView && !contentView.hidden && [otherView isDescendantOfView:contentView]) {
+                return YES;
+            }
+        }
+    }
+
     if (gestureRecognizer == self.feedListSwipeGesture ||
         gestureRecognizer == self.feedListEdgeSwipeGesture ||
         gestureRecognizer == self.fullScreenPopGesture) {
