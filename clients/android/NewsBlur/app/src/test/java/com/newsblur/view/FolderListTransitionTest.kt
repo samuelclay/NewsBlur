@@ -69,6 +69,61 @@ class FolderListTransitionTest {
         assertEquals(150f, motions.single { it.after.id == 3L }.after.top, 0f)
     }
 
+    @Test
+    fun bottomClampedCollapseBringsNewUpperRowsFromAboveTheViewport() {
+        val motions = bottomClampedCollapse().associateBy { it.after.id }
+        val heading = motions.getValue(6)
+        val viewportShift = heading.after.top - heading.before.top
+
+        for (id in 101L..106L) {
+            val incoming = motions.getValue(id)
+            assertEquals(incoming.after.top - viewportShift, incoming.before.top, 0f)
+            assertEquals("Rows exposed by scrolling are already opaque", 1f, incoming.before.alpha, 0f)
+        }
+    }
+
+    @Test
+    fun bottomClampedCollapseNeverLeavesABlackGapAboveTheHeading() {
+        val motions = bottomClampedCollapse()
+        val heading = motions.single { it.after.id == 6L }
+        for (progress in listOf(0f, 0.25f, 0.5f, 0.75f, 1f)) {
+            val headingBottom = heading.before.top + (heading.after.top - heading.before.top) * progress + heading.after.height
+            val opaqueRows = motions.filter { it.before.alpha == 1f && it.after.alpha == 1f }
+                .map { motion ->
+                    val top = motion.before.top + (motion.after.top - motion.before.top) * progress
+                    top to top + motion.after.height
+                }.sortedBy { it.first }
+            var coveredTo = 0f
+            for ((top, bottom) in opaqueRows) {
+                if (bottom <= 0f || top >= headingBottom) continue
+                assertTrue("FolderListTransition.kt exposed a gap at $coveredTo while progress=$progress", top <= coveredTo)
+                coveredTo = maxOf(coveredTo, bottom)
+            }
+            assertTrue("Opaque rows must reach the heading at progress=$progress", coveredTo >= headingBottom)
+        }
+    }
+
+    @Test
+    fun bottomClampedCollapseKeepsOutgoingTagsBelowTheMovingHeading() {
+        val motions = bottomClampedCollapse()
+        val heading = motions.single { it.after.id == 6L }
+        val viewportShift = heading.after.top - heading.before.top
+        for (outgoing in motions.filter { it.after.id in 7L..12L }) {
+            assertEquals("Saved tags must travel with the heading instead of crossing incoming folders",
+                viewportShift, outgoing.after.top - outgoing.before.top, 0f)
+            assertEquals(0f, outgoing.after.alpha, 0f)
+        }
+    }
+
+    private fun bottomClampedCollapse(): List<FolderListTransition.Motion> {
+        // AnimatedFolderListView.kt's Saved Stories heading moves from 250px to 550px
+        // when collapse removes the rows that had allowed the old viewport offset.
+        val before = (1L..12L).mapIndexed { index, id -> row(id, index * 50f) }
+        val after = (101L..106L).mapIndexed { index, id -> row(id, index * 50f) } +
+            (1L..6L).mapIndexed { index, id -> row(id, 300f + index * 50f) }
+        return FolderListTransition.plan(before, after, 600f, 300f, false, 24f)
+    }
+
     private fun plan(
         before: List<FolderListTransition.Row>,
         after: List<FolderListTransition.Row>,
