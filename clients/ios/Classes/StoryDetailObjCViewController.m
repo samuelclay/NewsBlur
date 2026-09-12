@@ -453,6 +453,11 @@
 }
 
 - (void)loadHTMLString:(NSString *)html {
+    // StoryDetailViewController.swift keeps document readiness separate from URL navigation.
+    WKUserContentController *contentController = self.webView.configuration.userContentController;
+    [contentController removeScriptMessageHandlerForName:@"newsblurStoryReady"];
+    [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
+                                         name:@"newsblurStoryReady"];
     // Use HTTPS baseURL so YouTube embeds get a valid Referer header (fixes Error 153).
     // CSS/JS are inlined directly in the HTML to avoid custom scheme issues.
     static NSURL *baseURL;
@@ -676,6 +681,8 @@
         [self invalidateStoryLoad];
         return;
     }
+
+    if ([appDelegate.storyPagesViewController deferStoryRedrawDuringSelection:(StoryDetailViewController *)self]) return;
 
     [self invalidateStoryLoad];
     NSUInteger generation = self.storyLoadGeneration;
@@ -2950,6 +2957,16 @@
             [self.appDelegate.feedDetailViewController reload];
         });
     }
+}
+
+- (void)receiveStoryReadyMessage:(WKScriptMessage *)message {
+    if (message.webView != self.webView || !message.frameInfo.isMainFrame ||
+        ![message.name isEqualToString:@"newsblurStoryReady"] ||
+        ![message.body isKindOfClass:NSString.class] || !self.hasStory ||
+        ![self isCurrentStoryLoad:self.storyLoadGeneration]) return;
+    NSString *expectedLoadId = [NSString stringWithFormat:@"%lu", (unsigned long)self.storyLoadGeneration];
+    if (![message.body isEqualToString:expectedLoadId]) return;
+    [self webViewNotifyLoaded];
 }
 
 - (void)webViewNotifyLoaded {
