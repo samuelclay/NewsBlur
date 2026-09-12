@@ -405,7 +405,8 @@ private final class StoryFaviconDiskStorage: NSObject {
     }
 
     @objc(setObject:forKey:) func setObject(_ image: UIImage, forKey key: String) {
-        try? image.pngData()?.write(to: directory.appendingPathComponent(key))
+        // StoryFaviconPrefetchTests.swift matches PINDiskCache.m's atomic replacement while an older image may still map the file.
+        try? image.pngData()?.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
 
     func remove(_ key: String) { try? FileManager.default.removeItem(at: directory.appendingPathComponent(key)) }

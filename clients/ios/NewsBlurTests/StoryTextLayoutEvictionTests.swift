@@ -174,6 +174,100 @@ import ObjectiveC.runtime
         XCTAssertEqual(fixture.controller.normalizationRecorder.counts.main, 0)
     }
 
+    func test_rejectedPreviewCacheWriteDoesNotRetryUnchangedSourceIndefinitely() throws {
+        let fixture = makeFixture(storyCount: 1)
+        let rejected = expectation(description: "The preview cache rejects the prepared value")
+        let previews = RejectingPreviewCache()
+        previews.firstRejectedWrite = { rejected.fulfill() }
+        fixture.controller.setValue(previews, forKey: "storyPreviewTextCache")
+        let cache = try XCTUnwrap(fixture.controller.value(forKey: "storyTextLayoutCache") as? StoryTextLayoutCache)
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        defer {
+            fixture.controller.perform(NSSelectorFromString("clearStoryRenderCaches"))
+            fixture.previewQueue.waitUntilAllOperationsAreFinished()
+        }
+
+        prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
+        wait(for: [rejected], timeout: 5)
+        // StoryTextLayoutEvictionTests.swift lets completion retry naturally; the injected cache never retains writes.
+        let settled = expectation(description: "Rejected-write completion has settled")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { settled.fulfill() }
+        wait(for: [settled], timeout: 5)
+        fixture.layoutQueue.sync {}
+
+        XCTAssertEqual(fixture.controller.normalizationRecorder.counts.worker, 1,
+                       "An unchanged requested source must not create an unbounded completion-to-prefetch loop.")
+        XCTAssertEqual(fixture.controller.normalizationRecorder.counts.main, 0)
+        XCTAssertEqual(cache.cachedEntryCount, 1,
+                       "The completed worker preview should still prepare its layout when NSCache rejects the value.")
+        XCTAssertNil(previews.object(forKey: "eviction-0"))
+    }
+
+    func test_rejectedCacheStillPreparesNewRequestsAndChangedSourceWithoutRevisitingCompletedRows() throws {
+        let fixture = makeFixture(storyCount: 2)
+        let previews = RejectingPreviewCache()
+        fixture.controller.setValue(previews, forKey: "storyPreviewTextCache")
+        let cache = try XCTUnwrap(fixture.controller.value(forKey: "storyTextLayoutCache") as? StoryTextLayoutCache)
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        let entered = expectation(description: "Original source is held on the normalization worker")
+        let resume = DispatchSemaphore(value: 0)
+        let recorder = fixture.controller.normalizationRecorder
+        recorder.beforeNormalize = { _, isMain in
+            if !isMain && recorder.counts.worker == 1 {
+                entered.fulfill()
+                resume.wait()
+            }
+        }
+        defer {
+            resume.signal()
+            fixture.controller.perform(NSSelectorFromString("clearStoryRenderCaches"))
+            fixture.previewQueue.waitUntilAllOperationsAreFinished()
+        }
+
+        prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
+        wait(for: [entered], timeout: 5)
+        var updated = try XCTUnwrap(fixture.controller.getStoryAtLocation(0))
+        updated["story_content"] = "<p>The replacement preview preserves 数学 العربية &amp; entities.</p>"
+        let neighbor = try XCTUnwrap(fixture.controller.getStoryAtLocation(1))
+        fixture.stories.setStories([updated, neighbor])
+        prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 1, section: 0)])
+        resume.signal()
+        waitForPreviewCompletion(fixture)
+        let settled = expectation(description: "No unchanged rejected row is implicitly rescheduled")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { settled.fulfill() }
+        wait(for: [settled], timeout: 5)
+        fixture.layoutQueue.sync {}
+
+        XCTAssertEqual(recorder.counts.worker, 3, "Only the obsolete source, its replacement, and the new neighboring row are normalized.")
+        XCTAssertEqual(recorder.counts.main, 0)
+        XCTAssertEqual(cache.cachedEntryCount, 2, "Only the two current rows receive prepared layouts.")
+        XCTAssertNil(fixture.controller.value(forKey: "storyLayoutPreviewOverrides"),
+                     "The temporary normalized previews must be released after synchronous layout setup.")
+        XCTAssertNil(previews.object(forKey: "eviction-0"))
+        XCTAssertNil(previews.object(forKey: "eviction-1"))
+    }
+
+    func test_rejectedCacheAdvancesThroughByteLimitedBatchesOnlyOncePerRequestedRow() throws {
+        let largeContent = "<p>" + String(repeating: "x", count: 524_288) + "</p>"
+        let fixture = makeFixture(storyCount: 4, content: largeContent)
+        fixture.controller.setValue(RejectingPreviewCache(), forKey: "storyPreviewTextCache")
+        let cache = try XCTUnwrap(fixture.controller.value(forKey: "storyTextLayoutCache") as? StoryTextLayoutCache)
+        let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
+        defer {
+            fixture.controller.perform(NSSelectorFromString("clearStoryRenderCaches"))
+            fixture.previewQueue.waitUntilAllOperationsAreFinished()
+        }
+        prefetcher.tableView(fixture.table, prefetchRowsAt: (0..<4).map { IndexPath(row: $0, section: 0) })
+        waitForPreviewCompletion(fixture)
+        fixture.layoutQueue.sync {}
+
+        XCTAssertEqual(fixture.controller.normalizationRecorder.counts.worker, 4,
+                       "The fourth row exceeds the first batch's byte budget; processing it must not revisit the first three rejected writes.")
+        XCTAssertEqual(fixture.controller.normalizationRecorder.counts.main, 0)
+        XCTAssertEqual(cache.cachedEntryCount, 4)
+        XCTAssertNil(fixture.controller.value(forKey: "storyLayoutPreviewOverrides"))
+    }
+
     private func waitForPreviewCompletion(_ fixture: EvictionLayoutFixture) {
         let completed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             fixture.controller.value(forKey: "storyPreviewPrefetchOperation") == nil
@@ -237,6 +331,20 @@ import ObjectiveC.runtime
 private final class EvictionLayoutAppDelegate: NewsBlurAppDelegate {
     override func getFavicon(_ feedId: String!) -> UIImage! { nil }
     override func cachedImage(forStoryHash storyHash: String!) -> UIImage! { nil }
+}
+
+private final class RejectingPreviewCache: NSCache<NSString, NSString> {
+    var firstRejectedWrite: (() -> Void)?
+
+    override func setObject(_ obj: NSString, forKey key: NSString) {
+        let callback = firstRejectedWrite
+        firstRejectedWrite = nil
+        callback?()
+    }
+
+    override func setObject(_ obj: NSString, forKey key: NSString, cost g: Int) {
+        setObject(obj, forKey: key)
+    }
 }
 
 @MainActor private final class EvictionLayoutController: FeedDetailViewController {
