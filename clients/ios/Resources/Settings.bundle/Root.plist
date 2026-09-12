@@ -719,6 +719,60 @@
 			<true/>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe right on story</string>
+			<key>Key</key>
+			<string>story_title_swipe_right</string>
+			<key>DefaultValue</key>
+			<string>back</string>
+			<key>Titles</key>
+			<array>
+				<string>Back to feeds</string>
+				<string>Read / unread</string>
+				<string>Save / unsave</string>
+				<string>Share</string>
+				<string>Show actions</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>back</string>
+				<string>read</string>
+				<string>save</string>
+				<string>share</string>
+				<string>menu</string>
+			</array>
+			<key>FooterText</key>
+			<string>Swiping from the left edge always returns to feeds.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe left on story</string>
+			<key>Key</key>
+			<string>story_title_swipe_left</string>
+			<key>DefaultValue</key>
+			<string>menu</string>
+			<key>Titles</key>
+			<array>
+				<string>Back to feeds</string>
+				<string>Read / unread</string>
+				<string>Save / unsave</string>
+				<string>Share</string>
+				<string>Show actions</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>back</string>
+				<string>read</string>
+				<string>save</string>
+				<string>share</string>
+				<string>menu</string>
+			</array>
+		</dict>
+		<dict>
 			<key>FooterText</key>
 			<string></string>
 			<key>Type</key>

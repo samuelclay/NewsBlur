@@ -1951,6 +1951,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_titles_style"]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+    } else if ([identifier isEqual:@"story_title_swipe_right"] || [identifier isEqual:@"story_title_swipe_left"] || [identifier isEqual:@"enable_feed_cell_swipe"]) {
+        [self.appDelegate.feedDetailViewController updateStoryTitleSwipePreference];
     } else if ([identifier isEqual:@"story_clustering"]) {
         NSString *value = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"] ? @"true" : @"false";
         [self saveProfilePreferenceWithKey:@"story_clustering" value:value];
