@@ -43,9 +43,15 @@ import ObjectiveC.runtime
         }
         defer { probe.restore() }
 
+        reportNativePrefetchContext(controller: fixture.controller, table: fixture.table,
+                                    cache: fixture.cache, phase: "measurement.before")
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
+        reportNativePrefetchContext(controller: fixture.controller, table: fixture.table,
+                                    cache: fixture.cache, phase: "measurement.requested")
         wait(for: [measured], timeout: 5)
         fixture.queue.sync {}
+        reportNativePrefetchContext(controller: fixture.controller, table: fixture.table,
+                                    cache: fixture.cache, phase: "measurement.drained")
         let preparedAt = CACurrentMediaTime()
         let beforeDraw = probe.counts
         let cell = try XCTUnwrap(fixture.controller.tableView(fixture.table,
@@ -158,7 +164,11 @@ import ObjectiveC.runtime
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
         let paths = [IndexPath(row: 0, section: 0)]
         fixture.queue.suspend()
+        reportNativePrefetchContext(controller: fixture.controller, table: fixture.table,
+                                    cache: fixture.cache, phase: "cancellation.before")
         prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
+        reportNativePrefetchContext(controller: fixture.controller, table: fixture.table,
+                                    cache: fixture.cache, phase: "cancellation.requested")
         XCTAssertEqual(fixture.cache.pendingRowCount, 1)
         prefetcher.tableView?(fixture.table, cancelPrefetchingForRowsAt: paths)
         XCTAssertEqual(fixture.cache.pendingRowCount, 0)
@@ -168,6 +178,18 @@ import ObjectiveC.runtime
         fixture.queue.resume()
         fixture.queue.sync {}
         XCTAssertEqual(fixture.cache.cachedEntryCount, 0)
+    }
+
+    private func reportNativePrefetchContext(controller: TextLayoutController, table: UITableView,
+                                             cache: StoryTextLayoutCache, phase: String) {
+        // StoryTextLayoutPerformanceTests.swift records entry conditions without altering prefetch or pixel assertions.
+        let previews = controller.value(forKey: "storyPreviewTextCache") as? NSCache<NSString, NSString>
+        let preview = previews?.object(forKey: "layout-fixture")
+        let rows = controller.value(forKey: "visibleStoryRows") as? [[String: Any]] ?? []
+        let story = controller.getStoryAtLocation(0)
+        let boundTable = controller.storyTitlesTable.map { String(describing: ObjectIdentifier($0)) } ?? "nil"
+        let previewIdentity = previews.map { String(describing: ObjectIdentifier($0)) } ?? "nil"
+        print("TEXT_PREFETCH_CONTEXT phase=\(phase) requested=0:0 table=\(ObjectIdentifier(table)) bound_table=\(boundTable) matches=\(table === controller.storyTitlesTable) width=\(table.bounds.width) legacy=\(controller.isLegacyTable) dashboard=\(controller.isDashboard) briefing=\(controller.storiesCollection.isDailyBriefing) intelligence=\(controller.appDelegate.selectedIntelligence) visible_locations=\(controller.storiesCollection.activeFeedStoryLocations ?? []) descriptors=\(rows) story_present=\(story != nil) preview_cache=\(previewIdentity) preview_present=\(preview != nil) preview_length=\(preview?.length ?? 0) pending=\(cache.pendingRowCount) cached=\(cache.cachedEntryCount) normalizations=\(controller.normalizations)")
     }
 
     func test_clusterCellsKeepTheirDistinctDrawingPath() throws {
@@ -214,6 +236,7 @@ import ObjectiveC.runtime
         controller.textSize = FeedDetailTextSize(rawValue: 2)!
         controller.setValue([["type": 0, "story_location": 0]], forKey: "visibleStoryRows")
         let previews = NSCache<NSString, NSString>()
+        previews.countLimit = 512
         previews.setObject(preview as NSString, forKey: "layout-fixture")
         controller.setValue(previews, forKey: "storyPreviewTextCache")
         let queue = DispatchQueue(label: "test.story-text-layout.prefetch")
