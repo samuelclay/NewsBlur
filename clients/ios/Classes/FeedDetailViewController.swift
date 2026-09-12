@@ -498,6 +498,23 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         configureDataSource()
     }
 
+    @objc func resetForAccountChange() {
+        storiesCollection.reset()
+        resetFeedDetail()
+        // FeedDetailObjCViewController.m's offline fallback only belongs to a selected feed.
+        pageFinished = true
+        storiesCollection.inSearch = false
+        storiesCollection.searchQuery = nil
+        storiesCollection.savedSearchQuery = nil
+        storyCache.resetForAccountChange()
+        title = nil
+        navigationItem.titleView = nil
+        // FeedDetailObjCViewController.m uses this same state before any feed is selected.
+        messageLabel.text = "Select a feed to read"
+        messageView.isHidden = false
+        reloadImmediately()
+    }
+
     @objc func resetPendingReloadsForFeedChange() {
         reloadWorkItem?.cancel()
         reloadWorkItem = nil

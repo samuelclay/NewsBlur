@@ -137,6 +137,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic) NSUInteger faviconCacheGeneration;
 @property (nonatomic) NSUInteger faviconWriteGeneration;
 @property (nonatomic, strong) FeedIconRenderer *feedIconRenderer;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
 
 - (void)presentFeedDetailAfterFeedSelection;
 - (void)updateFeedDetailTitleView;
@@ -2161,6 +2162,72 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
     
     [self loadFeedDetailView];
+}
+
+- (void)finishAuthentication {
+    // NewsBlurAppDelegate.m starts a new browsing session only after authentication succeeds.
+    [self.feedsViewController resetForAccountChange];
+    [self cancelOfflineQueue];
+
+    self.activeUsername = nil;
+    // FeedsObjCViewController.m selects persisted accounts using this key. Until /reader/feeds
+    // identifies the new account, a relaunch must not restore an earlier account's subscriptions.
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"active_username"];
+    self.pendingFolder = nil;
+    self.pendingDailyBriefingStoryHash = nil;
+    self.pendingNotificationStory = nil;
+    self.tryFeedFeedId = nil;
+    self.tryFeedStoryId = nil;
+    self.tryFeedStoryTitle = nil;
+    self.tryFeedCategory = nil;
+    self.isTryFeedView = NO;
+    self.skipTryFeedCleanup = NO;
+    self.inFindingStoryMode = NO;
+    self.findingStoryStartDate = nil;
+    self.findingStoryDictionary = nil;
+    self.inFeedDetail = NO;
+    self.inStoryDetail = NO;
+    self.detailViewController.storyTitlesFromDashboardStory = NO;
+    self.activeOriginalStoryURL = nil;
+    self.activeComment = nil;
+    self.activeShareType = nil;
+    self.activeUserProfileId = nil;
+    self.activeUserProfileName = nil;
+
+    [self.feedDetailViewController resetForAccountChange];
+    self.activeStory = nil;
+    self.dictFeeds = nil; // NewsBlurAppDelegate.m's setter invalidates account-owned image generations.
+    self.dictFeeds = [NSMutableDictionary dictionary];
+    self.dictInactiveFeeds = [NSMutableDictionary dictionary];
+    self.dictActiveFeeds = [NSMutableDictionary dictionary];
+    self.dictFolders = @{};
+    self.dictFoldersArray = [NSMutableArray array];
+    self.dictSubfolders = @{};
+    self.dictSocialFeeds = @{};
+    self.dictSocialProfile = nil;
+    self.dictUserProfile = nil;
+    self.dictSocialServices = nil;
+    self.dictSavedStoryTags = @{};
+    self.dictSavedStoryFeedCounts = @{};
+    self.dictUnreadCounts = [NSMutableDictionary dictionary];
+    self.dictTextFeeds = [NSMutableDictionary dictionary];
+    self.dictFolderIcons = @{};
+    self.dictFeedIcons = @{};
+    self.userInteractionsArray = @[];
+    self.userActivitiesArray = @[];
+    self.dashboardArray = @[];
+    self.notificationFeedIds = @[];
+    self.savedSearchesCount = 0;
+    self.savedStoriesCount = 0;
+    self.hasNoSites = NO;
+    [self.folderCountCache removeAllObjects];
+
+    [self.feedsViewController calculateFeedLocations];
+    [self.feedsViewController reloadFeedTitlesTable];
+    [self.feedsViewController refreshHeaderCounts];
+    [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+    [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"finishAuthentication" animated:NO];
+    [self reloadFeedsView:YES];
 }
 
 - (void)reloadFeedsView:(BOOL)showLoader {
