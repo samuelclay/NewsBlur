@@ -14,4 +14,5 @@ internal fun shouldRevealPreparedReader(
     pendingTargetHash: String?,
     activeStoryHash: String?,
     readyStoryHash: String,
-): Boolean = waiting && pendingTargetHash == null && activeStoryHash == readyStoryHash
+    isPaused: Boolean = false,
+): Boolean = waiting && !isPaused && pendingTargetHash == null && activeStoryHash == readyStoryHash

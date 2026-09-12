@@ -1,5 +1,7 @@
 package com.newsblur.activity
 
+import android.os.SystemClock
+import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import com.newsblur.database.ReadingAdapter
@@ -20,11 +22,15 @@ class ReadingHistoryNavigationTest {
     @Before
     fun keepUnrelatedBackgroundReadWorkPending() {
         mockkStatic("androidx.lifecycle.LifecycleOwnerKt", "com.newsblur.util.ExtensionsKt")
+        mockkStatic(SystemClock::class, Log::class)
+        every { SystemClock.uptimeMillis() } returns 1000L
+        every { Log.d(any(), any()) } returns 0
     }
 
     @After
     fun restoreCoroutineExtensions() {
         unmockkStatic("androidx.lifecycle.LifecycleOwnerKt", "com.newsblur.util.ExtensionsKt")
+        unmockkStatic(SystemClock::class, Log::class)
     }
 
     @Test
@@ -44,15 +50,13 @@ class ReadingHistoryNavigationTest {
         fixture.reading.onPageSelected(0)
         fixture.reading.onPageSelected(3)
         fixture.reading.onPageSelected(5)
-        every { fixture.pager.setCurrentItem(any(), true) } answers {
-            fixture.reading.onPageSelected(firstArg())
-        }
 
         fixture.previous()
         fixture.previous()
 
-        verify(exactly = 1) { fixture.pager.setCurrentItem(3, true) }
-        verify(exactly = 1) { fixture.pager.setCurrentItem(0, true) }
+        verify(exactly = 1) { fixture.pager.setCurrentItem(3, false) }
+        verify(exactly = 1) { fixture.pager.setCurrentItem(0, false) }
+        assertEquals(listOf(-1, -1), fixture.animationDirections)
         assertEquals(listOf(fixture.stories[0]), fixture.history)
         verify(atLeast = 1) { fixture.traverseBar.updatePreviousEnabled(false) }
     }
@@ -68,11 +72,29 @@ class ReadingHistoryNavigationTest {
         assertEquals(listOf(fixture.stories[0], fixture.stories[3]), fixture.history)
     }
 
+    @Test
+    fun previousDoesNotTrimVisibleHistoryUntilItsPreparedPageIsRevealed() {
+        val fixture = Fixture()
+        fixture.reading.onPageSelected(0)
+        fixture.reading.onPageSelected(3)
+        fixture.reading.onPageSelected(5)
+        fixture.completePreparationImmediately = false
+
+        fixture.previous()
+
+        assertEquals(listOf(fixture.stories[0], fixture.stories[3], fixture.stories[5]), fixture.history)
+        fixture.navigation.ready(fixture.stories[3].storyHash)
+        assertEquals(listOf(fixture.stories[0], fixture.stories[3]), fixture.history)
+    }
+
     private class Fixture {
         val reading = mockk<Reading>(relaxed = true)
         val pager = mockk<ViewPager>(relaxed = true)
         val traverseBar = mockk<ReadingTraverseBar>(relaxed = true)
         val history = mutableListOf<Story>()
+        val animationDirections = mutableListOf<Int>()
+        var completePreparationImmediately = true
+        val navigation: PreparedReaderNavigation
         val stories = (0..5).map { index ->
             Story().apply {
                 id = "https://example.com/story/$index"
@@ -86,6 +108,8 @@ class ReadingHistoryNavigationTest {
             val adapter = mockk<ReadingAdapter>(relaxed = true)
             every { adapter.getStory(any()) } answers { stories.getOrNull(firstArg()) }
             every { adapter.getPosition(any()) } answers { stories.indexOf(firstArg()) }
+            every { adapter.findHash(any()) } answers { stories.indexOfFirst { it.storyHash == firstArg<String>() } }
+            every { adapter.getExistingItem(any()) } returns null
             setField("readingAdapter", adapter)
             setField("pager", pager)
             setField("traverseBar", traverseBar)
@@ -93,10 +117,41 @@ class ReadingHistoryNavigationTest {
             val scope = mockk<androidx.lifecycle.LifecycleCoroutineScope>(relaxed = true)
             every { reading.lifecycleScope } returns scope
             every { scope.executeAsyncTask<Any?>(any(), any(), any()) } returns Job()
-            every { reading.onPageSelected(any()) } answers { callOriginal() }
+            var currentPosition = 0
+            every { pager.currentItem } answers { currentPosition }
+            every { reading.onPageSelected(any()) } answers {
+                currentPosition = firstArg()
+                callOriginal()
+            }
+            every { pager.setCurrentItem(any(), any()) } answers { reading.onPageSelected(firstArg()) }
             every { reading["getLastReadPosition"](any<Boolean>()) } answers { callOriginal() }
             every { reading["overlayLeftClick"]() } answers { callOriginal() }
             every { reading["clearCurrentStoryPins"]() } returns Unit
+            every { reading["navigateToStory"](any<Int>(), any<Boolean>()) } answers { callOriginal() }
+            every { reading["trimHistoryToStory"](any<String>()) } answers { callOriginal() }
+            every { reading["commitPreparedPage"](any<ReaderPageTarget>()) } answers { callOriginal() }
+            lateinit var coordinator: PreparedReaderNavigation
+            coordinator = PreparedReaderNavigation(
+                capture = { it(true) },
+                prepare = { target ->
+                    pager.setCurrentItem(target.position, false)
+                    if (completePreparationImmediately) coordinator.ready(target.storyHash)
+                },
+                commit = { target ->
+                    Reading::class.java.getDeclaredMethod("commitPreparedPage", ReaderPageTarget::class.java).apply {
+                        isAccessible = true
+                        invoke(reading, target)
+                    }
+                },
+                animate = { direction, completion ->
+                    animationDirections.add(direction)
+                    completion()
+                },
+                release = {},
+                captureFailed = {},
+            )
+            navigation = coordinator
+            setField("preparedPageNavigation", navigation)
         }
 
         fun previous() {

@@ -35,4 +35,10 @@ class PreparedReaderEntranceTest {
         assertTrue(shouldRevealPreparedReader(true, null, "target", "target"))
         assertFalse(shouldRevealPreparedReader(false, null, "target", "target"))
     }
+
+    @Test
+    fun aPageFinishingInTheBackgroundWaitsForResumeBeforeEntering() {
+        assertFalse(shouldRevealPreparedReader(true, null, "target", "target", isPaused = true))
+        assertTrue(shouldRevealPreparedReader(true, null, "target", "target", isPaused = false))
+    }
 }
