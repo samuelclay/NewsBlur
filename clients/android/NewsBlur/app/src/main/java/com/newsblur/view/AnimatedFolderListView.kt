@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -15,6 +16,7 @@ import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
 import android.widget.ExpandableListView
 import com.newsblur.R
+import com.newsblur.util.UIUtils
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -43,6 +45,7 @@ class AnimatedFolderListView
         )
 
         private val snapshotPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+        private var transitionBackground: Drawable? = null
         private var movingViews = emptyList<MovingView>()
         private var leavingRows = emptyList<LeavingRow>()
         private var animator: ValueAnimator? = null
@@ -205,6 +208,16 @@ class AnimatedFolderListView
         override fun dispatchDraw(canvas: Canvas) {
             val checkpoint = canvas.save()
             canvas.clipRect(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom)
+            if (animator != null) {
+                // row_folder.xml supplies every theme's surface; fading snapshots must not uncover
+                // the window behind AnimatedFolderListView.kt while following folders are moving.
+                val surface =
+                    transitionBackground ?: context.getDrawable(
+                        UIUtils.getThemedResource(context, R.attr.selectorFolderBackground, android.R.attr.background),
+                    )?.mutate()?.also { transitionBackground = it }
+                surface?.setBounds(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom)
+                surface?.draw(canvas)
+            }
             for ((snapshot, motion) in leavingRows) {
                 snapshotPaint.alpha = (255f * interpolate(motion.before.alpha, motion.after.alpha)).roundToInt().coerceIn(0, 255)
                 canvas.drawBitmap(snapshot.bitmap, snapshot.left, interpolate(motion.before.top, motion.after.top), snapshotPaint)
