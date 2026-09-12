@@ -138,11 +138,39 @@ static UIFont *indicatorFont = nil;
     return output;
 }
 
+- (NSString *)accessibilityValue {
+    return [NSString stringWithFormat:@"%@, %@", self.isRead ? @"Read" : @"Unread", self.isSaved ? @"Saved" : @"Unsaved"];
+}
+
 - (void)setupGestures {
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    self.shouldDrag = NO;
-    self.mode = MCSwipeTableViewCellModeNone;
-    self.delegate = nil;
+    BOOL right = [StoryTitleSwipePreference usesRowSwipeRight:YES canMarkRead:self.isReadAvailable];
+    BOOL left = [StoryTitleSwipePreference usesRowSwipeRight:NO canMarkRead:self.isReadAvailable];
+    self.shouldDrag = (right || left) && !self.isClusterStory;
+    self.mode = self.shouldDrag ? MCSwipeTableViewCellModeSwitch : MCSwipeTableViewCellModeNone;
+    self.delegate = self.shouldDrag ? appDelegate.feedDetailViewController : nil;
+    if (!self.shouldDrag) return;
+
+    StoryTitleSwipeAction rightAction = StoryTitleSwipePreference.rightAction;
+    StoryTitleSwipeAction leftAction = StoryTitleSwipePreference.leftAction;
+    NSString *rightIcon = right ? [StoryTitleSwipePreference iconNameForAction:rightAction isRead:self.isRead score:storyScore] : nil;
+    NSString *leftIcon = left ? [StoryTitleSwipePreference iconNameForAction:leftAction isRead:self.isRead score:storyScore] : nil;
+    UIColor *rightColor = right ? [StoryTitleSwipePreference colorForAction:rightAction isSaved:self.isSaved isRead:self.isRead] : nil;
+    UIColor *leftColor = left ? [StoryTitleSwipePreference colorForAction:leftAction isSaved:self.isSaved isRead:self.isRead] : nil;
+    [self setFirstStateIconName:rightIcon firstColor:rightColor
+          secondStateIconName:nil secondColor:nil
+                 thirdIconName:leftIcon thirdColor:leftColor
+                fourthIconName:nil fourthColor:nil];
+    self.shouldAnimatesIcons = NO;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if ([gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
+        CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
+        // FeedDetailTableCell.m leaves menu swipes to UITableView and back swipes to navigation.
+        if (![StoryTitleSwipePreference usesRowSwipeRight:velocity.x > 0 canMarkRead:self.isReadAvailable]) return NO;
+    }
+    return [super gestureRecognizerShouldBegin:gestureRecognizer];
 }
 
 - (BOOL)readStateAnimationsEnabled {

@@ -22,6 +22,13 @@ struct CardView: View {
 
     @State private var swipeDragOffset: CGFloat = 0
     @State private var settledSwipeOffset: CGFloat = 0
+    @AppStorage("story_title_swipe_right") private var rightSwipe = "back"
+    @AppStorage("story_title_swipe_left") private var leftSwipe = "menu"
+    @AppStorage("enable_feed_cell_swipe") private var swipeActionsEnabled = true
+
+    private var rightAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(rightSwipe, fallback: .back) }
+    private var leftAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(leftSwipe, fallback: .menu) }
+    private var usesCustomSwipes: Bool { rightAction != .back || leftAction != .menu }
     
     var body: some View {
         ZStack {
@@ -31,6 +38,21 @@ struct CardView: View {
                     .onTapGesture {
                         feedDetailInteraction.tapped(story: story, in: dash)
                     }
+            } else if usesCustomSwipes && swipeActionsEnabled {
+                StoryTitleSwipeView(cache: cache, storyID: story.id,
+                                      rightAction: rightAction, leftAction: leftAction,
+                                      isSaved: story.isSaved, isRead: story.isRead,
+                                      canMarkRead: story.isReadAvailable,
+                                      perform: performSwipeAction,
+                                      open: { feedDetailInteraction.tapped(story: story, in: dash) }) {
+                    standardCardBody.background(nonGridRowBackgroundColor)
+                        // FeedDetailCardView.swift rebinds nested observers when StoryCache replaces a same-ID model.
+                        .id(ObjectIdentifier(story))
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityValue("\(story.isRead ? "Read" : "Unread"), \(story.isSaved ? "Saved" : "Unsaved")")
+                .accessibilityAction(named: Text(story.isSaved ? "Unsave" : "Save"), toggleSavedState)
+                .accessibilityAction(named: Text(story.isRead ? "Mark Unread" : "Mark Read"), toggleReadState)
             } else if cache.isNonGridStoryTitlesLayout {
                 swipeableStandardCardBody
             } else {
@@ -41,7 +63,7 @@ struct CardView: View {
                     }
             }
         }
-        .if(!story.isClusterStory && !cache.isNonGridStoryTitlesLayout) { view in
+        .if(!story.isClusterStory && !cache.isNonGridStoryTitlesLayout && !usesCustomSwipes && swipeActionsEnabled) { view in
             view.swipeActions(edge: .trailing, allowsFullSwipe: true) {
                 Button {
                     toggleReadState()
@@ -454,6 +476,7 @@ struct CardView: View {
     }
 
     private func shouldTrackSwipe(for value: DragGesture.Value) -> Bool {
+        guard swipeActionsEnabled else { return false }
         let horizontal = value.translation.width
         let vertical = value.translation.height
 
@@ -522,6 +545,16 @@ struct CardView: View {
 
     private func clampedSwipeOffset(_ candidate: CGFloat) -> CGFloat {
         min(0, max(-maxSwipeOffset, candidate))
+    }
+
+    private func performSwipeAction(_ action: StoryTitleSwipeAction) {
+        switch action {
+        case .read: toggleReadState()
+        case .save: toggleSavedState()
+        case .share: shareStory()
+        case .back: cache.appDelegate.showFeedsList(animated: true)
+        case .menu: break
+        }
     }
 
     private func toggleReadState() {
