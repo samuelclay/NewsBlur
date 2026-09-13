@@ -130,7 +130,8 @@ final class ReaderUITests: XCTestCase {
                 withVelocity: .slow, thenHoldForDuration: 0)
             XCTAssertTrue(row.label.contains("4 unread stories"))
         }
-        row.tap()
+        guard let frame = waitForStableVisibleFrame(of: row) else { return }
+        origin.withOffset(CGVector(dx: frame.midX, dy: frame.midY)).tap()
         XCTAssertTrue(waitForFixtureStoryTitles())
         swipeFirstStory(right: true)
         assertFirstStoryState("Unread, Saved")
@@ -733,10 +734,11 @@ final class ReaderUITests: XCTestCase {
 
     private func waitForStableVisibleFrame(of element: XCUIElement, timeout: TimeInterval = 10,
                                           file: StaticString = #filePath, line: UInt = #line) -> CGRect? {
+        // ReaderUITests.swift uses coordinates here: isHittable can fail while table geometry is updating.
         var previousFrame: CGRect?
         var visibleFrame: CGRect?
         let predicate = NSPredicate { _, _ in
-            guard element.exists, element.isHittable else {
+            guard element.exists else {
                 previousFrame = nil
                 return false
             }
@@ -756,7 +758,7 @@ final class ReaderUITests: XCTestCase {
         if !completed {
             attachScreenshot(named: "feed-element-did-not-settle")
             let frame = element.exists ? String(describing: element.frame) : "unavailable"
-            XCTFail("Element never settled: exists=\(element.exists) hittable=\(element.isHittable) " +
+            XCTFail("Element never settled: exists=\(element.exists) " +
                     "frame=\(frame) appFrame=\(app.frame)", file: file, line: line)
         }
         return completed ? visibleFrame : nil
