@@ -22,6 +22,111 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
+    func test_gesturePreferencesCollapseIndependentlyAndKeepSelections() {
+        app.launchArguments = ["-newsblur-ui-test-reset-gestures", "-newsblur-ui-test-animations"]
+        launch(on: "preferences")
+        let scroll = app.scrollViews.firstMatch
+        XCTAssertTrue(scroll.waitForExistence(timeout: 5))
+        func show(_ element: XCUIElement) {
+            for _ in 0..<18 {
+                if element.isHittable && element.frame.minY > 120 && element.frame.maxY < 750 { return }
+                let origin = app.coordinate(withNormalizedOffset: .zero)
+                let up = !element.exists || element.frame.midY > app.frame.midY
+                origin.withOffset(CGVector(dx: 185, dy: up ? 720 : 260)).press(forDuration: 0.05,
+                    thenDragTo: origin.withOffset(CGVector(dx: 185, dy: up ? 370 : 610)),
+                    withVelocity: .slow, thenHoldForDuration: 0.2)
+            }
+            XCTAssertTrue(element.isHittable)
+        }
+        let feedToggle = app.switches["enable_feed_swipes"]
+        let storyToggle = app.switches["enable_story_swipes"]
+        let feedLeft = app.buttons["feed_title_swipe_left"]
+        let storyRight = app.buttons["story_title_swipe_right"]
+        show(storyRight)
+        storyRight.tap()
+        app.buttons["Save / unsave"].tap()
+        show(feedToggle)
+        feedToggle.tap()
+        XCTAssertFalse(feedLeft.exists)
+        XCTAssertFalse(app.buttons["feed_title_swipe_right"].exists)
+        XCTAssertTrue(storyRight.exists)
+        XCTAssertTrue(app.buttons["long_press_feed_title"].exists)
+        show(storyToggle)
+        storyToggle.tap()
+        XCTAssertFalse(storyRight.exists)
+        XCTAssertFalse(app.buttons["story_title_swipe_left"].exists)
+        XCTAssertTrue(app.buttons["long_press_story_title"].exists)
+        attachScreenshot(named: "gesture-groups-swipes-off")
+        storyToggle.tap()
+        XCTAssertTrue(storyRight.waitForExistence(timeout: 3))
+        XCTAssertTrue(storyRight.label.contains("Save / unsave"))
+        XCTAssertFalse(feedLeft.exists)
+        show(feedToggle)
+        feedToggle.tap()
+        XCTAssertTrue(feedLeft.waitForExistence(timeout: 3))
+        attachScreenshot(named: "gesture-groups-swipes-on")
+    }
+
+    func test_feedSwipeDirectionsWorkWithStorySwipesDisabled() {
+        for right in [false, true] {
+            app = XCUIApplication()
+            app.launchArguments = ["-enable_feed_swipes", "YES", "-enable_story_swipes", "NO",
+                                   "-feed_title_swipe_left", right ? "notifications" : "read",
+                                   "-feed_title_swipe_right", right ? "read" : "notifications",
+                                   "-show_feeds_after_being_read", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader")
+            let row = feedCell("910002")
+            XCTAssertTrue(row.waitForExistence(timeout: 5))
+            XCTAssertTrue(row.label.contains("4 unread stories"))
+            let origin = app.coordinate(withNormalizedOffset: .zero)
+            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: row.frame.midY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: row.frame.midY)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            expectation(for: NSPredicate(format: "label == %@", "Swift Weekly feed"), evaluatedWith: row)
+            waitForExpectations(timeout: 5)
+        }
+    }
+
+    func test_disabledFeedSwipesLeaveStorySwipesEnabled() {
+        app.launchArguments = ["-enable_feed_swipes", "NO", "-enable_story_swipes", "YES",
+                               "-story_title_swipe_right", "save", "-story_title_swipe_left", "read",
+                               "-newsblur-ui-test-animations"]
+        launch(on: "reader", storyTitlesStyle: "standard")
+        let row = feedCell("910002")
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        for right in [false, true] {
+            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: row.frame.midY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: row.frame.midY)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            XCTAssertTrue(row.label.contains("4 unread stories"))
+        }
+        row.tap()
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        swipeFirstStory(right: true)
+        assertFirstStoryState("Unread, Saved")
+    }
+
+    func test_disabledStorySwipesKeepEdgeBack() { verifyDisabledStorySwipes(experimental: false) }
+    func test_experimentalDisabledStorySwipesKeepEdgeBack() { verifyDisabledStorySwipes(experimental: true) }
+
+    private func verifyDisabledStorySwipes(experimental: Bool) {
+        app.launchArguments = ["-enable_feed_swipes", "YES", "-enable_story_swipes", "NO",
+                               "-story_title_swipe_right", "back", "-story_title_swipe_left", "save",
+                               "-newsblur-ui-test-animations"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: 80, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 350, dy: 195)), withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+        swipeFirstStory(right: false)
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+        origin.withOffset(CGVector(dx: 2, dy: 300)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 350, dy: 300)), withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+    }
+
     func test_classicTitlesKeepEdgeSwipeBack() {
         verifyStoryListSwipeBack(classic: true, experimental: false)
     }
