@@ -433,7 +433,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
     show_correct_feed_view_options_in_menu: function () {
         var order = NEWSBLUR.assets.view_setting(this.options.feed_id, 'order');
-        var read_filter = NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter');
+        var read_filter = NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+            NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter'),
+            NEWSBLUR.reader.flags['classifier_filter']
+        );
         var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.options.feed_id, 'dashboard_count'), 10);
         var mark_scroll = NEWSBLUR.assets.preference('mark_read_on_scroll_titles');
         var density = NEWSBLUR.assets.preference('density');
