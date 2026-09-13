@@ -3,7 +3,8 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryTitleSwipe: XCTestCase {
-    private let keys = ["story_title_swipe_right", "story_title_swipe_left", "enable_feed_cell_swipe"]
+    private let keys = ["story_title_swipe_right", "story_title_swipe_left", "enable_story_swipes",
+                        "enable_feed_swipes", "feed_title_swipe_left", "feed_title_swipe_right"]
     private var previous: [Any?] = []
 
     override func setUp() {
@@ -12,6 +13,9 @@ import XCTest
         UserDefaults.standard.removeObject(forKey: keys[0])
         UserDefaults.standard.removeObject(forKey: keys[1])
         UserDefaults.standard.set(true, forKey: keys[2])
+        UserDefaults.standard.set(true, forKey: keys[3])
+        UserDefaults.standard.removeObject(forKey: keys[4])
+        UserDefaults.standard.removeObject(forKey: keys[5])
     }
 
     override func tearDown() {
@@ -26,6 +30,120 @@ import XCTest
         let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
         cell.setupGestures()
         XCTAssertFalse(cell.shouldDrag)
+    }
+
+    func test_feedAndStorySwipesCanBeDisabledIndependentlyAndReenabled() {
+        selectActions()
+        let feed = FeedTableCell(style: .default, reuseIdentifier: nil)
+        let story = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        story.isReadAvailable = true
+        for (feeds, stories) in [(true, true), (false, true), (true, false), (false, false), (true, true)] {
+            UserDefaults.standard.set(feeds, forKey: "enable_feed_swipes")
+            UserDefaults.standard.set(stories, forKey: "enable_story_swipes")
+            feed.setupGestures()
+            story.setupGestures()
+            XCTAssertEqual(feed.shouldDrag, feeds)
+            XCTAssertEqual(story.shouldDrag, stories)
+        }
+        UserDefaults.standard.set("back", forKey: keys[0])
+        UserDefaults.standard.set(false, forKey: "enable_story_swipes")
+        XCTAssertFalse(StoryTitleSwipePreference.usesFullScreenBack)
+    }
+
+    func test_swipeEnablementAcceptsBooleansAndStringLaunchArguments() {
+        let defaults = UserDefaults.standard
+        let arguments = defaults.volatileDomain(forName: UserDefaults.argumentDomain)
+        let registration = defaults.volatileDomain(forName: UserDefaults.registrationDomain)
+        defer {
+            defaults.setVolatileDomain(arguments, forName: UserDefaults.argumentDomain)
+            defaults.setVolatileDomain(registration, forName: UserDefaults.registrationDomain)
+        }
+        var testArguments = arguments
+        var testRegistration = registration
+        for key in ["enable_feed_swipes", "enable_story_swipes"] {
+            testArguments.removeValue(forKey: key)
+            testRegistration.removeValue(forKey: key)
+        }
+        defaults.setVolatileDomain(testArguments, forName: UserDefaults.argumentDomain)
+        defaults.setVolatileDomain(testRegistration, forName: UserDefaults.registrationDomain)
+
+        for (value, expected) in [(NSNumber(value: true), true), (NSNumber(value: false), false)] {
+            defaults.set(value, forKey: "enable_feed_swipes")
+            defaults.set(value, forKey: "enable_story_swipes")
+            XCTAssertEqual(GesturePreferences.feedsEnabled, expected)
+            XCTAssertEqual(GesturePreferences.storiesEnabled, expected)
+        }
+
+        for (feeds, stories) in [("NO", "YES"), ("YES", "NO")] {
+            testArguments["enable_feed_swipes"] = feeds as NSString
+            testArguments["enable_story_swipes"] = stories as NSString
+            defaults.setVolatileDomain(testArguments, forName: UserDefaults.argumentDomain)
+            XCTAssertEqual(GesturePreferences.feedsEnabled, feeds == "YES")
+            XCTAssertEqual(GesturePreferences.storiesEnabled, stories == "YES")
+        }
+
+        for key in ["enable_feed_swipes", "enable_story_swipes"] {
+            defaults.removeObject(forKey: key)
+            testArguments.removeValue(forKey: key)
+        }
+        defaults.setVolatileDomain(testArguments, forName: UserDefaults.argumentDomain)
+        XCTAssertNil(defaults.object(forKey: "enable_feed_swipes"))
+        XCTAssertNil(defaults.object(forKey: "enable_story_swipes"))
+        XCTAssertTrue(GesturePreferences.feedsEnabled)
+        XCTAssertTrue(GesturePreferences.storiesEnabled)
+    }
+
+    func test_feedSwipeDirectionsKeepDefaultsAndCanBeReversed() {
+        let feed = FeedTableCell(style: .default, reuseIdentifier: nil)
+        feed.setupGestures()
+        XCTAssertEqual(feed.firstIconName, "menu_icn_notifications.png")
+        XCTAssertEqual(feed.thirdIconName, "indicator-unread")
+        UserDefaults.standard.set("read", forKey: "feed_title_swipe_right")
+        UserDefaults.standard.set("statistics", forKey: "feed_title_swipe_left")
+        feed.setupGestures()
+        XCTAssertEqual(feed.firstIconName, "indicator-unread")
+        XCTAssertEqual(feed.thirdIconName, "menu_icn_statistics.png")
+        feed.isSaved = true
+        feed.setupGestures()
+        XCTAssertFalse(feed.shouldDrag)
+        feed.isSaved = false
+        feed.setupGestures()
+        XCTAssertTrue(feed.shouldDrag)
+    }
+
+    func test_gestureSettingsHideOnlyTheDisabledSwipeChoices() {
+        let model = PreferencesViewModel()
+        for (feeds, stories) in [(true, true), (false, true), (true, false), (false, false)] {
+            UserDefaults.standard.set(feeds, forKey: "enable_feed_swipes")
+            UserDefaults.standard.set(stories, forKey: "enable_story_swipes")
+            model.updateHiddenKeys()
+            for key in ["feed_title_swipe_left", "feed_title_swipe_right"] { XCTAssertEqual(model.shouldShow(key: key), feeds) }
+            for key in ["story_title_swipe_left", "story_title_swipe_right"] { XCTAssertEqual(model.shouldShow(key: key), stories) }
+            for key in ["long_press_feed_title", "long_press_story_title", "double_tap_story", "two_finger_double_tap", "story_detail_swipe_left_edge"] {
+                XCTAssertTrue(model.shouldShow(key: key))
+            }
+        }
+        XCTAssertEqual(model.sections.first { $0.title == "Gestures" }?.groups.map { $0.title },
+                       ["Feed list", "Story titles", "Reading a story"])
+    }
+
+    func test_sharedSwipeMigrationPreservesDisabledStateAndActualFeedDirection() {
+        let suite = "GesturePreferencesTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.setPersistentDomain(["enable_feed_cell_swipe": false, "feed_swipe_left": "statistics"], forName: suite)
+        GesturePreferences.migrateLegacyPreferences(in: defaults, domain: suite)
+        XCTAssertEqual(defaults.object(forKey: "enable_feed_swipes") as? Bool, false)
+        XCTAssertEqual(defaults.object(forKey: "enable_story_swipes") as? Bool, false)
+        XCTAssertEqual(defaults.string(forKey: "feed_title_swipe_right"), "statistics")
+        XCTAssertNil(defaults.object(forKey: "enable_feed_cell_swipe"))
+        defaults.setPersistentDomain(["enable_feed_cell_swipe": false, "enable_story_swipes": true,
+                                      "feed_swipe_left": "trainer", "feed_title_swipe_right": "read"], forName: suite)
+        GesturePreferences.migrateLegacyPreferences(in: defaults, domain: suite)
+        XCTAssertEqual(defaults.object(forKey: "enable_story_swipes") as? Bool, true)
+        XCTAssertEqual(defaults.string(forKey: "feed_title_swipe_right"), "read")
+        GesturePreferences.migrateLegacyPreferences(in: defaults, domain: suite)
+        XCTAssertEqual(defaults.object(forKey: "enable_story_swipes") as? Bool, true)
     }
 
     private func selectActions() {
