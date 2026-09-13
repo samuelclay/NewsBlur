@@ -2038,6 +2038,28 @@ class ReadingItemFragment :
         webview.setCustomViewLayout(binding.customViewContainer)
         webview.setWebviewWrapperLayout(binding.readingContainer)
         webview.setBackgroundColor(Color.TRANSPARENT)
+        webview.setOnTouchListener(
+            com.newsblur.view.ReaderTapGestures(webview) { twoFingers ->
+                val action =
+                    if (twoFingers) {
+                        prefsRepo.getReaderGesture("reader_two_finger_double_tap", "text")
+                    } else {
+                        prefsRepo.getReaderGesture("reader_double_tap", "original")
+                    }
+                if (webview.hitTestResult?.type != HitTestResult.UNKNOWN_TYPE) {
+                    false
+                } else {
+                    when (action) {
+                        "original" -> openBrowser()
+                        "text" -> switchSelectedViewMode()
+                        "unread" -> story?.let { feedUtils.markStoryUnread(it, requireContext()) }
+                        "save" -> story?.let { feedUtils.setStorySaved(it, true, requireContext(), emptyList(), emptyList()) }
+                    }
+                    action != "none"
+                }
+            },
+        )
+
         webview.fragment = this
         webview.activity = readingActivity
         webview.setWebviewActionDelegate { action, selectedText ->

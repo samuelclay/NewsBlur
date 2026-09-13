@@ -1940,7 +1940,12 @@ abstract class Reading :
                             totalDeltaX >= view.rootView.width * READING_BACK_SWIPE_TRIGGER_RATIO ||
                                 getXVelocity() > minimumFlingVelocityPx * 4f
                         if (shouldComplete) {
-                            completeInteractiveReaderBackSwipe()
+                            if (prefsRepo.getReaderGesture("reader_left_edge", "back") == "previous") {
+                                resetInteractiveReaderBackSwipe(cancelAnimation = true)
+                                previousStory()
+                            } else {
+                                completeInteractiveReaderBackSwipe()
+                            }
                         } else {
                             cancelInteractiveReaderBackSwipe()
                         }
