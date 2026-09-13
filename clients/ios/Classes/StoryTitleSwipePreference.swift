@@ -118,6 +118,9 @@ struct StoryTitleSwipeView<Content: View>: View {
                         Color(StoryTitleSwipePreference.color(for: action, isSaved: isSaved, isRead: isRead))
                         Image(StoryTitleSwipePreference.iconName(for: action, isRead: isRead, score: 0))
                             .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
                             .foregroundColor(Color.themed([0x404040, 0x4C4435, 0xFFFFFF, 0xFFFFFF]))
                             .padding(.horizontal, 24)
                     }
@@ -187,6 +190,9 @@ struct StoryTitleSwipeView<Content: View>: View {
             VStack(spacing: 6) {
                 Image(StoryTitleSwipePreference.iconName(for: action, isRead: isRead, score: 0))
                     .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
                 Text(action == .read ? (isRead ? "Mark Unread" : "Mark Read") :
                      action == .save ? (isSaved ? "Unsave" : "Save") : "Share")
                     .font(.system(size: 11, weight: .semibold))
