@@ -46,6 +46,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.util.CustomIconRenderer;
 import com.newsblur.domain.FeedQueryResult;
 import com.newsblur.domain.Folder;
+import com.newsblur.domain.FolderHierarchy;
 import com.newsblur.domain.FolderQueryResult;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SavedStoryCountsQueryResult;
@@ -225,7 +226,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			if (v == null) v = inflater.inflate(R.layout.row_folder, parent, false);
             String folderName = activeFolderNames.get(groupPosition);
 			TextView folderTitle = v.findViewById(R.id.row_foldername);
-		    folderTitle.setText(folderName);
+		    Folder folder = flatFolders.get(folderName);
+            folderTitle.setText(folder.name);
+            v.setPaddingRelative(UIUtils.dp2px(context, 28 * folder.depth()), 0, 0, 0);
+            folderTitle.setContentDescription(folderName);
 		    folderTitle.setTextSize(textSize * defaultTextSize_childName);
             bindCountViews(v, folderNeutCounts.get(groupPosition), folderPosCounts.get(groupPosition), false);
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
@@ -375,7 +379,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
             FrameLayout containerTitle = v.findViewById(R.id.row_title);
-            int rowMarginStart = isRowAllStories(groupPosition) ? 0 : UIUtils.dp2px(context, 32);
+            int rowMarginStart = isRowAllStories(groupPosition) ? 0 : UIUtils.dp2px(context, 28 * (getGroupFolder(groupPosition).depth() + 1));
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) containerTitle.getLayoutParams();
             lp.setMarginStart(rowMarginStart);
             containerTitle.setLayoutParams(lp);
@@ -518,7 +522,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (isRowRootFolder(groupPosition)) return AppConstants.ROOT_FOLDER;
         String flatFolderName = activeFolderNames.get(groupPosition);
         Folder folder = flatFolders.get(flatFolderName);
-        return folder.name;
+        return folder.flatName();
     }
 
     public Folder getGroupFolder(int groupPosition) {
@@ -687,6 +691,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         flatFolders.clear();
         folders.putAll(foldersResult.getFolders());
         flatFolders.putAll(foldersResult.getFlatFolders());
+        closedFolders.clear();
+        for (String path : flatFolders.keySet()) {
+            if (!prefsRepo.getBoolean(AppConstants.FOLDER_PRE + "_" + path, true)) closedFolders.add(path);
+        }
 
         recountFeeds();
         notifyDataSetChanged();
@@ -753,7 +761,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
             hasVisibleFolders = true;
             Folder folder = flatFolders.get(activeFolderNames.get(groupPosition));
-            if ((folder != null) && !closedFolders.contains(folder.name)) {
+            if ((folder != null) && !closedFolders.contains(folder.flatName())) {
                 return false;
             }
         }
@@ -779,44 +787,47 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             addSpecialRow(topLevelRow);
         }
 
-        // create a sorted list of folder display names
-        List<String> sortedFolderNames = new ArrayList<String>(flatFolders.keySet());
-        Collections.sort(sortedFolderNames, Folder.FolderNameComparator);
-        // figure out which sub-folders are hidden because their parents are closed (flat names)
-        Set<String> hiddenSubFolders = getSubFoldersRecursive(closedFolders);
-        Set<String> hiddenSubFoldersFlat = new HashSet<String>(hiddenSubFolders.size());
-        for (String hiddenSub : hiddenSubFolders) hiddenSubFoldersFlat.add(folders.get(hiddenSub).flatName());
-        // inspect folders to see if the are active for display
-        for (String folderName : sortedFolderNames) {
-            if (hiddenSubFoldersFlat.contains(folderName)) continue;
-            Folder folder = flatFolders.get(folderName);
-            List<Feed> activeFeeds = new ArrayList<Feed>();
-            feedinfolderloop: for (String feedId : folder.feedIds) {
+        // FolderHierarchy.kt retains ancestors with matching descendants and keeps sibling subtrees together.
+        FolderHierarchy hierarchy = new FolderHierarchy(flatFolders.values());
+        Map<String, List<Feed>> matchingFeeds = new LinkedHashMap<>();
+        Set<String> matchingFolders = new HashSet<>();
+        for (Folder folder : hierarchy.getOrdered()) {
+            List<Feed> activeFeeds = new ArrayList<>();
+            Set<String> seenFeeds = new HashSet<>();
+            for (String feedId : folder.feedIds) {
                 Feed f = feeds.get(feedId);
-                // activeFeeds is a list, so it doesn't handle duplication (which the API allows) gracefully
-                if (f == null) continue feedinfolderloop;
-                if (activeFeeds.contains(f)) break feedinfolderloop;
-
-                if ( (currentState == StateFilter.ALL) ||
-                     ((currentState == StateFilter.SOME) && (feedNeutCounts.containsKey(feedId) || feedPosCounts.containsKey(feedId))) ||
-                     ((currentState == StateFilter.BEST) && feedPosCounts.containsKey(feedId)) ||
-                     ((currentState == StateFilter.SAVED) && feedSavedCounts.containsKey(feedId)) ||
-                     f.feedId.equals(lastFeedViewedId) ) {
-                    if ((activeSearchQuery == null) || (f.title.toLowerCase().indexOf(activeSearchQuery.toLowerCase()) >= 0)) {
+                if (f == null || !seenFeeds.add(feedId)) continue;
+                if (currentState == StateFilter.ALL ||
+                        (currentState == StateFilter.SOME && (feedNeutCounts.containsKey(feedId) || feedPosCounts.containsKey(feedId))) ||
+                        (currentState == StateFilter.BEST && feedPosCounts.containsKey(feedId)) ||
+                        (currentState == StateFilter.SAVED && feedSavedCounts.containsKey(feedId)) ||
+                        f.feedId.equals(lastFeedViewedId)) {
+                    if (activeSearchQuery == null || f.title.toLowerCase().contains(activeSearchQuery.toLowerCase())) {
                         activeFeeds.add(f);
                     }
                 }
             }
-            if ((activeFeeds.size() > 0) || (folderName.equals(AppConstants.ROOT_FOLDER)) || folder.name.equals(lastFolderViewed)) {
-                Collections.sort(activeFeeds);
-                if (folderName.equals(AppConstants.ROOT_FOLDER)) {
-                    activeFolderChildren.set(getRootFolderIndex(), activeFeeds);
-                } else {
-                    activeFolderNames.add(folderName);
-                    activeFolderChildren.add(activeFeeds);
-                    folderNeutCounts.add(getFolderNeutralCountRecursive(folder, null));
-                    folderPosCounts.add(getFolderPositiveCountRecursive(folder, null));
+            String path = folder.flatName();
+            matchingFeeds.put(path, activeFeeds);
+            if (!activeFeeds.isEmpty() || path.equals(lastFolderViewed) ||
+                    (currentState == StateFilter.ALL && activeSearchQuery == null)) matchingFolders.add(path);
+        }
+        for (Folder folder : hierarchy.visibleFolders(matchingFolders, closedFolders)) {
+            String path = folder.flatName();
+            List<Feed> activeFeeds = matchingFeeds.get(path);
+            if (AppConstants.ROOT_FOLDER.equals(path)) {
+                activeFolderChildren.set(getRootFolderIndex(), activeFeeds);
+            } else {
+                activeFolderNames.add(path);
+                activeFolderChildren.add(activeFeeds);
+                int neutral = 0;
+                int positive = 0;
+                for (String feedId : hierarchy.feedIds(path)) {
+                    neutral += feedNeutCounts.getOrDefault(feedId, 0);
+                    positive += feedPosCounts.getOrDefault(feedId, 0);
                 }
+                folderNeutCounts.add(neutral);
+                folderPosCounts.add(positive);
             }
         }
 
@@ -871,54 +882,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             newFeedCount += folder.size();
         }
         lastFeedCount = newFeedCount;
-    }
-
-    /**
-     * Given a set of (not-flat) folder names, figure out child folder names (also not flat). Does
-     * not include the initially passed folder names, unless they occur as children of one of the
-     * other parents passed.
-     */
-    private Set<String> getSubFoldersRecursive(Set<String> parentFolders) {
-        HashSet<String> subFolders = new HashSet<String>();
-        for (String folder : parentFolders) {
-            Folder f = folders.get(folder);
-            if (f == null) continue;
-            subFolders.addAll(f.children);
-            subFolders.addAll(getSubFoldersRecursive(subFolders));
-        }
-        return subFolders;
-    }
-
-    private int getFolderNeutralCountRecursive(Folder folder, Set<String> visitedParents) {
-        int count = 0;
-        if (visitedParents == null) visitedParents = new HashSet<String>();
-        visitedParents.add(folder.name);
-        for (String feedId : folder.feedIds) {
-            Integer feedCount = feedNeutCounts.get(feedId);
-            if (feedCount != null) count += feedCount;
-        }
-        for (String childName : folder.children) {
-            if (!visitedParents.contains(childName)) {
-                count += getFolderNeutralCountRecursive(folders.get(childName), visitedParents);
-            }
-        }
-        return count;
-    }
-
-    private int getFolderPositiveCountRecursive(Folder folder, Set<String> visitedParents) {
-        int count = 0;
-        if (visitedParents == null) visitedParents = new HashSet<String>();
-        visitedParents.add(folder.name);
-        for (String feedId : folder.feedIds) {
-            Integer feedCount = feedPosCounts.get(feedId);
-            if (feedCount != null) count += feedCount;
-        }
-        for (String childName : folder.children) {
-            if (!visitedParents.contains(childName)) {
-                count += getFolderPositiveCountRecursive(folders.get(childName), visitedParents);
-            }
-        }
-        return count;
     }
 
     public synchronized void forceRecount() {
@@ -983,7 +946,8 @@ public synchronized Feed getGestureFeed(int group, int child) {
     }
 
     public Set<String> getAllFeedsForFolder(int groupPosition) {
-        return safeFolderFeedIds(getGroupFolder(groupPosition));
+        Folder folder = getGroupFolder(groupPosition);
+        return folder == null ? Collections.emptySet() : new FolderHierarchy(flatFolders.values()).feedIds(folder.flatName());
     }
 
     public static Set<String> safeFolderFeedIds(@Nullable Folder folder) {
@@ -1019,9 +983,9 @@ public synchronized Feed getGestureFeed(int group, int child) {
         Folder folder = flatFolders.get(folderName);
         if (folder == null) return; // beat the cursors
         if (closed) {
-            closedFolders.add(folder.name);
+            closedFolders.add(folder.flatName());
         } else {
-            closedFolders.remove(folder.name);
+            closedFolders.remove(folder.flatName());
         }
         // the logic to open/close sub-folders happens during recounts
         forceRecount();

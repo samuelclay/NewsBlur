@@ -739,7 +739,7 @@ public class BlurDatabaseHelper {
 
     public Folder getFolder(@NonNull String folderName) {
         String[] selArgs = new String[]{folderName};
-        String selection = DatabaseConstants.FOLDER_NAME + " = ?";
+        String selection = DatabaseConstants.FOLDER_PATH + " = ?";
         Cursor c = dbRO.query(DatabaseConstants.FOLDER_TABLE, null, selection, selArgs, null, null, null);
         if (c.moveToFirst()) {
             Folder folder = Folder.fromCursor(c);
@@ -1913,7 +1913,7 @@ public class BlurDatabaseHelper {
         Folder folder = getFolder(folderName);
         if (folder == null) return emptySet();
         Set<String> feedIds = new HashSet<>(folder.feedIds);
-        for (String child : folder.children) feedIds.addAll(getFeedIdsRecursive(child));
+        for (String child : folder.children) feedIds.addAll(getFeedIdsRecursive(folder.childPath(child)));
         return feedIds;
     }
 }

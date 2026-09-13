@@ -24,6 +24,7 @@ public class DatabaseConstants {
 
 	public static final String FOLDER_TABLE = "folders";
 	public static final String FOLDER_NAME = "folder_name";
+    public static final String FOLDER_PATH = "folder_path";
 	public static final String FOLDER_PARENT_NAMES = "folder_parent_names";
 	public static final String FOLDER_CHILDREN_NAMES = "folder_children_names";
 	public static final String FOLDER_FEED_IDS = "folder_feedids";
@@ -182,7 +183,8 @@ public class DatabaseConstants {
     public static final String CUSTOM_ICON_SET = "icon_set";         // lucide or heroicons-solid
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
-		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
+        FOLDER_PATH + TEXT + " PRIMARY KEY, " +
+        FOLDER_NAME + TEXT + ", " +
         FOLDER_PARENT_NAMES + TEXT + ", " +
         FOLDER_CHILDREN_NAMES + TEXT + ", " +
         FOLDER_FEED_IDS + TEXT +
