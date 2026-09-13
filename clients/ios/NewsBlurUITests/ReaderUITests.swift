@@ -524,6 +524,7 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_profileCurrentStoryTitlesScroll() throws {
+        try requireLiveSession()
 #if compiler(>=6.2)
         guard #available(iOS 26.0, *) else {
             throw XCTSkip("XCTHitchMetric requires iOS 26.0 or newer")
@@ -546,21 +547,24 @@ final class ReaderUITests: XCTestCase {
 #endif
     }
 
-    func test_openLiveAllSiteStories() {
+    func test_openLiveAllSiteStories() throws {
+        try requireLiveSession()
         app.activate()
         XCTAssertTrue(ensureFeedsListVisible())
         XCTAssertTrue(openLiveFolder(named: "All Site Stories"))
         XCTAssertTrue(waitForLiveStoryTitles())
     }
 
-    func test_openLiveCodeFolder() {
+    func test_openLiveCodeFolder() throws {
+        try requireLiveSession()
         app.activate()
         XCTAssertTrue(ensureFeedsListVisible())
         XCTAssertTrue(openLiveFolder(named: "Code"))
         XCTAssertTrue(waitForLiveStoryTitles())
     }
 
-    func test_openLiveEngadgetFeed() {
+    func test_openLiveEngadgetFeed() throws {
+        try requireLiveSession()
         app.activate()
         XCTAssertTrue(ensureFeedsListVisible())
         XCTAssertTrue(openLiveFeed(named: "Engadget"))
@@ -568,6 +572,7 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_profileLiveCurrentExperimentalScroll() throws {
+        try requireLiveSession()
 #if compiler(>=6.2)
         guard #available(iOS 26.0, *) else {
             throw XCTSkip("XCTHitchMetric requires iOS 26.0 or newer")
@@ -589,6 +594,16 @@ final class ReaderUITests: XCTestCase {
 #else
         throw XCTSkip("XCTHitchMetric requires Xcode 26 or newer to compile")
 #endif
+    }
+
+    // ReaderUITests.swift runs manual navigation/profiling individually against a prepared signed-in simulator.
+    // Open the desired story list before profiling, then run from clients/ios:
+    // TEST_RUNNER_NEWSBLUR_LIVE_UI_TESTS=1 xcodebuild test -project NewsBlur.xcodeproj -scheme NewsBlur \
+    //   -destination "id=$IOS_SIM_UDID" -only-testing:NewsBlurUITests/ReaderUITests/test_profileCurrentStoryTitlesScroll
+    private func requireLiveSession() throws {
+        guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_UI_TESTS"] == "1" else {
+            throw XCTSkip("Manual test requires a prepared signed-in simulator. Run individually with TEST_RUNNER_NEWSBLUR_LIVE_UI_TESTS=1.")
+        }
     }
 
     private func folderButton(named title: String) -> XCUIElement {
