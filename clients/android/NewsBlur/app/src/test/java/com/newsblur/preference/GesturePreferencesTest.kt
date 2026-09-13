@@ -9,20 +9,24 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class GesturePreferencesTest {
-    private val preferences = mockk<SharedPreferences> {
-        every { getString(any(), any()) } answers { secondArg() }
-        every { getBoolean(any(), any()) } answers { secondArg() }
-    }
+    private val preferences =
+        mockk<SharedPreferences> {
+            every { getString(any(), any()) } answers { secondArg() }
+            every { getBoolean(any(), any()) } answers { secondArg() }
+        }
     private val repo = PrefsRepo(preferences, mockk(relaxed = true))
+
     @Test fun existingAndroidSwipeChoicesSurvive() {
         every { preferences.getString(PrefConstants.RTL_GESTURE_ACTION, any()) } returns GestureAction.GEST_ACTION_UNSAVE.name
         assertEquals(GestureAction.GEST_ACTION_UNSAVE, repo.getRightToLeftGestureAction())
         assertEquals(GestureAction.GEST_ACTION_BACK, repo.getLeftToRightGestureAction())
     }
+
     @Test fun unknownValuesFallBackWithoutCrashing() {
         every { preferences.getString(PrefConstants.LTR_GESTURE_ACTION, any()) } returns "obsolete"
         assertEquals(GestureAction.GEST_ACTION_BACK, repo.getLeftToRightGestureAction())
     }
+
     @Test fun swipeTogglesAreIndependentAndDoNotDisableLongPress() {
         every { preferences.getBoolean("enable_story_swipes", any()) } returns false
         assertFalse(repo.isStorySwipesEnabled())

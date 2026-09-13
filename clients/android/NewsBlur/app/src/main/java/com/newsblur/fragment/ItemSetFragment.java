@@ -1060,7 +1060,10 @@ public class ItemSetFragment extends NbFragment {
         public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    gestureEligible = isInteractiveStoryListSwipeEnabled();
+                    gestureEligible = (getActivity() != null && !getActivity().isTaskRoot()) &&
+                            (event.getX() < UIUtils.dp2px(requireContext(), 24) ||
+                             (prefsRepo.isStorySwipesEnabled() && isInteractiveStoryListSwipeEnabled()));
+
                     isDragging = false;
                     downRawX = event.getRawX();
                     downRawY = event.getRawY();
@@ -1073,6 +1076,10 @@ public class ItemSetFragment extends NbFragment {
                     trackMovement(event);
                     float deltaX = event.getRawX() - downRawX;
                     float deltaY = event.getRawY() - downRawY;
+                    if (!isDragging && Math.abs(deltaY) > touchSlopPx && Math.abs(deltaY) >= Math.abs(deltaX)) {
+                        gestureEligible = false;
+                        return false;
+                    }
                     if (!isDragging &&
                             deltaX > touchSlopPx &&
                             deltaX > Math.abs(deltaY) * STORY_LIST_BACK_GESTURE_DIRECTION_RATIO) {
@@ -1086,6 +1093,7 @@ public class ItemSetFragment extends NbFragment {
                         return true;
                     }
                     break;
+                case MotionEvent.ACTION_POINTER_DOWN:
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
                     resetGestureState();

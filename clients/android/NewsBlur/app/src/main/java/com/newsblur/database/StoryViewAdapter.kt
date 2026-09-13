@@ -13,8 +13,6 @@ import android.text.TextUtils
 import android.text.SpannedString
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
-import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -612,11 +610,52 @@ class StoryViewAdapter(
         var gestureL2R: Boolean = false
         var gestureDebounce: Boolean = false
 
-        private val gestureDetector = GestureDetector(context, StoryViewGestureDetector(this))
+        private val rowSwipe =
+            com.newsblur.view.RowSwipeGesture(
+                itemView,
+                label = { right ->
+                    if (!prefsRepo.isStorySwipesEnabled() ||
+                        (
+                            right &&
+                                context is ItemsList &&
+                                prefsRepo.getLeftToRightGestureAction() == GestureAction.GEST_ACTION_BACK
+                        )
+                    ) {
+                        null
+                    } else {
+                        swipeAction(
+                            right,
+                        ).takeUnless { it == GestureAction.GEST_ACTION_NONE }?.let {
+                            com.newsblur.util.GestureLabels
+                                .title(context, it)
+                        }
+                    }
+                },
+                perform = { performGesture(swipeAction(it)) },
+                claim = { gestureDebounce = true },
+                colors = {
+                    com.newsblur.util.GestureThemeStyle
+                        .palette(prefsRepo.getResolvedTheme(context))
+                },
+            )
+        private var gestureStoryHash: String? = null
+        private var edgeGesture = false
+
+        fun cancelRowSwipe() = rowSwipe.cancel()
+
+        private fun swipeAction(right: Boolean) =
+            if (right) prefsRepo.getLeftToRightGestureAction() else prefsRepo.getRightToLeftGestureAction()
 
         init {
             view.setOnClickListener(this)
             view.setOnCreateContextMenuListener(this)
+            view.setOnLongClickListener {
+                rowSwipe.cancel()
+                gestureDebounce = false
+                performGesture(prefsRepo.getStoryLongPressAction())
+                true
+            }
+
             view.setOnTouchListener(this)
         }
 
@@ -720,40 +759,53 @@ class StoryViewAdapter(
             v: View,
             event: MotionEvent,
         ): Boolean {
-            // detector looks for ongoing gestures and sets our flags
-            val result = gestureDetector.onTouchEvent(event)
-            // iff a gesture possibly completed, see if any were found
-            if (event.actionMasked == MotionEvent.ACTION_UP) {
-                flushGesture()
-            } else if (event.actionMasked == MotionEvent.ACTION_CANCEL) {
-                // RecyclerViews may take event ownership to detect scrolling and never send an ACTION_UP
-                // to children.  valid gestures end in a CANCEL more often than not
-                flushGesture()
+            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                gestureDebounce = false
+                gestureStoryHash = story?.storyHash
+                val paneOrigin = IntArray(2)
+                (itemView.parent as? View)?.getLocationOnScreen(paneOrigin)
+                edgeGesture = context is ItemsList && event.rawX - paneOrigin[0] < UIUtils.dp2px(context, 24)
             }
-            return result
+            if (edgeGesture || gestureStoryHash != story?.storyHash) {
+                rowSwipe.cancel()
+                return false
+            }
+            return rowSwipe.onTouch(event)
         }
 
-        private fun flushGesture() {
-            // by default, do nothing
-            var action: GestureAction? = GestureAction.GEST_ACTION_NONE
-            if (gestureL2R) {
-                action = prefsRepo.getLeftToRightGestureAction()
-                gestureL2R = false
-            }
-            if (gestureR2L) {
-                action = prefsRepo.getRightToLeftGestureAction()
-                gestureR2L = false
-            }
+        private fun performGesture(action: GestureAction) {
+            val target = story ?: return
             when (action) {
                 GestureAction.GEST_ACTION_BACK -> (context as? ItemsList)?.completeInteractiveStoryListSwipe()
                 GestureAction.GEST_ACTION_TOGGLE_READ -> toggleStoryReadState()
-                GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
-                GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
-                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
-                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!, false, context, emptyList(), emptyList())
-                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
-                GestureAction.GEST_ACTION_NONE -> {}
-                else -> {}
+                GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(target, context)
+                GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(target, context)
+                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(target, true, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(target, false, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_TOGGLE_SAVE -> feedUtils.setStorySaved(target, !target.starred, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, target.feedId)
+                GestureAction.GEST_ACTION_SHARE -> feedUtils.sendStoryUrl(target, context)
+                GestureAction.GEST_ACTION_MENU -> {
+                    gestureDebounce = false
+                    itemView.showContextMenu()
+                }
+                GestureAction.GEST_ACTION_TRAIN ->
+                    if (target.feedId != "0") {
+                        StoryIntelTrainerFragment
+                            .newInstance(
+                                target,
+                                fs,
+                            ).show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
+                    }
+                GestureAction.GEST_ACTION_ASK_AI -> {
+                    val tag = com.newsblur.askai.AskAiBottomSheetFragment.TAG
+                    if (context.supportFragmentManager.findFragmentByTag(tag) == null) {
+                        com.newsblur.askai.AskAiBottomSheetFragment
+                            .newInstance(target.storyHash, UIUtils.fromHtml(target.title).toString())
+                            .show(context.supportFragmentManager, tag)
+                    }
+                }
+                else -> Unit
             }
         }
 
@@ -889,6 +941,7 @@ class StoryViewAdapter(
             is DisplayItem.StoryRow -> {
                 val story = item.story
                 val storyHolder = viewHolder as StoryViewHolder
+                if (storyHolder.story?.storyHash != story.storyHash) storyHolder.cancelRowSwipe()
                 storyHolder.story = story
                 bindCommon(storyHolder, story)
 
@@ -1260,6 +1313,7 @@ class StoryViewAdapter(
             if (viewHolder.thumbLoader != null) viewHolder.thumbLoader?.cancel = true
             viewHolder.lastThumbView = null
             viewHolder.readStateAnimator.cancel()
+            viewHolder.cancelRowSwipe()
         }
         if (viewHolder is ClusterRowViewHolder) {
             viewHolder.previewLoader?.cancel = true
@@ -1478,50 +1532,6 @@ class StoryViewAdapter(
         displayItems.clear()
         displayItems.addAll(buildDisplayItems(stories))
         rebuildStoryDisplayPositions()
-    }
-
-    internal inner class StoryViewGestureDetector(
-        private val vh: StoryViewHolder,
-    ) : SimpleOnGestureListener() {
-        override fun onScroll(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            distanceX: Float,
-            distanceY: Float,
-        ): Boolean {
-            val displayWidthPx = UIUtils.getDisplayWidthPx(context)
-            val edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40).toFloat()
-            val rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx
-            if (e1 != null &&
-                shouldHandleLeftToRightStoryGesture() &&
-                e1.x > edgeWithNavGesturesPaddingPx &&
-                // the gesture should not start too close to the left edge and
-                e2.x - e1.x > 50f &&
-                // move horizontally to the right and
-                abs(distanceY.toDouble()) < 25f
-            ) { // have minimal vertical travel, so we don't capture scrolling gestures
-                vh.gestureL2R = true
-                vh.gestureDebounce = true
-                return true
-            }
-            if (e1 != null &&
-                e1.x < rightEdgeNavGesturePaddingPx &&
-                // the gesture should not start too close to the right edge and
-                e1.x - e2.x > 50f &&
-                // move horizontally to the left and
-                abs(distanceY.toDouble()) < 25f
-            ) { // have minimal vertical travel, so we don't capture scrolling gestures
-                vh.gestureR2L = true
-                vh.gestureDebounce = true
-                return true
-            }
-            return false
-        }
-
-        private fun shouldHandleLeftToRightStoryGesture(): Boolean {
-            if (context !is ItemsList) return true
-            return prefsRepo.getLeftToRightGestureAction() != GestureAction.GEST_ACTION_BACK
-        }
     }
 
     fun notifyAllItemsChanged() {
