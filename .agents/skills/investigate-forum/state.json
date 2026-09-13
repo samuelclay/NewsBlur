@@ -47,6 +47,20 @@
       "note": "tmz.com (CloudFront) 403s every request from Hetzner IPs, any UA. Feed 8410 is_forbidden since Sep 13 04:14, last story Sep 11. ScrapingBee fallback skipped by the Sep 10 per-reader budget (plan 96% used, budget floor 1 credit, all 20 budget subscribers charged). Sam chose: feeds with 2+ active readers bypass the reader budget. PR adds Feed.has_multiple_active_subscribers + should_skip_paid_proxy exemption with tests. Reply assumes deploy (make deploy + make celery). Flagged: plan will run out before Sep 30 regardless; this adds ~1,100 fetches/day.",
       "reply": "TMZ started blocking NewsBlur's servers outright, every request from our IPs gets a 403 from their CDN. When a site does that, NewsBlur fetches the feed through a paid proxy instead, and that proxy is rationed this month because the plan is nearly used up. The rationing was meant for feeds with a single reader, but it caught TMZ too, which has dozens of active readers. I've fixed that so any feed shared by several readers always gets the proxy, and TMZ should catch up on the next fetch. Nothing on your end caused it.",
       "question": null
+    },
+    "13827": {
+      "title": "Is there any way to stop any Google News Stories",
+      "url": "https://forum.newsblur.com/t/is-there-any-way-to-stop-any-google-news-stories/13827",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-09-13T23:54:46Z",
+      "last_posted_at": "2026-09-07T18:16:33.559Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2131",
+      "branch": "forum-13827-google-news-consent-wall",
+      "worktree": ".worktree/forum-13827-google-news-consent-wall",
+      "note": "news.google.com/rss/articles/<token> links redirect to consent.google.com from NewsBlur's EU servers and the consent page was extracted as story text. Fix: Feed.resolve_google_redirect_url decodes the token via MStory._decode_google_news_url; TextImporter refuses consent.google.com; fetch_original_text drops cached consent text. Verified decoder works from happ-web-01. Reply assumes deploy (make deploy + make celery).",
+      "reply": "JTTraveler is right that Google News feeds only carry a headline and a link, but that cookie notice was on NewsBlur's side. Google News links go through a news.google.com redirect, and when NewsBlur's servers, which sit in Europe, followed it to pull the article text, Google handed them its cookie consent page instead of the story. That page is what ended up as the text. I've fixed it so NewsBlur decodes the link to the real article first and never keeps that consent page as a story's text. Stories that already show the notice will swap in the real article the next time you open them.",
+      "question": null
     }
   }
 }
