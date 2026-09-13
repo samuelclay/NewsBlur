@@ -20,6 +20,7 @@
 #import "MenuViewController.h"
 #import "FeedsObjCViewController.h"
 #import "FeedDetailObjCViewController.h"
+#import "FeedTableCell.h"
 #import "StoryPagesObjCViewController.h"
 #import "StoryDetailObjCViewController.h"
 #import "OriginalStoryViewController.h"
