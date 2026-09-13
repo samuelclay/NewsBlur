@@ -43,16 +43,23 @@ class ReaderTapGesturesTest {
         x: Float = 100f,
         fingers: Int = 1,
         second: Float = 150f,
+        firstPointerId: Int = 0,
+        actionPointerIndex: Int = if (action == MotionEvent.ACTION_POINTER_DOWN) 1 else 0,
     ): Boolean {
         val event =
             mockk<MotionEvent> {
                 every { actionMasked } returns action
+                every { actionIndex } returns actionPointerIndex
                 every { eventTime } returns time
                 every { getX() } returns x
                 every { getY() } returns 100f
+                every { getX(0) } returns x
+                every { getY(0) } returns 100f
                 every { getX(1) } returns second
                 every { getY(1) } returns 100f
                 every { pointerCount } returns fingers
+                every { getPointerId(0) } returns firstPointerId
+                every { getPointerId(1) } returns 1
             }
         return gestures.onTouch(view, event)
     }
@@ -62,7 +69,10 @@ class ReaderTapGesturesTest {
         fingers: Int = 1,
     ) {
         event(MotionEvent.ACTION_DOWN, time)
-        if (fingers == 2) event(MotionEvent.ACTION_POINTER_DOWN, time + 5, fingers = 2)
+        if (fingers == 2) {
+            event(MotionEvent.ACTION_POINTER_DOWN, time + 5, fingers = 2)
+            event(MotionEvent.ACTION_POINTER_UP, time + 40, fingers = 2, actionPointerIndex = 1)
+        }
         event(MotionEvent.ACTION_UP, time + 50)
     }
 
@@ -101,6 +111,44 @@ class ReaderTapGesturesTest {
         tap(500)
         event(MotionEvent.ACTION_DOWN, 650)
         event(MotionEvent.ACTION_UP, 1000)
+        assertTrue(actions.isEmpty())
+    }
+    @Test fun twoFingerDoubleTapAllowsFirstFingerToLiftFirst() {
+        tap(100, 2)
+        event(MotionEvent.ACTION_DOWN, 250)
+        event(MotionEvent.ACTION_POINTER_DOWN, 255, fingers = 2)
+        event(MotionEvent.ACTION_POINTER_UP, 270, fingers = 2)
+        event(MotionEvent.ACTION_MOVE, 275, x = 150f, firstPointerId = 1)
+        event(MotionEvent.ACTION_UP, 280, x = 150f, firstPointerId = 1)
+        assertEquals(listOf(true), actions)
+    }
+
+    @Test fun remainingSecondFingerDragCannotTriggerDoubleTap() {
+        tap(100, 2)
+        event(MotionEvent.ACTION_DOWN, 250)
+        event(MotionEvent.ACTION_POINTER_DOWN, 255, fingers = 2)
+        event(MotionEvent.ACTION_POINTER_UP, 270, fingers = 2)
+        event(MotionEvent.ACTION_MOVE, 275, x = 175f, firstPointerId = 1)
+        event(MotionEvent.ACTION_UP, 280, x = 175f, firstPointerId = 1)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test fun remainingFirstFingerMoveAllowsDoubleTap() {
+        tap(100, 2)
+        event(MotionEvent.ACTION_DOWN, 250)
+        event(MotionEvent.ACTION_POINTER_DOWN, 255, fingers = 2)
+        event(MotionEvent.ACTION_POINTER_UP, 270, fingers = 2, actionPointerIndex = 1)
+        event(MotionEvent.ACTION_MOVE, 275)
+        event(MotionEvent.ACTION_UP, 280)
+        assertEquals(listOf(true), actions)
+    }
+
+    @Test fun movementAtPointerLiftCannotTriggerDoubleTap() {
+        tap(100, 2)
+        event(MotionEvent.ACTION_DOWN, 250)
+        event(MotionEvent.ACTION_POINTER_DOWN, 255, fingers = 2)
+        event(MotionEvent.ACTION_POINTER_UP, 270, x = 125f, fingers = 2)
+        event(MotionEvent.ACTION_UP, 280, x = 150f, firstPointerId = 1)
         assertTrue(actions.isEmpty())
     }
 }

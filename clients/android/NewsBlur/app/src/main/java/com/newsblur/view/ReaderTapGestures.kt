@@ -23,6 +23,8 @@ class ReaderTapGestures(
     private var priorFingers = 0
     private var secondX = 0f
     private var secondY = 0f
+    private var firstPointerId = -1
+    private var secondPointerId = -1
 
     override fun onTouch(
         v: View,
@@ -35,29 +37,26 @@ class ReaderTapGestures(
                 downTime = event.eventTime
                 fingers = 1
                 moved = false
+                firstPointerId = event.getPointerId(0)
+                secondPointerId = -1
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
                 fingers = event.pointerCount
-                if (fingers == 2) {
-                    secondX = event.getX(1)
-                    secondY = event.getY(1)
+                if (fingers == 2 && secondPointerId == -1) {
+                    secondPointerId = event.getPointerId(event.actionIndex)
+                    secondX = event.getX(event.actionIndex)
+                    secondY = event.getY(event.actionIndex)
                 } else {
                     moved = true
                 }
             }
-            MotionEvent.ACTION_MOVE -> {
-                if (abs(event.x - downX) > slop ||
-                    abs(event.y - downY) > slop ||
-                    (event.pointerCount == 2 && (abs(event.getX(1) - secondX) > slop || abs(event.getY(1) - secondY) > slop))
-                ) {
-                    moved = true
-                }
-            }
+            MotionEvent.ACTION_MOVE, MotionEvent.ACTION_POINTER_UP -> checkMovement(event)
             MotionEvent.ACTION_CANCEL -> {
                 moved = true
                 priorTime = 0
             }
             MotionEvent.ACTION_UP -> {
+                checkMovement(event)
                 if (moved || event.eventTime - downTime > ViewConfiguration.getTapTimeout() * 2) {
                     priorTime = 0
                     return false
@@ -79,5 +78,30 @@ class ReaderTapGestures(
             }
         }
         return false
+    }
+
+    private fun checkMovement(event: MotionEvent) {
+        for (index in 0 until event.pointerCount) {
+            val pointerId = event.getPointerId(index)
+            val originX: Float
+            val originY: Float
+            when (pointerId) {
+                firstPointerId -> {
+                    originX = downX
+                    originY = downY
+                }
+                secondPointerId -> {
+                    originX = secondX
+                    originY = secondY
+                }
+                else -> {
+                    moved = true
+                    continue
+                }
+            }
+            if (abs(event.getX(index) - originX) > slop || abs(event.getY(index) - originY) > slop) {
+                moved = true
+            }
+        }
     }
 }
