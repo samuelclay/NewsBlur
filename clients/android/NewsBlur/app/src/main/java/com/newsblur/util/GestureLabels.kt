@@ -3,7 +3,7 @@ package com.newsblur.util
 import android.content.Context
 import com.newsblur.R
 
-/** GestureLabels.kt keeps the chooser and the visible swipe action in agreement. */
+/** GestureLabels.kt names configurable gestures and concrete swipe actions for accessibility. */
 object GestureLabels {
     @JvmStatic fun title(
         context: Context,

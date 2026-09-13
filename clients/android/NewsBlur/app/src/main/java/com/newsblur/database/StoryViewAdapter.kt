@@ -613,7 +613,7 @@ class StoryViewAdapter(
         private val rowSwipe =
             com.newsblur.view.RowSwipeGesture(
                 itemView,
-                label = { right ->
+                action = { right ->
                     if (!prefsRepo.isStorySwipesEnabled() ||
                         (
                             right &&
@@ -623,15 +623,16 @@ class StoryViewAdapter(
                     ) {
                         null
                     } else {
-                        swipeAction(
-                            right,
-                        ).takeUnless { it == GestureAction.GEST_ACTION_NONE }?.let {
-                            com.newsblur.util.GestureLabels
-                                .title(context, it)
+                        story?.let { target ->
+                            com.newsblur.util.GestureSwipeAction.resolve(
+                                swipeAction(right),
+                                isRead = target.read,
+                                isSaved = target.starred,
+                            )
                         }
                     }
                 },
-                perform = { performGesture(swipeAction(it)) },
+                perform = { performGesture(it.action) },
                 claim = { gestureDebounce = true },
                 colors = {
                     com.newsblur.util.GestureThemeStyle
