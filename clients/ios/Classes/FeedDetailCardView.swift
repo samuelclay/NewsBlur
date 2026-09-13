@@ -207,10 +207,11 @@ struct CardView: View {
             }
 
             standardCardBody
+                // FeedDetailCardView.swift rebinds nested observers when a menu action replaces the Story model.
+                .id(ObjectIdentifier(story))
                 .background(nonGridRowBackgroundColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .offset(x: swipeOffset)
-                .allowsHitTesting(!isSwipeRowOpen)
                 .contentShape(Rectangle())
                 .onTapGesture {
                     if isSwipeRowOpen {
@@ -219,6 +220,8 @@ struct CardView: View {
                         feedDetailInteraction.tapped(story: story, in: dash)
                     }
                 }
+                // FeedDetailCardView.swift disables the tap gesture with its content so exposed action buttons receive taps.
+                .allowsHitTesting(!isSwipeRowOpen)
         }
         .clipped()
         .onChange(of: cache.openSwipeStoryID) { newValue in
