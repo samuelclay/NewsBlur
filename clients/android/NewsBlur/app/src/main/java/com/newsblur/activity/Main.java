@@ -482,16 +482,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickAddButton() {
-        androidx.appcompat.widget.PopupMenu menu = new androidx.appcompat.widget.PopupMenu(this, binding.mainAddButton);
-        menu.getMenu().add(R.string.menu_add_feed).setOnMenuItemClickListener(item -> {
-            startActivity(new Intent(this, FeedSearchActivity.class));
-            return true;
-        });
-        menu.getMenu().add(R.string.add_new_folder).setOnMenuItemClickListener(item -> {
-            new com.newsblur.fragment.AddFolderFragment().show(getSupportFragmentManager(), "add_folder");
-            return true;
-        });
-        menu.show();
+        com.newsblur.fragment.AddFeedFragment.newInstance().show(getSupportFragmentManager(), "add_site");
     }
 
     private void onClickUserButton() {
@@ -557,7 +548,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     public void onKeyboardEvent(@NonNull KeyboardEvent event) {
         if (event instanceof KeyboardEvent.AddFeed) {
-            startActivity(new Intent(this, FeedSearchActivity.class));
+            onClickAddButton();
         } else if (event instanceof KeyboardEvent.OpenAllStories) {
             openAllStories(false);
         } else if (event instanceof KeyboardEvent.SwitchViewLeft) {
