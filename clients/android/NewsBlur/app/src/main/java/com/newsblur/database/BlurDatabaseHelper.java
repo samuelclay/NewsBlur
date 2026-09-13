@@ -116,7 +116,8 @@ public class BlurDatabaseHelper {
      */
     @Nullable
     public static CustomIcon getFolderIcon(String folderName) {
-        return folderIcons.get(folderName);
+        CustomIcon icon = folderIcons.get(folderName);
+        return icon != null ? icon : folderIcons.get(com.newsblur.network.FolderPath.serverName(folderName));
     }
 
     /**
