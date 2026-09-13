@@ -504,8 +504,9 @@ final class AppDelegateHelperTests: XCTestCase {
 
         let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
         XCTAssertFalse(control.isHidden)
-        XCTAssertGreaterThan(control.alpha, 0)
-        XCTAssertLessThan(control.alpha, 1)
+        // AppDelegateHelperTests.swift separates a fully revealed control from one armed by an active drag.
+        XCTAssertEqual(control.alpha, 1)
+        XCTAssertEqual(feedDetailViewController.value(forKey: "bottomNextFeedReady") as? Bool, false)
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
     }
 
