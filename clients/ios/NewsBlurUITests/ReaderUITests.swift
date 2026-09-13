@@ -1047,7 +1047,9 @@ final class ReaderUITests: XCTestCase {
         let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
             .withOffset(CGVector(dx: frame.midX, dy: endY))
 
-        start.press(forDuration: 0.2, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
+        // ReaderUITests.swift measures partial fade from a short drag without release momentum.
+        start.press(forDuration: 0.2, thenDragTo: end,
+                    withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0.5)
     }
 
     private func launch(on screen: String, storyTitlesStyle: String? = nil) {
