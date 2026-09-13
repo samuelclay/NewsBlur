@@ -31,9 +31,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Article
@@ -54,6 +56,7 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.PanTool
 import androidx.compose.material.icons.rounded.Photo
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Schedule
@@ -64,6 +67,7 @@ import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.SwipeRightAlt
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Wifi
@@ -93,6 +97,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -119,6 +124,7 @@ import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.VolumeKeyNavigation
 import kotlin.math.abs
+
 
 @Immutable
 data class SettingsUiState(
@@ -153,6 +159,15 @@ data class SettingsUiState(
     val showPublicComments: Boolean = true,
     val ltrGestureAction: String = GestureAction.GEST_ACTION_BACK.name,
     val rtlGestureAction: String = GestureAction.GEST_ACTION_TOGGLE_READ.name,
+    val feedSwipesEnabled: Boolean = true,
+    val storySwipesEnabled: Boolean = true,
+    val feedSwipeLeft: String = GestureAction.GEST_ACTION_MARKREAD.name,
+    val feedSwipeRight: String = GestureAction.GEST_ACTION_NOTIFICATIONS.name,
+    val feedLongPress: String = GestureAction.GEST_ACTION_READ_RANGE.name,
+    val storyLongPress: String = GestureAction.GEST_ACTION_ASK_AI.name,
+    val doubleTapStory: String = "original",
+    val twoFingerDoubleTapStory: String = "text",
+    val readerEdgeAction: String = "back",
     val enableNotifications: Boolean = false,
     val showAskAi: Boolean = true,
     val hasSubscription: Boolean = false,
@@ -210,6 +225,15 @@ fun buildSettingsUiState(
         showPublicComments = prefsRepo.showPublicComments(),
         ltrGestureAction = prefsRepo.getLeftToRightGestureAction().name,
         rtlGestureAction = prefsRepo.getRightToLeftGestureAction().name,
+        feedSwipesEnabled = prefsRepo.isFeedSwipesEnabled(),
+        storySwipesEnabled = prefsRepo.isStorySwipesEnabled(),
+        feedSwipeLeft = prefsRepo.getFeedSwipeAction(false).name,
+        feedSwipeRight = prefsRepo.getFeedSwipeAction(true).name,
+        feedLongPress = prefsRepo.getFeedLongPressAction().name,
+        storyLongPress = prefsRepo.getStoryLongPressAction().name,
+        doubleTapStory = prefsRepo.getReaderGesture("reader_double_tap", "original"),
+        twoFingerDoubleTapStory = prefsRepo.getReaderGesture("reader_two_finger_double_tap", "text"),
+        readerEdgeAction = prefsRepo.getReaderGesture("reader_left_edge", "back"),
         enableNotifications = prefsRepo.isEnableNotifications(),
         showAskAi = prefsRepo.isShowAskAi(),
         hasSubscription = prefsRepo.hasSubscription(),
@@ -229,6 +253,7 @@ fun SettingsScreen(
     onAppIconUpgrade: () -> Unit,
     onDeleteOfflineStories: () -> Unit,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val palette = settingsPalette(state.theme)
     var dialogState by remember { mutableStateOf<ChoiceDialogState?>(null) }
     var showAppIconChooser by remember { mutableStateOf(false) }
@@ -395,34 +420,75 @@ fun SettingsScreen(
             ChoiceOption(VolumeKeyNavigation.UP_NEXT.name, stringResource(R.string.volume_up_next), "Up"),
             ChoiceOption(VolumeKeyNavigation.DOWN_NEXT.name, stringResource(R.string.volume_down_next), "Down"),
         )
-    val ltrGestureOptions =
-        listOf(
-            ChoiceOption(GestureAction.GEST_ACTION_BACK.name, stringResource(R.string.gest_action_back)),
-            ChoiceOption(GestureAction.GEST_ACTION_TOGGLE_READ.name, stringResource(R.string.gest_action_toggle_read)),
-            ChoiceOption(GestureAction.GEST_ACTION_NONE.name, stringResource(R.string.gest_action_none)),
-            ChoiceOption(GestureAction.GEST_ACTION_MARKREAD.name, stringResource(R.string.gest_action_markread)),
-            ChoiceOption(GestureAction.GEST_ACTION_MARKUNREAD.name, stringResource(R.string.gest_action_markunread)),
-            ChoiceOption(GestureAction.GEST_ACTION_SAVE.name, stringResource(R.string.gest_action_save)),
-            ChoiceOption(GestureAction.GEST_ACTION_UNSAVE.name, stringResource(R.string.gest_action_unsave)),
-            ChoiceOption(GestureAction.GEST_ACTION_STATISTICS.name, stringResource(R.string.gest_action_statistics)),
+
+    fun gestureOptions(vararg actions: GestureAction) =
+        actions.map {
+            ChoiceOption(
+                it.name,
+                com.newsblur.util.GestureLabels
+                    .title(context, it),
+            )
+        }
+    val storySwipeOptions =
+        gestureOptions(
+            GestureAction.GEST_ACTION_BACK,
+            GestureAction.GEST_ACTION_TOGGLE_READ,
+            GestureAction.GEST_ACTION_TOGGLE_SAVE,
+            GestureAction.GEST_ACTION_SHARE,
+            GestureAction.GEST_ACTION_MENU,
+            GestureAction.GEST_ACTION_NONE,
+            GestureAction.GEST_ACTION_MARKREAD,
+            GestureAction.GEST_ACTION_MARKUNREAD,
+            GestureAction.GEST_ACTION_SAVE,
+            GestureAction.GEST_ACTION_UNSAVE,
+            GestureAction.GEST_ACTION_STATISTICS,
         )
-    val rtlGestureOptions =
+    val storyLongPressOptions =
+        gestureOptions(
+            GestureAction.GEST_ACTION_ASK_AI,
+            GestureAction.GEST_ACTION_SHARE,
+            GestureAction.GEST_ACTION_MARKUNREAD,
+            GestureAction.GEST_ACTION_SAVE,
+            GestureAction.GEST_ACTION_TRAIN,
+            GestureAction.GEST_ACTION_MENU,
+            GestureAction.GEST_ACTION_NONE,
+        )
+    val feedSwipeOptions =
+        gestureOptions(
+            GestureAction.GEST_ACTION_MARKREAD,
+            GestureAction.GEST_ACTION_TRAIN,
+            GestureAction.GEST_ACTION_NOTIFICATIONS,
+            GestureAction.GEST_ACTION_STATISTICS,
+            GestureAction.GEST_ACTION_NONE,
+        ).map {
+            if (it.value ==
+                GestureAction.GEST_ACTION_MARKREAD.name
+            ) {
+                ChoiceOption(it.value, stringResource(R.string.gesture_mark_all))
+            } else {
+                it
+            }
+        }
+    val feedLongPressOptions =
+        gestureOptions(
+            GestureAction.GEST_ACTION_READ_RANGE,
+            GestureAction.GEST_ACTION_MARKREAD,
+            GestureAction.GEST_ACTION_MENU,
+            GestureAction.GEST_ACTION_NONE,
+        )
+    val readerTapOptions =
         listOf(
-            ChoiceOption(GestureAction.GEST_ACTION_TOGGLE_READ.name, stringResource(R.string.gest_action_toggle_read)),
-            ChoiceOption(GestureAction.GEST_ACTION_NONE.name, stringResource(R.string.gest_action_none)),
-            ChoiceOption(GestureAction.GEST_ACTION_MARKREAD.name, stringResource(R.string.gest_action_markread)),
-            ChoiceOption(GestureAction.GEST_ACTION_MARKUNREAD.name, stringResource(R.string.gest_action_markunread)),
-            ChoiceOption(GestureAction.GEST_ACTION_SAVE.name, stringResource(R.string.gest_action_save)),
-            ChoiceOption(GestureAction.GEST_ACTION_UNSAVE.name, stringResource(R.string.gest_action_unsave)),
-            ChoiceOption(GestureAction.GEST_ACTION_STATISTICS.name, stringResource(R.string.gest_action_statistics)),
+            ChoiceOption("original", stringResource(R.string.gesture_original)),
+            ChoiceOption("text", stringResource(R.string.gesture_text)),
+            ChoiceOption("unread", stringResource(R.string.gesture_unread)),
+            ChoiceOption("save", stringResource(R.string.gesture_save)),
+            ChoiceOption("none", stringResource(R.string.gesture_none)),
         )
     val confirmMarkReadTitle = stringResource(R.string.settings_confirm_mark_all_read).stripTrailingEllipsis()
     val markStoryReadTitle = stringResource(R.string.settings_mark_story_read_title)
     val previewImagesTitle = stringResource(R.string.settings_preview_images_title)
     val defaultBrowserTitle = stringResource(R.string.default_browser).stripTrailingEllipsis()
     val fontTitle = stringResource(R.string.font).stripTrailingEllipsis()
-    val ltrGestureTitle = stringResource(R.string.settings_ltr_gesture_action).stripTrailingEllipsis()
-    val rtlGestureTitle = stringResource(R.string.settings_rtl_gesture_action).stripTrailingEllipsis()
     val networkTitle = stringResource(R.string.menu_network_select).stripTrailingEllipsis()
     val cacheAgeTitle = stringResource(R.string.menu_cache_age_select).stripTrailingEllipsis()
     val clusterMatchesTitle = stringResource(R.string.settings_cluster_matches)
@@ -782,45 +848,139 @@ fun SettingsScreen(
             )
         }
 
-        SettingsSection(
-            title = stringResource(R.string.settings_gestures),
-            icon = Icons.Rounded.Gesture,
-            iconColor = NewsblurPurple,
-            palette = palette,
-        ) {
-            ValueSettingsRow(
-                title = ltrGestureTitle,
-                icon = Icons.Rounded.SwipeRightAlt,
-                iconColor = NewsblurOrange,
-                currentValue = ltrGestureOptions.labelFor(state.ltrGestureAction),
-                palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = ltrGestureTitle,
-                            selectedValue = state.ltrGestureAction,
-                            options = ltrGestureOptions,
-                            onSelect = { onStringChanged(PrefConstants.LTR_GESTURE_ACTION, it) },
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Rounded.Gesture, null, tint = NewsblurPurple, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_gestures).uppercase(), color = palette.textSecondary, fontWeight = FontWeight.Bold)
+            }
+
+            @Composable fun gestureRow(
+                title: String,
+                key: String,
+                selected: String,
+                options: List<ChoiceOption>,
+            ) {
+                val longPress = key.endsWith("long_press")
+                val tap = key.contains("double_tap")
+                val icon =
+                    when {
+                        longPress -> Icons.Rounded.PanTool
+                        tap -> Icons.Rounded.TouchApp
+                        key.endsWith("left") || key == PrefConstants.RTL_GESTURE_ACTION -> Icons.AutoMirrored.Rounded.ArrowBack
+                        else -> Icons.AutoMirrored.Rounded.ArrowForward
+                    }
+                ValueSettingsRow(
+                    title = title,
+                    icon = icon,
+                    iconColor =
+                        if (longPress) {
+                            NewsblurOrange
+                        } else if (tap) {
+                            NewsblurBlue
+                        } else {
+                            NewsblurPurple
+                        },
+                    valueWeight = 1.2f,
+                    fillValueWidth = true,
+                    currentValue = options.labelFor(selected),
+                    palette = palette,
+                    onClick = { dialogState = ChoiceDialogState(title, selected, options, onSelect = { onStringChanged(key, it) }) },
+                )
+            }
+
+            @Composable fun gestureGroup(
+                title: String,
+                content: @Composable () -> Unit,
+            ) {
+                Text(
+                    title,
+                    color = palette.textPrimary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                )
+                Surface(
+                    shape = RoundedCornerShape(18.dp),
+                    color = palette.cardBackground,
+                    shadowElevation = if (palette.showShadow) 3.dp else 0.dp,
+                ) { Column { content() } }
+            }
+            gestureGroup(stringResource(R.string.gesture_feed_list)) {
+                ToggleSettingsRow(
+                    stringResource(R.string.gesture_swipe_feeds),
+                    Icons.Rounded.SwipeRightAlt,
+                    NewsblurPurple,
+                    state.feedSwipesEnabled,
+                    palette,
+                    onCheckedChange = { onBooleanChanged("enable_feed_swipes", it) },
+                )
+                androidx.compose.animation.AnimatedVisibility(state.feedSwipesEnabled) {
+                    Column {
+                        RowDivider(palette)
+                        gestureRow(stringResource(R.string.gesture_left), "feed_swipe_left", state.feedSwipeLeft, feedSwipeOptions)
+                        RowDivider(palette)
+                        gestureRow(stringResource(R.string.gesture_right), "feed_swipe_right", state.feedSwipeRight, feedSwipeOptions)
+                    }
+                }
+                RowDivider(palette)
+                gestureRow(stringResource(R.string.gesture_long_press), "feed_long_press", state.feedLongPress, feedLongPressOptions)
+            }
+            gestureGroup(stringResource(R.string.gesture_story_titles)) {
+                ToggleSettingsRow(
+                    stringResource(R.string.gesture_swipe_stories),
+                    Icons.Rounded.SwipeRightAlt,
+                    NewsblurPurple,
+                    state.storySwipesEnabled,
+                    palette,
+                    onCheckedChange = { onBooleanChanged("enable_story_swipes", it) },
+                )
+                androidx.compose.animation.AnimatedVisibility(state.storySwipesEnabled) {
+                    Column {
+                        RowDivider(palette)
+                        gestureRow(
+                            stringResource(R.string.gesture_left),
+                            PrefConstants.RTL_GESTURE_ACTION,
+                            state.rtlGestureAction,
+                            storySwipeOptions,
                         )
-                },
-            )
-            RowDivider(palette)
-            ValueSettingsRow(
-                title = rtlGestureTitle,
-                icon = Icons.AutoMirrored.Rounded.ArrowForward,
-                iconColor = NewsblurPurple,
-                currentValue = rtlGestureOptions.labelFor(state.rtlGestureAction),
-                palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = rtlGestureTitle,
-                            selectedValue = state.rtlGestureAction,
-                            options = rtlGestureOptions,
-                            onSelect = { onStringChanged(PrefConstants.RTL_GESTURE_ACTION, it) },
+                        RowDivider(palette)
+                        gestureRow(
+                            stringResource(R.string.gesture_right),
+                            PrefConstants.LTR_GESTURE_ACTION,
+                            state.ltrGestureAction,
+                            storySwipeOptions,
                         )
-                },
-            )
+                    }
+                }
+                RowDivider(palette)
+                gestureRow(stringResource(R.string.gesture_long_press), "story_long_press", state.storyLongPress, storyLongPressOptions)
+                Text(
+                    stringResource(R.string.gesture_edge_footer),
+                    color = palette.textSecondary,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(14.dp),
+                )
+            }
+            gestureGroup(stringResource(R.string.gesture_reading_story)) {
+                gestureRow(stringResource(R.string.gesture_double_tap), "reader_double_tap", state.doubleTapStory, readerTapOptions)
+                RowDivider(palette)
+                gestureRow(
+                    stringResource(R.string.gesture_two_finger_double_tap),
+                    "reader_two_finger_double_tap",
+                    state.twoFingerDoubleTapStory,
+                    readerTapOptions,
+                )
+                RowDivider(palette)
+                gestureRow(
+                    stringResource(R.string.gesture_left_edge),
+                    "reader_left_edge",
+                    state.readerEdgeAction,
+                    listOf(
+                        ChoiceOption("back", stringResource(R.string.gesture_back_titles)),
+                        ChoiceOption("previous", stringResource(R.string.gesture_previous)),
+                    ),
+                )
+            }
         }
 
         SettingsSection(
@@ -1005,6 +1165,8 @@ private fun ValueSettingsRow(
     palette: SettingsPalette,
     subtitle: String? = null,
     footer: String? = null,
+    valueWeight: Float = 0.6f,
+    fillValueWidth: Boolean = false,
     onClick: () -> Unit,
 ) {
     Column(
@@ -1043,7 +1205,7 @@ private fun ValueSettingsRow(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.End,
-                modifier = Modifier.weight(0.6f, fill = false),
+                modifier = Modifier.weight(valueWeight, fill = fillValueWidth),
             )
             Icon(
                 imageVector = Icons.Rounded.KeyboardArrowRight,
@@ -1525,6 +1687,7 @@ private fun ToggleSettingsRow(
         modifier =
             Modifier
                 .fillMaxWidth()
+                .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
                 .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -1552,7 +1715,7 @@ private fun ToggleSettingsRow(
         Spacer(Modifier.width(12.dp))
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange,
+            onCheckedChange = null,
             colors =
                 SwitchDefaults.colors(
                     checkedBorderColor = palette.newsblurGreen,
