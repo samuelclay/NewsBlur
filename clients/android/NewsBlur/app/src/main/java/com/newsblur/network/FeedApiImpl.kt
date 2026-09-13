@@ -130,11 +130,18 @@ class FeedApiImpl(
         feedUrl: String?,
         folderName: String?,
     ): AddFeedResponse? {
+        if (FolderPath.unavailable(folderName)) {
+            return AddFeedResponse().apply {
+                message = FolderPath.AMBIGUOUS_FOLDER
+                code = -1
+            }
+        }
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_URL, feedUrl)
         if (!TextUtils.isEmpty(folderName) && folderName != AppConstants.ROOT_FOLDER) {
-            values.put(APIConstants.PARAMETER_FOLDER, folderName)
+            values.put(APIConstants.PARAMETER_FOLDER, FolderPath.leaf(folderName))
         }
+        if (FolderPath.supported) values.put("folder_path", FolderPath.json(folderName))
         val urlString = APIConstants.buildUrl(APIConstants.PATH_ADD_FEED)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, AddFeedResponse::class.java)
@@ -189,8 +196,15 @@ class FeedApiImpl(
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         if ((!TextUtils.isEmpty(folderName)) && (folderName != AppConstants.ROOT_FOLDER)) {
-            values.put(APIConstants.PARAMETER_IN_FOLDER, folderName)
+            values.put(APIConstants.PARAMETER_IN_FOLDER, FolderPath.leaf(folderName))
         }
+        if (FolderPath.unavailable(folderName)) {
+            return NewsBlurResponse().apply {
+                message = FolderPath.AMBIGUOUS_FOLDER
+                code = -1
+            }
+        }
+        if (FolderPath.supported && folderName != null) values.put("folder_path", FolderPath.json(folderName))
         val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_FEED)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
@@ -230,7 +244,10 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun setFeedMute(feedId: String, mute: Boolean): NewsBlurResponse? {
+    override suspend fun setFeedMute(
+        feedId: String,
+        mute: Boolean,
+    ): NewsBlurResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_MUTE, if (mute) "true" else "false")
