@@ -23,11 +23,11 @@ struct CardView: View {
     @State private var swipeDragOffset: CGFloat = 0
     @State private var settledSwipeOffset: CGFloat = 0
     @AppStorage("story_title_swipe_right") private var rightSwipe = "back"
-    @AppStorage("story_title_swipe_left") private var leftSwipe = "menu"
+    @AppStorage("story_title_swipe_left") private var leftSwipe = "read"
     @AppStorage("enable_story_swipes") private var swipeActionsEnabled = true
 
     private var rightAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(rightSwipe, fallback: .back) }
-    private var leftAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(leftSwipe, fallback: .menu) }
+    private var leftAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(leftSwipe, fallback: .read) }
     private var usesCustomSwipes: Bool { rightAction != .back || leftAction != .menu }
     
     var body: some View {
