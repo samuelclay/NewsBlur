@@ -54,6 +54,56 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
     }
 
+    func test_fadeSelectionWithNoSelectedRowAfterFoldersAreCleared() {
+        let app = NewsBlurAppDelegate()
+        app.dictFoldersArray = []
+        app.dictFolders = [:]
+        let controller = FeedsViewController()
+        controller.appDelegate = app
+        let table = FeedFadeSelectionTable()
+        controller.feedTitlesTable = table
+
+        controller.fadeSelectedCell()
+
+        XCTAssertEqual(table.rowReloads, 0)
+    }
+
+    func test_fadeSelectionAfterSelectedFolderIsRemoved() {
+        let app = NewsBlurAppDelegate()
+        app.dictFoldersArray = ["Feeds"]
+        app.dictFolders = ["Feeds": [1]]
+        let controller = FeedsViewController()
+        controller.appDelegate = app
+        let table = FeedFadeSelectionTable()
+        table.selectedPath = IndexPath(row: 0, section: 1)
+        controller.feedTitlesTable = table
+
+        controller.fadeSelectedCell()
+
+        XCTAssertEqual(table.rowReloads, 0)
+    }
+
+    func test_fadeSelectionAfterSelectedRowOrFolderContentsAreRemoved() {
+        let app = NewsBlurAppDelegate()
+        app.dictFoldersArray = ["Feeds"]
+        app.dictFolders = ["Feeds": [1]]
+        let controller = FeedsViewController()
+        controller.appDelegate = app
+        let table = FeedFadeSelectionTable()
+        controller.feedTitlesTable = table
+
+        for path in [IndexPath(row: 1, section: 0), IndexPath(row: NSNotFound, section: 0),
+                     IndexPath(row: 0, section: NSNotFound)] {
+            table.selectedPath = path
+            controller.fadeSelectedCell()
+        }
+        app.dictFolders = [:]
+        table.selectedPath = IndexPath(row: 0, section: 0)
+        controller.fadeSelectedCell()
+
+        XCTAssertEqual(table.rowReloads, 0)
+    }
+
     func test_upgradeSettings_migratesLegacyScrollTrueToScroll() {
         defaults.set(true, forKey: "default_scroll_read_filter")
 
@@ -975,5 +1025,14 @@ private final class FeedListReturnTrackingViewController: FeedsViewController {
     override func reloadFeedTitlesTable() {
         reloadFeedTitlesTableCount += 1
         super.reloadFeedTitlesTable()
+    }
+}
+
+private final class FeedFadeSelectionTable: UITableView {
+    var selectedPath: IndexPath?
+    var rowReloads = 0
+    override var indexPathForSelectedRow: IndexPath? { selectedPath }
+    override func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
+        rowReloads += 1
     }
 }
