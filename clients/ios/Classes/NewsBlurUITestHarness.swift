@@ -39,6 +39,15 @@ final class NewsBlurUITestHarness {
         didPrepareLaunchEnvironment = true
         UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
 
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-reset-gestures") {
+            // NewsBlurUITestHarness.swift starts interactive preference tests without pinning controls in the argument domain.
+            UserDefaults.standard.setValuesForKeys([
+                "enable_feed_swipes": true, "enable_story_swipes": true,
+                "feed_title_swipe_left": "read", "feed_title_swipe_right": "notifications",
+                "story_title_swipe_left": "menu", "story_title_swipe_right": "back"
+            ])
+        }
+
         if let requestedStoryTitlesStyle {
             UserDefaults.standard.set(requestedStoryTitlesStyle, forKey: DetailViewController.Key.style)
         } else {
