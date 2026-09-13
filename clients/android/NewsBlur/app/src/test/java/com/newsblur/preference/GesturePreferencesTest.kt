@@ -31,7 +31,17 @@ class GesturePreferencesTest {
         every { preferences.getBoolean("enable_story_swipes", any()) } returns false
         assertFalse(repo.isStorySwipesEnabled())
         assertTrue(repo.isFeedSwipesEnabled())
-        assertEquals(GestureAction.GEST_ACTION_ASK_AI, repo.getStoryLongPressAction())
+        assertEquals(GestureAction.GEST_ACTION_SHARE, repo.getStoryLongPressAction())
         assertEquals(GestureAction.GEST_ACTION_READ_RANGE, repo.getFeedLongPressAction())
+    }
+
+    @Test fun explicitStoryLongPressChoiceSurvivesDefaultChange() {
+        every { preferences.getString("story_long_press", any()) } returns GestureAction.GEST_ACTION_ASK_AI.name
+        assertEquals(GestureAction.GEST_ACTION_ASK_AI, repo.getStoryLongPressAction())
+    }
+
+    @Test fun unknownStoryLongPressChoiceFallsBackToShare() {
+        every { preferences.getString("story_long_press", any()) } returns "obsolete"
+        assertEquals(GestureAction.GEST_ACTION_SHARE, repo.getStoryLongPressAction())
     }
 }
