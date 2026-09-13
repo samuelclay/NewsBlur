@@ -618,14 +618,15 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)fadeCellWithIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section > [self numberOfSectionsInTableView:self.feedTitlesTable]) {
+    if (!indexPath || indexPath.section < 0 ||
+        indexPath.section >= (NSInteger)appDelegate.dictFoldersArray.count) {
         return;
     }
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
     
-    if (!indexPath || indexPath.row >= folder.count) return;
+    if (indexPath.row < 0 || indexPath.row >= (NSInteger)folder.count) return;
     
     [self tableView:self.feedTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
     
