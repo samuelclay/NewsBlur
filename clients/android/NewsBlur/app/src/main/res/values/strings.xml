@@ -1001,4 +1001,7 @@ people together to talk about the world.</string>
     <string name="renaming_feed_message">Renaming feed %s</string>
     <string name="renaming_folder_message">Renaming folder %s</string>
 
+    <string name="parent_folder">Parent folder</string>
+    <string name="folder_added">Folder added</string>
+    <string name="new_folder_parent">In: %1$s</string>
 </resources>
