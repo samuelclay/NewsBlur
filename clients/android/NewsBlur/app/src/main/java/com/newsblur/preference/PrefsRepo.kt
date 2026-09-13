@@ -131,7 +131,7 @@ class PrefsRepo(
         val f =
             com.newsblur.util.Log
                 .getLogfile() ?: return
-        val localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f)
+        val localPath = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", f)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "*/*"
         i.putExtra(Intent.EXTRA_EMAIL, arrayOf("android@newsblur.com"))

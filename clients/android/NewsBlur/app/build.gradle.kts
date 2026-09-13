@@ -28,12 +28,19 @@ android {
         versionName = "14.5.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["defaultLauncherEnabled"] = "true"
     }
 
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
+        }
+        create("alpha") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".alpha"
+            matchingFallbacks += listOf("debug")
+            manifestPlaceholders["defaultLauncherEnabled"] = "false"
         }
         maybeCreate("benchmark")
         getByName("benchmark") {
