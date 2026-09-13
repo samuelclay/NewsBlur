@@ -148,8 +148,10 @@ class FeedApiImpl(
     }
 
     override suspend fun searchForFeed(searchTerm: String?): Array<FeedResult>? {
-        val values = ContentValues()
+        val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm)
+        values.put("format", "full")
+        values.put("limit", "10")
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEED_AUTOCOMPLETE)
         val response: APIResponse = networkClient.get(urlString, values)
 
