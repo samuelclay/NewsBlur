@@ -68,6 +68,36 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(table.rowReloads, 0)
     }
 
+    func test_feedToolbarLayoutWaitsForItsOutlets() {
+        let controller = FeedsViewController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.view = UIView()
+
+        controller.layout(for: .portrait)
+
+        XCTAssertNil(controller.feedViewToolbar)
+    }
+
+    func test_feedToolbarLayoutPopulatesConnectedOutlets() {
+        let controller = FeedsViewController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let toolbar = UIToolbar()
+        let intelligence = UISegmentedControl(items: ["All", "Unread", "Focus", "Saved"])
+        let add = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
+        let settings = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
+        controller.feedViewToolbar = toolbar
+        controller.intelligenceControl = intelligence
+        controller.addBarButton = add
+        controller.settingsBarButton = settings
+
+        controller.layout(for: .portrait)
+
+        XCTAssertEqual(toolbar.items?.filter { $0 === add }.count, 1)
+        XCTAssertEqual(toolbar.items?.filter { $0 === settings }.count, 1)
+        XCTAssertEqual(toolbar.items?.filter { $0.customView === intelligence }.count, 1)
+    }
+
     func test_fadeSelectionAfterSelectedFolderIsRemoved() {
         let app = NewsBlurAppDelegate()
         app.dictFoldersArray = ["Feeds"]

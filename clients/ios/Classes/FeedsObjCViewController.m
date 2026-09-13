@@ -434,6 +434,10 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)configureFeedToolbarItemsForOrientation:(UIInterfaceOrientation)orientation {
+    if (!self.feedViewToolbar || !self.intelligenceControl || !self.addBarButton || !self.settingsBarButton) {
+        return;
+    }
+
     UIBarButtonItem *intelligenceItem = nil;
     for (UIBarButtonItem *item in self.feedViewToolbar.items) {
         if (item.customView == self.intelligenceControl) {
