@@ -21,6 +21,7 @@ These hold for every topic, every run. Do not reinterpret them mid-run.
 6. **Reproduce before fixing.** Per CLAUDE.md: write the failing test first, then fix, then show it passing. If it cannot be reproduced, say so in the PR and the reply rather than guessing.
 7. **Reply-only topics are tier 1.** A how-to question, a known limitation, a duplicate, a "works as designed": draft the reply, record it, move on. No interview needed.
 8. **Ask with AskUserQuestion, never plain text.** Tier 2 decisions, and anything mid-fix that could go two materially different ways.
+9. **A PR is done only when `/commit-pr` says so.** Green CI on the current head, zero unresolved Claude or Codex review threads, marked ready for review. The push-to-clean loop lives in the `commit-pr` skill; this skill never re-implements it.
 
 ## Arguments
 
@@ -161,23 +162,24 @@ Branch and worktree are named `forum-<topic id>-<three or four word slug>`, for 
 
 5. **Prove it.** Test passes. After screenshot with the identical command as before, then read it. Run `make lint` from the worktree if Python changed.
 
-6. **Commit and push.** One focused commit, message in the imperative describing the user-visible fix, attribution lines from the current session appended.
+6. **Commit.** One focused commit per logical change, subject in the imperative naming the user-visible fix with the topic in parentheses, attribution lines from the current session appended. Stage specific files, not `git add -A`.
    ```bash
-   git add -A && git commit -m "$(cat <<'EOF'
-   Reject newsletters by header, not by body spam score (forum #13833)
+   git add apps/rss_feeds/models.py utils/feed_fetcher.py apps/rss_feeds/test_rss_feeds.py
+   git commit -m "$(cat <<'EOF'
+   Never ration a forbidden feed shared by active readers by their proxy budget (forum #13832)
+
+   <why, wrapped at 72 characters>
 
    Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
    Claude-Session: <session url>
    EOF
    )"
-   git push -u origin HEAD
    ```
 
-7. **Open the PR** ready for review, labeled `forum`, screenshots attached, reply draft at the bottom so it survives between sessions.
-   ```bash
-   gh pr create --label forum --title "<same as commit subject>" \
-     --attach "screenshots/before.png#Before" --attach "screenshots/after.png#After" \
-     --body "$(cat <<'EOF'
+7. **Hand off to `/commit-pr`.** Invoke the `commit-pr` skill from the worktree with: the title (same as the commit subject), the label `forum`, the screenshot attachments, and the PR body below. That skill pushes, opens the PR as a draft, watches CI, fixes failures, promotes the PR to ready for review, waits for the Claude and Codex review bots, fixes every review thread, and returns only when the PR is verifiably clean or it is blocked. Do not duplicate any of that here; if it reports a blocker, carry the blocker into the state entry and the report.
+
+   PR body to pass in:
+   ```markdown
    ## Forum topic
    https://forum.newsblur.com/t/<slug>/<id>
    <one sentence: what @username reported>
@@ -197,15 +199,14 @@ Branch and worktree are named `forum-<topic id>-<three or four word slug>`, for 
    <make deploy, make celery, both, or none; migrations; Celery restart>
 
    ## Forum reply draft
+   **Reply for [#<id> <title>](https://forum.newsblur.com/t/<slug>/<id>)** (<username>):
+
    <the reply from Step 6, plain text>
 
    🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
    <session url>
-   EOF
-   )"
    ```
-   If CI exists for the touched area, poll `gh pr checks` until every check finishes and fix failures as in the `commit-update-pr` command.
 
 8. **Stop the stack, keep the worktree.** `make worktree-stop` from the worktree, then `cd` back to the main repo. Sam runs `make worktree-close` after merging.
 
@@ -298,7 +299,7 @@ With `--dry-run`, skip this step entirely.
 The final message is what Sam reads when he comes back. For each topic handled this run, in the order handled:
 
 - Topic title and forum link on the first line.
-- Outcome: PR link, or reply-only, or the tier 2 decision he made, or skipped with the reason.
+- Outcome: PR link with its verified state from `/commit-pr` (CI green and review threads clear, or the exact blocker), or reply-only, or the tier 2 decision he made, or skipped with the reason.
 - The reply draft as plain text, ready to copy, under a bold label that links straight to the topic so Sam can click through and paste. Always this exact shape, with the topic URL from the fetch output:
 
   `**Reply for [#13833 WIRED Newsletters blocked as spam](https://forum.newsblur.com/t/wired-newsletters-blocked-as-spam/13833)** (mtaylor):`
