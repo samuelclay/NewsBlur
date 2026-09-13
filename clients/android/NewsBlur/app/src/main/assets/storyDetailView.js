@@ -1,7 +1,8 @@
 function loadImages() {
     var imgs = document.images;
+    var inline_contexts = new WeakMap();
     for (var i = 0, len = imgs.length; i < len; i++) {
-        setImage(imgs[i])
+        setImage(imgs[i], inline_contexts);
     }
 }
 
@@ -37,17 +38,100 @@ function setImageClass(img, className) {
     img.setAttribute('class', filtered.join(' '));
 }
 
-function setImage(img) {
+function setImage(img, inline_contexts) {
     if (hasProtectedImageClass(img)) {
         return;
     }
 
-    if (img.querySelector('tagName') == 'VIDEO') {
+    var pane_width = document.documentElement.clientWidth;
+    img.style.removeProperty('--NB-image-offset');
+    if (img.complete && pane_width > 0 && img.naturalWidth >= pane_width &&
+        img.naturalHeight >= 50 && !NB_is_deliberately_small_image(img) &&
+        NB_is_standalone_image(img, inline_contexts || new WeakMap())) {
         setImageClass(img, 'NB-large-image');
-    } else if (img.width >= 320 && img.height >= 50) {
-        setImageClass(img, 'NB-large-image');
+        // storyDetailView.js measures the image's actual inset, including nested wrapper padding.
+        img.style.setProperty('--NB-image-offset', -img.getBoundingClientRect().left + 'px');
     } else {
         setImageClass(img, 'NB-small-image');
+    }
+}
+
+function NB_is_deliberately_small_image(img) {
+    var story = img.closest('.NB-story');
+    if (!story) {
+        return true;
+    }
+    var fixed_width = /^\d+(\.\d+)?(px)?$/i;
+    var declared_width = img.style.width || img.getAttribute('width') || '';
+    return fixed_width.test(declared_width) && parseFloat(declared_width) < story.clientWidth;
+}
+
+function NB_is_standalone_image(img, inline_contexts) {
+    var branch = img;
+    var parent = img.parentElement;
+    while (parent) {
+        if (/^(UL|OL|LI|DL|DT|DD|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|BLOCKQUOTE|PRE)$/.test(parent.tagName)) {
+            return false;
+        }
+        var inline_content = inline_contexts.get(parent);
+        if (!inline_content) {
+            inline_content = [];
+            for (var sibling = parent.firstChild; sibling; sibling = sibling.nextSibling) {
+                if (sibling.nodeType === 3 && sibling.textContent.trim()) {
+                    inline_content.push(sibling);
+                } else if (sibling.nodeType === 1 &&
+                    !/^(IMG|PICTURE|SOURCE|BR|FIGCAPTION)$/.test(sibling.tagName) &&
+                    window.getComputedStyle(sibling).display.indexOf('inline') === 0 && sibling.textContent.trim()) {
+                    inline_content.push(sibling);
+                }
+            }
+            inline_contexts.set(parent, inline_content);
+        }
+        if (inline_content.length > 1 || (inline_content.length === 1 && inline_content[0] !== branch)) {
+            return false;
+        }
+        if (hasClass(parent, 'NB-story')) {
+            return true;
+        }
+        branch = parent;
+        parent = parent.parentElement;
+    }
+    return false;
+}
+
+// storyDetailView.js also handles cached images and images arriving after WebView.onPageFinished.
+if (!window.NB_image_listeners_installed) {
+    window.NB_image_listeners_installed = true;
+    document.addEventListener('load', function(event) {
+        if (event.target.tagName === 'IMG') {
+            setImage(event.target);
+        }
+    }, true);
+    document.addEventListener('error', function(event) {
+        if (event.target.tagName === 'IMG') {
+            setImage(event.target);
+        }
+    }, true);
+    var NB_image_resize_pending = false;
+    var NB_image_pane_width = document.documentElement.clientWidth;
+    window.addEventListener('resize', function() {
+        var pane_width = document.documentElement.clientWidth;
+        if (pane_width === NB_image_pane_width) {
+            return;
+        }
+        NB_image_pane_width = pane_width;
+        if (NB_image_resize_pending) {
+            return;
+        }
+        NB_image_resize_pending = true;
+        window.setTimeout(function() {
+            NB_image_resize_pending = false;
+            loadImages();
+        }, 0);
+    });
+    loadImages();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadImages, { once: true });
     }
 }
 
