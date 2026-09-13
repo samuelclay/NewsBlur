@@ -565,6 +565,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)registerDefaultsFromSettingsBundle {
+    [GesturePreferences migrateLegacyPreferences];
     [StoryTitleSwipePreference migrateLegacyStyle];
     NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
     if(!settingsBundle) {

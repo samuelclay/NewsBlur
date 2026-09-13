@@ -160,12 +160,6 @@ secondStateIconName:(NSString *)secondIconName
 #pragma mark - Handle Gestures
 
 - (void)handlePanGestureRecognizer:(UIPanGestureRecognizer *)gesture {
-    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-    
-    if (shouldDrag) {
-        shouldDrag = [prefs boolForKey:@"enable_feed_cell_swipe"];
-    }
-
     // The user do not want you to be dragged!
     if (!shouldDrag) return;
     

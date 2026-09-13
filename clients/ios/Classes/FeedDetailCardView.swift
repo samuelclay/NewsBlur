@@ -24,7 +24,7 @@ struct CardView: View {
     @State private var settledSwipeOffset: CGFloat = 0
     @AppStorage("story_title_swipe_right") private var rightSwipe = "back"
     @AppStorage("story_title_swipe_left") private var leftSwipe = "menu"
-    @AppStorage("enable_feed_cell_swipe") private var swipeActionsEnabled = true
+    @AppStorage("enable_story_swipes") private var swipeActionsEnabled = true
 
     private var rightAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(rightSwipe, fallback: .back) }
     private var leftAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(leftSwipe, fallback: .menu) }

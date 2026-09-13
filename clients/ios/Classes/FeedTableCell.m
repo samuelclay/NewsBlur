@@ -101,32 +101,19 @@ static UIFont *textFont = nil;
 }
 
 - (void)setupGestures {
-    if (self.isSaved) {
-        self.shouldDrag = NO;
-        return;
-    }
-    
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *swipe = [preferences stringForKey:@"feed_swipe_left"];
-    NSString *iconName;
-    
-    if (self.isSocial) {
-        iconName = @"menu_icn_fetch_subscribers.png";
-    } else if ([swipe isEqualToString:@"notifications"]) {
-        iconName = @"menu_icn_notifications.png";
-    } else if ([swipe isEqualToString:@"statistics"]) {
-        iconName = @"menu_icn_statistics.png";
-    } else {
-        iconName = @"train.png";
-    }
+    self.shouldDrag = GesturePreferences.feedsEnabled && !self.isSaved;
+    self.mode = self.shouldDrag ? MCSwipeTableViewCellModeSwitch : MCSwipeTableViewCellModeNone;
+    if (!self.shouldDrag) return;
+    NSString *right = GesturePreferences.feedRightAction;
+    NSString *left = GesturePreferences.feedLeftAction;
     
     [self setDelegate:(FeedsViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
-    [self setFirstStateIconName:(iconName)
-                     firstColor:UIColorFromRGB(0xA4D97B)
+    [self setFirstStateIconName:[GesturePreferences feedIconWithAction:right social:self.isSocial]
+                     firstColor:UIColorFromLightSepiaMediumDarkRGB(0xA4D97B, 0x98C572, 0x52763A, 0x3D592D)
             secondStateIconName:nil
                     secondColor:nil
-                  thirdIconName:@"indicator-unread"
-                     thirdColor:UIColorFromRGB(0x6A6659)
+                  thirdIconName:[GesturePreferences feedIconWithAction:left social:self.isSocial]
+                     thirdColor:UIColorFromLightSepiaMediumDarkRGB(0x6A6659, 0x6A604F, 0x545458, 0x48484A)
                  fourthIconName:nil
                     fourthColor:nil];
     
