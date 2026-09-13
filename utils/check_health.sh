@@ -217,7 +217,7 @@ check_components() {
         local quick_skip=""
         [ "$MODE" = "quick" ] && quick_skip="yes"
         if [ -z "$quick_skip" ]; then
-            run_check "MongoDB Analytics" "hdb-mongo-analytics-1" "curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://localhost:5579/db_check/mongo_analytics" &
+            run_check "MongoDB Analytics" "hdb-mongo-secondary-3" "curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://localhost:5579/db_check/mongo_analytics" &
             pids+=($!)
         fi
     fi
