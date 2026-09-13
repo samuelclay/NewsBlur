@@ -32,7 +32,7 @@
                 android:paddingStart="8dp"
                 android:paddingTop="4dp"
                 android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
+                android:paddingBottom="4dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/itemlist_discover_pill"
