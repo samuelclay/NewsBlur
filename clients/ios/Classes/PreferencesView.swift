@@ -1087,7 +1087,7 @@ class PreferencesViewModel: ObservableObject {
                     key: "\(onFeeds ? "feed" : "story")_title_swipe_\(direction)",
                     titles: onFeeds ? GesturePreferences.feedActionTitles : StoryTitleSwipePreference.actions.map { $0.title },
                     values: onFeeds ? GesturePreferences.feedActions : StoryTitleSwipePreference.actions.map { $0.value },
-                    defaultValue: onFeeds ? (right ? "notifications" : "read") : (right ? "back" : "menu")
+                    defaultValue: onFeeds ? (right ? "notifications" : "read") : (right ? "back" : "read")
                 ), pickerTitle: "Swipe \(direction) on \(onFeeds ? "feeds" : "story titles")"
             )
         }
@@ -1115,7 +1115,7 @@ class PreferencesViewModel: ObservableObject {
                                type: .multiValue(key: "long_press_story_title",
                                                  titles: ["Ask AI", "Share", "Mark as unread", "Save story", "Train intelligence", "Do nothing"],
                                                  values: ["ask", "open_send_to", "mark_unread", "save_story", "train_story", "nothing"],
-                                                 defaultValue: "ask"), pickerTitle: "Long press on story titles")
+                                                 defaultValue: "open_send_to"), pickerTitle: "Long press on story titles")
             ]),
             PreferenceGroup(title: "Reading a story", footer: nil, items: [
                 PreferenceItem(title: "Double tap", icon: "hand.tap", iconColor: .blue,

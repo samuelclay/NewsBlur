@@ -44,7 +44,8 @@ final class NewsBlurUITestHarness {
             UserDefaults.standard.setValuesForKeys([
                 "enable_feed_swipes": true, "enable_story_swipes": true,
                 "feed_title_swipe_left": "read", "feed_title_swipe_right": "notifications",
-                "story_title_swipe_left": "menu", "story_title_swipe_right": "back"
+                "story_title_swipe_left": "read", "story_title_swipe_right": "back",
+                "long_press_story_title": "open_send_to"
             ])
         }
 

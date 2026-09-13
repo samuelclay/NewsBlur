@@ -26,10 +26,19 @@ import XCTest
         super.tearDown()
     }
 
-    func test_defaultKeepsCurrentGestures() {
+    func test_defaultsUseReadOnLeftAndBackOnRight() {
+        XCTAssertTrue(GesturePreferences.feedsEnabled)
+        XCTAssertTrue(GesturePreferences.storiesEnabled)
+        XCTAssertEqual(GesturePreferences.feedLeftAction, "read")
+        XCTAssertEqual(GesturePreferences.feedRightAction, "notifications")
+        XCTAssertEqual(StoryTitleSwipePreference.leftAction, .read)
+        XCTAssertEqual(StoryTitleSwipePreference.rightAction, .back)
+        XCTAssertTrue(StoryTitleSwipePreference.usesFullScreenBack)
         let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        cell.isReadAvailable = true
         cell.setupGestures()
-        XCTAssertFalse(cell.shouldDrag)
+        XCTAssertTrue(cell.shouldDrag)
+        XCTAssertEqual(cell.thirdIconName, "indicator-unread")
     }
 
     func test_feedAndStorySwipesCanBeDisabledIndependentlyAndReenabled() {
@@ -200,6 +209,8 @@ import XCTest
 
     func test_reusedCellFollowsPreferenceInBothDirections() {
         let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        // StoryTitleSwipeTests.swift isolates right-swipe changes from the default left read action.
+        UserDefaults.standard.set("menu", forKey: keys[1])
         for style in ["save", "back", "share", "unknown"] {
             UserDefaults.standard.set(style, forKey: keys[0])
             cell.setupGestures()
