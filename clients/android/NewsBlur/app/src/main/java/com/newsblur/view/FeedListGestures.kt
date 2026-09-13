@@ -17,6 +17,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.GestureAction
 import com.newsblur.util.GestureLabels
+import com.newsblur.util.GestureSwipeAction
 import com.newsblur.util.ReadingAction
 
 /** FeedListGestures.kt captures feed identity before a drag, independent of later list refreshes. */
@@ -83,22 +84,27 @@ class FeedListGestures(
                 } else {
                     RowSwipeGesture(
                         row,
-                        label = { right ->
+                        action = { right ->
                             val action = prefs.getFeedSwipeAction(right)
                             if (!prefs.isFeedSwipesEnabled() ||
                                 action == GestureAction.GEST_ACTION_NONE ||
                                 (selected.feed == null && action != GestureAction.GEST_ACTION_MARKREAD)
                             ) {
                                 null
-                            } else if (action ==
-                                GestureAction.GEST_ACTION_MARKREAD
-                            ) {
-                                activity.getString(R.string.gesture_mark_all)
                             } else {
-                                GestureLabels.title(activity, action)
+                                GestureSwipeAction.resolve(action)?.let {
+                                    if (action == GestureAction.GEST_ACTION_MARKREAD) it.copy(iconRes = R.drawable.ic_mark_read) else it
+                                }
                             }
                         },
-                        perform = { perform(selected, prefs.getFeedSwipeAction(it)) },
+                        perform = { perform(selected, it.action) },
+                        actionDescription = {
+                            if (it.action == GestureAction.GEST_ACTION_MARKREAD) {
+                                activity.getString(R.string.gesture_mark_all)
+                            } else {
+                                GestureLabels.title(activity, it.action)
+                            }
+                        },
                         colors = {
                             com.newsblur.util.GestureThemeStyle
                                 .palette(prefs.getResolvedTheme(activity))
