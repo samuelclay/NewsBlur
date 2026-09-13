@@ -33,6 +33,20 @@
       "related_topics": [
         13833
       ]
+    },
+    "13832": {
+      "title": "TMZ feed not updating for the last few days",
+      "url": "https://forum.newsblur.com/t/tmz-feed-not-updating-for-the-last-few-days/13832",
+      "status": "pr-open",
+      "tier": 2,
+      "handled_at": "2026-09-13T23:38:53Z",
+      "last_posted_at": "2026-09-13T02:58:43.797Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2130",
+      "branch": "forum-13832-popular-feeds-proxy-budget",
+      "worktree": ".worktree/forum-13832-popular-feeds-proxy-budget",
+      "note": "tmz.com (CloudFront) 403s every request from Hetzner IPs, any UA. Feed 8410 is_forbidden since Sep 13 04:14, last story Sep 11. ScrapingBee fallback skipped by the Sep 10 per-reader budget (plan 96% used, budget floor 1 credit, all 20 budget subscribers charged). Sam chose: feeds with 2+ active readers bypass the reader budget. PR adds Feed.has_multiple_active_subscribers + should_skip_paid_proxy exemption with tests. Reply assumes deploy (make deploy + make celery). Flagged: plan will run out before Sep 30 regardless; this adds ~1,100 fetches/day.",
+      "reply": "TMZ started blocking NewsBlur's servers outright, every request from our IPs gets a 403 from their CDN. When a site does that, NewsBlur fetches the feed through a paid proxy instead, and that proxy is rationed this month because the plan is nearly used up. The rationing was meant for feeds with a single reader, but it caught TMZ too, which has dozens of active readers. I've fixed that so any feed shared by several readers always gets the proxy, and TMZ should catch up on the next fetch. Nothing on your end caused it.",
+      "question": null
     }
   }
 }
