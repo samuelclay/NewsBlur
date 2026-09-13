@@ -214,6 +214,22 @@ final class ReaderUITests: XCTestCase {
     func test_experimentalSaveSwipeWithLeftMenu() { verifySwipeMenu(experimental: true, rightMenu: false) }
     func test_rightMenuWithReadSwipe() { verifySwipeMenu(experimental: false, rightMenu: true) }
     func test_experimentalRightMenuWithReadSwipe() { verifySwipeMenu(experimental: true, rightMenu: true) }
+    func test_experimentalSwipeMenuIconsStayCompact() {
+        launchSwipes(experimental: true, right: "menu", left: "read")
+        swipeFirstStory(right: true)
+        XCTAssertTrue(app.buttons["Save"].firstMatch.waitForExistence(timeout: 3))
+        attachScreenshot(named: "experimental-swipe-menu-icon-sizes")
+        let hierarchy = XCTAttachment(string: app.debugDescription)
+        hierarchy.lifetime = .keepAlways
+        add(hierarchy)
+        for name in ["indicator-unread", "saved-stories", "email"] {
+            let icon = app.images[name].firstMatch
+            XCTAssertTrue(icon.exists, "Missing swipe icon \(name)")
+            XCTAssertGreaterThan(icon.frame.width, 0)
+            XCTAssertLessThanOrEqual(icon.frame.width, 18)
+            XCTAssertLessThanOrEqual(icon.frame.height, 18)
+        }
+    }
     func test_shareSwipes() { verifyShareSwipes(experimental: false) }
     func test_experimentalShareSwipes() { verifyShareSwipes(experimental: true) }
     func test_leftSwipeBack() { verifyConfiguredBack(experimental: false, leftBack: true) }
