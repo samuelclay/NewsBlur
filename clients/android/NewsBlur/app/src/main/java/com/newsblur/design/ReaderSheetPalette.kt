@@ -13,6 +13,11 @@ object ReaderSheetPalette {
         val textSecondary: Color,
         val inputBackground: Color,
         val accent: Color = Color(0xFF709E5D),
+        val siteFormBackground: Color = background,
+        val siteButton: Color = Color(0xFF71879F),
+        val siteLink: Color = Color(0xFF5574B2),
+        val fresh: Color = Color(0xFF35B963),
+        val stale: Color = Color(0xFFDD812B),
     )
 
     fun colors(theme: ThemeValue): Colors =
@@ -20,6 +25,7 @@ object ReaderSheetPalette {
             ThemeValue.SEPIA ->
                 Colors(
                     background = NbSepiaSurface,
+                    siteFormBackground = NbSepiaSurfaceAlt,
                     cardBackground = Color(0xFFFAF5ED),
                     border = Color(0xFFD4C8B8),
                     textPrimary = Color(0xFF5C4A3D),
@@ -34,6 +40,7 @@ object ReaderSheetPalette {
                     border = Color(0xFF5A5A5A),
                     textPrimary = Color(0xFFE0E0E0),
                     textSecondary = Color(0xFFA0A0A0),
+                    siteLink = Color(0xFFA3C3ED),
                     inputBackground = Color(0xFF3A3A3A),
                 )
 
@@ -44,12 +51,14 @@ object ReaderSheetPalette {
                     border = Color(0xFF404040),
                     textPrimary = Color(0xFFE8E8E8),
                     textSecondary = Color(0xFFB0B0B0),
+                    siteLink = Color(0xFFA3C3ED),
                     inputBackground = Color(0xFF222222),
                 )
 
             else ->
                 Colors(
                     background = Gray96,
+                    siteFormBackground = Color(0xFFEBEDE6),
                     cardBackground = Color.White,
                     border = Color(0xFFD0D2CC),
                     textPrimary = Color(0xFF5E6267),
