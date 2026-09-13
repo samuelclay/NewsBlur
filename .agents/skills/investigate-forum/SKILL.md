@@ -299,7 +299,11 @@ The final message is what Sam reads when he comes back. For each topic handled t
 
 - Topic title and forum link on the first line.
 - Outcome: PR link, or reply-only, or the tier 2 decision he made, or skipped with the reason.
-- The reply draft as plain text under a short label, ready to copy.
+- The reply draft as plain text, ready to copy, under a bold label that links straight to the topic so Sam can click through and paste. Always this exact shape, with the topic URL from the fetch output:
+
+  `**Reply for [#13833 WIRED Newsletters blocked as spam](https://forum.newsblur.com/t/wired-newsletters-blocked-as-spam/13833)** (mtaylor):`
+
+  The same linked label goes at the top of the PR body's "Forum reply draft" section and into any email or message draft that refers to a topic.
 - Anything left for him: merge and deploy target (`make deploy`, `make celery`, or both), a `make worktree-close` reminder, a pending question.
 
 Then a one-line tally: handled, PRs opened, replies drafted, pending questions, skipped. Nothing else.
