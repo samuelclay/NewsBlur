@@ -33,6 +33,8 @@ final class NewsBlurUITestHarness {
     private static var didScheduleScenario = false
     private static var didLoadFeedFixture = false
     private static var didIsolateReaderStorage = false
+    private static var didFinishReaderFeedLoad = false
+    private static var readerFeedLoadObserver: NSObjectProtocol?
 
     static func prepareLaunchEnvironmentIfNeeded(appDelegate: NewsBlurAppDelegate) {
         guard isEnabled, !didPrepareLaunchEnvironment else { return }
@@ -92,7 +94,7 @@ final class NewsBlurUITestHarness {
             configureReader(
                 on: appDelegate,
                 scenario: readerScenario(for: screen) ?? .list,
-                remainingRetries: 20
+                remainingRetries: 200
             )
         default:
             break
@@ -211,7 +213,7 @@ final class NewsBlurUITestHarness {
         scenario: ReaderScenario,
         remainingRetries: Int
     ) {
-        guard remainingRetries > 0 else { return }
+        precondition(remainingRetries > 0, "NewsBlurUITestHarness.swift timed out waiting for the fixture feed list")
         guard let feedsNavigationController = appDelegate.feedsNavigationController else { return }
         guard feedsNavigationController.viewIfLoaded?.window != nil else {
             retryConfiguringReader(on: appDelegate, scenario: scenario, remainingRetries: remainingRetries)
@@ -226,6 +228,12 @@ final class NewsBlurUITestHarness {
         }
 
         loadFixtureFeedList(on: appDelegate)
+        guard didFinishReaderFeedLoad else {
+            retryConfiguringReader(on: appDelegate, scenario: scenario, remainingRetries: remainingRetries)
+            return
+        }
+        // FeedsViewController.swift schedules startup navigation after publishing the feed list.
+        appDelegate.feedsViewController.loadWorkItem?.cancel()
         applyReaderScenario(scenario, on: appDelegate, remainingRetries: remainingRetries)
     }
 
@@ -244,22 +252,10 @@ final class NewsBlurUITestHarness {
         guard let feedsViewController = appDelegate.feedsViewController else { return }
         didLoadFeedFixture = true
 
-        installReaderFixtureNetwork(on: appDelegate)
-        ReaderUITestFixtures.prepareAppState(for: appDelegate)
-        appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
         feedsViewController.loadViewIfNeeded()
         appDelegate.feedsNavigationController.loadViewIfNeeded()
         appDelegate.feedsNavigationController.view.layoutIfNeeded()
-
-        DispatchQueue.main.async {
-            if appDelegate.dictFeeds == nil {
-                feedsViewController.fetchFeedList(false)
-            } else {
-                feedsViewController.reloadFeedTitlesTable()
-                feedsViewController.refreshHeaderCounts()
-            }
-            feedsViewController.view.layoutIfNeeded()
-        }
+        // NewsBlurAppDelegate.m already starts the initial feed request in prepareViewControllers.
     }
 
     private static func installReaderFixtureNetwork(on appDelegate: NewsBlurAppDelegate) {
@@ -281,6 +277,18 @@ final class NewsBlurUITestHarness {
             appDelegate.activeUsername = ReaderUITestFixtures.username
             appDelegate.hasQueuedReadStories = false
             appDelegate.hasQueuedSavedStories = false
+            readerFeedLoadObserver = NotificationCenter.default.addObserver(
+                forName: Notification.Name("FinishedLoadingFeedsNotification"), object: nil, queue: .main
+            ) { _ in
+                MainActor.assumeIsolated {
+                    guard appDelegate.activeUsername == ReaderUITestFixtures.username,
+                          !appDelegate.feedsViewController.isOffline,
+                          appDelegate.dictFeeds?[ReaderUITestFixtures.swiftFeedId] != nil else { return }
+                    didFinishReaderFeedLoad = true
+                    // NewsBlurUITestHarness.swift reserves initial navigation for its requested scenario.
+                    appDelegate.feedsViewController.loadWorkItem?.cancel()
+                }
+            }
         }
         ReaderUITestURLProtocol.installIfNeeded()
         appDelegate.setCustomDomainForTesting(ReaderUITestFixtures.baseURL.absoluteString)
@@ -498,6 +506,11 @@ private enum ReaderUITestFixtures {
         if request.httpMethod == "POST", mutationPaths.contains(url.path) {
             payload = ["code": 1]
         } else if url.path == "/reader/feeds" {
+            if let index = ProcessInfo.processInfo.arguments.firstIndex(of: "-newsblur-ui-test-feed-delay"),
+               ProcessInfo.processInfo.arguments.indices.contains(index + 1),
+               let delay = Double(ProcessInfo.processInfo.arguments[index + 1]) {
+                Thread.sleep(forTimeInterval: min(max(delay, 0), 5))
+            }
             payload = feedListResponse()
         } else if url.path == "/reader/refresh_feeds" {
             payload = refreshFeedsResponse()

@@ -22,6 +22,14 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
+    func test_readerScenarioWaitsForDelayedFeedFixture() {
+        app.launchArguments = ["-newsblur-ui-test-feed-delay", "3"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 5))
+        attachScreenshot(named: "delayed-feed-fixture-requested-story-list")
+    }
+
     func test_fixtureStoryMutationsDoNotSurviveRelaunch() {
         for experimental in [false, true] {
             launchSwipes(experimental: experimental, right: "save", left: "read")
