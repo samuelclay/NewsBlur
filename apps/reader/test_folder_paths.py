@@ -69,6 +69,11 @@ class Test_FolderPaths(SimpleTestCase):
         add_object_to_folder(7, ["A ▸ B", "日本語 - Links"], tree)
         self.assertEqual([7], resolve_folder_path(tree, ["A ▸ B", "日本語 - Links"]))
 
+    def test_classifier_path_lookup_preserves_literal_separators(self):
+        path = "A - B - 日本語 - Links"
+        self.assertEqual(path, views._find_full_folder_path({path: []}, "日本語 - Links", ["A - B"]))
+        self.assertIsNone(views._find_full_folder_path({path: []}, "日本語 - Links", ["Other"]))
+
     def test_legacy_leaf_requests_still_work(self):
         self.folders.add_folder("People", "Friends")
         self.assertEqual(
