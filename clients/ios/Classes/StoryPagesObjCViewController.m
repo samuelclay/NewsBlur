@@ -2135,6 +2135,7 @@
 }
 
 - (void)cancelPendingStoryPresentationWithoutRedraw {
+    if (ReaderPerformance.recordsUITestPresentation && self.pendingPresentationPage) NSLog(@"[ReaderPresentation] cancel page=%p hash=%@ fetch=%lu currentFetch=%lu", self.pendingPresentationPage, self.pendingPresentationHash, (unsigned long)self.pendingPresentationFetch, (unsigned long)appDelegate.feedDetailViewController.fetchRequestId);
     [self restoreStorySelectionViews];
     StoryDetailViewController *page = self.pendingPresentationPage;
     StoryDetailViewController *intermediate = self.pendingIntermediatePage;
@@ -2180,6 +2181,7 @@
     self.refreshAfterStorySelection = refreshAfterSelection;
     NSInteger index = [appDelegate.storiesCollection indexFromLocation:pageIndex];
     if (index < 0 || index >= appDelegate.storiesCollection.activeFeedStories.count) {
+        if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] invalidLocation location=%ld index=%ld count=%lu", (long)pageIndex, (long)index, (unsigned long)appDelegate.storiesCollection.activeFeedStories.count);
         [self cancelPendingStoryPresentation];
         return;
     }
@@ -2200,6 +2202,7 @@
     [self resizeScrollView];
     CGSize viewport = self.scrollView.bounds.size;
     if (viewport.width <= 0 || viewport.height <= 0) {
+        if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] invalidViewport location=%ld viewport=%@", (long)pageIndex, NSStringFromCGSize(viewport));
         [self cancelPendingStoryPresentation];
         return;
     }
@@ -2250,6 +2253,7 @@
         [intermediate prepareCurrentStoryForPresentation];
     }
     BOOL needsDocument = !page.hasStory || ![page.activeStoryId isEqualToString:hash];
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] prepare hash=%@ page=%p has=%d needs=%d viewport=%@ fetch=%lu source=%@", hash, page, page.hasStory, needsDocument, NSStringFromCGSize(viewport), (unsigned long)self.pendingPresentationFetch, self.pendingPresentationSource);
     page.pageIndex = pageIndex;
     if (needsDocument) {
         [page setActiveStoryAtIndex:index];
@@ -2276,6 +2280,7 @@
 }
 
 - (void)storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)page {
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] couldNotPrepare page=%p pending=%p", page, self.pendingPresentationPage);
     if (page == self.pendingPresentationPage) [self cancelPendingStoryPresentation];
     else if (page == self.pendingIntermediatePage) {
         UIView *host = self.storyIntermediatePreparationHost;
@@ -2297,6 +2302,7 @@
         ![hash isEqualToString:page.activeStoryId] ||
         (self.isPhoneOrCompact && self.pendingPresentationSource != navigation.visibleViewController);
     NSInteger location = [appDelegate.storiesCollection locationOfStoryId:hash];
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] ready hash=%@ location=%ld obsolete=%d fetch=%lu/%lu active=%@ source=%@/%@", hash, (long)location, obsolete, (unsigned long)self.pendingPresentationFetch, (unsigned long)appDelegate.feedDetailViewController.fetchRequestId, appDelegate.activeStory[@"story_hash"], self.pendingPresentationSource, navigation.visibleViewController);
     if (obsolete || location < 0) {
         [self cancelPendingStoryPresentation];
         return;
