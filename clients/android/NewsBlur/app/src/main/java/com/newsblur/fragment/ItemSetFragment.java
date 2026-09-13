@@ -691,7 +691,7 @@ public class ItemSetFragment extends NbFragment {
         } else if (folderName == null || folderName.trim().isEmpty()) {
             return getString(R.string.feed_list);
         }
-        return folderName;
+        return com.newsblur.network.FolderPath.leaf(folderName);
     }
 
     private void updateBottomNextFeedTargetIcon(@NonNull Session target) {

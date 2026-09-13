@@ -493,9 +493,9 @@ public void checkOpenFolderPreferences() {
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
             feedUtils.unmuteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_mute_folder) {
-            feedUtils.muteFeeds(getActivity(), FolderListAdapter.safeFolderFeedIds(folderForMenuAction));
+            feedUtils.muteFeeds(getActivity(), dbHelper.feedSetFromFolderName(folderForMenuAction.flatName()).getAllFeeds());
         } else if (item.getItemId() == R.id.menu_unmute_folder) {
-            feedUtils.unmuteFeeds(getActivity(), FolderListAdapter.safeFolderFeedIds(folderForMenuAction));
+            feedUtils.unmuteFeeds(getActivity(), dbHelper.feedSetFromFolderName(folderForMenuAction.flatName()).getAllFeeds());
         } else if (item.getItemId() == R.id.menu_instafetch_feed) {
             feedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
         } else if (item.getItemId() == R.id.menu_intel) {
@@ -509,11 +509,11 @@ public void checkOpenFolderPreferences() {
             }
 		} else if (item.getItemId() == R.id.menu_delete_folder) {
 		    String folderParentName = folderForMenuAction.getFirstParentName();
-            DeleteFolderDialogFragment deleteFolderFragment = DeleteFolderDialogFragment.newInstance(folderForMenuAction.name, folderParentName);
+            DeleteFolderDialogFragment deleteFolderFragment = DeleteFolderDialogFragment.newInstance(folderForMenuAction.flatName(), folderParentName);
 		    deleteFolderFragment.show(getParentFragmentManager(), deleteFolderFragment.getTag());
         } else if (item.getItemId() == R.id.menu_rename_folder) {
             String folderParentName = folderForMenuAction.getFirstParentName();
-            RenameDialogFragment renameDialogFragment = RenameDialogFragment.newFolderInstance(folderForMenuAction.name, folderParentName);
+            RenameDialogFragment renameDialogFragment = RenameDialogFragment.newFolderInstance(folderForMenuAction.flatName(), folderParentName);
             renameDialogFragment.show(getParentFragmentManager(), renameDialogFragment.getTag());
         }
 
