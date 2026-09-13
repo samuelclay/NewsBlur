@@ -1951,8 +1951,10 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_titles_style"]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-    } else if ([identifier isEqual:@"story_title_swipe_right"] || [identifier isEqual:@"story_title_swipe_left"] || [identifier isEqual:@"enable_feed_cell_swipe"]) {
+    } else if ([identifier isEqual:@"story_title_swipe_right"] || [identifier isEqual:@"story_title_swipe_left"] || [identifier isEqual:@"enable_story_swipes"]) {
         [self.appDelegate.feedDetailViewController updateStoryTitleSwipePreference];
+    } else if ([identifier isEqual:@"feed_title_swipe_right"] || [identifier isEqual:@"feed_title_swipe_left"] || [identifier isEqual:@"enable_feed_swipes"]) {
+        [self reloadFeedTitlesTable];
     } else if ([identifier isEqual:@"story_clustering"]) {
         NSString *value = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"] ? @"true" : @"false";
         [self saveProfilePreferenceWithKey:@"story_clustering" value:value];
@@ -2253,9 +2255,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     cell.indentationLevel = isTopLevel ? 0 : folderComponents.count;
     cell.indentationWidth = 28;
     
-    if (newCell) {
-        [cell setupGestures];
-    }
+    [cell setupGestures];
     
     if (searchQuery != nil) {
         cell.feedTitle = [NSString stringWithFormat:@"\"%@\" in %@", cell.searchQuery, cell.feedTitle];
@@ -3205,15 +3205,20 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode {
+    if (!GesturePreferences.feedsEnabled ||
+        (state != MCSwipeTableViewCellState1 && state != MCSwipeTableViewCellState3)) return;
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSIndexPath *indexPath = [self.feedTitlesTable indexPathForCell:cell];
+    if (!indexPath || indexPath.section >= appDelegate.dictFoldersArray.count) return;
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    if (indexPath.row >= [appDelegate.dictFolders[folderName] count]) return;
     NSString *feedId = [NSString stringWithFormat:@"%@",
                         [[appDelegate.dictFolders objectForKey:folderName]
                          objectAtIndex:indexPath.row]];
     feedId = [appDelegate feedIdWithoutSearchQuery:feedId];
     
-    if (state == MCSwipeTableViewCellState1) {
+    NSString *swipe = state == MCSwipeTableViewCellState1 ? GesturePreferences.feedRightAction : GesturePreferences.feedLeftAction;
+    if (![swipe isEqualToString:@"read"]) {
         
         if (indexPath.section == 1) {
             // Profile
@@ -3222,8 +3227,6 @@ heightForHeaderInSection:(NSInteger)section {
             appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
             [appDelegate showUserProfileModal:cell];
         } else {
-            NSString *swipe = [preferences stringForKey:@"feed_swipe_left"];
-            
             if ([swipe isEqualToString:@"notifications"]) {
                 [appDelegate openNotificationsWithFeed:feedId sender:cell];
             } else if ([swipe isEqualToString:@"statistics"]) {
@@ -3234,7 +3237,7 @@ heightForHeaderInSection:(NSInteger)section {
                 [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
             }
         }
-    } else if (state == MCSwipeTableViewCellState3) {
+    } else {
         // Mark read
         [self markFeedRead:feedId cutoffDays:0];
         if ([preferences boolForKey:@"show_feeds_after_being_read"]) {

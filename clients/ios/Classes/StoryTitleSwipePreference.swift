@@ -22,10 +22,10 @@ import SwiftUI
         action(UserDefaults.standard.string(forKey: "story_title_swipe_left"), fallback: .menu)
     }
 
-    @objc static var usesFullScreenBack: Bool { rightAction == .back }
+    @objc static var usesFullScreenBack: Bool { actionsEnabled && rightAction == .back }
 
     @objc static var actionsEnabled: Bool {
-        UserDefaults.standard.object(forKey: "enable_feed_cell_swipe") as? Bool ?? true
+        GesturePreferences.storiesEnabled
     }
 
     @objc static func migrateLegacyStyle() {
