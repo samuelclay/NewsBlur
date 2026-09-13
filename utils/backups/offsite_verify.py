@@ -27,6 +27,12 @@ ALERT_EMAIL = "samuel@newsblur.com"
 # Size drop threshold: alert if newest is less than this fraction of previous
 SIZE_DROP_THRESHOLD = 0.60  # 40% drop
 
+# Only compare sizes against a previous backup from within this many days. After
+# a gap in pulls (Apr-Sep 2026) the previous local copy was five months old and a
+# perfectly healthy Redis dump was flagged as a 46% drop. Weekly MongoDB dumps
+# are 7 days apart, so the window has to cover that.
+SIZE_BASELINE_MAX_DAYS = 8
+
 # Staleness: alert if no backup newer than this many days. Services can override
 # with a "staleness_days" key below; MongoDB is dumped weekly (offsite_pull.sh
 # MONGO_BACKUP_DAY), so it gets a week plus a day of slack instead of 3 days.
@@ -130,6 +136,18 @@ def check_size_anomaly(service_name, backups):
     ratio = newest_size / prev_size
     newest_fmt = format_size(newest_size)
     prev_fmt = format_size(prev_size)
+
+    # A months-old baseline says nothing about truncation, only about drift.
+    newest_dt = parse_date(newest_date)
+    prev_dt = parse_date(prev_date)
+    if newest_dt and prev_dt:
+        baseline_age_days = (newest_dt - prev_dt).days
+        if baseline_age_days > SIZE_BASELINE_MAX_DAYS:
+            return True, "size: %s (prev %s is %d days older, too old to compare)" % (
+                newest_fmt,
+                prev_fmt,
+                baseline_age_days,
+            )
 
     if ratio < SIZE_DROP_THRESHOLD:
         drop_pct = (1 - ratio) * 100
