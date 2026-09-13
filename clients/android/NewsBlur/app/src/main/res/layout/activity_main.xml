@@ -176,14 +176,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/main_add_button"
-            android:layout_width="27dp"
-            android:layout_height="27dp"
-            android:layout_margin="9dp"
-            android:background="@drawable/ic_add"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="4dp"
+            android:background="?attr/actionBarItemBackground"
             android:contentDescription="@string/menu_add_feed"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:padding="6dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_add"
+            app:layout_constraintTop_toTopOf="@id/fragment_feedintelligenceselector"
+            app:layout_constraintBottom_toBottomOf="@id/fragment_feedintelligenceselector"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
