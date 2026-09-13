@@ -760,7 +760,7 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Gestures</string>
+			<string>Gestures: Feed list</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -768,9 +768,9 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Swipe feed and story titles</string>
+			<string>Swipe on feeds</string>
 			<key>Key</key>
-			<string>enable_feed_cell_swipe</string>
+			<string>enable_feed_swipes</string>
 			<key>DefaultValue</key>
 			<true/>
 		</dict>
@@ -778,154 +778,156 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Swipe right on story</string>
+			<string>Swipe left on feeds</string>
 			<key>Key</key>
-			<string>story_title_swipe_right</string>
-			<key>DefaultValue</key>
-			<string>back</string>
+			<string>feed_title_swipe_left</string>
 			<key>Titles</key>
 			<array>
-				<string>Back to feeds</string>
-				<string>Read / unread</string>
-				<string>Save / unsave</string>
-				<string>Share</string>
-				<string>Show actions</string>
+				<string>Mark all stories read</string>
+				<string>Train intelligence</string>
+				<string>Notifications</string>
+				<string>Statistics</string>
 			</array>
 			<key>Values</key>
 			<array>
-				<string>back</string>
 				<string>read</string>
-				<string>save</string>
-				<string>share</string>
-				<string>menu</string>
+				<string>trainer</string>
+				<string>notifications</string>
+				<string>statistics</string>
 			</array>
-			<key>FooterText</key>
-			<string>Swiping from the left edge always returns to feeds.</string>
+			<key>DefaultValue</key>
+			<string>read</string>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Swipe left on story</string>
+			<string>Swipe right on feeds</string>
 			<key>Key</key>
-			<string>story_title_swipe_left</string>
-			<key>DefaultValue</key>
-			<string>menu</string>
+			<string>feed_title_swipe_right</string>
 			<key>Titles</key>
 			<array>
-				<string>Back to feeds</string>
-				<string>Read / unread</string>
-				<string>Save / unsave</string>
-				<string>Share</string>
-				<string>Show actions</string>
+				<string>Mark all stories read</string>
+				<string>Train intelligence</string>
+				<string>Notifications</string>
+				<string>Statistics</string>
 			</array>
 			<key>Values</key>
 			<array>
-				<string>back</string>
 				<string>read</string>
-				<string>save</string>
-				<string>share</string>
-				<string>menu</string>
+				<string>trainer</string>
+				<string>notifications</string>
+				<string>statistics</string>
 			</array>
+			<key>DefaultValue</key>
+			<string>notifications</string>
 		</dict>
 		<dict>
-			<key>FooterText</key>
-			<string></string>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Double tap story</string>
-			<key>Titles</key>
-			<array>
-				<string>Open original story</string>
-				<string>Show original text</string>
-				<string>Mark as unread</string>
-				<string>Save story</string>
-				<string>Do nothing</string>
-			</array>
-			<key>DefaultValue</key>
-			<string>open_original_story</string>
-			<key>Values</key>
-			<array>
-				<string>open_original_story</string>
-				<string>show_original_text</string>
-				<string>mark_unread</string>
-				<string>save_story</string>
-				<string>nothing</string>
-			</array>
+			<string>Long press on feeds and folders</string>
 			<key>Key</key>
-			<string>double_tap_story</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Double tap with two fingers to use this gesture.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Two finger double tap</string>
+			<string>long_press_feed_title</string>
 			<key>Titles</key>
 			<array>
-				<string>Open original story</string>
-				<string>Show original text</string>
-				<string>Mark as unread</string>
-				<string>Save story</string>
+				<string>Choose how far back to mark read</string>
+				<string>Mark all stories read</string>
 				<string>Do nothing</string>
 			</array>
-			<key>DefaultValue</key>
-			<string>show_original_text</string>
-			<key>Values</key>
-			<array>
-				<string>open_original_story</string>
-				<string>show_original_text</string>
-				<string>mark_unread</string>
-				<string>save_story</string>
-				<string>nothing</string>
-			</array>
-			<key>Key</key>
-			<string>two_finger_double_tap</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Also known as tap-and-hold, just hold down a feed/folder title for a couple seconds.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Long press feed/folder</string>
-			<key>Titles</key>
-			<array>
-				<string>Mark read X days back...</string>
-				<string>Mark everything read</string>
-				<string>Do nothing</string>
-			</array>
-			<key>DefaultValue</key>
-			<string>mark_read_choose_days</string>
 			<key>Values</key>
 			<array>
 				<string>mark_read_choose_days</string>
 				<string>mark_read_immediate</string>
 				<string>nothing</string>
 			</array>
-			<key>Key</key>
-			<string>long_press_feed_title</string>
+			<key>DefaultValue</key>
+			<string>mark_read_choose_days</string>
 		</dict>
 		<dict>
-			<key>FooterText</key>
-			<string>Also known as tap-and-hold, just hold down a story title for a couple seconds.</string>
+			<key>Title</key>
+			<string>Gestures: Story titles</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Swipe on stories</string>
+			<key>Key</key>
+			<string>enable_story_swipes</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Long press story title</string>
+			<string>Swipe left on story titles</string>
+			<key>Key</key>
+			<string>story_title_swipe_left</string>
 			<key>Titles</key>
 			<array>
-				<string>Ask</string>
-				<string>Send to third-party</string>
-				<string>Mark as unread</string>
-				<string>Save story</string>
-				<string>Train story</string>
-				<string>Do nothing</string>
+				<string>Back to feeds</string>
+				<string>Read / unread</string>
+				<string>Save / unsave</string>
+				<string>Share</string>
+				<string>Show actions</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>back</string>
+				<string>read</string>
+				<string>save</string>
+				<string>share</string>
+				<string>menu</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>ask</string>
+			<string>menu</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe right on story titles</string>
+			<key>Key</key>
+			<string>story_title_swipe_right</string>
+			<key>Titles</key>
+			<array>
+				<string>Back to feeds</string>
+				<string>Read / unread</string>
+				<string>Save / unsave</string>
+				<string>Share</string>
+				<string>Show actions</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>back</string>
+				<string>read</string>
+				<string>save</string>
+				<string>share</string>
+				<string>menu</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>back</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Long press on story titles</string>
+			<key>Key</key>
+			<string>long_press_story_title</string>
+			<key>Titles</key>
+			<array>
+				<string>Ask AI</string>
+				<string>Share</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Train intelligence</string>
+				<string>Do nothing</string>
+			</array>
 			<key>Values</key>
 			<array>
 				<string>ask</string>
@@ -935,54 +937,86 @@
 				<string>train_story</string>
 				<string>nothing</string>
 			</array>
-			<key>Key</key>
-			<string>long_press_story_title</string>
+			<key>DefaultValue</key>
+			<string>ask</string>
 		</dict>
 		<dict>
-			<key>FooterText</key>
-			<string>Every other view uses a left edge swipe to return to the previous screen. But the story detail view has this option because you may wish to traverse stories and not accidentally jump to the previous screen.</string>
+			<key>Title</key>
+			<string>Gestures: Reading a story</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Swipe left edge</string>
+			<string>Double tap</string>
+			<key>Key</key>
+			<string>double_tap_story</string>
 			<key>Titles</key>
 			<array>
-				<string>Go back to story list</string>
-				<string>Previous story</string>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>pop_to_story_list</string>
+			<string>open_original_story</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Two finger double tap</string>
+			<key>Key</key>
+			<string>two_finger_double_tap</string>
+			<key>Titles</key>
+			<array>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>show_original_text</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Swipe from left edge</string>
+			<key>Key</key>
+			<string>story_detail_swipe_left_edge</string>
+			<key>Titles</key>
+			<array>
+				<string>Back to story titles</string>
+				<string>Previous story</string>
+			</array>
 			<key>Values</key>
 			<array>
 				<string>pop_to_story_list</string>
 				<string>previous_story</string>
 			</array>
-			<key>Key</key>
-			<string>story_detail_swipe_left_edge</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Quickly access the intelligence trainer or site notifications from the feed list.</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Swipe from left on feed</string>
-			<key>Titles</key>
-			<array>
-				<string>Train intelligence</string>
-				<string>Notifications</string>
-				<string>Statistics</string>
-			</array>
 			<key>DefaultValue</key>
-			<string>notifications</string>
-			<key>Values</key>
-			<array>
-				<string>trainer</string>
-				<string>notifications</string>
-				<string>statistics</string>
-			</array>
-			<key>Key</key>
-			<string>feed_swipe_left</string>
+			<string>pop_to_story_list</string>
 		</dict>
 		<dict>
 			<key>Title</key>
