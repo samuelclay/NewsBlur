@@ -93,6 +93,41 @@ import XCTest
         XCTAssertTrue(GesturePreferences.storiesEnabled)
     }
 
+    func test_disabledNativeSwipesConsumeHorizontalDragsAndPreserveScrollingAndEdgeBack() {
+        UserDefaults.standard.set(false, forKey: "enable_feed_swipes")
+        UserDefaults.standard.set(false, forKey: "enable_story_swipes")
+        let feed = FeedTableCell(style: .default, reuseIdentifier: nil)
+        let story = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        feed.setupGestures()
+        story.setupGestures()
+        let pan = DisabledSwipeTestPan()
+
+        for cell in [feed as MCSwipeTableViewCell, story] {
+            XCTAssertFalse(cell.shouldDrag)
+            for horizontal in [-100.0, 100.0] {
+                pan.testVelocity = CGPoint(x: horizontal, y: 2)
+                XCTAssertTrue(cell.gestureRecognizerShouldBegin(pan))
+                let originalFrame = cell.contentView.frame
+                cell.perform(NSSelectorFromString("handlePanGestureRecognizer:"), with: pan)
+                XCTAssertEqual(cell.contentView.frame, originalFrame)
+            }
+            pan.testVelocity = CGPoint(x: 2, y: 100)
+            XCTAssertFalse(cell.gestureRecognizerShouldBegin(pan))
+            XCTAssertFalse(cell.gestureRecognizerShouldBegin(UITapGestureRecognizer()))
+        }
+
+        pan.testVelocity = CGPoint(x: 100, y: 2)
+        pan.startX = 2
+        XCTAssertFalse(story.gestureRecognizerShouldBegin(pan))
+        pan.startX = 80
+        XCTAssertTrue(story.gestureRecognizerShouldBegin(pan))
+
+        UserDefaults.standard.set(true, forKey: "enable_story_swipes")
+        UserDefaults.standard.set("back", forKey: keys[0])
+        story.setupGestures()
+        XCTAssertFalse(story.gestureRecognizerShouldBegin(pan))
+    }
+
     func test_feedSwipeDirectionsKeepDefaultsAndCanBeReversed() {
         let feed = FeedTableCell(style: .default, reuseIdentifier: nil)
         feed.setupGestures()
@@ -388,6 +423,15 @@ import XCTest
 
 private final class CachedSwipeTestController: FeedDetailObjCViewController {
     override func reload() {}
+}
+
+@MainActor private final class DisabledSwipeTestPan: UIPanGestureRecognizer {
+    var testVelocity = CGPoint.zero
+    var startX: CGFloat = 80
+
+    override func velocity(in view: UIView?) -> CGPoint { testVelocity }
+    override func translation(in view: UIView?) -> CGPoint { CGPoint(x: 12, y: 0) }
+    override func location(in view: UIView?) -> CGPoint { CGPoint(x: startX + 12, y: 30) }
 }
 
 // StoryTitleSwipeTests.swift isolates row identity from network and database mutations.

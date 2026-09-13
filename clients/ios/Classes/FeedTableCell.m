@@ -121,6 +121,16 @@ static UIFont *textFont = nil;
     self.shouldAnimatesIcons = NO;
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (!self.shouldDrag && !GesturePreferences.feedsEnabled &&
+        [gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
+        CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
+        // FeedTableCell.m consumes disabled horizontal swipes so UITableView does not select the row.
+        return fabs(velocity.x) > fabs(velocity.y);
+    }
+    return [super gestureRecognizerShouldBegin:gestureRecognizer];
+}
+
 - (void)redrawUnreadCounts {
     [((FeedTableCellView *)cellContent) redrawUnreadCounts];
 }
