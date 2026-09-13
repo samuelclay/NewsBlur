@@ -4039,6 +4039,10 @@ def _find_full_folder_path(flat_folders, folder_leaf_name, parent_leaf_name):
     full paths like "Parent - Child - Grandchild". parent_leaf_name is the immediate parent's
     leaf name (empty string for top-level folders).
     """
+    if isinstance(parent_leaf_name, list):
+        candidate = " - ".join(parent_leaf_name + [folder_leaf_name])
+        return candidate if candidate in flat_folders else None
+
     for path in flat_folders:
         parts = path.split(" - ")
         if parts[-1] != folder_leaf_name:
@@ -4046,8 +4050,6 @@ def _find_full_folder_path(flat_folders, folder_leaf_name, parent_leaf_name):
         if not parent_leaf_name:
             if len(parts) == 1:
                 return path
-        elif isinstance(parent_leaf_name, list) and parts[:-1] == parent_leaf_name:
-            return path
         elif len(parts) >= 2 and parts[-2] == parent_leaf_name:
             return path
     return None
