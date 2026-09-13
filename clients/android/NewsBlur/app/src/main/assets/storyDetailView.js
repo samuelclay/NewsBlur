@@ -67,26 +67,39 @@ function NB_is_deliberately_small_image(img) {
 }
 
 function NB_is_standalone_image(img, inline_contexts) {
+    if (window.getComputedStyle(img).cssFloat !== 'none') {
+        return false;
+    }
     var branch = img;
     var parent = img.parentElement;
     while (parent) {
         if (/^(UL|OL|LI|DL|DT|DD|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|BLOCKQUOTE|PRE)$/.test(parent.tagName)) {
             return false;
         }
-        var inline_content = inline_contexts.get(parent);
-        if (!inline_content) {
-            inline_content = [];
-            for (var sibling = parent.firstChild; sibling; sibling = sibling.nextSibling) {
-                if (sibling.nodeType === 3 && sibling.textContent.trim()) {
-                    inline_content.push(sibling);
-                } else if (sibling.nodeType === 1 &&
-                    !/^(IMG|PICTURE|SOURCE|BR|FIGCAPTION)$/.test(sibling.tagName) &&
-                    window.getComputedStyle(sibling).display.indexOf('inline') === 0 && sibling.textContent.trim()) {
-                    inline_content.push(sibling);
+        var parent_context = inline_contexts.get(parent);
+        if (!parent_context) {
+            var parent_style = window.getComputedStyle(parent);
+            parent_context = {
+                blocked: parent_style.overflowX !== 'visible' || parent_style.cssFloat !== 'none',
+                inline_content: []
+            };
+            if (!parent_context.blocked) {
+                for (var sibling = parent.firstChild; sibling; sibling = sibling.nextSibling) {
+                    if (sibling.nodeType === 3 && sibling.textContent.trim()) {
+                        parent_context.inline_content.push(sibling);
+                    } else if (sibling.nodeType === 1 &&
+                        !/^(IMG|PICTURE|SOURCE|BR|FIGCAPTION)$/.test(sibling.tagName) &&
+                        window.getComputedStyle(sibling).display.indexOf('inline') === 0 && sibling.textContent.trim()) {
+                        parent_context.inline_content.push(sibling);
+                    }
                 }
             }
-            inline_contexts.set(parent, inline_content);
+            inline_contexts.set(parent, parent_context);
         }
+        if (parent_context.blocked) {
+            return false;
+        }
+        var inline_content = parent_context.inline_content;
         if (inline_content.length > 1 || (inline_content.length === 1 && inline_content[0] !== branch)) {
             return false;
         }
