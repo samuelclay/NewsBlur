@@ -1,3 +1,38 @@
 {
-  "topics": {}
+  "topics": {
+    "13833": {
+      "title": "WIRED Newsletters blocked as spam",
+      "url": "https://forum.newsblur.com/t/wired-newsletters-blocked-as-spam/13833",
+      "status": "reply-drafted",
+      "tier": 2,
+      "handled_at": "2026-09-13T22:59:05Z",
+      "last_posted_at": "2026-09-13T21:18:38.917Z",
+      "pr": null,
+      "branch": null,
+      "worktree": null,
+      "note": "550 5.7.1 comes from ImprovMX's MX (SpamAssassin, hard 5.0 cutoff, build v2026.09.11); the mail never reaches newsletter_receive. mtaylor's WIRED feed 10067048 got a story daily through Sep 11, none since. Newsletter volume overall is normal and 7 other WIRED feeds received mail Sep 13, so it is per-email scoring. No code fix possible. Sam chose: email ImprovMX support asking to disable filtering for newsletters.newsblur.com, then post the reply. Reply assumes the email was sent.",
+      "reply": "Found the cause. That bounce is coming from ImprovMX, the service that receives mail for newsletters.newsblur.com and hands it to NewsBlur. They pushed an update on September 11 and their spam scoring now puts some WIRED emails right at the 5.0 cutoff, so the message gets rejected before it ever reaches NewsBlur. Your WIRED newsletters were arriving every day up through the 11th and then stopped, which matches. Nothing changed on your end or in NewsBlur. I've asked ImprovMX to turn off spam filtering for our domain, since every newsletter address already has a secret token in it and the mail only goes to NewsBlur. I'll update here when I hear back.",
+      "question": null,
+      "related_topics": [
+        13413
+      ]
+    },
+    "13413": {
+      "title": "Spam detection on newsletters too strict",
+      "url": "https://forum.newsblur.com/t/spam-detection-on-newsletters-too-strict/13413",
+      "status": "reply-drafted",
+      "tier": 2,
+      "handled_at": "2026-09-13T22:59:05Z",
+      "last_posted_at": "2026-07-02T16:18:44.541Z",
+      "pr": null,
+      "branch": null,
+      "worktree": null,
+      "note": "Same ImprovMX SpamAssassin rejection as 13833 (score 5.2, build v2026.01.28). Unanswered since Feb 2026, follow-up July 2. Handled together with 13833 at Sam's request; reply assumes the ImprovMX email was sent.",
+      "reply": "Sorry for the long wait on this. You have it right, the rejections are coming from ImprovMX, which receives mail for newsletters.newsblur.com, and their SpamAssassin scoring bounces anything at 5.0 or above before NewsBlur sees it. NewsBlur itself doesn't filter newsletters at all, and I agree the secret token in the address should be enough. I've asked ImprovMX to turn off filtering for our domain since the mail only goes to NewsBlur and never to a mailbox. If they won't, the next step is moving newsletter delivery off ImprovMX entirely. I'll post here when I know which.",
+      "question": null,
+      "related_topics": [
+        13833
+      ]
+    }
+  }
 }
