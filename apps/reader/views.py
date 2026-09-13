@@ -3980,7 +3980,9 @@ def delete_folder(request):
     folders = json.decode(user_sub_folders.folders)
 
     # Clean up folder icon when folder is deleted
-    MFolderIcon.delete_folder_icon(request.user.pk, folder_to_delete)
+    MFolderIcon.delete_folder_icon(
+        request.user.pk, " - ".join(folder_path) if folder_path else folder_to_delete
+    )
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
@@ -4105,10 +4107,12 @@ def rename_folder(request):
 
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
         # Update folder icon when folder is renamed
-        MFolderIcon.rename_folder_icon(request.user.pk, folder_to_rename, new_folder_name)
+        icon_old_name = " - ".join(folder_path) if folder_path else folder_to_rename
+        icon_new_name = " - ".join(folder_path[:-1] + [new_folder_name]) if folder_path else new_folder_name
+        MFolderIcon.rename_folder_icon(request.user.pk, icon_old_name, icon_new_name)
         # Update folder-scoped classifiers using full flattened paths
         if old_path:
-            parts = old_path.split(" - ")
+            parts = list(folder_path) if folder_path else old_path.split(" - ")
             parts[-1] = new_folder_name
             new_path = " - ".join(parts)
             _update_classifiers_for_folder_path_change(request.user.pk, old_path, new_path)

@@ -135,6 +135,19 @@ class Test_FolderPaths(SimpleTestCase):
         self.assertEqual(1, result["code"])
         self.assertEqual(["Art", "Links"], add.call_args.kwargs["folder"])
 
+    def test_rename_endpoint_keeps_literal_names_and_icon_identity(self):
+        self.folders.folders = json.dumps([{"A - B": [{"日本語 - Links": []}]}])
+        request = self.request({"folder_path": '["A - B","日本語 - Links"]', "new_folder_name": "References"})
+        with patch.object(UserSubscriptionFolders.objects, "get", return_value=self.folders), patch.object(
+            views, "get_object_or_404", return_value=self.folders
+        ), patch.object(views.MFolderIcon, "rename_folder_icon") as icon, patch.object(
+            views, "_update_classifiers_for_folder_path_change"
+        ) as classifiers:
+            response = views.rename_folder(request)
+        self.assertEqual(1, json.loads(response.content)["code"])
+        icon.assert_called_once_with(1, "A - B - 日本語 - Links", "A - B - References")
+        classifiers.assert_called_once_with(1, "A - B - 日本語 - Links", "A - B - References")
+
     def test_invalid_path_returns_api_error_without_mutation(self):
         request = self.request({"folder": "Friends", "parent_folder_path": '["Missing","Links"]'})
         with patch.object(
