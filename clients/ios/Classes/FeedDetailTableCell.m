@@ -166,7 +166,13 @@ static UIFont *indicatorFont = nil;
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     if ([gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
-        CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
+        UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
+        CGPoint velocity = [pan velocityInView:self];
+        if (!self.shouldDrag && !GesturePreferences.storiesEnabled) {
+            // FeedDetailTableCell.m consumes disabled row swipes while reserving the leading edge for navigation.
+            CGFloat startX = [pan locationInView:self].x - [pan translationInView:self].x;
+            return fabs(velocity.x) > fabs(velocity.y) && !(velocity.x > 0 && startX < 20);
+        }
         // FeedDetailTableCell.m leaves menu swipes to UITableView and back swipes to navigation.
         if (![StoryTitleSwipePreference usesRowSwipeRight:velocity.x > 0 canMarkRead:self.isReadAvailable]) return NO;
     }
