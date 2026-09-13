@@ -12,6 +12,7 @@
 NSString * const MenuTitle = @"title";
 NSString * const MenuIcon = @"icon";
 NSString * const MenuIconColor = @"iconColor";
+static NSString * const MenuFeedListIcon = @"feedListIcon";
 NSString * const MenuDestructive = @"destructive";
 NSString * const MenuThemeSegment = @"theme";
 NSString * const MenuSegmentTitles = @"segmentTitles";
@@ -108,6 +109,21 @@ NSString * const MenuHandler = @"handler";
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
     [self addTitle:title iconImage:[UIImage imageNamed:iconName] destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addFeedListTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    // MenuViewController.m matches Android's 18-point, aspect-fit, monochrome feed menu icons.
+    UIImage *source = [UIImage imageNamed:iconName];
+    CGFloat side = 18.0;
+    CGFloat scale = side / MAX(source.size.width, source.size.height);
+    CGSize size = CGSizeMake(source.size.width * scale, source.size.height * scale);
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(side, side)];
+    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+        [source drawInRect:CGRectMake((side - size.width) / 2, (side - size.height) / 2, size.width, size.height)];
+    }];
+    [self.items addObject:@{MenuTitle: title, MenuIcon: [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
+                           MenuFeedListIcon: @YES, MenuDestructive: @NO,
+                           MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
@@ -442,7 +458,10 @@ NSString * const MenuHandler = @"handler";
         cell.textLabel.text = title;
         cell.imageView.image = item[MenuIcon];
         
-        if (item[MenuIconColor]) {
+        if ([item[MenuFeedListIcon] boolValue]) {
+            // MenuViewController.m resolves the gray again when the theme changes in the open menu.
+            cell.imageView.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8C8C8C, 0x8C8C8C, 0xBFBFBF, 0xBFBFBF);
+        } else if (item[MenuIconColor]) {
             cell.imageView.tintColor = item[MenuIconColor];
         } else {
             cell.imageView.tintColor = UIColorFromRGB(0x303030);

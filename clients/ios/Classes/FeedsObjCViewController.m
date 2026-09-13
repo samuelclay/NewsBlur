@@ -1528,60 +1528,60 @@ static BOOL NBBoolPreferenceValue(id value) {
     MenuViewController *viewController = [MenuViewController new];
     
     if (!self.isMac) {
-        [viewController addTitle:@"Preferences" iconName:@"dialog-preferences" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
+        [viewController addFeedListTitle:@"Preferences" iconName:@"feed-menu-preferences" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPreferences];
         }];
     }
     
-    [viewController addTitle:@"Mute Sites" iconName:@"menu_icn_mute.png" selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Mute Sites" iconName:@"feed-menu-mute" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showMuteSites];
     }];
     
-    [viewController addTitle:@"Organize Sites" iconName:@"dialog-organize" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Organize Sites" iconName:@"feed-menu-organize" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showOrganizeSites];
     }];
     
-    [viewController addTitle:@"Widget Sites" iconName:@"calendar.png" selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Widget Sites" iconName:@"feed-menu-widget" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showWidgetSites];
     }];
     
-    [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Notifications" iconName:@"feed-menu-notifications" selectionShouldDismiss:YES handler:^{
         [self.appDelegate openNotificationsWithFeed:nil];
     }];
 
-    [viewController addTitle:@"Interactions" iconName:@"pulse" iconColor:UIColorFromRGB(0x8F918B) selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Interactions" iconName:@"feed-menu-interactions" selectionShouldDismiss:YES handler:^{
         [self showInteractionsPopover:nil];
     }];
 
-    [viewController addTitle:@"Find Friends" iconName:@"followers" iconColor:UIColorFromRGB(0x5FA1E7) selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Find Friends" iconName:@"feed-menu-friends" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showFindFriends];
     }];
     
     if (appDelegate.isPremium && appDelegate.isPremiumArchive) {
-        [viewController addTitle:@"Premium Archive" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
+        [viewController addFeedListTitle:@"Premium Archive" iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
         }];
     } else if (appDelegate.isPremium) {
-        [viewController addTitle:@"Upgrade to Archive" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
+        [viewController addFeedListTitle:@"Upgrade to Archive" iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
         }];
     } else {
-        [viewController addTitle:@"Upgrade to Premium" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
+        [viewController addFeedListTitle:@"Upgrade to Premium" iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
         }];
     }
     
-    [viewController addTitle:@"Support Forum" iconName:@"discourse.png" selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Support Forum" iconName:@"feed-menu-feedback" selectionShouldDismiss:YES handler:^{
         NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     }];
     
-    [viewController addTitle:@"Logout" iconName:@"menu_icn_fetch_subscribers.png" selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:@"Logout" iconName:@"feed-menu-logout" selectionShouldDismiss:YES handler:^{
         [self.appDelegate confirmLogout];
     }];
     
     if ([appDelegate.activeUsername isEqualToString:@"samuel"] || [appDelegate.activeUsername isEqualToString:@"Dejal"]) {
-        [viewController addTitle:@"Login as…" iconName:@"barbutton_sendto.png" selectionShouldDismiss:YES handler:^{
+        [viewController addFeedListTitle:@"Login as…" iconName:@"feed-menu-login-as" selectionShouldDismiss:YES handler:^{
             [self showLoginAsDialog];
         }];
     }
