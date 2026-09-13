@@ -105,11 +105,11 @@ final class ReaderUITests: XCTestCase {
                                    "-show_feeds_after_being_read", "YES", "-newsblur-ui-test-animations"]
             launch(on: "reader")
             let row = feedCell("910002")
-            XCTAssertTrue(row.waitForExistence(timeout: 5))
+            guard let frame = waitForStableVisibleFrame(of: row) else { return }
             XCTAssertTrue(row.label.contains("4 unread stories"))
             let origin = app.coordinate(withNormalizedOffset: .zero)
-            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: row.frame.midY)).press(forDuration: 0.05,
-                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: row.frame.midY)),
+            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: frame.midY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: frame.midY)),
                 withVelocity: .slow, thenHoldForDuration: 0)
             expectation(for: NSPredicate(format: "label == %@", "Swift Weekly feed"), evaluatedWith: row)
             waitForExpectations(timeout: 5)
@@ -122,11 +122,11 @@ final class ReaderUITests: XCTestCase {
                                "-newsblur-ui-test-animations"]
         launch(on: "reader", storyTitlesStyle: "standard")
         let row = feedCell("910002")
-        XCTAssertTrue(row.waitForExistence(timeout: 5))
         let origin = app.coordinate(withNormalizedOffset: .zero)
         for right in [false, true] {
-            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: row.frame.midY)).press(forDuration: 0.05,
-                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: row.frame.midY)),
+            guard let frame = waitForStableVisibleFrame(of: row) else { return }
+            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: frame.midY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: frame.midY)),
                 withVelocity: .slow, thenHoldForDuration: 0)
             XCTAssertTrue(row.label.contains("4 unread stories"))
         }
@@ -401,9 +401,19 @@ final class ReaderUITests: XCTestCase {
         let feedsList = app.tables["feeds-list"].firstMatch
         XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
 
-        let cultureFolder = folderButton(named: "Culture")
-        XCTAssertTrue(reveal(cultureFolder, in: feedsList))
-        tapElementCenter(cultureFolder)
+        // FolderTitleView.m's button can also appear in a hidden table accessibility copy.
+        let cultureFolders = app.buttons.matching(identifier: "folder-header-culture")
+        var cultureFolder: XCUIElement?
+        let hittableFolder = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            cultureFolder = cultureFolders.allElementsBoundByIndex.first { $0.isHittable }
+            return cultureFolder != nil
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter().wait(for: [hittableFolder], timeout: 10), .completed,
+                       "Culture folder has no hittable accessibility match")
+        guard let cultureFolder else { return }
+        guard let folderFrame = waitForStableVisibleFrame(of: cultureFolder) else { return }
+        app.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: folderFrame.midX, dy: folderFrame.midY)).tap()
 
         let storyList = app.tables["story-titles-list"]
         XCTAssertTrue(storyList.waitForExistence(timeout: 10))
@@ -719,6 +729,37 @@ final class ReaderUITests: XCTestCase {
 
     private func feedCell(_ feedID: String) -> XCUIElement {
         app.tables["feeds-list"].cells.matching(identifier: "feed-row-\(feedID)").firstMatch
+    }
+
+    private func waitForStableVisibleFrame(of element: XCUIElement, timeout: TimeInterval = 10,
+                                          file: StaticString = #filePath, line: UInt = #line) -> CGRect? {
+        var previousFrame: CGRect?
+        var visibleFrame: CGRect?
+        let predicate = NSPredicate { _, _ in
+            guard element.exists, element.isHittable else {
+                previousFrame = nil
+                return false
+            }
+            let frame = element.frame
+            guard !frame.isEmpty, frame.minX.isFinite, frame.minY.isFinite,
+                  frame.maxX.isFinite, frame.maxY.isFinite, self.app.frame.contains(frame) else {
+                previousFrame = nil
+                return false
+            }
+            defer { previousFrame = frame }
+            guard previousFrame == frame else { return false }
+            visibleFrame = frame
+            return true
+        }
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
+        let completed = XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
+        if !completed {
+            attachScreenshot(named: "feed-element-did-not-settle")
+            let frame = element.exists ? String(describing: element.frame) : "unavailable"
+            XCTFail("Element never settled: exists=\(element.exists) hittable=\(element.isHittable) " +
+                    "frame=\(frame) appFrame=\(app.frame)", file: file, line: line)
+        }
+        return completed ? visibleFrame : nil
     }
 
     private func storyCell(_ storyHash: String) -> XCUIElement {
