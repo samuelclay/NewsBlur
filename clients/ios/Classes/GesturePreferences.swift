@@ -6,11 +6,13 @@ import Foundation
     static let feedActionTitles = ["Mark all stories read", "Train intelligence", "Notifications", "Statistics"]
 
     @objc static var feedsEnabled: Bool {
-        UserDefaults.standard.object(forKey: "enable_feed_swipes") as? Bool ?? true
+        let defaults = UserDefaults.standard
+        return defaults.object(forKey: "enable_feed_swipes") == nil || defaults.bool(forKey: "enable_feed_swipes")
     }
 
     @objc static var storiesEnabled: Bool {
-        UserDefaults.standard.object(forKey: "enable_story_swipes") as? Bool ?? true
+        let defaults = UserDefaults.standard
+        return defaults.object(forKey: "enable_story_swipes") == nil || defaults.bool(forKey: "enable_story_swipes")
     }
 
     @objc static var feedLeftAction: String { feedAction(right: false) }
