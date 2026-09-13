@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 6;
+	static final int VERSION = 7;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);
@@ -78,6 +78,20 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int previousVersion, int nextVersion) {
+        if (previousVersion == 6) {
+            // Folder.java reconstructs paths from the cached parent list. Preserve feeds,
+            // stories and queued offline actions while replacing the folder primary key.
+            db.execSQL("ALTER TABLE " + DatabaseConstants.FOLDER_TABLE + " RENAME TO folders_legacy");
+            db.execSQL(DatabaseConstants.FOLDER_SQL);
+            try (android.database.Cursor cursor = db.query("folders_legacy", null, null, null, null, null, null)) {
+                while (cursor.moveToNext()) {
+                    db.insertOrThrow(DatabaseConstants.FOLDER_TABLE, null,
+                            com.newsblur.domain.Folder.fromCursor(cursor).getValues());
+                }
+            }
+            db.execSQL("DROP TABLE folders_legacy");
+            return;
+        }
         dropAndRecreateTables(db);
     }
 

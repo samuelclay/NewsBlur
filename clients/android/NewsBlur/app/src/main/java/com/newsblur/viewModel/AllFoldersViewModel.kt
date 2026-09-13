@@ -97,7 +97,7 @@ class AllFoldersViewModel
                 while (cursor.moveToNext()) {
                     signal.throwIfCanceled()
                     val folder = Folder.fromCursor(cursor)
-                    folders[folder.name] = folder
+                    folders[folder.flatName()] = folder
                     flatFolders[folder.flatName()] = folder
                 }
                 FolderQueryResult(folders, flatFolders)

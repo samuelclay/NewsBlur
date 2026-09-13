@@ -171,6 +171,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         });
         allFoldersViewModel.getFolders().observe(getViewLifecycleOwner(), foldersResult -> {
             adapter.setFolders(foldersResult);
+            checkOpenFolderPreferences();
             pushUnreadCounts();
             restoreListStateIfReady();
         });
@@ -287,25 +288,27 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      * database.  The list widget likes to default all folders to closed, so open them up
      * unless expressly collapsed at some point.
      */
-	public void checkOpenFolderPreferences() {
-        // make sure we didn't beat construction
-        if (this.binding.folderfeedList == null) return;
+private boolean applyingFolderExpansion;
 
-		for (int i = 0; i < adapter.getGroupCount(); i++) {
-			String flatGroupName = adapter.getGroupUniqueName(i);
-			if (prefsRepo.getBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true)) {
-				if (binding.folderfeedList.isGroupExpanded(i) == false) {
-                    binding.folderfeedList.expandGroup(i);
-                    adapter.setFolderClosed(flatGroupName, false);
-                }
-			} else {
-				if (binding.folderfeedList.isGroupExpanded(i) == true) {
-                    binding.folderfeedList.collapseGroup(i);
-                    adapter.setFolderClosed(flatGroupName, true);
-                }
-			}
-		}
-	}
+public void checkOpenFolderPreferences() {
+    if (binding == null || applyingFolderExpansion) return;
+    applyingFolderExpansion = true;
+    try {
+        // FolderListAdapter.java already filtered descendants using these preferences.
+        // Restoring widget state must not overwrite a hidden child's saved state.
+        for (int i = 0; i < adapter.getGroupCount(); i++) {
+            String path = adapter.getGroupUniqueName(i);
+            boolean expanded = prefsRepo.getBoolean(AppConstants.FOLDER_PRE + "_" + path, true);
+            if (expanded && !binding.folderfeedList.isGroupExpanded(i)) {
+                binding.folderfeedList.expandGroup(i, false);
+            } else if (!expanded && binding.folderfeedList.isGroupExpanded(i)) {
+                binding.folderfeedList.collapseGroup(i);
+            }
+        }
+    } finally {
+        applyingFolderExpansion = false;
+    }
+}
 
     private void toggleAllFolders() {
         boolean expandAll = adapter.areAllVisibleFoldersCollapsed();
@@ -712,6 +715,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     @Override
     public void onGroupExpand(int groupPosition) {
+        if (applyingFolderExpansion || !adapter.isValidGroupPosition(groupPosition)) return;
         // these shouldn't ever be collapsible
         if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
@@ -730,6 +734,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     @Override
     public void onGroupCollapse(int groupPosition) {
+        if (applyingFolderExpansion || !adapter.isValidGroupPosition(groupPosition)) return;
         // these shouldn't ever be collapsible
         if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
@@ -742,6 +747,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         // trigger display/hide of sub-folders
         adapter.setFolderClosed(flatGroupName, true);
+        checkOpenFolderPreferences();
     }
 
 	@Override
