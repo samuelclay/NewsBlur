@@ -19,7 +19,7 @@ import SwiftUI
     }
 
     @objc static var leftAction: StoryTitleSwipeAction {
-        action(UserDefaults.standard.string(forKey: "story_title_swipe_left"), fallback: .menu)
+        action(UserDefaults.standard.string(forKey: "story_title_swipe_left"), fallback: .read)
     }
 
     @objc static var usesFullScreenBack: Bool { actionsEnabled && rightAction == .back }
