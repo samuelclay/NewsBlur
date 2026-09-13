@@ -691,6 +691,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         flatFolders.clear();
         folders.putAll(foldersResult.getFolders());
         flatFolders.putAll(foldersResult.getFlatFolders());
+        com.newsblur.network.FolderPath.setFolders(flatFolders.values());
         closedFolders.clear();
         for (String path : flatFolders.keySet()) {
             if (!prefsRepo.getBoolean(AppConstants.FOLDER_PRE + "_" + path, true)) closedFolders.add(path);

@@ -56,6 +56,8 @@ public class FeedFolderResponse {
 		JsonObject asJsonObject = JsonParser.parseString(json).getAsJsonObject();
 
         this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
+        com.newsblur.network.FolderPath.setSupported(asJsonObject.has("folder_paths_supported") &&
+                asJsonObject.get("folder_paths_supported").getAsBoolean());
         if (asJsonObject.has("is_staff")) {
             this.isStaff = asJsonObject.get("is_staff").getAsBoolean();
         }
@@ -178,6 +180,7 @@ public class FeedFolderResponse {
         }
 
         parseTime = System.currentTimeMillis() - startTime;
+        com.newsblur.network.FolderPath.setFolders(folders);
 	}
 
     private JsonObject parsePreferences(JsonElement preferencesElement) {

@@ -747,7 +747,11 @@ public class BlurDatabaseHelper {
             return folder;
         } else {
             closeQuietly(c);
-            return null;
+            // BlurDatabaseHelper.java resolves old saved sessions only when their leaf name is unique.
+            try (Cursor legacy = dbRO.query(DatabaseConstants.FOLDER_TABLE, null,
+                    DatabaseConstants.FOLDER_NAME + " = ?", selArgs, null, null, null)) {
+                return legacy.getCount() == 1 && legacy.moveToFirst() ? Folder.fromCursor(legacy) : null;
+            }
         }
     }
 
