@@ -41,8 +41,12 @@ final class ReaderUITests: XCTestCase {
         let feedToggle = app.switches["enable_feed_swipes"]
         let storyToggle = app.switches["enable_story_swipes"]
         let feedLeft = app.buttons["feed_title_swipe_left"]
+        let storyLeft = app.buttons["story_title_swipe_left"]
         let storyRight = app.buttons["story_title_swipe_right"]
         show(storyRight)
+        XCTAssertTrue(storyLeft.label.contains("Read / unread"))
+        XCTAssertTrue(storyRight.label.contains("Back to feeds"))
+        XCTAssertTrue(app.buttons["long_press_story_title"].label.contains("Share"))
         storyRight.tap()
         app.buttons["Save / unsave"].tap()
         show(feedToggle)
@@ -143,6 +147,36 @@ final class ReaderUITests: XCTestCase {
         verifyStoryListSwipeBack(classic: false, experimental: true)
     }
 
+    func test_defaultStorySwipesToggleReadAndReturnToFeeds() {
+        verifyDefaultStorySwipes(experimental: false)
+    }
+
+    func test_defaultExperimentalStorySwipesToggleReadAndReturnToFeeds() {
+        verifyDefaultStorySwipes(experimental: true)
+    }
+
+    private func verifyDefaultStorySwipes(experimental: Bool) {
+        app.launchArguments = ["-newsblur-ui-test-reset-gestures", "-newsblur-ui-test-animations",
+                               "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let initialState = storyRow("ui-story-swift-1").value as? String ?? ""
+        XCTAssertTrue(initialState.hasPrefix("Read,") || initialState.hasPrefix("Unread,"))
+        let toggledState = initialState.replacingOccurrences(of: initialState.hasPrefix("Read,") ? "Read," : "Unread,",
+                                                             with: initialState.hasPrefix("Read,") ? "Unread," : "Read,")
+        swipeFirstStory(right: false)
+        assertFirstStoryState(toggledState)
+        attachScreenshot(named: experimental ? "default-experimental-left-read" : "default-left-read")
+        swipeFirstStory(right: false)
+        assertFirstStoryState(initialState)
+
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: 80, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 350, dy: 195)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+    }
+
     func test_classicStoryActionsAreReversible() {
         verifyClassicActions(experimental: false)
     }
@@ -173,7 +207,8 @@ final class ReaderUITests: XCTestCase {
     private func launchSwipes(experimental: Bool, right: String, left: String) {
         app = XCUIApplication()
         app.launchArguments = ["-story_title_swipe_right", right, "-story_title_swipe_left", left,
-                               "-newsblur-ui-test-animations", "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
+                               "-enable_story_swipes", "YES", "-newsblur-ui-test-animations",
+                               "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
         launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
         XCTAssertTrue(waitForFixtureStoryTitles())
     }
@@ -230,6 +265,7 @@ final class ReaderUITests: XCTestCase {
     private func verifyClassicActions(experimental: Bool, reversed: Bool = false) {
         app.launchArguments += ["-story_title_swipe_right", reversed ? "read" : "save",
                                 "-story_title_swipe_left", reversed ? "save" : "read", "-newsblur-ui-test-animations",
+                                "-enable_story_swipes", "YES",
                                 "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
         launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
         XCTAssertTrue(waitForFixtureStoryTitles())
@@ -290,7 +326,7 @@ final class ReaderUITests: XCTestCase {
     private func verifyStoryListSwipeBack(classic: Bool, experimental: Bool) {
         app.launchArguments += ["-story_title_swipe_right", classic ? "save" : "back",
                                 "-story_title_swipe_left", classic ? "read" : "menu",
-                                "-newsblur-ui-test-animations"]
+                                "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
         launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
         XCTAssertTrue(waitForFixtureStoryTitles())
         attachScreenshot(named: classic ? "classic-before-edge-back" : "current-before-swipe-back")
@@ -407,38 +443,62 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_experimentalTitlesSupportSwipeActionsAndReadToggling() {
-        launch(on: "reader-feed-swift", storyTitlesStyle: "experimental")
-
-        XCTAssertTrue(waitForFixtureStoryTitles())
-        let storyList = fixtureStorySurface()
+        launchSwipes(experimental: true, right: "back", left: "menu")
 
         let firstStory = storyRow("ui-story-swift-1")
         XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
+        let rowFrame = firstStory.frame
+        func rowImageData() -> Data {
+            let image = app.screenshot().image
+            let scale = CGFloat(image.cgImage!.width) / app.frame.width
+            let crop = rowFrame.applying(CGAffineTransform(scaleX: scale, y: scale)).integral
+            return UIImage(cgImage: image.cgImage!.cropping(to: crop)!).pngData()!
+        }
+        let initialRowImage = rowImageData()
 
         swipeElementLeft(firstStory)
 
-        let markReadButton = app.buttons["Mark Read"].firstMatch
-        XCTAssertTrue(markReadButton.waitForExistence(timeout: 2))
+        let readAction = app.buttons.matching(NSPredicate(format: "label IN %@", ["Mark Read", "Mark Unread"])).firstMatch
+        XCTAssertTrue(readAction.waitForExistence(timeout: 2))
+        let initialActionTitle = readAction.label
+        let oppositeActionTitle = initialActionTitle == "Mark Read" ? "Mark Unread" : "Mark Read"
         XCTAssertTrue(app.buttons["Save"].firstMatch.waitForExistence(timeout: 2))
         XCTAssertTrue(app.buttons["Share"].firstMatch.waitForExistence(timeout: 2))
 
-        markReadButton.tap()
+        readAction.tap()
 
+        // ReaderUITests.swift verifies read-state changes on the row retained by the All filter.
         let updatedStory = storyRow("ui-story-swift-1")
-        XCTAssertFalse(updatedStory.waitForExistence(timeout: 2))
+        XCTAssertTrue(updatedStory.waitForExistence(timeout: 2))
+        attachScreenshot(named: "experimental-menu-after-read-action")
+        let updatedRowImage = rowImageData()
+        swipeElementLeft(updatedStory)
+
+        let oppositeAction = app.buttons[oppositeActionTitle].firstMatch
+        XCTAssertTrue(oppositeAction.waitForExistence(timeout: 2))
+        XCTAssertFalse(app.buttons[initialActionTitle].firstMatch.exists)
+        XCTAssertNotEqual(updatedRowImage, initialRowImage, "ReaderUITests.swift requires visible read-state changes before reopening the menu")
+        attachScreenshot(named: "experimental-menu-toggled")
+        oppositeAction.tap()
+
+        let restoredStory = storyRow("ui-story-swift-1")
+        XCTAssertTrue(restoredStory.waitForExistence(timeout: 2))
+        XCTAssertEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires the original appearance after reversing the read action")
+        swipeElementLeft(restoredStory)
+        XCTAssertTrue(app.buttons[initialActionTitle].firstMatch.waitForExistence(timeout: 2))
+        XCTAssertFalse(oppositeAction.exists)
+        attachScreenshot(named: "experimental-menu-restored")
     }
 
     func test_experimentalTitlesKeepSwipeActionsScopedToOneRow() {
-        launch(on: "reader-feed-swift", storyTitlesStyle: "experimental")
-
-        XCTAssertTrue(waitForFixtureStoryTitles())
+        launchSwipes(experimental: true, right: "back", left: "menu")
 
         let firstStory = storyRow("ui-story-swift-1")
         let secondStory = storyRow("ui-story-swift-2")
         XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
         XCTAssertTrue(secondStory.waitForExistence(timeout: 10))
 
-        let markReadButtons = app.buttons.matching(NSPredicate(format: "label == %@", "Mark Read"))
+        let markReadButtons = app.buttons.matching(NSPredicate(format: "label IN %@", ["Mark Read", "Mark Unread"]))
         let saveButtons = app.buttons.matching(NSPredicate(format: "label == %@", "Save"))
         let shareButtons = app.buttons.matching(NSPredicate(format: "label == %@", "Share"))
 
@@ -886,7 +946,8 @@ final class ReaderUITests: XCTestCase {
         let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
             .withOffset(CGVector(dx: max(frame.minX + 12, frame.maxX - distance), dy: frame.midY))
 
-        start.press(forDuration: 0.05, thenDragTo: end)
+        // FeedDetailCardView.swift uses predicted travel to distinguish opening a menu from a full-swipe action.
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
     }
 
     private func dragUp(on element: XCUIElement, distance: CGFloat) {
