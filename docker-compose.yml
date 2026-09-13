@@ -52,8 +52,8 @@ services:
 
   imageproxy:
     container_name: newsblur_imageproxy
-    # image: ghcr.io/willnorris/imageproxy:latest # Enable if you don't need arm64 and want the original imageproxy
-    image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64
+    image: ghcr.io/willnorris/imageproxy:latest # Multi-arch (amd64/arm64); use this unless it breaks on your platform
+    # image: yusukeito/imageproxy:v0.11.2 # arm64-only fork; use if the image above doesn't work for you
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
@@ -123,16 +123,41 @@ services:
   #     - ./docker/volumes/redis_prod:/data
   #   command: redis-server /etc/redis/redis.conf --port 6579
 
+  # One-shot init step: chowns the bind-mounted data dir to the image's
+  # built-in elasticsearch user (uid 1000, gid 0) before Elasticsearch starts.
+  # Docker auto-creates a missing bind-mount host directory as root, and this
+  # image's entrypoint never chowns its own data dir on boot - it always execs
+  # directly as its non-root user. Docker Desktop's bind-mount layer papers
+  # over the resulting ownership mismatch; native Linux Docker Engine enforces
+  # real UID permissions, so a genuinely fresh clone fails there with an
+  # AccessDeniedException obtaining the node lock. Idempotent and harmless on
+  # every host, including Desktop, so it doesn't need an OS check.
+  newsblur_db_elasticsearch_permissions:
+    container_name: newsblur_db_elasticsearch_permissions
+    image: alpine:latest
+    command: chown -R 1000:0 /usr/share/elasticsearch/data
+    volumes:
+      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+    restart: "no"
+
   newsblur_db_elasticsearch:
     container_name: newsblur_db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    user: "1000:0" # the image's own built-in user; not host-dependent
+    depends_on:
+      newsblur_db_elasticsearch_permissions:
+        condition: service_completed_successfully
     mem_limit: 2g
     mem_reservation: 512m
     restart: unless-stopped
+    # See docker/elasticsearch/entrypoint.sh: only adds the ARM-only
+    # -XX:UseSVE=0 JVM flag when actually running on arm64, instead of
+    # hardcoding it (crashes on x86_64) or blanket-suppressing all
+    # unrecognized JVM options as a workaround.
+    entrypoint: ["/bin/bash", "/entrypoint.sh"]
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:UseSVE=0"
-      - "CLI_JAVA_OPTS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false
@@ -141,6 +166,7 @@ services:
       - 9200:9200
       - 9300:9300
     volumes:
+      - ./docker/elasticsearch/entrypoint.sh:/entrypoint.sh:ro
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
       - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
@@ -198,6 +224,11 @@ services:
     container_name: newsblur_haproxy
     image: haproxy:latest
     restart: unless-stopped
+    # host.docker.internal is provided automatically on Docker Desktop (Mac/Windows) but
+    # not on native Linux Docker Engine. This makes the camera_monitor backend resolvable
+    # on Linux too, instead of just failing its health check.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - nginx
       - newsblur_web
