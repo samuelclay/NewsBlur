@@ -44,8 +44,11 @@ function setImage(img, inline_contexts) {
     }
 
     var pane_width = document.documentElement.clientWidth;
+    var body_style = window.getComputedStyle(document.body);
+    // storyDetailView.js permits only the body gutters' enlargement, never a narrower nested wrapper's.
+    var content_width = pane_width - (parseFloat(body_style.paddingLeft) || 0) - (parseFloat(body_style.paddingRight) || 0);
     img.style.removeProperty('--NB-image-offset');
-    if (img.complete && pane_width > 0 && img.naturalWidth >= pane_width &&
+    if (img.complete && pane_width > 0 && img.naturalWidth >= content_width &&
         img.naturalHeight >= 50 && !NB_is_deliberately_small_image(img) &&
         NB_is_standalone_image(img, inline_contexts || new WeakMap())) {
         setImageClass(img, 'NB-large-image');
