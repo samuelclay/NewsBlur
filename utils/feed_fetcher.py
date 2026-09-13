@@ -1023,7 +1023,10 @@ class FetchFeed:
         is skipped outright, and so is a feed whose only subscriber hasn't been seen in a
         year (Feed.has_dormant_sole_subscriber): a credit for a reader who isn't reading.
         Finally each reader has a share of the plan for the billing period
-        (RScrapingBee.users_over_budget); a feed waits once all of its readers spent theirs.
+        (RScrapingBee.users_over_budget); a feed read by a single active reader waits once
+        that reader has spent theirs. A feed shared by two or more active readers
+        (Feed.has_multiple_active_subscribers) is never rationed by its readers' budgets,
+        since one credit serves all of them; the fetch is still charged to them for the stats.
         """
         if RScrapingBee.host_over_budget(self.feed.feed_address):
             RScrapingBee.record_capped("feed", url=self.feed.feed_address)
@@ -1042,7 +1045,12 @@ class FetchFeed:
             )
             return True
         self.proxy_user_ids = self.feed.proxy_budget_subscriber_ids()
-        if RScrapingBee.users_over_budget(self.proxy_user_ids):
+        if self.feed.has_multiple_active_subscribers():
+            logging.debug(
+                "   ---> [%-30s] ~FBShared by active readers, paid proxy not rationed: %s"
+                % (self.feed.log_title[:30], self.feed.feed_address)
+            )
+        elif RScrapingBee.users_over_budget(self.proxy_user_ids):
             RScrapingBee.record_skip("feed", "user_budget", url=self.feed.feed_address)
             self.skipped_for_user_budget = True
             logging.debug(

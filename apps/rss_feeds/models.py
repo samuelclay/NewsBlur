@@ -3110,6 +3110,36 @@ class Feed(models.Model):
             return True
         return last_seen < datetime.datetime.now() - datetime.timedelta(days=days)
 
+    def has_multiple_active_subscribers(self):
+        """True when at least two readers of this feed have been seen inside
+        settings.SUBSCRIBER_EXPIRE days, the same window count_subscribers uses for
+        active_subscribers.
+
+        The per-reader ScrapingBee budget (RScrapingBee.users_over_budget in
+        apps/statistics/rscrapingbee.py) is meant to stop one reader's pile of
+        single-subscriber forbidden feeds from draining the plan. A feed shared by several
+        active readers is the opposite case: one proxied fetch serves all of them, so
+        FetchFeed.should_skip_paid_proxy (utils/feed_fetcher.py) never rations it by its
+        readers' budgets. Forum #13832: TMZ, with dozens of active readers, stopped
+        updating because its 20 oldest subscribers had each spent their one-credit share.
+
+        The cached active_subscribers count answers when it is 2 or more. When it says 0
+        or 1 it may just be stale, so the real subscription rows decide, unless
+        num_subscribers already says there is at most one reader in total.
+        """
+        from apps.reader.models import UserSubscription
+
+        if self.active_subscribers is not None and self.active_subscribers > 1:
+            return True
+        if self.num_subscribers is not None and self.num_subscribers <= 1:
+            return False
+
+        seen_since = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        active_readers = UserSubscription.objects.filter(
+            feed=self, user__profile__last_seen_on__gte=seen_since
+        ).values_list("user_id", flat=True)[:2]
+        return len(active_readers) > 1
+
     def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False, pro_speed=False):
         if self.min_to_decay and not force and not premium_speed:
             if verbose:
