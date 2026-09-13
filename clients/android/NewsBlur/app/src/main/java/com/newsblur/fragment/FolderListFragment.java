@@ -229,6 +229,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         adapter.listBackref = new WeakReference<>(binding.folderfeedList); // see note in adapter about backref
         binding.folderfeedList.setAdapter(adapter);
+        new com.newsblur.view.FeedListGestures(binding.folderfeedList, adapter, prefsRepo, feedUtils, (NbActivity) requireActivity());
 
         // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
         binding.folderfeedList.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());

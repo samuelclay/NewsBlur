@@ -962,6 +962,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         }
     }
 
+// FolderListAdapter.java only exposes normal feed rows to feed-specific gesture actions.
+public synchronized Feed getGestureFeed(int group, int child) {
+    if (group < 0 || group >= activeFolderChildren.size() || child < 0 ||
+            child >= activeFolderChildren.get(group).size() ||
+            getChildType(group, child) != ChildType.FEED.ordinal()) return null;
+    return activeFolderChildren.get(group).get(child);
+}
+
     /** Get the cached Feed object for the feed at the given list location. */
     public synchronized Feed getFeed(int groupPosition, int childPosition) {
         if (groupPosition > activeFolderChildren.size()) return null;
