@@ -49,7 +49,7 @@ from apps.rss_feeds.tasks import (
     ScheduleCountTagsForUser,
     UpdateFeeds,
 )
-from apps.rss_feeds.text_importer import TextImporter
+from apps.rss_feeds.text_importer import TextImporter, is_google_consent_text
 from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
 from utils import feedfinder_forman, feedfinder_pilgrim
@@ -2886,6 +2886,14 @@ class Feed(models.Model):
         These return a JavaScript redirect page rather than an HTTP redirect,
         so requests/Mercury parser can't follow them. Extract the real URL from
         the 'url' query parameter instead.
+
+        Google News feeds link every story through
+        https://news.google.com/rss/articles/<token>. Following that from NewsBlur's
+        servers in the EU lands on Google's cookie consent wall rather than the article,
+        and the consent boilerplate was being shown as the story text (forum #13827).
+        The token is decoded to the real article URL with MStory._decode_google_news_url;
+        when Google's decode endpoint fails, the link is returned untouched and
+        TextImporter refuses the consent page instead (apps/rss_feeds/text_importer.py).
         """
         try:
             parsed = urllib.parse.urlparse(url)
@@ -2894,6 +2902,10 @@ class Feed(models.Model):
                 actual_url = qs.get("url", [None])[0]
                 if actual_url:
                     return actual_url
+            if parsed.hostname == "news.google.com" and "/articles/" in parsed.path:
+                decoded_url = MStory._decode_google_news_url(url)
+                if decoded_url:
+                    return decoded_url
         except Exception:
             pass
         return url
@@ -4431,6 +4443,12 @@ class MStory(mongo.Document):
 
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
+        # Google News stories fetched before forum #13827 was fixed cached Google's cookie
+        # consent wall as their text. Drop that cache so the real article is fetched; a failed
+        # refetch then leaves the story with no text rather than the consent boilerplate.
+        if original_text_z and not force and is_google_consent_text(zlib.decompress(original_text_z)):
+            logging.user(request, "~FYCached original text is Google's consent wall, refetching")
+            self.original_text_z = original_text_z = None
 
         if not original_text_z or force:
             feed = Feed.get_by_id(self.story_feed_id)
@@ -4668,6 +4686,12 @@ class MStarredStory(mongo.DynamicDocument):
 
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
+        # Google News stories fetched before forum #13827 was fixed cached Google's cookie
+        # consent wall as their text. Drop that cache so the real article is fetched; a failed
+        # refetch then leaves the story with no text rather than the consent boilerplate.
+        if original_text_z and not force and is_google_consent_text(zlib.decompress(original_text_z)):
+            logging.user(request, "~FYCached original text is Google's consent wall, refetching")
+            self.original_text_z = original_text_z = None
         feed = Feed.get_by_id(self.story_feed_id)
 
         if not original_text_z or force:
