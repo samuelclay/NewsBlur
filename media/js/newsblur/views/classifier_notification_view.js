@@ -23,21 +23,21 @@ NEWSBLUR.Views.ClassifierNotificationView = Backbone.View.extend({
             $.make('div', { className: 'NB-classifier-notification-controls' }, [
                 $.make('ul', { className: 'segmented-control NB-classifier-notification-types' }, [
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-email' + (is_email ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-email NB-notification-channel-option' + (is_email ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'Email'),
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('email', 'Email')),
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-web' + (is_web ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-web NB-notification-channel-option' + (is_web ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'Web'),
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('web', 'Web')),
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-ios' + (is_ios ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-ios NB-notification-channel-option' + (is_ios ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'iOS'),
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('ios', 'iOS')),
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-android' + (is_android ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-android NB-notification-channel-option' + (is_android ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'Android')
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('android', 'Android'))
                 ])
             ]),
             $.make('div', { className: 'NB-classifier-notification-pill' }, [

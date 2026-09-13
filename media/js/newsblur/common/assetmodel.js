@@ -749,15 +749,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var feed = this.feeds.get(feed_id);
 
         if (feed_id && feed) {
+            // media/js/newsblur/common/assetmodel.js — classifier_filter flag is
+            // read by apps/reader/views.py:load_single_feed the same way the
+            // river endpoint handles it.
+            var cf = NEWSBLUR.reader.flags['classifier_filter'];
             this.make_request('/reader/feed/' + feed_id,
                 {
                     page: page,
                     feed_address: feed.get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
-                    read_filter: this.view_setting(feed_id, 'read_filter'),
+                    read_filter: NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+                        this.view_setting(feed_id, 'read_filter'),
+                        cf
+                    ),
                     date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
                     date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
                     query: NEWSBLUR.reader.flags.search,
+                    classifier_filter_type: cf ? cf.type : null,
+                    classifier_filter_value: cf ? cf.value : null,
+                    classifier_filter_scope: cf ? cf.scope : null,
                     include_hidden: true
                 }, pre_callback,
                 error_callback,
@@ -930,6 +940,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     fetch_river_stories: function (feed_id, feeds, page, options, callback, error_callback, first_load) {
         var self = this;
+        // media/js/newsblur/common/assetmodel.js — classifier_filter params come
+        // from NEWSBLUR.reader.flags.classifier_filter (see reader.js:open_classifier_filter).
+        // When set, the backend (apps/reader/views.py:load_river_stories__redis)
+        // short-circuits the normal read-filter aggregation and returns only
+        // stories matching the chosen classifier value.
+        var cf = NEWSBLUR.reader.flags['classifier_filter'];
         options = $.extend({
             feeds: feeds,
             page: page,
@@ -938,9 +954,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
             date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             query: NEWSBLUR.reader.flags.search,
+            classifier_filter_type: cf ? cf.type : null,
+            classifier_filter_value: cf ? cf.value : null,
+            classifier_filter_scope: cf ? cf.scope : null,
+            classifier_filter_source_story: cf ? cf.story_hash : null,
             include_hidden: true,
             infrequent: false
         }, options);
+        options.read_filter = NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+            options.read_filter,
+            cf
+        );
 
         var pre_callback = function (data) {
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
@@ -1526,6 +1550,23 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         } else {
             if ($.isFunction(callback)) callback();
         }
+    },
+
+    // Optimistically update the per-feed classifier cache for a single
+    // value so recalculate_story_scores can see the change without a full
+    // refetch. score === 0 (or null/undefined) clears the value. Returns
+    // false when there's nothing cached for the feed.
+    update_cached_classifier_score: function (feed_id, classifier_type, value, score) {
+        var cache = this.classifiers[feed_id];
+        if (!cache) return false;
+        var bucket_key = classifier_type + 's';
+        cache[bucket_key] = cache[bucket_key] || {};
+        if (!score) {
+            delete cache[bucket_key][value];
+        } else {
+            cache[bucket_key][value] = score;
+        }
+        return true;
     },
 
     get_ai_classifier_usage: function (data, callback) {
