@@ -2414,12 +2414,13 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_capped.assert_called_once_with("feed", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_capped")
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=True)
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
     def test_capped_forbidden_fetch_records_no_error(
-        self, mock_get, mock_random, mock_over_budget, mock_capped
+        self, mock_get, mock_random, mock_over_budget, mock_capped, mock_validate
     ):
         """A fetch that was never attempted because of the credit cap shouldn't poison fetch
         history or back the feed off; it just waits for its next scheduled fetch."""
@@ -2461,13 +2462,14 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_skip.assert_called_once_with("feed", "dormant", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_skip")
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
     @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=True)
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
     def test_dormant_forbidden_fetch_records_no_error(
-        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip
+        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip, mock_validate
     ):
         """Like the credit cap, a fetch skipped for a dormant reader was never attempted, so it
         must not poison fetch history or back the feed off."""
@@ -2519,6 +2521,7 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_skip.assert_called_once_with("feed", "user_budget", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_skip")
     @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=True)
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
@@ -2535,6 +2538,7 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_over_budget,
         mock_users_over,
         mock_skip,
+        mock_validate,
     ):
         from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
 
