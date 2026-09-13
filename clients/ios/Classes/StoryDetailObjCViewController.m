@@ -2853,7 +2853,7 @@
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [self finishFontPreparationForWebView:webView navigation:navigation error:error];
-    if (self.preparingStoryPresentation && webView == self.webView && navigation == self.storyNavigation &&
+    if (webView == self.webView && navigation == self.storyNavigation &&
         [self isCurrentStoryLoad:self.storyLoadGeneration]) {
         [self.appDelegate.storyPagesViewController storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)self];
         [self invalidateStoryLoad];
@@ -2863,7 +2863,7 @@
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [self finishFontPreparationForWebView:webView navigation:navigation error:error];
-    if (self.preparingStoryPresentation && webView == self.webView && navigation == self.storyNavigation &&
+    if (webView == self.webView && navigation == self.storyNavigation &&
         [self isCurrentStoryLoad:self.storyLoadGeneration]) {
         [self.appDelegate.storyPagesViewController storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)self];
         [self invalidateStoryLoad];
