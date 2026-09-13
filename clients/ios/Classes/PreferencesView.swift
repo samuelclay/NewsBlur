@@ -1144,7 +1144,11 @@ class PreferencesViewModel: ObservableObject {
     }
 
     func valueChanged(key: String, value: Any) {
-        withAnimation(.easeInOut(duration: 0.2)) { updateHiddenKeys() }
+        if key == "enable_feed_swipes" || key == "enable_story_swipes" {
+            withAnimation(.easeInOut(duration: 0.2)) { updateHiddenKeys() }
+        } else {
+            updateHiddenKeys()
+        }
         delegate?.preferenceValueChanged(key: key, value: value)
     }
 }
