@@ -1279,7 +1279,7 @@ struct PreferenceSectionView: View {
                 }
 
                 ForEach(Array(visibleItems.enumerated()), id: \.element.id) { index, item in
-                    PreferenceItemView(item: item, viewModel: viewModel)
+                    PreferenceItemView(item: item, viewModel: viewModel, fullRowHitArea: section.title == "Gestures")
 
                     if index < visibleItems.count - 1 {
                         Divider()
@@ -1410,6 +1410,7 @@ struct ClusterSettingStateView: View {
 struct PreferenceItemView: View {
     let item: PreferenceItem
     @ObservedObject var viewModel: PreferencesViewModel
+    var fullRowHitArea = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -1418,7 +1419,8 @@ struct PreferenceItemView: View {
                 ToggleItemView(item: item, key: key, defaultValue: defaultValue, viewModel: viewModel)
 
             case .multiValue(let key, let titles, let values, let defaultValue):
-                MultiValueItemView(item: item, key: key, titles: titles, values: values, defaultValue: defaultValue, viewModel: viewModel)
+                MultiValueItemView(item: item, key: key, titles: titles, values: values, defaultValue: defaultValue,
+                                   viewModel: viewModel, fullRowHitArea: fullRowHitArea)
 
             case .slider(let key, let minValue, let maxValue, let defaultValue, let minImage, let maxImage):
                 SliderItemView(item: item, key: key, minValue: minValue, maxValue: maxValue, defaultValue: defaultValue, minImage: minImage, maxImage: maxImage, viewModel: viewModel)
@@ -1521,6 +1523,7 @@ struct MultiValueItemView: View {
     let values: [Any]
     let defaultValue: Any
     @ObservedObject var viewModel: PreferencesViewModel
+    var fullRowHitArea = false
 
     @State private var selectedIndex: Int = 0
     @State private var showPicker = false
@@ -1529,6 +1532,9 @@ struct MultiValueItemView: View {
         Button(action: { showPicker = true }) {
             if key == "cluster_mode" {
                 clusterModeRow
+            } else if fullRowHitArea {
+                // PreferencesView.swift includes the spacer and padding in gesture picker buttons' tap targets.
+                standardRow.contentShape(Rectangle())
             } else {
                 standardRow
             }
