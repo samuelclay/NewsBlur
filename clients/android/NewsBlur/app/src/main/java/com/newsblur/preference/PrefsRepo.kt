@@ -832,15 +832,23 @@ class PrefsRepo(
 
     fun isConfirmMarkRangeRead() = prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
 
-    fun getLeftToRightGestureAction(): GestureAction =
-        GestureAction.valueOf(
-            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK.toString())!!,
-        )
+    fun gestureAction(key: String, fallback: GestureAction): GestureAction {
+        val saved = prefs.getString(key, fallback.name)
+        return GestureAction.entries.firstOrNull { it.name == saved } ?: fallback
+    }
 
-    fun getRightToLeftGestureAction(): GestureAction =
-        GestureAction.valueOf(
-            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ.toString())!!,
-        )
+    fun getLeftToRightGestureAction() = gestureAction(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK)
+    fun getRightToLeftGestureAction() = gestureAction(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ)
+    fun isFeedSwipesEnabled() = prefs.getBoolean("enable_feed_swipes", true)
+    fun isStorySwipesEnabled() = prefs.getBoolean("enable_story_swipes", true)
+    fun getFeedSwipeAction(right: Boolean) = gestureAction(
+        if (right) "feed_swipe_right" else "feed_swipe_left",
+        if (right) GestureAction.GEST_ACTION_NOTIFICATIONS else GestureAction.GEST_ACTION_MARKREAD,
+    )
+    fun getFeedLongPressAction() = gestureAction("feed_long_press", GestureAction.GEST_ACTION_READ_RANGE)
+    fun getStoryLongPressAction() = gestureAction("story_long_press", GestureAction.GEST_ACTION_ASK_AI)
+
+    fun getReaderGesture(key: String, fallback: String): String = prefs.getString(key, fallback) ?: fallback
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
