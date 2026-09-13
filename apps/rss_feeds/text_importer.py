@@ -1,6 +1,6 @@
 import zlib
 from socket import error as SocketError
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 import urllib3
@@ -28,6 +28,30 @@ BROKEN_URLS = [
 ]
 
 INVALID_XML_CONTROL_CHARACTERS = dict.fromkeys((*range(0x00, 0x09), 0x0B, 0x0C, *range(0x0E, 0x20)))
+
+# Google answers requests from the EU (where NewsBlur's servers are) with a cookie consent
+# interstitial on these hosts instead of the page asked for. Extracting it yields "We use
+# cookies and data..." as the story text (forum #13827), so a fetch that ends up here is
+# treated as a failure. apps/rss_feeds/text_importer.py
+GOOGLE_CONSENT_HOSTS = ("consent.google.com", "consent.youtube.com")
+
+
+# The opening line of that interstitial, as extracted by Mercury or readability. Stories
+# fetched before the fix cached it as their original text; see MStory.fetch_original_text.
+GOOGLE_CONSENT_PHRASE = "We use cookies and data, including IP addresses"
+
+
+def is_google_consent_url(url):
+    """True when a fetch was redirected to Google's cookie consent wall."""
+    try:
+        return urlparse(url or "").hostname in GOOGLE_CONSENT_HOSTS
+    except ValueError:
+        return False
+
+
+def is_google_consent_text(text):
+    """True when extracted or cached original text is Google's cookie consent wall."""
+    return bool(text) and GOOGLE_CONSENT_PHRASE in smart_str(text)
 
 
 class TextImporter:
@@ -106,6 +130,12 @@ class TextImporter:
         url = doc["url"]
         image = doc["lead_image_url"]
 
+        if is_google_consent_url(url):
+            logging.user(
+                self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % url
+            )
+            return
+
         if image and ("http://" in image[1:] or "https://" in image[1:]):
             logging.user(self.request, "~SN~FRRemoving broken image from text: %s" % image)
             image = None
@@ -125,6 +155,13 @@ class TextImporter:
             resp = None
 
         if not resp:
+            return
+
+        if is_google_consent_url(getattr(resp, "url", None)):
+            logging.user(
+                self.request,
+                "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % resp.url,
+            )
             return
 
         @timelimit(5)

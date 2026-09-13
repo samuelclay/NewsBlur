@@ -1068,6 +1068,116 @@ class Test_TextImporterEncoding(TestCase):
         self.assertNotIn("\x01", result["content"])
 
 
+class Test_TextImporterGoogleNews(TestCase):
+    """Google News feeds link every story through news.google.com/rss/articles/<token>.
+    NewsBlur's servers are in the EU, so following that link lands on Google's cookie
+    consent wall ("Before you continue"), and that boilerplate was being extracted and
+    shown as the story text. Forum #13827. The token must be decoded to the real article
+    URL first, and a consent page must never be saved as original text."""
+
+    GOOGLE_URL = "https://news.google.com/rss/articles/CBMitwFBVV95cUxNNTFWNE1wQVNQ?oc=5"
+    ARTICLE_URL = "https://www.reuters.com/business/ahead-fed-meeting-2026-09-13/"
+    CONSENT_URL = "https://consent.google.com/ml?continue=https://news.google.com/rss/articles/CBMitwFBVV95"
+    CONSENT_HTML = (
+        b"<html><head><title>Before you continue</title></head><body><article>"
+        b"<p>We use cookies and data, including IP addresses, to Deliver and maintain Google services, "
+        b"Track outages and protect against spam, fraud, and abuse.</p></article></body></html>"
+    )
+
+    def _story(self, url):
+        story = MagicMock()
+        story.story_permalink = url
+        story.story_content_z = None
+        story.image_urls = []
+        return story
+
+    def _consent_response(self):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.content = self.CONSENT_HTML
+        resp.encoding = "utf-8"
+        resp.text = self.CONSENT_HTML.decode("utf-8")
+        resp.url = self.CONSENT_URL
+        resp.headers = {"Content-Type": "text/html; charset=utf-8"}
+        resp.connection = MagicMock()
+        return resp
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
+    def test_resolve_google_redirect_url_decodes_google_news_article_links(self, mock_decode):
+        mock_decode.return_value = self.ARTICLE_URL
+
+        self.assertEqual(Feed.resolve_google_redirect_url(self.GOOGLE_URL), self.ARTICLE_URL)
+        mock_decode.assert_called_once_with(self.GOOGLE_URL)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    def test_resolve_google_redirect_url_keeps_the_link_when_decoding_fails(self, mock_decode):
+        self.assertEqual(Feed.resolve_google_redirect_url(self.GOOGLE_URL), self.GOOGLE_URL)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
+    def test_text_importer_fetches_the_decoded_article_url(self, mock_decode):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mock_decode.return_value = self.ARTICLE_URL
+
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+
+        self.assertEqual(importer.story_url, self.ARTICLE_URL)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_fetch_manually_never_saves_the_google_consent_wall(self, mock_get, mock_decode):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mock_get.return_value = self._consent_response()
+
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+        result = importer.fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    def test_fetch_mercury_never_saves_the_google_consent_wall(self, mock_decode):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mercury = MagicMock()
+        mercury.json.return_value = {
+            "content": "<p>We use cookies and data, including IP addresses</p>",
+            "title": "Before you continue",
+            "url": self.CONSENT_URL,
+            "lead_image_url": None,
+        }
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+
+        with patch.object(importer, "fetch_request", return_value=mercury):
+            result = importer.fetch_mercury(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_cached_consent_wall_is_dropped_and_refetched(self, mock_feed, mock_decode):
+        """Stories fetched before the fix cached the consent page as their text; opening them
+        again must fetch the real article instead of serving the cached boilerplate."""
+        story = MStory(
+            story_feed_id=1,
+            story_hash="1:consent",
+            story_guid="consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer, patch.object(
+            MStory, "save"
+        ), patch.object(MStory, "extract_image_urls"):
+            mock_importer.return_value.fetch.return_value = {"content": "<p>Real article</p>", "image": None}
+            text = story.fetch_original_text()
+
+        self.assertEqual(text, "<p>Real article</p>")
+        self.assertIsNone(story.original_text_z)
+        mock_importer.return_value.fetch.assert_called_once_with(return_document=True)
+
+
 class Test_YouTubeFavicons(TestCase):
     """Tests for YouTube favicon lookup and caching."""
 
