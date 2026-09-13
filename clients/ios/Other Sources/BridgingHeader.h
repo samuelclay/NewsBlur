@@ -12,6 +12,7 @@
 
 #import "NSString+HTML.h"
 #import "Utilities.h"
+#import "FMDatabase.h"
 #import "NewsBlurAppDelegate.h"
 #import "ThemeManager.h"
 #import "PremiumManager.h"

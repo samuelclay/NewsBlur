@@ -32,6 +32,7 @@ final class NewsBlurUITestHarness {
     private static var didPrepareLaunchEnvironment = false
     private static var didScheduleScenario = false
     private static var didLoadFeedFixture = false
+    private static var didIsolateReaderStorage = false
 
     static func prepareLaunchEnvironmentIfNeeded(appDelegate: NewsBlurAppDelegate) {
         guard isEnabled, !didPrepareLaunchEnvironment else { return }
@@ -262,6 +263,25 @@ final class NewsBlurUITestHarness {
     }
 
     private static func installReaderFixtureNetwork(on appDelegate: NewsBlurAppDelegate) {
+        if !didIsolateReaderStorage {
+            didIsolateReaderStorage = true
+            // NewsBlurUITestHarness.swift keeps offline retries and cached stories local to this launch.
+            var schemaVersion = 0
+            appDelegate.database.inDatabase { database in
+                schemaVersion = appDelegate.databaseSchemaVersion(database)
+            }
+            let database = FMDatabaseQueue(path: ":memory:")!
+            database.inDatabase { connection in
+                guard let connection else { preconditionFailure("Unable to open the fixture database") }
+                // NewsBlurUITestHarness.swift creates current tables without running disk-image migrations.
+                _ = connection.executeUpdate("PRAGMA user_version = \(schemaVersion)", withArgumentsIn: [])
+                appDelegate.setupDatabase(connection, force: false)
+            }
+            appDelegate.database = database
+            appDelegate.activeUsername = ReaderUITestFixtures.username
+            appDelegate.hasQueuedReadStories = false
+            appDelegate.hasQueuedSavedStories = false
+        }
         ReaderUITestURLProtocol.installIfNeeded()
         appDelegate.setCustomDomainForTesting(ReaderUITestFixtures.baseURL.absoluteString)
         appDelegate.setNetworkProtocolClassesForTesting([ReaderUITestURLProtocol.self])
@@ -343,6 +363,13 @@ final class NewsBlurUITestHarness {
 
 private enum ReaderUITestFixtures {
     static let baseURL = URL(string: "https://ui-test.newsblur.example")!
+    // NewsBlurUITestHarness.swift gives StoryFirstPageCache a fresh account namespace on every launch.
+    static let username = "ui-test-\(UUID().uuidString)"
+    private static let mutationPaths: Set<String> = [
+        "/reader/mark_story_hashes_as_read", "/reader/mark_story_as_unread",
+        "/reader/mark_story_as_starred", "/reader/mark_story_as_unstarred",
+        "/reader/mark_feed_stories_as_read", "/reader/mark_feed_as_read", "/reader/mark_all_as_read",
+    ]
 
     static let techFeedId = "910001"
     static let swiftFeedId = "910002"
@@ -396,7 +423,7 @@ private enum ReaderUITestFixtures {
 
     static func feedListResponse() -> [String: Any] {
         let response: [String: Any] = [
-            "user": "ui-test-user",
+            "user": username,
             "share_ext_token": "ui-test-token",
             "social_profile": NSNull(),
             "social_services": [:],
@@ -468,7 +495,9 @@ private enum ReaderUITestFixtures {
         )!
         let payload: [String: Any]
 
-        if url.path == "/reader/feeds" {
+        if request.httpMethod == "POST", mutationPaths.contains(url.path) {
+            payload = ["code": 1]
+        } else if url.path == "/reader/feeds" {
             payload = feedListResponse()
         } else if url.path == "/reader/refresh_feeds" {
             payload = refreshFeedsResponse()

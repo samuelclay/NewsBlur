@@ -22,6 +22,23 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
+    func test_fixtureStoryMutationsDoNotSurviveRelaunch() {
+        for experimental in [false, true] {
+            launchSwipes(experimental: experimental, right: "save", left: "read")
+            assertFirstStoryState("Unread, Unsaved")
+            swipeFirstStory(right: true)
+            assertFirstStoryState("Unread, Saved")
+            swipeFirstStory(right: false)
+            assertFirstStoryState("Read, Saved")
+            attachScreenshot(named: "fixture-before-relaunch-\(experimental)")
+
+            app.terminate()
+            launchSwipes(experimental: experimental, right: "save", left: "read")
+            assertFirstStoryState("Unread, Unsaved")
+            attachScreenshot(named: "fixture-after-relaunch-\(experimental)")
+        }
+    }
+
     func test_gesturePreferencesCollapseIndependentlyAndKeepSelections() {
         app.launchArguments = ["-newsblur-ui-test-reset-gestures", "-newsblur-ui-test-animations"]
         launch(on: "preferences")
