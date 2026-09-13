@@ -2422,9 +2422,11 @@
                     return;
                 }
                 // StoryDetailObjCViewController.m can receive DOM readiness before WK publishes its native content size.
+                if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] restoreLayoutStart page=%p hash=%@ gen=%lu", strongSelf, strongSelf.activeStoryId, (unsigned long)generation);
                 [restoringWebView callAsyncJavaScript:@"await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); return true;"
                                            arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
                                    completionHandler:^(id result, NSError *error) {
+                    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] restoreLayoutFinished page=%p gen=%lu current=%d error=%@", strongSelf, (unsigned long)generation, [strongSelf isCurrentStoryLoad:generation], error);
                     if (![strongSelf isCurrentStoryLoad:generation] || strongSelf.webView != restoringWebView) return;
                     if (error || scrollActivity != strongSelf.storyScrollActivityGeneration ||
                         restoringWebView.scrollView.isTracking || restoringWebView.scrollView.isDragging ||
@@ -2805,6 +2807,7 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] navigationFinished page=%p hash=%@ currentWeb=%d storyNavigation=%d fontNavigation=%d gen=%lu readygen=%lu", self, self.activeStoryId, webView == self.webView, navigation == self.storyNavigation, navigation == self.fontWarmupNavigation, (unsigned long)self.storyLoadGeneration, (unsigned long)self.readyStoryLoadGeneration);
     if (webView == self.webView && navigation && navigation == self.measuredFontWarmupNavigation) {
         [ReaderPerformance finish:@"detail.font_bootstrap_navigation_finished" since:self.fontWarmupStarted];
     }
@@ -2852,6 +2855,7 @@
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] navigationFailed page=%p hash=%@ provisional=0 currentWeb=%d storyNavigation=%d preparing=%d gen=%lu error=%@", self, self.activeStoryId, webView == self.webView, navigation == self.storyNavigation, self.preparingStoryPresentation, (unsigned long)self.storyLoadGeneration, error);
     [self finishFontPreparationForWebView:webView navigation:navigation error:error];
     if (webView == self.webView && navigation == self.storyNavigation &&
         [self isCurrentStoryLoad:self.storyLoadGeneration]) {
@@ -2862,6 +2866,7 @@
 }
 
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] navigationFailed page=%p hash=%@ provisional=1 currentWeb=%d storyNavigation=%d preparing=%d gen=%lu error=%@", self, self.activeStoryId, webView == self.webView, navigation == self.storyNavigation, self.preparingStoryPresentation, (unsigned long)self.storyLoadGeneration, error);
     [self finishFontPreparationForWebView:webView navigation:navigation error:error];
     if (webView == self.webView && navigation == self.storyNavigation &&
         [self isCurrentStoryLoad:self.storyLoadGeneration]) {
@@ -2914,6 +2919,7 @@
     self.fullStoryHTML = nil;
     self.hasStory = YES;
     [self loadHTMLString:html];
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] loadStory page=%p hash=%@ gen=%lu", self, self.activeStoryId, (unsigned long)self.storyLoadGeneration);
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
@@ -2970,6 +2976,7 @@
 }
 
 - (void)webViewNotifyLoaded {
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] notify page=%p hash=%@ gen=%lu ready=%lu has=%d current=%d", self, self.activeStoryId, (unsigned long)self.storyLoadGeneration, (unsigned long)self.readyStoryLoadGeneration, self.hasStory, [self isCurrentStoryLoad:self.storyLoadGeneration]);
     if (!self.hasStory || ![self isCurrentStoryLoad:self.storyLoadGeneration] ||
         self.readyStoryLoadGeneration == self.storyLoadGeneration) return;
     self.readyStoryLoadGeneration = self.storyLoadGeneration;
@@ -2981,6 +2988,7 @@
 }
 
 - (void)prepareCurrentStoryForPresentation {
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] current page=%p hash=%@ gen=%lu ready=%lu has=%d hidden=%d current=%d", self, self.activeStoryId, (unsigned long)self.storyLoadGeneration, (unsigned long)self.readyStoryLoadGeneration, self.hasStory, self.webView.hidden, [self isCurrentStoryLoad:self.storyLoadGeneration]);
     self.preparingStoryPresentation = YES;
     self.readyForPresentation = NO;
     self.presentationLayoutGeneration++;
@@ -2998,6 +3006,7 @@
 
 - (void)finishPreparingStoryPresentation {
     NSUInteger generation = self.storyLoadGeneration;
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] finish page=%p prepare=%d ready=%d checking=%d has=%d hidden=%d restoring=%d gen=%lu readygen=%lu current=%d", self, self.preparingStoryPresentation, self.readyForPresentation, self.checkingPresentationLayout, self.hasStory, self.webView.hidden, self.awaitingStoryScrollRestoration, (unsigned long)generation, (unsigned long)self.readyStoryLoadGeneration, [self isCurrentStoryLoad:generation]);
     if (!self.preparingStoryPresentation || self.readyForPresentation || self.checkingPresentationLayout ||
         !self.hasStory || self.webView.hidden || self.awaitingStoryScrollRestoration ||
         self.readyStoryLoadGeneration != generation || ![self isCurrentStoryLoad:generation]) return;
@@ -3016,6 +3025,7 @@
     [preparingWebView callAsyncJavaScript:@"await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); return document.querySelector('#NB-story') !== null;"
                                arguments:nil inFrame:nil inContentWorld:WKContentWorld.pageWorld
                        completionHandler:^(id result, NSError *error) {
+        if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] layoutFinished page=%p gen=%lu current=%d layoutGen=%lu/%lu result=%@ error=%@", weakSelf, (unsigned long)generation, [weakSelf isCurrentStoryLoad:generation], (unsigned long)layoutGeneration, (unsigned long)weakSelf.presentationLayoutGeneration, result, error);
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf || strongSelf.webView != preparingWebView || ![strongSelf isCurrentStoryLoad:generation] ||
             layoutGeneration != strongSelf.presentationLayoutGeneration) return;
@@ -3055,6 +3065,7 @@
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
     if (webView != self.webView) return;
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] webProcessTerminated page=%p hash=%@ preparing=%d has=%d gen=%lu readygen=%lu", self, self.activeStoryId, self.preparingStoryPresentation, self.hasStory, (unsigned long)self.storyLoadGeneration, (unsigned long)self.readyStoryLoadGeneration);
     NSLog(@"Web content process did terminate: %@", webView);  // log
     
     self.preparedWebViewFonts = NO;
