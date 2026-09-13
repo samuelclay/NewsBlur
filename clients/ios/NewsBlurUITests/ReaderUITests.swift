@@ -388,9 +388,14 @@ final class ReaderUITests: XCTestCase {
 
         let storyList = fixtureStorySurface()
         XCTAssertTrue(storyList.waitForExistence(timeout: 10))
-        XCTAssertTrue(reveal(storyTitle("Swift Fixture Story One"), in: storyList))
-        XCTAssertTrue(reveal(storyTitle("Swift Fixture Story Two"), in: storyList))
-        XCTAssertTrue(reveal(storyTitle("Swift Fixture Story Three"), in: storyList))
+        // FeedDetailTableCell.m exposes the drawn title in the cell's combined accessibility label.
+        for (hash, title) in [("ui-story-swift-1", "Swift Fixture Story One"),
+                              ("ui-story-swift-2", "Swift Fixture Story Two"),
+                              ("ui-story-swift-3", "Swift Fixture Story Three")] {
+            let row = storyCell(hash)
+            XCTAssertTrue(reveal(row, in: storyList))
+            XCTAssertTrue(row.label.contains("\"\(title)\""))
+        }
     }
 
     func test_experimentalTitlesShowClusterRows() {
