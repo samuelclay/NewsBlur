@@ -1103,15 +1103,23 @@ class Test_TextImporterGoogleNews(TestCase):
         return resp
 
     @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
-    def test_resolve_google_redirect_url_decodes_google_news_article_links(self, mock_decode):
+    def test_resolve_google_news_article_url_decodes_the_token(self, mock_decode):
         mock_decode.return_value = self.ARTICLE_URL
 
-        self.assertEqual(Feed.resolve_google_redirect_url(self.GOOGLE_URL), self.ARTICLE_URL)
+        self.assertEqual(Feed.resolve_google_news_article_url(self.GOOGLE_URL), self.ARTICLE_URL)
         mock_decode.assert_called_once_with(self.GOOGLE_URL)
 
     @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
-    def test_resolve_google_redirect_url_keeps_the_link_when_decoding_fails(self, mock_decode):
+    def test_resolve_google_news_article_url_keeps_the_link_when_decoding_fails(self, mock_decode):
+        self.assertEqual(Feed.resolve_google_news_article_url(self.GOOGLE_URL), self.GOOGLE_URL)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
+    def test_get_permalink_never_decodes_google_news_links(self, mock_decode):
+        """get_permalink runs for every entry on every fetch; decoding costs two HTTP
+        requests per story, so it stays out of the shared permalink helper."""
+        self.assertEqual(Feed.get_permalink({"link": self.GOOGLE_URL}), self.GOOGLE_URL)
         self.assertEqual(Feed.resolve_google_redirect_url(self.GOOGLE_URL), self.GOOGLE_URL)
+        mock_decode.assert_not_called()
 
     @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
     def test_text_importer_fetches_the_decoded_article_url(self, mock_decode):
@@ -1176,6 +1184,26 @@ class Test_TextImporterGoogleNews(TestCase):
         self.assertEqual(text, "<p>Real article</p>")
         self.assertIsNone(story.original_text_z)
         mock_importer.return_value.fetch.assert_called_once_with(return_document=True)
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_unrelated_article_quoting_the_consent_wording_is_kept(self, mock_feed):
+        """Only Google News links get their cached text dropped; an article elsewhere that
+        quotes Google's consent wording keeps its cached full text."""
+        story = MStory(
+            story_feed_id=1,
+            story_hash="1:quoting",
+            story_guid="quoting-guid",
+            story_title="What Google's consent wall says",
+            story_permalink="https://example.com/google-consent-wall-explained",
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer:
+            text = story.fetch_original_text()
+
+        self.assertEqual(text, self.CONSENT_HTML)
+        self.assertIsNotNone(story.original_text_z)
+        mock_importer.assert_not_called()
 
 
 class Test_YouTubeFavicons(TestCase):

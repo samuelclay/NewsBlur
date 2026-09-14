@@ -49,7 +49,11 @@ from apps.rss_feeds.tasks import (
     ScheduleCountTagsForUser,
     UpdateFeeds,
 )
-from apps.rss_feeds.text_importer import TextImporter, is_google_consent_text
+from apps.rss_feeds.text_importer import (
+    TextImporter,
+    is_google_consent_text,
+    is_google_news_url,
+)
 from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
 from utils import feedfinder_forman, feedfinder_pilgrim
@@ -2887,13 +2891,9 @@ class Feed(models.Model):
         so requests/Mercury parser can't follow them. Extract the real URL from
         the 'url' query parameter instead.
 
-        Google News feeds link every story through
-        https://news.google.com/rss/articles/<token>. Following that from NewsBlur's
-        servers in the EU lands on Google's cookie consent wall rather than the article,
-        and the consent boilerplate was being shown as the story text (forum #13827).
-        The token is decoded to the real article URL with MStory._decode_google_news_url;
-        when Google's decode endpoint fails, the link is returned untouched and
-        TextImporter refuses the consent page instead (apps/rss_feeds/text_importer.py).
+        This runs for every entry on every fetch (get_permalink), so it must never make a
+        network request. Google News article tokens, which need one, are decoded only when
+        a story's text is fetched: see resolve_google_news_article_url.
         """
         try:
             parsed = urllib.parse.urlparse(url)
@@ -2902,13 +2902,31 @@ class Feed(models.Model):
                 actual_url = qs.get("url", [None])[0]
                 if actual_url:
                     return actual_url
-            if parsed.hostname == "news.google.com" and "/articles/" in parsed.path:
-                decoded_url = MStory._decode_google_news_url(url)
-                if decoded_url:
-                    return decoded_url
         except Exception:
             pass
         return url
+
+    @staticmethod
+    def resolve_google_news_article_url(url):
+        """Decode a Google News story link to the article it points at.
+
+        Google News feeds link every story through
+        https://news.google.com/rss/articles/<token>. Following that from NewsBlur's
+        servers in the EU lands on Google's cookie consent wall rather than the article,
+        and the consent boilerplate was being shown as the story text (forum #13827).
+        Decoding costs up to two HTTP requests (MStory._decode_google_news_url), so only
+        TextImporter calls this, once per original-text fetch; never get_permalink, which
+        runs for every entry on every feed fetch. When the decode endpoint fails, the link
+        is returned untouched and TextImporter refuses the consent page instead
+        (apps/rss_feeds/text_importer.py).
+        """
+        if not is_google_news_url(url):
+            return url
+        try:
+            decoded_url = MStory._decode_google_news_url(url)
+        except Exception:
+            decoded_url = None
+        return decoded_url or url
 
     def _exists_story(self, story, story_content, existing_stories, new_story_hashes, lightweight=False):
         story_in_system = None
@@ -4445,8 +4463,14 @@ class MStory(mongo.Document):
         original_text_z = self.original_text_z
         # Google News stories fetched before forum #13827 was fixed cached Google's cookie
         # consent wall as their text. Drop that cache so the real article is fetched; a failed
-        # refetch then leaves the story with no text rather than the consent boilerplate.
-        if original_text_z and not force and is_google_consent_text(zlib.decompress(original_text_z)):
+        # refetch then leaves the story with no text rather than the consent boilerplate. Only
+        # Google News links qualify, so an article that merely quotes the wording is kept.
+        if (
+            original_text_z
+            and not force
+            and is_google_news_url(self.story_permalink)
+            and is_google_consent_text(zlib.decompress(original_text_z))
+        ):
             logging.user(request, "~FYCached original text is Google's consent wall, refetching")
             self.original_text_z = original_text_z = None
 
@@ -4688,8 +4712,14 @@ class MStarredStory(mongo.DynamicDocument):
         original_text_z = self.original_text_z
         # Google News stories fetched before forum #13827 was fixed cached Google's cookie
         # consent wall as their text. Drop that cache so the real article is fetched; a failed
-        # refetch then leaves the story with no text rather than the consent boilerplate.
-        if original_text_z and not force and is_google_consent_text(zlib.decompress(original_text_z)):
+        # refetch then leaves the story with no text rather than the consent boilerplate. Only
+        # Google News links qualify, so an article that merely quotes the wording is kept.
+        if (
+            original_text_z
+            and not force
+            and is_google_news_url(self.story_permalink)
+            and is_google_consent_text(zlib.decompress(original_text_z))
+        ):
             logging.user(request, "~FYCached original text is Google's consent wall, refetching")
             self.original_text_z = original_text_z = None
         feed = Feed.get_by_id(self.story_feed_id)
