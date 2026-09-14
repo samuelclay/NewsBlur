@@ -700,25 +700,33 @@ class FetchFeed:
                         response_headers["content-type"] = f"{content_type}; charset=utf-8"
 
                     # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes).
-                    # A feed in another declared encoding (ISO-8859-1 with accents) is not
-                    # UTF-8; decode it with the encoding the response declares instead of
-                    # falling out to the feedparser URL fallback, which cannot reach a feed
-                    # that only answers over https (forum #13830).
+                    # A feed in another encoding (ISO-8859-1, Windows-1251) is not valid UTF-8:
+                    # hand feedparser the raw bytes so it honors the XML declaration and the
+                    # HTTP charset itself, instead of falling out to the feedparser URL
+                    # fallback, which cannot reach a feed that only answers over https
+                    # (forum #13830). utils/feed_fetcher.py
                     try:
                         self.raw_feed = smart_str(raw_feed.content)
                     except (UnicodeDecodeError, DjangoUnicodeDecodeError):
-                        declared = getattr(raw_feed, "encoding", None)
-                        declared = declared if isinstance(declared, str) and declared else "iso-8859-1"
-                        self.raw_feed = raw_feed.content.decode(declared, errors="replace")
+                        self.raw_feed = None
 
-                    # Preprocess feed to fix encoding issues before parsing with feedparser
-                    processed_feed = preprocess_feed_encoding(self.raw_feed)
-                    if processed_feed != self.raw_feed:
+                    if self.raw_feed is not None:
+                        # Preprocess feed to fix encoding issues before parsing with feedparser
+                        processed_feed = preprocess_feed_encoding(self.raw_feed)
+                        if processed_feed != self.raw_feed:
+                            logging.debug(
+                                "   ---> [%-30s] ~FGApplied encoding correction to feed with misencoded HTML entities"
+                                % (self.feed.log_title[:30])
+                            )
+                        self.fpf = feedparser.parse(processed_feed, response_headers=response_headers)
+                    else:
+                        self.fpf = feedparser.parse(raw_feed.content, response_headers=response_headers)
+                        detected = self.fpf.get("encoding") or "utf-8"
                         logging.debug(
-                            "   ---> [%-30s] ~FGApplied encoding correction to feed with misencoded HTML entities"
-                            % (self.feed.log_title[:30])
+                            "   ---> [%-30s] ~FBFeed is not UTF-8, parsed raw bytes as %s"
+                            % (self.feed.log_title[:30], detected)
                         )
-                    self.fpf = feedparser.parse(processed_feed, response_headers=response_headers)
+                        self.raw_feed = raw_feed.content.decode(detected, errors="replace")
 
                     # When feedparser parses content (not a URL), it doesn't set status/etag/modified.
                     # Inject these from the requests response so compare_feed_attribute_changes preserves them.
@@ -738,7 +746,7 @@ class FetchFeed:
                             % (
                                 self.feed.log_title[:30],
                                 raw_feed.status_code,
-                                len(smart_str(raw_feed.content)),
+                                len(raw_feed.content),
                                 raw_feed.headers,
                             )
                         )

@@ -1351,13 +1351,47 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
             response.headers = {"Content-Type": "application/rss+xml; charset=ISO-8859-1"}
             return response
 
-        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        fetcher = FetchFeed(self.feed.pk, {"verbose": True, "force": False})
         with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_latin1):
             result, fpf = fetcher.fetch()
 
         self.assertEqual(result, FEED_OK)
         self.assertTrue(fpf.get("upgraded_to_https"))
         self.assertEqual(fpf.entries[0].title, "Crème brûlée")
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_feed_declaring_windows_1251_without_an_http_charset_is_decoded_by_its_declaration(
+        self, mock_random, mock_validate
+    ):
+        """The HTTP charset is absent, so the XML declaration must win; verbose logging must not
+        trip over the non-UTF-8 body either."""
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        cyrillic_rss = (
+            '<?xml version="1.0" encoding="windows-1251"?><rss version="2.0"><channel><title>Новости</title>'
+            "<link>https://dead-port-80.example.com/</link><item><title>Привет, мир</title>"
+            "<link>https://dead-port-80.example.com/3</link><guid>https://dead-port-80.example.com/3</guid></item>"
+            "</channel></rss>"
+        ).encode("windows-1251")
+
+        def http_dead_https_cyrillic(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = cyrillic_rss
+            response.encoding = None
+            response.headers = {"Content-Type": "application/rss+xml"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": True, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_cyrillic):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.entries[0].title, "Привет, мир")
+        self.assertIn("Привет, мир", fetcher.raw_feed)
 
     def test_process_feed_persists_the_https_address(self):
         import feedparser
