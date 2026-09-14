@@ -125,8 +125,11 @@ class Feed(models.Model):
     archive_subscribers = models.IntegerField(default=0, null=True, blank=True)
     pro_subscribers = models.IntegerField(default=0, null=True, blank=True)
     active_premium_subscribers = models.IntegerField(default=-1)
+    # SET_NULL, not CASCADE: deleting a feed must never delete the feeds branched from it.
+    # With CASCADE, merge_feeds deleting a stale parent took its live https branches and
+    # every subscription on them (forum #13830). apps/rss_feeds/models.py
     branch_from_feed = models.ForeignKey(
-        "Feed", blank=True, null=True, db_index=True, on_delete=models.CASCADE
+        "Feed", blank=True, null=True, db_index=True, on_delete=models.SET_NULL
     )
     last_update = models.DateTimeField(db_index=True)
     next_scheduled_update = models.DateTimeField()
@@ -5176,6 +5179,68 @@ class DuplicateFeed(models.Model):
         super(DuplicateFeed, self).save(*args, **kwargs)
 
 
+def log_merge_feeds_inventory(original_feed, duplicate_feed):
+    """Log everything merge_feeds is about to move or delete, one line per row, so a bad
+    merge can be reconstructed from the task logs alone. Forum #13830: a merge cascade-
+    deleted two feeds and 700 subscriptions with no record of what they had been.
+    apps/rss_feeds/models.py
+    """
+    from apps.notifications.models import MUserFeedNotification
+    from apps.reader.models import MCustomFeedIcon, UserSubscription
+
+    for label, feed in (("original (survives)", original_feed), ("duplicate (deleted)", duplicate_feed)):
+        logging.info(
+            " ---> merge_feeds %s: id=%s address=%s link=%s title=%r num_subscribers=%s active_subscribers=%s "
+            "branch_from=%s last_story=%s stories=%s starred=%s"
+            % (
+                label,
+                feed.pk,
+                feed.feed_address,
+                feed.feed_link,
+                feed.feed_title,
+                feed.num_subscribers,
+                feed.active_subscribers,
+                feed.branch_from_feed_id,
+                feed.last_story_date,
+                MStory.objects(story_feed_id=feed.pk).count(),
+                MStarredStory.objects(story_feed_id=feed.pk).count(),
+            )
+        )
+    for branched in Feed.objects.filter(branch_from_feed=duplicate_feed):
+        logging.info(
+            " ---> merge_feeds feed branched from the duplicate: id=%s address=%s num_subscribers=%s"
+            % (branched.pk, branched.feed_address, branched.num_subscribers)
+        )
+    subscriptions = UserSubscription.objects.filter(feed=duplicate_feed).select_related("user").order_by("pk")
+    logging.info(
+        " ---> merge_feeds moving %s subscriptions from %s to %s"
+        % (subscriptions.count(), duplicate_feed.pk, original_feed.pk)
+    )
+    for sub in subscriptions:
+        logging.info(
+            "      sub id=%s user_id=%s username=%s active=%s is_trained=%s feed_opens=%s "
+            "mark_read_date=%s needs_unread_recalc=%s"
+            % (
+                sub.pk,
+                sub.user_id,
+                sub.user.username,
+                sub.active,
+                sub.is_trained,
+                sub.feed_opens,
+                sub.mark_read_date,
+                sub.needs_unread_recalc,
+            )
+        )
+    logging.info(
+        " ---> merge_feeds on the duplicate: notifications=%s custom_icons=%s duplicate_rows=%s"
+        % (
+            MUserFeedNotification.objects(feed_id=duplicate_feed.pk).count(),
+            MCustomFeedIcon.objects(feed_id=duplicate_feed.pk).count(),
+            DuplicateFeed.objects.filter(feed=duplicate_feed).count(),
+        )
+    )
+
+
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.notifications.models import MUserFeedNotification
     from apps.reader.models import MCustomFeedIcon, UserSubscription
@@ -5223,6 +5288,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
             " [B: %s]" % duplicate_feed.branch_from_feed.pk if duplicate_feed.branch_from_feed else "",
         )
     )
+
+    log_merge_feeds_inventory(original_feed, duplicate_feed)
 
     original_feed.branch_from_feed = None
 
@@ -5276,6 +5343,18 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         " ---> Dupe subscribers (%s): %s, Original subscribers (%s): %s"
         % (duplicate_feed.pk, duplicate_feed.num_subscribers, original_feed.pk, original_feed.num_subscribers)
     )
+    # Until migration 0014 made branch_from_feed SET_NULL, deleting the duplicate cascaded to
+    # every feed branched from it, including the survivor when it was one of them (forum
+    # #13830). Re-parent those feeds to the survivor and persist the survivor's cleared parent
+    # before the delete, so the merge is safe on a database that has not migrated yet.
+    branched_feeds = Feed.objects.filter(branch_from_feed=duplicate_feed).exclude(pk=original_feed.pk)
+    for branched_feed in branched_feeds:
+        logging.info(
+            " ---> merge_feeds re-parenting feed %s (%s) from %s to %s"
+            % (branched_feed.pk, branched_feed.feed_address, duplicate_feed.pk, original_feed.pk)
+        )
+    branched_feeds.update(branch_from_feed=original_feed)
+    Feed.objects.filter(pk=original_feed.pk).update(branch_from_feed=None)
     if duplicate_feed.pk != original_feed.pk:
         duplicate_feed.delete()
     else:
