@@ -1159,6 +1159,38 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
 
 
 class Test_BranchFromFeedDoesNotCascade(TestCase):
+    @patch.object(Feed, "count_subscribers")
+    def test_cleanup_command_keeps_a_protected_parent_and_continues(self, mock_count):
+        """count_subscribers --delete must skip a zero-subscriber parent that still has
+        branches and go on to delete the other empty feeds."""
+        from django.core.management import call_command
+
+        parent = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/parent.xml",
+            feed_link="https://www.example.com/parent",
+            feed_title="Example | Parent",
+        )
+        branch = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-cleanup",
+            feed_link="https://www.example.com/parent",
+            feed_title="Example | Parent (reader)",
+            branch_from_feed=parent,
+        )
+        orphan = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/orphan.xml",
+            feed_link="https://www.example.com/orphan",
+            feed_title="Example | Orphan",
+        )
+        # The branch still has a reader, so only the parent and the orphan are cleanup candidates.
+        Feed.objects.filter(pk__in=[parent.pk, orphan.pk]).update(num_subscribers=0)
+        Feed.objects.filter(pk=branch.pk).update(num_subscribers=1)
+
+        call_command("count_subscribers", delete=True, verbosity=0)
+
+        self.assertTrue(Feed.objects.filter(pk=parent.pk).exists())
+        self.assertTrue(Feed.objects.filter(pk=branch.pk).exists())
+        self.assertFalse(Feed.objects.filter(pk=orphan.pk).exists())
+
     def test_deleting_a_parent_feed_with_branches_is_refused_and_leaves_them_intact(self):
         """A branch can be a reader's private URL, and a null parent is what makes a feed
         public in discovery, so a parent with branches can be merged but not deleted."""
