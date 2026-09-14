@@ -5182,67 +5182,101 @@ class DuplicateFeed(models.Model):
         super(DuplicateFeed, self).save(*args, **kwargs)
 
 
-def log_merge_feeds_inventory(original_feed, duplicate_feed):
-    """Log everything merge_feeds is about to move or delete, one line per row, so a bad
-    merge can be reconstructed from the task logs alone. Forum #13830: a merge cascade-
-    deleted two feeds and 700 subscriptions with no record of what they had been.
+MERGE_FEEDS_INVENTORY_PREFIX = "MERGE_FEEDS_INVENTORY"
+
+
+def merge_feeds_inventory_record(record):
+    """Write one merge inventory record as a single JSON line. It goes through the raw
+    "newsblur" logger rather than utils.log.info, whose colorizer rewrites "[" and "]" and
+    would corrupt the JSON. Read back with `manage.py restore_merged_feed`.
     apps/rss_feeds/models.py
     """
-    from apps.reader.models import UserSubscription
+    logging.getlogger().info("%s %s" % (MERGE_FEEDS_INVENTORY_PREFIX, json.encode(record)))
 
-    for label, feed in (("original (survives)", original_feed), ("duplicate (deleted)", duplicate_feed)):
-        logging.info(
-            " ---> merge_feeds %s: id=%s address=%s link=%s title=%r num_subscribers=%s active_subscribers=%s "
-            "branch_from=%s last_story=%s stories=%s starred=%s"
-            % (
-                label,
-                feed.pk,
-                feed.feed_address,
-                feed.feed_link,
-                feed.feed_title,
-                feed.num_subscribers,
-                feed.active_subscribers,
-                feed.branch_from_feed_id,
-                feed.last_story_date,
-                MStory.objects(story_feed_id=feed.pk).count(),
-                MStarredStory.objects(story_feed_id=feed.pk).count(),
+
+def folder_names_holding_feed(folders, feed_id, parent=""):
+    """Every folder name whose direct children include feed_id, "" for the root, walking a
+    UserSubscriptionFolders tree (ints are feeds, {name: [...]} dicts are folders)."""
+    names = []
+    for item in folders:
+        if isinstance(item, int) and item == feed_id:
+            names.append(parent)
+        elif isinstance(item, dict):
+            for name, children in item.items():
+                names.extend(folder_names_holding_feed(children, feed_id, name))
+    return names
+
+
+def log_merge_feeds_inventory(original_feed, duplicate_feed):
+    """Log everything merge_feeds is about to touch, as JSON records, so a bad merge can be
+    undone from the task logs alone with `manage.py restore_merged_feed` (forum #13830: a
+    merge cascade-deleted two feeds and 700 subscriptions with no record of what they were).
+
+    For both feeds: the full Feed row and FeedData rows as Django serializer objects, and
+    every subscription as a serializer object plus the folder names that hold the feed in
+    that reader's tree. That is exactly what a restore needs: the feed row with its original
+    id (folder trees and starred stories point at ids), the subscription rows with their
+    read state, and where in each reader's sidebar the feed belongs. Feeds branched from the
+    duplicate are listed by id only, since a branch can be a reader's private URL carrying
+    an access token. apps/rss_feeds/models.py
+    """
+    from django.core import serializers
+
+    from apps.reader.models import UserSubscription, UserSubscriptionFolders
+
+    merge = {
+        "original_feed_id": original_feed.pk,
+        "duplicate_feed_id": duplicate_feed.pk,
+        "logged_at": datetime.datetime.utcnow().isoformat(),
+    }
+    for role, feed in (("original", original_feed), ("duplicate", duplicate_feed)):
+        merge_feeds_inventory_record(
+            {
+                "type": "feed",
+                "role": role,
+                "merge": merge,
+                "object": json.decode(serializers.serialize("json", [feed]))[0],
+                "stories": MStory.objects(story_feed_id=feed.pk).count(),
+                "starred": MStarredStory.objects(story_feed_id=feed.pk).count(),
+            }
+        )
+        for feed_data in json.decode(serializers.serialize("json", FeedData.objects.filter(feed=feed))):
+            merge_feeds_inventory_record(
+                {"type": "feeddata", "role": role, "merge": merge, "object": feed_data}
             )
+        subscriptions = UserSubscription.objects.filter(feed=feed).order_by("pk")
+        folder_rows = dict(
+            UserSubscriptionFolders.objects.filter(
+                user_id__in=subscriptions.values_list("user_id", flat=True)
+            ).values_list("user_id", "folders")
         )
-    # Branch ids only: a branched feed can be a reader's private URL carrying an access token
-    # (Reddit personal feeds, utils/reddit_fetcher.py), which must stay out of the task logs.
-    for branched_id, branched_subscribers in Feed.objects.filter(branch_from_feed=duplicate_feed).values_list(
-        "pk", "num_subscribers"
-    ):
-        logging.info(
-            " ---> merge_feeds feed branched from the duplicate: id=%s num_subscribers=%s"
-            % (branched_id, branched_subscribers)
-        )
-    subscriptions = UserSubscription.objects.filter(feed=duplicate_feed).select_related("user").order_by("pk")
-    logging.info(
-        " ---> merge_feeds moving %s subscriptions from %s to %s"
-        % (subscriptions.count(), duplicate_feed.pk, original_feed.pk)
-    )
-    for sub in subscriptions:
-        logging.info(
-            "      sub id=%s user_id=%s username=%s active=%s is_trained=%s feed_opens=%s "
-            "mark_read_date=%s needs_unread_recalc=%s"
-            % (
-                sub.pk,
-                sub.user_id,
-                sub.user.username,
-                sub.active,
-                sub.is_trained,
-                sub.feed_opens,
-                sub.mark_read_date,
-                sub.needs_unread_recalc,
+        for subscription in json.decode(serializers.serialize("json", subscriptions)):
+            user_id = subscription["fields"]["user"]
+            folders_json = folder_rows.get(user_id)
+            placements = []
+            if folders_json:
+                placements = folder_names_holding_feed(json.decode(folders_json), feed.pk)
+            merge_feeds_inventory_record(
+                {
+                    "type": "subscription",
+                    "role": role,
+                    "merge": merge,
+                    "object": subscription,
+                    "folders": placements,
+                    "has_folder_row": user_id in folder_rows,
+                }
             )
-        )
-    # Notification and custom icon rows are counted by their own switch_feed calls below;
-    # their Mongo collections are indexed by user_id, so an extra feed_id-only count here
-    # would scan them on every merge.
-    logging.info(
-        " ---> merge_feeds on the duplicate: duplicate_rows=%s"
-        % DuplicateFeed.objects.filter(feed=duplicate_feed).count()
+    merge_feeds_inventory_record(
+        {
+            "type": "summary",
+            "merge": merge,
+            "original_subscriptions": UserSubscription.objects.filter(feed=original_feed).count(),
+            "duplicate_subscriptions": UserSubscription.objects.filter(feed=duplicate_feed).count(),
+            "branches_of_duplicate": list(
+                Feed.objects.filter(branch_from_feed=duplicate_feed).values_list("pk", flat=True)
+            ),
+            "duplicate_rows": DuplicateFeed.objects.filter(feed=duplicate_feed).count(),
+        }
     )
 
 
