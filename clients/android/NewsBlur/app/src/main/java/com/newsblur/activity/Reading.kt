@@ -273,6 +273,7 @@ abstract class Reading :
     private var readerPageSnapshot: ReaderPageSnapshot? = null
     private var preparedPageStartedAt = 0L
     private var readerIsPaused = false
+    private var toolbarVisibleFraction = 1f
     private var preparedVisibleStory: Story? = null
     private var preparedVisibleScrollPosition: Float? = null
 
@@ -355,6 +356,8 @@ abstract class Reading :
                 "loadNext=${prefsRepo.loadNextOnMarkRead()} fs=${feedSetDebug()}",
         )
 
+        toolbarVisibleFraction = if (savedInstanceBundle?.getBoolean(EXTRA_TOOLBAR_HIDDEN)
+            ?: intent.getBooleanExtra(EXTRA_TOOLBAR_HIDDEN, false)) 0f else 1f
         setupViews()
         setupListeners()
         setupObservers()
@@ -364,6 +367,7 @@ abstract class Reading :
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
+        savedInstanceState.putBoolean(EXTRA_TOOLBAR_HIDDEN, toolbarVisibleFraction == 0f)
         val activeStory = activeReadingStory()
         val pagerStory = pagerReadingStory()
         logReaderRestore(
@@ -498,12 +502,24 @@ abstract class Reading :
     private fun setupViews() {
         // Reading.kt uses native nested scrolling so the page follows the toolbar without WebView relayout.
         val appBar = binding.includeToolbar.root
+        // Reading.kt establishes a scroll range before the initial hidden state is laid out.
+        // UIUtils.java supplies feed metadata asynchronously and must not own these flags.
+        binding.includeToolbar.toolbar.apply {
+            layoutParams = (layoutParams as AppBarLayout.LayoutParams).apply {
+                scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+            }
+        }
         appBar.addOnOffsetChangedListener(
             AppBarLayout.OnOffsetChangedListener { bar, offset ->
                 val visibleFraction = 1f - (-offset.toFloat() / bar.totalScrollRange.coerceAtLeast(1))
-                setOverlayAlpha(visibleFraction.coerceIn(0f, 1f))
+                toolbarVisibleFraction = visibleFraction.coerceIn(0f, 1f)
+                setOverlayAlpha(toolbarVisibleFraction)
             },
         )
+
+        if (toolbarVisibleFraction == 0f) appBar.setExpanded(false, false)
 
         findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener { openStorySettingsMenu(it) }
 
@@ -1096,7 +1112,6 @@ abstract class Reading :
                     }
                     checkStoryCount(position)
                     updateOverlayText()
-                    enableOverlays()
                 }
             },
         )
@@ -1133,15 +1148,15 @@ abstract class Reading :
     }
 
     /**
-     * Make visible and update the overlay UI.
+     * Restore controls after fullscreen video without changing the reader's scroll state.
      */
     fun enableOverlays() {
-        // Reading.kt also enables controls from asynchronous story-selection callbacks.
         runOnUiThread {
-            binding.includeToolbar.root.setExpanded(true, true)
-            setOverlayAlpha(1.0f)
+            setOverlayAlpha(toolbarVisibleFraction)
         }
     }
+
+    fun isToolbarHidden(): Boolean = toolbarVisibleFraction == 0f
 
     fun disableOverlays() {
         setOverlayAlpha(0.0f)
@@ -1671,6 +1686,7 @@ abstract class Reading :
         setResult(
             RESULT_OK,
             Intent().apply {
+                putExtra(EXTRA_TOOLBAR_HIDDEN, toolbarVisibleFraction == 0f)
                 pager?.currentItem?.let { pagerPosition ->
                     val visibleStory = currentReadingStory()
                     val position = visibleStory?.storyHash?.let { readingAdapter?.findHash(it) }
@@ -1988,6 +2004,7 @@ abstract class Reading :
         const val EXTRA_FEEDSET = "feed_set"
         const val EXTRA_STORY_HASH = "story_hash"
         const val EXTRA_STORY = "story"
+        const val EXTRA_TOOLBAR_HIDDEN = "reader_toolbar_hidden"
         private const val BUNDLE_STARTING_UNREAD = "starting_unread"
         private const val BUNDLE_CURRENT_SCROLL_POS_REL = "current_scroll_pos_rel"
         private const val BUNDLE_CURRENT_STORY = "current_story"

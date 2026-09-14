@@ -5,9 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -45,7 +42,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.snackbar.Snackbar;
@@ -205,13 +201,6 @@ public class UIUtils {
             return new ImageView(activity);
         }
 
-        // enabled scrolling app bar only for reading
-        if (activity instanceof Reading) {
-            AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_ENTER_ALWAYS | SCROLL_FLAG_SNAP);
-            toolbar.setLayoutParams(p);
-        }
-
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -254,6 +243,10 @@ public class UIUtils {
     }
 
     public static void startReadingActivity(Context context, FeedSet fs, String startingHash, @Nullable ActivityResultLauncher<Intent> readingActivityLauncher) {
+        startReadingActivity(context, fs, startingHash, readingActivityLauncher, context instanceof Reading && ((Reading) context).isToolbarHidden());
+    }
+
+    public static void startReadingActivity(Context context, FeedSet fs, String startingHash, @Nullable ActivityResultLauncher<Intent> readingActivityLauncher, boolean toolbarHidden) {
         Class activityClass;
 		if (fs.isAllSaved()) {
             activityClass = SavedStoriesReading.class;
@@ -290,6 +283,7 @@ public class UIUtils {
         Intent i = new Intent(context, activityClass);
         i.putExtra(Reading.EXTRA_FEEDSET, fs);
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
+        i.putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, toolbarHidden);
         if (readingActivityLauncher != null) readingActivityLauncher.launch(i);
         else context.startActivity(i);
     }

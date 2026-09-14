@@ -154,6 +154,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean predictiveBackInProgress = false;
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
+    private boolean readerToolbarHidden = false;
     private boolean fetchingBannerDelayElapsed = false;
     @Nullable
     private ImageView interactiveSwipeUnderlay;
@@ -177,6 +178,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onCreate(Bundle bundle) {
         Trace.beginSection("ItemsListOnCreate");
         super.onCreate(bundle);
+        readerToolbarHidden = bundle != null
+                ? bundle.getBoolean(Reading.EXTRA_TOOLBAR_HIDDEN, false)
+                : getIntent().getBooleanExtra(Reading.EXTRA_TOOLBAR_HIDDEN, false);
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
@@ -259,6 +263,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onSaveInstanceState(@NotNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(Reading.EXTRA_TOOLBAR_HIDDEN, readerToolbarHidden);
         String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (!q.isEmpty()) {
             savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
@@ -1110,7 +1115,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private void launchReadingActivity(FeedSet feedSet, String storyHash) {
         readingLaunchParentRef = new WeakReference<>(this);
-        UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch);
+        UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch, readerToolbarHidden);
     }
 
     public void beginInteractiveStoryListSwipe() {
@@ -1152,6 +1157,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private void handleReadingActivityResult(ActivityResult result) {
         if (result.getData() != null) {
+            readerToolbarHidden = result.getData().getBooleanExtra(Reading.EXTRA_TOOLBAR_HIDDEN, readerToolbarHidden);
             String lastReadingStoryHash = result.getData().getStringExtra(Reading.LAST_READING_STORY_HASH);
             if (lastReadingStoryHash != null) {
                 Log.d(this.getClass().getName(), "Checking returned story position for " + lastReadingStoryHash);
