@@ -24,8 +24,8 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 283
-        versionName = "14.5.8"
+        versionCode = 284
+        versionName = "15.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
