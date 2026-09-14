@@ -2095,12 +2095,14 @@ class UserSubscription(models.Model):
         return scores["feed"]
 
     def switch_feed(self, new_feed, old_feed):
-        # Rewrite feed in subscription folders
-        try:
-            user_sub_folders = UserSubscriptionFolders.objects.get(user=self.user)
-        except Exception as e:
-            logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
-            return
+        # A reader with no folder row still has a subscription to move. Returning early here
+        # left the subscription on the old feed, and merge_feeds then deleted it along with
+        # that feed (forum #13830). The folder rewrite below is skipped for them instead.
+        user_sub_folders = UserSubscriptionFolders.objects.filter(user=self.user).first()
+        if user_sub_folders is None:
+            logging.info(
+                " ***> %s has no folder row, moving the subscription without a folder rewrite" % self.user
+            )
 
         logging.info("      ===> %s " % self.user)
 
@@ -2169,7 +2171,8 @@ class UserSubscription(models.Model):
             self.delete()
 
         # Always rewrite folders to clean up duplicate feed references
-        user_sub_folders.rewrite_feed(new_feed, old_feed)
+        if user_sub_folders is not None:
+            user_sub_folders.rewrite_feed(new_feed, old_feed)
 
     @classmethod
     def collect_orphan_feeds(cls, user):

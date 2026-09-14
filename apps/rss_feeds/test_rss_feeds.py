@@ -1148,14 +1148,195 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
             branch_from_feed=parent,
         )
 
-        with patch("apps.rss_feeds.models.logging.info") as mock_info, patch(
-            "apps.rss_feeds.models.logging.debug"
-        ) as mock_debug:
+        with self.assertLogs("newsblur", level="DEBUG") as captured:
             merge_feeds(twin.pk, parent.pk, force=True)
 
-        logged = " ".join(str(call.args[0]) for call in mock_info.call_args_list + mock_debug.call_args_list)
-        self.assertIn("branched from the duplicate", logged)
+        logged = "\n".join(captured.output)
+        self.assertIn("re-parenting feed", logged)
+        self.assertIn('"branches_of_duplicate": [', logged)
         self.assertNotIn("SECRET-TOKEN", logged)
+
+
+class Test_MergeFeedsInventory(TestCase):
+    """merge_feeds logs JSON records for both feeds, their feed data, and every subscription
+    with the folders that hold the feed, so a bad merge can be undone from the logs alone
+    (forum #13830). Records go through the raw logger, not the colorizer."""
+
+    def _feed(self, address):
+        return Feed.objects.create(
+            feed_address=address, feed_link="https://www.example.com/news", feed_title="Example | News"
+        )
+
+    def test_inventory_records_feeds_subscriptions_and_folder_placements(self):
+        from apps.reader.models import UserSubscriptionFolders
+        from apps.rss_feeds.management.commands.restore_merged_feed import parse_inventory
+        from apps.rss_feeds.models import FeedData, log_merge_feeds_inventory
+
+        original = self._feed("https://rss.example.com/lineup/news.xml")
+        duplicate = self._feed("http://rss.example.com/lineup/news.xml")
+        FeedData.objects.create(feed=duplicate, feed_tagline="Old tagline")
+        filed = User.objects.create_user("filed_reader", "filed@example.com", "password")
+        UserSubscription.objects.create(user=filed, feed=duplicate, user_title="My CBC")
+        UserSubscriptionFolders.objects.create(user=filed, folders='[{"News": [%s]}, 12]' % duplicate.pk)
+        rootless = User.objects.create_user("rootless_reader", "rootless@example.com", "password")
+        UserSubscription.objects.create(user=rootless, feed=duplicate)
+
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(original, duplicate)
+
+        records = parse_inventory(captured.output)
+        feeds = {r["role"]: r for r in records if r["type"] == "feed"}
+        self.assertEqual(feeds["original"]["object"]["pk"], original.pk)
+        self.assertEqual(feeds["duplicate"]["object"]["fields"]["feed_address"], duplicate.feed_address)
+        feeddata = [r for r in records if r["type"] == "feeddata"]
+        self.assertEqual(feeddata[0]["object"]["fields"]["feed_tagline"], "Old tagline")
+        subscriptions = {r["object"]["fields"]["user"]: r for r in records if r["type"] == "subscription"}
+        self.assertEqual(subscriptions[filed.pk]["folders"], ["News"])
+        self.assertEqual(subscriptions[filed.pk]["object"]["fields"]["user_title"], "My CBC")
+        self.assertTrue(subscriptions[filed.pk]["has_folder_row"])
+        self.assertEqual(subscriptions[rootless.pk]["folders"], [])
+        self.assertFalse(subscriptions[rootless.pk]["has_folder_row"])
+        summary = [r for r in records if r["type"] == "summary"][0]
+        self.assertEqual(summary["duplicate_subscriptions"], 2)
+        for line in captured.output:
+            self.assertNotIn("~", line, "inventory lines must not pass through the colorizer")
+
+
+class Test_SwitchFeedWithoutFolderRow(TestCase):
+    @patch("apps.reader.models.redis")
+    def test_subscription_moves_even_when_the_reader_has_no_folder_row(self, mock_redis):
+        old = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/old.xml",
+            feed_link="https://www.example.com/",
+            feed_title="Old",
+        )
+        new = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/old.xml",
+            feed_link="https://www.example.com/",
+            feed_title="New",
+        )
+        reader = User.objects.create_user("folderless", "folderless@example.com", "password")
+        subscription = UserSubscription.objects.create(user=reader, feed=old)
+
+        subscription.switch_feed(new, old)
+
+        self.assertEqual(UserSubscription.objects.get(pk=subscription.pk).feed_id, new.pk)
+
+
+class Test_RestoreMergedFeedCommand(TestCase):
+    """Round trip: log the inventory, lose the feed the way the CBC merge did, restore it
+    from the log lines with the management command."""
+
+    def _inventory_file(self, lines):
+        import tempfile
+
+        handle = tempfile.NamedTemporaryFile("w", suffix=".log", delete=False)
+        handle.write("\n".join(lines) + "\n")
+        handle.close()
+        self.addCleanup(lambda: __import__("os").unlink(handle.name))
+        return handle.name
+
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_restores_feed_subscriptions_and_folders_from_the_log(self, mock_count):
+        from django.core.management import call_command
+
+        from apps.reader.models import UserSubscriptionFolders
+        from apps.rss_feeds.models import FeedData, log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/canada.xml",
+            feed_link="https://www.example.com/canada",
+            feed_title="Example | Canada",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-canada",
+            feed_link="https://www.example.com/canada",
+            feed_title="Example | Canada",
+        )
+        FeedData.objects.create(feed=lost, feed_tagline="Canada news")
+        filed = User.objects.create_user("filed", "filed@example.com", "password")
+        filed_sub = UserSubscription.objects.create(user=filed, feed=lost, user_title="Canada", feed_opens=7)
+        UserSubscriptionFolders.objects.create(user=filed, folders='[{"News": [%s, 12]}]' % lost.pk)
+        rootless = User.objects.create_user("rootless", "rootless@example.com", "password")
+        UserSubscription.objects.create(user=rootless, feed=lost)
+        gone = User.objects.create_user("gone", "gone@example.com", "password")
+        UserSubscription.objects.create(user=gone, feed=lost)
+
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+
+        # The bad merge: the feed and everything hanging off it vanish, one reader removes the
+        # dead entry from their sidebar, another reader deletes their account.
+        lost_id = lost.pk
+        lost.delete()
+        UserSubscriptionFolders.objects.filter(user=filed).update(folders='[{"News": [12]}]')
+        gone.delete()
+        self.assertFalse(Feed.objects.filter(pk=lost_id).exists())
+        self.assertFalse(UserSubscription.objects.filter(feed_id=lost_id).exists())
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id, dry_run=True)
+        self.assertFalse(Feed.objects.filter(pk=lost_id).exists(), "dry run must not write")
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        restored = Feed.objects.get(pk=lost_id)
+        self.assertEqual(restored.feed_address, "https://www.example.com/webfeed/rss/rss-canada")
+        self.assertEqual(FeedData.objects.get(feed=restored).feed_tagline, "Canada news")
+        restored_sub = UserSubscription.objects.get(user=filed, feed=restored)
+        self.assertEqual(restored_sub.pk, filed_sub.pk)
+        self.assertEqual((restored_sub.user_title, restored_sub.feed_opens), ("Canada", 7))
+        self.assertTrue(UserSubscription.objects.filter(user=rootless, feed=restored).exists())
+        self.assertEqual(UserSubscription.objects.filter(feed=restored).count(), 2)
+        filed_tree = json.decode(UserSubscriptionFolders.objects.get(user=filed).folders)
+        self.assertEqual(filed_tree, [{"News": [12, lost_id]}])
+        rootless_tree = json.decode(UserSubscriptionFolders.objects.get(user=rootless).folders)
+        self.assertEqual(rootless_tree, [lost_id])
+
+        # Running again changes nothing.
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+        self.assertEqual(UserSubscription.objects.filter(feed=restored).count(), 2)
+        self.assertEqual(
+            json.decode(UserSubscriptionFolders.objects.get(user=filed).folders), [{"News": [12, lost_id]}]
+        )
+
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    @patch("apps.rss_feeds.management.commands.restore_merged_feed.merge_feeds")
+    def test_folds_a_feed_re_added_at_the_same_address_into_the_restored_one(self, mock_merge, mock_count):
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/world.xml",
+            feed_link="https://www.example.com/world",
+            feed_title="Example | World",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-world",
+            feed_link="https://www.example.com/world",
+            feed_title="Example | World",
+        )
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id, lost_hash = lost.pk, lost.hash_address_and_link
+        lost.delete()
+        readded = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-world",
+            feed_link="https://www.example.com/world",
+            feed_title="Example | World",
+        )
+        self.assertEqual(readded.hash_address_and_link, lost_hash)
+        mock_merge.return_value = lost_id
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        self.assertTrue(Feed.objects.filter(pk=lost_id, hash_address_and_link=lost_hash).exists())
+        self.assertTrue(Feed.objects.get(pk=readded.pk).hash_address_and_link.startswith("restore-parked-"))
+        mock_merge.assert_called_once_with(lost_id, readded.pk)
 
 
 class Test_BranchFromFeedDoesNotCascade(TestCase):
