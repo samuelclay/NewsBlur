@@ -1347,7 +1347,8 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
                 raise requests.ConnectionError("connection refused on port 80")
             response = self._https_response(url)
             response.content = latin1_rss
-            response.headers = {"Content-Type": "application/rss+xml"}
+            response.encoding = "ISO-8859-1"
+            response.headers = {"Content-Type": "application/rss+xml; charset=ISO-8859-1"}
             return response
 
         fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})

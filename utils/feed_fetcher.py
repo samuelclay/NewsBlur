@@ -57,7 +57,7 @@ feedparser.sanitizer._BaseHTMLProcessor.elements_no_end_tag.update(
 from bs4 import BeautifulSoup
 from celery.exceptions import SoftTimeLimitExceeded
 from django.utils import feedgenerator
-from django.utils.encoding import smart_str
+from django.utils.encoding import DjangoUnicodeDecodeError, smart_str
 from django.utils.html import linebreaks
 from mongoengine import connect, connection
 from qurl import qurl
@@ -699,8 +699,17 @@ class FetchFeed:
                         # Add UTF-8 charset to help feedparser detect encoding correctly
                         response_headers["content-type"] = f"{content_type}; charset=utf-8"
 
-                    # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes)
-                    self.raw_feed = smart_str(raw_feed.content)
+                    # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes).
+                    # A feed in another declared encoding (ISO-8859-1 with accents) is not
+                    # UTF-8; decode it with the encoding the response declares instead of
+                    # falling out to the feedparser URL fallback, which cannot reach a feed
+                    # that only answers over https (forum #13830).
+                    try:
+                        self.raw_feed = smart_str(raw_feed.content)
+                    except (UnicodeDecodeError, DjangoUnicodeDecodeError):
+                        declared = getattr(raw_feed, "encoding", None)
+                        declared = declared if isinstance(declared, str) and declared else "iso-8859-1"
+                        self.raw_feed = raw_feed.content.decode(declared, errors="replace")
 
                     # Preprocess feed to fix encoding issues before parsing with feedparser
                     processed_feed = preprocess_feed_encoding(self.raw_feed)
