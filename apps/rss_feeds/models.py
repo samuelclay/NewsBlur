@@ -5360,6 +5360,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
     delete_story_feed(MFeedIcon, "feed_id")
+    delete_story_feed(MFetchHistory, "feed_id")
 
     try:
         DuplicateFeed.objects.create(

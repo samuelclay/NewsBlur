@@ -3021,14 +3021,17 @@ class UserSubscriptionFolders(models.Model):
     def rewrite_feed(self, original_feed, duplicate_feed):
         def rewrite_folders(folders, original_feed, duplicate_feed):
             new_folders = []
+            # A reader subscribed to both feeds in the same folder would otherwise end up
+            # with the survivor listed twice there after the rewrite (merge_feeds).
+            feeds_in_this_folder = set()
 
             for k, folder in enumerate(folders):
                 if isinstance(folder, int):
-                    if folder == duplicate_feed.pk:
-                        # logging.info("              ===> Rewrote %s'th item: %s" % (k+1, folders))
-                        new_folders.append(original_feed.pk)
-                    else:
-                        new_folders.append(folder)
+                    rewritten = original_feed.pk if folder == duplicate_feed.pk else folder
+                    if rewritten in feeds_in_this_folder:
+                        continue
+                    feeds_in_this_folder.add(rewritten)
+                    new_folders.append(rewritten)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
                         new_folders.append({f_k: rewrite_folders(f_v, original_feed, duplicate_feed)})

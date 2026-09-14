@@ -1202,6 +1202,36 @@ class Test_MergeFeedsInventory(TestCase):
             self.assertNotIn("~", line, "inventory lines must not pass through the colorizer")
 
 
+class Test_FolderRewriteAfterMerge(TestCase):
+    def test_reader_subscribed_to_both_feeds_in_one_folder_ends_up_with_the_survivor_once(self):
+        from apps.reader.models import UserSubscriptionFolders
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/both.xml",
+            feed_link="https://www.example.com/",
+            feed_title="S",
+        )
+        duplicate = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/both.xml",
+            feed_link="https://www.example.com/",
+            feed_title="D",
+        )
+        reader = User.objects.create_user("both", "both@example.com", "password")
+        folders = UserSubscriptionFolders.objects.create(
+            user=reader,
+            folders=json.encode(
+                [{"News": [survivor.pk, duplicate.pk, 12]}, duplicate.pk, {"Other": [duplicate.pk]}]
+            ),
+        )
+
+        folders.rewrite_feed(survivor, duplicate)
+
+        self.assertEqual(
+            json.decode(UserSubscriptionFolders.objects.get(pk=folders.pk).folders),
+            [{"News": [survivor.pk, 12]}, survivor.pk, {"Other": [survivor.pk]}],
+        )
+
+
 class Test_SwitchFeedWithoutFolderRow(TestCase):
     @patch("apps.reader.models.redis")
     def test_subscription_moves_even_when_the_reader_has_no_folder_row(self, mock_redis):
