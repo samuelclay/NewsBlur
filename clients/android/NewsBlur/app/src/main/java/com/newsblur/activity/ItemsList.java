@@ -155,6 +155,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean readerToolbarHidden = false;
+    @Nullable
+    private String preparedReturnStoryHash;
     private boolean fetchingBannerDelayElapsed = false;
     @Nullable
     private ImageView interactiveSwipeUnderlay;
@@ -1114,6 +1116,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void launchReadingActivity(FeedSet feedSet, String storyHash) {
+        preparedReturnStoryHash = null;
         readingLaunchParentRef = new WeakReference<>(this);
         UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch, readerToolbarHidden);
     }
@@ -1155,7 +1158,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         return true;
     }
 
+    public void prepareReturnToStory(@Nullable String storyHash) {
+        if (storyHash == null || storyHash.equals(preparedReturnStoryHash) || itemSetFragment == null) return;
+        preparedReturnStoryHash = storyHash;
+        itemSetFragment.prepareReturnToStory(storyHash);
+    }
+
     private void handleReadingActivityResult(ActivityResult result) {
+
         if (result.getData() != null) {
             readerToolbarHidden = result.getData().getBooleanExtra(Reading.EXTRA_TOOLBAR_HIDDEN, readerToolbarHidden);
             String lastReadingStoryHash = result.getData().getStringExtra(Reading.LAST_READING_STORY_HASH);
