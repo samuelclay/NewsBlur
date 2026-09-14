@@ -1142,6 +1142,104 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
         self.assertFalse(fpf.get("upgraded_to_https"))
         self.assertIsNone(fpf.get("href"))
 
+    def _dead_http_only(self, url, **kwargs):
+        raise requests.ConnectionError("connection refused on port 80")
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_archive_fetch_never_probes_https(self, mock_skip, mock_parse, mock_random, mock_validate):
+        """An archive fetch replaces the address with a history page; migrating the feed to
+        that page would strand every subscriber on old stories."""
+        from utils.feed_fetcher import FetchFeed
+
+        options = {
+            "verbose": False,
+            "force": True,
+            "archive_page": "rfc5005",
+            "archive_page_link": "http://dead-port-80.example.com/lineup/feed.xml?page=7",
+        }
+        fetcher = FetchFeed(self.feed.pk, options)
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=self._dead_http_only) as mock_get:
+            fetcher.fetch()
+
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertTrue(requested, "the archive page should have been requested")
+        self.assertFalse([url for url in requested if url.startswith("https://")])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_landing_page_is_not_an_upgrade(self, mock_skip, mock_parse, mock_random, mock_validate):
+        """A 200 over https that is not a feed (an error or landing page) must not replace the
+        fetch or be tagged for migration; the normal retries still run."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_html(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b"<html><body><h1>Site moved</h1></body></html>"
+            response.headers = {"Content-Type": "text/html"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_html):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_https_probe_sends_no_conditional_headers(self, mock_random, mock_validate):
+        """A healthy https copy would answer a conditional probe with 304, which the probe
+        cannot use, so it sends none of the cache validators."""
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.etag = '"abc123"'
+        self.feed.last_modified = datetime.datetime(2026, 9, 1, 12, 30, 0)
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=self._http_dead_https_alive
+        ) as mock_get:
+            result, fpf = fetcher.fetch()
+
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        http_headers = mock_get.call_args_list[0].kwargs["headers"]
+        probe_headers = mock_get.call_args_list[1].kwargs["headers"]
+        self.assertIn("If-None-Match", http_headers)
+        for name in ("If-None-Match", "If-Modified-Since", "A-IM"):
+            self.assertNotIn(name, probe_headers)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_json_feed_over_https_is_tagged_for_migration(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_json(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'{"version": "https://jsonfeed.org/version/1.1"}'
+            response.headers = {"Content-Type": "application/feed+json"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_json), patch.object(
+            FetchFeed, "fetch_json_feed", return_value=self.RSS.decode("utf-8")
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.HTTPS_ADDRESS)
+
     def test_process_feed_persists_the_https_address(self):
         import feedparser
 
@@ -1199,6 +1297,35 @@ class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
         self.assertEqual(pfeed.feed_id, twin.pk)
         self.assertTrue(UserSubscription.objects.filter(user=user, feed=twin).exists())
         self.assertFalse(Feed.objects.filter(pk=stale.pk).exists())
+
+    def test_heavier_http_feed_survives_the_merge_with_the_https_address(self):
+        """When the dead http feed has more subscribers, Feed.save keeps that row and deletes
+        the https twin, so the survivor must still end up on the https address."""
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        stale = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        stale.num_subscribers = 9
+        stale.save()
+        twin = Feed.objects.create(
+            feed_address=self.HTTPS_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        twin.num_subscribers = 2
+        twin.save()
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(stale.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(pfeed.feed_id, stale.pk)
+        self.assertEqual(Feed.objects.get(pk=stale.pk).feed_address, self.HTTPS_ADDRESS)
+        self.assertFalse(Feed.objects.filter(pk=twin.pk).exists())
 
 
 class Test_YouTubeFavicons(TestCase):

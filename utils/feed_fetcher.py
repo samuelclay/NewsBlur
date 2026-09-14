@@ -549,18 +549,30 @@ class FetchFeed:
                     raw_feed = safe_requests_get(address, headers=headers, timeout=15)
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
-                if raw_feed is None and address.startswith("http://"):
+                if (
+                    raw_feed is None
+                    and address.startswith("http://")
+                    and not self.options.get("archive_page")
+                ):
                     # Forum #13830: rss.cbc.ca dropped port 80 with no redirect, so every
                     # http:// subscription went quiet. When the http address won't connect at
                     # all, try the same path over https before the fake-header retry. A live
-                    # feed there is tagged on fpf so ProcessFeed.migrate_https_feed_address
-                    # persists the https address. utils/feed_fetcher.py
+                    # feed there is tagged on fpf (after parsing proves it is a feed) so
+                    # ProcessFeed.migrate_https_feed_address persists the https address.
+                    # Archive fetches are skipped: their address is a history page, not the
+                    # feed. The probe is unconditional so a healthy https copy can't answer
+                    # 304 and look dead. utils/feed_fetcher.py
                     https_address = "https://" + address[len("http://") :]
+                    probe_headers = {
+                        name: value
+                        for name, value in headers.items()
+                        if name not in ("If-None-Match", "If-Modified-Since", "A-IM")
+                    }
                     try:
-                        https_feed = safe_requests_get(https_address, headers=headers, timeout=15)
+                        https_feed = safe_requests_get(https_address, headers=probe_headers, timeout=15)
                     except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                         https_feed = None
-                    if https_feed is not None and https_feed.status_code == 200 and https_feed.content:
+                    if self.https_probe_looks_like_a_feed(https_feed):
                         logging.debug(
                             "   ---> [%-30s] ~FBhttp address is dead, https answered: ~SB%s"
                             % (self.feed.log_title[:30], https_address)
@@ -703,9 +715,6 @@ class FetchFeed:
                         self.fpf["modified"] = modified_header
                     if raw_feed.url != address:
                         self.fpf["href"] = raw_feed.url
-                    if upgraded_to_https:
-                        self.fpf["href"] = address
-                        self.fpf["upgraded_to_https"] = True
 
                     if self.options["verbose"]:
                         logging.debug(
@@ -717,6 +726,12 @@ class FetchFeed:
                                 raw_feed.headers,
                             )
                         )
+                # Only a parsed, recognized feed earns the address migration, whether it came
+                # through the JSON or the XML branch. A 200 that parses to nothing (an error
+                # page, a landing page) is never saved as the feed's address.
+                if upgraded_to_https and self.fpf and (self.fpf.entries or self.fpf.version):
+                    self.fpf["href"] = address
+                    self.fpf["upgraded_to_https"] = True
             except Exception as e:
                 logging.debug(
                     "   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s"
@@ -824,6 +839,21 @@ class FetchFeed:
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
         return json_fetcher.fetch(address, headers)
+
+    @staticmethod
+    def https_probe_looks_like_a_feed(response):
+        """Cheap gate for the https probe in fetch(): a 200 with a feed-ish content type or
+        body. Keeps an https landing page or error page from replacing the dead http fetch,
+        so the usual fake-header and proxy retries still run for it. The parsed result is
+        checked again before the address is tagged for migration. utils/feed_fetcher.py
+        """
+        if response is None or response.status_code != 200 or not response.content:
+            return False
+        content_type = (response.headers.get("Content-Type") or "").lower()
+        if any(marker in content_type for marker in ("xml", "rss", "atom", "json")):
+            return True
+        head = response.content.lstrip()[:200].lower()
+        return head.startswith(b"<?xml") or b"<rss" in head or b"<feed" in head or head.startswith(b"{")
 
     def fetch_youtube(self):
         youtube_fetcher = YoutubeFetcher(self.feed, self.options)
@@ -1202,6 +1232,19 @@ class ProcessFeed:
         if saved_feed:
             self.feed = saved_feed
             self.feed_id = self.feed.pk
+        if self.feed.feed_address != https_address and not self.feed.feed_address_locked:
+            # Feed.save merged into the https twin but kept this row because it had more
+            # subscribers, so the row still carries the dead http address. The twin is gone
+            # now, so a second save lands the https address without a collision.
+            logging.debug(
+                "   ---> [%-30s] ~FBSurvived the merge with the http address, saving https: ~SB%s"
+                % (self.feed.log_title[:30], https_address)
+            )
+            self.feed.feed_address = https_address
+            saved_feed = self.feed.save()
+            if saved_feed:
+                self.feed = saved_feed
+                self.feed_id = self.feed.pk
 
     def load_existing_stories(self, story_hashes):
         stories = MStory.objects(story_hash__in=story_hashes).order_by()
