@@ -1252,6 +1252,44 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
         self.assertEqual(survivor_copy.story_feed_id, restored.pk)
         self.assertTrue(survivor_copy.story_hash.startswith("%s:" % restored.pk))
 
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_a_target_story_that_appears_mid_move_wins_and_only_the_source_copy_goes(self, mock_sync):
+        """A fetch of the restored feed stores the same story between the lookup and the
+        update: the update hits the unique hash, the target copy stays, the source copy is
+        dropped, and recovery keeps going."""
+        from mongoengine.queryset import NotUniqueError
+
+        from apps.rss_feeds.models import move_one_story
+
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-mid-move",
+            feed_link="https://www.example.com/mid-move",
+            feed_title="Example | Mid move",
+        )
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-mid-move-copy",
+            feed_link="https://www.example.com/mid-move",
+            feed_title="Example | Mid move",
+        )
+        story = MStory(
+            story_feed_id=parked.pk,
+            story_guid="fetched-on-both",
+            story_title="Both",
+            story_permalink="https://www.example.com/mid-move/1",
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.save()
+        self.addCleanup(lambda: MStory.objects(story_guid="fetched-on-both").delete())
+
+        with patch("apps.rss_feeds.models.MStory.objects") as mock_objects:
+            queryset = mock_objects.return_value
+            queryset.count.return_value = 0
+            queryset.update.side_effect = NotUniqueError("duplicate story_hash")
+            queryset.delete.return_value = 1
+            outcome = move_one_story(story, parked.pk, restored.pk, restored)
+
+        self.assertEqual(outcome, "dropped")
+
     def test_survivor_keeps_its_parent_when_asked(self):
         from apps.rss_feeds.models import merge_feeds
 
@@ -1563,6 +1601,7 @@ class Test_RestoreMergedFeedCommand(TestCase):
         restored_sub = UserSubscription.objects.get(user=filed, feed=restored)
         self.assertEqual(restored_sub.pk, filed_sub.pk)
         self.assertEqual((restored_sub.user_title, restored_sub.feed_opens), ("Canada", 7))
+        self.assertTrue(restored_sub.needs_unread_recalc, "logged unread counts predate the restore")
         self.assertTrue(UserSubscription.objects.filter(user=rootless, feed=restored).exists())
         self.assertEqual(UserSubscription.objects.filter(feed=restored).count(), 2)
         filed_tree = json.decode(UserSubscriptionFolders.objects.get(user=filed).folders)
@@ -2018,6 +2057,10 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
         self.assertTrue(UserSubscription.objects.filter(user=newcomer, feed=restored).exists())
         mock_sync_feed.assert_called_once()
+
+        # A rerun after the parked row is gone still rebuilds the hashes.
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+        self.assertEqual(mock_sync_feed.call_count, 2)
         self.assertEqual(json.decode(UserSubscriptionFolders.objects.get(user=newcomer).folders), [lost_id])
         self.assertFalse(DuplicateFeed.objects.filter(duplicate_feed_id=lost_id).exists())
         # Another deleted id at the same address (different link) keeps its redirect.

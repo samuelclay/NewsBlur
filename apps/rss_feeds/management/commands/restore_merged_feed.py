@@ -314,6 +314,9 @@ def restore_feed_from_inventory(
             if UserSubscription.objects.filter(pk=subscription_object["pk"]).exists():
                 # The old row id belongs to another subscription now; take a fresh id.
                 subscription_object["pk"] = None
+            # Counts in the log predate whatever the feed collected since (a re-added feed's
+            # stories, for one); the next unread count recomputes them.
+            subscription_object["fields"]["needs_unread_recalc"] = True
             log("creating subscription for user %s" % user_id)
             if not dry_run:
                 deserialize_and_save(subscription_object)
@@ -340,11 +343,11 @@ def restore_feed_from_inventory(
     if not dry_run:
         feed = Feed.get_by_id(feed_id)
         feed.count_subscribers()
-        if counts["collision_merged"]:
-            # Stories moved in from the re-added feed were added to Redis under the restored
-            # feed's unread cutoff as of before its subscribers were recounted; an Archive
-            # reader among them widens that cutoff, so rebuild the hashes now.
-            feed.sync_redis()
+        # Stories moved in from a re-added feed were added to Redis under the restored feed's
+        # unread cutoff as of before its subscribers were recounted; an Archive reader among
+        # them widens that cutoff. Rebuilt on every run, so a restore interrupted after the
+        # parked row went (when the rerun no longer sees a collision) still gets it.
+        feed.sync_redis()
         feed.schedule_feed_fetch_immediately()
         logging.info(
             " ---> restore_merged_feed: feed %s back with %s subscribers" % (feed_id, feed.num_subscribers)

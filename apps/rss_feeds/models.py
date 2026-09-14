@@ -5325,7 +5325,17 @@ def move_one_story(story, from_feed_id, to_feed_id, to_feed):
         return "gone"
     # Search and discovery index by the old hash and feed id; drop those entries and
     # index again under the new feed according to its own indexing settings.
-    if not still_here.update(set__story_feed_id=to_feed_id, set__story_hash=new_hash):
+    try:
+        updated = still_here.update(set__story_feed_id=to_feed_id, set__story_hash=new_hash)
+    except NotUniqueError:
+        # A fetch of the target feed stored this story between the lookup above and the
+        # update; the target copy wins and only the source copy goes.
+        if still_here.delete():
+            story.remove_from_redis()
+            story.remove_from_search_index()
+            return "dropped"
+        return "gone"
+    if not updated:
         return "gone"
     # The loaded story still carries the old feed id and hash, so these clear the old
     # Redis and search entries; the reload below picks up the new ones.
