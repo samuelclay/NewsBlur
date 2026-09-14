@@ -1305,6 +1305,30 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
         self.assertFalse(fpf and fpf.get("upgraded_to_https"))
         self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
 
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_probe_timeout_keeps_the_http_retries(
+        self, mock_skip, mock_parse, mock_random, mock_validate
+    ):
+        """A probe that times out or loops on redirects is not a connection error; it must be
+        swallowed like one so the fake-header http retry still runs."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_slow(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            raise requests.ReadTimeout("https took too long")
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_slow) as mock_get:
+            fetcher.fetch()
+
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+        self.assertTrue(len(requested) >= 3 and requested[2].startswith("http://"), requested)
+
     def test_process_feed_persists_the_https_address(self):
         import feedparser
 
