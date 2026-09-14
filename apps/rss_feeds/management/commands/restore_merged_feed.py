@@ -96,6 +96,9 @@ def inventory_for_feed(records, feed_id, snapshot=None):
         # The feed may appear in several merges over time (it survived one, then was merged
         # into another feed later); the most recent merge is the one being undone, and its
         # retries share the same feed pair.
+        # Inventories logged by a recovery merge (folding a parked feed into the feed being
+        # restored) describe the restore in progress, not the merge being undone.
+        feed_records = [r for r in feed_records if not r["merge"].get("recovery")]
         latest = max(feed_records, key=lambda r: r["merge"]["logged_at"], default=None)
         if latest:
             pair = (latest["merge"]["original_feed_id"], latest["merge"]["duplicate_feed_id"])
