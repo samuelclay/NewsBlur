@@ -348,6 +348,13 @@ def restore_feed_from_inventory(
         # them widens that cutoff. Rebuilt on every run, so a restore interrupted after the
         # parked row went (when the rerun no longer sees a collision) still gets it.
         feed.sync_redis()
+        # A story move that stopped after its Mongo write but before indexing leaves search
+        # and discovery entries missing for a document a rerun no longer touches, so the
+        # restored feed is reindexed wholesale according to its own indexing flags.
+        if feed.search_indexed:
+            feed.index_stories_for_search(force=True)
+        if feed.discover_indexed:
+            feed.index_stories_for_discover(force=True)
         feed.schedule_feed_fetch_immediately()
         logging.info(
             " ---> restore_merged_feed: feed %s back with %s subscribers" % (feed_id, feed.num_subscribers)
