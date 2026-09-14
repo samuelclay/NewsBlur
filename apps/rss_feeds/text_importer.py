@@ -41,6 +41,15 @@ GOOGLE_CONSENT_HOSTS = ("consent.google.com", "consent.youtube.com")
 GOOGLE_CONSENT_PHRASE = "We use cookies and data, including IP addresses"
 
 
+def is_google_news_url(url):
+    """True for a Google News story link (news.google.com/.../articles/<token>)."""
+    try:
+        parsed = urlparse(url or "")
+    except ValueError:
+        return False
+    return parsed.hostname == "news.google.com" and "/articles/" in parsed.path
+
+
 def is_google_consent_url(url):
     """True when a fetch was redirected to Google's cookie consent wall."""
     try:
@@ -64,6 +73,7 @@ class TextImporter:
             from apps.rss_feeds.models import Feed
 
             self.story_url = Feed.resolve_google_redirect_url(self.story_url)
+            self.story_url = Feed.resolve_google_news_article_url(self.story_url)
         self.feed = feed
         self.request = request
         self.debug = debug
