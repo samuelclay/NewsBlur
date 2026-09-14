@@ -753,7 +753,8 @@ final class ReaderUITests: XCTestCase {
             visibleFrame = frame
             return true
         }
-        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
+        // ReaderUITests.swift captures the element above; passing it again makes XCTest spend the wait dumping its hierarchy.
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: nil)
         let completed = XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
         if !completed {
             attachScreenshot(named: "feed-element-did-not-settle")
