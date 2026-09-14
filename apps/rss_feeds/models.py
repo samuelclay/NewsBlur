@@ -5299,7 +5299,12 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
     )
 
 
-def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
+def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
+    """Fold duplicate_feed into original_feed and delete it. With preserve_branch_from_feed
+    the survivor keeps its own parent (unless that parent is the duplicate being deleted),
+    which restore_merged_feed relies on so a restored private branch never turns public
+    partway through the merge. apps/rss_feeds/models.py
+    """
     from apps.notifications.models import MUserFeedNotification
     from apps.reader.models import MCustomFeedIcon, UserSubscription
     from apps.social.models import MSharedStory
@@ -5349,7 +5354,12 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
 
     log_merge_feeds_inventory(original_feed, duplicate_feed)
 
-    original_feed.branch_from_feed = None
+    keep_parent = preserve_branch_from_feed and original_feed.branch_from_feed_id not in (
+        None,
+        duplicate_feed.pk,
+    )
+    if not keep_parent:
+        original_feed.branch_from_feed = None
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by("-pk")
     for user_sub in user_subs:
@@ -5414,13 +5424,15 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
             % (branched_id, duplicate_feed.pk, original_feed.pk)
         )
     branched_feeds.update(branch_from_feed=original_feed)
-    Feed.objects.filter(pk=original_feed.pk).update(branch_from_feed=None)
+    if not keep_parent:
+        Feed.objects.filter(pk=original_feed.pk).update(branch_from_feed=None)
     if duplicate_feed.pk != original_feed.pk:
         duplicate_feed.delete()
     else:
         logging.debug(" ***> Duplicate feed is the same as original feed. Panic!")
     logging.debug(" ---> Deleted duplicate feed: %s/%s" % (duplicate_feed, duplicate_feed_id))
-    original_feed.branch_from_feed = None
+    if not keep_parent:
+        original_feed.branch_from_feed = None
     original_feed.count_subscribers()
     original_feed.save()
     logging.debug(" ---> Now original subscribers: %s" % (original_feed.num_subscribers))

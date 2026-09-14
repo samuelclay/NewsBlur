@@ -1078,13 +1078,44 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
         # merge_feeds rewrites Redis story hashes and subscriber counts, and tests share
         # Redis with the dev server (newsblur_web/test_settings.py), so every merge in this
         # class runs against mocked Redis clients and a no-op subscriber recount.
+        # The analytics Mongo alias is not redirected by the test runner either, so the
+        # duplicate's fetch-history cleanup is stubbed rather than run against dev data.
+        from apps.rss_feeds.models import MFetchHistory
+
         for patcher in (
             patch("apps.rss_feeds.models.redis"),
             patch("apps.reader.models.redis"),
             patch.object(Feed, "count_subscribers"),
+            patch.object(MFetchHistory, "delete_for_feed", return_value=0),
         ):
             patcher.start()
             self.addCleanup(patcher.stop)
+
+    def test_survivor_keeps_its_parent_when_asked(self):
+        from apps.rss_feeds.models import merge_feeds
+
+        parent = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/keep-parent.xml",
+            feed_link="https://www.example.com/keep",
+            feed_title="Example | Keep",
+        )
+        branch = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-keep&user=reader",
+            feed_link="https://www.example.com/keep",
+            feed_title="Example | Keep (reader)",
+            branch_from_feed=parent,
+        )
+        readded = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-keep&user=reader&v=2",
+            feed_link="https://www.example.com/keep",
+            feed_title="Example | Keep (reader)",
+        )
+
+        survivor = merge_feeds(branch.pk, readded.pk, force=True, preserve_branch_from_feed=True)
+
+        self.assertEqual(survivor, branch.pk)
+        self.assertEqual(Feed.objects.get(pk=branch.pk).branch_from_feed_id, parent.pk)
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
 
     def test_merging_a_parent_into_its_branch_keeps_the_branch_and_reparents_siblings(self):
         from apps.reader.models import UserSubscriptionFolders
@@ -1257,6 +1288,15 @@ class Test_RestoreMergedFeedCommand(TestCase):
     """Round trip: log the inventory, lose the feed the way the CBC merge did, restore it
     from the log lines with the management command."""
 
+    def setUp(self):
+        # The collision tests run a real merge; keep its fetch-history cleanup off the
+        # analytics database, which the test runner does not redirect.
+        from apps.rss_feeds.models import MFetchHistory
+
+        patcher = patch.object(MFetchHistory, "delete_for_feed", return_value=0)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def _inventory_file(self, lines):
         import tempfile
 
@@ -1324,8 +1364,10 @@ class Test_RestoreMergedFeedCommand(TestCase):
         rootless_tree = json.decode(UserSubscriptionFolders.objects.get(user=rootless).folders)
         self.assertEqual(rootless_tree, [lost_id])
 
-        # Running again changes nothing.
+        # Running again changes nothing, but still recounts and reschedules: a restore
+        # interrupted after the row was created relies on the rerun to finish that.
         call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+        self.assertEqual(mock_count.call_count, 2)
         self.assertEqual(UserSubscription.objects.filter(feed=restored).count(), 2)
         self.assertEqual(
             json.decode(UserSubscriptionFolders.objects.get(user=filed).folders),
