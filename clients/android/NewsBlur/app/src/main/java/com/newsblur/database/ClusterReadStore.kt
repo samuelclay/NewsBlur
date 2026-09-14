@@ -30,7 +30,17 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
             if (readStatusAuthoritative && local == story.read) db.delete(READ_STATE, "story_hash = ?", arrayOf(story.storyHash))
             else story.read = local
         } else if (!readStatusAuthoritative) {
-            storedStory(story.storyHash)?.let { story.read = it.read }
+            val stored = storedStory(story.storyHash)
+            if (stored != null) {
+                story.read = stored.read
+            } else {
+                // ReaderTargetLoader.kt can fetch a child known only through an indexed parent cluster.
+                // Hash responses use an unread placeholder, so preserve any matching known read copy.
+                val knownRead = parentsReferencing(setOf(story.storyHash)).values.any { children ->
+                    children.any { it.storyHash == story.storyHash && it.read }
+                }
+                if (knownRead) story.read = true
+            }
         }
         story.clusterStories = (story.clusterStories ?: emptyArray()).map { child ->
             val read = localReadState(child.storyHash) ?: storedStory(child.storyHash)?.read?.takeIf { it }
@@ -42,11 +52,21 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
 
     fun reconcileServerUnread(hashes: Collection<String>, requestStartedAt: Long) {
         val candidates = mutableSetOf<String>()
+        val embeddedCandidates = mutableSetOf<String>()
         for (chunk in hashes.chunked(400)) {
             val params = chunk.joinToString(",") { "?" }
             db.rawQuery("SELECT story_hash FROM ${DatabaseConstants.STORY_TABLE} WHERE read = 1 AND story_hash IN ($params) " +
                 "UNION SELECT story_hash FROM $READ_STATE WHERE read = 1 AND story_hash IN ($params)",
                 (chunk + chunk).toTypedArray()).use { while (it.moveToNext()) candidates.add(it.getString(0)) }
+            db.rawQuery("SELECT DISTINCT child_hash FROM $MEMBERS WHERE child_hash IN ($params)",
+                chunk.toTypedArray()).use { while (it.moveToNext()) embeddedCandidates.add(it.getString(0)) }
+        }
+        // ClusterReadStore.kt also respects remote unread changes for children not yet stored individually.
+        // Only indexed, known-read children need a receipt; the rest of the server unread list stays untouched.
+        for (children in parentsReferencing(embeddedCandidates).values) {
+            for (child in children) {
+                if (child.read && child.storyHash in embeddedCandidates) candidates.add(child.storyHash)
+            }
         }
         reconcileServerReadState(candidates, false, requestStartedAt)
     }
