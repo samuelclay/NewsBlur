@@ -1393,6 +1393,101 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertFalse(DuplicateFeed.objects.filter(duplicate_address=lost_address, feed=survivor).exists())
         self.assertEqual((restored.etag, restored.last_modified, restored.fetched_once), (None, None, False))
 
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_refuses_to_merge_a_re_added_feed_that_has_stories_unless_told_to(
+        self, mock_count, mock_sync, mock_reader_redis, mock_feed_redis
+    ):
+        from django.core.management import CommandError, call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/stories.xml",
+            feed_link="https://www.example.com/stories",
+            feed_title="Example | Stories",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-stories",
+            feed_link="https://www.example.com/stories",
+            feed_title="Example | Stories",
+        )
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id, lost_address = lost.pk, lost.feed_address
+        lost.delete()
+        readded = Feed.objects.create(
+            feed_address=lost_address,
+            feed_link="https://www.example.com/stories",
+            feed_title="Example | Stories",
+        )
+        MStory(
+            story_feed_id=readded.pk,
+            story_guid="only-the-readded-feed-saw-this",
+            story_title="Collected after the bad merge",
+            story_permalink="https://www.example.com/stories/1",
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(lambda: MStory.objects(story_guid="only-the-readded-feed-saw-this").delete())
+
+        with self.assertRaises(CommandError):
+            call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+        self.assertFalse(Feed.objects.filter(pk=lost_id).exists())
+        self.assertTrue(Feed.objects.filter(pk=readded.pk).exists())
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id, discard_collision_stories=True)
+
+        self.assertTrue(Feed.objects.filter(pk=lost_id).exists())
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
+
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_restored_private_branch_keeps_its_parent_through_a_collision_merge(
+        self, mock_count, mock_reader_redis, mock_feed_redis
+    ):
+        """merge_feeds clears the survivor's parent; the restore puts the resolved parent back
+        so a private branch never turns public through the collision merge."""
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        parent = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/parent-kept.xml",
+            feed_link="https://www.example.com/kept",
+            feed_title="Example | Kept",
+        )
+        other = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/kept-other.xml",
+            feed_link="https://www.example.com/kept",
+            feed_title="Example | Kept",
+        )
+        branch = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-kept&user=reader",
+            feed_link="https://www.example.com/kept",
+            feed_title="Example | Kept (reader)",
+            branch_from_feed=parent,
+        )
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(other, branch)
+        log_path = self._inventory_file(captured.output)
+        branch_id, branch_address = branch.pk, branch.feed_address
+        branch.delete()
+        Feed.objects.create(
+            feed_address=branch_address,
+            feed_link="https://www.example.com/kept",
+            feed_title="Example | Kept (reader)",
+        )
+
+        call_command("restore_merged_feed", log=log_path, feed_id=branch_id)
+
+        self.assertEqual(Feed.objects.get(pk=branch_id).branch_from_feed_id, parent.pk)
+
     @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
     @patch("apps.rss_feeds.models.Feed.count_subscribers")
     def test_restored_branch_keeps_a_parent_so_it_stays_private(self, mock_count):

@@ -33,6 +33,7 @@ from apps.rss_feeds.models import (
     DuplicateFeed,
     Feed,
     FeedData,
+    MStory,
     merge_feeds,
 )
 from utils import json_functions
@@ -112,7 +113,12 @@ def deserialize_and_save(serialized_object):
 
 
 def restore_feed_from_inventory(
-    feed_record, feeddata_records, subscription_records, dry_run=False, log=print
+    feed_record,
+    feeddata_records,
+    subscription_records,
+    dry_run=False,
+    discard_collision_stories=False,
+    log=print,
 ):
     """Recreate what is missing for the feed in feed_record. Returns a dict of counts."""
     feed_object = json.loads(json.dumps(feed_record["object"]))
@@ -168,9 +174,19 @@ def restore_feed_from_inventory(
             .first()
         )
         if collision:
+            # Folding the re-added feed in deletes its stories (merge_feeds keeps only the
+            # survivor's); stories the publisher no longer serves would be gone for good.
+            collision_stories = MStory.objects(story_feed_id=collision.pk).count()
+            if collision_stories and not discard_collision_stories:
+                raise CommandError(
+                    "feed %s was re-added at this address after the merge and has %s stories; merging it into "
+                    "feed %s would delete them. Rerun with --discard-collision-stories to accept that, or leave "
+                    "both feeds and merge by hand." % (collision.pk, collision_stories, feed_id)
+                )
             log(
-                "feed %s already holds this address (re-added after the merge); its hash is parked so feed %s can "
-                "come back, then it is merged into the restored feed" % (collision.pk, feed_id)
+                "feed %s already holds this address (re-added after the merge, %s stories); its hash is parked so "
+                "feed %s can come back, then it is merged into the restored feed"
+                % (collision.pk, collision_stories, feed_id)
             )
         log("creating feed %s %s" % (feed_id, fields.get("feed_address")))
         if not dry_run:
@@ -188,6 +204,10 @@ def restore_feed_from_inventory(
                     raise CommandError(
                         "merge of %s into %s did not keep %s" % (collision.pk, feed_id, feed_id)
                     )
+                # merge_feeds clears the survivor's parent; a restored branch keeps the one
+                # resolved above so it stays out of public discovery.
+                if fields.get("branch_from_feed"):
+                    Feed.objects.filter(pk=feed_id).update(branch_from_feed=fields["branch_from_feed"])
                 counts["collision_merged"] = collision.pk
                 log("merged feed %s into %s" % (collision.pk, feed_id))
 
@@ -257,6 +277,12 @@ class Command(BaseCommand):
             "--feed-id", dest="feed_id", type=int, required=True, help="Feed id to bring back"
         )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Report without writing")
+        parser.add_argument(
+            "--discard-collision-stories",
+            dest="discard_collision_stories",
+            action="store_true",
+            help="Merge a feed re-added at the same address even though the merge deletes its stories",
+        )
 
     def handle(self, *args, **options):
         with open(options["log"]) as handle:
@@ -275,6 +301,7 @@ class Command(BaseCommand):
             feeddata_records,
             subscription_records,
             dry_run=options["dry_run"],
+            discard_collision_stories=options["discard_collision_stories"],
             log=lambda message: self.stdout.write(("DRY RUN: " if options["dry_run"] else "") + message),
         )
         for key, value in counts.items():
