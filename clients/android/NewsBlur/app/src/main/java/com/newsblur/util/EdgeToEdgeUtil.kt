@@ -75,13 +75,28 @@ object EdgeToEdgeUtil {
     @JvmStatic
     fun Activity.applyView(binding: ViewBinding) {
         setContentView(binding.root)
+        val collapsingReader = findViewById<View>(R.id.reading_back_swipe_edge) != null
+        if (collapsingReader) {
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            // UIUtils.restartActivity preserves the framework decor, including fitting parents that can
+            // consume all insets before activity_reading.xml receives them. The reader owns these insets.
+            var parent = binding.root.parent as? View
+            while (parent != null && parent !== window.decorView) {
+                if (parent.fitsSystemWindows) {
+                    parent.fitsSystemWindows = false
+                    parent.setPadding(0, 0, 0, 0)
+                }
+                parent = parent.parent as? View
+            }
+        }
+        // Reading.kt needs themed paint behind the transparent status bar even before insets are redispatched.
+        if (collapsingReader) binding.root.setBackgroundColor(resolveSystemBarColor(android.R.attr.navigationBarColor))
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
             // EdgeToEdgeUtil.kt keeps the status bar clear when the reader toolbar collapses.
-            val collapsingReader = findViewById<View>(R.id.reading_back_swipe_edge) != null
             val toolbarStatusBar = if (collapsingReader) Insets.NONE else statusBar
             if (collapsingReader) binding.root.setPadding(0, statusBar.top, 0, 0)
 
@@ -104,16 +119,19 @@ object EdgeToEdgeUtil {
 
             // sets the background on the navigation bar in landscape mode
             if (collapsingReader || navBar.left > 0 || navBar.right > 0) {
-                val tv = TypedValue()
-                binding.root.context.theme
-                    .resolveAttribute(android.R.attr.navigationBarColor, tv, true)
-                binding.root.setBackgroundColor(tv.data)
+                binding.root.setBackgroundColor(resolveSystemBarColor(android.R.attr.navigationBarColor))
             } else {
                 binding.root.setBackgroundColor(0)
             }
 
             WindowInsetsCompat.CONSUMED
         }
+    }
+
+    private fun Activity.resolveSystemBarColor(attribute: Int): Int {
+        val value = TypedValue()
+        theme.resolveAttribute(attribute, value, true)
+        return value.data
     }
 
     fun View.applyNavBarInsetBottomTo(targetView: View) {
