@@ -5216,7 +5216,7 @@ def folder_names_holding_feed(folders, feed_id, parent=()):
     return paths
 
 
-def log_merge_feeds_inventory(original_feed, duplicate_feed):
+def log_merge_feeds_inventory(original_feed, duplicate_feed, recovery=False):
     """Log everything merge_feeds is about to touch, as JSON records, so a bad merge can be
     undone from the task logs alone with `manage.py restore_merged_feed` (forum #13830: a
     merge cascade-deleted two feeds and 700 subscriptions with no record of what they were).
@@ -5237,6 +5237,9 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
         "original_feed_id": original_feed.pk,
         "duplicate_feed_id": duplicate_feed.pk,
         "logged_at": datetime.datetime.utcnow().isoformat(),
+        # A merge that folds a parked feed into a feed being restored is part of a recovery,
+        # not a merge to undo; restore_merged_feed skips these when picking a snapshot.
+        "recovery": recovery,
     }
     emitted_subscriptions = {}
     for role, feed in (("original", original_feed), ("duplicate", duplicate_feed)):
@@ -5370,12 +5373,32 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
     return moved, dropped
 
 
+MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 15 * 60
+
+
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
     """Fold duplicate_feed into original_feed and delete it. With preserve_branch_from_feed
     the survivor keeps its own parent (unless that parent is the duplicate being deleted),
     which restore_merged_feed relies on so a restored private branch never turns public
-    partway through the merge. apps/rss_feeds/models.py
+    partway through the merge.
+
+    Merges of the same duplicate are serialized on a Redis lock: restore_merged_feed and a
+    fetch worker saving a parked feed can both arrive here, and two interleaved runs could
+    each load a subscription before the other moved it and then delete it as a duplicate.
+    apps/rss_feeds/models.py
     """
+    if original_feed_id == duplicate_feed_id:
+        logging.info(" ***> Merging the same feed. Ignoring...")
+        return original_feed_id
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    with r.lock(
+        "merge_feeds:%s" % duplicate_feed_id, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
+    ):
+        return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
+
+
+def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
+    """The body of merge_feeds; call merge_feeds, which holds the per-duplicate lock."""
     from apps.notifications.models import MUserFeedNotification
     from apps.reader.models import MCustomFeedIcon, UserSubscription
     from apps.social.models import MSharedStory
@@ -5431,7 +5454,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
         )
     )
 
-    log_merge_feeds_inventory(original_feed, duplicate_feed)
+    log_merge_feeds_inventory(original_feed, duplicate_feed, recovery=parked_duplicate)
 
     keep_parent = preserve_branch_from_feed and original_feed.branch_from_feed_id not in (
         None,

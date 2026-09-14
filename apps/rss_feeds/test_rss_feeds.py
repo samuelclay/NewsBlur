@@ -1961,6 +1961,54 @@ class Test_RestoreMergedFeedCommand(TestCase):
 
     @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
     @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_recovery_merges_own_inventory_is_never_the_default_snapshot(self, mock_count):
+        """Folding a parked feed into the restored feed logs an inventory too, newer than
+        the one being undone and with the restored feed as original; a retry must still pick
+        the merge being undone."""
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/recovery.xml",
+            feed_link="https://www.example.com/recovery",
+            feed_title="Example | Recovery",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-recovery",
+            feed_link="https://www.example.com/recovery",
+            feed_title="Example | Recovery",
+        )
+        original_reader = User.objects.create_user("original_reader", "original@example.com", "password")
+        UserSubscription.objects.create(user=original_reader, feed=lost)
+        with self.assertLogs("newsblur", level="INFO") as undone:
+            log_merge_feeds_inventory(survivor, lost)
+        # The first restore attempt recreated the row, folded the re-added feed in (logging
+        # a recovery inventory with only that feed's reader on the restored side), then died.
+        UserSubscription.objects.filter(user=original_reader).delete()
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-recovery-readded",
+            feed_link="https://www.example.com/recovery",
+            feed_title="Example | Recovery",
+        )
+        newcomer = User.objects.create_user("recovery_newcomer", "newcomer2@example.com", "password")
+        UserSubscription.objects.create(user=newcomer, feed=lost)
+        with self.assertLogs("newsblur", level="INFO") as recovery:
+            log_merge_feeds_inventory(lost, parked, recovery=True)
+        log_path = self._inventory_file(undone.output + recovery.output)
+        lost_id = lost.pk
+        lost.delete()
+        parked.delete()
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        self.assertEqual(
+            set(UserSubscription.objects.filter(feed_id=lost_id).values_list("user_id", flat=True)),
+            {original_reader.pk},
+        )
+
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
     def test_skips_an_inventory_cut_short_while_it_was_being_logged(self, mock_count):
         from django.core.management import call_command
 
@@ -2249,6 +2297,23 @@ class Test_RestoreMergedFeedCommand(TestCase):
         call_command("restore_merged_feed", log=log_path, feed_id=branch_id)
 
         self.assertEqual(Feed.objects.get(pk=branch_id).branch_from_feed_id, other.pk)
+
+
+class Test_MergeFeedsLock(TestCase):
+    @patch("apps.rss_feeds.models.merge_feeds_locked", return_value=11)
+    @patch("apps.rss_feeds.models.redis")
+    def test_merges_of_a_duplicate_are_serialized_on_a_redis_lock(self, mock_redis, mock_locked):
+        from apps.rss_feeds.models import MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, merge_feeds
+
+        self.assertEqual(merge_feeds(11, 22, force=True), 11)
+
+        lock = mock_redis.Redis.return_value.lock
+        lock.assert_called_once_with(
+            "merge_feeds:22", timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
+        )
+        lock.return_value.__enter__.assert_called_once()
+        lock.return_value.__exit__.assert_called_once()
+        mock_locked.assert_called_once_with(11, 22, True, False)
 
 
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):
