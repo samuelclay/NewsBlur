@@ -13,7 +13,7 @@ get a fix as far as a reviewed PR when it is safe to, and leave a reply he can p
 
 These hold for every topic, every run. Do not reinterpret them mid-run.
 
-1. **One topic at a time, newest activity first.** Finish a topic (state recorded) before opening the next. No parallel subagents across topics. A subagent may help inside one topic (for example, a second opinion on a fix) but the loop stays sequential.
+1. **At most three topics per run, one at a time, newest activity first.** The queue is cut at three (`--limit`, default 3); the rest wait for the next run so open PRs get merged before more pile up. Finish a topic (state recorded) before opening the next. No parallel subagents across topics. A subagent may help inside one topic (for example, a second opinion on a fix) but the loop stays sequential.
 2. **Production is read-only.** Pre-authorized: Django ORM reads, mongoengine reads, redis read commands (`GET`, `HGETALL`, `ZRANGE`, `SMEMBERS`, `KEYS` on a narrow pattern, `INFO`), log greps, `sentry-cli issues list`, Play Console crash reads. Never `.save()`, `.update()`, `.delete()`, `.create()`, bulk writes, redis writes, container restarts, deploys, or `make deploy`/`make celery`. Anything that changes production state is tier 2 and needs an explicit yes through AskUserQuestion, then run exactly the approved command and nothing more.
 3. **Never post to the forum.** Replies are drafted for Sam to paste. Never call any Discourse write endpoint.
 4. **Never merge or push to main.** PRs are opened ready for review with the `forum` label. Sam merges.
@@ -31,12 +31,12 @@ These hold for every topic, every run. Do not reinterpret them mid-run.
 
 | Flag | Meaning |
 |---|---|
-| (none) | Topics with activity in the last 7 days, newest first, skipping ones already in `state.json` |
+| (none) | Topics with activity in the last 7 days, newest first, skipping ones already in `state.json`, capped at 3 topics per run |
 | `--days N` | Widen or narrow the activity window |
 | `--since YYYY-MM-DD` | Window start date, overrides `--days` |
 | `--topic ID` or a forum URL | Only that topic (repeatable). Ignores window and state. A pasted forum URL anywhere in the prompt counts as this. |
 | `--all` | Include topics already recorded in state.json |
-| `--limit N` | Stop after N topics |
+| `--limit N` | Stop after N topics (default 3; `--limit 0` removes the cap). Three is the cap because each topic can fan out into a worktree, a PR, and review rounds, and Sam merges between runs. |
 | `--dry-run` | Investigate and classify only. No worktrees, no PRs, no state writes. Print what would happen. |
 
 ## Files in this skill
