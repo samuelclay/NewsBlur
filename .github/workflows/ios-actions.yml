@@ -25,7 +25,30 @@ jobs:
       - name: Select and boot iOS simulator
         run: |
           IOS_SIMULATOR_UDID="$(
-            python3 -c 'import json,re,subprocess,sys; data=json.loads(subprocess.check_output(["xcrun","simctl","list","devices","available","--json"], text=True)); candidates=[(tuple(int(part) for part in re.findall(r"\d+", runtime)), device["udid"]) for runtime, devices in data["devices"].items() if runtime.startswith("com.apple.CoreSimulator.SimRuntime.iOS-") for device in devices if device.get("name") == "iPhone 16e" and device.get("isAvailable", False)]; sys.exit("Unable to find an available iPhone 16e simulator") if not candidates else None; print(max(candidates)[1])'
+            python3 - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          data = json.loads(subprocess.check_output(
+              ["xcrun", "simctl", "list", "devices", "available", "--json"], text=True
+          ))
+          device_preference = {"iPhone 16e": 0, "iPhone 17e": 1}
+          runtime_prefix = "com.apple.CoreSimulator.SimRuntime.iOS-"
+          candidates = []
+          for runtime, devices in data["devices"].items():
+              if not runtime.startswith(runtime_prefix):
+                  continue
+              version = tuple(int(part) for part in runtime.removeprefix(runtime_prefix).split("-"))
+              for device in devices:
+                  preference = device_preference.get(device.get("name"))
+                  if preference is not None and device.get("isAvailable", False):
+                      candidates.append((version, preference, device["udid"]))
+
+          if not candidates:
+              sys.exit("Unable to find an available iPhone 17e or iPhone 16e simulator")
+          print(max(candidates)[2])
+          PY
           )"
 
           echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
