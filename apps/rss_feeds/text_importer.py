@@ -150,7 +150,11 @@ class TextImporter:
         url = doc["url"]
         image = doc["lead_image_url"]
 
-        if is_google_consent_url(url):
+        # Mercury reports the requested URL, not always the final host after redirects, so
+        # for a Google News link that could not be decoded the extracted text is checked too.
+        if is_google_consent_url(url) or (
+            is_google_news_url(self.story_url) and is_google_consent_text(text)
+        ):
             logging.user(
                 self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % url
             )

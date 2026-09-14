@@ -1180,6 +1180,26 @@ class Test_TextImporterGoogleNews(TestCase):
         mock_importer.return_value.fetch.assert_called_once()
 
     @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    def test_fetch_mercury_rejects_consent_text_even_when_it_reports_the_google_news_url(self, mock_decode):
+        """Mercury can echo the requested Google News URL rather than consent.google.com, so
+        the extracted text itself must give the consent wall away."""
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mercury = MagicMock()
+        mercury.json.return_value = {
+            "content": self.CONSENT_HTML.decode("utf-8"),
+            "title": "Before you continue",
+            "url": self.GOOGLE_URL,
+            "lead_image_url": None,
+        }
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+
+        with patch.object(importer, "fetch_request", return_value=mercury):
+            result = importer.fetch_mercury(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
     def test_fetch_mercury_never_saves_the_google_consent_wall(self, mock_decode):
         from apps.rss_feeds.text_importer import TextImporter
 
