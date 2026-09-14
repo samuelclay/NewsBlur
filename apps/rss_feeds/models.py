@@ -125,11 +125,14 @@ class Feed(models.Model):
     archive_subscribers = models.IntegerField(default=0, null=True, blank=True)
     pro_subscribers = models.IntegerField(default=0, null=True, blank=True)
     active_premium_subscribers = models.IntegerField(default=-1)
-    # SET_NULL, not CASCADE: deleting a feed must never delete the feeds branched from it.
+    # PROTECT, not CASCADE: deleting a feed must never delete the feeds branched from it.
     # With CASCADE, merge_feeds deleting a stale parent took its live https branches and
-    # every subscription on them (forum #13830). apps/rss_feeds/models.py
+    # every subscription on them (forum #13830). Not SET_NULL either: a null parent is what
+    # marks a feed as public in discovery (apps/discover/views.py), and a branch can be a
+    # reader's private URL. A parent with branches must be merged (merge_feeds re-parents
+    # them) rather than deleted outright. apps/rss_feeds/models.py
     branch_from_feed = models.ForeignKey(
-        "Feed", blank=True, null=True, db_index=True, on_delete=models.SET_NULL
+        "Feed", blank=True, null=True, db_index=True, on_delete=models.PROTECT
     )
     last_update = models.DateTimeField(db_index=True)
     next_scheduled_update = models.DateTimeField()
@@ -5345,10 +5348,11 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         " ---> Dupe subscribers (%s): %s, Original subscribers (%s): %s"
         % (duplicate_feed.pk, duplicate_feed.num_subscribers, original_feed.pk, original_feed.num_subscribers)
     )
-    # Until migration 0014 made branch_from_feed SET_NULL, deleting the duplicate cascaded to
+    # Until migration 0014 made branch_from_feed PROTECT, deleting the duplicate cascaded to
     # every feed branched from it, including the survivor when it was one of them (forum
     # #13830). Re-parent those feeds to the survivor and persist the survivor's cleared parent
-    # before the delete, so the merge is safe on a database that has not migrated yet.
+    # before the delete: that keeps them (and their private-branch status) and is also what
+    # lets the protected delete go through.
     branched_feeds = Feed.objects.filter(branch_from_feed=duplicate_feed).exclude(pk=original_feed.pk)
     for branched_id in branched_feeds.values_list("pk", flat=True):
         logging.info(
