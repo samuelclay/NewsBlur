@@ -1139,8 +1139,9 @@ class Test_TextImporterGoogleNews(TestCase):
         self.assertEqual(importer.story_url, self.ARTICLE_URL)
 
     @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    @patch("apps.rss_feeds.text_importer.validate_public_url")
     @patch("apps.rss_feeds.text_importer.safe_requests_get")
-    def test_fetch_manually_never_saves_the_google_consent_wall(self, mock_get, mock_decode):
+    def test_fetch_manually_never_saves_the_google_consent_wall(self, mock_get, mock_validate, mock_decode):
         from apps.rss_feeds.text_importer import TextImporter
 
         mock_get.return_value = self._consent_response()
@@ -1149,6 +1150,34 @@ class Test_TextImporterGoogleNews(TestCase):
         result = importer.fetch_manually(skip_save=True, return_document=True)
 
         self.assertIsNone(result)
+        mock_get.assert_called_once()
+
+    @patch("apps.rss_feeds.models.safe_requests_get")
+    def test_google_news_decoder_fetches_the_article_page_through_the_redirect_guard(self, mock_safe_get):
+        """The decoder now runs for story links supplied by feeds, so its page fetch must go
+        through safe_requests_get, which validates every redirect hop."""
+        mock_safe_get.return_value = MagicMock(status_code=200, text="<html></html>")
+
+        self.assertIsNone(MStory._decode_google_news_url(self.GOOGLE_URL))
+        mock_safe_get.assert_called_once()
+        self.assertTrue(mock_safe_get.call_args.args[0].startswith("https://news.google.com/articles/"))
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_shared_story_drops_a_cached_consent_wall_too(self, mock_feed):
+        from apps.social.models import MSharedStory
+
+        shared = MSharedStory(
+            story_feed_id=1, story_permalink=self.GOOGLE_URL, user_id=1, story_guid="shared-consent"
+        )
+        shared.original_text_z = zlib.compress(self.CONSENT_HTML)
+
+        with patch("apps.social.models.TextImporter") as mock_importer:
+            mock_importer.return_value.fetch.return_value = "<p>Real article</p>"
+            text = shared.fetch_original_text()
+
+        self.assertEqual(text, "<p>Real article</p>")
+        self.assertIsNone(shared.original_text_z)
+        mock_importer.return_value.fetch.assert_called_once()
 
     @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
     def test_fetch_mercury_never_saves_the_google_consent_wall(self, mock_decode):

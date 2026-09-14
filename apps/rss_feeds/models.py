@@ -4413,15 +4413,17 @@ class MStory(mongo.Document):
         except Exception:
             return None
 
-        # Step 1: Fetch the Google News article page to get signature and timestamp
+        # Step 1: Fetch the Google News article page to get signature and timestamp.
+        # safe_requests_get validates every redirect hop, since this now runs for
+        # user-supplied story links (TextImporter) and must never reach an internal address.
         try:
-            resp = requests.get(
+            resp = safe_requests_get(
                 f"https://news.google.com/articles/{base64_str}",
                 timeout=8,
             )
-            if resp.status_code != 200:
+            if not resp or resp.status_code != 200:
                 return None
-        except requests.RequestException:
+        except (requests.RequestException, UnsafeUrlError):
             return None
 
         soup = BeautifulSoup(resp.text, features="lxml")
@@ -4450,6 +4452,7 @@ class MStory(mongo.Document):
                 },
                 data=f"f.req={quote(json.dumps([[payload]]))}",
                 timeout=8,
+                allow_redirects=False,
             )
             if resp.status_code != 200:
                 return None
