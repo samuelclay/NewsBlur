@@ -544,10 +544,30 @@ class FetchFeed:
                     headers["If-Modified-Since"] = modified_header
                 if etag or modified:
                     headers["A-IM"] = "feed"
+                upgraded_to_https = False
                 try:
                     raw_feed = safe_requests_get(address, headers=headers, timeout=15)
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
+                if raw_feed is None and address.startswith("http://"):
+                    # Forum #13830: rss.cbc.ca dropped port 80 with no redirect, so every
+                    # http:// subscription went quiet. When the http address won't connect at
+                    # all, try the same path over https before the fake-header retry. A live
+                    # feed there is tagged on fpf so ProcessFeed.migrate_https_feed_address
+                    # persists the https address. utils/feed_fetcher.py
+                    https_address = "https://" + address[len("http://") :]
+                    try:
+                        https_feed = safe_requests_get(https_address, headers=headers, timeout=15)
+                    except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
+                        https_feed = None
+                    if https_feed is not None and https_feed.status_code == 200 and https_feed.content:
+                        logging.debug(
+                            "   ---> [%-30s] ~FBhttp address is dead, https answered: ~SB%s"
+                            % (self.feed.log_title[:30], https_address)
+                        )
+                        raw_feed = https_feed
+                        address = https_address
+                        upgraded_to_https = True
                 if raw_feed and raw_feed.status_code == 304:
                     logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
@@ -683,6 +703,9 @@ class FetchFeed:
                         self.fpf["modified"] = modified_header
                     if raw_feed.url != address:
                         self.fpf["href"] = raw_feed.url
+                    if upgraded_to_https:
+                        self.fpf["href"] = address
+                        self.fpf["upgraded_to_https"] = True
 
                     if self.options["verbose"]:
                         logging.debug(
@@ -1153,6 +1176,33 @@ class ProcessFeed:
             self.feed = saved_feed
             self.feed_id = self.feed.pk
 
+    def migrate_https_feed_address(self):
+        """Persist the https:// address FetchFeed fell back to when the http:// one stopped
+        connecting (fpf["upgraded_to_https"], see FetchFeed.fetch), so the feed migrates
+        once instead of knocking on the dead port every fetch.
+
+        Like migrate_openrss_feed_address, the full save recomputes the address hash and
+        merges into an existing https feed on collision, which is how a stale http feed
+        and its https twin become one. Locked addresses are left alone. Forum #13830.
+        utils/feed_fetcher.py
+        """
+        if self.fpf.get("upgraded_to_https") is not True:
+            return
+        https_address = self.fpf.get("href")
+        if not isinstance(https_address, str) or https_address == self.feed.feed_address:
+            return
+        if self.feed.feed_address_locked:
+            return
+        logging.debug(
+            "   ---> [%-30s] ~FBMigrating dead http feed address to https: ~SB%s~SN -> ~SB%s"
+            % (self.feed.log_title[:30], self.feed.feed_address, https_address)
+        )
+        self.feed.feed_address = https_address
+        saved_feed = self.feed.save()
+        if saved_feed:
+            self.feed = saved_feed
+            self.feed_id = self.feed.pk
+
     def load_existing_stories(self, story_hashes):
         stories = MStory.objects(story_hash__in=story_hashes).order_by()
         return {story.story_hash: story for story in stories}
@@ -1162,6 +1212,7 @@ class ProcessFeed:
         start = time.time()
         self.refresh_feed()
         self.migrate_openrss_feed_address()
+        self.migrate_https_feed_address()
 
         if not self.options.get("archive_page", None):
             feed_status, ret_values = self.verify_feed_integrity()
