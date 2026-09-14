@@ -1,0 +1,87 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:hiltAggregateDepsDebug UP-TO-DATE
+> Task :app:hiltJavaCompileDebug UP-TO-DATE
+> Task :app:transformDebugClassesWithAsm UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:kspDebugUnitTestKotlin
+
+> Task :app:compileDebugUnitTestKotlin
+w: file:///Users/sclay/projects/newsblur/.worktree/android-scroll-performance/clients/android/NewsBlur/app/src/test/java/com/newsblur/activity/ReadingMemoryTrimTest.kt:35:45 'static field TRIM_MEMORY_MODERATE: Int' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/.worktree/android-scroll-performance/clients/android/NewsBlur/app/src/test/java/com/newsblur/activity/ReadingMemoryTrimTest.kt:46:45 'static field TRIM_MEMORY_RUNNING_LOW: Int' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/.worktree/android-scroll-performance/clients/android/NewsBlur/app/src/test/java/com/newsblur/network/FeedApiImplBulkMarkReadTest.kt:6:8 'class NetworkInfo : Any, Parcelable' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/.worktree/android-scroll-performance/clients/android/NewsBlur/app/src/test/java/com/newsblur/network/FeedApiImplBulkMarkReadTest.kt:126:33 'class NetworkInfo : Any, Parcelable' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/.worktree/android-scroll-performance/clients/android/NewsBlur/app/src/test/java/com/newsblur/network/FeedApiImplBulkMarkReadTest.kt:127:29 'val isConnected: Boolean' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/.worktree/android-scroll-performance/clients/android/NewsBlur/app/src/test/java/com/newsblur/network/FeedApiImplBulkMarkReadTest.kt:129:37 'val activeNetworkInfo: NetworkInfo?' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugUnitTestJavaWithJavac UP-TO-DATE
+> Task :app:hiltAggregateDepsDebugUnitTest UP-TO-DATE
+> Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:transformDebugUnitTestClassesWithAsm
+
+> Task :app:testDebugUnitTest
+
+MarkStoryReadBehaviorTest > dwellTimesMatchTheirPreferenceLabels FAILED
+    java.lang.AssertionError at MarkStoryReadBehaviorTest.kt:10
+
+ReadingDwellBehaviorTest > pausingBeforeTheDwellDeadlineDoesNotReadAnOffscreenStory FAILED
+    java.lang.AssertionError at ReadingDwellBehaviorTest.kt:98
+
+ReadingDwellBehaviorTest > leavingThePageBeforeItsDeadlineCancelsThatStoryImmediately FAILED
+    java.lang.AssertionError at ReadingDwellBehaviorTest.kt:64
+
+ReadingDwellBehaviorTest > committedBackCancelsDwellBeforeTheExitAnimationFinishes FAILED
+    java.lang.AssertionError at ReadingDwellBehaviorTest.kt:113
+
+ReadingDwellBehaviorTest > anUnrenderedEntranceDoesNotUseUpTheStoryDwell FAILED
+    java.lang.AssertionError at ReadingDwellBehaviorTest.kt:128
+
+ReadingDwellBehaviorTest > outOfOrderSelectionWorkCannotMarkThePreviousStoryOrStealTheNewDwell FAILED
+    java.lang.AssertionError at ReadingDwellBehaviorTest.kt:84
+
+ReadingDwellBehaviorTest > anOldReadPinCannotReplaceTheActuallyVisibleStoryOnReturn FAILED
+    org.junit.ComparisonFailure at ReadingDwellBehaviorTest.kt:170
+
+11 tests completed, 7 failed
+
+> Task :app:testDebugUnitTest FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///Users/sclay/projects/newsblur/.worktree/android-scroll-performance/clients/android/NewsBlur/app/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 16s
+36 actionable tasks: 4 executed, 32 up-to-date
