@@ -21,6 +21,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
@@ -64,6 +66,7 @@ import com.newsblur.util.ViewUtils
 import com.newsblur.util.VolumeKeyNavigation
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
+import com.newsblur.view.readerUsesSystemBackGesture
 import com.newsblur.viewModel.ReadingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -1732,7 +1735,11 @@ abstract class Reading :
 
     private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot
 
-    private fun supportsPredictiveReaderBack(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    private fun supportsPredictiveReaderBack(): Boolean {
+        val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())
+        val hasSystemBackGesture = gestureInsets != null && (gestureInsets.left > 0 || gestureInsets.right > 0)
+        return readerUsesSystemBackGesture(Build.VERSION.SDK_INT, hasSystemBackGesture)
+    }
 
     private fun beginInteractiveReaderBackSwipe() {
         interactiveBackSurface().animate().cancel()
