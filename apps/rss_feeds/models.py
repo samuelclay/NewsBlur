@@ -5238,7 +5238,9 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
         "duplicate_feed_id": duplicate_feed.pk,
         "logged_at": datetime.datetime.utcnow().isoformat(),
     }
+    emitted_subscriptions = {}
     for role, feed in (("original", original_feed), ("duplicate", duplicate_feed)):
+        emitted_subscriptions[role] = 0
         merge_feeds_inventory_record(
             {
                 "type": "feed",
@@ -5286,12 +5288,15 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
                         "has_folder_row": user_id in folder_rows,
                     }
                 )
+                emitted_subscriptions[role] += 1
     merge_feeds_inventory_record(
         {
             "type": "summary",
             "merge": merge,
-            "original_subscriptions": UserSubscription.objects.filter(feed=original_feed).count(),
-            "duplicate_subscriptions": UserSubscription.objects.filter(feed=duplicate_feed).count(),
+            # Counts of the records written above, not live queries: a reader subscribing
+            # between the batches and this summary must not make a complete inventory look cut short.
+            "original_subscriptions": emitted_subscriptions["original"],
+            "duplicate_subscriptions": emitted_subscriptions["duplicate"],
             "branches_of_duplicate": list(
                 Feed.objects.filter(branch_from_feed=duplicate_feed).values_list("pk", flat=True)
             ),
@@ -5300,9 +5305,33 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
     )
 
 
-def merge_feeds(
-    original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False, discard_stories=False
-):
+def move_stories_between_feeds(from_feed_id, to_feed_id):
+    """Re-home every story of from_feed_id under to_feed_id, dropping a copy whose story the
+    target already has. MStory.save recomputes story_hash from the new feed id and re-syncs
+    Redis, and RUserStory.switch_feed has already moved readers' read state to the new id.
+    Used by merge_feeds for a feed parked by restore_merged_feed, whose stories were fetched
+    while the original row was gone and would otherwise be deleted. apps/rss_feeds/models.py
+    """
+    moved = dropped = 0
+    for story in MStory.objects(story_feed_id=from_feed_id):
+        guid_hash = (
+            story.story_hash.split(":", 1)[1] if story.story_hash and ":" in story.story_hash else None
+        )
+        if guid_hash and MStory.objects(story_hash="%s:%s" % (to_feed_id, guid_hash)).count():
+            story.delete()
+            dropped += 1
+            continue
+        story.story_feed_id = to_feed_id
+        story.save()
+        moved += 1
+    logging.info(
+        " ---> merge_feeds moved %s stories from %s to %s (%s duplicates dropped)"
+        % (moved, from_feed_id, to_feed_id, dropped)
+    )
+    return moved, dropped
+
+
+def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
     """Fold duplicate_feed into original_feed and delete it. With preserve_branch_from_feed
     the survivor keeps its own parent (unless that parent is the duplicate being deleted),
     which restore_merged_feed relies on so a restored private branch never turns public
@@ -5325,15 +5354,8 @@ def merge_feeds(
     # A feed parked by restore_merged_feed carries a placeholder hash while the original row
     # comes back. Whoever saves it first (a fetch worker included) lands here, and it must
     # fold into the restored feed, never the other way round, with the parent kept.
-    if (duplicate_feed.hash_address_and_link or "").startswith("restore-parked-"):
-        if not discard_stories and MStory.objects(story_feed_id=duplicate_feed.pk).count():
-            # Stories it fetched while parked would be deleted by the merge; only
-            # restore_merged_feed --discard-collision-stories may decide that.
-            logging.info(
-                " ***> merge_feeds: parked feed %s has stories, leaving it for restore_merged_feed"
-                % duplicate_feed.pk
-            )
-            return original_feed_id
+    parked_duplicate = (duplicate_feed.hash_address_and_link or "").startswith("restore-parked-")
+    if parked_duplicate:
         force = True
         preserve_branch_from_feed = True
 
@@ -5398,6 +5420,11 @@ def merge_feeds(
         # if duplicate_stories.count():
         #     logging.info(" ---> Deleting %s %s" % (duplicate_stories.count(), model))
         duplicate_stories.delete()
+
+    if parked_duplicate:
+        # A parked feed collected its stories while the original row was gone; they move to
+        # the restored feed rather than being deleted, whatever a fetch worker adds meanwhile.
+        move_stories_between_feeds(duplicate_feed.pk, original_feed.pk)
 
     # Clear Redis story hashes before bulk-deleting stories, since queryset
     # .delete() bypasses the instance MStory.delete() / remove_from_redis().
