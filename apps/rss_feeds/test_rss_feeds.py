@@ -1159,23 +1159,29 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
 
 
 class Test_BranchFromFeedDoesNotCascade(TestCase):
-    def test_deleting_a_parent_feed_leaves_its_branches(self):
+    def test_deleting_a_parent_feed_with_branches_is_refused_and_leaves_them_intact(self):
+        """A branch can be a reader's private URL, and a null parent is what makes a feed
+        public in discovery, so a parent with branches can be merged but not deleted."""
+        from django.db.models import ProtectedError
+
         parent = Feed.objects.create(
             feed_address="http://rss.example.com/lineup/world.xml",
             feed_link="https://www.example.com/world",
             feed_title="Example | World",
         )
         child = Feed.objects.create(
-            feed_address="https://rss.example.com/lineup/world.xml",
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-xyz&user=reader",
             feed_link="https://www.example.com/world",
-            feed_title="Example | World",
+            feed_title="Example | World (reader)",
             branch_from_feed=parent,
         )
 
-        parent.delete()
+        with self.assertRaises(ProtectedError):
+            parent.delete()
 
         child.refresh_from_db()
-        self.assertIsNone(child.branch_from_feed_id)
+        self.assertEqual(child.branch_from_feed_id, parent.pk)
+        self.assertTrue(Feed.objects.filter(pk=parent.pk).exists())
 
 
 class Test_YouTubeFavicons(TestCase):
