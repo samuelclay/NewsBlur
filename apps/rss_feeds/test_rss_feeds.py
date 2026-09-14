@@ -1081,7 +1081,14 @@ class Test_TextImporterGoogleNews(TestCase):
     CONSENT_HTML = (
         b"<html><head><title>Before you continue</title></head><body><article>"
         b"<p>We use cookies and data, including IP addresses, to Deliver and maintain Google services, "
-        b"Track outages and protect against spam, fraud, and abuse.</p></article></body></html>"
+        b"Track outages and protect against spam, fraud, and abuse.</p>"
+        b"<p>You can also visit g.co/privacytools at any time.</p>"
+        b"<button>Reject all</button><button>Accept all</button></article></body></html>"
+    )
+    QUOTING_HTML = (
+        b"<html><body><article><h1>What Google's consent wall says</h1>"
+        b'<p>Google opens with "We use cookies and data, including IP addresses, to Deliver and '
+        b'maintain Google services", which tells you very little.</p></article></body></html>'
     )
 
     def _story(self, url):
@@ -1184,6 +1191,82 @@ class Test_TextImporterGoogleNews(TestCase):
         self.assertEqual(text, "<p>Real article</p>")
         self.assertIsNone(story.original_text_z)
         mock_importer.return_value.fetch.assert_called_once_with(return_document=True)
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_google_news_article_quoting_the_consent_wording_is_kept(self, mock_feed):
+        """The article behind a Google News link keeps its Google News permalink after text
+        extraction, so the consent signature needs more than the opening line."""
+        story = MStory(
+            story_feed_id=1,
+            story_hash="1:quoting-google",
+            story_guid="quoting-google-guid",
+            story_title="What Google's consent wall says",
+            story_permalink=self.GOOGLE_URL,
+        )
+        story.original_text_z = zlib.compress(self.QUOTING_HTML)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer:
+            text = story.fetch_original_text()
+
+        self.assertEqual(text, self.QUOTING_HTML)
+        mock_importer.assert_not_called()
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_failed_consent_refetch_never_erases_a_concurrent_success(self, mock_sync, mock_feed):
+        """Two requests load the same consent-wall cache. The first refetch succeeds and
+        saves the article; the second fails and must leave that article in place."""
+        story = MStory(
+            story_feed_id=1,
+            story_guid="concurrent-consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+        story.save()
+        self.addCleanup(lambda: MStory.objects(id=story.id).delete())
+        real_article = zlib.compress(b"<p>Real article</p>")
+        winner = MStory.objects.get(id=story.id)
+        loser = MStory.objects.get(id=story.id)
+
+        def losing_fetch(**kwargs):
+            # The other request finishes its refetch while this one is still in flight.
+            winner.original_text_z = real_article
+            winner.save()
+            return None
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer, patch.object(
+            MStory, "extract_image_urls"
+        ):
+            mock_importer.return_value.fetch.side_effect = losing_fetch
+            text = loser.fetch_original_text()
+
+        self.assertIsNone(text)
+        self.assertEqual(MStory.objects.get(id=story.id).original_text_z, real_article)
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_stale_consent_copy_serves_the_text_another_request_already_cached(self, mock_sync, mock_feed):
+        story = MStory(
+            story_feed_id=1,
+            story_guid="stale-consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+        story.save()
+        self.addCleanup(lambda: MStory.objects(id=story.id).delete())
+        real_article = zlib.compress(b"<p>Real article</p>")
+        stale = MStory.objects.get(id=story.id)
+        MStory.objects(id=story.id).update(set__original_text_z=real_article)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer:
+            text = stale.fetch_original_text()
+
+        self.assertEqual(text, b"<p>Real article</p>")
+        mock_importer.assert_not_called()
 
     @patch("apps.rss_feeds.models.Feed.get_by_id")
     def test_unrelated_article_quoting_the_consent_wording_is_kept(self, mock_feed):
