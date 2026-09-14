@@ -1,8 +1,159 @@
 import XCTest
+import ObjectiveC.runtime
 
 @testable import NewsBlur
 
 @MainActor final class Test_StoryTitleSwipe: XCTestCase {
+    func test_onlyRecognizedPanDefersReloadAndCancellationReleasesIt() async throws {
+        selectActions()
+        let controller = StorySwipeReloadController()
+        let table = StoryListSwipeReloadTable()
+        controller.storyTitlesTable = table
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        cell.frame = CGRect(x: 0, y: 0, width: 320, height: 80)
+        cell.storyHash = "recognized-pan-story"
+        cell.setupGestures()
+        cell.delegate = controller
+
+        // MCSwipeTableViewCell.m checks UIPanGestureRecognizer's exact class; scope the velocity stub to this synchronous query.
+        do {
+            let method = try XCTUnwrap(class_getInstanceMethod(UIPanGestureRecognizer.self,
+                                                               #selector(UIPanGestureRecognizer.velocity(in:))))
+            let original = method_getImplementation(method)
+            let velocity: @convention(block) (UIPanGestureRecognizer, UIView?) -> CGPoint = { _, _ in
+                CGPoint(x: 100, y: 0)
+            }
+            let replacement = imp_implementationWithBlock(velocity)
+            method_setImplementation(method, replacement)
+            defer {
+                method_setImplementation(method, original)
+                imp_removeBlock(replacement)
+            }
+            let possiblePan = UIPanGestureRecognizer()
+            XCTAssertEqual(possiblePan.state, .possible)
+            XCTAssertTrue(cell.gestureRecognizerShouldBegin(possiblePan))
+        }
+        XCTAssertNil(controller.swipingStoryHash)
+        controller.configureDataSource()
+        XCTAssertEqual(controller.tableReloadCount, 1, "A permission query may still lose to edge navigation")
+
+        controller.resetPendingReloadsForFeedChange()
+        controller.tableReloadCount = 0
+        let pan = StorySwipeLifecyclePan()
+        pan.testState = .began
+        cell.perform(NSSelectorFromString("handlePanGestureRecognizer:"), with: pan)
+        XCTAssertEqual(controller.swipingStoryHash, "recognized-pan-story")
+        controller.configureDataSource()
+        XCTAssertEqual(controller.tableReloadCount, 0)
+        let reload = expectation(description: "Reload after the cancelled pan finishes bouncing")
+        controller.onReload = { reload.fulfill() }
+        pan.testState = .cancelled
+        cell.perform(NSSelectorFromString("handlePanGestureRecognizer:"), with: pan)
+        await fulfillment(of: [reload], timeout: 2)
+        XCTAssertNil(controller.swipingStoryHash)
+        XCTAssertEqual(controller.tableReloadCount, 1)
+    }
+
+    func test_nativeFullReloadWaitsForSwipeActionOrCancellation() async throws {
+        let preferences = UserDefaults.standard
+        let previousAction = preferences.object(forKey: "story_title_swipe_right")
+        preferences.set("save", forKey: "story_title_swipe_right")
+        defer {
+            if let previousAction { preferences.set(previousAction, forKey: "story_title_swipe_right") }
+            else { preferences.removeObject(forKey: "story_title_swipe_right") }
+        }
+
+        for percentage in [0.0, 0.4] {
+            let controller = StorySwipeReloadController()
+            let table = StoryListSwipeReloadTable()
+            let stories = StoryListSwipeReloadStories()
+            let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+            stories.activeFeedStories = [["story_hash": "reload-swiped-story"]]
+            stories.activeFeedStoryLocations = NSMutableArray(array: [0])
+            stories.storyLocationsCount = 1
+            controller.storiesCollection = stories
+            controller.storyTitlesTable = table
+            cell.storyHash = "reload-swiped-story"
+            cell.setupGestures()
+            cell.delegate = controller
+            cell.mode = .switch
+            controller.swipeTableViewCellDidStartSwiping(cell)
+
+            // StoryTitleSwipeTests.swift covers both immediate and coalesced page-response reloads.
+            controller.configureDataSource()
+            controller.reload()
+            try await Task.sleep(nanoseconds: 250_000_000)
+            XCTAssertEqual(controller.tableReloadCount, 0, "A full reload must not recycle a cell while its pan is active")
+
+            // MCSwipeTableViewCell.m calls notifyDelegate after the bounce for both ended and cancelled pans.
+            let reload = expectation(description: "Reload after the original story swipe finishes")
+            controller.onReload = { reload.fulfill() }
+            cell.setValue(percentage, forKey: "currentPercentage")
+            cell.perform(NSSelectorFromString("notifyDelegate"))
+            XCTAssertNil(controller.swipingStoryHash, "A short or reversed swipe must also release the reload")
+            XCTAssertNil(controller.swipingIndexPath)
+            XCTAssertEqual(stories.savedHashes, percentage == 0 ? [] : ["reload-swiped-story"])
+            await fulfillment(of: [reload], timeout: 2)
+            XCTAssertEqual(controller.tableReloadCount, 1, "Coalesce the pending refreshes after the original story action")
+        }
+    }
+
+    func test_feedChangeDiscardsReloadDeferredByPreviousSwipe() async throws {
+        let controller = StorySwipeReloadController()
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        cell.storyHash = "previous-feed-story"
+        cell.delegate = controller
+        controller.swipeTableViewCellDidStartSwiping(cell)
+        controller.configureDataSource()
+        XCTAssertEqual(controller.tableReloadCount, 0)
+
+        controller.resetPendingReloadsForFeedChange()
+        XCTAssertNil(controller.swipingStoryHash)
+        XCTAssertNil(controller.swipingIndexPath)
+        cell.perform(NSSelectorFromString("notifyDelegate"))
+        try await Task.sleep(nanoseconds: 250_000_000)
+        XCTAssertEqual(controller.tableReloadCount, 0, "Finishing an obsolete gesture must not refresh the new feed")
+    }
+
+    func test_obsoleteSwipeCompletionPreservesNewCellsActionAndPendingReload() async throws {
+        selectActions()
+        let controller = StorySwipeReloadController()
+        let table = StoryListSwipeReloadTable()
+        let stories = StoryListSwipeReloadStories()
+        stories.activeFeedStories = [["story_hash": "current-feed-story"]]
+        stories.activeFeedStoryLocations = NSMutableArray(array: [0])
+        stories.storyLocationsCount = 1
+        controller.storiesCollection = stories
+        controller.storyTitlesTable = table
+        let oldCell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        oldCell.storyHash = "previous-feed-story"
+        let currentCell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+        currentCell.storyHash = "current-feed-story"
+        for cell in [oldCell, currentCell] {
+            cell.setupGestures()
+            cell.delegate = controller
+            cell.setValue(0.4, forKey: "currentPercentage")
+        }
+
+        controller.swipeTableViewCellDidStartSwiping(oldCell)
+        controller.configureDataSource()
+        controller.resetPendingReloadsForFeedChange()
+        controller.swipeTableViewCellDidStartSwiping(currentCell)
+        controller.configureDataSource()
+        oldCell.perform(NSSelectorFromString("notifyDelegate"))
+        XCTAssertEqual(controller.swipingStoryHash, "current-feed-story")
+        XCTAssertEqual(controller.swipingIndexPath, IndexPath(row: 0, section: 0))
+        XCTAssertEqual(controller.tableReloadCount, 0)
+        XCTAssertTrue(stories.savedHashes.isEmpty)
+
+        let reload = expectation(description: "Reload after the current cell finishes")
+        controller.onReload = { reload.fulfill() }
+        currentCell.perform(NSSelectorFromString("notifyDelegate"))
+        XCTAssertEqual(stories.savedHashes, ["current-feed-story"])
+        await fulfillment(of: [reload], timeout: 2)
+        XCTAssertEqual(controller.tableReloadCount, 1)
+    }
+
     private let keys = ["story_title_swipe_right", "story_title_swipe_left", "enable_story_swipes",
                         "enable_feed_swipes", "feed_title_swipe_left", "feed_title_swipe_right"]
     private var previous: [Any?] = []
@@ -429,6 +580,41 @@ import XCTest
         StoryTitleSwipePreference.migrateLegacyStyle(in: defaults, persistentDomainName: suite)
         XCTAssertNil(defaults.persistentDomain(forName: suite)?[keys[0]])
         XCTAssertNil(defaults.persistentDomain(forName: suite)?[keys[1]])
+    }
+}
+
+@MainActor private final class StorySwipeReloadController: FeedDetailViewController {
+    var tableReloadCount = 0
+    var onReload: (() -> Void)?
+    override var isLegacyTable: Bool { true }
+    override var isDashboard: Bool { false }
+    override var isDailyBriefingView: Bool { false }
+    override func reloadTable() {
+        tableReloadCount += 1
+        onReload?()
+    }
+}
+
+@MainActor private final class StorySwipeLifecyclePan: UIPanGestureRecognizer {
+    var testState = UIGestureRecognizer.State.possible
+    override var state: UIGestureRecognizer.State {
+        get { testState }
+        set { testState = newValue }
+    }
+    override func velocity(in view: UIView?) -> CGPoint { CGPoint(x: 100, y: 0) }
+    override func translation(in view: UIView?) -> CGPoint { .zero }
+}
+
+@MainActor private final class StoryListSwipeReloadTable: UITableView {
+    override func indexPath(for cell: UITableViewCell) -> IndexPath? { IndexPath(row: 0, section: 0) }
+}
+
+@MainActor private final class StoryListSwipeReloadStories: StoriesCollection {
+    var savedHashes = [String]()
+
+    override func toggleStorySaved(_ story: [AnyHashable: Any]!) -> Bool {
+        savedHashes.append(story["story_hash"] as! String)
+        return true
     }
 }
 

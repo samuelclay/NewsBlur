@@ -448,6 +448,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
     
     var reloadWorkItem: DispatchWorkItem?
+    private weak var activeStorySwipeCell: MCSwipeTableViewCell?
+    private var reloadDeferredForStorySwipe = false
     
     var pendingStories = [Story.ID : Story]()
     
@@ -519,6 +521,33 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         reloadWorkItem?.cancel()
         reloadWorkItem = nil
         pendingStories.removeAll()
+        activeStorySwipeCell = nil
+        reloadDeferredForStorySwipe = false
+        swipingIndexPath = nil
+        swipingStoryHash = nil
+    }
+
+    override func swipeTableViewCellDidStartSwiping(_ cell: MCSwipeTableViewCell!) {
+        super.swipeTableViewCellDidStartSwiping(cell)
+        activeStorySwipeCell = cell
+    }
+
+    override func swipeTableViewCell(_ cell: MCSwipeTableViewCell!,
+                                    didEndSwipingSwipingWith state: MCSwipeTableViewCellState,
+                                    mode: MCSwipeTableViewCellMode) {
+        guard activeStorySwipeCell === cell else { return }
+        super.swipeTableViewCell(cell, didEndSwipingSwipingWith: state, mode: mode)
+    }
+
+    override func swipeTableViewCellDidFinishSwiping(_ cell: MCSwipeTableViewCell!) {
+        guard activeStorySwipeCell === cell else { return }
+        activeStorySwipeCell = nil
+        swipingIndexPath = nil
+        swipingStoryHash = nil
+        if reloadDeferredForStorySwipe {
+            reloadDeferredForStorySwipe = false
+            deferredReload()
+        }
     }
     
     @objc override func reload() {
@@ -645,6 +674,12 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 
 extension FeedDetailViewController {
     func configureDataSource(story: Story? = nil) {
+        // FeedDetailViewController.swift keeps a page response from recycling the cell before its swipe action finishes.
+        if activeStorySwipeCell != nil {
+            reloadDeferredForStorySwipe = true
+            return
+        }
+
         if isDailyBriefingView {
             refreshDailyBriefingPresentation()
 
