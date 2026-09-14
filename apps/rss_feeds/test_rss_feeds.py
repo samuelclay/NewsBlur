@@ -2354,6 +2354,26 @@ class Test_MergeFeedsLock(TestCase):
         self.assertEqual(feed_models._merge_locks_held(), set())
 
     @patch("apps.rss_feeds.models.redis")
+    def test_a_lock_taken_before_a_later_one_fails_is_released(self, mock_redis):
+        from unittest.mock import MagicMock
+
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import merge_feeds
+
+        first, second = MagicMock(), MagicMock()
+        second.__enter__.side_effect = RuntimeError("lock 22 timed out")
+        mock_redis.Redis.return_value.lock.side_effect = [first, second]
+
+        with patch.object(feed_models, "merge_feeds_locked") as mock_locked:
+            with self.assertRaises(RuntimeError):
+                merge_feeds(11, 22)
+
+        first.__exit__.assert_called_once()
+        second.__exit__.assert_not_called()
+        mock_locked.assert_not_called()
+        self.assertEqual(feed_models._merge_locks_held(), set())
+
+    @patch("apps.rss_feeds.models.redis")
     def test_a_collision_on_a_brand_new_feed_does_not_lock_or_raise(self, mock_redis):
         """Feed.save calls merge_feeds(existing.pk, None) when a brand-new feed collides on
         insert; that must return the existing id, not fail on sorting None."""

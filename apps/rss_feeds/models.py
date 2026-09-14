@@ -5376,7 +5376,9 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
     return moved, dropped
 
 
-MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 15 * 60
+# Long enough for restore_merged_feed to walk a large Archive feed's stories; a lease that
+# expired mid-merge would let a second merge of the same feeds start.
+MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 2 * 60 * 60
 # Feed ids whose merge lock this thread already holds. merge_feeds_locked ends with a full
 # Feed.save of the survivor, which merges again on a hash collision; that nested merge must
 # not wait on locks its own caller holds. apps/rss_feeds/models.py
@@ -5417,14 +5419,18 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
         r.lock("merge_feeds:%s" % feed_id, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120)
         for feed_id in to_lock
     ]
-    for lock in locks:
-        lock.__enter__()
-    held.update(to_lock)
+    entered = []
     try:
+        for lock in locks:
+            lock.__enter__()
+            entered.append(lock)
+        held.update(to_lock)
         return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
     finally:
+        # Also on a failed acquisition: a first lock taken before a second timed out must not
+        # stay held until its lease runs out.
         held.difference_update(to_lock)
-        for lock in reversed(locks):
+        for lock in reversed(entered):
             lock.__exit__(None, None, None)
 
 
