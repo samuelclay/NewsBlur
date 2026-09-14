@@ -21,7 +21,9 @@ These hold for every topic, every run. Do not reinterpret them mid-run.
 6. **Reproduce before fixing.** Per CLAUDE.md: write the failing test first, then fix, then show it passing. If it cannot be reproduced, say so in the PR and the reply rather than guessing.
 7. **Reply-only topics are tier 1.** A how-to question, a known limitation, a duplicate, a "works as designed": draft the reply, record it, move on. No interview needed.
 8. **Ask with AskUserQuestion, never plain text.** Tier 2 decisions, and anything mid-fix that could go two materially different ways.
-9. **A PR is done only when `/commit-pr` says so.** Green CI on the current head, zero unresolved Claude or Codex review threads, marked ready for review. The push-to-clean loop lives in the `commit-pr` skill; this skill never re-implements it.
+9. **When the auto-mode classifier blocks an approved prod write, hand it to Sam.** Write the exact script or SQL to a file at the repo root, print the one-line command that runs it, record `tier2-pending` with that command in the note, and move on. Never look for another route to the same write.
+10. **Before any prod `merge_feeds`, check for branches.** `Feed.objects.filter(branch_from_feed=<duplicate>)` must be empty or re-parented first; until PR #2133 is deployed, a merge that deletes a feed with branches deletes the branches and their subscriptions too (CBC incident, 2026-09-14). Prefer `force=False` so the heavier feed survives.
+11. **A PR is done only when `/commit-pr` says so.** Green CI on the current head, zero unresolved Claude or Codex review threads, marked ready for review. The push-to-clean loop lives in the `commit-pr` skill; this skill never re-implements it.
 
 ## Arguments
 
