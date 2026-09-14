@@ -1136,8 +1136,11 @@ abstract class Reading :
      * Make visible and update the overlay UI.
      */
     fun enableOverlays() {
-        binding.includeToolbar.root.setExpanded(true, true)
-        setOverlayAlpha(1.0f)
+        // Reading.kt also enables controls from asynchronous story-selection callbacks.
+        runOnUiThread {
+            binding.includeToolbar.root.setExpanded(true, true)
+            setOverlayAlpha(1.0f)
+        }
     }
 
     fun disableOverlays() {
