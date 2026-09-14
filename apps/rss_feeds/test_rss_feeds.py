@@ -1240,6 +1240,71 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
         self.assertTrue(fpf.get("upgraded_to_https"))
         self.assertEqual(fpf.get("href"), self.HTTPS_ADDRESS)
 
+    def _parse_strings_only(self):
+        """feedparser.parse for string bodies (the probe check and the XML branch), None for
+        URLs, so the feedparser fallbacks in fetch() never touch the network."""
+        import feedparser
+
+        real_parse = feedparser.parse
+        return lambda source, **kwargs: (
+            real_parse(source, **kwargs)
+            if isinstance(source, (str, bytes)) and not str(source).startswith("http")
+            else None
+        )
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_xml_error_document_is_not_adopted(self, mock_skip, mock_random, mock_validate):
+        """An XML error document over https looks like a feed by content type but parses to
+        no entries: it must not replace the fetch, and the http retries must still run."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_error_xml(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'<?xml version="1.0"?><error>unavailable</error>'
+            response.headers = {"Content-Type": "application/xml"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_error_xml
+        ) as mock_get, patch("utils.feed_fetcher.feedparser.parse", side_effect=self._parse_strings_only()):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+        self.assertTrue(len(requested) >= 3 and requested[2].startswith("http://"), requested)
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_json_error_document_is_not_adopted(self, mock_skip, mock_random, mock_validate):
+        """JSONFetcher turns any JSON object into an Atom feed with a version, so a JSON error
+        response must be rejected by the missing entries, not accepted by the version."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_error_json(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'{"error": "unavailable"}'
+            response.headers = {"Content-Type": "application/json"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_error_json), patch(
+            "utils.feed_fetcher.feedparser.parse", side_effect=self._parse_strings_only()
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
     def test_process_feed_persists_the_https_address(self):
         import feedparser
 
@@ -1263,6 +1328,18 @@ class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
     HTTP_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTP_ADDRESS
     HTTPS_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTPS_ADDRESS
     RSS = Test_HttpsUpgradeOnDeadHttp.RSS
+
+    def setUp(self):
+        # merge_feeds rewrites Redis story hashes and subscriber counts, and tests share
+        # Redis with the dev server (newsblur_web/test_settings.py), so every merge in this
+        # class runs against mocked Redis clients and a no-op subscriber recount.
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(Feed, "count_subscribers"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def test_process_feed_merges_into_an_existing_https_twin(self):
         import feedparser
