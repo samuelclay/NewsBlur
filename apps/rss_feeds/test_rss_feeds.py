@@ -1068,6 +1068,139 @@ class Test_TextImporterEncoding(TestCase):
         self.assertNotIn("\x01", result["content"])
 
 
+class Test_HttpsUpgradeOnDeadHttp(TestCase):
+    """When a publisher stops answering on port 80 (rss.cbc.ca did on June 30, 2026,
+    forum #13830) every http:// feed address goes quiet with no redirect to follow.
+    FetchFeed retries the same path over https:// and, when that is a live feed, tags
+    the parsed feed so ProcessFeed persists the https address, merging into an
+    existing https twin when one exists."""
+
+    HTTP_ADDRESS = "http://dead-port-80.example.com/lineup/feed.xml"
+    HTTPS_ADDRESS = "https://dead-port-80.example.com/lineup/feed.xml"
+    RSS = (
+        b'<?xml version="1.0"?><rss version="2.0"><channel><title>Dead Port 80</title>'
+        b"<link>https://dead-port-80.example.com/</link>"
+        b"<item><title>Alive over https</title><link>https://dead-port-80.example.com/1</link>"
+        b"<guid>https://dead-port-80.example.com/1</guid></item></channel></rss>"
+    )
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS,
+            feed_link="https://dead-port-80.example.com/",
+            feed_title="Dead Port 80",
+        )
+        self.feed.num_subscribers = 2
+        self.feed.save()
+
+    def _https_response(self, url):
+        response = MagicMock()
+        response.status_code = 200
+        response.content = self.RSS
+        response.text = self.RSS.decode("utf-8")
+        response.headers = {"Content-Type": "application/rss+xml"}
+        response.url = url
+        response.connection = MagicMock()
+        return response
+
+    def _http_dead_https_alive(self, url, **kwargs):
+        if url.startswith("http://"):
+            raise requests.ConnectionError("connection refused on port 80")
+        return self._https_response(url)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_fetch_retries_over_https_and_tags_the_upgrade(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=self._http_dead_https_alive
+        ) as mock_get:
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(len(fpf.entries), 1)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.HTTPS_ADDRESS)
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_fetch_leaves_a_working_http_feed_alone(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get",
+            side_effect=lambda url, **kwargs: self._https_response(url),
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertFalse(fpf.get("upgraded_to_https"))
+        self.assertIsNone(fpf.get("href"))
+
+    def test_process_feed_persists_the_https_address(self):
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(self.feed.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTPS_ADDRESS)
+
+
+class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
+    """Feed.save handles the address-hash collision by merging into the existing feed,
+    which needs a real transaction (the failed UPDATE aborts a TestCase's wrapper)."""
+
+    HTTP_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTP_ADDRESS
+    HTTPS_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTPS_ADDRESS
+    RSS = Test_HttpsUpgradeOnDeadHttp.RSS
+
+    def test_process_feed_merges_into_an_existing_https_twin(self):
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        stale = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        stale.num_subscribers = 2
+        stale.save()
+        twin = Feed.objects.create(
+            feed_address=self.HTTPS_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        # The twin is the heavier feed, as it was for every CBC pair, so it is the survivor.
+        twin.num_subscribers = 5
+        twin.save()
+        from apps.reader.models import UserSubscriptionFolders
+
+        user = User.objects.create_user("port80reader", "port80reader@example.com", "password")
+        UserSubscription.objects.create(user=user, feed=stale)
+        # switch_feed only moves a subscription for a user who has a folder tree.
+        UserSubscriptionFolders.objects.create(user=user, folders="[%s]" % stale.pk)
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(stale.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(pfeed.feed_id, twin.pk)
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=twin).exists())
+        self.assertFalse(Feed.objects.filter(pk=stale.pk).exists())
+
+
 class Test_YouTubeFavicons(TestCase):
     """Tests for YouTube favicon lookup and caching."""
 
