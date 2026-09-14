@@ -1528,12 +1528,18 @@ class Test_RestoreMergedFeedCommand(TestCase):
 
     def setUp(self):
         # The collision tests run a real merge; keep its fetch-history cleanup off the
-        # analytics database, which the test runner does not redirect.
+        # analytics database, which the test runner does not redirect, and keep the
+        # finalization's Redis rebuild and reindexing off the shared dev Redis and search.
         from apps.rss_feeds.models import MFetchHistory
 
-        patcher = patch.object(MFetchHistory, "delete_for_feed", return_value=0)
-        patcher.start()
-        self.addCleanup(patcher.stop)
+        for patcher in (
+            patch.object(MFetchHistory, "delete_for_feed", return_value=0),
+            patch.object(Feed, "sync_redis"),
+            patch.object(Feed, "index_stories_for_search"),
+            patch.object(Feed, "index_stories_for_discover"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def _inventory_file(self, lines):
         import tempfile
@@ -2068,6 +2074,41 @@ class Test_RestoreMergedFeedCommand(TestCase):
             DuplicateFeed.objects.filter(duplicate_feed_id=424242, duplicate_address=lost_address).exists()
         )
         self.assertEqual((restored.etag, restored.last_modified, restored.fetched_once), (None, None, False))
+
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_search_indexed_feed_is_reindexed_after_restore(self, mock_count):
+        """A move that stopped between its Mongo write and indexing leaves a story out of
+        search; the restore reindexes the whole feed per its flags."""
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/indexed.xml",
+            feed_link="https://www.example.com/indexed",
+            feed_title="Example | Indexed",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-indexed",
+            feed_link="https://www.example.com/indexed",
+            feed_title="Example | Indexed",
+        )
+        Feed.objects.filter(pk=lost.pk).update(search_indexed=True, discover_indexed=False)
+        lost = Feed.objects.get(pk=lost.pk)
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id = lost.pk
+        lost.delete()
+
+        with patch.object(Feed, "index_stories_for_search") as mock_search, patch.object(
+            Feed, "index_stories_for_discover"
+        ) as mock_discover:
+            call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        mock_search.assert_called_once_with(force=True)
+        mock_discover.assert_not_called()
 
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
