@@ -2306,14 +2306,18 @@ class Test_MergeFeedsLock(TestCase):
         from apps.rss_feeds.models import MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, merge_feeds
 
         self.assertEqual(merge_feeds(11, 22, force=True), 11)
+        merge_feeds(22, 11)
 
         lock = mock_redis.Redis.return_value.lock
-        lock.assert_called_once_with(
-            "merge_feeds:22", timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
+        # Both orderings of the same pair take the same lock, so a swap inside one merge
+        # cannot let two merges of the pair run at once.
+        self.assertEqual([call.args[0] for call in lock.call_args_list], ["merge_feeds:11:22"] * 2)
+        lock.assert_called_with(
+            "merge_feeds:11:22", timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
         )
-        lock.return_value.__enter__.assert_called_once()
-        lock.return_value.__exit__.assert_called_once()
-        mock_locked.assert_called_once_with(11, 22, True, False)
+        self.assertEqual(lock.return_value.__enter__.call_count, 2)
+        self.assertEqual(lock.return_value.__exit__.call_count, 2)
+        mock_locked.assert_any_call(11, 22, True, False)
 
 
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):

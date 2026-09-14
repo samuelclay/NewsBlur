@@ -5390,9 +5390,12 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
     if original_feed_id == duplicate_feed_id:
         logging.info(" ***> Merging the same feed. Ignoring...")
         return original_feed_id
+    # Keyed on the pair in a fixed order: merge_feeds(a, b) may swap the two when b has more
+    # readers, so merge_feeds(b, a) running at the same time must contend for the same lock.
+    low, high = sorted((original_feed_id, duplicate_feed_id))
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     with r.lock(
-        "merge_feeds:%s" % duplicate_feed_id, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
+        "merge_feeds:%s:%s" % (low, high), timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
     ):
         return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
 
