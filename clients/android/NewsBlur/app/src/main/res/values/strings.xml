@@ -605,6 +605,11 @@ people together to talk about the world.</string>
     <string name="settings_story_clustering_title_only">Title only</string>
     <string name="settings_cluster_mode_title_match_only">Title match only</string>
     <string name="settings_cluster_mode_title_match_plus_related">Title match plus related</string>
+    <string name="settings_cluster_mark_read_matches">Mark matching stories as read</string>
+    <string name="settings_cluster_mark_read_related">Mark related stories as read</string>
+    <string name="settings_cluster_mark_read_matches_summary">When you read a story, also mark its matching stories as read.</string>
+    <string name="settings_cluster_mark_read_related_summary">When you read a story, also mark matching and related stories as read.</string>
+    <string name="settings_cluster_mark_read_save_failed">Couldn\'t save the related stories read preference</string>
     <string name="settings_story_clustering_title">Title</string>
     <string name="settings_story_clustering_only">only</string>
     <string name="settings_story_clustering_plus">+</string>

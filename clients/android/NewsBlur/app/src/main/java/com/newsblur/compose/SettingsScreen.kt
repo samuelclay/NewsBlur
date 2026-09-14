@@ -150,6 +150,9 @@ data class SettingsUiState(
     val markReadOnScroll: Boolean = false,
     val storyClusteringEnabled: Boolean = true,
     val clusterMode: String = StoryClusterDisplayDecision.CLUSTER_MODE_RELATED,
+    val isArchive: Boolean = false,
+    val clusterMarkReadEnabled: Boolean = false,
+    val clusterMarkReadSaving: Boolean = false,
     val storyContentPreviewStyle: String = StoryContentPreviewStyle.MEDIUM.name,
     val thumbnailStyle: String = ThumbnailStyle.RIGHT_LARGE.name,
     val markStoryReadBehavior: String = MarkStoryReadBehavior.IMMEDIATELY.name,
@@ -216,6 +219,8 @@ fun buildSettingsUiState(
         markReadOnScroll = prefsRepo.isMarkReadOnFeedScroll(),
         storyClusteringEnabled = StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo),
         clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo),
+        isArchive = prefsRepo.getIsArchive(),
+        clusterMarkReadEnabled = prefsRepo.isClusterMarkReadEnabled(),
         storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle().name,
         thumbnailStyle = prefsRepo.getThumbnailStyle().name,
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior().name,
@@ -643,6 +648,20 @@ fun SettingsScreen(
                             )
                     },
                 )
+                if (state.isArchive) {
+                    RowDivider(palette)
+                    val matchesOnly = state.clusterMode == StoryClusterDisplayDecision.CLUSTER_MODE_TITLE
+                    ToggleSettingsRow(
+                        title = stringResource(if (matchesOnly) R.string.settings_cluster_mark_read_matches else R.string.settings_cluster_mark_read_related),
+                        icon = Icons.Rounded.CheckCircle,
+                        iconColor = NewsblurGreen,
+                        checked = state.clusterMarkReadEnabled,
+                        enabled = !state.clusterMarkReadSaving,
+                        subtitle = stringResource(if (matchesOnly) R.string.settings_cluster_mark_read_matches_summary else R.string.settings_cluster_mark_read_related_summary),
+                        palette = palette,
+                        onCheckedChange = { onBooleanChanged(PrefConstants.CLUSTER_MARK_READ, it) },
+                    )
+                }
             }
         }
 
@@ -1679,6 +1698,7 @@ private fun ToggleSettingsRow(
     iconColor: Color,
     checked: Boolean,
     palette: SettingsPalette,
+    enabled: Boolean = true,
     subtitle: String? = null,
     supportingContent: (@Composable () -> Unit)? = null,
     onCheckedChange: (Boolean) -> Unit,
@@ -1687,7 +1707,7 @@ private fun ToggleSettingsRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+                .toggleable(value = checked, enabled = enabled, role = Role.Switch, onValueChange = onCheckedChange)
                 .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -1715,6 +1735,7 @@ private fun ToggleSettingsRow(
         Spacer(Modifier.width(12.dp))
         Switch(
             checked = checked,
+            enabled = enabled,
             onCheckedChange = null,
             colors =
                 SwitchDefaults.colors(
