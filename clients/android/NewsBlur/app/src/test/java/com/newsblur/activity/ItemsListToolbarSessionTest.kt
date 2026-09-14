@@ -1,6 +1,7 @@
 package com.newsblur.activity
 
 import android.content.Intent
+import android.content.ContextWrapper
 import androidx.activity.result.ActivityResult
 import com.newsblur.util.FeedSet
 import com.newsblur.util.UIUtils
@@ -12,6 +13,26 @@ import io.mockk.verify
 import org.junit.Test
 
 class ItemsListToolbarSessionTest {
+    @Test
+    fun directRelatedStoryLaunchInheritsHiddenToolbarThroughNestedWrappers() {
+        mockkStatic(UIUtils::class)
+        try {
+            val reading = mockk<Reading>(relaxed = true)
+            every { reading.isToolbarHidden() } returns true
+            val inner = mockk<ContextWrapper>()
+            val outer = mockk<ContextWrapper>()
+            every { inner.baseContext } returns reading
+            every { outer.baseContext } returns inner
+            val feedSet = mockk<FeedSet>()
+            every { UIUtils.startReadingActivity(any(), any(), any(), any(), any()) } returns Unit
+            every { UIUtils.startReadingActivity(outer, feedSet, "related", null) } answers { callOriginal() }
+            UIUtils.startReadingActivity(outer, feedSet, "related", null)
+            verify { UIUtils.startReadingActivity(outer, feedSet, "related", null, true) }
+        } finally {
+            unmockkStatic(UIUtils::class)
+        }
+    }
+
     @Test
     fun relatedStoryLaunchesInheritTheCurrentReaderVisibility() {
         mockkStatic(UIUtils::class)

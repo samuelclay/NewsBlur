@@ -52,6 +52,8 @@ import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.PrefConstants;
 
+import dagger.hilt.android.internal.managers.FragmentComponentManager;
+
 public class UIUtils {
 
     private UIUtils() {} // util class - no instances
@@ -243,7 +245,13 @@ public class UIUtils {
     }
 
     public static void startReadingActivity(Context context, FeedSet fs, String startingHash, @Nullable ActivityResultLauncher<Intent> readingActivityLauncher) {
-        startReadingActivity(context, fs, startingHash, readingActivityLauncher, context instanceof Reading && ((Reading) context).isToolbarHidden());
+        startReadingActivity(context, fs, startingHash, readingActivityLauncher, isReaderToolbarHidden(context));
+    }
+
+    public static boolean isReaderToolbarHidden(Context context) {
+        // UIUtils.java receives Hilt-wrapped fragment contexts as well as activity contexts.
+        Context activity = FragmentComponentManager.findActivity(context);
+        return activity instanceof Reading && ((Reading) activity).isToolbarHidden();
     }
 
     public static void startReadingActivity(Context context, FeedSet fs, String startingHash, @Nullable ActivityResultLauncher<Intent> readingActivityLauncher, boolean toolbarHidden) {

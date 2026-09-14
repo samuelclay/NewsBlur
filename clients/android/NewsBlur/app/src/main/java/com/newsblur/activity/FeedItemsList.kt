@@ -271,7 +271,7 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FEED_SET, feedSet)
                     putExtra(EXTRA_STORY_HASH, storyHash)
                     putExtra(EXTRA_AUTO_OPEN_STORY, true)
-                    putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, (context as? Reading)?.isToolbarHidden() == true)
+                    putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
                 }.also { intent ->
                     context.startActivity(intent)
                 }
