@@ -4459,20 +4459,45 @@ class MStory(mongo.Document):
         except (requests.RequestException, json.JSONDecodeError, IndexError, TypeError, KeyError):
             return None
 
+    def drop_cached_google_consent_text(self, original_text_z, force=False, request=None):
+        """Clear a cached copy of Google's cookie consent wall so the real article is fetched
+        (forum #13827). Only the exact stale bytes are unset, in one conditional update, so
+        a concurrent request that already cached the real article is never undone; when the
+        update matches nothing the fresh stored text is returned instead. Returns the text to
+        use and whether this call dropped the cache. Shared by MStory and MStarredStory.
+        apps/rss_feeds/models.py
+        """
+        if (
+            not original_text_z
+            or force
+            or not is_google_news_url(self.story_permalink)
+            or not is_google_consent_text(zlib.decompress(original_text_z))
+        ):
+            return original_text_z, False
+        logging.user(request, "~FYCached original text is Google's consent wall, refetching")
+        if not self.id:
+            # Never stored, so there is no shared copy to protect: just drop it in memory.
+            self.original_text_z = None
+            return None, True
+        cleared = self.__class__.objects(id=self.id, original_text_z=original_text_z).update(
+            unset__original_text_z=1
+        )
+        if cleared:
+            self.original_text_z = None
+            return None, True
+        fresh = self.__class__.objects(id=self.id).only("original_text_z").first()
+        self.original_text_z = fresh.original_text_z if fresh else None
+        return self.original_text_z, False
+
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         # Google News stories fetched before forum #13827 was fixed cached Google's cookie
         # consent wall as their text. Drop that cache so the real article is fetched; a failed
         # refetch then leaves the story with no text rather than the consent boilerplate. Only
         # Google News links qualify, so an article that merely quotes the wording is kept.
-        if (
-            original_text_z
-            and not force
-            and is_google_news_url(self.story_permalink)
-            and is_google_consent_text(zlib.decompress(original_text_z))
-        ):
-            logging.user(request, "~FYCached original text is Google's consent wall, refetching")
-            self.original_text_z = original_text_z = None
+        original_text_z, dropped_consent_cache = self.drop_cached_google_consent_text(
+            original_text_z, force=force, request=request
+        )
 
         if not original_text_z or force:
             feed = Feed.get_by_id(self.story_feed_id)
@@ -4487,6 +4512,12 @@ class MStory(mongo.Document):
                 has_broken_proto = "http://" in lead_image[1:] or "https://" in lead_image[1:]
                 if len(lead_image) < 1024 and not has_broken_proto:
                     self.image_urls = [lead_image]
+            if dropped_consent_cache and not original_doc:
+                # The refetch after dropping a consent-wall cache failed. Saving now would
+                # write this copy's empty original_text_z over a concurrent request's
+                # successful refetch, so leave the stored document alone.
+                logging.user(request, "~FRConsent wall refetch failed, leaving the stored story untouched")
+                return original_text
             try:
                 self.save()
             except NotUniqueError:
@@ -4708,20 +4739,14 @@ class MStarredStory(mongo.DynamicDocument):
                 story.save()
         return count
 
+    drop_cached_google_consent_text = MStory.drop_cached_google_consent_text
+
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
-        # Google News stories fetched before forum #13827 was fixed cached Google's cookie
-        # consent wall as their text. Drop that cache so the real article is fetched; a failed
-        # refetch then leaves the story with no text rather than the consent boilerplate. Only
-        # Google News links qualify, so an article that merely quotes the wording is kept.
-        if (
-            original_text_z
-            and not force
-            and is_google_news_url(self.story_permalink)
-            and is_google_consent_text(zlib.decompress(original_text_z))
-        ):
-            logging.user(request, "~FYCached original text is Google's consent wall, refetching")
-            self.original_text_z = original_text_z = None
+        # Same consent-wall cache cleanup as MStory.fetch_original_text (forum #13827).
+        original_text_z, dropped_consent_cache = self.drop_cached_google_consent_text(
+            original_text_z, force=force, request=request
+        )
         feed = Feed.get_by_id(self.story_feed_id)
 
         if not original_text_z or force:

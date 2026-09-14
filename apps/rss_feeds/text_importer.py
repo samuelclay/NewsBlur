@@ -36,9 +36,12 @@ INVALID_XML_CONTROL_CHARACTERS = dict.fromkeys((*range(0x00, 0x09), 0x0B, 0x0C, 
 GOOGLE_CONSENT_HOSTS = ("consent.google.com", "consent.youtube.com")
 
 
-# The opening line of that interstitial, as extracted by Mercury or readability. Stories
-# fetched before the fix cached it as their original text; see MStory.fetch_original_text.
+# The opening line of that interstitial, as extracted by Mercury or readability, plus the
+# controls that only the consent page itself carries. Stories fetched before the fix cached
+# it as their original text; see MStory.fetch_original_text. An article that merely quotes
+# the opening line does not match: it also needs the privacy-tools link or both buttons.
 GOOGLE_CONSENT_PHRASE = "We use cookies and data, including IP addresses"
+GOOGLE_CONSENT_MARKERS = ("g.co/privacytools", "Accept all", "Reject all")
 
 
 def is_google_news_url(url):
@@ -59,8 +62,15 @@ def is_google_consent_url(url):
 
 
 def is_google_consent_text(text):
-    """True when extracted or cached original text is Google's cookie consent wall."""
-    return bool(text) and GOOGLE_CONSENT_PHRASE in smart_str(text)
+    """True when extracted or cached original text is Google's cookie consent wall: the
+    opening line plus either the privacy-tools link or both the Accept and Reject buttons."""
+    if not text:
+        return False
+    text = smart_str(text)
+    if GOOGLE_CONSENT_PHRASE not in text:
+        return False
+    privacy_link, accept, reject = (marker in text for marker in GOOGLE_CONSENT_MARKERS)
+    return privacy_link or (accept and reject)
 
 
 class TextImporter:
