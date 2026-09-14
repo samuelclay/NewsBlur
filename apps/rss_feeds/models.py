@@ -5185,8 +5185,7 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
     deleted two feeds and 700 subscriptions with no record of what they had been.
     apps/rss_feeds/models.py
     """
-    from apps.notifications.models import MUserFeedNotification
-    from apps.reader.models import MCustomFeedIcon, UserSubscription
+    from apps.reader.models import UserSubscription
 
     for label, feed in (("original (survives)", original_feed), ("duplicate (deleted)", duplicate_feed)):
         logging.info(
@@ -5206,10 +5205,14 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
                 MStarredStory.objects(story_feed_id=feed.pk).count(),
             )
         )
-    for branched in Feed.objects.filter(branch_from_feed=duplicate_feed):
+    # Branch ids only: a branched feed can be a reader's private URL carrying an access token
+    # (Reddit personal feeds, utils/reddit_fetcher.py), which must stay out of the task logs.
+    for branched_id, branched_subscribers in Feed.objects.filter(branch_from_feed=duplicate_feed).values_list(
+        "pk", "num_subscribers"
+    ):
         logging.info(
-            " ---> merge_feeds feed branched from the duplicate: id=%s address=%s num_subscribers=%s"
-            % (branched.pk, branched.feed_address, branched.num_subscribers)
+            " ---> merge_feeds feed branched from the duplicate: id=%s num_subscribers=%s"
+            % (branched_id, branched_subscribers)
         )
     subscriptions = UserSubscription.objects.filter(feed=duplicate_feed).select_related("user").order_by("pk")
     logging.info(
@@ -5231,13 +5234,12 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
                 sub.needs_unread_recalc,
             )
         )
+    # Notification and custom icon rows are counted by their own switch_feed calls below;
+    # their Mongo collections are indexed by user_id, so an extra feed_id-only count here
+    # would scan them on every merge.
     logging.info(
-        " ---> merge_feeds on the duplicate: notifications=%s custom_icons=%s duplicate_rows=%s"
-        % (
-            MUserFeedNotification.objects(feed_id=duplicate_feed.pk).count(),
-            MCustomFeedIcon.objects(feed_id=duplicate_feed.pk).count(),
-            DuplicateFeed.objects.filter(feed=duplicate_feed).count(),
-        )
+        " ---> merge_feeds on the duplicate: duplicate_rows=%s"
+        % DuplicateFeed.objects.filter(feed=duplicate_feed).count()
     )
 
 
@@ -5348,10 +5350,10 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     # #13830). Re-parent those feeds to the survivor and persist the survivor's cleared parent
     # before the delete, so the merge is safe on a database that has not migrated yet.
     branched_feeds = Feed.objects.filter(branch_from_feed=duplicate_feed).exclude(pk=original_feed.pk)
-    for branched_feed in branched_feeds:
+    for branched_id in branched_feeds.values_list("pk", flat=True):
         logging.info(
-            " ---> merge_feeds re-parenting feed %s (%s) from %s to %s"
-            % (branched_feed.pk, branched_feed.feed_address, duplicate_feed.pk, original_feed.pk)
+            " ---> merge_feeds re-parenting feed %s from %s to %s"
+            % (branched_id, duplicate_feed.pk, original_feed.pk)
         )
     branched_feeds.update(branch_from_feed=original_feed)
     Feed.objects.filter(pk=original_feed.pk).update(branch_from_feed=None)
