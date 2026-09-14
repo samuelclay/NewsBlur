@@ -2131,6 +2131,12 @@ class UserSubscription(models.Model):
         switch_feed_for_classifier(MClassifierTag)
         switch_feed_for_classifier(MClassifierText)
 
+        # Folders first, then the subscription row: if the merge stops between the two, the
+        # reader is still found under the old feed on the next run and the rewrite repeats
+        # harmlessly; the other order would strand a moved subscription without a sidebar entry.
+        if user_sub_folders is not None:
+            user_sub_folders.rewrite_feed(new_feed, old_feed)
+
         # Switch to original feed for the user subscription
         self.feed = new_feed
         self.needs_unread_recalc = True
@@ -2169,10 +2175,6 @@ class UserSubscription(models.Model):
             existing_sub.needs_unread_recalc = True
             existing_sub.save()
             self.delete()
-
-        # Always rewrite folders to clean up duplicate feed references
-        if user_sub_folders is not None:
-            user_sub_folders.rewrite_feed(new_feed, old_feed)
 
     @classmethod
     def collect_orphan_feeds(cls, user):
