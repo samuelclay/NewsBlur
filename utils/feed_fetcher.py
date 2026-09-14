@@ -572,7 +572,7 @@ class FetchFeed:
                         https_feed = safe_requests_get(https_address, headers=probe_headers, timeout=15)
                     except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                         https_feed = None
-                    if self.https_probe_looks_like_a_feed(https_feed):
+                    if self.https_probe_is_a_feed(https_feed, https_address):
                         logging.debug(
                             "   ---> [%-30s] ~FBhttp address is dead, https answered: ~SB%s"
                             % (self.feed.log_title[:30], https_address)
@@ -580,6 +580,11 @@ class FetchFeed:
                         raw_feed = https_feed
                         address = https_address
                         upgraded_to_https = True
+                    elif https_feed is not None:
+                        logging.debug(
+                            "   ---> [%-30s] ~FYhttps answered without a feed, keeping the usual retries: %s"
+                            % (self.feed.log_title[:30], https_address)
+                        )
                 if raw_feed and raw_feed.status_code == 304:
                     logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
@@ -726,10 +731,10 @@ class FetchFeed:
                                 raw_feed.headers,
                             )
                         )
-                # Only a parsed, recognized feed earns the address migration, whether it came
-                # through the JSON or the XML branch. A 200 that parses to nothing (an error
-                # page, a landing page) is never saved as the feed's address.
-                if upgraded_to_https and self.fpf and (self.fpf.entries or self.fpf.version):
+                # Only a parsed feed with stories earns the address migration, whether it came
+                # through the JSON or the XML branch. A 200 that parses to no entries (an error
+                # document, a landing page) is never saved as the feed's address.
+                if upgraded_to_https and self.fpf and self.fpf.entries:
                     self.fpf["href"] = address
                     self.fpf["upgraded_to_https"] = True
             except Exception as e:
@@ -839,6 +844,31 @@ class FetchFeed:
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
         return json_fetcher.fetch(address, headers)
+
+    def https_probe_is_a_feed(self, response, address):
+        """The https probe in fetch() is adopted only when its body parses to a feed with
+        at least one story. A 200 that merely looks like a feed (an XML or JSON error
+        document) is left alone so the fake-header, feedparser, and proxy retries still run
+        for the http address, and a JSON error object never reaches JSONFetcher's Atom
+        conversion with a bare version and no items. utils/feed_fetcher.py
+        """
+        if not self.https_probe_looks_like_a_feed(response):
+            return False
+        content_type = (response.headers.get("Content-Type") or "").lower()
+        try:
+            if "json" in content_type:
+                body = self.fetch_json_feed(address, response)
+            else:
+                body = smart_str(response.content)
+            if not body:
+                return False
+            parsed = feedparser.parse(preprocess_feed_encoding(body))
+        except Exception as e:
+            logging.debug(
+                "   ***> [%-30s] ~FRhttps probe did not parse as a feed: %s" % (self.feed.log_title[:30], e)
+            )
+            return False
+        return bool(parsed and parsed.entries)
 
     @staticmethod
     def https_probe_looks_like_a_feed(response):
