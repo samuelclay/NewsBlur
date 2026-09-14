@@ -5202,17 +5202,18 @@ def merge_feeds_inventory_record(record):
     logging.getlogger().info("%s %s" % (MERGE_FEEDS_INVENTORY_PREFIX, json.encode(record)))
 
 
-def folder_names_holding_feed(folders, feed_id, parent=""):
-    """Every folder name whose direct children include feed_id, "" for the root, walking a
-    UserSubscriptionFolders tree (ints are feeds, {name: [...]} dicts are folders)."""
-    names = []
+def folder_names_holding_feed(folders, feed_id, parent=()):
+    """Every folder path whose direct children include feed_id, as a list of names from the
+    top ([] for the root), walking a UserSubscriptionFolders tree (ints are feeds,
+    {name: [...]} dicts are folders). Full paths, so Work/News and Personal/News stay apart."""
+    paths = []
     for item in folders:
         if isinstance(item, int) and item == feed_id:
-            names.append(parent)
+            paths.append(list(parent))
         elif isinstance(item, dict):
             for name, children in item.items():
-                names.extend(folder_names_holding_feed(children, feed_id, name))
-    return names
+                paths.extend(folder_names_holding_feed(children, feed_id, tuple(parent) + (name,)))
+    return paths
 
 
 def log_merge_feeds_inventory(original_feed, duplicate_feed):
