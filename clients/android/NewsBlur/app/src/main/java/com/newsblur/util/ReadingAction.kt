@@ -30,6 +30,7 @@ sealed interface ReadingAction : Serializable {
         val readTimesJson: String? = null,
         override val time: Long = System.currentTimeMillis(),
         override val tried: Int = 0,
+        var relatedStoryHashes: List<String>? = null,
     ) : ReadingAction
 
     data class ReportStoryReadTimes(
@@ -306,8 +307,14 @@ suspend fun ReadingAction.doRemote(
 
     when (this) {
         // MARK_READ (story)
-        is ReadingAction.MarkStoryRead ->
+        is ReadingAction.MarkStoryRead -> {
             result = storyApi.markStoryAsRead(storyHash, readTimesJson)
+            if (result != null && !result!!.isError) {
+                relatedStoryHashes = (relatedStoryHashes.orEmpty() + result!!.storyHashes.orEmpty() + storyHash).distinct()
+                syncServiceState.addRecountCandidates(dbHelper.applyStoryReadHashes(relatedStoryHashes!!, true, true, time))
+                impact = impact or UPDATE_STORY or UPDATE_METADATA
+            }
+        }
 
         is ReadingAction.ReportStoryReadTimes ->
             result = storyApi.submitReadTimes(readTimesJson)
@@ -419,7 +426,7 @@ fun ReadingAction.doLocal(
     when (this) {
         // MARK_READ (story)
         is ReadingAction.MarkStoryRead -> {
-            dbHelper.setStoryReadState(storyHash, true)
+            dbHelper.applyStoryReadHashes(relatedStoryHashes.orEmpty() + storyHash, true, false, time)
             plus(UPDATE_METADATA)
             plus(UPDATE_STORY)
         }
@@ -428,8 +435,9 @@ fun ReadingAction.doLocal(
         }
 
         is ReadingAction.MarkStoryUnread -> {
-            dbHelper.setStoryReadState(storyHash, false)
+            dbHelper.applyStoryReadHashes(listOf(storyHash), false, false, time)
             plus(UPDATE_METADATA)
+            plus(UPDATE_STORY)
         }
 
         is ReadingAction.SaveStory -> {
