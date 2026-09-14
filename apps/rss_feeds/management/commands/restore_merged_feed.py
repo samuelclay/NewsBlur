@@ -145,12 +145,17 @@ def add_feed_at_path(folders, path, feed_id, log=print, user_id=None):
     return folders
 
 
-def parked_feed_for(feed_id, feed_address):
-    """A feed re-added at this address whose hash was parked by an earlier, interrupted run."""
+def parking_hash(parked_id, feed_id):
+    """The placeholder hash a re-added feed carries while feed_id is being restored. It names
+    the target, so a later restore for another feed at the same address (different link)
+    never picks up this row."""
+    return "restore-parked-%s-for-%s" % (parked_id, feed_id)
+
+
+def parked_feed_for(feed_id):
+    """The feed an earlier, interrupted run parked for this restore, if any."""
     return (
-        Feed.objects.filter(feed_address=feed_address, hash_address_and_link__startswith="restore-parked-")
-        .exclude(pk=feed_id)
-        .first()
+        Feed.objects.filter(hash_address_and_link__endswith="-for-%s" % feed_id).exclude(pk=feed_id).first()
     )
 
 
@@ -172,7 +177,13 @@ def fold_in_parked_feed(feed_id, parked, discard_collision_stories=False, log=pr
     The story check runs here too: a feed parked by an interrupted run can have fetched
     stories since."""
     refuse_unless_stories_may_go(feed_id, parked, discard_collision_stories)
-    survivor = merge_feeds(feed_id, parked.pk, force=True, preserve_branch_from_feed=True)
+    survivor = merge_feeds(
+        feed_id,
+        parked.pk,
+        force=True,
+        preserve_branch_from_feed=True,
+        discard_stories=discard_collision_stories,
+    )
     if survivor != feed_id or not Feed.objects.filter(pk=feed_id).exists():
         raise CommandError("merge of %s into %s did not keep %s" % (parked.pk, feed_id, feed_id))
     log("merged feed %s into %s" % (parked.pk, feed_id))
@@ -222,7 +233,7 @@ def restore_feed_from_inventory(
         log("feed %s already exists, leaving the row alone" % feed_id)
         # An earlier run parked the re-added feed and then failed before or during the
         # merge; finish that first, or its next save would recompute the hash and collide.
-        parked = parked_feed_for(feed_id, fields["feed_address"])
+        parked = parked_feed_for(feed_id)
         if parked:
             log("feed %s is still parked from an interrupted run, merging it into %s" % (parked.pk, feed_id))
             if not dry_run:
@@ -259,6 +270,11 @@ def restore_feed_from_inventory(
         fields["etag"] = None
         fields["last_modified"] = None
         fields["fetched_once"] = False
+        # The logged hash can be stale (a save with update_fields=["feed_link"] does not
+        # recompute it); the canonical hash is what a later save would collide on.
+        fields["hash_address_and_link"] = Feed.generate_hash_address_and_link(
+            fields.get("feed_address"), fields.get("feed_link")
+        )
         collision = (
             Feed.objects.filter(hash_address_and_link=fields["hash_address_and_link"])
             .exclude(pk=feed_id)
@@ -279,7 +295,7 @@ def restore_feed_from_inventory(
                 stale_redirects.delete()
                 if collision:
                     Feed.objects.filter(pk=collision.pk).update(
-                        hash_address_and_link="restore-parked-%s" % collision.pk
+                        hash_address_and_link=parking_hash(collision.pk, feed_id)
                     )
                 deserialize_and_save(feed_object)
             counts["feed_created"] = 1

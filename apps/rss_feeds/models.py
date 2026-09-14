@@ -5300,7 +5300,9 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
     )
 
 
-def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
+def merge_feeds(
+    original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False, discard_stories=False
+):
     """Fold duplicate_feed into original_feed and delete it. With preserve_branch_from_feed
     the survivor keeps its own parent (unless that parent is the duplicate being deleted),
     which restore_merged_feed relies on so a restored private branch never turns public
@@ -5324,6 +5326,14 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
     # comes back. Whoever saves it first (a fetch worker included) lands here, and it must
     # fold into the restored feed, never the other way round, with the parent kept.
     if (duplicate_feed.hash_address_and_link or "").startswith("restore-parked-"):
+        if not discard_stories and MStory.objects(story_feed_id=duplicate_feed.pk).count():
+            # Stories it fetched while parked would be deleted by the merge; only
+            # restore_merged_feed --discard-collision-stories may decide that.
+            logging.info(
+                " ***> merge_feeds: parked feed %s has stories, leaving it for restore_merged_feed"
+                % duplicate_feed.pk
+            )
+            return original_feed_id
         force = True
         preserve_branch_from_feed = True
 
