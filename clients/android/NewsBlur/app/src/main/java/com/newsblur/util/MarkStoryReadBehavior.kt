@@ -21,8 +21,8 @@ enum class MarkStoryReadBehavior {
             SECONDS_10 -> 10_000
             SECONDS_20 -> 20_000
             SECONDS_30 -> 30_000
-            SECONDS_45 -> 40_000
-            SECONDS_60 -> 50_000
+            SECONDS_45 -> 45_000
+            SECONDS_60 -> 60_000
             MANUALLY -> -1
         }
 }
