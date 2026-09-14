@@ -570,7 +570,9 @@ class FetchFeed:
                     }
                     try:
                         https_feed = safe_requests_get(https_address, headers=probe_headers, timeout=15)
-                    except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
+                    except (UnsafeUrlError, requests.RequestException, TimeoutError):
+                        # Any failure of the optional probe (connection refused, read timeout,
+                        # redirect loop) just means the usual http retries run as before.
                         https_feed = None
                     if self.https_probe_is_a_feed(https_feed, https_address):
                         logging.debug(
