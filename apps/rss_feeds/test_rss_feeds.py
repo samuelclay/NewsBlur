@@ -1068,6 +1068,72 @@ class Test_TextImporterEncoding(TestCase):
         self.assertNotIn("\x01", result["content"])
 
 
+class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
+    """merge_feeds deletes the duplicate feed. Until branch_from_feed became SET_NULL that
+    cascaded to every feed branched from the duplicate, including the survivor itself when
+    it was one of them, and took their subscriptions along (forum #13830, the CBC merge).
+    The merge must re-parent branches to the survivor before deleting anything."""
+
+    def test_merging_a_parent_into_its_branch_keeps_the_branch_and_reparents_siblings(self):
+        from apps.reader.models import UserSubscriptionFolders
+        from apps.rss_feeds.models import merge_feeds
+
+        parent = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/canada.xml",
+            feed_link="https://www.example.com/news",
+            feed_title="Example | Canada News",
+        )
+        parent.num_subscribers = 5
+        parent.save()
+        twin = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/canada.xml",
+            feed_link="https://www.example.com/news",
+            feed_title="Example | Canada News",
+            branch_from_feed=parent,
+        )
+        twin.num_subscribers = 5
+        twin.save()
+        sibling = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-canada",
+            feed_link="https://www.example.com/news",
+            feed_title="Example | Canada News",
+            branch_from_feed=parent,
+        )
+        user = User.objects.create_user("canadareader", "canadareader@example.com", "password")
+        UserSubscription.objects.create(user=user, feed=parent)
+        UserSubscriptionFolders.objects.create(user=user, folders="[%s]" % parent.pk)
+
+        survivor_id = merge_feeds(twin.pk, parent.pk, force=True)
+
+        self.assertEqual(survivor_id, twin.pk)
+        twin.refresh_from_db()
+        sibling.refresh_from_db()
+        self.assertIsNone(twin.branch_from_feed_id)
+        self.assertEqual(sibling.branch_from_feed_id, twin.pk)
+        self.assertFalse(Feed.objects.filter(pk=parent.pk).exists())
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=twin).exists())
+
+
+class Test_BranchFromFeedDoesNotCascade(TestCase):
+    def test_deleting_a_parent_feed_leaves_its_branches(self):
+        parent = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/world.xml",
+            feed_link="https://www.example.com/world",
+            feed_title="Example | World",
+        )
+        child = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/world.xml",
+            feed_link="https://www.example.com/world",
+            feed_title="Example | World",
+            branch_from_feed=parent,
+        )
+
+        parent.delete()
+
+        child.refresh_from_db()
+        self.assertIsNone(child.branch_from_feed_id)
+
+
 class Test_YouTubeFavicons(TestCase):
     """Tests for YouTube favicon lookup and caching."""
 
