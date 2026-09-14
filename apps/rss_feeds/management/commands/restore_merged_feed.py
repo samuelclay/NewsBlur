@@ -340,6 +340,11 @@ def restore_feed_from_inventory(
     if not dry_run:
         feed = Feed.get_by_id(feed_id)
         feed.count_subscribers()
+        if counts["collision_merged"]:
+            # Stories moved in from the re-added feed were added to Redis under the restored
+            # feed's unread cutoff as of before its subscribers were recounted; an Archive
+            # reader among them widens that cutoff, so rebuild the hashes now.
+            feed.sync_redis()
         feed.schedule_feed_fetch_immediately()
         logging.info(
             " ---> restore_merged_feed: feed %s back with %s subscribers" % (feed_id, feed.num_subscribers)

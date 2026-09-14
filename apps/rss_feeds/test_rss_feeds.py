@@ -1217,6 +1217,41 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
         self.assertEqual(mock_remove_index.call_count, 2)
         self.assertEqual(mock_index.call_count, 2)
 
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_a_story_another_merge_already_moved_is_never_deleted(self, mock_sync):
+        """Two merges of the same parked feed load the same story. The second one finds the
+        story already at the survivor and must leave that document alone."""
+        from apps.rss_feeds.models import move_one_story
+
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-overlap",
+            feed_link="https://www.example.com/overlap",
+            feed_title="Example | Overlap",
+        )
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-overlap-copy",
+            feed_link="https://www.example.com/overlap",
+            feed_title="Example | Overlap",
+        )
+        story = MStory(
+            story_feed_id=parked.pk,
+            story_guid="moved-by-the-other-merge",
+            story_title="Overlap",
+            story_permalink="https://www.example.com/overlap/1",
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.save()
+        self.addCleanup(lambda: MStory.objects(story_guid="moved-by-the-other-merge").delete())
+        stale_copy = MStory.objects.get(id=story.id)
+        # The other merge moves it first.
+        self.assertEqual(move_one_story(story, parked.pk, restored.pk, restored), "moved")
+
+        self.assertEqual(move_one_story(stale_copy, parked.pk, restored.pk, restored), "gone")
+
+        survivor_copy = MStory.objects.get(id=story.id)
+        self.assertEqual(survivor_copy.story_feed_id, restored.pk)
+        self.assertTrue(survivor_copy.story_hash.startswith("%s:" % restored.pk))
+
     def test_survivor_keeps_its_parent_when_asked(self):
         from apps.rss_feeds.models import merge_feeds
 
@@ -1410,6 +1445,22 @@ class Test_SwitchFeedReadState(TestCase):
         self.assertIn(("RS:7", "200:a1b2c3"), added)
         self.assertEqual(len(added), 2)
         mock_story_hashes.assert_not_called()
+
+    @patch("apps.reader.models.Feed.days_of_story_hashes_for_feed", return_value=30)
+    @patch("apps.reader.models.redis")
+    def test_a_large_read_set_is_copied_in_batches_with_one_expiry_lookup(self, mock_redis, mock_days):
+        from apps.reader.models import RUserStory
+
+        connection = mock_redis.Redis.return_value
+        connection.smembers.return_value = {("100:%06x" % n).encode() for n in range(2500)}
+        pipeline = connection.pipeline.return_value
+
+        RUserStory.switch_feed(user_id=7, old_feed_id=100, new_feed_id=200)
+
+        self.assertEqual(mock_days.call_count, 1)
+        self.assertEqual(pipeline.sadd.call_count, 5000)
+        self.assertEqual(pipeline.expire.call_count, 2)
+        self.assertEqual(pipeline.execute.call_count, 3)
 
 
 class Test_SwitchFeedWithoutFolderRow(TestCase):
@@ -1903,12 +1954,13 @@ class Test_RestoreMergedFeedCommand(TestCase):
             {first.pk, second.pk},
         )
 
+    @patch("apps.rss_feeds.models.Feed.sync_redis")
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
     @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
     @patch("apps.rss_feeds.models.Feed.count_subscribers")
     def test_folds_a_heavier_feed_re_added_at_the_same_address_into_the_restored_one(
-        self, mock_count, mock_reader_redis, mock_feed_redis
+        self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync_feed
     ):
         """A real merge: the re-added feed has more readers than the restored row, which
         merge_feeds would normally let win; the restored id must survive and keep its data,
@@ -1965,6 +2017,7 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertEqual(restored.hash_address_and_link, lost_hash)
         self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
         self.assertTrue(UserSubscription.objects.filter(user=newcomer, feed=restored).exists())
+        mock_sync_feed.assert_called_once()
         self.assertEqual(json.decode(UserSubscriptionFolders.objects.get(user=newcomer).folders), [lost_id])
         self.assertFalse(DuplicateFeed.objects.filter(duplicate_feed_id=lost_id).exists())
         # Another deleted id at the same address (different link) keeps its redirect.
