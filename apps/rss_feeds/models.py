@@ -5313,6 +5313,7 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
     while the original row was gone and would otherwise be deleted. apps/rss_feeds/models.py
     """
     moved = dropped = 0
+    to_feed = Feed.get_by_id(to_feed_id)
     for story in MStory.objects(story_feed_id=from_feed_id):
         guid_hash = (
             story.story_hash.split(":", 1)[1] if story.story_hash and ":" in story.story_hash else None
@@ -5321,8 +5322,15 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
             story.delete()
             dropped += 1
             continue
+        # Search and discovery index by the old hash and feed id; drop those entries and
+        # index again under the new feed according to its own indexing settings.
+        story.remove_from_search_index()
         story.story_feed_id = to_feed_id
         story.save()
+        if to_feed and to_feed.search_indexed:
+            story.index_story_for_search()
+        if to_feed and to_feed.discover_indexed:
+            story.index_story_for_discover()
         moved += 1
     logging.info(
         " ---> merge_feeds moved %s stories from %s to %s (%s duplicates dropped)"
@@ -5431,7 +5439,10 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     r.delete("F:%s" % duplicate_feed.pk)
     r.delete("zF:%s" % duplicate_feed.pk)
-    delete_story_feed(MStory, "story_feed_id")
+    if not parked_duplicate:
+        # A parked feed's stories were moved above and are moved once more right before the
+        # row goes, so a story a fetch worker adds in between is carried across, never deleted.
+        delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
     delete_story_feed(MFeedIcon, "feed_id")
     MFetchHistory.delete_for_feed(duplicate_feed.pk)
@@ -5471,6 +5482,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
     branched_feeds.update(branch_from_feed=original_feed)
     if not keep_parent:
         Feed.objects.filter(pk=original_feed.pk).update(branch_from_feed=None)
+    if parked_duplicate:
+        move_stories_between_feeds(duplicate_feed.pk, original_feed.pk)
     if duplicate_feed.pk != original_feed.pk:
         duplicate_feed.delete()
     else:

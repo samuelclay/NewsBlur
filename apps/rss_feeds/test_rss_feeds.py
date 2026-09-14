@@ -1154,6 +1154,69 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
         self.assertFalse(Feed.objects.filter(pk=parked.pk).exists())
         self.assertEqual(MStory.objects(story_guid="parked-story").first().story_feed_id, restored.pk)
 
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.MStory.index_story_for_search")
+    @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+    def test_a_story_fetched_between_the_move_and_the_cleanup_is_carried_across_and_reindexed(
+        self, mock_remove_index, mock_index, mock_sync
+    ):
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import merge_feeds
+
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-late-story",
+            feed_link="https://www.example.com/late-story",
+            feed_title="Example | Late",
+        )
+        Feed.objects.filter(pk=restored.pk).update(search_indexed=True)
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-late-story-copy",
+            feed_link="https://www.example.com/late-story",
+            feed_title="Example | Late",
+        )
+        Feed.objects.filter(pk=parked.pk).update(
+            feed_address=restored.feed_address,
+            hash_address_and_link="restore-parked-%s-for-%s" % (parked.pk, restored.pk),
+        )
+        MStory(
+            story_feed_id=parked.pk,
+            story_guid="fetched-before-the-merge",
+            story_title="Before",
+            story_permalink="https://www.example.com/late-story/1",
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(
+            lambda: MStory.objects(story_guid__in=["fetched-before-the-merge", "fetched-mid-merge"]).delete()
+        )
+        real_move = feed_models.move_stories_between_feeds
+        calls = []
+
+        def move_then_fetch(from_feed_id, to_feed_id):
+            result = real_move(from_feed_id, to_feed_id)
+            calls.append(from_feed_id)
+            if len(calls) == 1:
+                # A fetch worker lands a story on the parked feed after the first move.
+                MStory(
+                    story_feed_id=parked.pk,
+                    story_guid="fetched-mid-merge",
+                    story_title="Mid merge",
+                    story_permalink="https://www.example.com/late-story/2",
+                    story_date=datetime.datetime.utcnow(),
+                ).save()
+            return result
+
+        with patch.object(feed_models, "move_stories_between_feeds", side_effect=move_then_fetch):
+            survivor = merge_feeds(restored.pk, parked.pk, force=True)
+
+        self.assertEqual(survivor, restored.pk)
+        self.assertEqual(len(calls), 2)
+        for guid in ("fetched-before-the-merge", "fetched-mid-merge"):
+            story = MStory.objects(story_guid=guid).first()
+            self.assertEqual((guid, story.story_feed_id), (guid, restored.pk))
+            self.assertTrue(story.story_hash.startswith("%s:" % restored.pk))
+        self.assertEqual(mock_remove_index.call_count, 2)
+        self.assertEqual(mock_index.call_count, 2)
+
     def test_survivor_keeps_its_parent_when_asked(self):
         from apps.rss_feeds.models import merge_feeds
 
@@ -1324,6 +1387,29 @@ class Test_FolderRewriteAfterMerge(TestCase):
             json.decode(UserSubscriptionFolders.objects.get(pk=folders.pk).folders),
             [{"News": [survivor.pk, 987654]}, survivor.pk, {"Other": [survivor.pk]}],
         )
+
+
+class Test_SwitchFeedReadState(TestCase):
+    @patch("apps.reader.models.UserSubscription.story_hashes")
+    @patch("apps.reader.models.redis")
+    def test_read_stories_carry_over_and_unread_ones_stay_unread(self, mock_redis, mock_story_hashes):
+        """switch_feed copied the *unread* hashes into the new feed's read set. It must copy
+        the read set itself: the one read story on the old feed becomes one read hash on the
+        new feed, and the unread listing is never consulted."""
+        from apps.reader.models import RUserStory
+
+        connection = mock_redis.Redis.return_value
+        connection.smembers.return_value = {b"100:a1b2c3"}
+        pipeline = connection.pipeline.return_value
+
+        RUserStory.switch_feed(user_id=7, old_feed_id=100, new_feed_id=200)
+
+        connection.smembers.assert_called_once_with("RS:7:100")
+        added = [call.args for call in pipeline.sadd.call_args_list]
+        self.assertIn(("RS:7:200", "200:a1b2c3"), added)
+        self.assertIn(("RS:7", "200:a1b2c3"), added)
+        self.assertEqual(len(added), 2)
+        mock_story_hashes.assert_not_called()
 
 
 class Test_SwitchFeedWithoutFolderRow(TestCase):

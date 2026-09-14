@@ -2596,8 +2596,13 @@ class RUserStory:
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
 
-        story_hashes = UserSubscription.story_hashes(user_id, feed_ids=[old_feed_id])
-        # story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
+        # The reader's actual read set for the old feed. UserSubscription.story_hashes with
+        # its default read_filter="unread" listed the *unread* stories here, which marked
+        # them read on the new feed and dropped the real read state (merge_feeds, #2133).
+        story_hashes = [
+            story_hash.decode() if isinstance(story_hash, bytes) else story_hash
+            for story_hash in cls.get_stories(user_id, old_feed_id, r=r)
+        ]
 
         for story_hash in story_hashes:
             _, hash_story = MStory.split_story_hash(story_hash)
