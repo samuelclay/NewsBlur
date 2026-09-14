@@ -1074,6 +1074,18 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
     it was one of them, and took their subscriptions along (forum #13830, the CBC merge).
     The merge must re-parent branches to the survivor before deleting anything."""
 
+    def setUp(self):
+        # merge_feeds rewrites Redis story hashes and subscriber counts, and tests share
+        # Redis with the dev server (newsblur_web/test_settings.py), so every merge in this
+        # class runs against mocked Redis clients and a no-op subscriber recount.
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(Feed, "count_subscribers"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
     def test_merging_a_parent_into_its_branch_keeps_the_branch_and_reparents_siblings(self):
         from apps.reader.models import UserSubscriptionFolders
         from apps.rss_feeds.models import merge_feeds
@@ -1112,6 +1124,38 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
         self.assertEqual(sibling.branch_from_feed_id, twin.pk)
         self.assertFalse(Feed.objects.filter(pk=parent.pk).exists())
         self.assertTrue(UserSubscription.objects.filter(user=user, feed=twin).exists())
+
+    def test_private_branch_addresses_never_reach_the_merge_logs(self):
+        """A reader can branch a feed to a personal URL with an access token in it; the
+        inventory and re-parenting logs name branches by id only."""
+        from apps.rss_feeds.models import merge_feeds
+
+        parent = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/private.xml",
+            feed_link="https://www.example.com/private",
+            feed_title="Example | Private",
+        )
+        twin = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/private.xml",
+            feed_link="https://www.example.com/private",
+            feed_title="Example | Private",
+            branch_from_feed=parent,
+        )
+        Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-abc123&user=reader",
+            feed_link="https://www.example.com/private",
+            feed_title="Example | Private (reader)",
+            branch_from_feed=parent,
+        )
+
+        with patch("apps.rss_feeds.models.logging.info") as mock_info, patch(
+            "apps.rss_feeds.models.logging.debug"
+        ) as mock_debug:
+            merge_feeds(twin.pk, parent.pk, force=True)
+
+        logged = " ".join(str(call.args[0]) for call in mock_info.call_args_list + mock_debug.call_args_list)
+        self.assertIn("branched from the duplicate", logged)
+        self.assertNotIn("SECRET-TOKEN", logged)
 
 
 class Test_BranchFromFeedDoesNotCascade(TestCase):
