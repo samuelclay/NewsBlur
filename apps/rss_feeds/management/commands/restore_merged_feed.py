@@ -168,8 +168,14 @@ def parking_hash(parked_id, feed_id):
 
 def parked_feed_for(feed_id):
     """The feed an earlier, interrupted run parked for this restore, if any."""
+    # The indexed prefix narrows the scan before the suffix picks this restore's row.
     return (
-        Feed.objects.filter(hash_address_and_link__endswith="-for-%s" % feed_id).exclude(pk=feed_id).first()
+        Feed.objects.filter(
+            hash_address_and_link__startswith="restore-parked-",
+            hash_address_and_link__endswith="-for-%s" % feed_id,
+        )
+        .exclude(pk=feed_id)
+        .first()
     )
 
 

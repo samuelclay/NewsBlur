@@ -2619,6 +2619,10 @@ class RUserStory:
             p.sadd(read_feed_key, new_story_hash)
             p.sadd(read_user_key, new_story_hash)
             if index % 1000 == 0:
+                # Expiry rides with every batch so a set created by an early batch never
+                # outlives its feed if the worker stops before the last one.
+                p.expire(read_feed_key, expire_seconds)
+                p.expire(read_user_key, expire_seconds)
                 p.execute()
         if story_hashes:
             p.expire(read_feed_key, expire_seconds)

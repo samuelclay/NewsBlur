@@ -1497,7 +1497,8 @@ class Test_SwitchFeedReadState(TestCase):
 
         self.assertEqual(mock_days.call_count, 1)
         self.assertEqual(pipeline.sadd.call_count, 5000)
-        self.assertEqual(pipeline.expire.call_count, 2)
+        # Two batches and the tail each carry both expiries.
+        self.assertEqual(pipeline.expire.call_count, 6)
         self.assertEqual(pipeline.execute.call_count, 3)
 
 
@@ -2321,6 +2322,36 @@ class Test_MergeFeedsLock(TestCase):
         self.assertEqual(lock.return_value.__enter__.call_count, 4)
         self.assertEqual(lock.return_value.__exit__.call_count, 4)
         mock_locked.assert_any_call(11, 22, True, False)
+        from apps.rss_feeds import models as feed_models
+
+        self.assertEqual(feed_models._merge_locks_held(), set())
+
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_merge_nested_inside_a_merge_does_not_wait_on_its_own_locks(self, mock_redis):
+        """merge_feeds_locked ends with a full save of the survivor, which merges again on a
+        hash collision; that nested merge re-uses the locks this thread already holds."""
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import merge_feeds
+
+        lock = mock_redis.Redis.return_value.lock
+        seen = []
+
+        def nested_merge(original_feed_id, duplicate_feed_id, force, preserve):
+            seen.append((original_feed_id, duplicate_feed_id))
+            if len(seen) == 1:
+                # The survivor's save collides with feed 33 and merges into it.
+                return merge_feeds(33, original_feed_id)
+            return original_feed_id
+
+        with patch.object(feed_models, "merge_feeds_locked", side_effect=nested_merge):
+            self.assertEqual(merge_feeds(11, 22), 33)
+
+        self.assertEqual(seen, [(11, 22), (33, 11)])
+        self.assertEqual(
+            [call.args[0] for call in lock.call_args_list],
+            ["merge_feeds:11", "merge_feeds:22", "merge_feeds:33"],
+        )
+        self.assertEqual(feed_models._merge_locks_held(), set())
 
     @patch("apps.rss_feeds.models.redis")
     def test_a_collision_on_a_brand_new_feed_does_not_lock_or_raise(self, mock_redis):
