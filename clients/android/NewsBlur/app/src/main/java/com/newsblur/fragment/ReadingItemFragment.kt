@@ -157,6 +157,7 @@ class ReadingItemFragment :
     private var sourceUserId: String? = null
     private val documentRenderer = LatestReaderRender<ReaderHtmlRequest, PreparedReaderDocument>()
     private var lastMetadataSnapshot: ReaderMetadataSnapshot? = null
+    private var lastClusterSnapshot: ReaderClusterSnapshot? = null
     private var lastSocialSnapshot: List<Any?>? = null
     private val storyHighlights = mutableSetOf<String>()
     private var hasCompletedInitialStoryRender = false
@@ -200,7 +201,8 @@ class ReadingItemFragment :
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[ReadingItemViewModel::class.java]
 
-        story = requireArguments().getSerializable("story") as Story?
+        val restoredFromBundle = story == null
+        if (restoredFromBundle) story = requireArguments().getSerializable("story") as Story?
 
         displayFeedDetails = requireArguments().getBoolean("displayFeedDetails")
         feedIconUrl = requireArguments().getString("faviconUrl")
@@ -230,6 +232,21 @@ class ReadingItemFragment :
         hasSavedScrollPosition = savedScrollPosRel > 0f || savedScrollPosPx > 0
 
         story?.let { storyHighlights.addAll(it.highlights) }
+        if (restoredFromBundle) {
+            story?.let { bundledStory ->
+                lifecycleScope.launch {
+                    val clusters = withContext(Dispatchers.IO) { dbHelper.getStoryClusterStories(bundledStory.storyHash) }
+                    applyRestoredClusterMetadata(bundledStory, clusters)
+                }
+            }
+        }
+    }
+
+    private fun applyRestoredClusterMetadata(bundledStory: Story, clusters: Array<Story.ClusterStory>) {
+        // ReadingAdapter.kt may have delivered a newer full Story while the database query was running.
+        if (story !== bundledStory) return
+        bundledStory.clusterStories = clusters
+        if (view != null) setupItemMetadata()
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -365,6 +382,7 @@ class ReadingItemFragment :
         binding = FragmentReadingitemBinding.inflate(inflater, container, false)
         readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
         lastMetadataSnapshot = null
+        lastClusterSnapshot = null
         lastSocialSnapshot = null
 
         val readingActivity = requireActivity() as Reading
@@ -871,6 +889,7 @@ class ReadingItemFragment :
     }
 
     private fun setupItemMetadata() {
+        setupClusterStories()
         val snapshot = story?.let(::ReaderMetadataSnapshot)
         if (snapshot == lastMetadataSnapshot) return
         lastMetadataSnapshot = snapshot
@@ -952,7 +971,6 @@ class ReadingItemFragment :
         binding.readingItemTitle.setOnClickListener { openBrowser() }
 
         setupTagsAndIntel()
-        setupClusterStories()
     }
 
     private fun setupTagsAndIntel() {
@@ -1054,36 +1072,37 @@ class ReadingItemFragment :
         binding.readingItemUserTags.visibility = View.VISIBLE
     }
 
-    private fun setupClusterStories() {
-        binding.readingStoryClusterList.removeAllViews()
+    private fun clusterStoriesForDetail(currentStory: Story, isArchive: Boolean): List<Story.ClusterStory> =
+        currentStory.clusterStories.orEmpty()
+            // story_detail_view.js includes both matched and related sources, including unsubscribed feeds.
+            .filter { !it.feedId.isNullOrBlank() && !it.storyHash.isNullOrBlank() }
+            .sortedByDescending { it.timestamp }
+            .let { if (isArchive) it else it.take(1) }
 
+    private fun setupClusterStories() {
         val currentStory = story
-        if (currentStory == null || !StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo)) {
+        if (currentStory == null) {
+            lastClusterSnapshot = null
             hideClusterStories()
             return
         }
+        val snapshot = ReaderClusterSnapshot(
+            currentStory,
+            prefsRepo.isClusterMarkReadEnabled(),
+            isArchiveUser(),
+            prefsRepo.getResolvedTheme(requireContext()),
+        )
+        if (snapshot == lastClusterSnapshot) return
+        lastClusterSnapshot = snapshot
+        binding.readingStoryClusterList.removeAllViews()
 
-        val subscribedFeedIds = dbHelper.getAllActiveFeeds()
-        val clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo)
-        val allClusterStories =
-            StoryClusterDisplayDecision.visibleClusterStories(
-                clusterStories = currentStory.clusterStories,
-                subscribedFeedIds = subscribedFeedIds,
-                isPremiumArchive = true,
-                clusterMode = clusterMode,
-            )
+        val allClusterStories = clusterStoriesForDetail(currentStory, isArchive = true)
         if (allClusterStories.isEmpty()) {
             hideClusterStories()
             return
         }
+        val visibleClusterStories = clusterStoriesForDetail(currentStory, isArchive = isArchiveUser())
 
-        val visibleClusterStories =
-            StoryClusterDisplayDecision.visibleClusterStories(
-                clusterStories = currentStory.clusterStories,
-                subscribedFeedIds = subscribedFeedIds,
-                isPremiumArchive = isArchiveUser(),
-                clusterMode = clusterMode,
-            )
         val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(requireContext()))
 
         binding.readingStoryClusterDivider.setBackgroundColor(palette.detailSectionBorderColor)
@@ -1183,6 +1202,7 @@ class ReadingItemFragment :
         onClick: () -> Unit,
     ) {
         val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(requireContext()))
+        val isRead = clusterStory.read || lastClusterSnapshot?.inheritParentRead == true
         val rowView: View = clusterView.findViewById(R.id.story_cluster_detail_row)
         val dividerView: View = clusterView.findViewById(R.id.story_cluster_detail_divider)
         val outerBar: View = clusterView.findViewById(R.id.story_cluster_bar_outer)
@@ -1211,17 +1231,17 @@ class ReadingItemFragment :
             }
 
         dateView.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
-        dateView.setTextColor(if (clusterStory.read) palette.readMetaColor else palette.metaColor)
+        dateView.setTextColor(if (isRead) palette.readMetaColor else palette.metaColor)
 
         titleView.text = UIUtils.fromHtml(clusterStory.title ?: "")
         titleView.maxLines = maxTitleLines
-        titleView.setTextColor(if (clusterStory.read) palette.readTitleColor else palette.titleColor)
+        titleView.setTextColor(if (isRead) palette.readTitleColor else palette.titleColor)
         StoryClusterBadgeViewBinder.bind(
             badgeView,
             requireContext(),
             clusterStory.clusterTier,
             palette,
-            clusterStory.read,
+            isRead,
         )
 
         bindClusterFeedIcon(feed, feedIconView)
@@ -1231,13 +1251,13 @@ class ReadingItemFragment :
             titleView = titleView,
             dateView = dateView,
             thumbnailUrl = clusterStory.thumbnailUrl ?: feedUtils.getStoryThumbnailUrl(clusterStory.storyHash),
-            isRead = clusterStory.read,
+            isRead = isRead,
         )
 
-        outerBar.alpha = if (clusterStory.read) 0.15f else 1.0f
-        innerBar.alpha = if (clusterStory.read) 0.15f else 1.0f
-        sentimentView.imageAlpha = if (clusterStory.read) 38 else 255
-        feedIconView.imageAlpha = if (clusterStory.read) 102 else 255
+        outerBar.alpha = if (isRead) 0.15f else 1.0f
+        innerBar.alpha = if (isRead) 0.15f else 1.0f
+        sentimentView.imageAlpha = if (isRead) 38 else 255
+        feedIconView.imageAlpha = if (isRead) 102 else 255
         dateView.alpha = 1.0f
         titleView.alpha = 1.0f
 
@@ -2145,6 +2165,8 @@ class ReadingItemFragment :
             initialScrollPosRel: Float = 0f,
         ): ReadingItemFragment {
             val readingFragment = ReadingItemFragment()
+            // ReadingItemFragment.kt keeps full metadata in memory; only saved state uses the bounded copy.
+            readingFragment.story = story
 
             val args = Bundle()
             // Store a lightweight copy of the Story so the activity's saved-state Bundle stays

@@ -1,6 +1,24 @@
 package com.newsblur.fragment
 
 import com.newsblur.domain.Story
+import com.newsblur.util.PrefConstants.ThemeValue
+
+// ReadingItemFragment.kt caches the footer independently so parent read updates don't rebuild the article header.
+internal data class ReaderClusterSnapshot(
+    val storyHash: String?,
+    val clusters: List<List<Any?>>,
+    val inheritParentRead: Boolean,
+    val archive: Boolean,
+    val theme: ThemeValue,
+) {
+    constructor(story: Story, clusterMarkRead: Boolean, archive: Boolean, theme: ThemeValue) : this(
+        storyHash = story.storyHash,
+        clusters = ReaderMetadataSnapshot(story).clusters,
+        inheritParentRead = story.read && clusterMarkRead,
+        archive = archive,
+        theme = theme,
+    )
+}
 
 /** Fields that require rebuilding ReadingItemFragment.kt's title, tags, and related-story section. */
 internal data class ReaderMetadataSnapshot(
