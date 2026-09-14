@@ -1268,6 +1268,18 @@ public class BlurDatabaseHelper {
         }
     }
 
+    @NonNull
+    public Story.ClusterStory[] getStoryClusterStories(@NonNull String hash) {
+        // ReadingItemFragment.kt restores omitted Bundle metadata off the main thread.
+        String q = "SELECT " + DatabaseConstants.STORY_CLUSTER_STORIES +
+                " FROM " + DatabaseConstants.STORY_TABLE +
+                " WHERE " + DatabaseConstants.STORY_HASH + " = ? LIMIT 1";
+        try (Cursor cursor = dbRO.rawQuery(q, new String[]{hash})) {
+            if (!cursor.moveToFirst()) return new Story.ClusterStory[]{};
+            return Story.ClusterStory.fromJson(cursor.getString(0));
+        }
+    }
+
     @Nullable
     public String getStoryThumbnailUrl(@Nullable String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_THUMBNAIL_URL +
