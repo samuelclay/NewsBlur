@@ -2604,17 +2604,23 @@ class RUserStory:
             for story_hash in cls.get_stories(user_id, old_feed_id, r=r)
         ]
 
-        for story_hash in story_hashes:
+        # One expiry lookup (it queries Postgres) for the whole set, and the pipeline flushed
+        # in bounded batches: a long-time reader can have tens of thousands of read hashes.
+        expire_seconds = Feed.days_of_story_hashes_for_feed(new_feed_id) * 24 * 60 * 60
+        read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
+        read_user_key = "RS:%s" % (user_id)
+        for index, story_hash in enumerate(story_hashes, 1):
             _, hash_story = MStory.split_story_hash(story_hash)
+            if not hash_story:
+                continue
             new_story_hash = "%s:%s" % (new_feed_id, hash_story)
-            read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
             p.sadd(read_feed_key, new_story_hash)
-            p.expire(read_feed_key, Feed.days_of_story_hashes_for_feed(new_feed_id) * 24 * 60 * 60)
-
-            read_user_key = "RS:%s" % (user_id)
             p.sadd(read_user_key, new_story_hash)
-            p.expire(read_user_key, Feed.days_of_story_hashes_for_feed(new_feed_id) * 24 * 60 * 60)
-
+            if index % 1000 == 0:
+                p.execute()
+        if story_hashes:
+            p.expire(read_feed_key, expire_seconds)
+            p.expire(read_user_key, expire_seconds)
         p.execute()
 
         if len(story_hashes) > 0:

@@ -5305,6 +5305,41 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
     )
 
 
+def move_one_story(story, from_feed_id, to_feed_id, to_feed):
+    """Move one loaded story to to_feed_id, or drop it when the target already has that
+    story. Every write is conditional on the document still belonging to from_feed_id, so
+    two merges of the same parked feed running at once (the restore command and a fetch
+    worker's save) can never delete a story the other one just moved. Returns "moved",
+    "dropped", or "gone". apps/rss_feeds/models.py
+    """
+    guid_hash = story.story_hash.split(":", 1)[1] if story.story_hash and ":" in story.story_hash else None
+    if not guid_hash:
+        return "gone"
+    still_here = MStory.objects(id=story.id, story_feed_id=from_feed_id)
+    new_hash = "%s:%s" % (to_feed_id, guid_hash)
+    if MStory.objects(story_hash=new_hash).count():
+        if still_here.delete():
+            story.remove_from_redis()
+            story.remove_from_search_index()
+            return "dropped"
+        return "gone"
+    # Search and discovery index by the old hash and feed id; drop those entries and
+    # index again under the new feed according to its own indexing settings.
+    if not still_here.update(set__story_feed_id=to_feed_id, set__story_hash=new_hash):
+        return "gone"
+    # The loaded story still carries the old feed id and hash, so these clear the old
+    # Redis and search entries; the reload below picks up the new ones.
+    story.remove_from_redis()
+    story.remove_from_search_index()
+    story.reload()
+    story.sync_redis()
+    if to_feed and to_feed.search_indexed:
+        story.index_story_for_search()
+    if to_feed and to_feed.discover_indexed:
+        story.index_story_for_discover()
+    return "moved"
+
+
 def move_stories_between_feeds(from_feed_id, to_feed_id):
     """Re-home every story of from_feed_id under to_feed_id, dropping a copy whose story the
     target already has. MStory.save recomputes story_hash from the new feed id and re-syncs
@@ -5315,23 +5350,9 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
     moved = dropped = 0
     to_feed = Feed.get_by_id(to_feed_id)
     for story in MStory.objects(story_feed_id=from_feed_id):
-        guid_hash = (
-            story.story_hash.split(":", 1)[1] if story.story_hash and ":" in story.story_hash else None
-        )
-        if guid_hash and MStory.objects(story_hash="%s:%s" % (to_feed_id, guid_hash)).count():
-            story.delete()
-            dropped += 1
-            continue
-        # Search and discovery index by the old hash and feed id; drop those entries and
-        # index again under the new feed according to its own indexing settings.
-        story.remove_from_search_index()
-        story.story_feed_id = to_feed_id
-        story.save()
-        if to_feed and to_feed.search_indexed:
-            story.index_story_for_search()
-        if to_feed and to_feed.discover_indexed:
-            story.index_story_for_discover()
-        moved += 1
+        outcome = move_one_story(story, from_feed_id, to_feed_id, to_feed)
+        moved += outcome == "moved"
+        dropped += outcome == "dropped"
     logging.info(
         " ---> merge_feeds moved %s stories from %s to %s (%s duplicates dropped)"
         % (moved, from_feed_id, to_feed_id, dropped)
