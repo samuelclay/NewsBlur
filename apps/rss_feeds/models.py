@@ -5320,6 +5320,13 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
         logging.info(" ***> Already deleted feed: %s" % duplicate_feed_id)
         return original_feed_id
 
+    # A feed parked by restore_merged_feed carries a placeholder hash while the original row
+    # comes back. Whoever saves it first (a fetch worker included) lands here, and it must
+    # fold into the restored feed, never the other way round, with the parent kept.
+    if (duplicate_feed.hash_address_and_link or "").startswith("restore-parked-"):
+        force = True
+        preserve_branch_from_feed = True
+
     heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
     branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
     if (heavier_dupe or branched_original) and not force:
