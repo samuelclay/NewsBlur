@@ -69,6 +69,7 @@ import com.newsblur.view.ReadingScrollView.ScrollChangeListener
 import com.newsblur.view.readerUsesSystemBackGesture
 import com.newsblur.viewModel.ReadingViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -148,7 +149,9 @@ internal fun createReadingConfigChangeRestore(
     scrollPosRel: Float?,
     recentlyMarkedReadStory: Story? = null,
 ): ReadingConfigChangeRestore? {
-    val story = recentlyMarkedReadStory ?: visibleStory ?: pagerStory
+    val story = visibleStory?.let { visible ->
+        recentlyMarkedReadStory?.takeIf { it.storyHash == visible.storyHash } ?: visible
+    } ?: recentlyMarkedReadStory ?: pagerStory
     return createReadingConfigChangeRestore(
         storyHash = story?.storyHash ?: fallbackStoryHash,
         scrollPosRel = scrollPosRel,
@@ -234,6 +237,7 @@ abstract class Reading :
 
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
+    private var pendingDwellStory: Story? = null
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
     private val readTimeTracker = ReadTimeTracker()
     private var readTimeTickJob: Job? = null
@@ -272,7 +276,7 @@ abstract class Reading :
     private var preparedPageNavigation: PreparedReaderNavigation? = null
     private var readerPageSnapshot: ReaderPageSnapshot? = null
     private var preparedPageStartedAt = 0L
-    private var readerIsPaused = false
+    private var readerIsPaused = true
     private var toolbarVisibleFraction = 1f
     private var preparedVisibleStory: Story? = null
     private var preparedVisibleScrollPosition: Float? = null
@@ -410,9 +414,11 @@ abstract class Reading :
         if (waitingForPreparedEntrance) {
             pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }?.let(::onReaderPageVisualReady)
         }
+        resumeStoryDwell()
     }
 
     override fun onPause() {
+        cancelStoryDwell()
         cancelUnreadSearch()
         readerIsPaused = true
         if (isFinishing) {
@@ -448,6 +454,7 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
+        cancelStoryDwell(clearStory = true)
         preparedPageNavigation?.cancel()
         readerPageSnapshot = null
         clearPreparedLoading()
@@ -482,6 +489,7 @@ abstract class Reading :
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
+        cancelStoryDwell(clearStory = true)
         pendingConfigChangeRestore = captureReadingConfigChangeRestore()
         logReaderRestore(
             "onConfigurationChanged captured=${restoreDebug(pendingConfigChangeRestore)} " +
@@ -557,8 +565,13 @@ abstract class Reading :
         )
     }
 
-    private fun currentReadingStory(): Story? =
-        preparedVisibleStory ?: recentlyMarkedReadStory ?: activeReadingStory() ?: pagerReadingStory()
+    private fun currentReadingStory(): Story? {
+        val visibleStory = preparedVisibleStory ?: activeReadingStory()
+        // Reading.kt keeps a manual read's updated state only for the article that is actually still visible.
+        return visibleStory?.let { visible ->
+            recentlyMarkedReadStory?.takeIf { it.storyHash == visible.storyHash } ?: visible
+        } ?: recentlyMarkedReadStory ?: pagerReadingStory()
+    }
 
     private fun activeReadingStory(): Story? = readingAdapter?.getActiveStory()
 
@@ -819,6 +832,7 @@ abstract class Reading :
         val activePosition = pager?.currentItem ?: return
         if (readingAdapter?.getExistingItem(activePosition)?.isReadyForDisplay() != true) return
         waitingForPreparedEntrance = false
+        resumeStoryDwell()
         val surface = interactiveBackSurface()
         preparedEntranceTimeout?.let(surface::removeCallbacks)
         preparedEntranceTimeout = null
@@ -1083,6 +1097,7 @@ abstract class Reading :
 
     override fun onPageSelected(position: Int) {
         if (preparedPageNavigation?.isPreparing == true) return
+        cancelStoryDwell(clearStory = true)
         val isRestoringSelection = isRestoringState
         val story = readingAdapter?.getStory(position)
         if (story != null) {
@@ -1093,28 +1108,12 @@ abstract class Reading :
                 }
             }
             traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+            beginReadTimeTracking(story.storyHash)
+            // Reading.kt schedules dwell synchronously with selection; old IO callbacks cannot replace its timer.
+            if (!isRestoringSelection) triggerMarkStoryReadBehavior(story)
         }
-        lifecycleScope.executeAsyncTask(
-            doInBackground = {
-                readingAdapter?.let { readingAdapter ->
-                    if (story != null) {
-                        logReaderRestore(
-                            "onPageSelected position=$position story=${storyDebug(story)} " +
-                                "restoring=$isRestoringSelection current=${pager?.currentItem ?: -1} count=${readingAdapter.count}",
-                        )
-                        beginReadTimeTracking(story.storyHash)
-
-                        // Don't mark stories read during activity recreation (e.g., rotation).
-                        // The user is still on the same story, not navigating to a new one.
-                        if (!isRestoringSelection) {
-                            triggerMarkStoryReadBehavior(story)
-                        }
-                    }
-                    checkStoryCount(position)
-                    updateOverlayText()
-                }
-            },
-        )
+        checkStoryCount(position)
+        updateOverlayText()
     }
 
     // interface ScrollChangeListener
@@ -1594,37 +1593,50 @@ abstract class Reading :
     }
 
     private fun triggerMarkStoryReadBehavior(story: Story) {
-        markStoryReadJob?.cancel()
+        cancelStoryDwell()
+        pendingDwellStory = story
         if (story.read) {
             logReaderRestore("markBehavior skipped alreadyRead ${storyDebug(story)}")
             return
         }
+        if (readerIsPaused || waitingForPreparedEntrance || isRestoringState || isFinishing || isDestroyed) return
 
         val delayMillis = markStoryReadBehavior.getDelayMillis()
         logReaderRestore("markBehavior story=${storyDebug(story)} delayMs=$delayMillis")
         if (delayMillis >= 0) {
-            markStoryReadJob =
-                createMarkStoryReadJob(story, delayMillis).also {
-                    it.start()
-                }
+            markStoryReadJob = createMarkStoryReadJob(story, delayMillis)
+            markStoryReadJob?.start()
         }
+    }
+
+    private fun cancelStoryDwell(clearStory: Boolean = false) {
+        markStoryReadJob?.cancel()
+        markStoryReadJob = null
+        if (clearStory) pendingDwellStory = null
+    }
+
+    private fun resumeStoryDwell() {
+        val story = pendingDwellStory ?: return
+        if (currentReadingStory()?.storyHash == story.storyHash) triggerMarkStoryReadBehavior(story)
     }
 
     private fun createMarkStoryReadJob(
         story: Story,
         delayMillis: Long,
     ): Job =
-        lifecycleScope.launch(Dispatchers.Default) {
-            if (isActive) delay(delayMillis)
-            if (isActive) markStoryAsRead(story)
+        lifecycleScope.launch(start = CoroutineStart.LAZY) {
+            delay(delayMillis)
+            if (isActive && !readerIsPaused && !waitingForPreparedEntrance && !isRestoringState &&
+                !isFinishing && !isDestroyed && pendingDwellStory?.storyHash == story.storyHash
+            ) markStoryAsRead(story)
         }
 
     fun markStoryAsRead(story: Story) {
         logReaderRestore("markStoryAsRead story=${storyDebug(story)} loadNext=${prefsRepo.loadNextOnMarkRead()}")
-        recentlyMarkedReadStory =
-            story.copyForBundle().apply {
-                read = true
-            }
+        if (pendingDwellStory?.storyHash == story.storyHash || currentReadingStory()?.storyHash == story.storyHash) {
+            recentlyMarkedReadStory = story.copyForBundle().apply { read = true }
+            cancelStoryDwell(clearStory = true)
+        }
         val readTimesJson = readTimeTracker.drainReadTimesForMarkedStory(story.storyHash)
         feedUtils.syncStoryAsRead(story, this, readTimesJson)
     }
@@ -1677,6 +1689,7 @@ abstract class Reading :
      * passes back the last read item position from the pager
      */
     override fun finish() {
+        cancelStoryDwell(clearStory = true)
         cancelUnreadSearch()
         if (!allowImmediateFinish && shouldAnimateReaderBackFinish()) {
             completeInteractiveReaderBackSwipe()
@@ -1779,6 +1792,7 @@ abstract class Reading :
     }
 
     private fun completeInteractiveReaderBackSwipe() {
+        cancelStoryDwell(clearStory = true)
         cancelUnreadSearch()
         val surface = interactiveBackSurface()
         preparedPageNavigation?.cancel(releaseSnapshot = false)
