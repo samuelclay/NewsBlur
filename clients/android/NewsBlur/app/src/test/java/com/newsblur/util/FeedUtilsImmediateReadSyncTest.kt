@@ -23,6 +23,31 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FeedUtilsImmediateReadSyncTest {
+    @Test
+    fun immediateSuccessAppliesAuthoritativeChildrenEvenWhenPreferenceIsOff() = runTest {
+        val story = unreadStory()
+        val response = NewsBlurResponse().apply { storyHashes = arrayOf("story-hash", "2:child") }
+        coEvery { storyApi.markStoryAsRead("story-hash", null) } returns response
+        feedUtils.syncStoryAsReadNow(story, context)
+        verify { dbHelper.applyStoryReadHashes(listOf("story-hash", "2:child"), true, true, any()) }
+    }
+
+    @Test
+    fun offlineFailureKeepsOptimisticChildrenInRetryWithoutApplyingUnconfirmedServerHashes() = runTest {
+        val story = unreadStory().apply {
+            clusterStories = arrayOf(Story.ClusterStory().apply { storyHash = "2:child"; clusterTier = "title" })
+        }
+        every { prefsRepo.isClusterMarkReadEnabled() } returns true
+        coEvery { storyApi.markStoryAsRead("story-hash", null) } returns NewsBlurResponse().apply {
+            isProtocolError = true
+            storyHashes = arrayOf("3:unconfirmed")
+        }
+        feedUtils.syncStoryAsReadNow(story, context)
+        verify { dbHelper.applyStoryReadHashes(listOf("story-hash", "2:child"), true, true) }
+        verify(exactly = 0) { dbHelper.applyStoryReadHashes(match { "3:unconfirmed" in it }, any(), any()) }
+        verify(exactly = 0) { dbHelper.applyStoryReadHashes(match { "3:unconfirmed" in it }, any(), any(), any()) }
+        verify { dbHelper.enqueueAction(match { it is ReadingAction.MarkStoryRead && it.relatedStoryHashes == listOf("story-hash", "2:child") }) }
+    }
     private val dbHelper = mockk<BlurDatabaseHelper>(relaxed = true)
     private val folderApi = mockk<FolderApi>(relaxed = true)
     private val prefsRepo = mockk<PrefsRepo>(relaxed = true)
