@@ -199,15 +199,11 @@ def restore_feed_from_inventory(
             counts["feed_created"] = 1
             if collision:
                 # force=True keeps the restored id no matter which side has more readers.
-                survivor = merge_feeds(feed_id, collision.pk, force=True)
+                survivor = merge_feeds(feed_id, collision.pk, force=True, preserve_branch_from_feed=True)
                 if survivor != feed_id or not Feed.objects.filter(pk=feed_id).exists():
                     raise CommandError(
                         "merge of %s into %s did not keep %s" % (collision.pk, feed_id, feed_id)
                     )
-                # merge_feeds clears the survivor's parent; a restored branch keeps the one
-                # resolved above so it stays out of public discovery.
-                if fields.get("branch_from_feed"):
-                    Feed.objects.filter(pk=feed_id).update(branch_from_feed=fields["branch_from_feed"])
                 counts["collision_merged"] = collision.pk
                 log("merged feed %s into %s" % (collision.pk, feed_id))
 
@@ -256,7 +252,9 @@ def restore_feed_from_inventory(
             folder_row.folders = json_functions.encode(tree)
             folder_row.save()
 
-    if not dry_run and counts["feed_created"]:
+    # Always, not only when the row was created here: a restore interrupted after creating
+    # the feed is rerun, and the recount and fetch schedule must still happen.
+    if not dry_run:
         feed = Feed.get_by_id(feed_id)
         feed.count_subscribers()
         feed.schedule_feed_fetch_immediately()
