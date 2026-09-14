@@ -25,6 +25,85 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoryViewAdapterCommitTest {
     @Test
+    fun returningAfterTheLastCommitScrollsImmediatelyAndWaitsForVisiblePresentationToFade() = runTest {
+        withFixture { fixture ->
+            fixture.submit("1:last-viewed", 1)
+            runCurrent()
+            fixture.showBoundStory("1:last-viewed")
+            every { fixture.grid.height } returns 1000
+            every { fixture.layoutManager.findFirstVisibleItemPosition() } returns 10
+            every { fixture.layoutManager.findLastVisibleItemPosition() } returns 15
+            every { fixture.grid.hasWindowFocus() } returns false
+
+            fixture.adapter.requestStoryReturn("1:last-viewed", fixture.grid, false)
+            verify { fixture.layoutManager.scrollToPositionWithOffset(0, 150) }
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            verify(exactly = 0) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+
+            every { fixture.grid.hasWindowFocus() } returns true
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            verify(exactly = 0) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+
+            fixture.adapter.requestStoryReturn("1:last-viewed", fixture.grid, true)
+            verify(exactly = 0) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            verify(exactly = 1) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+        }
+    }
+
+    @Test
+    fun highlightingWaitsForTheCorrectHolderAfterLayoutAndLaterBatches() = runTest {
+        withFixture { fixture ->
+            fixture.adapter.requestStoryReturn("1:last-viewed", fixture.grid, true)
+            fixture.submit("1:earlier-page", 1)
+            runCurrent()
+            fixture.submit("1:last-viewed", 2)
+            runCurrent()
+            val holder = fixture.showBoundStory("1:earlier-page")
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            verify(exactly = 0) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+
+            every { holder.story } returns Story().apply { storyHash = "1:last-viewed" }
+            every { fixture.grid.isLayoutRequested } returns true
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            verify(exactly = 0) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+            every { fixture.grid.isLayoutRequested } returns false
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            verify(exactly = 1) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+        }
+    }
+
+    @Test
+    fun aCoveredStoryListDoesNotStartTheReturnHighlightFade() = runTest {
+        withFixture { fixture ->
+            every { fixture.grid.hasWindowFocus() } returns false
+            fixture.adapter.setPendingHighlightStoryHash("1:last-viewed")
+            fixture.submit("1:last-viewed", 1)
+            runCurrent()
+
+            verify(exactly = 0) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+        }
+    }
+
+    @Test
+    fun aPartialBatchDoesNotLoseTheReturnedStoryBeforeItsPageArrives() = runTest {
+        withFixture { fixture ->
+            fixture.adapter.setPendingScrollStoryHash("1:last-viewed")
+            fixture.adapter.setPendingHighlightStoryHash("1:last-viewed")
+            fixture.submit("1:earlier-page", 1)
+            runCurrent()
+            every { fixture.grid.height } returns 1000
+            every { fixture.layoutManager.findFirstVisibleItemPosition() } returns 10
+            every { fixture.layoutManager.findLastVisibleItemPosition() } returns 15
+            fixture.submit("1:last-viewed", 2)
+            runCurrent()
+
+            verify(exactly = 1) { fixture.layoutManager.scrollToPositionWithOffset(0, 150) }
+        }
+    }
+
+    @Test
     fun firstStoriesReplaceTheFooterAnchorWithTheTopStoryOnlyOnce() = runTest {
         withFixture { fixture ->
             assertEquals("The empty list already contains a full-height footer", 1, fixture.adapter.itemCount)
@@ -263,6 +342,7 @@ class StoryViewAdapterCommitTest {
         var onBuild: (List<Story>) -> Unit = {}
 
         init {
+            setField("returnPresentationReady", true)
             setField("adapterScope", scope.backgroundScope)
             setField("diffDispatcher", StandardTestDispatcher(scope.testScheduler))
             setField("clusterThumbnailUrls", mutableMapOf<String, String?>())
@@ -280,7 +360,11 @@ class StoryViewAdapterCommitTest {
             every { adapter.onDetachedFromRecyclerView(any()) } answers { callOriginal() }
             every { adapter.rawStoryCount } answers { callOriginal() }
             every { adapter.itemCount } answers { callOriginal() }
+            every { adapter.applyPendingStoryReturn(any(), any(), any()) } answers { callOriginal() }
+            every { adapter.requestStoryReturn(any(), any(), any()) } answers { callOriginal() }
+            every { adapter["boundStoryHash"](any<RecyclerView.ViewHolder>()) } answers { callOriginal() }
             every { adapter.setPendingScrollStoryHash(any()) } answers { callOriginal() }
+            every { adapter.setPendingHighlightStoryHash(any()) } answers { callOriginal() }
             every { adapter.getDisplayPositionForStoryHash(any()) } answers { callOriginal() }
             every { adapter.isUpdatingStories } answers { callOriginal() }
             every { adapter["invalidateStoryDiffs"]() } answers { callOriginal() }
@@ -307,6 +391,21 @@ class StoryViewAdapterCommitTest {
                 shape
             }
             adapter.updateFeedSet(FeedSet.singleFeed("1"))
+        }
+
+        fun showBoundStory(hash: String): StoryViewAdapter.StoryViewHolder {
+            val holder = mockk<StoryViewAdapter.StoryViewHolder>(relaxed = true)
+            val row = mockk<View>(relaxed = true)
+            RecyclerView.ViewHolder::class.java.getDeclaredField("itemView").apply {
+                isAccessible = true
+                set(holder, row)
+            }
+            every { holder.story } returns Story().apply { storyHash = hash }
+            every { grid.findViewHolderForAdapterPosition(0) } returns holder
+            every { row.isLaidOut } returns true
+            every { grid.hasWindowFocus() } returns true
+            every { grid.isShown } returns true
+            return holder
         }
 
         fun submit(hash: String, loadId: Long, scrollState: Parcelable? = null) {

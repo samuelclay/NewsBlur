@@ -1695,6 +1695,7 @@ abstract class Reading :
             completeInteractiveReaderBackSwipe()
             return
         }
+        prepareStoryListForReturn()
         flushAndStopReadTimeTracking()
         setResult(
             RESULT_OK,
@@ -1774,7 +1775,14 @@ abstract class Reading :
     }
 
     private fun beginInteractiveReaderBackSwipe() {
+        prepareStoryListForReturn()
         interactiveBackSurface().animate().cancel()
+    }
+
+    private fun prepareStoryListForReturn() {
+        currentReadingStory()?.storyHash?.let { storyHash ->
+            ItemsList.peekReadingLaunchParent()?.prepareReturnToStory(storyHash)
+        }
     }
 
     private fun updateInteractiveReaderBackSwipe(offsetPx: Float) {
@@ -1792,6 +1800,7 @@ abstract class Reading :
     }
 
     private fun completeInteractiveReaderBackSwipe() {
+        prepareStoryListForReturn()
         cancelStoryDwell(clearStory = true)
         cancelUnreadSearch()
         val surface = interactiveBackSurface()

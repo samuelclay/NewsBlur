@@ -385,19 +385,17 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void scrollToStoryHashIfOffScreen(@Nullable String storyHash) {
-        // Set pending hashes so the adapter can scroll and highlight after the async
-        // data reload that onResume() triggers via hasUpdated().
-        adapter.setPendingScrollStoryHash(storyHash);
-        adapter.setPendingHighlightStoryHash(storyHash);
+        requestStoryReturn(storyHash, true);
+    }
 
-        int layoutPosition = adapter.getDisplayPositionForStoryHash(storyHash);
-        int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-        int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+    public void prepareReturnToStory(@Nullable String storyHash) {
+        requestStoryReturn(storyHash, false);
+    }
 
-        if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(layoutPosition, firstVisiblePosition, lastVisiblePosition)) {
-            int topOffsetPx = (int) (binding.itemgridfragmentGrid.getHeight() * 0.15f);
-            layoutManager.scrollToPositionWithOffset(layoutPosition, topOffsetPx);
-        }
+    private void requestStoryReturn(@Nullable String storyHash, boolean presentationReady) {
+        if (binding == null || adapter == null) return;
+        // ItemSetFragment.java handles an already committed list as well as later database batches.
+        adapter.requestStoryReturn(storyHash, binding.itemgridfragmentGrid, presentationReady);
     }
 
     protected FeedSet getFeedSet() {

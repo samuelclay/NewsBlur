@@ -2,11 +2,8 @@
 
 package com.newsblur.database
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.os.Parcelable
 import android.os.SystemClock
 import android.text.TextUtils
@@ -22,6 +19,7 @@ import android.view.View.OnCreateContextMenuListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewConfiguration
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -101,6 +99,11 @@ class StoryViewAdapter(
     private var oldScrollState: Parcelable? = null
     private var pendingScrollStoryHash: String? = null
     private var pendingHighlightStoryHash: String? = null
+    private var returnPresentationReady = true
+    private var returnHighlight: ReturnedStoryHighlight? = null
+    private var returnObserver: ViewTreeObserver? = null
+    private var returnPreDrawListener: ViewTreeObserver.OnPreDrawListener? = null
+    private var returnFocusListener: ViewTreeObserver.OnWindowFocusChangeListener? = null
     private val userId: String?
 
     private val iconLoader: ImageLoader
@@ -215,6 +218,8 @@ class StoryViewAdapter(
             oldScrollState = null
             pendingScrollStoryHash = null
             pendingHighlightStoryHash = null
+            returnHighlight?.cancel()
+            returnHighlight = null
             diffFeedSet = fs?.let { FeedSet.fromCompactSerial(it.toCompactSerial()) }
         }
         this.fs = fs
@@ -234,6 +239,8 @@ class StoryViewAdapter(
         oldScrollState = null
         pendingScrollStoryHash = null
         pendingHighlightStoryHash = null
+        returnHighlight?.cancel()
+        returnHighlight = null
         activeFeedIds = null
         clusterThumbnailUrls.clear()
         titleCache.clear()
@@ -358,27 +365,8 @@ class StoryViewAdapter(
                     lm.onRestoreInstanceState(it)
                     oldScrollState = null
                 }
-                val pendingHash = pendingScrollStoryHash
-                if (pendingHash != null) {
-                    pendingScrollStoryHash = null
-                    val pos = getDisplayPositionForStoryHash(pendingHash)
-                    if (pos >= 0) {
-                        val llm = lm as? LinearLayoutManager
-                        val first = llm?.findFirstVisibleItemPosition() ?: -1
-                        val last = llm?.findLastVisibleItemPosition() ?: -1
-                        if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
-                            val topOffset = (rv.height * 0.15f).toInt()
-                            llm?.scrollToPositionWithOffset(pos, topOffset)
-                        }
-                    }
-                }
             }
-            val highlightHash = pendingHighlightStoryHash
-            if (highlightHash != null && !isUpdatingStories && stories.isNotEmpty()) {
-                pendingHighlightStoryHash = null
-                val highlightPos = getDisplayPositionForStoryHash(highlightHash)
-                if (highlightPos >= 0) animateReturnHighlight(rv, highlightPos)
-            }
+            applyPendingStoryReturn(rv, replacingEmptyList)
         }
         if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "commit id=${submission.loadId} rows=${result.items.size} pending=$isUpdatingStories")
         if (latestSubmission === submission) latestSubmission = null
@@ -526,26 +514,87 @@ class StoryViewAdapter(
             else -> 0xFFF4F4F4.toInt()
         }
 
-    private fun animateReturnHighlight(rv: RecyclerView, position: Int) {
-        rv.post {
-            val vh = rv.findViewHolderForAdapterPosition(position) ?: return@post
-            val story = (vh as? StoryViewHolder)?.story
-            val highlightColor = highlightColorForTheme()
-            val defaultColor = defaultColorForTheme()
-            val animator = ValueAnimator.ofObject(ArgbEvaluator(), highlightColor, defaultColor)
-            animator.duration = 1000
-            animator.addUpdateListener { anim ->
-                vh.itemView.background = ColorDrawable(anim.animatedValue as Int)
-            }
-            animator.addListener(object : android.animation.AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: android.animation.Animator) {
-                    if (story != null) {
-                        vh.itemView.setBackgroundResource(backgroundResourceFor(story))
-                    }
-                }
-            })
-            animator.start()
+    @JvmOverloads
+    fun requestStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean = true) {
+        if (storyHash.isNullOrBlank()) return
+        if (pendingHighlightStoryHash != storyHash && returnHighlight?.storyHash != storyHash) {
+            returnHighlight?.cancel()
+            returnHighlight = null
         }
+        pendingScrollStoryHash = storyHash
+        pendingHighlightStoryHash = storyHash
+        returnPresentationReady = presentationReady
+        applyPendingStoryReturn(rv)
+        rv.invalidate()
+    }
+
+    @JvmOverloads
+    fun applyPendingStoryReturn(rv: RecyclerView, replacingEmptyList: Boolean = false, presentationFrame: Boolean = false) {
+        if (isUpdatingStories || stories.isEmpty() || rv.adapter !== this) return
+        val lm = rv.layoutManager ?: return
+        pendingScrollStoryHash?.let { hash ->
+            val position = getDisplayPositionForStoryHash(hash)
+            if (position >= 0) {
+                val llm = lm as? LinearLayoutManager
+                val first = llm?.findFirstVisibleItemPosition() ?: -1
+                val last = llm?.findLastVisibleItemPosition() ?: -1
+                if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)) {
+                    if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
+                    else lm.scrollToPosition(position)
+                }
+                // StoryViewAdapter.kt retains the identity until its page exists in a committed batch.
+                pendingScrollStoryHash = null
+            }
+        }
+        val hash = pendingHighlightStoryHash ?: return
+        if (pendingScrollStoryHash != null || rv.isComputingLayout || rv.isLayoutRequested) return
+        val position = getDisplayPositionForStoryHash(hash)
+        if (position < 0) return
+        val holder = rv.findViewHolderForAdapterPosition(position) ?: return
+        if (boundStoryHash(holder) != hash || !holder.itemView.isLaidOut) return
+        holdReturnHighlight(holder, hash)
+        // StoryViewAdapter.kt starts time only after Reader's exit completed and this window can be seen.
+        if (!presentationFrame || !returnPresentationReady || !rv.hasWindowFocus() || !rv.isShown) return
+        pendingHighlightStoryHash = null
+        animateReturnHighlight(rv, position)
+    }
+
+    private fun boundStoryHash(holder: RecyclerView.ViewHolder): String? = when (holder) {
+        is StoryViewHolder -> holder.story?.storyHash
+        is ClusterRowViewHolder -> holder.clusterStory?.storyHash
+        else -> null
+    }
+
+    private fun holdReturnHighlight(holder: RecyclerView.ViewHolder, hash: String) {
+        if (returnHighlight?.view === holder.itemView && returnHighlight?.storyHash == hash && returnHighlight?.isFinished == false) return
+        returnHighlight?.cancel()
+        returnHighlight = ReturnedStoryHighlight(
+            holder.itemView, hash, { boundStoryHash(holder) }, highlightColorForTheme(), defaultColorForTheme(),
+        ).also { it.hold() }
+    }
+
+    private fun animateReturnHighlight(rv: RecyclerView, position: Int) {
+        val holder = rv.findViewHolderForAdapterPosition(position) ?: return
+        val hash = boundStoryHash(holder) ?: return
+        if (returnHighlight?.view === holder.itemView && returnHighlight?.storyHash == hash) returnHighlight?.fade()
+    }
+
+    private fun cancelReturnHighlight(holder: RecyclerView.ViewHolder) {
+        if (returnHighlight?.view !== holder.itemView) return
+        returnHighlight?.cancel()
+        returnHighlight = null
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        returnObserver = recyclerView.viewTreeObserver
+        returnPreDrawListener = ViewTreeObserver.OnPreDrawListener {
+            if (pendingScrollStoryHash != null || pendingHighlightStoryHash != null) applyPendingStoryReturn(recyclerView, presentationFrame = true)
+            true
+        }.also { returnObserver?.addOnPreDrawListener(it) }
+        returnFocusListener = ViewTreeObserver.OnWindowFocusChangeListener { focused ->
+            if (focused) recyclerView.invalidate()
+        }.also { returnObserver?.addOnWindowFocusChangeListener(it) }
     }
 
     fun setTextSize(textSize: Float) {
@@ -576,6 +625,15 @@ class StoryViewAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
+        recyclerView.viewTreeObserver.takeIf { it.isAlive }?.let { observer ->
+            returnPreDrawListener?.let(observer::removeOnPreDrawListener)
+            returnFocusListener?.let(observer::removeOnWindowFocusChangeListener)
+        }
+        returnObserver = null
+        returnPreDrawListener = null
+        returnFocusListener = null
+        returnHighlight?.cancel()
+        returnHighlight = null
         invalidateStoryDiffs()
         diffRunner?.close()
         diffRunner = null
@@ -922,6 +980,15 @@ class StoryViewAdapter(
         viewHolder: RecyclerView.ViewHolder,
         position: Int,
     ) {
+        val incomingHash = when (val item = displayItems.getOrNull(position)) {
+            is DisplayItem.StoryRow -> item.story.storyHash
+            is DisplayItem.ClusterRow -> item.clusterStory.storyHash
+            else -> null
+        }
+        val retainedHighlight = returnHighlight?.takeIf {
+            it.view === viewHolder.itemView && it.storyHash == incomingHash && !it.isFinished
+        }
+        if (retainedHighlight != null) retainedHighlight.beforeRebind() else cancelReturnHighlight(viewHolder)
         if (position >= storyCount || position < 0) {
             val vh = viewHolder as FooterViewHolder
             vh.innerView.removeAllViews()
@@ -957,6 +1024,7 @@ class StoryViewAdapter(
                 bindClusterRow(viewHolder as ClusterRowViewHolder, item)
             }
         }
+        retainedHighlight?.afterRebind()
     }
 
     /**
@@ -1310,6 +1378,7 @@ class StoryViewAdapter(
     }
 
     override fun onViewRecycled(viewHolder: RecyclerView.ViewHolder) {
+        cancelReturnHighlight(viewHolder)
         if (viewHolder is StoryViewHolder) {
             if (viewHolder.thumbLoader != null) viewHolder.thumbLoader?.cancel = true
             viewHolder.lastThumbView = null
