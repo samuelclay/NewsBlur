@@ -4485,9 +4485,12 @@ class MStory(mongo.Document):
         if cleared:
             self.original_text_z = None
             return None, True
+        # Another request cleared this cache first. If it has already stored the article,
+        # serve that; if its refetch is still in flight, behave as if this call dropped the
+        # cache so a failed refetch here never saves an empty text over its result.
         fresh = self.__class__.objects(id=self.id).only("original_text_z").first()
         self.original_text_z = fresh.original_text_z if fresh else None
-        return self.original_text_z, False
+        return self.original_text_z, self.original_text_z is None
 
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
