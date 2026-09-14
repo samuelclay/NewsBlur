@@ -11,6 +11,9 @@ import java.util.Map;
 
 public class StoriesResponse extends NewsBlurResponse {
 
+    // StoriesResponse.java keeps hash-lookup read placeholders distinct from authoritative feed state.
+    public transient boolean readStatusAuthoritative = true;
+
     // some APIs (rivers) return many stories
     @SerializedName("stories")
     public Story[] stories;

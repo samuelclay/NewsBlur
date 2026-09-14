@@ -198,7 +198,10 @@ class StoryApiImpl(
             }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_RIVER_STORIES)
         val response: APIResponse = networkClient.get(urlString, values)
-        return response.getResponse(gson, StoriesResponse::class.java)
+        return response.getResponse(gson, StoriesResponse::class.java)?.apply {
+            // StoryApiImpl.kt hash lookups return placeholder top-level unread flags from the server.
+            readStatusAuthoritative = false
+        }
     }
 
     override suspend fun markStoryAsRead(
