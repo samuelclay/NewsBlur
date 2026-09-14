@@ -80,9 +80,14 @@ object EdgeToEdgeUtil {
             val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
+            // EdgeToEdgeUtil.kt keeps the status bar clear when the reader toolbar collapses.
+            val collapsingReader = findViewById<View>(R.id.reading_back_swipe_edge) != null
+            val toolbarStatusBar = if (collapsingReader) Insets.NONE else statusBar
+            if (collapsingReader) binding.root.setPadding(0, statusBar.top, 0, 0)
+
             // AppBarLayout or Toolbar
-            findViewById<View>(R.id.app_bar_layout)?.applyToolbarInsets(statusBar, navBar)
-                ?: findViewById<View>(R.id.toolbar)?.applyToolbarInsets(statusBar, navBar)
+            findViewById<View>(R.id.app_bar_layout)?.applyToolbarInsets(toolbarStatusBar, navBar)
+                ?: findViewById<View>(R.id.toolbar)?.applyToolbarInsets(toolbarStatusBar, navBar)
 
             // Container or Content
             findViewById<View>(R.id.container)?.applyContentInsets(navBar)
@@ -90,6 +95,7 @@ object EdgeToEdgeUtil {
 
             // Reading - activity_reading.xml
             findViewById<View>(R.id.content_bottom_overlay)?.let {
+                it.applyHorizontalNavBarMargins(navBar)
                 it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, navBar.bottom)
             }
 
@@ -97,7 +103,7 @@ object EdgeToEdgeUtil {
             findViewById<View>(R.id.bottom_toolbar)?.applyBottomToolbarInsets(navBar)
 
             // sets the background on the navigation bar in landscape mode
-            if (navBar.left > 0 || navBar.right > 0) {
+            if (collapsingReader || navBar.left > 0 || navBar.right > 0) {
                 val tv = TypedValue()
                 binding.root.context.theme
                     .resolveAttribute(android.R.attr.navigationBarColor, tv, true)
