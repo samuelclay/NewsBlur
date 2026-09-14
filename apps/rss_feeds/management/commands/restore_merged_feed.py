@@ -63,6 +63,25 @@ def inventory_snapshots(records, feed_id):
     )
 
 
+def inventory_is_complete(records, feed_record):
+    """True when the inventory that logged feed_record has its summary and as many
+    subscription records for this feed as the summary counted."""
+    merge = feed_record["merge"]
+    feed_id = feed_record["object"]["pk"]
+    summaries = [r for r in records if r.get("type") == "summary" and r.get("merge") == merge]
+    if not summaries:
+        return False
+    expected = summaries[0].get("%s_subscriptions" % feed_record["role"])
+    logged = sum(
+        1
+        for r in records
+        if r.get("type") == "subscription"
+        and r.get("merge") == merge
+        and r["object"]["fields"]["feed"] == feed_id
+    )
+    return expected is not None and logged == expected
+
+
 def inventory_for_feed(records, feed_id, snapshot=None):
     """The feed, feeddata, and subscription records for feed_id from one inventory.
 
@@ -73,6 +92,10 @@ def inventory_for_feed(records, feed_id, snapshot=None):
     feed_records = [r for r in records if r.get("type") == "feed" and r["object"]["pk"] == feed_id]
     if snapshot:
         feed_records = [r for r in feed_records if r["merge"]["logged_at"].startswith(snapshot)]
+    else:
+        # A worker that died while logging leaves an inventory without its summary, or with
+        # fewer subscription records than the summary counts; only complete ones qualify.
+        feed_records = [r for r in feed_records if inventory_is_complete(records, r)]
     if not feed_records:
         return None, [], []
     feed_record = sorted(feed_records, key=lambda r: r["merge"]["logged_at"])[0]
@@ -131,8 +154,24 @@ def parked_feed_for(feed_id, feed_address):
     )
 
 
-def fold_in_parked_feed(feed_id, parked, log=print):
-    """Merge a parked feed into the restored one, keeping the restored id and its parent."""
+def refuse_unless_stories_may_go(feed_id, other, discard_collision_stories):
+    """Folding the re-added feed in deletes its stories (merge_feeds keeps only the
+    survivor's); stories the publisher no longer serves would be gone for good."""
+    stories = MStory.objects(story_feed_id=other.pk).count()
+    if stories and not discard_collision_stories:
+        raise CommandError(
+            "feed %s was re-added at this address after the merge and has %s stories; merging it into "
+            "feed %s would delete them. Rerun with --discard-collision-stories to accept that, or leave "
+            "both feeds and merge by hand." % (other.pk, stories, feed_id)
+        )
+    return stories
+
+
+def fold_in_parked_feed(feed_id, parked, discard_collision_stories=False, log=print):
+    """Merge a parked feed into the restored one, keeping the restored id and its parent.
+    The story check runs here too: a feed parked by an interrupted run can have fetched
+    stories since."""
+    refuse_unless_stories_may_go(feed_id, parked, discard_collision_stories)
     survivor = merge_feeds(feed_id, parked.pk, force=True, preserve_branch_from_feed=True)
     if survivor != feed_id or not Feed.objects.filter(pk=feed_id).exists():
         raise CommandError("merge of %s into %s did not keep %s" % (parked.pk, feed_id, feed_id))
@@ -187,7 +226,7 @@ def restore_feed_from_inventory(
         if parked:
             log("feed %s is still parked from an interrupted run, merging it into %s" % (parked.pk, feed_id))
             if not dry_run:
-                fold_in_parked_feed(feed_id, parked, log=log)
+                fold_in_parked_feed(feed_id, parked, discard_collision_stories, log=log)
                 counts["collision_merged"] = parked.pk
     else:
         # Similar-feed links are a many-to-many to other feeds that may be gone.
@@ -208,11 +247,11 @@ def restore_feed_from_inventory(
                 % (parent_id, redirect.feed_id, feed_id)
             )
             fields["branch_from_feed"] = redirect.feed_id
-        # The merge that lost this feed left redirects from its id and address to the
-        # survivor; a saved story or an import would follow them straight back out.
-        stale_redirects = DuplicateFeed.objects.filter(
-            duplicate_feed_id=feed_id
-        ) | DuplicateFeed.objects.filter(duplicate_address=fields["feed_address"])
+        # The merge that lost this feed left a redirect from its id to the survivor; a
+        # saved story or an import would follow it straight back out.
+        # Only this id's redirects: another deleted feed can share the address with a
+        # different link, and its mapping must keep resolving.
+        stale_redirects = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
         if stale_redirects.exists():
             log("removing %s stale duplicate-feed redirects for feed %s" % (stale_redirects.count(), feed_id))
         # merge_feeds deleted the feed's stories, so the row must fetch afresh: cached
@@ -226,15 +265,7 @@ def restore_feed_from_inventory(
             .first()
         )
         if collision:
-            # Folding the re-added feed in deletes its stories (merge_feeds keeps only the
-            # survivor's); stories the publisher no longer serves would be gone for good.
-            collision_stories = MStory.objects(story_feed_id=collision.pk).count()
-            if collision_stories and not discard_collision_stories:
-                raise CommandError(
-                    "feed %s was re-added at this address after the merge and has %s stories; merging it into "
-                    "feed %s would delete them. Rerun with --discard-collision-stories to accept that, or leave "
-                    "both feeds and merge by hand." % (collision.pk, collision_stories, feed_id)
-                )
+            collision_stories = refuse_unless_stories_may_go(feed_id, collision, discard_collision_stories)
             log(
                 "feed %s already holds this address (re-added after the merge, %s stories); its hash is parked so "
                 "feed %s can come back, then it is merged into the restored feed"
@@ -255,7 +286,7 @@ def restore_feed_from_inventory(
             if collision:
                 # The merge touches Mongo and Redis too, so it runs outside the transaction; a
                 # rerun finds the parked row and finishes it (see parked_feed_for above).
-                fold_in_parked_feed(feed_id, collision, log=log)
+                fold_in_parked_feed(feed_id, collision, discard_collision_stories, log=log)
                 counts["collision_merged"] = collision.pk
 
     for record in feeddata_records:

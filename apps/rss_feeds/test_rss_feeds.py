@@ -1091,6 +1091,35 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
+    def test_a_parked_feed_saved_by_a_worker_still_folds_into_the_restored_feed(self):
+        """While restore_merged_feed has the re-added feed parked, an ordinary save of that
+        feed (a fetch worker, say) recomputes its hash, collides, and reaches merge_feeds
+        without force. The parked feed must still lose, even with more readers."""
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-parked",
+            feed_link="https://www.example.com/parked",
+            feed_title="Example | Parked",
+        )
+        restored.num_subscribers = 1
+        restored.save()
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-parked-copy",
+            feed_link="https://www.example.com/parked",
+            feed_title="Example | Parked",
+        )
+        Feed.objects.filter(pk=parked.pk).update(
+            feed_address=restored.feed_address,
+            hash_address_and_link="restore-parked-%s" % parked.pk,
+            num_subscribers=50,
+        )
+        parked = Feed.objects.get(pk=parked.pk)
+
+        saved = parked.save()
+
+        self.assertEqual(saved.pk, restored.pk)
+        self.assertTrue(Feed.objects.filter(pk=restored.pk).exists())
+        self.assertFalse(Feed.objects.filter(pk=parked.pk).exists())
+
     def test_survivor_keeps_its_parent_when_asked(self):
         from apps.rss_feeds.models import merge_feeds
 
@@ -1473,6 +1502,101 @@ class Test_RestoreMergedFeedCommand(TestCase):
 
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_retry_rechecks_stories_the_parked_feed_fetched_meanwhile(
+        self, mock_count, mock_sync, mock_reader_redis, mock_feed_redis
+    ):
+        from django.core.management import CommandError, call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/meanwhile.xml",
+            feed_link="https://www.example.com/meanwhile",
+            feed_title="Example | Meanwhile",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-meanwhile",
+            feed_link="https://www.example.com/meanwhile",
+            feed_title="Example | Meanwhile",
+        )
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id, lost_address = lost.pk, lost.feed_address
+        lost.delete()
+        readded = Feed.objects.create(
+            feed_address=lost_address,
+            feed_link="https://www.example.com/meanwhile",
+            feed_title="Example | Meanwhile",
+        )
+        with patch(
+            "apps.rss_feeds.management.commands.restore_merged_feed.merge_feeds",
+            side_effect=RuntimeError("worker died mid-merge"),
+        ):
+            with self.assertRaises(RuntimeError):
+                call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+        # The parked feed fetches a story before anyone retries.
+        MStory(
+            story_feed_id=readded.pk,
+            story_guid="fetched-while-parked",
+            story_title="Fetched while parked",
+            story_permalink="https://www.example.com/meanwhile/1",
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(lambda: MStory.objects(story_guid="fetched-while-parked").delete())
+
+        with self.assertRaises(CommandError):
+            call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+        self.assertTrue(Feed.objects.filter(pk=readded.pk).exists())
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id, discard_collision_stories=True)
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
+
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_skips_an_inventory_cut_short_while_it_was_being_logged(self, mock_count):
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/cut.xml",
+            feed_link="https://www.example.com/cut",
+            feed_title="Example | Cut",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-cut",
+            feed_link="https://www.example.com/cut",
+            feed_title="Example | Cut",
+        )
+        first = User.objects.create_user("cut_first", "cut_first@example.com", "password")
+        second = User.objects.create_user("cut_second", "cut_second@example.com", "password")
+        UserSubscription.objects.create(user=first, feed=lost)
+        UserSubscription.objects.create(user=second, feed=lost)
+        with self.assertLogs("newsblur", level="INFO") as partial:
+            log_merge_feeds_inventory(survivor, lost)
+        with self.assertLogs("newsblur", level="INFO") as complete:
+            log_merge_feeds_inventory(survivor, lost)
+        # The first worker died after logging one subscription and before the summary.
+        cut = [line for line in partial.output if '"type": "summary"' not in line]
+        subscription_lines = [line for line in cut if '"type": "subscription"' in line]
+        cut.remove(subscription_lines[-1])
+        log_path = self._inventory_file(cut + complete.output)
+        lost_id = lost.pk
+        lost.delete()
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        self.assertEqual(
+            set(UserSubscription.objects.filter(feed_id=lost_id).values_list("user_id", flat=True)),
+            {first.pk, second.pk},
+        )
+
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
     @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
     @patch("apps.rss_feeds.models.Feed.count_subscribers")
     def test_folds_a_heavier_feed_re_added_at_the_same_address_into_the_restored_one(
@@ -1511,6 +1635,12 @@ class Test_RestoreMergedFeedCommand(TestCase):
             duplicate_feed_id=lost_id,
             feed=survivor,
         )
+        DuplicateFeed.objects.create(
+            duplicate_address=lost_address,
+            duplicate_link="https://other.example.com/",
+            duplicate_feed_id=424242,
+            feed=survivor,
+        )
         readded = Feed.objects.create(
             feed_address=lost_address, feed_link="https://www.example.com/world", feed_title="Example | World"
         )
@@ -1529,7 +1659,10 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertTrue(UserSubscription.objects.filter(user=newcomer, feed=restored).exists())
         self.assertEqual(json.decode(UserSubscriptionFolders.objects.get(user=newcomer).folders), [lost_id])
         self.assertFalse(DuplicateFeed.objects.filter(duplicate_feed_id=lost_id).exists())
-        self.assertFalse(DuplicateFeed.objects.filter(duplicate_address=lost_address, feed=survivor).exists())
+        # Another deleted id at the same address (different link) keeps its redirect.
+        self.assertTrue(
+            DuplicateFeed.objects.filter(duplicate_feed_id=424242, duplicate_address=lost_address).exists()
+        )
         self.assertEqual((restored.etag, restored.last_modified, restored.fetched_once), (None, None, False))
 
     @patch("apps.rss_feeds.models.redis")
