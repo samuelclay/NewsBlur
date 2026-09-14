@@ -476,6 +476,7 @@ open class SyncService :
             feedResponse.clusterMode?.let {
                 prefsRepo.putString(PrefConstants.CLUSTER_MODE, it)
             }
+            prefsRepo.putBoolean(PrefConstants.CLUSTER_MARK_READ, feedResponse.clusterMarkRead)
 
             // note all feeds that belong to some folder so we can find orphans
             for (folder in feedResponse.folders) {

@@ -47,6 +47,7 @@ public class FeedFolderResponse {
 	public int starredCount;
     public Boolean storyClustering;
     public String clusterMode;
+    public boolean clusterMarkRead;
 
     public String shareExtToken;
 	
@@ -83,6 +84,10 @@ public class FeedFolderResponse {
                 }
                 if (preferences != null && preferences.has("cluster_mode")) {
                     this.clusterMode = preferences.get("cluster_mode").getAsString();
+                }
+                if (preferences != null && preferences.has("cluster_mark_read") &&
+                        !preferences.get("cluster_mark_read").isJsonNull()) {
+                    this.clusterMarkRead = preferences.get("cluster_mark_read").getAsBoolean();
                 }
             }
         }

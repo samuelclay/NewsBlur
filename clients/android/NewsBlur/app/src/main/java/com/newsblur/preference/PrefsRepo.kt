@@ -945,6 +945,8 @@ class PrefsRepo(
 
     fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
 
+    fun isClusterMarkReadEnabled(): Boolean = getIsArchive() && prefs.getBoolean(PrefConstants.CLUSTER_MARK_READ, false)
+
     fun setPro(
         isPro: Boolean,
         proExpire: Long?,
