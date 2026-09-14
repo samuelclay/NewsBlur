@@ -59,6 +59,7 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PendingTransitionUtils
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadTimeTracker
+import com.newsblur.util.ReaderTargetLoader
 import com.newsblur.util.StateFilter
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.UIUtils
@@ -75,6 +76,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -215,6 +217,9 @@ abstract class Reading :
     lateinit var feedUtils: FeedUtils
 
     @Inject
+    lateinit var readerTargetLoader: ReaderTargetLoader
+
+    @Inject
     @IconLoader
     lateinit var iconLoader: ImageLoader
 
@@ -224,6 +229,7 @@ abstract class Reading :
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
     private var storyHash: String? = null
+    private var targetStoryLoad: Job? = null
 
     private var pager: ViewPager? = null
     private var readingAdapter: ReadingAdapter? = null
@@ -681,8 +687,17 @@ abstract class Reading :
         }
     }
 
-    private fun setStoryData(batch: ReadingViewModel.StoryBatch) {
-        if (!dbHelper.isFeedSetReady(fs)) {
+    private fun setStoryData(incomingBatch: ReadingViewModel.StoryBatch) {
+        val sessionReady = dbHelper.isFeedSetReady(fs)
+        // Reading.kt may have an exact target before its feed session is ready; never mix in another session's rows.
+        val batch = if (sessionReady) incomingBatch else incomingBatch.copy(stories = emptyList(), classifiers = emptyMap(), indexOfLastUnread = -1)
+        val requestedHash = storyHash
+        if (requestedHash != null && requestedHash != FIND_FIRST_UNREAD &&
+            restoredCurrentStory?.storyHash != requestedHash && batch.stories.none { it.storyHash == requestedHash }
+        ) {
+            loadMissingStoryTarget(requestedHash)
+        }
+        if (!sessionReady && restoredCurrentStory == null) {
             com.newsblur.util.Log
                 .i(this.javaClass.name, "stale load")
             // the system can and will re-use activities, so during the initial mismatch of
@@ -798,8 +813,46 @@ abstract class Reading :
             return
         }
 
-        // if the story wasn't found, try to get more stories into the cursor
-        checkStoryCount(readingAdapter!!.count + 1)
+        if (storyHash == FIND_FIRST_UNREAD) {
+            checkStoryCount(readingAdapter!!.count + 1)
+        } else {
+            storyHash?.let(::loadMissingStoryTarget)
+        }
+    }
+
+    private fun loadMissingStoryTarget(hash: String) {
+        if (targetStoryLoad != null || isFinishing || isDestroyed) return
+        // Reading.kt resolves old cluster children directly instead of paging through their entire feed.
+        // NetworkClientImpl.kt can block during retries, so the visible deadline runs independently on the main thread.
+        val deadline = lifecycleScope.launch {
+            delay(20_000L)
+            if (storyHash == hash && targetStoryLoad?.isActive == true) {
+                targetStoryLoad?.cancel()
+                failStoryTargetLoad()
+            }
+        }
+        targetStoryLoad = lifecycleScope.launch {
+            val target = try {
+                withContext(Dispatchers.IO) { readerTargetLoader.load(hash) }
+            } finally {
+                deadline.cancel()
+            }
+            if (storyHash != hash || isFinishing || isDestroyed) return@launch
+            if (target == null) {
+                failStoryTargetLoad()
+            } else {
+                restoredCurrentStory = target
+                setStoryData(ReadingViewModel.StoryBatch(emptyList(), -1, 0, emptyMap()))
+                loadActiveStories()
+            }
+        }
+    }
+
+    private fun failStoryTargetLoad() {
+        if (isFinishing || isDestroyed) return
+        clearPreparedLoading()
+        android.widget.Toast.makeText(this, R.string.story_navigation_failed, android.widget.Toast.LENGTH_LONG).show()
+        finish()
     }
 
     fun onReaderPageVisualReady(readyStoryHash: String) {
