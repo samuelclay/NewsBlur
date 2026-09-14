@@ -30,6 +30,7 @@ from django.core.management.base import BaseCommand, CommandError
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import (
     MERGE_FEEDS_INVENTORY_PREFIX,
+    DuplicateFeed,
     Feed,
     FeedData,
     merge_feeds,
@@ -131,13 +132,36 @@ def restore_feed_from_inventory(
     if Feed.objects.filter(pk=feed_id).exists():
         log("feed %s already exists, leaving the row alone" % feed_id)
     else:
-        # Similar-feed links are a many-to-many to other feeds that may be gone; the branch
-        # parent may be gone too (it usually was the deleted duplicate).
+        # Similar-feed links are a many-to-many to other feeds that may be gone.
         fields.pop("similar_feeds", None)
+        # A branch stays a branch: a null parent is what makes a feed public in discovery,
+        # and a branch can be a reader's private token URL. When the recorded parent was
+        # itself merged away, DuplicateFeed says which feed took its place.
         parent_id = fields.get("branch_from_feed")
         if parent_id and not Feed.objects.filter(pk=parent_id).exists():
-            log("branch parent %s no longer exists, restoring feed %s with no parent" % (parent_id, feed_id))
-            fields["branch_from_feed"] = None
+            redirect = DuplicateFeed.objects.filter(duplicate_feed_id=parent_id).first()
+            if redirect is None:
+                raise CommandError(
+                    "feed %s was a branch of feed %s, which no longer exists and was not merged anywhere; "
+                    "restore the parent first so the branch does not become public" % (feed_id, parent_id)
+                )
+            log(
+                "branch parent %s was merged into %s, restoring feed %s under it"
+                % (parent_id, redirect.feed_id, feed_id)
+            )
+            fields["branch_from_feed"] = redirect.feed_id
+        # The merge that lost this feed left redirects from its id and address to the
+        # survivor; a saved story or an import would follow them straight back out.
+        stale_redirects = DuplicateFeed.objects.filter(
+            duplicate_feed_id=feed_id
+        ) | DuplicateFeed.objects.filter(duplicate_address=fields["feed_address"])
+        if stale_redirects.exists():
+            log("removing %s stale duplicate-feed redirects for feed %s" % (stale_redirects.count(), feed_id))
+        # merge_feeds deleted the feed's stories, so the row must fetch afresh: cached
+        # validators would let an unchanged publisher answer 304 and leave it empty.
+        fields["etag"] = None
+        fields["last_modified"] = None
+        fields["fetched_once"] = False
         collision = (
             Feed.objects.filter(hash_address_and_link=fields["hash_address_and_link"])
             .exclude(pk=feed_id)
@@ -150,6 +174,7 @@ def restore_feed_from_inventory(
             )
         log("creating feed %s %s" % (feed_id, fields.get("feed_address")))
         if not dry_run:
+            stale_redirects.delete()
             if collision:
                 Feed.objects.filter(pk=collision.pk).update(
                     hash_address_and_link="restore-parked-%s" % collision.pk
@@ -157,9 +182,14 @@ def restore_feed_from_inventory(
             deserialize_and_save(feed_object)
             counts["feed_created"] = 1
             if collision:
-                survivor = merge_feeds(feed_id, collision.pk)
+                # force=True keeps the restored id no matter which side has more readers.
+                survivor = merge_feeds(feed_id, collision.pk, force=True)
+                if survivor != feed_id or not Feed.objects.filter(pk=feed_id).exists():
+                    raise CommandError(
+                        "merge of %s into %s did not keep %s" % (collision.pk, feed_id, feed_id)
+                    )
                 counts["collision_merged"] = collision.pk
-                log("merged feed %s into %s, survivor %s" % (collision.pk, feed_id, survivor))
+                log("merged feed %s into %s" % (collision.pk, feed_id))
 
     for record in feeddata_records:
         if FeedData.objects.filter(feed_id=feed_id).exists():

@@ -5104,6 +5104,13 @@ class MFetchHistory(mongo.Document):
         return history
 
     @classmethod
+    @skip_when_analytics_down(default=0)
+    def delete_for_feed(cls, feed_id):
+        """Drop a merged-away feed's fetch history. Analytics is optional: an outage must
+        never abort merge_feeds partway through (apps/rss_feeds/models.py)."""
+        return cls.objects(feed_id=feed_id).delete()
+
+    @classmethod
     @skip_when_analytics_down(default=empty_fetch_history)
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
@@ -5360,7 +5367,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
     delete_story_feed(MFeedIcon, "feed_id")
-    delete_story_feed(MFetchHistory, "feed_id")
+    MFetchHistory.delete_for_feed(duplicate_feed.pk)
 
     try:
         DuplicateFeed.objects.create(
