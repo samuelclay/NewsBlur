@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.newsblur.BuildConfig
@@ -237,9 +238,6 @@ abstract class Reading :
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
     private var activeUnreadSnackbar: com.google.android.material.snackbar.Snackbar? = null
-    private var overlayRangeTopPx = 0f
-    private var overlayRangeBotPx = 0f
-    private var lastVScrollPos = 0
 
     // enabling multi window mode from recent apps on the device
     // creates a different activity lifecycle compared to a device rotation
@@ -495,9 +493,14 @@ abstract class Reading :
     }
 
     private fun setupViews() {
-        // this value is expensive to compute but doesn't change during a single runtime
-        overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
-        overlayRangeBotPx = UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP).toFloat()
+        // Reading.kt uses native nested scrolling so the page follows the toolbar without WebView relayout.
+        val appBar = binding.includeToolbar.root
+        appBar.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { bar, offset ->
+                val visibleFraction = 1f - (-offset.toFloat() / bar.totalScrollRange.coerceAtLeast(1))
+                setOverlayAlpha(visibleFraction.coerceIn(0f, 1f))
+            },
+        )
 
         findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener { openStorySettingsMenu(it) }
 
@@ -1104,29 +1107,6 @@ abstract class Reading :
         currentHeight: Int,
     ) {
         readTimeTracker.recordActivity()
-
-        // only update overlay alpha every few pixels. modern screens are so dense that it
-        // is way overkill to do it on every pixel
-        if (abs(lastVScrollPos - vPos) < 2) return
-        lastVScrollPos = vPos
-
-        val scrollMax = currentHeight - binding.root.measuredHeight
-        val posFromBot = scrollMax - vPos
-
-        var newAlpha = 0.0f
-        if (vPos < overlayRangeTopPx && posFromBot < overlayRangeBotPx) {
-            // if we have a super-tiny scroll window such that we never leave either top or bottom,
-            // just leave us at full alpha.
-            newAlpha = 1.0f
-        } else if (vPos < overlayRangeTopPx) {
-            val delta = overlayRangeTopPx - vPos.toFloat()
-            newAlpha = delta / overlayRangeTopPx
-        } else if (posFromBot < overlayRangeBotPx) {
-            val delta = overlayRangeBotPx - posFromBot.toFloat()
-            newAlpha = delta / overlayRangeBotPx
-        }
-
-        setOverlayAlpha(newAlpha)
     }
 
     private fun setOverlayAlpha(a: Float) {
@@ -1153,6 +1133,7 @@ abstract class Reading :
      * Make visible and update the overlay UI.
      */
     fun enableOverlays() {
+        binding.includeToolbar.root.setExpanded(true, true)
         setOverlayAlpha(1.0f)
     }
 
@@ -2004,8 +1985,6 @@ abstract class Reading :
         /** special value for starting story hash that jumps to the first unread.  */
         const val FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD"
         private const val OVERLAY_ELEVATION_DP = 1.5f
-        private const val OVERLAY_RANGE_TOP_DP = 40
-        private const val OVERLAY_RANGE_BOT_DP = 60
 
         /** The minimum screen width (in DP) needed to show all the overlay controls.  */
         private const val OVERLAY_MIN_WIDTH_DP = 355
