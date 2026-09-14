@@ -5390,14 +5390,18 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
     if original_feed_id == duplicate_feed_id:
         logging.info(" ***> Merging the same feed. Ignoring...")
         return original_feed_id
-    # Keyed on the pair in a fixed order: merge_feeds(a, b) may swap the two when b has more
-    # readers, so merge_feeds(b, a) running at the same time must contend for the same lock.
-    low, high = sorted((original_feed_id, duplicate_feed_id))
-    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-    with r.lock(
-        "merge_feeds:%s:%s" % (low, high), timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
-    ):
+    if not original_feed_id or not duplicate_feed_id:
+        # Feed.save reaches here with self.pk None when a brand-new feed collides on insert;
+        # there is nothing to lock and the body's missing-feed guard answers.
         return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
+    # One lock per feed, taken in id order so two merges never wait on each other in a
+    # cycle: merge_feeds(a, b) may swap the two when b has more readers, and merge_feeds(c, a)
+    # touching a at the same time must wait for a's lock as well.
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    low, high = sorted((original_feed_id, duplicate_feed_id))
+    with r.lock("merge_feeds:%s" % low, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120):
+        with r.lock("merge_feeds:%s" % high, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120):
+            return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
 
 
 def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):

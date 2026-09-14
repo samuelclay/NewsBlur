@@ -2309,15 +2309,59 @@ class Test_MergeFeedsLock(TestCase):
         merge_feeds(22, 11)
 
         lock = mock_redis.Redis.return_value.lock
-        # Both orderings of the same pair take the same lock, so a swap inside one merge
-        # cannot let two merges of the pair run at once.
-        self.assertEqual([call.args[0] for call in lock.call_args_list], ["merge_feeds:11:22"] * 2)
-        lock.assert_called_with(
-            "merge_feeds:11:22", timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
+        # One lock per feed, always in id order, so both orderings of a pair and any merge
+        # sharing a feed with another wait on the same locks and never in a cycle.
+        self.assertEqual(
+            [call.args[0] for call in lock.call_args_list],
+            ["merge_feeds:11", "merge_feeds:22", "merge_feeds:11", "merge_feeds:22"],
         )
-        self.assertEqual(lock.return_value.__enter__.call_count, 2)
-        self.assertEqual(lock.return_value.__exit__.call_count, 2)
+        lock.assert_called_with(
+            "merge_feeds:22", timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120
+        )
+        self.assertEqual(lock.return_value.__enter__.call_count, 4)
+        self.assertEqual(lock.return_value.__exit__.call_count, 4)
         mock_locked.assert_any_call(11, 22, True, False)
+
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_collision_on_a_brand_new_feed_does_not_lock_or_raise(self, mock_redis):
+        """Feed.save calls merge_feeds(existing.pk, None) when a brand-new feed collides on
+        insert; that must return the existing id, not fail on sorting None."""
+        from apps.rss_feeds.models import merge_feeds
+
+        self.assertEqual(merge_feeds(11, None), 11)
+        mock_redis.Redis.return_value.lock.assert_not_called()
+
+
+class Test_SwitchFeedOrder(TestCase):
+    @patch("apps.reader.models.redis")
+    def test_folders_are_rewritten_before_the_subscription_row_moves(self, mock_redis):
+        """Interrupted between the two, the reader is still found under the old feed on the
+        next run; the other order would strand a moved subscription without a sidebar entry."""
+        from unittest.mock import Mock
+
+        from apps.reader.models import UserSubscriptionFolders
+
+        old = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/order.xml",
+            feed_link="https://www.example.com/",
+            feed_title="Old",
+        )
+        new = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/order.xml",
+            feed_link="https://www.example.com/",
+            feed_title="New",
+        )
+        reader = User.objects.create_user("ordered", "ordered@example.com", "password")
+        subscription = UserSubscription.objects.create(user=reader, feed=old)
+        UserSubscriptionFolders.objects.create(user=reader, folders="[%s]" % old.pk)
+        order = Mock()
+
+        with patch.object(
+            UserSubscriptionFolders, "rewrite_feed", side_effect=lambda *a, **k: order.rewrite()
+        ), patch.object(UserSubscription, "save", side_effect=lambda *a, **k: order.save()):
+            subscription.switch_feed(new, old)
+
+        self.assertEqual([call[0] for call in order.mock_calls], ["rewrite", "save"])
 
 
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):
