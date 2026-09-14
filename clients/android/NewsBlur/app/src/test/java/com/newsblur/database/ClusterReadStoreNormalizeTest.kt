@@ -2,6 +2,7 @@ package com.newsblur.database
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.google.gson.Gson
 import com.newsblur.domain.Story
 import io.mockk.every
 import io.mockk.mockk
@@ -13,6 +14,7 @@ class ClusterReadStoreNormalizeTest {
     private val db = mockk<SQLiteDatabase>(relaxed = true)
     private var receipt: Boolean? = null
     private var stored: Boolean? = null
+    private var embedded = emptyMap<String, Array<Story.ClusterStory>>()
     private val store = ClusterReadStore(db)
 
     init {
@@ -23,6 +25,16 @@ class ClusterReadStoreNormalizeTest {
                 every { cursor.moveToFirst() } returns (state != null)
                 every { cursor.getInt(any()) } answers { if (state == true) 1 else 0 }
                 every { cursor.getString(any()) } answers { if (firstArg<Int>() == 0) "1" else "" }
+            }
+        }
+        every { db.rawQuery(any(), any()) } answers {
+            val parents = embedded.toList()
+            var position = -1
+            mockk<Cursor>(relaxed = true).also { cursor ->
+                every { cursor.moveToNext() } answers { ++position < parents.size }
+                every { cursor.getString(any()) } answers {
+                    if (firstArg<Int>() == 0) parents[position].first else Gson().toJson(parents[position].second)
+                }
             }
         }
     }
@@ -67,5 +79,44 @@ class ClusterReadStoreNormalizeTest {
 
         assertFalse(story.read)
         verify(exactly = 0) { db.delete(ClusterReadStore.READ_STATE, any(), any()) }
+    }
+
+    @Test fun hashLookupPreservesReadStateKnownOnlyInParentMetadata() {
+        embedded = mapOf("1:parent" to arrayOf(Story.ClusterStory().apply { storyHash = "2:child"; read = true }))
+        val story = Story().apply { storyHash = "2:child"; read = false }
+
+        store.normalizeStory(story, false)
+
+        assertTrue(story.read)
+    }
+
+    @Test fun conflictingParentMetadataKeepsKnownReadStateDuringHashLookup() {
+        embedded = mapOf(
+            "1:parent" to arrayOf(Story.ClusterStory().apply { storyHash = "2:child"; read = false }),
+            "3:parent" to arrayOf(Story.ClusterStory().apply { storyHash = "2:child"; read = true }),
+        )
+        val story = Story().apply { storyHash = "2:child"; read = false }
+
+        store.normalizeStory(story, false)
+
+        assertTrue(story.read)
+    }
+
+    @Test fun explicitUnreadAndAuthoritativeFeedResponsesOutrankEmbeddedReadMetadata() {
+        embedded = mapOf("1:parent" to arrayOf(Story.ClusterStory().apply { storyHash = "2:child"; read = true }))
+        val fromFeed = Story().apply { storyHash = "2:child"; read = false }
+        store.normalizeStory(fromFeed, true)
+        assertFalse(fromFeed.read)
+
+        stored = false
+        val fromHash = Story().apply { storyHash = "2:child"; read = false }
+        store.normalizeStory(fromHash, false)
+        assertFalse(fromHash.read)
+
+        stored = null
+        receipt = false
+        store.normalizeStory(fromHash, false)
+        assertFalse(fromHash.read)
+        verify(exactly = 0) { db.rawQuery(any(), any()) }
     }
 }
