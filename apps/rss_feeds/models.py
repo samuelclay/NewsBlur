@@ -16,6 +16,7 @@ import os
 import pickle
 import random
 import re
+import threading
 import time
 import urllib.parse
 import zlib
@@ -5362,7 +5363,9 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
     """
     moved = dropped = 0
     to_feed = Feed.get_by_id(to_feed_id)
-    for story in MStory.objects(story_feed_id=from_feed_id):
+    # no_cache: a large Archive feed's stories, content and all, must not pile up in the
+    # cursor's result cache inside the worker while they are walked.
+    for story in MStory.objects(story_feed_id=from_feed_id).no_cache():
         outcome = move_one_story(story, from_feed_id, to_feed_id, to_feed)
         moved += outcome == "moved"
         dropped += outcome == "dropped"
@@ -5374,6 +5377,16 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
 
 
 MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 15 * 60
+# Feed ids whose merge lock this thread already holds. merge_feeds_locked ends with a full
+# Feed.save of the survivor, which merges again on a hash collision; that nested merge must
+# not wait on locks its own caller holds. apps/rss_feeds/models.py
+_merge_feeds_locks_held = threading.local()
+
+
+def _merge_locks_held():
+    if not hasattr(_merge_feeds_locks_held, "feed_ids"):
+        _merge_feeds_locks_held.feed_ids = set()
+    return _merge_feeds_locks_held.feed_ids
 
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
@@ -5398,10 +5411,21 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
     # cycle: merge_feeds(a, b) may swap the two when b has more readers, and merge_feeds(c, a)
     # touching a at the same time must wait for a's lock as well.
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-    low, high = sorted((original_feed_id, duplicate_feed_id))
-    with r.lock("merge_feeds:%s" % low, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120):
-        with r.lock("merge_feeds:%s" % high, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120):
-            return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
+    held = _merge_locks_held()
+    to_lock = [feed_id for feed_id in sorted((original_feed_id, duplicate_feed_id)) if feed_id not in held]
+    locks = [
+        r.lock("merge_feeds:%s" % feed_id, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120)
+        for feed_id in to_lock
+    ]
+    for lock in locks:
+        lock.__enter__()
+    held.update(to_lock)
+    try:
+        return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
+    finally:
+        held.difference_update(to_lock)
+        for lock in reversed(locks):
+            lock.__exit__(None, None, None)
 
 
 def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
