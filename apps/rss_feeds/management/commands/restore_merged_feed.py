@@ -26,6 +26,7 @@ import json
 from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import (
@@ -38,7 +39,6 @@ from apps.rss_feeds.models import (
 )
 from utils import json_functions
 from utils import log as logging
-from utils.feed_functions import add_object_to_folder
 
 
 def parse_inventory(lines):
@@ -56,13 +56,26 @@ def parse_inventory(lines):
     return records
 
 
-def inventory_for_feed(records, feed_id):
-    """The feed, feeddata, and subscription records for feed_id from the latest merge that
-    logged it. Returns (feed_record, feeddata_records, subscription_records)."""
+def inventory_snapshots(records, feed_id):
+    """The logged_at of every inventory that recorded feed_id, oldest first."""
+    return sorted(
+        {r["merge"]["logged_at"] for r in records if r.get("type") == "feed" and r["object"]["pk"] == feed_id}
+    )
+
+
+def inventory_for_feed(records, feed_id, snapshot=None):
+    """The feed, feeddata, and subscription records for feed_id from one inventory.
+
+    The oldest inventory is used unless `snapshot` names a logged_at: a merge that failed
+    partway and was retried logs a second inventory holding only the readers it had not
+    moved yet, so the first one is the complete picture. Returns
+    (feed_record, feeddata_records, subscription_records)."""
     feed_records = [r for r in records if r.get("type") == "feed" and r["object"]["pk"] == feed_id]
+    if snapshot:
+        feed_records = [r for r in feed_records if r["merge"]["logged_at"].startswith(snapshot)]
     if not feed_records:
         return None, [], []
-    feed_record = feed_records[-1]
+    feed_record = sorted(feed_records, key=lambda r: r["merge"]["logged_at"])[0]
     merge = feed_record["merge"]
 
     def same_merge(record):
@@ -81,18 +94,49 @@ def inventory_for_feed(records, feed_id):
     return feed_record, feeddata_records, subscription_records
 
 
-def folder_name_in_tree(folders, wanted):
-    """The folder name as spelled in this tree for a logged name, matched case-insensitively,
-    or None when the reader no longer has that folder."""
+def folder_at_path(folders, path):
+    """The children list of the folder at `path` (names from the top, matched
+    case-insensitively level by level), the root list for [], or None when the reader no
+    longer has that exact folder. Same-named folders under different parents stay apart."""
+    if not path:
+        return folders
+    wanted, rest = path[0], path[1:]
     for item in folders:
         if isinstance(item, dict):
             for name, children in item.items():
                 if name.lower() == wanted.lower():
-                    return name
-                found = folder_name_in_tree(children, wanted)
-                if found:
-                    return found
+                    return folder_at_path(children, rest)
     return None
+
+
+def add_feed_at_path(folders, path, feed_id, log=print, user_id=None):
+    """Put feed_id into the folder at `path`, or into the root when that folder is gone."""
+    target = folder_at_path(folders, path)
+    if target is None:
+        log(
+            "user %s no longer has folder %s, adding feed %s to the root" % (user_id, "/".join(path), feed_id)
+        )
+        target = folders
+    if feed_id not in [item for item in target if isinstance(item, int)]:
+        target.append(feed_id)
+    return folders
+
+
+def parked_feed_for(feed_id, feed_address):
+    """A feed re-added at this address whose hash was parked by an earlier, interrupted run."""
+    return (
+        Feed.objects.filter(feed_address=feed_address, hash_address_and_link__startswith="restore-parked-")
+        .exclude(pk=feed_id)
+        .first()
+    )
+
+
+def fold_in_parked_feed(feed_id, parked, log=print):
+    """Merge a parked feed into the restored one, keeping the restored id and its parent."""
+    survivor = merge_feeds(feed_id, parked.pk, force=True, preserve_branch_from_feed=True)
+    if survivor != feed_id or not Feed.objects.filter(pk=feed_id).exists():
+        raise CommandError("merge of %s into %s did not keep %s" % (parked.pk, feed_id, feed_id))
+    log("merged feed %s into %s" % (parked.pk, feed_id))
 
 
 def tree_holds_feed(folders, feed_id):
@@ -137,6 +181,14 @@ def restore_feed_from_inventory(
 
     if Feed.objects.filter(pk=feed_id).exists():
         log("feed %s already exists, leaving the row alone" % feed_id)
+        # An earlier run parked the re-added feed and then failed before or during the
+        # merge; finish that first, or its next save would recompute the hash and collide.
+        parked = parked_feed_for(feed_id, fields["feed_address"])
+        if parked:
+            log("feed %s is still parked from an interrupted run, merging it into %s" % (parked.pk, feed_id))
+            if not dry_run:
+                fold_in_parked_feed(feed_id, parked, log=log)
+                counts["collision_merged"] = parked.pk
     else:
         # Similar-feed links are a many-to-many to other feeds that may be gone.
         fields.pop("similar_feeds", None)
@@ -190,22 +242,21 @@ def restore_feed_from_inventory(
             )
         log("creating feed %s %s" % (feed_id, fields.get("feed_address")))
         if not dry_run:
-            stale_redirects.delete()
-            if collision:
-                Feed.objects.filter(pk=collision.pk).update(
-                    hash_address_and_link="restore-parked-%s" % collision.pk
-                )
-            deserialize_and_save(feed_object)
+            # One transaction for the Postgres staging: if recreating the row fails, the
+            # re-added feed is not left parked under an invalid hash.
+            with transaction.atomic():
+                stale_redirects.delete()
+                if collision:
+                    Feed.objects.filter(pk=collision.pk).update(
+                        hash_address_and_link="restore-parked-%s" % collision.pk
+                    )
+                deserialize_and_save(feed_object)
             counts["feed_created"] = 1
             if collision:
-                # force=True keeps the restored id no matter which side has more readers.
-                survivor = merge_feeds(feed_id, collision.pk, force=True, preserve_branch_from_feed=True)
-                if survivor != feed_id or not Feed.objects.filter(pk=feed_id).exists():
-                    raise CommandError(
-                        "merge of %s into %s did not keep %s" % (collision.pk, feed_id, feed_id)
-                    )
+                # The merge touches Mongo and Redis too, so it runs outside the transaction; a
+                # rerun finds the parked row and finishes it (see parked_feed_for above).
+                fold_in_parked_feed(feed_id, collision, log=log)
                 counts["collision_merged"] = collision.pk
-                log("merged feed %s into %s" % (collision.pk, feed_id))
 
     for record in feeddata_records:
         if FeedData.objects.filter(feed_id=feed_id).exists():
@@ -232,19 +283,15 @@ def restore_feed_from_inventory(
                 deserialize_and_save(subscription_object)
             counts["subscriptions_created"] += 1
 
-        placements = record.get("folders") or [""]
+        placements = record.get("folders") or [[]]
         folder_row = UserSubscriptionFolders.objects.filter(user_id=user_id).first()
         tree = json_functions.decode(folder_row.folders) if folder_row and folder_row.folders else []
         if tree_holds_feed(tree, feed_id):
             counts["folders_existing"] += 1
             continue
-        for wanted in placements:
-            target = folder_name_in_tree(tree, wanted) if wanted else None
-            target = target or ""
-            log(
-                "adding feed %s to user %s folder %s" % (feed_id, user_id, repr(target) if target else "root")
-            )
-            tree = add_object_to_folder(feed_id, target, tree)
+        for path in placements:
+            log("adding feed %s to user %s folder %s" % (feed_id, user_id, "/".join(path) or "root"))
+            tree = add_feed_at_path(tree, path, feed_id, log=log, user_id=user_id)
         counts["folders_added"] += 1
         if not dry_run:
             if folder_row is None:
@@ -276,6 +323,12 @@ class Command(BaseCommand):
         )
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Report without writing")
         parser.add_argument(
+            "--snapshot",
+            dest="snapshot",
+            default=None,
+            help="logged_at (or a prefix) of the inventory to restore from; default is the oldest for the feed",
+        )
+        parser.add_argument(
             "--discard-collision-stories",
             dest="discard_collision_stories",
             action="store_true",
@@ -285,10 +338,24 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with open(options["log"]) as handle:
             records = parse_inventory(handle)
-        feed_record, feeddata_records, subscription_records = inventory_for_feed(records, options["feed_id"])
+        snapshots = inventory_snapshots(records, options["feed_id"])
+        feed_record, feeddata_records, subscription_records = inventory_for_feed(
+            records, options["feed_id"], snapshot=options["snapshot"]
+        )
         if not feed_record:
             raise CommandError(
-                "No MERGE_FEEDS_INVENTORY record for feed %s in %s" % (options["feed_id"], options["log"])
+                "No MERGE_FEEDS_INVENTORY record for feed %s in %s (snapshots on file: %s)"
+                % (options["feed_id"], options["log"], ", ".join(snapshots) or "none")
+            )
+        if len(snapshots) > 1:
+            self.stdout.write(
+                "%s inventories on file for feed %s (%s); using %s, pass --snapshot to pick another"
+                % (
+                    len(snapshots),
+                    options["feed_id"],
+                    ", ".join(snapshots),
+                    feed_record["merge"]["logged_at"],
+                )
             )
         self.stdout.write(
             "Inventory from merge of %(duplicate_feed_id)s into %(original_feed_id)s at %(logged_at)s"
