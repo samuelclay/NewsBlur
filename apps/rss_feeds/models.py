@@ -5190,6 +5190,7 @@ class DuplicateFeed(models.Model):
 
 
 MERGE_FEEDS_INVENTORY_PREFIX = "MERGE_FEEDS_INVENTORY"
+MERGE_FEEDS_INVENTORY_BATCH = 500
 
 
 def merge_feeds_inventory_record(record):
@@ -5251,28 +5252,39 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed):
             merge_feeds_inventory_record(
                 {"type": "feeddata", "role": role, "merge": merge, "object": feed_data}
             )
-        subscriptions = UserSubscription.objects.filter(feed=feed).order_by("pk")
-        folder_rows = dict(
-            UserSubscriptionFolders.objects.filter(
-                user_id__in=subscriptions.values_list("user_id", flat=True)
-            ).values_list("user_id", "folders")
-        )
-        for subscription in json.decode(serializers.serialize("json", subscriptions)):
-            user_id = subscription["fields"]["user"]
-            folders_json = folder_rows.get(user_id)
-            placements = []
-            if folders_json:
-                placements = folder_names_holding_feed(json.decode(folders_json), feed.pk)
-            merge_feeds_inventory_record(
-                {
-                    "type": "subscription",
-                    "role": role,
-                    "merge": merge,
-                    "object": subscription,
-                    "folders": placements,
-                    "has_folder_row": user_id in folder_rows,
-                }
+        # Batched by subscription id so a popular survivor never has every reader's sidebar
+        # in memory at once inside the fetching worker.
+        last_pk = 0
+        while True:
+            batch = list(
+                UserSubscription.objects.filter(feed=feed, pk__gt=last_pk).order_by("pk")[
+                    :MERGE_FEEDS_INVENTORY_BATCH
+                ]
             )
+            if not batch:
+                break
+            last_pk = batch[-1].pk
+            folder_rows = dict(
+                UserSubscriptionFolders.objects.filter(
+                    user_id__in=[sub.user_id for sub in batch]
+                ).values_list("user_id", "folders")
+            )
+            for subscription in json.decode(serializers.serialize("json", batch)):
+                user_id = subscription["fields"]["user"]
+                folders_json = folder_rows.get(user_id)
+                placements = []
+                if folders_json:
+                    placements = folder_names_holding_feed(json.decode(folders_json), feed.pk)
+                merge_feeds_inventory_record(
+                    {
+                        "type": "subscription",
+                        "role": role,
+                        "merge": merge,
+                        "object": subscription,
+                        "folders": placements,
+                        "has_folder_row": user_id in folder_rows,
+                    }
+                )
     merge_feeds_inventory_record(
         {
             "type": "summary",
