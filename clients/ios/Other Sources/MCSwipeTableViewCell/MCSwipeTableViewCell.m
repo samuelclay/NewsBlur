@@ -171,6 +171,10 @@ secondStateIconName:(NSString *)secondIconName
     _direction = [self directionWithPercentage:percentage];
     
     if (state == UIGestureRecognizerStateBegan || state == UIGestureRecognizerStateChanged) {
+        if (state == UIGestureRecognizerStateBegan &&
+            [_delegate respondsToSelector:@selector(swipeTableViewCellDidStartSwiping:)]) {
+            [_delegate swipeTableViewCellDidStartSwiping:self];
+        }
         _isDragging = YES;
         
         CGPoint center = {self.contentView.center.x + translation.x, self.contentView.center.y};
@@ -227,12 +231,6 @@ secondStateIconName:(NSString *)secondIconName
         CGPoint point = [g velocityInView:self];
         
         if (fabs(point.x) > fabs(point.y) ) {
-            
-            // We notify the delegate that we just started dragging
-            if ([_delegate respondsToSelector:@selector(swipeTableViewCellDidStartSwiping:)]) {
-                [_delegate swipeTableViewCellDidStartSwiping:self];
-            }
-            
             return YES;
         }
     }
@@ -567,6 +565,9 @@ secondStateIconName:(NSString *)secondIconName
         if ([_delegate respondsToSelector:@selector(swipeTableViewCell:didEndSwipingSwipingWithState:mode:)]) {
             [_delegate swipeTableViewCell:self didEndSwipingSwipingWithState:state mode:mode];
         }
+    }
+    if ([_delegate respondsToSelector:@selector(swipeTableViewCellDidFinishSwiping:)]) {
+        [_delegate swipeTableViewCellDidFinishSwiping:self];
     }
 }
 
