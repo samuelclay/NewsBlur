@@ -279,7 +279,7 @@ Present the draft in the final report as plain text, not inside a blockquote.
 }
 ```
 
-`status` is one of `pr-open`, `reply-drafted`, `tier2-pending`, `skipped`, `done`. `last_posted_at` must be copied verbatim from the fetch output; it is how follow-ups are detected. `question` holds the pending AskUserQuestion text for `tier2-pending`. `reply` holds the draft. Keep older keys when updating an entry.
+`status` is one of `pr-open`, `reply-drafted`, `tier2-pending`, `skipped`, `done`. `last_posted_at` must be copied verbatim from `fetch_topics.py --topic <id> --json` (never typed from memory; the milliseconds matter), because an exact match is how follow-ups are detected. `question` holds the pending AskUserQuestion text for `tier2-pending`. `reply` holds the draft. Keep older keys when updating an entry.
 
 At the end of the run (or after each topic when the run is long), commit the state file on main, not pushed:
 
