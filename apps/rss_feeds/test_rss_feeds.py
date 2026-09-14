@@ -1329,6 +1329,35 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
         self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
         self.assertTrue(len(requested) >= 3 and requested[2].startswith("http://"), requested)
 
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_non_utf8_feed_over_https_is_still_adopted(self, mock_random, mock_validate):
+        """The probe check must honor the feed's declared encoding rather than forcing UTF-8."""
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        latin1_rss = (
+            '<?xml version="1.0" encoding="ISO-8859-1"?><rss version="2.0"><channel><title>Caf\u00e9 Feed</title>'
+            "<link>https://dead-port-80.example.com/</link><item><title>Crème br\u00fbl\u00e9e</title>"
+            "<link>https://dead-port-80.example.com/2</link><guid>https://dead-port-80.example.com/2</guid></item>"
+            "</channel></rss>"
+        ).encode("iso-8859-1")
+
+        def http_dead_https_latin1(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = latin1_rss
+            response.headers = {"Content-Type": "application/rss+xml"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_latin1):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.entries[0].title, "Crème brûlée")
+
     def test_process_feed_persists_the_https_address(self):
         import feedparser
 

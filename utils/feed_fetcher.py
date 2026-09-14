@@ -860,11 +860,13 @@ class FetchFeed:
         try:
             if "json" in content_type:
                 body = self.fetch_json_feed(address, response)
+                if not body:
+                    return False
+                parsed = feedparser.parse(preprocess_feed_encoding(body))
             else:
-                body = smart_str(response.content)
-            if not body:
-                return False
-            parsed = feedparser.parse(preprocess_feed_encoding(body))
+                # Raw bytes, so feedparser honors the feed's own encoding declaration; a
+                # UTF-8 decode here would reject every valid ISO-8859-1 feed.
+                parsed = feedparser.parse(response.content)
         except Exception as e:
             logging.debug(
                 "   ***> [%-30s] ~FRhttps probe did not parse as a feed: %s" % (self.feed.log_title[:30], e)
