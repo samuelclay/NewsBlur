@@ -6,13 +6,7 @@ import ObjectiveC.runtime
 @objcMembers
 final class ReaderPerformance: NSObject {
     // ReaderPerformance.swift records presentation gates only for the isolated UI fixture process.
-    static let recordsUITestPresentation: Bool = {
-        #if DEBUG
-        return ProcessInfo.processInfo.arguments.contains("-newsblur-ui-testing")
-        #else
-        return false
-        #endif
-    }()
+    static let recordsUITestPresentation = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-testing")
 
     private static var recorder: ReaderPerformance?
     private var displayLink: CADisplayLink?
