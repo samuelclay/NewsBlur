@@ -1247,6 +1247,43 @@ class Test_TextImporterGoogleNews(TestCase):
 
     @patch("apps.rss_feeds.models.Feed.get_by_id")
     @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_failed_refetch_after_another_request_cleared_the_cache_never_erases_its_result(
+        self, mock_sync, mock_feed
+    ):
+        """Request A clears the consent cache; request B finds it already cleared, refetches,
+        and fails while A stores the article. B must not save an empty text over it."""
+        story = MStory(
+            story_feed_id=1,
+            story_guid="cleared-first-consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+        story.save()
+        self.addCleanup(lambda: MStory.objects(id=story.id).delete())
+        real_article = zlib.compress(b"<p>Real article</p>")
+        winner = MStory.objects.get(id=story.id)
+        loser = MStory.objects.get(id=story.id)
+        # A has cleared the cache but not yet stored its article.
+        MStory.objects(id=story.id).update(unset__original_text_z=1)
+
+        def losing_fetch(**kwargs):
+            winner.original_text_z = real_article
+            winner.save()
+            return None
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer, patch.object(
+            MStory, "extract_image_urls"
+        ):
+            mock_importer.return_value.fetch.side_effect = losing_fetch
+            text = loser.fetch_original_text()
+
+        self.assertIsNone(text)
+        self.assertEqual(MStory.objects.get(id=story.id).original_text_z, real_article)
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
     def test_stale_consent_copy_serves_the_text_another_request_already_cached(self, mock_sync, mock_feed):
         story = MStory(
             story_feed_id=1,
