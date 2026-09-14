@@ -78,6 +78,20 @@
       "related_prs": [
         "https://github.com/samuelclay/NewsBlur/pull/2133"
       ]
+    },
+    "13826": {
+      "title": "Android: App crashes if there are no unread items and a feed is selected",
+      "url": "https://forum.newsblur.com/t/android-app-crashes-if-there-are-no-unread-items-and-a-feed-is-selected/13826",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-09-14T03:12:01Z",
+      "last_posted_at": "2026-09-07T07:29:31.560Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2135",
+      "branch": "forum-13826-android-next-folder-loop",
+      "worktree": ".worktree/forum-13826-android-next-folder-loop",
+      "note": "Play Console top crash for builds 282/283: StackOverflowError in SessionDataSource.getNextNonEmptyFolder (39 reports, 14 users). Recursive next-folder search wrapped forever when no folder had unread feeds. Replaced with a bounded loop; 3 unit tests added, 18 in the class pass. Reply assumes the next Android release ships the fix.",
+      "reply": "Found it. When you open a feed with nothing unread, the app looks for the next folder that still has unread stories, and if there wasn't one anywhere it kept looping through your folders until it ran out of stack and crashed. It's fixed in the next Android release, which I'll push out shortly. Until then, switching the filter to All Stories avoids it.",
+      "question": null
     }
   }
 }
