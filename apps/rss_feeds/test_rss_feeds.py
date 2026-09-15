@@ -2557,6 +2557,73 @@ class Test_RestoreMergedFeedCommand(TestCase):
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
     @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_moved_newsletters_permalink_names_its_new_hash_and_the_mailed_one_still_opens(
+        self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
+    ):
+        """A newsletter's permalink is its own story hash, and the hash changes with the
+        feed id when the story moves to the restored feed. The stored permalink is rewritten
+        with the move, and the link already in the reader's inbox resolves through the
+        feed's redirect instead of a 404."""
+        from django.urls import reverse
+
+        from apps.rss_feeds.management.commands.restore_merged_feed import (
+            fold_in_parked_feed,
+            parking_hash,
+        )
+
+        restored = Feed.objects.create(
+            feed_address="newsletter:lockedin:sender@example.com",
+            feed_link="https://www.example.com/newsletter",
+            feed_title="A newsletter",
+        )
+        parked = Feed.objects.create(
+            feed_address="newsletter:lockedin:sender@example.com-copy",
+            feed_link="https://www.example.com/newsletter",
+            feed_title="A newsletter",
+        )
+        Feed.objects.filter(pk=parked.pk).update(
+            feed_address=restored.feed_address, hash_address_and_link=parking_hash(parked.pk, restored.pk)
+        )
+        parked = Feed.objects.get(pk=parked.pk)
+        old_hash = MStory.feed_guid_hash_unsaved(parked.pk, "issue-42")
+        MStory(
+            story_feed_id=parked.pk,
+            story_guid="issue-42",
+            story_title="Issue 42",
+            story_content="<p>Issue 42 of the newsletter.</p>",
+            story_permalink="https://www.example.com%s"
+            % reverse("newsletter-story", kwargs={"story_hash": old_hash}),
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(lambda: MStory.objects(story_guid="issue-42").delete())
+
+        fold_in_parked_feed(restored.pk, parked, log=lambda message: None)
+
+        moved = MStory.objects(story_guid="issue-42").first()
+        self.assertEqual(moved.story_feed_id, restored.pk)
+        self.assertNotEqual(moved.story_hash, old_hash)
+        self.assertTrue(
+            moved.story_permalink.endswith(
+                reverse("newsletter-story", kwargs={"story_hash": moved.story_hash})
+            )
+        )
+        self.assertNotIn(old_hash, moved.story_permalink)
+        mailed = self.client.get(reverse("newsletter-story", kwargs={"story_hash": old_hash}))
+        self.assertEqual(mailed.status_code, 200)
+        self.assertIn(b"Issue 42 of the newsletter", mailed.content)
+        current = self.client.get(reverse("newsletter-story", kwargs={"story_hash": moved.story_hash}))
+        self.assertEqual(current.status_code, 200)
+        self.assertEqual(
+            self.client.get(
+                reverse("newsletter-story", kwargs={"story_hash": "%s:nothere" % parked.pk})
+            ).status_code,
+            404,
+        )
+
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
     def test_a_parked_feed_redirected_onto_another_feeds_address_still_folds_into_its_restore_target(
         self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
     ):
@@ -3009,6 +3076,34 @@ class Test_MergeFeedsLock(TestCase):
         self.assertEqual(MStory.objects(story_feed_id=target.pk).count(), 0)
 
     @patch("apps.rss_feeds.models.redis")
+    def test_a_lock_left_by_a_dead_worker_frees_itself_when_its_lease_runs_out(self, mock_redis):
+        """A worker killed while holding a feed's lock never runs the exit; the lease is what
+        frees the feed, so the next fetch waits for the lease, not for two hours."""
+        import threading
+        import time
+
+        from apps.rss_feeds.models import merge_feeds_lock
+
+        table = InMemoryMergeLocks()
+        mock_redis.Redis.return_value = table
+
+        def dead_worker():
+            # Takes the lock the way a fetch does and dies without ever leaving the block.
+            merge_feeds_lock(10, timeout=1, blocking_timeout=1).__enter__()
+
+        thread = threading.Thread(target=dead_worker)
+        thread.start()
+        thread.join(5)
+        self.assertTrue(table.held("merge_feeds:10"))
+
+        started = time.monotonic()
+        with merge_feeds_lock(10, timeout=1, blocking_timeout=3):
+            waited = time.monotonic() - started
+        self.assertGreaterEqual(waited, 0.8)
+        self.assertLess(waited, 3)
+        self.assertFalse(table.held("merge_feeds:10"))
+
+    @patch("apps.rss_feeds.models.redis")
     def test_a_request_below_a_held_lock_is_tried_once_and_never_waited_for(self, mock_redis):
         """A worker holding feed 20 that needs feed 10 is the mirror image of a worker holding
         10 that needs 20; if both waited, both would stall until a timeout failed one. The
@@ -3111,14 +3206,25 @@ class InMemoryMergeLocks:
         self.calls = []
 
     def lock(self, name, timeout=None, blocking_timeout=None):
-        return InMemoryMergeLock(self, name, blocking_timeout)
+        return InMemoryMergeLock(self, name, blocking_timeout, timeout)
+
+    def held(self, name):
+        """Whether the lock is owned and its lease has not run out, the way Redis sees it."""
+        import time
+
+        owner = self.owners.get(name)
+        if owner and owner[1] is not None and time.monotonic() >= owner[1]:
+            del self.owners[name]
+            return False
+        return owner is not None
 
 
 class InMemoryMergeLock:
-    def __init__(self, table, name, blocking_timeout):
+    def __init__(self, table, name, blocking_timeout, timeout=None):
         self.table = table
         self.name = name
         self.blocking_timeout = blocking_timeout
+        self.timeout = timeout
 
     def acquire(self, blocking=True):
         import threading
@@ -3127,11 +3233,23 @@ class InMemoryMergeLock:
         self.table.calls.append((self.name, blocking))
         deadline = time.monotonic() + (self.blocking_timeout or 0)
         with self.table.condition:
-            while self.name in self.table.owners:
+            while self.table.held(self.name):
                 if not blocking or time.monotonic() >= deadline:
                     return False
                 self.table.condition.wait(0.05)
-            self.table.owners[self.name] = threading.get_ident()
+            expires = time.monotonic() + self.timeout if self.timeout else None
+            self.table.owners[self.name] = (threading.get_ident(), expires)
+            return True
+
+    def extend(self, additional_time, replace_ttl=False):
+        import threading
+        import time
+
+        with self.table.condition:
+            owner = self.table.owners.get(self.name)
+            if not self.table.held(self.name) or owner[0] != threading.get_ident():
+                raise LockError("Cannot extend a lock that's no longer owned")
+            self.table.owners[self.name] = (owner[0], time.monotonic() + additional_time)
             return True
 
     def release(self):
@@ -3301,6 +3419,45 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         self.assertEqual((ret_feed, ret_values["new"]), (FEED_OK, 2))
         feed.refresh_from_db()
         self.assertEqual(feed.etag, '"after"')
+
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_fetch_holds_its_feeds_lock_on_a_short_lease_and_renews_it_while_writing(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """A fetch worker killed mid-write (a hard time limit, a crash) never runs the lock's
+        exit, and the lease is what frees the feed for the next fetch: it is a fraction of a
+        merge's, waited for briefly, and extended as the stories are written."""
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import (
+            FETCH_LOCK_BLOCKING_SECONDS,
+            FETCH_LOCK_TIMEOUT_SECONDS,
+            MERGE_FEEDS_LOCK_BLOCKING_SECONDS,
+            MERGE_FEEDS_LOCK_TIMEOUT_SECONDS,
+        )
+        from utils.feed_fetcher import FEED_OK, ProcessFeed
+
+        feed = self._feed("https://rss.example.com/lineup/lease.xml")
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        mock_redis.Redis.return_value.zrevrangebyscore.return_value = []
+        lock = mock_redis.Redis.return_value.lock
+        lock.return_value.acquire.return_value = True
+
+        with patch.object(feed_models, "FETCH_LOCK_RENEW_EVERY", 1):
+            ret_feed, ret_values = ProcessFeed(feed.pk, self._parsed('"lease"'), dict(self.options)).process()
+
+        self.assertEqual((ret_feed, ret_values["new"]), (FEED_OK, 2))
+        self.assertLess(FETCH_LOCK_TIMEOUT_SECONDS, MERGE_FEEDS_LOCK_TIMEOUT_SECONDS)
+        self.assertLess(FETCH_LOCK_BLOCKING_SECONDS, MERGE_FEEDS_LOCK_BLOCKING_SECONDS)
+        lock.assert_called_once_with(
+            "merge_feeds:%s" % feed.pk,
+            timeout=FETCH_LOCK_TIMEOUT_SECONDS,
+            blocking_timeout=FETCH_LOCK_BLOCKING_SECONDS,
+        )
+        self.assertGreaterEqual(lock.return_value.extend.call_count, 1)
+        lock.return_value.extend.assert_called_with(FETCH_LOCK_TIMEOUT_SECONDS, replace_ttl=True)
+        lock.return_value.release.assert_called_once()
 
     def test_refresh_feed_tolerates_a_feed_deleted_with_no_redirect(self):
         from utils.feed_fetcher import ProcessFeed

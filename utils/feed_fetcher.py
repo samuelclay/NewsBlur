@@ -43,7 +43,13 @@ from apps.notifications.tasks import QueueClassifierNotifications, QueueNotifica
 from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.icon_importer import IconImporter
-from apps.rss_feeds.models import Feed, MStory, merge_feeds_lock
+from apps.rss_feeds.models import (
+    FETCH_LOCK_BLOCKING_SECONDS,
+    FETCH_LOCK_TIMEOUT_SECONDS,
+    Feed,
+    MStory,
+    merge_feeds_lock,
+)
 from apps.rss_feeds.page_importer import PageImporter
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
 from apps.statistics.rscrapingbee import RScrapingBee
@@ -1308,7 +1314,13 @@ class ProcessFeed:
         """
         locked_feed_id = self.feed.pk
         for attempt in range(MAX_FEED_LOCK_ATTEMPTS):
-            with merge_feeds_lock(locked_feed_id):
+            # A short lease, renewed by add_update_stories as it goes: a worker killed by its
+            # hard time limit never releases the lock, and the lease is what frees the feed.
+            with merge_feeds_lock(
+                locked_feed_id,
+                timeout=FETCH_LOCK_TIMEOUT_SECONDS,
+                blocking_timeout=FETCH_LOCK_BLOCKING_SECONDS,
+            ):
                 self.refresh_feed()
                 if self.feed is None:
                     logging.debug(
