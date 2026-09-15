@@ -62,6 +62,41 @@ class Test_EmailNewsletter(TestCase):
         params.update(overrides)
         return EmailNewsletter().receive_newsletter(params)
 
+    @patch("apps.rss_feeds.models.MFetchHistory.delete_for_feed", return_value=0)
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    def test_a_newsletter_delivered_to_a_parked_feed_is_stored_on_the_restored_feed(
+        self, mock_reader_redis, mock_feed_redis, mock_history
+    ):
+        """restore_merged_feed has parked the newsletter feed this reader re-added while the
+        lost original comes back. Delivery's save of the parked feed folds it into the
+        restored one, so the newsletter has to be stored under the restored feed, under its
+        lock, and never under the id that save just deleted."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
+
+        first = self.receive("first")
+        readded = Feed.objects.get(pk=first.story_feed_id)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=readded).exists())
+        restored = Feed.objects.create(
+            feed_address=readded.feed_address + "-restored",
+            feed_link=readded.feed_link,
+            feed_title=readded.feed_title,
+            fetched_once=True,
+            known_good=True,
+        )
+        Feed.objects.filter(pk=readded.pk).update(hash_address_and_link=parking_hash(readded.pk, restored.pk))
+
+        second = self.receive("second")
+
+        self.assertEqual(second.story_feed_id, restored.pk)
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=restored).exists())
+        self.assertIn(
+            reverse("newsletter-story", kwargs={"story_hash": second.story_hash}), second.story_permalink
+        )
+        self.assertEqual(MStory.objects(story_feed_id=readded.pk).count(), 0)
+        self.assertEqual(MStory.objects(story_feed_id=restored.pk).count(), 2)
+
     @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=100)
     @patch.object(EmailNewsletter, "receive_newsletter")
     def test_oversized_webhook_returns_payload_too_large(self, mock_receive_newsletter):

@@ -3027,7 +3027,7 @@ class Test_MergeFeedsLock(TestCase):
         Feed.objects.filter(pk=target.pk).update(discover_indexed=True)
         locks = self._recording_locks(mock_redis)
 
-        with patch.object(feed_models, "MERGE_FEEDS_RENEW_EVERY", 1), patch.object(
+        with patch.object(feed_models, "MERGE_FEEDS_RENEW_AFTER_FRACTION", 0), patch.object(
             feed_models.IndexDiscoverStories, "apply_async"
         ) as mock_queue, patch.object(MStory, "index_story_for_discover") as mock_inline:
             with merge_feeds_lock(source.pk, target.pk):
@@ -3066,7 +3066,7 @@ class Test_MergeFeedsLock(TestCase):
             mock_redis, extend_side_effect=LockNotOwnedError("Cannot extend a lock that's no longer owned")
         )
 
-        with patch.object(feed_models, "MERGE_FEEDS_RENEW_EVERY", 1):
+        with patch.object(feed_models, "MERGE_FEEDS_RENEW_AFTER_FRACTION", 0):
             with merge_feeds_lock(source.pk, target.pk):
                 with self.assertRaises(LockError) as raised:
                     move_stories_between_feeds(source.pk, target.pk)
@@ -3444,7 +3444,7 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         lock = mock_redis.Redis.return_value.lock
         lock.return_value.acquire.return_value = True
 
-        with patch.object(feed_models, "FETCH_LOCK_RENEW_EVERY", 1):
+        with patch.object(feed_models, "MERGE_FEEDS_RENEW_AFTER_FRACTION", 0):
             ret_feed, ret_values = ProcessFeed(feed.pk, self._parsed('"lease"'), dict(self.options)).process()
 
         self.assertEqual((ret_feed, ret_values["new"]), (FEED_OK, 2))
@@ -3458,6 +3458,68 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         self.assertGreaterEqual(lock.return_value.extend.call_count, 1)
         lock.return_value.extend.assert_called_with(FETCH_LOCK_TIMEOUT_SECONDS, replace_ttl=True)
         lock.return_value.release.assert_called_once()
+
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_slow_google_news_image_lookups_never_outlast_the_fetch_lease(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """Every new Google News story fetches its og:image, up to fifteen seconds each, so
+        ten stories can take longer than the two-minute lease. Renewal goes by elapsed time,
+        checked before each story with the production interval, so the lease is extended
+        long before it can run out and a merge can never take the feed from under a fetch
+        still writing to it."""
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import FETCH_LOCK_TIMEOUT_SECONDS
+        from utils.feed_fetcher import FEED_OK, ProcessFeed
+
+        feed = self._feed("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en")
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        self.assertTrue(feed.is_google_news_feed)
+        items = "".join(
+            "<item><title>Headline %s</title><link>https://www.example.com/news/%s</link>"
+            '<guid isPermaLink="false">news-%s</guid><description>Story %s body</description>'
+            "<pubDate>Mon, 14 Sep 2026 %02d:00:00 GMT</pubDate></item>" % (n, n, n, n, n)
+            for n in range(10)
+        )
+        xml = (
+            '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Google News</title>'
+            "<link>https://www.example.com/inflight</link>%s</channel></rss>" % items
+        )
+        import feedparser
+
+        fpf = feedparser.parse(xml)
+        fpf["etag"] = '"news"'
+        clock = {"now": 1000.0}
+        events = []
+
+        def lock_factory(name, **kwargs):
+            lock = MagicMock()
+            lock.name = name
+            lock.acquire.side_effect = lambda blocking=True: events.append(("acquire", clock["now"])) or True
+            lock.extend.side_effect = lambda *args, **kwargs: events.append(("extend", clock["now"])) or True
+            return lock
+
+        def slow_image_lookup(story):
+            clock["now"] += 15
+
+        mock_redis.Redis.return_value.lock.side_effect = lock_factory
+        mock_redis.Redis.return_value.zrevrangebyscore.return_value = []
+        with patch.object(feed_models, "_merge_lock_clock", lambda: clock["now"]), patch.object(
+            MStory, "fetch_og_image", slow_image_lookup
+        ):
+            ret_feed, ret_values = ProcessFeed(feed.pk, fpf, dict(self.options)).process()
+
+        self.assertEqual((ret_feed, ret_values["new"]), (FEED_OK, 10))
+        self.assertGreaterEqual(clock["now"] - 1000.0, 150)
+        renewals = [at for kind, at in events if kind == "extend"]
+        self.assertGreaterEqual(len(renewals), 2)
+        times = [at for kind, at in events]
+        widest_gap = max(later - earlier for earlier, later in zip(times, times[1:]))
+        self.assertLess(widest_gap, FETCH_LOCK_TIMEOUT_SECONDS)
+        # Renewed at the production interval, not on every story.
+        self.assertLess(len(renewals), 10)
 
     def test_refresh_feed_tolerates_a_feed_deleted_with_no_redirect(self):
         from utils.feed_fetcher import ProcessFeed

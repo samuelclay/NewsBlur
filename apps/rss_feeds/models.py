@@ -6,6 +6,7 @@ history, and duplicate feed detection.
 """
 
 import base64
+import contextlib
 import csv
 import datetime
 import difflib
@@ -1924,10 +1925,11 @@ class Feed(models.Model):
             )
             return existing_story, story_has_changed
 
-        for story_index, story in enumerate(stories):
-            if story_index and story_index % FETCH_LOCK_RENEW_EVERY == 0:
-                # Under ProcessFeed's short lease on the feed's merge lock; a no-op elsewhere.
-                renew_merge_feeds_locks()
+        for story in stories:
+            # Under ProcessFeed's short lease on the feed's merge lock: a story can take a
+            # while (a Google News story's image lookup), so the lease is checked before
+            # each one. A no-op outside a lock.
+            renew_merge_feeds_locks()
             if verbose:
                 logging.debug(
                     "   ---> [%-30s] ~FBChecking ~SB%s~SN / ~SB%s"
@@ -5454,10 +5456,9 @@ def move_stories_between_feeds(from_feed_id, to_feed_id):
     to_discover = []
     # no_cache: a large Archive feed's stories, content and all, must not pile up in the
     # cursor's result cache inside the worker while they are walked.
-    for index, story in enumerate(MStory.objects(story_feed_id=from_feed_id).no_cache()):
-        if index % MERGE_FEEDS_RENEW_EVERY == 0:
-            # An Archive feed can take longer than the lease; keep the locks, or stop.
-            renew_merge_feeds_locks()
+    for story in MStory.objects(story_feed_id=from_feed_id).no_cache():
+        # An Archive feed can take longer than the lease; keep the locks, or stop.
+        renew_merge_feeds_locks()
         outcome = move_one_story(story, from_feed_id, to_feed_id, to_feed)
         moved += outcome == "moved"
         dropped += outcome == "dropped"
@@ -5496,9 +5497,17 @@ MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 10 * 60
 # row comes back; Feed.save keeps it and merge_feeds moves such a feed's stories rather than
 # deleting them. apps/rss_feeds/models.py
 RESTORE_PARKED_HASH_PREFIX = "restore-parked-"
-# Inside a merge's long loops the leases of the locks it holds are extended this often, in
-# stories moved, subscriptions switched, or inventory records logged. apps/rss_feeds/models.py
-MERGE_FEEDS_RENEW_EVERY = 200
+# A held lock is renewed once this much of its lease has passed since it was taken or last
+# renewed. The check runs before every story, subscription or inventory record a locked loop
+# handles and costs a clock read; the renewal itself is one Redis call. What is left of the
+# lease is the margin one slow step (a Google News story's image lookup, a big delete) has to
+# finish in. apps/rss_feeds/models.py
+MERGE_FEEDS_RENEW_AFTER_FRACTION = 1 / 3
+# Tests swap this for a clock they advance by hand.
+_merge_lock_clock = time.monotonic
+# How many times a writer follows a feed merged away while it waited for the feed's lock
+# before it gives up on the write. apps/rss_feeds/models.py
+FEED_WRITE_LOCK_ATTEMPTS = 5
 
 
 def restore_target_from_parking_hash(parking_hash):
@@ -5511,13 +5520,12 @@ def restore_target_from_parking_hash(parking_hash):
 
 MERGE_FEEDS_LOCK_BLOCKING_SECONDS = 120
 # A fetch holds its feed's lock only while the batch is written, and a fetch worker killed
-# by its hard time limit never releases it, so the fetch lease is short and extended every
-# few stories in add_update_stories; a fetch that cannot get the lock quickly (a merge or
-# restore of the feed is running) gives up and comes back on its next schedule rather than
-# holding a worker slot. apps/rss_feeds/models.py
+# by its hard time limit never releases it, so the fetch lease is short and renewed before
+# every story add_update_stories handles; a fetch that cannot get the lock quickly (a merge
+# or restore of the feed is running) gives up and comes back on its next schedule rather
+# than holding a worker slot. apps/rss_feeds/models.py
 FETCH_LOCK_TIMEOUT_SECONDS = 2 * 60
 FETCH_LOCK_BLOCKING_SECONDS = 30
-FETCH_LOCK_RENEW_EVERY = 10
 # A merge that keeps finding yet another feed for the survivor's final save to collide with
 # stops widening its lock set here. apps/rss_feeds/models.py
 MERGE_FEEDS_MAX_LOCKS = 6
@@ -5540,11 +5548,49 @@ def renew_merge_feeds_locks():
     subscriptions switching, the inventory being logged), so a merge that outlasts a lease
     keeps its locks; when a lease was already lost, the merge stops here instead of going on
     unlocked next to another merge of the same feeds. apps/rss_feeds/models.py"""
-    for feed_id, (lock, lease) in list(_merge_locks_held().items()):
+    now = _merge_lock_clock()
+    for feed_id, held in list(_merge_locks_held().items()):
+        lock, lease, renewed_at = held
+        if now - renewed_at < lease * MERGE_FEEDS_RENEW_AFTER_FRACTION:
+            continue
         try:
             lock.extend(lease, replace_ttl=True)
         except LockError as e:
             raise LockError("merge_feeds:%s lease was lost while the merge was running: %s" % (feed_id, e))
+        held[2] = _merge_lock_clock()
+
+
+@contextlib.contextmanager
+def feed_write_lock(feed_id, timeout=None, blocking_timeout=None):
+    """Hold the merge lock of the feed that feed_id resolves to, and yield that feed, or None
+    when it is gone. Once a lock is held the feed is looked up again: a feed merged away
+    while the caller waited resolves to its survivor (Feed.get_by_id follows DuplicateFeed),
+    and the survivor's own lock is what protects its stories, so the stale lock is released
+    and the survivor's taken and checked the same way. ProcessFeed writes a fetch's stories
+    under it and EmailNewsletter stores a delivered newsletter under it, both on the short
+    fetch lease. apps/rss_feeds/models.py"""
+    locked_feed_id = feed_id
+    for attempt in range(FEED_WRITE_LOCK_ATTEMPTS):
+        with merge_feeds_lock(locked_feed_id, timeout=timeout, blocking_timeout=blocking_timeout):
+            feed = Feed.get_by_id(locked_feed_id)
+            if feed is None:
+                logging.debug(" ***> Feed %s was deleted while it was being written to" % locked_feed_id)
+                yield None
+                return
+            if feed.pk != locked_feed_id:
+                logging.debug(
+                    " ***> Feed %s was merged into %s while it was being written to, locking the survivor"
+                    % (locked_feed_id, feed.pk)
+                )
+                locked_feed_id = feed.pk
+                continue
+            yield feed
+            return
+    logging.debug(
+        " ***> Feed %s was merged away %s times while it was being written to, giving up"
+        % (locked_feed_id, FEED_WRITE_LOCK_ATTEMPTS)
+    )
+    yield None
 
 
 class merge_feeds_lock:
@@ -5596,7 +5642,10 @@ class merge_feeds_lock:
         except BaseException:
             self._release()
             raise
-        held.update({feed_id: (lock, self.timeout) for feed_id, lock in zip(self.taken, self.locks)})
+        taken_at = _merge_lock_clock()
+        held.update(
+            {feed_id: [lock, self.timeout, taken_at] for feed_id, lock in zip(self.taken, self.locks)}
+        )
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -5777,9 +5826,8 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         original_feed.branch_from_feed = None
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by("-pk")
-    for index, user_sub in enumerate(user_subs):
-        if index % MERGE_FEEDS_RENEW_EVERY == 0:
-            renew_merge_feeds_locks()
+    for user_sub in user_subs:
+        renew_merge_feeds_locks()
         user_sub.switch_feed(original_feed, duplicate_feed)
 
     # Switch starred stories and their counts to the new feed
