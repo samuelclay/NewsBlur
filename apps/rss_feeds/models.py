@@ -288,6 +288,22 @@ class Feed(models.Model):
         return "news.google.com" in self.feed_address
 
     @property
+    def is_private_branch(self):
+        """A feed branched from another is a reader's own copy and can carry a personal URL
+        (an access token in the address, a private page as the link), so logs name it by id
+        and the merge inventory keeps its address out of the task log.
+        apps/rss_feeds/models.py"""
+        return bool(self.branch_from_feed_id)
+
+    @property
+    def loggable_address(self):
+        return "private feed %s address" % self.pk if self.is_private_branch else self.feed_address
+
+    @property
+    def loggable_link(self):
+        return "private feed %s link" % self.pk if self.is_private_branch else self.feed_link
+
+    @property
     def is_bluesky_feed(self):
         return "bsky.app/profile/" in self.feed_address
 
@@ -5276,6 +5292,39 @@ MERGE_FEEDS_INVENTORY_PREFIX = "MERGE_FEEDS_INVENTORY"
 MERGE_FEEDS_INVENTORY_BATCH = 500
 
 
+PRIVATE_FEED_ADDRESS_PLACEHOLDER = "private-feed-address:%s"
+PRIVATE_FEED_LINK_PLACEHOLDER = "private-feed-link:%s"
+
+
+class MMergeFeedsPrivateInventory(mongo.Document):
+    """The address and link of a private branch (a feed with a parent) as they were when a
+    merge inventoried it. The inventory line in the task log carries placeholders for them,
+    since a private branch's address can hold a reader's access token and the logs travel
+    further than the database; restore_merged_feed reads the real values from here by feed
+    id and the inventory's logged_at. apps/rss_feeds/models.py"""
+
+    feed_id = mongo.IntField()
+    logged_at = mongo.StringField()
+    feed_address = mongo.StringField()
+    feed_link = mongo.StringField()
+
+    meta = {
+        "collection": "merge_feeds_private_inventory",
+        "indexes": [("feed_id", "logged_at")],
+        "allow_inheritance": False,
+    }
+
+    @classmethod
+    def keep(cls, feed, logged_at):
+        return cls.objects.create(
+            feed_id=feed.pk, logged_at=logged_at, feed_address=feed.feed_address, feed_link=feed.feed_link
+        )
+
+    @classmethod
+    def lookup(cls, feed_id, logged_at):
+        return cls.objects(feed_id=feed_id, logged_at=logged_at).first()
+
+
 def merge_feeds_inventory_record(record):
     """Write one merge inventory record as a single JSON line. It goes through the raw
     "newsblur" logger rather than utils.log.info, whose colorizer rewrites "[" and "]" and
@@ -5309,8 +5358,10 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed, recovery=False):
     that reader's tree. That is exactly what a restore needs: the feed row with its original
     id (folder trees and starred stories point at ids), the subscription rows with their
     read state, and where in each reader's sidebar the feed belongs. Feeds branched from the
-    duplicate are listed by id only, since a branch can be a reader's private URL carrying
-    an access token. apps/rss_feeds/models.py
+    duplicate are listed by id only, and a private branch among the two feeds themselves has
+    its address and link replaced by placeholders in the log and kept in
+    MMergeFeedsPrivateInventory instead, since a branch can be a reader's private URL
+    carrying an access token. apps/rss_feeds/models.py
     """
     from django.core import serializers
 
@@ -5327,12 +5378,18 @@ def log_merge_feeds_inventory(original_feed, duplicate_feed, recovery=False):
     emitted_subscriptions = {}
     for role, feed in (("original", original_feed), ("duplicate", duplicate_feed)):
         emitted_subscriptions[role] = 0
+        feed_object = json.decode(serializers.serialize("json", [feed]))[0]
+        if feed.is_private_branch:
+            MMergeFeedsPrivateInventory.keep(feed, merge["logged_at"])
+            feed_object["fields"]["feed_address"] = PRIVATE_FEED_ADDRESS_PLACEHOLDER % feed.pk
+            feed_object["fields"]["feed_link"] = PRIVATE_FEED_LINK_PLACEHOLDER % feed.pk
         merge_feeds_inventory_record(
             {
                 "type": "feed",
                 "role": role,
                 "merge": merge,
-                "object": json.decode(serializers.serialize("json", [feed]))[0],
+                "object": feed_object,
+                "private": feed.is_private_branch,
                 "stories": MStory.objects(story_feed_id=feed.pk).count(),
                 "starred": MStarredStory.objects(story_feed_id=feed.pk).count(),
             }
@@ -5793,15 +5850,15 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
 
     logging.info(
         " ---> Feed: [%s - %s] %s - %s"
-        % (original_feed_id, duplicate_feed_id, original_feed, original_feed.feed_link)
+        % (original_feed_id, duplicate_feed_id, original_feed, original_feed.loggable_link)
     )
     logging.info(
         "            Orig ++> %s: (%s subs) %s / %s %s"
         % (
             original_feed.pk,
             original_feed.num_subscribers,
-            original_feed.feed_address,
-            original_feed.feed_link,
+            original_feed.loggable_address,
+            original_feed.loggable_link,
             " [B: %s]" % original_feed.branch_from_feed.pk if original_feed.branch_from_feed else "",
         )
     )
@@ -5810,8 +5867,8 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         % (
             duplicate_feed.pk,
             duplicate_feed.num_subscribers,
-            duplicate_feed.feed_address,
-            duplicate_feed.feed_link,
+            duplicate_feed.loggable_address,
+            duplicate_feed.loggable_link,
             " [B: %s]" % duplicate_feed.branch_from_feed.pk if duplicate_feed.branch_from_feed else "",
         )
     )
