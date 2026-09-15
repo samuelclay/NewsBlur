@@ -519,15 +519,29 @@ class Feed(models.Model):
         save with update_fields does not recompute the hash). Parking or merging the stale
         twin while another row still owns the hash would leave the collision in place.
         apps/rss_feeds/models.py"""
+        holders = cls.feeds_holding_address(feed_address, feed_link, exclude_ids=exclude_ids)
+        return holders[0] if holders else None
+
+    @classmethod
+    def feeds_holding_address(cls, feed_address, feed_link, exclude_ids=()):
+        """Every feed a save with this address and link would collide with, the holder of the
+        canonical hash first and then the feeds carrying the exact address and link under a
+        stale hash, by id. A restore parks and folds in all of them: a stale twin left at
+        the restored address would collide with the restored feed on its own next full save
+        and, with more readers, merge the restored feed away. apps/rss_feeds/models.py"""
         canonical_hash = cls.generate_hash_address_and_link(feed_address or "", feed_link or "")
-        by_hash = cls.objects.filter(hash_address_and_link=canonical_hash).exclude(pk__in=exclude_ids)
-        holder = by_hash.order_by("pk").first()
-        if holder:
-            return holder
-        by_address = cls.objects.filter(feed_address=feed_address, feed_link=feed_link).exclude(
-            pk__in=exclude_ids
+        by_hash = list(
+            cls.objects.filter(hash_address_and_link=canonical_hash)
+            .exclude(pk__in=exclude_ids)
+            .order_by("pk")
         )
-        return by_address.order_by("pk").first()
+        seen = [feed.pk for feed in by_hash] + list(exclude_ids)
+        by_address = list(
+            cls.objects.filter(feed_address=feed_address, feed_link=feed_link)
+            .exclude(pk__in=seen)
+            .order_by("pk")
+        )
+        return by_hash + by_address
 
     @classmethod
     def index_all_for_search(cls, offset=0, subscribers=2):

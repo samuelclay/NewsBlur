@@ -2445,6 +2445,64 @@ class Test_RestoreMergedFeedCommand(TestCase):
 
         return lost_id, readded.pk, acquired
 
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_restore_that_finds_the_row_recreated_under_the_lock_leaves_it_alone(
+        self, mock_count, mock_redis
+    ):
+        """Two invocations both pass the existence check; the second waits on the lock while
+        the first recreates the row and the recovery goes on changing it. Deserializing the
+        snapshot over that row would undo those changes, so the second checks again under
+        the lock and only restores what is still missing."""
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/twice.xml",
+            feed_link="https://www.example.com/twice",
+            feed_title="Example | Twice",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-twice",
+            feed_link="https://www.example.com/twice",
+            feed_title="Example | Twice",
+        )
+        reader = User.objects.create_user("twice", "twice@example.com", "password")
+        UserSubscription.objects.create(user=reader, feed=lost)
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id, lost_address, lost_link = lost.pk, lost.feed_address, lost.feed_link
+        lost.delete()
+
+        def lock_factory(name, **kwargs):
+            lock = MagicMock()
+            lock.name = name
+
+            def acquire(blocking=True):
+                if name == "merge_feeds:%s" % lost_id and not Feed.objects.filter(pk=lost_id).exists():
+                    # The other invocation recreated the row while this one waited, and the
+                    # recovery has already given it a new title.
+                    Feed.objects.create(
+                        pk=lost_id,
+                        feed_address=lost_address,
+                        feed_link=lost_link,
+                        feed_title="Retitled by the other run",
+                    )
+                return True
+
+            lock.acquire.side_effect = acquire
+            return lock
+
+        mock_redis.Redis.return_value.lock.side_effect = lock_factory
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        self.assertEqual(Feed.objects.get(pk=lost_id).feed_title, "Retitled by the other run")
+        self.assertTrue(UserSubscription.objects.filter(user=reader, feed_id=lost_id).exists())
+
     def test_the_re_added_feed_is_parked_and_folded_in_under_both_merge_locks(self):
         """Parking the re-added feed's hash and merging it into the restored row happen
         under the locks of both ids, taken once in id order; the fold-in's own merge_feeds
@@ -2917,9 +2975,11 @@ class Test_RestoreMergedFeedCommand(TestCase):
     ):
         """Two feeds carry the restored feed's address and link: an older one under a stale
         hash (its address was saved with update_fields) and a re-added one under the
-        canonical hash. Parking the older one would leave the canonical hash occupied and
-        the restored row's insert colliding on every retry; the hash holder is the one to
-        park, as Feed.save would pick it."""
+        canonical hash. The hash holder is parked first, as Feed.save would pick it, so the
+        restored row's insert never collides, and the stale twin is parked and folded in
+        too: left behind, its own next full save would collide with the restored feed and,
+        with more readers, the ordinary merge would delete the restored feed and its
+        recovered stories."""
         from django.core.management import call_command
 
         from apps.rss_feeds.models import log_merge_feeds_inventory
@@ -2944,20 +3004,39 @@ class Test_RestoreMergedFeedCommand(TestCase):
             feed_link="https://www.example.com/twins",
             feed_title="Stale",
         )
-        Feed.objects.filter(pk=stale_twin.pk).update(feed_address=lost_address)
-        stale_hash = Feed.objects.get(pk=stale_twin.pk).hash_address_and_link
+        Feed.objects.filter(pk=stale_twin.pk).update(feed_address=lost_address, num_subscribers=50)
         readded = Feed.objects.create(
             feed_address=lost_address, feed_link="https://www.example.com/twins", feed_title="Re-added"
         )
         self.assertEqual(readded.hash_address_and_link, lost_hash)
         self.assertLess(stale_twin.pk, readded.pk)
+        MStory(
+            story_feed_id=readded.pk,
+            story_guid="twins-recovered",
+            story_title="Recovered",
+            story_permalink="https://www.example.com/twins/1",
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(lambda: MStory.objects(story_guid="twins-recovered").delete())
+        # A fetch worker loaded the heavier stale twin before the restore ran.
+        workers_copy_of_twin = Feed.objects.get(pk=stale_twin.pk)
 
         call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
 
         restored = Feed.objects.get(pk=lost_id)
         self.assertEqual(restored.hash_address_and_link, lost_hash)
         self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
-        self.assertEqual(Feed.objects.get(pk=stale_twin.pk).hash_address_and_link, stale_hash)
+        self.assertFalse(Feed.objects.filter(pk=stale_twin.pk).exists())
+        self.assertEqual(MStory.objects(story_guid="twins-recovered").first().story_feed_id, lost_id)
+
+        # The worker's full save of its copy neither recreates the twin nor merges the
+        # restored feed away; it resolves to the restored feed.
+        saved = workers_copy_of_twin.save()
+
+        self.assertEqual(saved.pk, lost_id)
+        self.assertFalse(Feed.objects.filter(pk=stale_twin.pk).exists())
+        self.assertTrue(Feed.objects.filter(pk=lost_id).exists())
+        self.assertEqual(MStory.objects(story_guid="twins-recovered").first().story_feed_id, lost_id)
 
 
 class Test_MergeFeedsLock(TestCase):
