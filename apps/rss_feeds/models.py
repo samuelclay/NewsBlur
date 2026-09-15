@@ -402,7 +402,22 @@ class Feed(models.Model):
             # the row before the marker was there, and a save that starts after the marker is
             # committed sees it. Either way the marker survives the save.
             with transaction.atomic():
-                parking_hash = self.parking_hash_on_disk(kwargs.get("update_fields"))
+                exists, parking_hash = self.row_on_disk(kwargs.get("update_fields"))
+                if not exists:
+                    # The row went away while this instance was held: a merge folded the feed
+                    # into another one (restore_merged_feed folding in a parked feed, say). A
+                    # plain save would insert the deleted id again, and the next fetch would
+                    # find that row instead of the survivor and write stories to a feed whose
+                    # readers have moved on. Follow the merge's redirect instead.
+                    survivor = Feed.get_by_id(self.pk)
+                    logging.debug(
+                        " ***> Feed %s was deleted while a save was pending, %s"
+                        % (
+                            self.pk,
+                            "following its redirect to %s" % survivor.pk if survivor else "no redirect",
+                        )
+                    )
+                    return survivor
                 if parking_hash:
                     # restore_merged_feed parked this row while it brings the original feed
                     # back. The marker stays through every save, an address change included
@@ -452,23 +467,29 @@ class Feed(models.Model):
 
         return self
 
-    def parking_hash_on_disk(self, update_fields=None):
-        """The restore-parked- placeholder this row carries on disk while restore_merged_feed
-        brings the original feed back, or None. Only looked up by a save that would write
-        the hash column, since one with update_fields leaves it alone. Locks the row for the
-        rest of the save's transaction, whether or not it is parked, so a parking UPDATE
-        cannot slip in between this lookup and the write. apps/rss_feeds/models.py"""
+    def row_on_disk(self, update_fields=None):
+        """Whether this feed's row still exists (True as well for a new instance that is
+        about to be inserted), and the restore-parked- placeholder it carries while
+        restore_merged_feed brings the original feed back (or None). Only
+        looked up by a save that would write the hash column, since one with update_fields
+        leaves it alone and fails harmlessly on a missing row. Locks the row for the rest of
+        the save's transaction, whether or not it is parked, so a parking UPDATE cannot slip
+        in between this lookup and the write. apps/rss_feeds/models.py"""
         if not self.pk or (update_fields is not None and "hash_address_and_link" not in update_fields):
-            return None
-        stored_hash = (
+            return True, None
+        rows = list(
             Feed.objects.select_for_update()
             .filter(pk=self.pk)
             .values_list("hash_address_and_link", flat=True)
-            .first()
         )
+        if not rows:
+            # A new instance built with a chosen id (fixtures do this) is meant to be
+            # inserted; only a row this instance was loaded from can have vanished.
+            return self._state.adding, None
+        stored_hash = rows[0]
         if stored_hash and stored_hash.startswith(RESTORE_PARKED_HASH_PREFIX):
-            return stored_hash
-        return None
+            return True, stored_hash
+        return True, None
 
     def fold_parked_feed_into_its_restore_target(self, parking_hash):
         """After a save of a parked row: fold it into the feed restore_merged_feed parked it
@@ -2064,6 +2085,9 @@ class Feed(models.Model):
                 #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                 if existing_story.story_hash != story.get("story_hash"):
                     self.update_story_with_new_guid(existing_story, story.get("guid"))
+                    # The migration walked every recent reader; the lease is checked again
+                    # before this story's own write.
+                    renew_merge_feeds_locks()
 
                 if verbose:
                     logging.debug(
@@ -2159,7 +2183,9 @@ class Feed(models.Model):
 
         old_hash = existing_story.story_hash
         new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
+        # Walks every recent reader of the feed, renewing the fetch lease as it goes.
         RUserStory.switch_hash(feed=self, old_hash=old_hash, new_hash=new_hash)
+        renew_merge_feeds_locks()
 
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk, story_hash=old_hash)
         for story in shared_stories:

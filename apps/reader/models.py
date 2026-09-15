@@ -55,7 +55,7 @@ from apps.reader.metrics import (
     normalize_reader_metrics_read_filter,
     normalize_reader_metrics_source,
 )
-from apps.rss_feeds.models import DuplicateFeed, Feed, MStory
+from apps.rss_feeds.models import DuplicateFeed, Feed, MStory, renew_merge_feeds_locks
 from apps.rss_feeds.tasks import NewFeeds
 from utils import json_functions as json
 from utils import log as logging
@@ -2640,6 +2640,10 @@ class RUserStory:
         usersubs = UserSubscription.objects.filter(feed_id=feed.pk, last_read_date__gte=feed.unread_cutoff)
         logging.info(" ---> ~SB%s usersubs~SN to switch read story hashes..." % len(usersubs))
         for sub in usersubs:
+            # One story of a popular feed can outlast the fetch lease in here; keep the lock
+            # the fetch holds on the feed, or stop before writing under a lost one. A no-op
+            # outside a lock. apps/reader/models.py
+            renew_merge_feeds_locks()
             rs_key = "RS:%s:%s" % (sub.user.pk, feed.pk)
             read = r.sismember(rs_key, old_hash)
             if read:
