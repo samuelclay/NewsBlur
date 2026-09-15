@@ -2682,6 +2682,55 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertEqual(restored.branch_from_feed_id, grandparent.pk)
         self.assertFalse(Feed.objects.filter(pk=holder.pk).exists())
 
+    @patch("apps.rss_feeds.models.MStory.index_story_for_search")
+    @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+    @patch("apps.rss_feeds.models.MStory.remove_from_redis")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_trim_never_deletes_a_story_a_restore_moved_since_it_was_loaded(self, mock_redis, *mocks):
+        """The fetch trims old stories after it let go of the merge lock. A restore moving
+        the feed's stories keeps each document's id, so a trim that loaded a story before
+        the move would delete the moved copy by id. Each deletion is conditional on the
+        story still being the feed's."""
+        from apps.rss_feeds.models import move_one_story
+
+        trimmed = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/trim.xml",
+            feed_link="https://www.example.com/trim",
+            feed_title="Trimmed",
+        )
+        elsewhere = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/trim-elsewhere.xml",
+            feed_link="https://www.example.com/trim",
+            feed_title="Elsewhere",
+        )
+        for number, guid in enumerate(["trim-oldest", "trim-older", "trim-newest"]):
+            MStory(
+                story_feed_id=trimmed.pk,
+                story_guid=guid,
+                story_title=guid,
+                story_permalink="https://www.example.com/trim/%s" % guid,
+                story_date=datetime.datetime(2026, 9, 1 + number),
+            ).save()
+        self.addCleanup(lambda: MStory.objects(story_feed_id__in=[trimmed.pk, elsewhere.pk]).delete())
+        original_delete = MStory.delete_if_still_in_feed
+
+        def moved_between_lookup_and_delete(story, feed_id):
+            if story.story_guid == "trim-oldest":
+                # The restore moves the story after the trim loaded it and before it deletes.
+                move_one_story(MStory.objects.get(id=story.id), trimmed.pk, elsewhere.pk, elsewhere)
+            return original_delete(story, feed_id)
+
+        with patch.object(MStory, "delete_if_still_in_feed", moved_between_lookup_and_delete):
+            removed = trimmed.trim_feed(cutoff=1)
+
+        self.assertEqual(removed, 1)
+        self.assertEqual([s.story_guid for s in MStory.objects(story_feed_id=trimmed.pk)], ["trim-newest"])
+        moved = MStory.objects(story_feed_id=elsewhere.pk).first()
+        self.assertEqual(moved.story_guid, "trim-oldest")
+        self.assertEqual(moved.story_hash, MStory.feed_guid_hash_unsaved(elsewhere.pk, "trim-oldest"))
+        self.assertFalse(MStory.objects(story_guid="trim-older").count())
+
     @patch("apps.rss_feeds.models.MStory.sync_redis")
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
@@ -3278,6 +3327,66 @@ class Test_MergeFeedsLock(TestCase):
         self.assertGreaterEqual(waited, 0.8)
         self.assertLess(waited, 3)
         self.assertFalse(table.held("merge_feeds:10"))
+
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_long_saved_story_migration_renews_the_merge_leases(self, mock_redis):
+        """After the subscription loop, a merge walks every saved story of the duplicate; on
+        a popular feed that alone can outlast the ten-minute lease. The walk renews the
+        locks per record, so the gap between renewals stays well inside the lease."""
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import (
+            MERGE_FEEDS_LOCK_TIMEOUT_SECONDS,
+            MStarredStory,
+            merge_feeds_lock,
+        )
+
+        old = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/starred-old.xml",
+            feed_link="https://www.example.com/starred",
+            feed_title="Old",
+        )
+        new = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/starred-new.xml",
+            feed_link="https://www.example.com/starred",
+            feed_title="New",
+        )
+        for number in range(3):
+            MStarredStory(
+                user_id=1,
+                story_feed_id=old.pk,
+                story_guid="starred-%s" % number,
+                story_title="Starred %s" % number,
+                story_permalink="https://www.example.com/starred/%s" % number,
+                story_date=datetime.datetime.utcnow(),
+                starred_date=datetime.datetime.utcnow(),
+            ).save()
+        self.addCleanup(lambda: MStarredStory.objects(story_feed_id__in=[old.pk, new.pk]).delete())
+        clock = {"now": 9000.0}
+        events = []
+        locks = self._recording_locks(mock_redis)
+        original_save = MStarredStory.save
+
+        def slow_save(story, *args, **kwargs):
+            clock["now"] += 250
+            return original_save(story, *args, **kwargs)
+
+        for lock in locks.values():
+            pass
+        with patch.object(feed_models, "_merge_lock_clock", lambda: clock["now"]), patch.object(
+            MStarredStory, "save", slow_save
+        ):
+            with merge_feeds_lock(old.pk, new.pk):
+                for lock in locks.values():
+                    lock.extend.side_effect = lambda *args, **kwargs: events.append(clock["now"]) or True
+                events.append(clock["now"])
+                MStarredStory.switch_feed(new.pk, old.pk)
+                events.append(clock["now"])
+
+        self.assertEqual(MStarredStory.objects(story_feed_id=new.pk).count(), 3)
+        self.assertGreaterEqual(clock["now"] - 9000.0, 750)
+        self.assertGreater(len(events), 2)
+        widest_gap = max(later - earlier for earlier, later in zip(events, events[1:]))
+        self.assertLess(widest_gap, MERGE_FEEDS_LOCK_TIMEOUT_SECONDS)
 
     @patch("apps.rss_feeds.models.redis")
     def test_a_request_below_a_held_lock_is_tried_once_and_never_waited_for(self, mock_redis):

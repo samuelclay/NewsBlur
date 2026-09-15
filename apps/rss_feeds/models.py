@@ -3967,6 +3967,19 @@ class MStory(mongo.Document):
 
         super(MStory, self).delete(*args, **kwargs)
 
+    def delete_if_still_in_feed(self, feed_id):
+        """Delete this story only while it still belongs to feed_id. A merge or restore moving
+        a feed's stories keeps each document's id and changes its feed and hash, so a trim
+        that loaded the story before the move would otherwise delete the moved copy by id
+        and leave its new Redis and search entries behind. Returns whether it was deleted.
+        apps/rss_feeds/models.py"""
+        deleted = MStory.objects(id=self.id, story_feed_id=feed_id).delete()
+        if deleted:
+            # The loaded copy still carries the old hash, which is what the entries are under.
+            self.remove_from_redis()
+            self.remove_from_search_index()
+        return bool(deleted)
+
     def publish_to_subscribers(self):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
@@ -4085,7 +4098,11 @@ class MStory(mongo.Document):
                     shared_story_count += 1
                     extra_stories_count -= 1
                     continue
-                story.delete()
+                # Conditional on the story still being this feed's: the trim runs outside the
+                # merge lock, and a restore can have moved the story to another feed since it
+                # was loaded here.
+                if not story.delete_if_still_in_feed(feed_id):
+                    extra_stories_count -= 1
             if verbose:
                 existing_story_count = cls.objects(story_feed_id=feed_id).count()
                 logging.debug(
@@ -4791,6 +4808,8 @@ class MStarredStory(mongo.DynamicDocument):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for story in starred_stories:
+                # A popular feed's saved stories take a while; keep the merge's locks alive.
+                renew_merge_feeds_locks()
                 story.story_feed_id = original_feed_id
                 # Update story_hash to reflect new feed_id
                 story.story_hash = story.feed_guid_hash
@@ -5013,6 +5032,7 @@ class MStarredStoryCounts(mongo.Document):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for dup_count in duplicate_counts:
+                renew_merge_feeds_locks()
                 # Find or create matching count for original feed
                 try:
                     orig_count = cls.objects.get(
@@ -5913,7 +5933,9 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         renew_merge_feeds_locks()
         user_sub.switch_feed(original_feed, duplicate_feed)
 
-    # Switch starred stories and their counts to the new feed
+    # Switch starred stories and their counts to the new feed. Each of these walks renews
+    # the merge's locks per record; the lease is checked again before every phase that
+    # deletes or rewrites something, so nothing is written under a lease that ran out.
     MStarredStory.switch_feed(original_feed.pk, duplicate_feed.pk)
     MStarredStoryCounts.switch_feed(original_feed.pk, duplicate_feed.pk)
 
@@ -5934,6 +5956,7 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         # the restored feed rather than being deleted, whatever a fetch worker adds meanwhile.
         move_stories_between_feeds(duplicate_feed.pk, original_feed.pk)
 
+    renew_merge_feeds_locks()
     # Clear Redis story hashes before bulk-deleting stories, since queryset
     # .delete() bypasses the instance MStory.delete() / remove_from_redis().
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -5999,6 +6022,7 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         Feed.objects.filter(pk=original_feed.pk).update(branch_from_feed=None)
     if parked_duplicate:
         move_stories_between_feeds(duplicate_feed.pk, original_feed.pk)
+    renew_merge_feeds_locks()
     if duplicate_feed.pk != original_feed.pk:
         duplicate_feed.delete()
     else:
@@ -6006,6 +6030,7 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
     logging.debug(" ---> Deleted duplicate feed: %s/%s" % (duplicate_feed, duplicate_feed_id))
     if not keep_parent:
         original_feed.branch_from_feed = None
+    renew_merge_feeds_locks()
     original_feed.count_subscribers()
     try:
         original_feed.save()
@@ -6020,6 +6045,7 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         )
     logging.debug(" ---> Now original subscribers: %s" % (original_feed.num_subscribers))
 
+    renew_merge_feeds_locks()
     MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
 
     return original_feed_id
