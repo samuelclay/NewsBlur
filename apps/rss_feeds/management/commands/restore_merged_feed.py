@@ -31,6 +31,7 @@ from django.db import transaction
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import (
     MERGE_FEEDS_INVENTORY_PREFIX,
+    RESTORE_PARKED_HASH_PREFIX,
     DuplicateFeed,
     Feed,
     FeedData,
@@ -164,7 +165,7 @@ def parking_hash(parked_id, feed_id):
     """The placeholder hash a re-added feed carries while feed_id is being restored. It names
     the target, so a later restore for another feed at the same address (different link)
     never picks up this row."""
-    return "restore-parked-%s-for-%s" % (parked_id, feed_id)
+    return "%s%s-for-%s" % (RESTORE_PARKED_HASH_PREFIX, parked_id, feed_id)
 
 
 def parked_feed_for(feed_id):
@@ -172,7 +173,7 @@ def parked_feed_for(feed_id):
     # The indexed prefix narrows the scan before the suffix picks this restore's row.
     return (
         Feed.objects.filter(
-            hash_address_and_link__startswith="restore-parked-",
+            hash_address_and_link__startswith=RESTORE_PARKED_HASH_PREFIX,
             hash_address_and_link__endswith="-for-%s" % feed_id,
         )
         .exclude(pk=feed_id)
@@ -190,14 +191,13 @@ def fold_in_parked_feed(feed_id, parked, log=print):
 
 
 def feed_holding_address(fields, feed_id):
-    """The feed, other than feed_id, that already holds the restored feed's address: by the
-    canonical hash, or by the exact address and link when its stored hash is stale (a save
-    with update_fields does not recompute it), the two lookups Feed.save makes on a
-    collision."""
-    holders = Feed.objects.filter(
-        hash_address_and_link=fields["hash_address_and_link"]
-    ) | Feed.objects.filter(feed_address=fields.get("feed_address"), feed_link=fields.get("feed_link"))
-    return holders.exclude(pk=feed_id).order_by("pk").first()
+    """The feed, other than feed_id, that already holds the restored feed's address: the
+    holder of the canonical hash, else a feed carrying the exact address and link under a
+    stale hash, the order Feed.save looks them up in. Parking the stale twin while another
+    row owns the hash would leave the restored row's insert colliding."""
+    return Feed.feed_holding_address(
+        fields.get("feed_address"), fields.get("feed_link"), exclude_ids=[feed_id]
+    )
 
 
 def stage_restored_feed(feed_object, stale_redirects, collision, log=print):
