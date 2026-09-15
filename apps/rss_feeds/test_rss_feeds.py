@@ -2413,6 +2413,115 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertTrue(Feed.objects.filter(pk=lost_id).exists())
         self.assertFalse(Feed.objects.filter(pk=readded_id).exists())
 
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_parked_feed_whose_address_a_worker_changed_still_folds_in_with_its_stories(
+        self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
+    ):
+        """A fetch worker saves the parked feed from outside the merge lock (a redirect it
+        followed, the Open RSS migration) with an address nobody holds. Recomputed, the hash
+        would save cleanly and erase the parking marker, and the fold-in would then delete
+        the feed's stories instead of moving them. The marker stays through the save."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import (
+            fold_in_parked_feed,
+            parked_feed_for,
+            parking_hash,
+        )
+
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-moved",
+            feed_link="https://www.example.com/moved",
+            feed_title="Example | Moved",
+        )
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-moved-copy",
+            feed_link="https://www.example.com/moved",
+            feed_title="Example | Moved",
+        )
+        Feed.objects.filter(pk=parked.pk).update(
+            feed_address=restored.feed_address, hash_address_and_link=parking_hash(parked.pk, restored.pk)
+        )
+        parked = Feed.objects.get(pk=parked.pk)
+        MStory(
+            story_feed_id=parked.pk,
+            story_guid="fetched-before-the-redirect",
+            story_title="Fetched while parked",
+            story_permalink="https://www.example.com/moved/1",
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(lambda: MStory.objects(story_guid="fetched-before-the-redirect").delete())
+
+        # The publisher moved the feed; the worker persists the new address with a full save.
+        parked.feed_address = "https://www.example.com/webfeed/rss/rss-moved-elsewhere"
+        saved = parked.save()
+
+        self.assertEqual(saved.pk, parked.pk)
+        parked.refresh_from_db()
+        self.assertEqual(parked.feed_address, "https://www.example.com/webfeed/rss/rss-moved-elsewhere")
+        self.assertEqual(parked.hash_address_and_link, parking_hash(parked.pk, restored.pk))
+        self.assertEqual(parked_feed_for(restored.pk).pk, parked.pk)
+
+        fold_in_parked_feed(restored.pk, parked, log=lambda message: None)
+
+        self.assertFalse(Feed.objects.filter(pk=parked.pk).exists())
+        self.assertEqual(
+            MStory.objects(story_guid="fetched-before-the-redirect").first().story_feed_id, restored.pk
+        )
+
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_the_holder_of_the_canonical_hash_is_parked_ahead_of_a_stale_hash_twin(
+        self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
+    ):
+        """Two feeds carry the restored feed's address and link: an older one under a stale
+        hash (its address was saved with update_fields) and a re-added one under the
+        canonical hash. Parking the older one would leave the canonical hash occupied and
+        the restored row's insert colliding on every retry; the hash holder is the one to
+        park, as Feed.save would pick it."""
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import log_merge_feeds_inventory
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/twins.xml",
+            feed_link="https://www.example.com/twins",
+            feed_title="Example | Twins",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-twins",
+            feed_link="https://www.example.com/twins",
+            feed_title="Example | Twins",
+        )
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id, lost_address, lost_hash = lost.pk, lost.feed_address, lost.hash_address_and_link
+        lost.delete()
+        stale_twin = Feed.objects.create(
+            feed_address=lost_address + "?stale",
+            feed_link="https://www.example.com/twins",
+            feed_title="Stale",
+        )
+        Feed.objects.filter(pk=stale_twin.pk).update(feed_address=lost_address)
+        stale_hash = Feed.objects.get(pk=stale_twin.pk).hash_address_and_link
+        readded = Feed.objects.create(
+            feed_address=lost_address, feed_link="https://www.example.com/twins", feed_title="Re-added"
+        )
+        self.assertEqual(readded.hash_address_and_link, lost_hash)
+        self.assertLess(stale_twin.pk, readded.pk)
+
+        call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        restored = Feed.objects.get(pk=lost_id)
+        self.assertEqual(restored.hash_address_and_link, lost_hash)
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
+        self.assertEqual(Feed.objects.get(pk=stale_twin.pk).hash_address_and_link, stale_hash)
+
 
 class Test_MergeFeedsLock(TestCase):
     @patch("apps.rss_feeds.models.merge_feeds_locked", return_value=11)
@@ -2542,6 +2651,48 @@ class Test_MergeFeedsLock(TestCase):
         self.assertEqual(lock.return_value.release.call_count, len(pair) + len(trio))
         mock_locked.assert_called_once_with(survivor.pk, duplicate.pk, True, False)
         self.assertEqual(feed_models._merge_locks_held(), set())
+
+    def test_the_address_lookup_prefers_the_hash_holder_over_a_stale_hash_twin(self):
+        """Feed.save merges into the holder of the canonical hash and only falls back to a
+        row with the same address and link under a stale hash; the lookup the merge
+        predictor and the restore share does the same, whatever the row order."""
+        stale_twin = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/holder.xml?stale",
+            feed_link="https://www.example.com/holder",
+            feed_title="Stale",
+        )
+        Feed.objects.filter(pk=stale_twin.pk).update(feed_address="https://rss.example.com/lineup/holder.xml")
+        self.assertEqual(
+            Feed.feed_holding_address(
+                "https://rss.example.com/lineup/holder.xml", "https://www.example.com/holder"
+            ).pk,
+            stale_twin.pk,
+        )
+        holder = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/holder.xml",
+            feed_link="https://www.example.com/holder",
+            feed_title="Holder",
+        )
+        self.assertGreater(holder.pk, stale_twin.pk)
+
+        found = Feed.feed_holding_address(
+            "https://rss.example.com/lineup/holder.xml", "https://www.example.com/holder"
+        )
+
+        self.assertEqual(found.pk, holder.pk)
+        self.assertEqual(
+            Feed.feed_holding_address(
+                "https://rss.example.com/lineup/holder.xml",
+                "https://www.example.com/holder",
+                exclude_ids=[holder.pk],
+            ).pk,
+            stale_twin.pk,
+        )
+        self.assertIsNone(
+            Feed.feed_holding_address(
+                "https://rss.example.com/lineup/nobody.xml", "https://www.example.com/holder"
+            )
+        )
 
     def test_the_collision_lookup_follows_the_swap_to_the_unbranched_feeds_address(self):
         """When the original is a branch and the duplicate is not, merge_feeds swaps them and
