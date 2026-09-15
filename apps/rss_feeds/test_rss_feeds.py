@@ -1092,6 +1092,71 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_save_that_read_the_row_before_it_was_parked_cannot_erase_the_marker(self, mock_redis):
+        """restore_merged_feed parks the re-added feed while a fetch worker's save of that
+        same row sits between its marker lookup and its write. The lookup locks the row for
+        the save's transaction, so the parking UPDATE waits for the save to commit and lands
+        on top of it; the other order, the save sees the marker. Real threads and real
+        commits, so the row lock is what is under test."""
+        import threading
+        import time
+
+        from django.db import connection, transaction
+
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
+
+        racing = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-racing",
+            feed_link="https://www.example.com/racing",
+            feed_title="Racing",
+        )
+        marker = parking_hash(racing.pk, 987654)
+        looked_up, staging_started = threading.Event(), threading.Event()
+        failures = []
+        original_lookup = Feed.parking_hash_on_disk
+
+        def lookup_then_pause(feed, update_fields=None):
+            stored = original_lookup(feed, update_fields)
+            looked_up.set()
+            staging_started.wait(5)
+            time.sleep(0.5)
+            return stored
+
+        def worker():
+            try:
+                row = Feed.objects.get(pk=racing.pk)
+                row.feed_address = "https://www.example.com/webfeed/rss/rss-racing-moved"
+                with patch.object(Feed, "parking_hash_on_disk", lookup_then_pause):
+                    row.save()
+            except Exception as e:
+                failures.append(("worker", e))
+            finally:
+                connection.close()
+
+        def staging():
+            try:
+                looked_up.wait(5)
+                staging_started.set()
+                with transaction.atomic():
+                    Feed.objects.filter(pk=racing.pk).update(hash_address_and_link=marker)
+            except Exception as e:
+                failures.append(("staging", e))
+            finally:
+                connection.close()
+
+        threads = [threading.Thread(target=worker), threading.Thread(target=staging)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(15)
+
+        self.assertEqual(failures, [])
+        self.assertFalse(any(thread.is_alive() for thread in threads))
+        row = Feed.objects.get(pk=racing.pk)
+        self.assertEqual(row.feed_address, "https://www.example.com/webfeed/rss/rss-racing-moved")
+        self.assertEqual(row.hash_address_and_link, marker)
+
     def test_a_parked_feed_saved_by_a_worker_still_folds_into_the_restored_feed(self):
         """While restore_merged_feed has the re-added feed parked, an ordinary save of that
         feed (a fetch worker, say) recomputes its hash, collides, and reaches merge_feeds
@@ -2423,12 +2488,9 @@ class Test_RestoreMergedFeedCommand(TestCase):
         """A fetch worker saves the parked feed from outside the merge lock (a redirect it
         followed, the Open RSS migration) with an address nobody holds. Recomputed, the hash
         would save cleanly and erase the parking marker, and the fold-in would then delete
-        the feed's stories instead of moving them. The marker stays through the save."""
-        from apps.rss_feeds.management.commands.restore_merged_feed import (
-            fold_in_parked_feed,
-            parked_feed_for,
-            parking_hash,
-        )
+        the feed's stories instead of moving them. The marker stays through the save, which
+        folds the row into the feed its marker names, stories and all."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
 
         restored = Feed.objects.create(
             feed_address="https://www.example.com/webfeed/rss/rss-moved",
@@ -2457,18 +2519,101 @@ class Test_RestoreMergedFeedCommand(TestCase):
         parked.feed_address = "https://www.example.com/webfeed/rss/rss-moved-elsewhere"
         saved = parked.save()
 
-        self.assertEqual(saved.pk, parked.pk)
-        parked.refresh_from_db()
-        self.assertEqual(parked.feed_address, "https://www.example.com/webfeed/rss/rss-moved-elsewhere")
-        self.assertEqual(parked.hash_address_and_link, parking_hash(parked.pk, restored.pk))
-        self.assertEqual(parked_feed_for(restored.pk).pk, parked.pk)
-
-        fold_in_parked_feed(restored.pk, parked, log=lambda message: None)
-
+        self.assertEqual(saved.pk, restored.pk)
         self.assertFalse(Feed.objects.filter(pk=parked.pk).exists())
         self.assertEqual(
             MStory.objects(story_guid="fetched-before-the-redirect").first().story_feed_id, restored.pk
         )
+
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_parked_feed_stays_parked_for_the_rerun_while_its_restore_target_is_missing(self, mock_redis):
+        """A restore interrupted before the restored row was recreated leaves the re-added
+        feed parked; a save of it meanwhile keeps the marker and folds nothing, so the rerun
+        finds the row by the marker and finishes the recovery."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import (
+            parked_feed_for,
+            parking_hash,
+        )
+
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-waiting",
+            feed_link="https://www.example.com/waiting",
+            feed_title="Waiting",
+        )
+        Feed.objects.filter(pk=parked.pk).update(hash_address_and_link=parking_hash(parked.pk, 987654))
+        parked = Feed.objects.get(pk=parked.pk)
+
+        parked.feed_address = "https://www.example.com/webfeed/rss/rss-waiting-elsewhere"
+        saved = parked.save()
+
+        self.assertEqual(saved.pk, parked.pk)
+        parked.refresh_from_db()
+        self.assertEqual(parked.feed_address, "https://www.example.com/webfeed/rss/rss-waiting-elsewhere")
+        self.assertEqual(parked.hash_address_and_link, parking_hash(parked.pk, 987654))
+        self.assertEqual(parked_feed_for(987654).pk, parked.pk)
+        mock_redis.Redis.return_value.lock.assert_not_called()
+
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_parked_feed_redirected_onto_another_feeds_address_still_folds_into_its_restore_target(
+        self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
+    ):
+        """While parked, the feed followed a publisher's redirect onto an address a third
+        feed already owns. Its save folds it into the feed named in its marker, the one its
+        readers subscribed to, not into the owner of its new address; the third feed keeps
+        its address, and the redirect the merge leaves behind carries only the parked id."""
+        from apps.reader.models import UserSubscriptionFolders
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
+        from apps.rss_feeds.models import DuplicateFeed
+
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-target",
+            feed_link="https://www.example.com/target",
+            feed_title="Example | Target",
+        )
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-target-copy",
+            feed_link="https://www.example.com/target",
+            feed_title="Example | Target",
+        )
+        Feed.objects.filter(pk=parked.pk).update(
+            feed_address=restored.feed_address, hash_address_and_link=parking_hash(parked.pk, restored.pk)
+        )
+        parked = Feed.objects.get(pk=parked.pk)
+        elsewhere = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-elsewhere",
+            feed_link="https://www.example.com/target",
+            feed_title="Elsewhere",
+        )
+        MStory(
+            story_feed_id=parked.pk,
+            story_guid="fetched-then-redirected",
+            story_title="Fetched while parked",
+            story_permalink="https://www.example.com/target/1",
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(lambda: MStory.objects(story_guid="fetched-then-redirected").delete())
+        reader = User.objects.create_user("redirected", "redirected@example.com", "password")
+        UserSubscription.objects.create(user=reader, feed=parked)
+        UserSubscriptionFolders.objects.create(user=reader, folders="[%s]" % parked.pk)
+
+        parked.feed_address = elsewhere.feed_address
+        saved = parked.save()
+
+        self.assertEqual(saved.pk, restored.pk)
+        self.assertFalse(Feed.objects.filter(pk=parked.pk).exists())
+        self.assertTrue(Feed.objects.filter(pk=elsewhere.pk).exists())
+        self.assertEqual(
+            MStory.objects(story_guid="fetched-then-redirected").first().story_feed_id, restored.pk
+        )
+        self.assertTrue(UserSubscription.objects.filter(user=reader, feed=restored).exists())
+        self.assertFalse(UserSubscription.objects.filter(user=reader, feed=elsewhere).exists())
+        redirect = DuplicateFeed.objects.get(duplicate_feed_id=parked.pk)
+        self.assertEqual(redirect.feed_id, restored.pk)
+        self.assertEqual(redirect.duplicate_address, restored.feed_address)
+        self.assertFalse(DuplicateFeed.objects.filter(duplicate_address=elsewhere.feed_address).exists())
 
     @patch("apps.rss_feeds.models.MStory.sync_redis")
     @patch("apps.rss_feeds.models.redis")
@@ -2548,7 +2693,7 @@ class Test_MergeFeedsLock(TestCase):
         mock_locked.assert_any_call(11, 22, True, False)
         from apps.rss_feeds import models as feed_models
 
-        self.assertEqual(feed_models._merge_locks_held(), set())
+        self.assertEqual(feed_models._merge_locks_held(), {})
 
     @patch("apps.rss_feeds.models.redis")
     def test_a_merge_nested_inside_a_merge_does_not_wait_on_its_own_locks(self, mock_redis):
@@ -2575,7 +2720,7 @@ class Test_MergeFeedsLock(TestCase):
             [call.args[0] for call in lock.call_args_list],
             ["merge_feeds:11", "merge_feeds:22", "merge_feeds:33"],
         )
-        self.assertEqual(feed_models._merge_locks_held(), set())
+        self.assertEqual(feed_models._merge_locks_held(), {})
 
     @patch("apps.rss_feeds.models.redis")
     def test_a_lock_taken_before_a_later_one_fails_is_released(self, mock_redis):
@@ -2595,7 +2740,7 @@ class Test_MergeFeedsLock(TestCase):
         first.release.assert_called_once()
         second.release.assert_not_called()
         mock_locked.assert_not_called()
-        self.assertEqual(feed_models._merge_locks_held(), set())
+        self.assertEqual(feed_models._merge_locks_held(), {})
 
     @patch("apps.rss_feeds.models.redis")
     def test_a_collision_on_a_brand_new_feed_does_not_lock_or_raise(self, mock_redis):
@@ -2650,7 +2795,7 @@ class Test_MergeFeedsLock(TestCase):
         lock.return_value.acquire.assert_called_with(blocking=True)
         self.assertEqual(lock.return_value.release.call_count, len(pair) + len(trio))
         mock_locked.assert_called_once_with(survivor.pk, duplicate.pk, True, False)
-        self.assertEqual(feed_models._merge_locks_held(), set())
+        self.assertEqual(feed_models._merge_locks_held(), {})
 
     def test_the_address_lookup_prefers_the_hash_holder_over_a_stale_hash_twin(self):
         """Feed.save merges into the holder of the canonical hash and only falls back to a
@@ -2758,6 +2903,111 @@ class Test_MergeFeedsLock(TestCase):
         self.assertTrue(Feed.objects.filter(pk=survivor.pk).exists())
         mock_shared.assert_called_once_with(survivor.pk, duplicate.pk)
 
+    def _feeds_with_stories(self, slug, count):
+        source = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/%s-source.xml" % slug,
+            feed_link="https://www.example.com/%s" % slug,
+            feed_title="Source",
+        )
+        target = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/%s-target.xml" % slug,
+            feed_link="https://www.example.com/%s" % slug,
+            feed_title="Target",
+        )
+        for number in range(count):
+            MStory(
+                story_feed_id=source.pk,
+                story_guid="%s-%s" % (slug, number),
+                story_title="Story %s" % number,
+                story_permalink="https://www.example.com/%s/%s" % (slug, number),
+                story_date=datetime.datetime.utcnow(),
+            ).save()
+        self.addCleanup(lambda: MStory.objects(story_feed_id__in=[source.pk, target.pk]).delete())
+        return source, target
+
+    def _recording_locks(self, mock_redis, extend_side_effect=None):
+        locks = {}
+
+        def lock_factory(name, **kwargs):
+            lock = MagicMock()
+            lock.name = name
+            lock.acquire.return_value = True
+            if extend_side_effect is not None:
+                lock.extend.side_effect = extend_side_effect
+            locks[name] = lock
+            return lock
+
+        mock_redis.Redis.return_value.lock.side_effect = lock_factory
+        return locks
+
+    @patch("apps.rss_feeds.models.MStory.index_story_for_search")
+    @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.MStory.remove_from_redis")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_long_story_move_renews_the_leases_and_queues_discover_indexing(self, mock_redis, *mocks):
+        """Moving a parked Archive feed's stories can outlast the two-hour lease. The move
+        extends every lock the thread holds as it goes, and leaves the per-story embedding
+        to the discover indexer's own task instead of doing it under the locks."""
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import (
+            MERGE_FEEDS_LOCK_TIMEOUT_SECONDS,
+            merge_feeds_lock,
+            move_stories_between_feeds,
+        )
+
+        source, target = self._feeds_with_stories("lease", 3)
+        Feed.objects.filter(pk=target.pk).update(discover_indexed=True)
+        locks = self._recording_locks(mock_redis)
+
+        with patch.object(feed_models, "MERGE_FEEDS_RENEW_EVERY", 1), patch.object(
+            feed_models.IndexDiscoverStories, "apply_async"
+        ) as mock_queue, patch.object(MStory, "index_story_for_discover") as mock_inline:
+            with merge_feeds_lock(source.pk, target.pk):
+                moved, dropped = move_stories_between_feeds(source.pk, target.pk)
+
+        self.assertEqual((moved, dropped), (3, 0))
+        self.assertEqual(
+            sorted(locks), ["merge_feeds:%s" % feed_id for feed_id in sorted([source.pk, target.pk])]
+        )
+        for lock in locks.values():
+            self.assertEqual(lock.extend.call_count, 3)
+            lock.extend.assert_called_with(MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, replace_ttl=True)
+        mock_inline.assert_not_called()
+        mock_queue.assert_called_once()
+        queued = mock_queue.call_args.kwargs["kwargs"]["story_ids"]
+        self.assertEqual(
+            sorted(queued), sorted(story.story_hash for story in MStory.objects(story_feed_id=target.pk))
+        )
+        self.assertEqual(mock_queue.call_args.kwargs["queue"], "discover_indexer")
+
+    @patch("apps.rss_feeds.models.MStory.index_story_for_search")
+    @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.MStory.remove_from_redis")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_lost_lease_stops_the_move_before_it_touches_a_story(self, mock_redis, *mocks):
+        """When Redis no longer holds the lease (it ran out, another worker took the lock),
+        the move stops rather than going on next to another merge of the same feeds."""
+        from redis.exceptions import LockNotOwnedError
+
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import merge_feeds_lock, move_stories_between_feeds
+
+        source, target = self._feeds_with_stories("lost", 2)
+        self._recording_locks(
+            mock_redis, extend_side_effect=LockNotOwnedError("Cannot extend a lock that's no longer owned")
+        )
+
+        with patch.object(feed_models, "MERGE_FEEDS_RENEW_EVERY", 1):
+            with merge_feeds_lock(source.pk, target.pk):
+                with self.assertRaises(LockError) as raised:
+                    move_stories_between_feeds(source.pk, target.pk)
+
+        self.assertIn("lease was lost", str(raised.exception))
+        self.assertEqual(MStory.objects(story_feed_id=source.pk).count(), 2)
+        self.assertEqual(MStory.objects(story_feed_id=target.pk).count(), 0)
+
     @patch("apps.rss_feeds.models.redis")
     def test_a_request_below_a_held_lock_is_tried_once_and_never_waited_for(self, mock_redis):
         """A worker holding feed 20 that needs feed 10 is the mirror image of a worker holding
@@ -2779,7 +3029,7 @@ class Test_MergeFeedsLock(TestCase):
 
         with merge_feeds_lock(20):
             with merge_feeds_lock(30):
-                self.assertEqual(feed_models._merge_locks_held(), {20, 30})
+                self.assertEqual(set(feed_models._merge_locks_held()), {20, 30})
             locks["merge_feeds:30"].acquire.assert_called_once_with(blocking=True)
             with self.assertRaises(LockError) as raised:
                 with merge_feeds_lock(10):
@@ -2787,9 +3037,9 @@ class Test_MergeFeedsLock(TestCase):
             self.assertIn("not waiting out of id order", str(raised.exception))
             locks["merge_feeds:10"].acquire.assert_called_once_with(blocking=False)
             locks["merge_feeds:10"].release.assert_not_called()
-            self.assertEqual(feed_models._merge_locks_held(), {20})
+            self.assertEqual(set(feed_models._merge_locks_held()), {20})
         locks["merge_feeds:20"].release.assert_called_once()
-        self.assertEqual(feed_models._merge_locks_held(), set())
+        self.assertEqual(feed_models._merge_locks_held(), {})
 
     @patch("apps.rss_feeds.models.redis")
     def test_two_workers_crossing_on_a_nested_lock_do_not_stall_each_other(self, mock_redis):

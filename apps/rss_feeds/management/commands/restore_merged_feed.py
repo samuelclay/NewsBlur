@@ -281,14 +281,6 @@ def restore_feed_from_inventory(
 
     if Feed.objects.filter(pk=feed_id).exists():
         log("feed %s already exists, leaving the row alone" % feed_id)
-        # An earlier run parked the re-added feed and then failed before or during the
-        # merge; finish that first, or its next save would recompute the hash and collide.
-        parked = parked_feed_for(feed_id)
-        if parked:
-            log("feed %s is still parked from an interrupted run, merging it into %s" % (parked.pk, feed_id))
-            if not dry_run:
-                fold_in_parked_feed(feed_id, parked, log=log)
-                counts["collision_merged"] = parked.pk
     else:
         # Similar-feed links are a many-to-many to other feeds that may be gone.
         fields.pop("similar_feeds", None)
@@ -344,6 +336,16 @@ def restore_feed_from_inventory(
             counts["feed_created"] = 1
             if collision:
                 counts["collision_merged"] = collision.pk
+
+    # An earlier run parked a feed for this restore and stopped before merging it, or the
+    # parked feed followed a redirect away from the restored address meanwhile and the
+    # address lookup above no longer sees it; its marker still names this feed.
+    parked = parked_feed_for(feed_id)
+    if parked:
+        log("feed %s is still parked from an interrupted run, merging it into %s" % (parked.pk, feed_id))
+        if not dry_run:
+            fold_in_parked_feed(feed_id, parked, log=log)
+            counts["collision_merged"] = parked.pk
 
     for record in feeddata_records:
         if FeedData.objects.filter(feed_id=feed_id).exists():
