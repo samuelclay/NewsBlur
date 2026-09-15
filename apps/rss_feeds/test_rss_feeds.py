@@ -2348,12 +2348,13 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_capped.assert_called_once_with("feed", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_capped")
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=True)
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
     def test_capped_forbidden_fetch_records_no_error(
-        self, mock_get, mock_random, mock_over_budget, mock_capped
+        self, mock_get, mock_random, mock_over_budget, mock_capped, mock_validate
     ):
         """A fetch that was never attempted because of the credit cap shouldn't poison fetch
         history or back the feed off; it just waits for its next scheduled fetch."""
@@ -2395,13 +2396,14 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_skip.assert_called_once_with("feed", "dormant", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_skip")
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
     @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=True)
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
     def test_dormant_forbidden_fetch_records_no_error(
-        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip
+        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip, mock_validate
     ):
         """Like the credit cap, a fetch skipped for a dormant reader was never attempted, so it
         must not poison fetch history or back the feed off."""
@@ -2453,6 +2455,7 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_skip.assert_called_once_with("feed", "user_budget", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_skip")
     @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=True)
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
@@ -2469,6 +2472,7 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_over_budget,
         mock_users_over,
         mock_skip,
+        mock_validate,
     ):
         from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
 
@@ -2482,6 +2486,55 @@ class Test_ScrapingBeeProxy(TestCase):
         self.assertEqual(result, FEED_ERRHTTP)
         self.assertIsNone(parsed)
         mock_history.assert_not_called()
+
+    @patch("utils.feed_fetcher.RScrapingBee.record_skip")
+    @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=True)
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.proxy_budget_subscriber_ids", return_value=[41, 42])
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_feed_shared_by_active_readers_ignores_the_reader_budget(
+        self, mock_random, mock_subscribers, mock_dormant, mock_over_budget, mock_users_over, mock_skip
+    ):
+        """The per-reader budget exists so one reader's pile of single-subscriber feeds can't
+        drain the pool. A feed with several active readers is the opposite case: one credit
+        serves all of them, so it is never rationed by its readers' budgets. Forum #13832:
+        TMZ (47 active readers) stopped updating because its 20 oldest subscribers had each
+        spent their one-credit share."""
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.active_subscribers = 47
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        self.assertFalse(fetcher.should_skip_paid_proxy())
+        self.assertFalse(fetcher.skipped_for_user_budget)
+        mock_users_over.assert_not_called()
+        mock_skip.assert_not_called()
+
+    def test_has_multiple_active_subscribers_counts_real_readers_when_cached_count_is_stale(self):
+        """active_subscribers is a cached count, so when it says 0 or 1 the real subscription
+        rows decide: two readers seen inside SUBSCRIBER_EXPIRE days make the feed shared, one
+        recent reader plus one who has drifted away do not."""
+        recent = datetime.datetime.now() - datetime.timedelta(days=1)
+        stale = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE + 30)
+        readers = []
+        for name, last_seen in (("shared_reader_1", recent), ("shared_reader_2", recent)):
+            user = User.objects.create_user(name, f"{name}@example.com", "password")
+            Profile.objects.filter(user=user).update(last_seen_on=last_seen)
+            UserSubscription.objects.create(user=user, feed=self.feed)
+            readers.append(user)
+
+        self.feed.active_subscribers = 0
+        self.feed.num_subscribers = 2
+        self.feed.save()
+        self.assertTrue(self.feed.has_multiple_active_subscribers())
+
+        Profile.objects.filter(user=readers[1]).update(last_seen_on=stale)
+        self.assertFalse(self.feed.has_multiple_active_subscribers())
+
+        self.feed.active_subscribers = 2
+        self.assertTrue(self.feed.has_multiple_active_subscribers())
 
     @override_settings(SCRAPINGBEE_API_KEY="test-key")
     @patch("utils.feed_fetcher.RScrapingBee.record")
