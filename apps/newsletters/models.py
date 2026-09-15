@@ -351,7 +351,10 @@ class EmailNewsletter:
 
         old_feed_address = feed.feed_address
         feed.feed_address = feed_address
-        feed.save()
+        # The save can hand back another feed: one restore_merged_feed had parked is folded
+        # into the restored feed by its save, and going on with the deleted row would
+        # recreate it at the new address on the next save. apps/newsletters/models.py
+        feed = feed.save() or feed
         logging.info(
             " ---> Updating newsletter feed address: %s -> %s (%s)"
             % (old_feed_address, feed_address, feed.pk)

@@ -35,6 +35,7 @@ from apps.rss_feeds.models import (
     DuplicateFeed,
     Feed,
     FeedData,
+    MMergeFeedsPrivateInventory,
     MStory,
     merge_feeds,
     merge_feeds_lock,
@@ -200,6 +201,30 @@ def feed_holding_address(fields, feed_id):
     )
 
 
+def keep_parent_away_from_the_collision(fields, collision, log=print):
+    """A restored branch must not be folded together with its own parent. The recorded parent
+    can resolve, through DuplicateFeed, to the very feed that holds the restored address,
+    and merge_feeds clears a survivor's parent when that parent is the feed being merged
+    away, which would leave a private URL public in discovery. When that feed has a parent
+    of its own the restored feed is re-parented to it; otherwise the restore refuses, before
+    anything is written."""
+    if not collision or fields.get("branch_from_feed") != collision.pk:
+        return
+    if collision.branch_from_feed_id:
+        log(
+            "feed %s holds this address and is also the restored feed's parent; re-parenting the restored "
+            "feed to %s so folding %s in cannot leave it public"
+            % (collision.pk, collision.branch_from_feed_id, collision.pk)
+        )
+        fields["branch_from_feed"] = collision.branch_from_feed_id
+        return
+    raise CommandError(
+        "feed %s holds the restored feed's address and is also its parent; merging it into the restored "
+        "feed would clear the parent and make a private branch public. Remove or re-address feed %s "
+        "first, or restore by hand" % (collision.pk, collision.pk)
+    )
+
+
 def stage_restored_feed(feed_object, stale_redirects, collision, log=print):
     """Recreate the feed row, parking the re-added feed that holds its address first, under
     the merge locks of both ids, and fold the parked feed in before letting go of them.
@@ -223,6 +248,7 @@ def stage_restored_feed(feed_object, stale_redirects, collision, log=print):
                 )
                 collision = current
                 continue
+            keep_parent_away_from_the_collision(feed_object["fields"], collision, log=log)
             # One transaction for the Postgres staging: if recreating the row fails, the
             # re-added feed is not left parked under an invalid hash.
             with transaction.atomic():
@@ -268,6 +294,20 @@ def restore_feed_from_inventory(
     feed_object = json.loads(json.dumps(feed_record["object"]))
     feed_id = feed_object["pk"]
     fields = feed_object["fields"]
+    if feed_record.get("private"):
+        # The log carries placeholders for a private branch's address and link; the real
+        # values were kept in the database when the inventory was logged.
+        kept = MMergeFeedsPrivateInventory.lookup(feed_id, feed_record["merge"]["logged_at"])
+        if kept is None:
+            raise CommandError(
+                "feed %s is a private branch and its address is not on file for the inventory logged at %s; "
+                "pass it by hand with a fixed-up log" % (feed_id, feed_record["merge"]["logged_at"])
+            )
+        fields["feed_address"] = kept.feed_address
+        fields["feed_link"] = kept.feed_link
+    display_address = (
+        "private feed %s address" % feed_id if feed_record.get("private") else fields.get("feed_address")
+    )
     counts = {
         "feed_created": 0,
         "feeddata_created": 0,
@@ -330,7 +370,8 @@ def restore_feed_from_inventory(
                 "feed %s can come back, then it is merged into the restored feed and its stories move across"
                 % (collision.pk, collision_stories, feed_id)
             )
-        log("creating feed %s %s" % (feed_id, fields.get("feed_address")))
+        keep_parent_away_from_the_collision(fields, collision, log=log)
+        log("creating feed %s %s" % (feed_id, display_address))
         if not dry_run:
             collision = stage_restored_feed(feed_object, stale_redirects, collision, log=log)
             counts["feed_created"] = 1

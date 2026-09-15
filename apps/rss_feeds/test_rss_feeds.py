@@ -10,6 +10,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import management
+from django.core.management.base import CommandError
 from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
@@ -2552,6 +2553,134 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertEqual(parked.hash_address_and_link, parking_hash(parked.pk, 987654))
         self.assertEqual(parked_feed_for(987654).pk, parked.pk)
         mock_redis.Redis.return_value.lock.assert_not_called()
+
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_private_branch_merged_as_the_duplicate_keeps_its_address_out_of_the_logs_and_restores(
+        self, mock_count, mock_reader_redis, mock_feed_redis
+    ):
+        """The private branch is one of the two feeds being merged, not a sibling: its
+        address and link, which can carry the reader's access token, never reach the task
+        log (neither the merge's own lines nor the inventory), and the restore still brings
+        it back with the real address, from the protected copy."""
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import MMergeFeedsPrivateInventory, merge_feeds
+
+        parent = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/personal.xml",
+            feed_link="https://www.example.com/personal",
+            feed_title="Example | Personal",
+        )
+        private = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-xyz789&user=reader",
+            feed_link="https://www.example.com/personal?key=SECRET-LINK-key456",
+            feed_title="Example | Personal (reader)",
+            branch_from_feed=parent,
+        )
+        twin = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/personal-twin.xml",
+            feed_link="https://www.example.com/personal",
+            feed_title="Example | Personal",
+        )
+        private_id = private.pk
+        self.addCleanup(lambda: MMergeFeedsPrivateInventory.objects(feed_id=private_id).delete())
+
+        with self.assertLogs("newsblur", level="DEBUG") as captured:
+            merge_feeds(twin.pk, private.pk, force=True)
+
+        logged = "\n".join(captured.output)
+        self.assertNotIn("SECRET-TOKEN", logged)
+        self.assertNotIn("SECRET-LINK", logged)
+        self.assertIn('"private": true', logged)
+        self.assertIn("private-feed-address:%s" % private_id, logged)
+        self.assertFalse(Feed.objects.filter(pk=private_id).exists())
+        self.assertEqual(MMergeFeedsPrivateInventory.objects(feed_id=private_id).count(), 1)
+
+        call_command("restore_merged_feed", log=self._inventory_file(captured.output), feed_id=private_id)
+
+        restored = Feed.objects.get(pk=private_id)
+        self.assertEqual(
+            restored.feed_address, "https://www.example.com/.rss?feed=SECRET-TOKEN-xyz789&user=reader"
+        )
+        self.assertEqual(restored.feed_link, "https://www.example.com/personal?key=SECRET-LINK-key456")
+        self.assertEqual(restored.branch_from_feed_id, parent.pk)
+
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_restore_whose_resolved_parent_holds_its_address_refuses_before_writing(
+        self, mock_count, mock_reader_redis, mock_feed_redis
+    ):
+        """The recorded parent was merged away into the feed that now holds the restored
+        feed's address. Folding that feed in would clear the restored feed's parent, since
+        merge_feeds never keeps a parent that is the feed being merged away, and a private
+        branch would turn public. With no other parent to fall back on, nothing is written."""
+        from django.core.management import call_command
+
+        from apps.rss_feeds.models import DuplicateFeed, log_merge_feeds_inventory
+
+        parent = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/guarded.xml",
+            feed_link="https://www.example.com/guarded",
+            feed_title="Example | Guarded",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/guarded.xml?token=SECRET",
+            feed_link="https://www.example.com/guarded",
+            feed_title="Example | Guarded (reader)",
+            branch_from_feed=parent,
+        )
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/guarded-survivor.xml",
+            feed_link="https://www.example.com/guarded",
+            feed_title="Example | Guarded",
+        )
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id = lost.pk
+        lost.delete()
+        holder = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/guarded.xml?token=SECRET",
+            feed_link="https://www.example.com/guarded",
+            feed_title="Holder",
+        )
+        parent_id = parent.pk
+        DuplicateFeed.objects.create(
+            duplicate_address=parent.feed_address,
+            duplicate_link=parent.feed_link,
+            duplicate_feed_id=parent_id,
+            feed=holder,
+        )
+        parent.delete()
+        holder_hash = holder.hash_address_and_link
+
+        with self.assertRaises(CommandError) as refused:
+            call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        self.assertIn("also its parent", str(refused.exception))
+        self.assertFalse(Feed.objects.filter(pk=lost_id).exists())
+        self.assertEqual(Feed.objects.get(pk=holder.pk).hash_address_and_link, holder_hash)
+        self.assertTrue(DuplicateFeed.objects.filter(duplicate_feed_id=parent_id).exists())
+
+        # With a parent of its own, the holder can be folded in and the restored feed stays a
+        # private branch under that parent.
+        grandparent = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/guarded-grand.xml",
+            feed_link="https://www.example.com/guarded",
+            feed_title="Grand",
+        )
+        Feed.objects.filter(pk=holder.pk).update(branch_from_feed=grandparent)
+        with patch("apps.rss_feeds.models.MStory.sync_redis"):
+            call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        restored = Feed.objects.get(pk=lost_id)
+        self.assertEqual(restored.branch_from_feed_id, grandparent.pk)
+        self.assertFalse(Feed.objects.filter(pk=holder.pk).exists())
 
     @patch("apps.rss_feeds.models.MStory.sync_redis")
     @patch("apps.rss_feeds.models.redis")

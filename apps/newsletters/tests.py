@@ -97,6 +97,41 @@ class Test_EmailNewsletter(TestCase):
         self.assertEqual(MStory.objects(story_feed_id=readded.pk).count(), 0)
         self.assertEqual(MStory.objects(story_feed_id=restored.pk).count(), 2)
 
+    @patch("apps.rss_feeds.models.MFetchHistory.delete_for_feed", return_value=0)
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    def test_an_identity_change_while_the_feed_is_parked_follows_the_fold_in(
+        self, mock_reader_redis, mock_feed_redis, mock_history
+    ):
+        """A newsletter arrives with a List-ID for the first time while its feed is parked
+        by restore_merged_feed. The re-addressing save folds the parked feed into the
+        restored one; delivery must go on with the restored feed rather than the deleted
+        row, which its next save would otherwise recreate at the new address."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
+
+        first = self.receive("first")
+        readded = Feed.objects.get(pk=first.story_feed_id)
+        restored = Feed.objects.create(
+            feed_address=readded.feed_address + "-restored",
+            feed_link=readded.feed_link,
+            feed_title=readded.feed_title,
+            fetched_once=True,
+            known_good=True,
+        )
+        Feed.objects.filter(pk=readded.pk).update(hash_address_and_link=parking_hash(readded.pk, restored.pk))
+
+        second = self.receive(
+            "second", **{"message-headers": '[["List-ID", "Hipersonica <hipersonica.substack.com>"]]'}
+        )
+
+        self.assertEqual(second.story_feed_id, restored.pk)
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
+        self.assertFalse(
+            Feed.objects.filter(feed_address__startswith="newsletter:%s:list-id:" % self.user.pk).exists()
+        )
+        self.assertEqual(MStory.objects(story_feed_id=restored.pk).count(), 2)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=restored).exists())
+
     @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=100)
     @patch.object(EmailNewsletter, "receive_newsletter")
     def test_oversized_webhook_returns_payload_too_large(self, mock_receive_newsletter):
