@@ -48,7 +48,7 @@ from apps.rss_feeds.models import (
     FETCH_LOCK_TIMEOUT_SECONDS,
     Feed,
     MStory,
-    merge_feeds_lock,
+    feed_write_lock,
 )
 from apps.rss_feeds.page_importer import PageImporter
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
@@ -171,9 +171,6 @@ MAX_ENTRIES_HIGH_VOLUME = 250
 HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per fetch
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
-# How many times ProcessFeed follows a feed merged away while it waited for the feed's merge
-# lock before it gives up on the batch. utils/feed_fetcher.py
-MAX_FEED_LOCK_ATTEMPTS = 5
 
 # Forbidden feeds are fetched through ScrapingBee, which bills a credit per successful
 # request. Once a feed has failed this many fetches in a row (errors_since_good), the
@@ -1300,61 +1297,44 @@ class ProcessFeed:
         merge lock of the feed they belong to. Returns (ret_values, story_hashes), or
         (None, []) when the feed is gone and the batch is dropped.
 
-        A merge of this feed running at the same time waits on the lock, and once the lock
-        is ours the feed is looked up again: a feed merged away while this fetch was in
-        flight resolves to its survivor (Feed.get_by_id follows DuplicateFeed). The survivor
-        needs its own lock, so the stale one is released and the survivor's taken and checked
-        the same way, until the feed found under the lock is the one locked. Only then are
-        the story hashes built, from the locked feed's id, so the survivor's existing stories
-        are found and updated rather than re-inserted as unchanged.
+        A merge of this feed running at the same time waits on the lock, and feed_write_lock
+        looks the feed up again once the lock is ours: a feed merged away while this fetch
+        was in flight resolves to its survivor, whose own lock is then taken instead. Only
+        then are the story hashes built, from the locked feed's id, so the survivor's
+        existing stories are found and updated rather than re-inserted as unchanged. The
+        lease is short (a worker killed mid-write never releases the lock) and
+        add_update_stories renews it before every story.
 
         The validators (ETag, Last-Modified) are saved last: saved first, a lock timeout or a
         failed write would leave them in place and the next poll could answer 304 for a batch
         that was never stored. utils/feed_fetcher.py
         """
-        locked_feed_id = self.feed.pk
-        for attempt in range(MAX_FEED_LOCK_ATTEMPTS):
-            # A short lease, renewed by add_update_stories as it goes: a worker killed by its
-            # hard time limit never releases the lock, and the lease is what frees the feed.
-            with merge_feeds_lock(
-                locked_feed_id,
-                timeout=FETCH_LOCK_TIMEOUT_SECONDS,
-                blocking_timeout=FETCH_LOCK_BLOCKING_SECONDS,
-            ):
-                self.refresh_feed()
-                if self.feed is None:
-                    logging.debug(
-                        " ***> Feed %s was deleted while it was being fetched, dropping its stories"
-                        % locked_feed_id
-                    )
-                    return None, []
-                if self.feed.pk != locked_feed_id:
-                    # Merged into a survivor while this fetch waited; the survivor's own lock is
-                    # what protects its stories, and it is checked again once held.
-                    locked_feed_id = self.feed.pk
-                    continue
-                stories, story_hashes = self.build_stories()
-                existing_stories = self.load_existing_stories(story_hashes)
-                # if len(existing_stories) == 0:
-                #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
-                #         story_date__gte=start_date,
-                #         story_feed_id=self.feed.pk
-                #     ))
+        with feed_write_lock(
+            self.feed.pk, timeout=FETCH_LOCK_TIMEOUT_SECONDS, blocking_timeout=FETCH_LOCK_BLOCKING_SECONDS
+        ) as feed:
+            if feed is None:
+                logging.debug(" ***> Feed %s is gone, dropping its stories" % self.feed_id)
+                return None, []
+            if feed.pk != self.feed_id:
+                logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, feed.pk))
+            self.feed, self.feed_id = feed, feed.pk
+            stories, story_hashes = self.build_stories()
+            existing_stories = self.load_existing_stories(story_hashes)
+            # if len(existing_stories) == 0:
+            #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
+            #         story_date__gte=start_date,
+            #         story_feed_id=self.feed.pk
+            #     ))
 
-                ret_values = self.feed.add_update_stories(
-                    stories,
-                    existing_stories,
-                    verbose=self.options["verbose"],
-                    updates_off=self.options["updates_off"],
-                )
-                if not self.options.get("archive_page", None):
-                    self.compare_feed_attribute_changes()
-                return ret_values, story_hashes
-        logging.debug(
-            " ***> Feed %s was merged away %s times while it was being fetched, dropping its stories"
-            % (locked_feed_id, MAX_FEED_LOCK_ATTEMPTS)
-        )
-        return None, []
+            ret_values = self.feed.add_update_stories(
+                stories,
+                existing_stories,
+                verbose=self.options["verbose"],
+                updates_off=self.options["updates_off"],
+            )
+            if not self.options.get("archive_page", None):
+                self.compare_feed_attribute_changes()
+            return ret_values, story_hashes
 
     def build_stories(self):
         """The parsed entries as stories hashed under the feed's current id, with the hashes
