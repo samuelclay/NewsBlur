@@ -50,7 +50,7 @@ from apps.analyzer.models import (
 )
 from apps.profile.models import MSentEmail, Profile
 from apps.reader.models import RUserStory, UserSubscription
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, renew_merge_feeds_locks
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.text_importer import TextImporter
 from utils import json_functions as json
@@ -2093,6 +2093,8 @@ class MSharedStory(mongo.DynamicDocument):
         shared_stories = cls.objects.filter(story_feed_id=duplicate_feed_id)
         logging.info(" ---> %s shared stories" % shared_stories.count())
         for story in shared_stories:
+            # Keeps the merge's locks alive on a feed with many shares. apps/social/models.py
+            renew_merge_feeds_locks()
             story.story_feed_id = original_feed_id
             story.save()
 
