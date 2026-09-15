@@ -3453,6 +3453,7 @@ class MCustomFeedIcon(mongo.Document):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for icon in duplicate_icons:
+                renew_merge_feeds_locks()
                 # Check if user already has a custom icon for the original feed
                 try:
                     cls.objects.get(user_id=icon.user_id, feed_id=original_feed_id)
