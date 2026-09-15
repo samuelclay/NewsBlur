@@ -1924,7 +1924,10 @@ class Feed(models.Model):
             )
             return existing_story, story_has_changed
 
-        for story in stories:
+        for story_index, story in enumerate(stories):
+            if story_index and story_index % FETCH_LOCK_RENEW_EVERY == 0:
+                # Under ProcessFeed's short lease on the feed's merge lock; a no-op elsewhere.
+                renew_merge_feeds_locks()
             if verbose:
                 logging.debug(
                     "   ---> [%-30s] ~FBChecking ~SB%s~SN / ~SB%s"
@@ -5408,8 +5411,14 @@ def move_one_story(story, from_feed_id, to_feed_id, to_feed):
         return "gone"
     # Search and discovery index by the old hash and feed id; drop those entries and
     # index again under the new feed according to its own indexing settings.
+    changes = dict(set__story_feed_id=to_feed_id, set__story_hash=new_hash)
+    if story.story_permalink and story.story_hash in story.story_permalink:
+        # A newsletter's permalink is its own story hash on this site (the newsletter-story
+        # view, see apps/newsletters/models.py); it has to name the new hash, or the link in
+        # the reader's email opens a 404.
+        changes["set__story_permalink"] = story.story_permalink.replace(story.story_hash, new_hash)
     try:
-        updated = still_here.update(set__story_feed_id=to_feed_id, set__story_hash=new_hash)
+        updated = still_here.update(**changes)
     except NotUniqueError:
         # A fetch of the target feed stored this story between the lookup above and the
         # update; the target copy wins and only the source copy goes.
@@ -5477,9 +5486,12 @@ def queue_discover_indexing(story_hashes):
     )
 
 
-# Long enough for restore_merged_feed to walk a large Archive feed's stories; a lease that
-# expired mid-merge would let a second merge of the same feeds start.
-MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 2 * 60 * 60
+# The lease is renewed inside a merge's loops (renew_merge_feeds_locks), so it only has to
+# cover the longest single step, deleting a big duplicate's stories, and it bounds how long a
+# process killed mid-merge keeps its feeds locked. A lease that expired mid-merge would let
+# a second merge of the same feeds start, which is why renewal stops a merge whose lease is
+# gone. apps/rss_feeds/models.py
+MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 10 * 60
 # The hash restore_merged_feed gives a feed re-added at a lost feed's address while the lost
 # row comes back; Feed.save keeps it and merge_feeds moves such a feed's stories rather than
 # deleting them. apps/rss_feeds/models.py
@@ -5498,6 +5510,14 @@ def restore_target_from_parking_hash(parking_hash):
 
 
 MERGE_FEEDS_LOCK_BLOCKING_SECONDS = 120
+# A fetch holds its feed's lock only while the batch is written, and a fetch worker killed
+# by its hard time limit never releases it, so the fetch lease is short and extended every
+# few stories in add_update_stories; a fetch that cannot get the lock quickly (a merge or
+# restore of the feed is running) gives up and comes back on its next schedule rather than
+# holding a worker slot. apps/rss_feeds/models.py
+FETCH_LOCK_TIMEOUT_SECONDS = 2 * 60
+FETCH_LOCK_BLOCKING_SECONDS = 30
+FETCH_LOCK_RENEW_EVERY = 10
 # A merge that keeps finding yet another feed for the survivor's final save to collide with
 # stops widening its lock set here. apps/rss_feeds/models.py
 MERGE_FEEDS_MAX_LOCKS = 6
@@ -5520,9 +5540,9 @@ def renew_merge_feeds_locks():
     subscriptions switching, the inventory being logged), so a merge that outlasts a lease
     keeps its locks; when a lease was already lost, the merge stops here instead of going on
     unlocked next to another merge of the same feeds. apps/rss_feeds/models.py"""
-    for feed_id, lock in list(_merge_locks_held().items()):
+    for feed_id, (lock, lease) in list(_merge_locks_held().items()):
         try:
-            lock.extend(MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, replace_ttl=True)
+            lock.extend(lease, replace_ttl=True)
         except LockError as e:
             raise LockError("merge_feeds:%s lease was lost while the merge was running: %s" % (feed_id, e))
 
@@ -5541,8 +5561,12 @@ class merge_feeds_lock:
     apps/rss_feeds/models.py
     """
 
-    def __init__(self, *feed_ids):
+    def __init__(self, *feed_ids, timeout=None, blocking_timeout=None):
         self.feed_ids = [feed_id for feed_id in feed_ids if feed_id]
+        # The lease and how long to wait for it: a merge's by default, a fetch's shorter ones
+        # when ProcessFeed asks. Renewals keep each lock on the lease it was taken with.
+        self.timeout = timeout or MERGE_FEEDS_LOCK_TIMEOUT_SECONDS
+        self.blocking_timeout = blocking_timeout or MERGE_FEEDS_LOCK_BLOCKING_SECONDS
         self.locks = []
         self.entered = []
         self.taken = []
@@ -5553,11 +5577,7 @@ class merge_feeds_lock:
         highest_held = max(held) if held else None
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         self.locks = [
-            r.lock(
-                "merge_feeds:%s" % feed_id,
-                timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS,
-                blocking_timeout=MERGE_FEEDS_LOCK_BLOCKING_SECONDS,
-            )
+            r.lock("merge_feeds:%s" % feed_id, timeout=self.timeout, blocking_timeout=self.blocking_timeout)
             for feed_id in self.taken
         ]
         try:
@@ -5570,14 +5590,13 @@ class merge_feeds_lock:
                             "merge_feeds:%s; not waiting out of id order" % (feed_id, highest_held)
                         )
                     raise LockError(
-                        "merge_feeds:%s was not released within %s seconds"
-                        % (feed_id, MERGE_FEEDS_LOCK_BLOCKING_SECONDS)
+                        "merge_feeds:%s was not released within %s seconds" % (feed_id, self.blocking_timeout)
                     )
                 self.entered.append(lock)
         except BaseException:
             self._release()
             raise
-        held.update(zip(self.taken, self.locks))
+        held.update({feed_id: (lock, self.timeout) for feed_id, lock in zip(self.taken, self.locks)})
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
