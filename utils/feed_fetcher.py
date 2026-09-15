@@ -165,6 +165,9 @@ MAX_ENTRIES_HIGH_VOLUME = 250
 HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per fetch
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
+# How many times ProcessFeed follows a feed merged away while it waited for the feed's merge
+# lock before it gives up on the batch. utils/feed_fetcher.py
+MAX_FEED_LOCK_ATTEMPTS = 5
 
 # Forbidden feeds are fetched through ScrapingBee, which bills a credit per successful
 # request. Once a feed has failed this many fetches in a row (errors_since_good), the
@@ -1227,9 +1230,125 @@ class ProcessFeed:
                 :max_entries
             ]
 
-        if not self.options.get("archive_page", None):
-            self.compare_feed_attribute_changes()
+        ret_values, story_hashes = self.save_feed_and_stories()
+        if ret_values is None:
+            return FEED_ERRHTTP, dict(new=0, updated=0, same=0, error=1)
 
+        # PubSubHubbub
+        if not self.options.get("archive_page", None):
+            self.check_feed_for_push()
+
+        # Push notifications
+        if ret_values["new"] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
+            QueueNotifications.delay(self.feed.pk, ret_values["new"])
+        if ret_values["new"] > 0 and MUserClassifierNotification.feed_has_users(self.feed.pk):
+            QueueClassifierNotifications.delay(self.feed.pk, ret_values["new"])
+
+        # All Done
+        logging.debug(
+            "   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s"
+            % (
+                self.feed.log_title[:30],
+                "~FG~SB" if ret_values["new"] else "",
+                ret_values["new"],
+                "~FY~SB" if ret_values["updated"] else "",
+                ret_values["updated"],
+                "~SB" if ret_values["same"] else "",
+                ret_values["same"],
+                "~FR~SB" if ret_values["error"] else "",
+                ret_values["error"],
+                len(self.feed_entries),
+            )
+        )
+        if self.cache_control_max_age:
+            logging.debug(
+                f"   ---> [{self.feed.log_title[:30]:<30}] ~FYScheduling next fetch with delay: ~SB{self.cache_control_max_age:.1f} minutes"
+            )
+        self.feed.update_all_statistics(
+            has_new_stories=bool(ret_values["new"]),
+            force=self.options["force"],
+            delay_fetch_sec=self.cache_control_max_age * 60 if self.cache_control_max_age else None,
+        )
+        fetch_date = datetime.datetime.now()
+        if ret_values["new"]:
+            if not getattr(settings, "TEST_DEBUG", False):
+                self.feed.trim_feed()
+                self.feed.expire_redis()
+            if MStatistics.get("raw_feed", None) == self.feed.pk:
+                self.feed.save_raw_feed(self.raw_feed, fetch_date)
+        self.feed.save_feed_history(200, "OK", date=fetch_date)
+
+        if self.options["verbose"]:
+            logging.debug(
+                "   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss"
+                % (self.feed.log_title[:30], time.time() - start)
+            )
+
+        if self.options.get("archive_page", None):
+            self.archive_seen_story_hashes.update(story_hashes)
+
+        return FEED_OK, ret_values
+
+    def save_feed_and_stories(self):
+        """Writes the stories, then the response's validators and feed attributes, under the
+        merge lock of the feed they belong to. Returns (ret_values, story_hashes), or
+        (None, []) when the feed is gone and the batch is dropped.
+
+        A merge of this feed running at the same time waits on the lock, and once the lock
+        is ours the feed is looked up again: a feed merged away while this fetch was in
+        flight resolves to its survivor (Feed.get_by_id follows DuplicateFeed). The survivor
+        needs its own lock, so the stale one is released and the survivor's taken and checked
+        the same way, until the feed found under the lock is the one locked. Only then are
+        the story hashes built, from the locked feed's id, so the survivor's existing stories
+        are found and updated rather than re-inserted as unchanged.
+
+        The validators (ETag, Last-Modified) are saved last: saved first, a lock timeout or a
+        failed write would leave them in place and the next poll could answer 304 for a batch
+        that was never stored. utils/feed_fetcher.py
+        """
+        locked_feed_id = self.feed.pk
+        for attempt in range(MAX_FEED_LOCK_ATTEMPTS):
+            with merge_feeds_lock(locked_feed_id):
+                self.refresh_feed()
+                if self.feed is None:
+                    logging.debug(
+                        " ***> Feed %s was deleted while it was being fetched, dropping its stories"
+                        % locked_feed_id
+                    )
+                    return None, []
+                if self.feed.pk != locked_feed_id:
+                    # Merged into a survivor while this fetch waited; the survivor's own lock is
+                    # what protects its stories, and it is checked again once held.
+                    locked_feed_id = self.feed.pk
+                    continue
+                stories, story_hashes = self.build_stories()
+                existing_stories = self.load_existing_stories(story_hashes)
+                # if len(existing_stories) == 0:
+                #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
+                #         story_date__gte=start_date,
+                #         story_feed_id=self.feed.pk
+                #     ))
+
+                ret_values = self.feed.add_update_stories(
+                    stories,
+                    existing_stories,
+                    verbose=self.options["verbose"],
+                    updates_off=self.options["updates_off"],
+                )
+                if not self.options.get("archive_page", None):
+                    self.compare_feed_attribute_changes()
+                return ret_values, story_hashes
+        logging.debug(
+            " ***> Feed %s was merged away %s times while it was being fetched, dropping its stories"
+            % (locked_feed_id, MAX_FEED_LOCK_ATTEMPTS)
+        )
+        return None, []
+
+    def build_stories(self):
+        """The parsed entries as stories hashed under the feed's current id, with the hashes
+        of the feed's recent stories added so unchanged and updated stories are matched
+        against what is already stored. Runs under the merge lock, after the feed is
+        resolved, since the hashes carry the feed id. utils/feed_fetcher.py"""
         # Determine if stories aren't valid and replace broken guids
         guids_seen = set()
         permalinks_seen = set()
@@ -1296,88 +1415,7 @@ class ProcessFeed:
                     len(story_hashes_in_unread_cutoff),
                 )
             )
-
-        # Stories are written under the feed's merge lock: a merge of this feed running at
-        # the same time waits, and once the lock is ours the feed is looked up again so a feed
-        # merged away while this fetch was in flight resolves to its survivor (Feed.get_by_id
-        # follows DuplicateFeed) instead of stranding stories under a deleted id.
-        with merge_feeds_lock(self.feed.pk):
-            feed_before_lock = self.feed.pk
-            self.refresh_feed()
-            if self.feed is None:
-                logging.debug(
-                    " ***> Feed %s was deleted while it was being fetched, dropping its stories"
-                    % feed_before_lock
-                )
-                return FEED_ERRHTTP, dict(new=0, updated=0, same=0, error=1)
-            existing_stories = self.load_existing_stories(story_hashes)
-            # if len(existing_stories) == 0:
-            #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
-            #         story_date__gte=start_date,
-            #         story_feed_id=self.feed.pk
-            #     ))
-
-            ret_values = self.feed.add_update_stories(
-                stories,
-                existing_stories,
-                verbose=self.options["verbose"],
-                updates_off=self.options["updates_off"],
-            )
-
-        # PubSubHubbub
-        if not self.options.get("archive_page", None):
-            self.check_feed_for_push()
-
-        # Push notifications
-        if ret_values["new"] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
-            QueueNotifications.delay(self.feed.pk, ret_values["new"])
-        if ret_values["new"] > 0 and MUserClassifierNotification.feed_has_users(self.feed.pk):
-            QueueClassifierNotifications.delay(self.feed.pk, ret_values["new"])
-
-        # All Done
-        logging.debug(
-            "   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s"
-            % (
-                self.feed.log_title[:30],
-                "~FG~SB" if ret_values["new"] else "",
-                ret_values["new"],
-                "~FY~SB" if ret_values["updated"] else "",
-                ret_values["updated"],
-                "~SB" if ret_values["same"] else "",
-                ret_values["same"],
-                "~FR~SB" if ret_values["error"] else "",
-                ret_values["error"],
-                len(self.feed_entries),
-            )
-        )
-        if self.cache_control_max_age:
-            logging.debug(
-                f"   ---> [{self.feed.log_title[:30]:<30}] ~FYScheduling next fetch with delay: ~SB{self.cache_control_max_age:.1f} minutes"
-            )
-        self.feed.update_all_statistics(
-            has_new_stories=bool(ret_values["new"]),
-            force=self.options["force"],
-            delay_fetch_sec=self.cache_control_max_age * 60 if self.cache_control_max_age else None,
-        )
-        fetch_date = datetime.datetime.now()
-        if ret_values["new"]:
-            if not getattr(settings, "TEST_DEBUG", False):
-                self.feed.trim_feed()
-                self.feed.expire_redis()
-            if MStatistics.get("raw_feed", None) == self.feed.pk:
-                self.feed.save_raw_feed(self.raw_feed, fetch_date)
-        self.feed.save_feed_history(200, "OK", date=fetch_date)
-
-        if self.options["verbose"]:
-            logging.debug(
-                "   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss"
-                % (self.feed.log_title[:30], time.time() - start)
-            )
-
-        if self.options.get("archive_page", None):
-            self.archive_seen_story_hashes.update(story_hashes)
-
-        return FEED_OK, ret_values
+        return stories, story_hashes
 
     def verify_feed_integrity(self):
         """Ensures stories come through and any abberant status codes get saved
