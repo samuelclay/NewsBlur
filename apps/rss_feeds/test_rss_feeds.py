@@ -1068,6 +1068,431 @@ class Test_TextImporterEncoding(TestCase):
         self.assertNotIn("\x01", result["content"])
 
 
+class Test_HttpsUpgradeOnDeadHttp(TestCase):
+    """When a publisher stops answering on port 80 (rss.cbc.ca did on June 30, 2026,
+    forum #13830) every http:// feed address goes quiet with no redirect to follow.
+    FetchFeed retries the same path over https:// and, when that is a live feed, tags
+    the parsed feed so ProcessFeed persists the https address, merging into an
+    existing https twin when one exists."""
+
+    HTTP_ADDRESS = "http://dead-port-80.example.com/lineup/feed.xml"
+    HTTPS_ADDRESS = "https://dead-port-80.example.com/lineup/feed.xml"
+    RSS = (
+        b'<?xml version="1.0"?><rss version="2.0"><channel><title>Dead Port 80</title>'
+        b"<link>https://dead-port-80.example.com/</link>"
+        b"<item><title>Alive over https</title><link>https://dead-port-80.example.com/1</link>"
+        b"<guid>https://dead-port-80.example.com/1</guid></item></channel></rss>"
+    )
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS,
+            feed_link="https://dead-port-80.example.com/",
+            feed_title="Dead Port 80",
+        )
+        self.feed.num_subscribers = 2
+        self.feed.save()
+
+    def _https_response(self, url):
+        response = MagicMock()
+        response.status_code = 200
+        response.content = self.RSS
+        response.text = self.RSS.decode("utf-8")
+        response.headers = {"Content-Type": "application/rss+xml"}
+        response.url = url
+        response.connection = MagicMock()
+        return response
+
+    def _http_dead_https_alive(self, url, **kwargs):
+        if url.startswith("http://"):
+            raise requests.ConnectionError("connection refused on port 80")
+        return self._https_response(url)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_fetch_retries_over_https_and_tags_the_upgrade(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=self._http_dead_https_alive
+        ) as mock_get:
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(len(fpf.entries), 1)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.HTTPS_ADDRESS)
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_fetch_leaves_a_working_http_feed_alone(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get",
+            side_effect=lambda url, **kwargs: self._https_response(url),
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertFalse(fpf.get("upgraded_to_https"))
+        self.assertIsNone(fpf.get("href"))
+
+    def _dead_http_only(self, url, **kwargs):
+        raise requests.ConnectionError("connection refused on port 80")
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_archive_fetch_never_probes_https(self, mock_skip, mock_parse, mock_random, mock_validate):
+        """An archive fetch replaces the address with a history page; migrating the feed to
+        that page would strand every subscriber on old stories."""
+        from utils.feed_fetcher import FetchFeed
+
+        options = {
+            "verbose": False,
+            "force": True,
+            "archive_page": "rfc5005",
+            "archive_page_link": "http://dead-port-80.example.com/lineup/feed.xml?page=7",
+        }
+        fetcher = FetchFeed(self.feed.pk, options)
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=self._dead_http_only) as mock_get:
+            fetcher.fetch()
+
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertTrue(requested, "the archive page should have been requested")
+        self.assertFalse([url for url in requested if url.startswith("https://")])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_landing_page_is_not_an_upgrade(self, mock_skip, mock_parse, mock_random, mock_validate):
+        """A 200 over https that is not a feed (an error or landing page) must not replace the
+        fetch or be tagged for migration; the normal retries still run."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_html(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b"<html><body><h1>Site moved</h1></body></html>"
+            response.headers = {"Content-Type": "text/html"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_html):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_https_probe_sends_no_conditional_headers(self, mock_random, mock_validate):
+        """A healthy https copy would answer a conditional probe with 304, which the probe
+        cannot use, so it sends none of the cache validators."""
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.etag = '"abc123"'
+        self.feed.last_modified = datetime.datetime(2026, 9, 1, 12, 30, 0)
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=self._http_dead_https_alive
+        ) as mock_get:
+            result, fpf = fetcher.fetch()
+
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        http_headers = mock_get.call_args_list[0].kwargs["headers"]
+        probe_headers = mock_get.call_args_list[1].kwargs["headers"]
+        self.assertIn("If-None-Match", http_headers)
+        for name in ("If-None-Match", "If-Modified-Since", "A-IM"):
+            self.assertNotIn(name, probe_headers)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_json_feed_over_https_is_tagged_for_migration(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_json(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'{"version": "https://jsonfeed.org/version/1.1"}'
+            response.headers = {"Content-Type": "application/feed+json"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_json), patch.object(
+            FetchFeed, "fetch_json_feed", return_value=self.RSS.decode("utf-8")
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.HTTPS_ADDRESS)
+
+    def _parse_strings_only(self):
+        """feedparser.parse for string bodies (the probe check and the XML branch), None for
+        URLs, so the feedparser fallbacks in fetch() never touch the network."""
+        import feedparser
+
+        real_parse = feedparser.parse
+        return lambda source, **kwargs: (
+            real_parse(source, **kwargs)
+            if isinstance(source, (str, bytes)) and not str(source).startswith("http")
+            else None
+        )
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_xml_error_document_is_not_adopted(self, mock_skip, mock_random, mock_validate):
+        """An XML error document over https looks like a feed by content type but parses to
+        no entries: it must not replace the fetch, and the http retries must still run."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_error_xml(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'<?xml version="1.0"?><error>unavailable</error>'
+            response.headers = {"Content-Type": "application/xml"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_error_xml
+        ) as mock_get, patch("utils.feed_fetcher.feedparser.parse", side_effect=self._parse_strings_only()):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+        self.assertTrue(len(requested) >= 3 and requested[2].startswith("http://"), requested)
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_json_error_document_is_not_adopted(self, mock_skip, mock_random, mock_validate):
+        """JSONFetcher turns any JSON object into an Atom feed with a version, so a JSON error
+        response must be rejected by the missing entries, not accepted by the version."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_error_json(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'{"error": "unavailable"}'
+            response.headers = {"Content-Type": "application/json"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_error_json), patch(
+            "utils.feed_fetcher.feedparser.parse", side_effect=self._parse_strings_only()
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_probe_timeout_keeps_the_http_retries(
+        self, mock_skip, mock_parse, mock_random, mock_validate
+    ):
+        """A probe that times out or loops on redirects is not a connection error; it must be
+        swallowed like one so the fake-header http retry still runs."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_slow(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            raise requests.ReadTimeout("https took too long")
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_slow) as mock_get:
+            fetcher.fetch()
+
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+        self.assertTrue(len(requested) >= 3 and requested[2].startswith("http://"), requested)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_non_utf8_feed_over_https_is_still_adopted(self, mock_random, mock_validate):
+        """The probe check must honor the feed's declared encoding rather than forcing UTF-8."""
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        latin1_rss = (
+            '<?xml version="1.0" encoding="ISO-8859-1"?><rss version="2.0"><channel><title>Caf\u00e9 Feed</title>'
+            "<link>https://dead-port-80.example.com/</link><item><title>Crème br\u00fbl\u00e9e</title>"
+            "<link>https://dead-port-80.example.com/2</link><guid>https://dead-port-80.example.com/2</guid></item>"
+            "</channel></rss>"
+        ).encode("iso-8859-1")
+
+        def http_dead_https_latin1(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = latin1_rss
+            response.encoding = "ISO-8859-1"
+            response.headers = {"Content-Type": "application/rss+xml; charset=ISO-8859-1"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": True, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_latin1):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.entries[0].title, "Crème brûlée")
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_feed_declaring_windows_1251_without_an_http_charset_is_decoded_by_its_declaration(
+        self, mock_random, mock_validate
+    ):
+        """The HTTP charset is absent, so the XML declaration must win; verbose logging must not
+        trip over the non-UTF-8 body either."""
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        cyrillic_rss = (
+            '<?xml version="1.0" encoding="windows-1251"?><rss version="2.0"><channel><title>Новости</title>'
+            "<link>https://dead-port-80.example.com/</link><item><title>Привет, мир</title>"
+            "<link>https://dead-port-80.example.com/3</link><guid>https://dead-port-80.example.com/3</guid></item>"
+            "</channel></rss>"
+        ).encode("windows-1251")
+
+        def http_dead_https_cyrillic(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = cyrillic_rss
+            response.encoding = None
+            response.headers = {"Content-Type": "application/rss+xml"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": True, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_cyrillic):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.entries[0].title, "Привет, мир")
+        self.assertIn("Привет, мир", fetcher.raw_feed)
+
+    def test_process_feed_persists_the_https_address(self):
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(self.feed.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTPS_ADDRESS)
+
+
+class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
+    """Feed.save handles the address-hash collision by merging into the existing feed,
+    which needs a real transaction (the failed UPDATE aborts a TestCase's wrapper)."""
+
+    HTTP_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTP_ADDRESS
+    HTTPS_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTPS_ADDRESS
+    RSS = Test_HttpsUpgradeOnDeadHttp.RSS
+
+    def setUp(self):
+        # merge_feeds rewrites Redis story hashes and subscriber counts, and tests share
+        # Redis with the dev server (newsblur_web/test_settings.py), so every merge in this
+        # class runs against mocked Redis clients and a no-op subscriber recount.
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(Feed, "count_subscribers"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_process_feed_merges_into_an_existing_https_twin(self):
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        stale = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        stale.num_subscribers = 2
+        stale.save()
+        twin = Feed.objects.create(
+            feed_address=self.HTTPS_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        # The twin is the heavier feed, as it was for every CBC pair, so it is the survivor.
+        twin.num_subscribers = 5
+        twin.save()
+        from apps.reader.models import UserSubscriptionFolders
+
+        user = User.objects.create_user("port80reader", "port80reader@example.com", "password")
+        UserSubscription.objects.create(user=user, feed=stale)
+        # switch_feed only moves a subscription for a user who has a folder tree.
+        UserSubscriptionFolders.objects.create(user=user, folders="[%s]" % stale.pk)
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(stale.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(pfeed.feed_id, twin.pk)
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=twin).exists())
+        self.assertFalse(Feed.objects.filter(pk=stale.pk).exists())
+
+    def test_heavier_http_feed_survives_the_merge_with_the_https_address(self):
+        """When the dead http feed has more subscribers, Feed.save keeps that row and deletes
+        the https twin, so the survivor must still end up on the https address."""
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        stale = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        stale.num_subscribers = 9
+        stale.save()
+        twin = Feed.objects.create(
+            feed_address=self.HTTPS_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        twin.num_subscribers = 2
+        twin.save()
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(stale.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(pfeed.feed_id, stale.pk)
+        self.assertEqual(Feed.objects.get(pk=stale.pk).feed_address, self.HTTPS_ADDRESS)
+        self.assertFalse(Feed.objects.filter(pk=twin.pk).exists())
+
+
 class Test_YouTubeFavicons(TestCase):
     """Tests for YouTube favicon lookup and caching."""
 
@@ -2348,12 +2773,13 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_capped.assert_called_once_with("feed", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_capped")
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=True)
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
     def test_capped_forbidden_fetch_records_no_error(
-        self, mock_get, mock_random, mock_over_budget, mock_capped
+        self, mock_get, mock_random, mock_over_budget, mock_capped, mock_validate
     ):
         """A fetch that was never attempted because of the credit cap shouldn't poison fetch
         history or back the feed off; it just waits for its next scheduled fetch."""
@@ -2395,13 +2821,14 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_skip.assert_called_once_with("feed", "dormant", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_skip")
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
     @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=True)
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     @patch("utils.feed_fetcher.safe_requests_get", side_effect=requests.ConnectionError("blocked"))
     def test_dormant_forbidden_fetch_records_no_error(
-        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip
+        self, mock_get, mock_random, mock_dormant, mock_over_budget, mock_skip, mock_validate
     ):
         """Like the credit cap, a fetch skipped for a dormant reader was never attempted, so it
         must not poison fetch history or back the feed off."""
@@ -2453,6 +2880,7 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_scrapeninja.assert_not_called()
         mock_skip.assert_called_once_with("feed", "user_budget", url=self.feed.feed_address)
 
+    @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.RScrapingBee.record_skip")
     @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=True)
     @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
@@ -2469,6 +2897,7 @@ class Test_ScrapingBeeProxy(TestCase):
         mock_over_budget,
         mock_users_over,
         mock_skip,
+        mock_validate,
     ):
         from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
 
