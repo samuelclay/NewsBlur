@@ -1115,7 +1115,7 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
         marker = parking_hash(racing.pk, 987654)
         looked_up, staging_started = threading.Event(), threading.Event()
         failures = []
-        original_lookup = Feed.parking_hash_on_disk
+        original_lookup = Feed.row_on_disk
 
         def lookup_then_pause(feed, update_fields=None):
             stored = original_lookup(feed, update_fields)
@@ -1128,7 +1128,7 @@ class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
             try:
                 row = Feed.objects.get(pk=racing.pk)
                 row.feed_address = "https://www.example.com/webfeed/rss/rss-racing-moved"
-                with patch.object(Feed, "parking_hash_on_disk", lookup_then_pause):
+                with patch.object(Feed, "row_on_disk", lookup_then_pause):
                     row.save()
             except Exception as e:
                 failures.append(("worker", e))
@@ -2686,6 +2686,53 @@ class Test_RestoreMergedFeedCommand(TestCase):
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
     @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_stale_instance_of_a_feed_folded_away_never_recreates_it_on_save(
+        self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
+    ):
+        """A fetch worker loaded the re-added feed before the restore folded it into the
+        original. Its later save of an address change finds no row; a plain Django save
+        would insert the deleted id again, and the next fetch would lock that row instead
+        of following the redirect. The save follows the merge's redirect and inserts nothing."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import (
+            fold_in_parked_feed,
+            parking_hash,
+        )
+        from apps.rss_feeds.models import feed_write_lock
+
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-stale",
+            feed_link="https://www.example.com/stale",
+            feed_title="Example | Stale",
+        )
+        parked = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-stale-copy",
+            feed_link="https://www.example.com/stale",
+            feed_title="Example | Stale",
+        )
+        Feed.objects.filter(pk=parked.pk).update(
+            feed_address=restored.feed_address, hash_address_and_link=parking_hash(parked.pk, restored.pk)
+        )
+        parked_id = parked.pk
+        worker_copy = Feed.objects.get(pk=parked_id)
+
+        fold_in_parked_feed(restored.pk, Feed.objects.get(pk=parked_id), log=lambda message: None)
+        self.assertFalse(Feed.objects.filter(pk=parked_id).exists())
+
+        worker_copy.feed_address = "https://www.example.com/webfeed/rss/rss-stale-moved"
+        saved = worker_copy.save()
+
+        self.assertEqual(saved.pk, restored.pk)
+        self.assertFalse(Feed.objects.filter(pk=parked_id).exists())
+        self.assertFalse(
+            Feed.objects.filter(feed_address="https://www.example.com/webfeed/rss/rss-stale-moved").exists()
+        )
+        with feed_write_lock(parked_id) as feed:
+            self.assertEqual(feed.pk, restored.pk)
+
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
     def test_a_moved_newsletters_permalink_names_its_new_hash_and_the_mailed_one_still_opens(
         self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
     ):
@@ -3649,6 +3696,66 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         self.assertLess(widest_gap, FETCH_LOCK_TIMEOUT_SECONDS)
         # Renewed at the production interval, not on every story.
         self.assertLess(len(renewals), 10)
+
+    @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+    @patch("apps.rss_feeds.models.MStory.remove_from_redis")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_long_story_identifier_migration_renews_the_lease_for_every_reader(
+        self, mock_feed_redis, mock_reader_redis, *mocks
+    ):
+        """update_story_with_new_guid walks every recent reader of the feed to move their
+        read state to the new hash; on a popular feed that one story outlasts the fetch
+        lease. The lease is renewed inside that walk and checked again before the writes
+        that follow it, so a merge can never take the feed while the migration writes."""
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import FETCH_LOCK_TIMEOUT_SECONDS, merge_feeds_lock
+
+        feed = self._feed("https://rss.example.com/lineup/migration.xml")
+        story = MStory(
+            story_feed_id=feed.pk,
+            story_guid="migration-old-guid",
+            story_title="Migrating",
+            story_content="<p>The same story under a new identifier.</p>",
+            story_permalink="https://www.example.com/inflight/migration",
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.save()
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        for number in range(4):
+            reader = User.objects.create_user(
+                "migrating%s" % number, "migrating%s@example.com" % number, "pw"
+            )
+            UserSubscription.objects.create(user=reader, feed=feed, last_read_date=datetime.datetime.utcnow())
+        clock = {"now": 5000.0}
+        events = []
+
+        def lock_factory(name, **kwargs):
+            lock = MagicMock()
+            lock.name = name
+            lock.acquire.side_effect = lambda blocking=True: events.append(("acquire", clock["now"])) or True
+            lock.extend.side_effect = lambda *args, **kwargs: events.append(("extend", clock["now"])) or True
+            return lock
+
+        def slow_reader(*args, **kwargs):
+            # Each reader's read-state lookup takes fifty seconds on this popular feed.
+            clock["now"] += 50
+            return True
+
+        mock_feed_redis.Redis.return_value.lock.side_effect = lock_factory
+        mock_reader_redis.Redis.return_value.sismember.side_effect = slow_reader
+        with patch.object(feed_models, "_merge_lock_clock", lambda: clock["now"]):
+            with merge_feeds_lock(feed.pk, timeout=FETCH_LOCK_TIMEOUT_SECONDS):
+                feed.update_story_with_new_guid(story, "migration-new-guid")
+                events.append(("write", clock["now"]))
+
+        self.assertGreaterEqual(clock["now"] - 5000.0, 200)
+        renewals = [at for kind, at in events if kind == "extend"]
+        self.assertGreaterEqual(len(renewals), 2)
+        times = [at for kind, at in events]
+        widest_gap = max(later - earlier for earlier, later in zip(times, times[1:]))
+        self.assertLess(widest_gap, FETCH_LOCK_TIMEOUT_SECONDS)
 
     def test_refresh_feed_tolerates_a_feed_deleted_with_no_redirect(self):
         from utils.feed_fetcher import ProcessFeed
