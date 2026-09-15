@@ -2095,6 +2095,14 @@ class Test_RestoreMergedFeedCommand(TestCase):
             duplicate_feed_id=424242,
             feed=survivor,
         )
+        # A chained merge rewrote this feed's own redirect to point at another id but kept
+        # its address and link; it must go too.
+        DuplicateFeed.objects.create(
+            duplicate_address=lost_address,
+            duplicate_link=lost.feed_link,
+            duplicate_feed_id=515151,
+            feed=survivor,
+        )
         readded = Feed.objects.create(
             feed_address=lost_address, feed_link="https://www.example.com/world", feed_title="Example | World"
         )
@@ -2118,6 +2126,7 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertEqual(mock_sync_feed.call_count, 2)
         self.assertEqual(json.decode(UserSubscriptionFolders.objects.get(user=newcomer).folders), [lost_id])
         self.assertFalse(DuplicateFeed.objects.filter(duplicate_feed_id=lost_id).exists())
+        self.assertFalse(DuplicateFeed.objects.filter(duplicate_feed_id=515151).exists())
         # Another deleted id at the same address (different link) keeps its redirect.
         self.assertTrue(
             DuplicateFeed.objects.filter(duplicate_feed_id=424242, duplicate_address=lost_address).exists()
@@ -2413,6 +2422,68 @@ class Test_SwitchFeedOrder(TestCase):
             subscription.switch_feed(new, old)
 
         self.assertEqual([call[0] for call in order.mock_calls], ["rewrite", "save"])
+
+
+class Test_FetchWritesUnderTheMergeLock(TestCase):
+    @patch("apps.rss_feeds.models.redis")
+    def test_stories_land_on_the_survivor_when_the_feed_was_merged_away_mid_fetch(self, mock_redis):
+        """A ProcessFeed that loaded the feed before a merge takes the feed's lock and looks
+        the feed up again before writing; the survivor gets the stories."""
+        from apps.rss_feeds.models import DuplicateFeed
+        from utils.feed_fetcher import ProcessFeed
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/inflight.xml",
+            feed_link="https://www.example.com/inflight",
+            feed_title="Example | In flight",
+        )
+        merged_away = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/inflight.xml",
+            feed_link="https://www.example.com/inflight",
+            feed_title="Example | In flight",
+        )
+        pfeed = ProcessFeed(
+            merged_away.pk, MagicMock(), {"verbose": False, "force": False, "updates_off": False}
+        )
+        pfeed.refresh_feed()
+        # The merge completes while this fetch is still parsing.
+        DuplicateFeed.objects.create(
+            duplicate_address=merged_away.feed_address,
+            duplicate_link=merged_away.feed_link,
+            duplicate_feed_id=merged_away.pk,
+            feed=survivor,
+        )
+        merged_id = merged_away.pk
+        merged_away.delete()
+
+        with patch.object(
+            Feed, "add_update_stories", return_value=dict(new=1, updated=0, same=0, error=0)
+        ) as mock_add:
+            from apps.rss_feeds import models as feed_models
+
+            with feed_models.merge_feeds_lock(pfeed.feed.pk):
+                pfeed.refresh_feed()
+            lock = mock_redis.Redis.return_value.lock
+            self.assertIn("merge_feeds:%s" % merged_id, [call.args[0] for call in lock.call_args_list])
+
+        self.assertEqual(pfeed.feed.pk, survivor.pk)
+        self.assertEqual(pfeed.feed_id, survivor.pk)
+
+    def test_refresh_feed_tolerates_a_feed_deleted_with_no_redirect(self):
+        from utils.feed_fetcher import ProcessFeed
+
+        gone = Feed.objects.create(
+            feed_address="http://rss.example.com/lineup/gone.xml",
+            feed_link="https://www.example.com/gone",
+            feed_title="Gone",
+        )
+        pfeed = ProcessFeed(gone.pk, MagicMock(), {"verbose": False, "force": False, "updates_off": False})
+        pfeed.refresh_feed()
+        gone.delete()
+
+        pfeed.refresh_feed()
+
+        self.assertIsNone(pfeed.feed)
 
 
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):

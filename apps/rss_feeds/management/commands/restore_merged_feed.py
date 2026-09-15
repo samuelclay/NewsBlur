@@ -258,9 +258,14 @@ def restore_feed_from_inventory(
             fields["branch_from_feed"] = redirect.feed_id
         # The merge that lost this feed left a redirect from its id to the survivor; a
         # saved story or an import would follow it straight back out.
-        # Only this id's redirects: another deleted feed can share the address with a
-        # different link, and its mapping must keep resolving.
-        stale_redirects = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+        # This id's redirects, plus the row that carries this feed's exact address and link
+        # (after a chain A into B into C, merge_feeds rewrote A's row to point at B's id but
+        # kept A's address). A feed sharing only the address with a different link keeps its row.
+        stale_redirects = DuplicateFeed.objects.filter(
+            duplicate_feed_id=feed_id
+        ) | DuplicateFeed.objects.filter(
+            duplicate_address=fields["feed_address"], duplicate_link=fields["feed_link"]
+        )
         if stale_redirects.exists():
             log("removing %s stale duplicate-feed redirects for feed %s" % (stale_redirects.count(), feed_id))
         # merge_feeds deleted the feed's stories, so the row must fetch afresh: cached

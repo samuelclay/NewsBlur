@@ -43,7 +43,7 @@ from apps.notifications.tasks import QueueClassifierNotifications, QueueNotifica
 from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.icon_importer import IconImporter
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, merge_feeds_lock
 from apps.rss_feeds.page_importer import PageImporter
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
 from apps.statistics.rscrapingbee import RScrapingBee
@@ -1126,6 +1126,8 @@ class ProcessFeed:
 
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
+        if self.feed is None:
+            return
         if self.feed_id != self.feed.pk:
             logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, self.feed.pk))
             self.feed_id = self.feed.pk
@@ -1295,19 +1297,32 @@ class ProcessFeed:
                 )
             )
 
-        existing_stories = self.load_existing_stories(story_hashes)
-        # if len(existing_stories) == 0:
-        #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
-        #         story_date__gte=start_date,
-        #         story_feed_id=self.feed.pk
-        #     ))
+        # Stories are written under the feed's merge lock: a merge of this feed running at
+        # the same time waits, and once the lock is ours the feed is looked up again so a feed
+        # merged away while this fetch was in flight resolves to its survivor (Feed.get_by_id
+        # follows DuplicateFeed) instead of stranding stories under a deleted id.
+        with merge_feeds_lock(self.feed.pk):
+            feed_before_lock = self.feed.pk
+            self.refresh_feed()
+            if self.feed is None:
+                logging.debug(
+                    " ***> Feed %s was deleted while it was being fetched, dropping its stories"
+                    % feed_before_lock
+                )
+                return FEED_ERRHTTP, dict(new=0, updated=0, same=0, error=1)
+            existing_stories = self.load_existing_stories(story_hashes)
+            # if len(existing_stories) == 0:
+            #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
+            #         story_date__gte=start_date,
+            #         story_feed_id=self.feed.pk
+            #     ))
 
-        ret_values = self.feed.add_update_stories(
-            stories,
-            existing_stories,
-            verbose=self.options["verbose"],
-            updates_off=self.options["updates_off"],
-        )
+            ret_values = self.feed.add_update_stories(
+                stories,
+                existing_stories,
+                verbose=self.options["verbose"],
+                updates_off=self.options["updates_off"],
+            )
 
         # PubSubHubbub
         if not self.options.get("archive_page", None):

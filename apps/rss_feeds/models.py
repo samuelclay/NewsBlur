@@ -457,7 +457,9 @@ class Feed(models.Model):
         if self.search_indexed and not force:
             return
 
-        stories = MStory.objects(story_feed_id=self.pk)
+        # no_cache: an Archive feed's stories, content and all, must not accumulate in the
+        # cursor's result cache while they are walked.
+        stories = MStory.objects(story_feed_id=self.pk).no_cache()
         for story in stories:
             story.index_story_for_search()
 
@@ -473,7 +475,7 @@ class Feed(models.Model):
             logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
             return
 
-        stories = MStory.objects(story_feed_id=self.pk).order_by("-story_date")[:1000]
+        stories = MStory.objects(story_feed_id=self.pk).order_by("-story_date").no_cache()[:1000]
         for index, story in enumerate(stories):
             if index % 100 == 0:
                 logging.debug(f" ---> ~FBIndexing discover story {index} in {self}")
@@ -5391,6 +5393,50 @@ def _merge_locks_held():
     return _merge_feeds_locks_held.feed_ids
 
 
+class merge_feeds_lock:
+    """Per-feed Redis locks taken in id order, reentrant within a thread, released in reverse
+    even when a later acquisition fails. merge_feeds holds them for both feeds, and
+    ProcessFeed holds the one for the feed it is writing stories to, so a fetch in flight
+    and a merge of the same feed take turns instead of stranding stories under a deleted
+    id. apps/rss_feeds/models.py
+    """
+
+    def __init__(self, *feed_ids):
+        self.feed_ids = [feed_id for feed_id in feed_ids if feed_id]
+        self.locks = []
+        self.entered = []
+        self.taken = []
+
+    def __enter__(self):
+        held = _merge_locks_held()
+        self.taken = [feed_id for feed_id in sorted(set(self.feed_ids)) if feed_id not in held]
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        self.locks = [
+            r.lock("merge_feeds:%s" % feed_id, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120)
+            for feed_id in self.taken
+        ]
+        try:
+            for lock in self.locks:
+                lock.__enter__()
+                self.entered.append(lock)
+        except BaseException:
+            self._release()
+            raise
+        held.update(self.taken)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._release()
+
+    def _release(self):
+        # Also after a failed acquisition: a first lock taken before a second timed out must
+        # not stay held until its lease runs out.
+        _merge_locks_held().difference_update(self.taken)
+        for lock in reversed(self.entered):
+            lock.__exit__(None, None, None)
+        self.entered = []
+
+
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
     """Fold duplicate_feed into original_feed and delete it. With preserve_branch_from_feed
     the survivor keeps its own parent (unless that parent is the duplicate being deleted),
@@ -5412,26 +5458,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branc
     # One lock per feed, taken in id order so two merges never wait on each other in a
     # cycle: merge_feeds(a, b) may swap the two when b has more readers, and merge_feeds(c, a)
     # touching a at the same time must wait for a's lock as well.
-    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-    held = _merge_locks_held()
-    to_lock = [feed_id for feed_id in sorted((original_feed_id, duplicate_feed_id)) if feed_id not in held]
-    locks = [
-        r.lock("merge_feeds:%s" % feed_id, timeout=MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, blocking_timeout=120)
-        for feed_id in to_lock
-    ]
-    entered = []
-    try:
-        for lock in locks:
-            lock.__enter__()
-            entered.append(lock)
-        held.update(to_lock)
+    with merge_feeds_lock(original_feed_id, duplicate_feed_id):
         return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
-    finally:
-        # Also on a failed acquisition: a first lock taken before a second timed out must not
-        # stay held until its lease runs out.
-        held.difference_update(to_lock)
-        for lock in reversed(entered):
-            lock.__exit__(None, None, None)
 
 
 def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
