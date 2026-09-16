@@ -31,7 +31,7 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(filter.waitForExistence(timeout: 10))
         let feedsList = app.tables["feeds-list"].firstMatch
         let outerInset: CGFloat
-        if #available(iOS 27.0, *), UIDevice.current.userInterfaceIdiom == .phone {
+        if #available(iOS 27.0, *) {
             outerInset = 0
         } else {
             outerInset = 8
