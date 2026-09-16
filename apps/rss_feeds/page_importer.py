@@ -20,7 +20,7 @@ from pyasn1.error import PyAsn1Error
 from sentry_sdk import capture_exception, flush
 
 from apps.rss_feeds.models import MFeedPage
-from apps.rss_feeds.text_importer import is_blocked_response
+from apps.rss_feeds.text_importer import is_blocked_response, redact_proxy_error
 from apps.statistics.rscrapingbee import RScrapingBee
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
@@ -341,9 +341,11 @@ class PageImporter(object):
             )
         except Exception as e:
             RScrapingBee.record("original_story", None, url=url)
+            # The raw exception can carry the request URL with the API key in it, see
+            # redact_proxy_error in apps/rss_feeds/text_importer.py.
             logging.user(
                 self.request,
-                "~SN~FRScrapingBee original story fetch error: %s" % e,
+                "~SN~FRScrapingBee original story fetch error: %s" % redact_proxy_error(e, api_key),
             )
         return None
 
