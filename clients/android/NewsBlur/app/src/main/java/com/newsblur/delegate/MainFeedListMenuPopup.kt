@@ -1,6 +1,7 @@
 package com.newsblur.delegate
 
 import android.content.Intent
+import com.newsblur.activity.ContactActivity
 import android.content.res.Configuration
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -188,6 +189,15 @@ class MainFeedListMenuPopup(
                         },
                     )
                 }
+                add(
+                    MainMenuRow(
+                        title = activity.getString(R.string.contact_us),
+                        iconRes = R.drawable.nb_menu_feedback,
+                    ) {
+                        popupWindow.dismiss()
+                        activity.startActivity(Intent(activity, ContactActivity::class.java))
+                    },
+                )
                 add(
                     MainMenuRow(
                         title = activity.getString(R.string.menu_feedback),
