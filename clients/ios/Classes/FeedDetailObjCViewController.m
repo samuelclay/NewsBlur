@@ -3318,21 +3318,35 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     self.pageFetching = NO;
 
-    if (preservedStoryTable && storiesCollection.storyLocationsCount == previousStoryCount) {
-        // FeedDetailObjCViewController.m advances filtered pages without reloading the loading cell or moving the read anchor.
+    if (preservedStoryTable) {
+        // FeedDetailObjCViewController.m rechecks the viewport after every native append: a partial
+        // filtered page can leave the loading row onscreen without another willDisplay callback.
         StoriesCollection *collection = storiesCollection;
         NSInteger page = collection.feedPage;
         NSUInteger requestId = self.fetchRequestId;
         NSUInteger renderGeneration = self.storyRenderCacheGeneration;
         NSDictionary *context = self.renderedStoryAppendContext;
+        NSString *account = [appDelegate.activeUsername copy] ?: @"";
+        NSString *host = [appDelegate.url copy] ?: @"";
         __weak FeedDetailObjCViewController *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
             FeedDetailObjCViewController *controller = weakSelf;
             if (!controller || controller.storiesCollection != collection || collection.feedPage != page ||
                 controller.fetchRequestId != requestId || controller.storyRenderCacheGeneration != renderGeneration ||
+                ![(controller.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
+                ![(controller.appDelegate.url ?: @"") isEqualToString:host] ||
                 ![context isEqualToDictionary:[controller storyAppendContext]]) {
                 return;
             }
+            UITableView *table = controller.storyTitlesTable;
+            if (!controller.appDelegate.inFindingStoryMode) {
+                UIWindow *window = table.window;
+                if (!window || !CGRectIntersectsRect([table convertRect:table.bounds toView:window], window.bounds)) return;
+                for (UIView *ancestor = table; ancestor; ancestor = ancestor.superview) {
+                    if (ancestor.hidden || ancestor.alpha == 0) return;
+                }
+            }
+            [table layoutIfNeeded];
             [controller fetchNextPageForCurrentViewport];
         });
     }
