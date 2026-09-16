@@ -20,7 +20,7 @@ import Combine
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.appDelegate = NewsBlurAppDelegate.shared()
+        if self.appDelegate == nil { self.appDelegate = NewsBlurAppDelegate.shared() }
         self.title = "Add + Discover Sites"
 
         updateBackgroundColor()
@@ -87,9 +87,16 @@ import Combine
         viewModel?.stopPolling()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        appDelegate?.detailViewController.discoverSitesDidAppear(self)
+    }
+
     private func handleTryFeed(_ feed: DiscoverPopularFeed) {
         Task { [weak self] in
             guard let self, let resolved = await self.viewModel?.resolvePreviewFeed(feed) else { return }
+            guard self.appDelegate?.detailViewController.isDiscoverSitesVisible == true else { return }
+            self.appDelegate?.detailViewController.beginDiscoverPreview()
             self.appDelegate?.loadTryFeedDetailView(
                 resolved.id, withStory: nil, isSocial: false,
                 withUser: resolved.rawFeedDict, showFindingStory: false

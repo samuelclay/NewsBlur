@@ -4,6 +4,171 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor
+final class Test_DiscoverPanePresentation: XCTestCase {
+    func test_livePadDiscoveryFillsContentAndKeepsSidebarSelection() async throws {
+        // AddSiteViewModelTests.swift exercises the signed Alpha app without replacing its account or preferences.
+#if targetEnvironment(simulator)
+        throw XCTSkip("Run explicitly on a connected iPad with NewsBlur Alpha")
+#else
+        guard UIDevice.current.userInterfaceIdiom == .pad,
+              Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+            throw XCTSkip("Requires NewsBlur Alpha on iPad")
+        }
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        for _ in 0..<100 {
+            if app.feedsNavigationController?.viewIfLoaded?.window != nil,
+               app.dictFoldersArray?.contains("discover_sites") == true { break }
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        let detail = try XCTUnwrap(app.detailViewController)
+        XCTAssertFalse(detail.isPhoneOrCompact)
+        let feeds = try XCTUnwrap(app.feedsViewController)
+        let section = try XCTUnwrap(app.dictFoldersArray?.index(of: "discover_sites"))
+        XCTAssertNotEqual(section, NSNotFound)
+        feeds.didSelectSectionHeader(withTag: section)
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        XCTAssertTrue(app.feedsNavigationController.topViewController === feeds)
+        XCTAssertEqual(feeds.currentSection, section)
+        let discovery = try XCTUnwrap(descendants(of: detail).first { $0 is DiscoverSitesViewController })
+        let pane = discovery.view.convert(discovery.view.bounds, to: detail.view)
+        XCTAssertEqual(pane.width, detail.view.bounds.width, accuracy: 1)
+        detail.beginDiscoverPreview()
+        detail.addDiscoverPreviewBackButton()
+        XCTAssertFalse(detail.isDiscoverSitesVisible)
+        XCTAssertTrue(detail.feedDetailNavigationItem.leftBarButtonItems?.contains {
+            $0.accessibilityIdentifier == "discover-preview-back"
+        } == true)
+        detail.returnToDiscoverSites()
+        XCTAssertTrue(descendants(of: detail).contains { $0 === discovery })
+        let everything = try XCTUnwrap(app.dictFoldersArray?.index(of: "everything"))
+        XCTAssertNotEqual(everything, NSNotFound)
+        feeds.didSelectSectionHeader(withTag: everything)
+        XCTAssertFalse(detail.isDiscoverSitesVisible)
+        XCTAssertFalse(detail.canReturnToDiscoverSites)
+        feeds.didSelectSectionHeader(withTag: section)
+        try await Task.sleep(nanoseconds: 3_000_000_000)
+        XCTAssertTrue(detail.isDiscoverSitesVisible)
+        XCTAssertEqual(feeds.currentSection, section)
+        let window = try XCTUnwrap(detail.view.window)
+        let screenshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        let attachment = XCTAttachment(image: screenshot)
+        attachment.name = "claypad-discovery-full-content-pane"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+#endif
+    }
+
+    func test_regularDiscoveryLeavesFeedsVisibleAndOccupiesTheContentPane() throws {
+        let (app, detail, feeds, navigation) = fixture()
+        app.openDiscoverSitesView()
+
+        XCTAssertTrue(navigation.topViewController === feeds,
+                      "Add + Discover Sites must leave the feed sidebar visible on iPad")
+        let discovery = try XCTUnwrap(descendants(of: detail).first { $0 is DiscoverSitesViewController })
+        detail.view.layoutIfNeeded()
+        XCTAssertEqual(discovery.view.convert(discovery.view.bounds, to: detail.view).width,
+                       detail.view.bounds.width, accuracy: 1,
+                       "Discovery must cover both story titles and story detail")
+    }
+
+    func test_compactDiscoveryStillPushesOntoTheFeedNavigationStack() throws {
+        let (app, detail, feeds, navigation) = fixture()
+        detail.compactLayout = true
+        app.openDiscoverSitesView()
+        XCTAssertTrue(navigation.viewControllers.first === feeds)
+        XCTAssertTrue(navigation.topViewController is DiscoverSitesViewController)
+        XCTAssertFalse(descendants(of: detail).contains { $0 is DiscoverSitesViewController })
+    }
+
+    func test_previewReturnRetainsDiscoveryAndRestoresTheReaderVisibilityOnExit() throws {
+        let (app, detail, feeds, _) = fixture()
+        let titles = UIView()
+        let article = UIView()
+        let hiddenDivider = UIView()
+        hiddenDivider.isHidden = true
+        [titles, article, hiddenDivider].forEach { detail.view.addSubview($0) }
+        app.openDiscoverSitesView()
+        let discovery = try XCTUnwrap(descendants(of: detail).first { $0 is DiscoverSitesViewController })
+        XCTAssertTrue(titles.isHidden && article.isHidden)
+        XCTAssertEqual(feeds.currentSection, 1)
+
+        detail.beginDiscoverPreview()
+        XCTAssertFalse(detail.isDiscoverSitesVisible)
+        XCTAssertTrue(detail.canReturnToDiscoverSites)
+        XCTAssertFalse(titles.isHidden || article.isHidden)
+        XCTAssertTrue(hiddenDivider.isHidden)
+
+        detail.returnToDiscoverSites()
+        XCTAssertTrue(detail.isDiscoverSitesVisible)
+        XCTAssertTrue(descendants(of: detail).contains { $0 === discovery })
+        XCTAssertTrue(titles.isHidden && article.isHidden)
+
+        detail.dismissDiscoverSites()
+        XCTAssertFalse(detail.isDiscoverSitesVisible)
+        XCTAssertFalse(detail.canReturnToDiscoverSites)
+        XCTAssertFalse(titles.isHidden || article.isHidden)
+        XCTAssertTrue(hiddenDivider.isHidden)
+        XCTAssertNil(discovery.parent)
+    }
+
+    func test_resizingDiscoveryDoesNotRestoreStaleReaderAboveIt() throws {
+        let (app, detail, feeds, navigation) = fixture()
+        app.openDiscoverSitesView()
+        let discovery = try XCTUnwrap(descendants(of: detail).first { $0 is DiscoverSitesViewController })
+        detail.collapseToSingleColumn()
+        detail.restoreCompactNavigationAfterSplitCollapse(showFeed: true, showStory: true)
+        XCTAssertTrue(navigation.topViewController === discovery)
+        XCTAssertEqual(navigation.viewControllers.count, 2)
+
+        detail.expandToTwoColumns()
+        XCTAssertTrue(navigation.topViewController === feeds)
+        XCTAssertTrue(descendants(of: detail).contains { $0 === discovery })
+        XCTAssertTrue(detail.isDiscoverSitesVisible)
+    }
+
+    func test_nativeBackToDiscoveryClearsThePreviewReturnState() throws {
+        let (app, detail, _, navigation) = fixture()
+        detail.compactLayout = true
+        app.openDiscoverSitesView()
+        let discovery = try XCTUnwrap(navigation.topViewController)
+        detail.beginDiscoverPreview()
+        XCTAssertTrue(detail.canReturnToDiscoverSites)
+        detail.discoverSitesDidAppear(discovery)
+        XCTAssertFalse(detail.canReturnToDiscoverSites)
+        XCTAssertTrue(detail.isDiscoverSitesVisible)
+    }
+
+    private func fixture() -> (NewsBlurAppDelegate, DiscoveryPaneTestDetail, FeedsViewController, UINavigationController) {
+        let app = NewsBlurAppDelegate()
+        let detail = DiscoveryPaneTestDetail()
+        let feeds = FeedsViewController()
+        let navigation = UINavigationController(rootViewController: feeds)
+        app.detailViewController = detail
+        app.feedsViewController = feeds
+        app.feedsNavigationController = navigation
+        app.storiesCollection = StoriesCollection()
+        app.dictFoldersArray = ["dashboard", "discover_sites", "everything"]
+        detail.appDelegate = app
+        feeds.appDelegate = app
+        detail.loadViewIfNeeded()
+        return (app, detail, feeds, navigation)
+    }
+
+    private func descendants(of controller: UIViewController) -> [UIViewController] {
+        controller.children.flatMap { [$0] + descendants(of: $0) }
+    }
+}
+
+@MainActor private final class DiscoveryPaneTestDetail: DetailViewController {
+    var compactLayout = false
+    override var isPhoneOrCompact: Bool { compactLayout || isCompact }
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 880, height: 820)) }
+    override func viewDidLoad() {}
+}
+
+@MainActor
 final class AddSiteViewModelTests: XCTestCase {
     func test_addSitePresentationStartsAtSystemMediumDetent() throws {
         let controller = AddSiteSheetViewController()

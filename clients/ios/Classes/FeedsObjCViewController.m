@@ -2329,6 +2329,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     if (appDelegate.hasNoSites) {
         return;
     }
+    [appDelegate.detailViewController dismissDiscoverSites];
     
     [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
     [appDelegate.storiesCollection reset];
@@ -2636,6 +2637,18 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
 }
 
+- (void)highlightDiscoverySelection {
+    [self clearSelectedHeader];
+    if (self.currentRowAtIndexPath) {
+        [self.feedTitlesTable deselectRowAtIndexPath:self.currentRowAtIndexPath animated:NO];
+    }
+    self.currentRowAtIndexPath = nil;
+    self.currentSection = NewsBlurTopSectionDiscoverSites;
+    self.lastRowAtIndexPath = nil;
+    self.lastSection = NewsBlurTopSectionDiscoverSites;
+    [self highlightSelection];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView
 heightForHeaderInSection:(NSInteger)section {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
@@ -2719,6 +2732,9 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag {
+    if (tag != NewsBlurTopSectionDiscoverSites) {
+        [appDelegate.detailViewController dismissDiscoverSites];
+    }
     if (self.currentRowAtIndexPath != nil) {
         [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
     }

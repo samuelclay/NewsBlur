@@ -180,4 +180,5 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)showDoneNotifier;
 - (void)hideNotifier;
 
+- (void)highlightDiscoverySelection;
 @end

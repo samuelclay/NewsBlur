@@ -1031,6 +1031,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)updateSplitBehavior:(BOOL)refresh {
+    if (self.detailViewController.isDiscoverSitesVisible && !self.detailViewController.isPhoneOrCompact) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+        return;
+    }
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *behavior = [preferences stringForKey:@"split_behavior"] ?: @"auto";
     
@@ -1762,11 +1767,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (@available(iOS 15.0, *)) {
         DiscoverSitesViewController *discoverVC = [[DiscoverSitesViewController alloc] init];
 
-        if (self.detailViewController.isPhoneOrCompact) {
-            [self.feedsNavigationController pushViewController:discoverVC animated:YES];
-        } else {
-            [self.feedsNavigationController pushViewController:discoverVC animated:YES];
-        }
+        [self.detailViewController showDiscoverSites:discoverVC];
     }
 }
 
@@ -2456,7 +2457,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
     self.skipTryFeedCleanup = YES;
     if (@available(iOS 15.0, *)) {
-        if ([self.feedsNavigationController.topViewController isKindOfClass:DiscoverSitesViewController.class]) {
+        if ([self.feedsNavigationController.topViewController isKindOfClass:DiscoverSitesViewController.class] ||
+            self.detailViewController.canReturnToDiscoverSites) {
             // NewsBlurAppDelegate.m keeps Discover beneath its preview instead of starting a competing pop to root.
             [self loadFeedDetailView];
             return;
