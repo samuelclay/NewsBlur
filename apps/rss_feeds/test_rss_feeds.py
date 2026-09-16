@@ -7033,12 +7033,16 @@ class Test_PlainUserAgentRetryOnBlockedFetch(TestCase):
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
     @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
     @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
-    def test_a_rate_limit_is_respected_with_no_retries_at_all(
-        self, mock_parse, mock_skip, mock_random, mock_validate
-    ):
+    def test_a_rate_limit_gets_no_user_agent_retries(self, mock_parse, mock_skip, mock_random, mock_validate):
+        # A 429 gets neither the fake-header retry nor the plain-UA retry. The feedparser
+        # fallback that follows (patched out here) is deliberately still reached: it is the
+        # request whose headers ProcessFeed reads Retry-After from, see the Retry-After
+        # handling in utils/feed_fetcher.py, so the backoff the site asked for is honored.
         result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents(blocked_status=429))
 
         self.assertEqual(len(self.user_agents), 1)
+        self.assertIn("Mozilla/", self.user_agents[0])
+        self.assertTrue(mock_parse.called)
 
     @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
