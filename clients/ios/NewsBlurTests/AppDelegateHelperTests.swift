@@ -4,6 +4,24 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedFilterAccessibility: XCTestCase {
+    func test_iPhoneSEWidthKeepsTheLabeledIntelligenceFilters() throws {
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
+        let controller = try XCTUnwrap(storyboard.instantiateViewController(withIdentifier: "FeedsViewController") as? FeedsViewController)
+        controller.loadViewIfNeeded()
+        controller.view.frame = CGRect(x: 0, y: 0, width: 375, height: 667)
+        controller.viewDidLayoutSubviews()
+        // AppDelegateHelperTests.swift resolves the storyboard's margin-relative constraints without a host window.
+        let leading = controller.view.layoutMargins.left + controller.toolbarLeadingConstraint.constant
+        let trailing = controller.view.layoutMargins.right + controller.toolbarTrailingConstraint.constant
+        controller.feedViewToolbar.frame = CGRect(x: leading, y: 0, width: 375 - leading - trailing, height: 48)
+        controller.layout(for: .portrait)
+        let control = try XCTUnwrap(controller.intelligenceControl)
+        // AppDelegateHelperTests.swift requires the original text-bearing images at iPhone SE width.
+        XCTAssertEqual(control.widthForSegment(at: 1), 68)
+        XCTAssertEqual(control.widthForSegment(at: 2), 62)
+        XCTAssertEqual(control.widthForSegment(at: 3), 60)
+    }
+
     func test_loadingSidebarKeepsImageFiltersAccessible() throws {
         let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
         let controller = try XCTUnwrap(storyboard.instantiateViewController(withIdentifier: "FeedsViewController") as? FeedsViewController)
