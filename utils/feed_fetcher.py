@@ -57,7 +57,7 @@ feedparser.sanitizer._BaseHTMLProcessor.elements_no_end_tag.update(
 from bs4 import BeautifulSoup
 from celery.exceptions import SoftTimeLimitExceeded
 from django.utils import feedgenerator
-from django.utils.encoding import smart_str
+from django.utils.encoding import DjangoUnicodeDecodeError, smart_str
 from django.utils.html import linebreaks
 from mongoengine import connect, connection
 from qurl import qurl
@@ -544,10 +544,49 @@ class FetchFeed:
                     headers["If-Modified-Since"] = modified_header
                 if etag or modified:
                     headers["A-IM"] = "feed"
+                upgraded_to_https = False
                 try:
                     raw_feed = safe_requests_get(address, headers=headers, timeout=15)
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
+                if (
+                    raw_feed is None
+                    and address.startswith("http://")
+                    and not self.options.get("archive_page")
+                ):
+                    # Forum #13830: rss.cbc.ca dropped port 80 with no redirect, so every
+                    # http:// subscription went quiet. When the http address won't connect at
+                    # all, try the same path over https before the fake-header retry. A live
+                    # feed there is tagged on fpf (after parsing proves it is a feed) so
+                    # ProcessFeed.migrate_https_feed_address persists the https address.
+                    # Archive fetches are skipped: their address is a history page, not the
+                    # feed. The probe is unconditional so a healthy https copy can't answer
+                    # 304 and look dead. utils/feed_fetcher.py
+                    https_address = "https://" + address[len("http://") :]
+                    probe_headers = {
+                        name: value
+                        for name, value in headers.items()
+                        if name not in ("If-None-Match", "If-Modified-Since", "A-IM")
+                    }
+                    try:
+                        https_feed = safe_requests_get(https_address, headers=probe_headers, timeout=15)
+                    except (UnsafeUrlError, requests.RequestException, TimeoutError):
+                        # Any failure of the optional probe (connection refused, read timeout,
+                        # redirect loop) just means the usual http retries run as before.
+                        https_feed = None
+                    if self.https_probe_is_a_feed(https_feed, https_address):
+                        logging.debug(
+                            "   ---> [%-30s] ~FBhttp address is dead, https answered: ~SB%s"
+                            % (self.feed.log_title[:30], https_address)
+                        )
+                        raw_feed = https_feed
+                        address = https_address
+                        upgraded_to_https = True
+                    elif https_feed is not None:
+                        logging.debug(
+                            "   ---> [%-30s] ~FYhttps answered without a feed, keeping the usual retries: %s"
+                            % (self.feed.log_title[:30], https_address)
+                        )
                 if raw_feed and raw_feed.status_code == 304:
                     logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
@@ -660,17 +699,34 @@ class FetchFeed:
                         # Add UTF-8 charset to help feedparser detect encoding correctly
                         response_headers["content-type"] = f"{content_type}; charset=utf-8"
 
-                    # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes)
-                    self.raw_feed = smart_str(raw_feed.content)
+                    # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes).
+                    # A feed in another encoding (ISO-8859-1, Windows-1251) is not valid UTF-8:
+                    # hand feedparser the raw bytes so it honors the XML declaration and the
+                    # HTTP charset itself, instead of falling out to the feedparser URL
+                    # fallback, which cannot reach a feed that only answers over https
+                    # (forum #13830). utils/feed_fetcher.py
+                    try:
+                        self.raw_feed = smart_str(raw_feed.content)
+                    except (UnicodeDecodeError, DjangoUnicodeDecodeError):
+                        self.raw_feed = None
 
-                    # Preprocess feed to fix encoding issues before parsing with feedparser
-                    processed_feed = preprocess_feed_encoding(self.raw_feed)
-                    if processed_feed != self.raw_feed:
+                    if self.raw_feed is not None:
+                        # Preprocess feed to fix encoding issues before parsing with feedparser
+                        processed_feed = preprocess_feed_encoding(self.raw_feed)
+                        if processed_feed != self.raw_feed:
+                            logging.debug(
+                                "   ---> [%-30s] ~FGApplied encoding correction to feed with misencoded HTML entities"
+                                % (self.feed.log_title[:30])
+                            )
+                        self.fpf = feedparser.parse(processed_feed, response_headers=response_headers)
+                    else:
+                        self.fpf = feedparser.parse(raw_feed.content, response_headers=response_headers)
+                        detected = self.fpf.get("encoding") or "utf-8"
                         logging.debug(
-                            "   ---> [%-30s] ~FGApplied encoding correction to feed with misencoded HTML entities"
-                            % (self.feed.log_title[:30])
+                            "   ---> [%-30s] ~FBFeed is not UTF-8, parsed raw bytes as %s"
+                            % (self.feed.log_title[:30], detected)
                         )
-                    self.fpf = feedparser.parse(processed_feed, response_headers=response_headers)
+                        self.raw_feed = raw_feed.content.decode(detected, errors="replace")
 
                     # When feedparser parses content (not a URL), it doesn't set status/etag/modified.
                     # Inject these from the requests response so compare_feed_attribute_changes preserves them.
@@ -690,10 +746,16 @@ class FetchFeed:
                             % (
                                 self.feed.log_title[:30],
                                 raw_feed.status_code,
-                                len(smart_str(raw_feed.content)),
+                                len(raw_feed.content),
                                 raw_feed.headers,
                             )
                         )
+                # Only a parsed feed with stories earns the address migration, whether it came
+                # through the JSON or the XML branch. A 200 that parses to no entries (an error
+                # document, a landing page) is never saved as the feed's address.
+                if upgraded_to_https and self.fpf and self.fpf.entries:
+                    self.fpf["href"] = address
+                    self.fpf["upgraded_to_https"] = True
             except Exception as e:
                 logging.debug(
                     "   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s"
@@ -801,6 +863,48 @@ class FetchFeed:
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
         return json_fetcher.fetch(address, headers)
+
+    def https_probe_is_a_feed(self, response, address):
+        """The https probe in fetch() is adopted only when its body parses to a feed with
+        at least one story. A 200 that merely looks like a feed (an XML or JSON error
+        document) is left alone so the fake-header, feedparser, and proxy retries still run
+        for the http address, and a JSON error object never reaches JSONFetcher's Atom
+        conversion with a bare version and no items. utils/feed_fetcher.py
+        """
+        if not self.https_probe_looks_like_a_feed(response):
+            return False
+        content_type = (response.headers.get("Content-Type") or "").lower()
+        try:
+            if "json" in content_type:
+                body = self.fetch_json_feed(address, response)
+                if not body:
+                    return False
+                parsed = feedparser.parse(preprocess_feed_encoding(body))
+            else:
+                # Raw bytes, so feedparser honors the feed's own encoding declaration; a
+                # UTF-8 decode here would reject every valid ISO-8859-1 feed.
+                parsed = feedparser.parse(response.content)
+        except Exception as e:
+            logging.debug(
+                "   ***> [%-30s] ~FRhttps probe did not parse as a feed: %s" % (self.feed.log_title[:30], e)
+            )
+            return False
+        return bool(parsed and parsed.entries)
+
+    @staticmethod
+    def https_probe_looks_like_a_feed(response):
+        """Cheap gate for the https probe in fetch(): a 200 with a feed-ish content type or
+        body. Keeps an https landing page or error page from replacing the dead http fetch,
+        so the usual fake-header and proxy retries still run for it. The parsed result is
+        checked again before the address is tagged for migration. utils/feed_fetcher.py
+        """
+        if response is None or response.status_code != 200 or not response.content:
+            return False
+        content_type = (response.headers.get("Content-Type") or "").lower()
+        if any(marker in content_type for marker in ("xml", "rss", "atom", "json")):
+            return True
+        head = response.content.lstrip()[:200].lower()
+        return head.startswith(b"<?xml") or b"<rss" in head or b"<feed" in head or head.startswith(b"{")
 
     def fetch_youtube(self):
         youtube_fetcher = YoutubeFetcher(self.feed, self.options)
@@ -1161,6 +1265,46 @@ class ProcessFeed:
             self.feed = saved_feed
             self.feed_id = self.feed.pk
 
+    def migrate_https_feed_address(self):
+        """Persist the https:// address FetchFeed fell back to when the http:// one stopped
+        connecting (fpf["upgraded_to_https"], see FetchFeed.fetch), so the feed migrates
+        once instead of knocking on the dead port every fetch.
+
+        Like migrate_openrss_feed_address, the full save recomputes the address hash and
+        merges into an existing https feed on collision, which is how a stale http feed
+        and its https twin become one. Locked addresses are left alone. Forum #13830.
+        utils/feed_fetcher.py
+        """
+        if self.fpf.get("upgraded_to_https") is not True:
+            return
+        https_address = self.fpf.get("href")
+        if not isinstance(https_address, str) or https_address == self.feed.feed_address:
+            return
+        if self.feed.feed_address_locked:
+            return
+        logging.debug(
+            "   ---> [%-30s] ~FBMigrating dead http feed address to https: ~SB%s~SN -> ~SB%s"
+            % (self.feed.log_title[:30], self.feed.feed_address, https_address)
+        )
+        self.feed.feed_address = https_address
+        saved_feed = self.feed.save()
+        if saved_feed:
+            self.feed = saved_feed
+            self.feed_id = self.feed.pk
+        if self.feed.feed_address != https_address and not self.feed.feed_address_locked:
+            # Feed.save merged into the https twin but kept this row because it had more
+            # subscribers, so the row still carries the dead http address. The twin is gone
+            # now, so a second save lands the https address without a collision.
+            logging.debug(
+                "   ---> [%-30s] ~FBSurvived the merge with the http address, saving https: ~SB%s"
+                % (self.feed.log_title[:30], https_address)
+            )
+            self.feed.feed_address = https_address
+            saved_feed = self.feed.save()
+            if saved_feed:
+                self.feed = saved_feed
+                self.feed_id = self.feed.pk
+
     def load_existing_stories(self, story_hashes):
         stories = MStory.objects(story_hash__in=story_hashes).order_by()
         return {story.story_hash: story for story in stories}
@@ -1170,6 +1314,7 @@ class ProcessFeed:
         start = time.time()
         self.refresh_feed()
         self.migrate_openrss_feed_address()
+        self.migrate_https_feed_address()
 
         if not self.options.get("archive_page", None):
             feed_status, ret_values = self.verify_feed_integrity()
