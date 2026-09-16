@@ -477,6 +477,14 @@ static BOOL NBBoolPreferenceValue(id value) {
         makeFixedSpace(16)
     ];
 #else
+    if (@available(iOS 27.0, *)) {
+        if (self.appDelegate.detailViewController.isPhoneOrCompact) {
+            // FeedsObjCViewController.m keeps compact toolbar controls in one native group.
+            // Spacer items split them into separate glass groups whose gaps can overflow full filter labels.
+            self.feedViewToolbar.items = @[self.addBarButton, intelligenceItem, self.settingsBarButton];
+            return;
+        }
+    }
     self.feedViewToolbar.items = @[
         self.addBarButton,
         makeFlexSpace(),
@@ -586,8 +594,14 @@ static BOOL NBBoolPreferenceValue(id value) {
 #else
     // MainInterface.storyboard anchors this toolbar to layout margins, not the view edges.
     // Subtract those margins so the intended 8pt inset does not become 24pt on phone or 20pt on iPad.
-    self.toolbarLeadingConstraint.constant = self.view.safeAreaInsets.left + 8.0 - self.view.layoutMargins.left;
-    self.toolbarTrailingConstraint.constant = self.view.safeAreaInsets.right + 8.0 - self.view.layoutMargins.right;
+    CGFloat toolbarSideInset = 8.0;
+    if (@available(iOS 27.0, *)) {
+        // FeedsObjCViewController.m uses UIKit's own 16pt inner margins on compact screens
+        // so the full filter labels still fit the 375pt iPhone SE without a second outer inset.
+        if (self.appDelegate.detailViewController.isPhoneOrCompact) toolbarSideInset = 0;
+    }
+    self.toolbarLeadingConstraint.constant = self.view.safeAreaInsets.left + toolbarSideInset - self.view.layoutMargins.left;
+    self.toolbarTrailingConstraint.constant = self.view.safeAreaInsets.right + toolbarSideInset - self.view.layoutMargins.right;
 #endif
     self.toolbarBottomConstraint.constant = -toolbarBottomGap;
     CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
@@ -788,10 +802,10 @@ static BOOL NBBoolPreferenceValue(id value) {
 #if !TARGET_OS_MACCATALYST
     if (@available(iOS 27.0, *)) {
         // FeedsObjCViewController.m reserves the measured iOS 27 toolbar geometry so filters
-        // remain visible: 16pt inner margins, 48pt native button groups, and two 8pt gaps.
+        // remain visible: 16pt inner margins and 48pt buttons. Separate regular-width groups need two 8pt gaps.
         const CGFloat toolbarInnerMargins = 2 * 16;
         const CGFloat toolbarButtonGroups = 2 * 48;
-        const CGFloat toolbarGroupSpacing = 2 * 8;
+        const CGFloat toolbarGroupSpacing = self.appDelegate.detailViewController.isPhoneOrCompact ? 0 : 2 * 8;
         CGFloat availableWidth = MAX(0, toolbarWidth - toolbarInnerMargins - toolbarButtonGroups - toolbarGroupSpacing);
         useCompactIcons = availableWidth < 230;
         controlWidth = useCompactIcons ? MIN(165, availableWidth) : 230;

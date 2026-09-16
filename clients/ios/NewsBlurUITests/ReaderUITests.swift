@@ -30,8 +30,14 @@ final class ReaderUITests: XCTestCase {
         let filter = app.segmentedControls["feed-list-intelligence"]
         XCTAssertTrue(filter.waitForExistence(timeout: 10))
         let feedsList = app.tables["feeds-list"].firstMatch
-        XCTAssertEqual(toolbar.frame.minX - feedsList.frame.minX, 8, accuracy: 1)
-        XCTAssertEqual(feedsList.frame.maxX - toolbar.frame.maxX, 8, accuracy: 1)
+        let outerInset: CGFloat
+        if #available(iOS 27.0, *), UIDevice.current.userInterfaceIdiom == .phone {
+            outerInset = 0
+        } else {
+            outerInset = 8
+        }
+        XCTAssertEqual(toolbar.frame.minX - feedsList.frame.minX, outerInset, accuracy: 1)
+        XCTAssertEqual(feedsList.frame.maxX - toolbar.frame.maxX, outerInset, accuracy: 1)
         XCTAssertTrue(addButton.isHittable)
         XCTAssertTrue(settings.isHittable)
         XCTAssertEqual(filter.buttons.count, 4)
