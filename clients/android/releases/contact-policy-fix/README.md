@@ -7,7 +7,7 @@ Google Play's September 16, 2026 rejection identifies a missing clearly labeled 
 - Android main menu and login screen link to a native Contact us page.
 - The page identifies NewsBlur, Inc. and displays selectable android@newsblur.com and the NewsBlur website without requiring an email client, login, or network request.
 - Send email opens a plain email intent; missing email/browser handlers show an explanatory message.
-- Public /contact page identifies Samuel Clay at NewsBlur, Inc., with general and Android support email links. Website footer and About link to it.
+- Public /contact page identifies Samuel Clay at NewsBlur, Inc., with general and Android support email links. It remains accessible directly by URL and from About, without a website footer link.
 
 ## Verification
 
