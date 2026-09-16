@@ -44,6 +44,18 @@ final class ReaderUITests: XCTestCase {
         attachScreenshot(named: "shared-story-remains-in-focus")
     }
 
+    func test_focusedRiverLoadsFollowingPagesWithoutScrolling() {
+        app.launchArguments += ["-newsblur-ui-test-focused-pagination"]
+        launch(on: "reader-folder-tech", storyTitlesStyle: "standard")
+        let table = app.tables["story-titles-list"]
+        XCTAssertTrue(table.waitForExistence(timeout: 10))
+        XCTAssertTrue(table.cells["story-row-ui-focus-3-0"].waitForExistence(timeout: 15), app.debugDescription)
+        XCTAssertTrue(table.cells["story-row-ui-focus-1-0"].exists)
+        XCTAssertTrue(table.cells["story-row-ui-focus-2-0"].exists)
+        XCTAssertFalse(table.cells["story-row-ui-focus-1-1"].exists)
+        attachScreenshot(named: "focus-pages-load-without-scrolling")
+    }
+
     func test_readerScenarioWaitsForDelayedFeedFixture() {
         app.launchArguments = ["-newsblur-ui-test-feed-delay", "3"]
         launch(on: "reader-feed-swift", storyTitlesStyle: "standard")

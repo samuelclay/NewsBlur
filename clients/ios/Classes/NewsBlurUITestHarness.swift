@@ -309,7 +309,8 @@ final class NewsBlurUITestHarness {
             return
         }
 
-        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") {
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") ||
+            ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-focused-pagination") {
             appDelegate.selectedIntelligence = 1
             appDelegate.feedsViewController.intelligenceControl.selectedSegmentIndex = 2
         }
@@ -573,6 +574,19 @@ private enum ReaderUITestFixtures {
     }
 
     private static func riverStoriesResponse(for url: URL) -> [String: Any] {
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-focused-pagination") {
+            let page = pageNumber(from: url)
+            // NewsBlurUITestHarness.swift leaves one Focus match per page to exercise paging without scrolling.
+            let stories: [[String: Any]] = (1...3).contains(page) ? (0..<12).map { index in
+                var item = story(hash: "ui-focus-\(page)-\(index)", feedID: swiftFeedId,
+                                 title: "Focus page \(page) story \(index)", content: "<p>Pagination fixture.</p>",
+                                 date: "5m", timestamp: 1_700_001_000 - page * 12 - index,
+                                 author: "Reader Fixtures")
+                item["intelligence"] = ["feed": index == 0 ? 1 : 0, "title": 0, "author": 0, "tags": 0]
+                return item
+            } : []
+            return feedStoriesResponse(feedID: "river", stories: stories)
+        }
         let activeFeeds = Set(URLComponents(url: url, resolvingAgainstBaseURL: false)?
             .queryItems?
             .filter { $0.name == "f" }
