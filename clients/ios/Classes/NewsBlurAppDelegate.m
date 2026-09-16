@@ -1753,7 +1753,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
         UISheetPresentationController *sheet = nav.sheetPresentationController;
         UISheetPresentationControllerDetent *smallDetent = [UISheetPresentationControllerDetent customDetentWithIdentifier:@"addSiteSmall" resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext> context) {
-            return 200.0;
+            return 390.0;
         }];
         sheet.detents = @[smallDetent, UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
@@ -2463,6 +2463,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 
     self.skipTryFeedCleanup = YES;
+    if (@available(iOS 15.0, *)) {
+        if ([self.feedsNavigationController.topViewController isKindOfClass:DiscoverSitesViewController.class]) {
+            // NewsBlurAppDelegate.m keeps Discover beneath its preview instead of starting a competing pop to root.
+            [self loadFeedDetailView];
+            return;
+        }
+    }
     [self presentFeedDetailAfterFeedSelection];
 }
 

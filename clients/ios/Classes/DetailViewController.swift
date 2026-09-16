@@ -431,7 +431,7 @@ class DetailViewController: BaseViewController {
             return
         }
 
-        var controllers: [UIViewController] = [feedsViewController]
+        var controllers = discoveryNavigationPrefix(in: nav) ?? [feedsViewController]
 
         if (showFeed || showStory), let feedDetailViewController {
             controllers.append(feedDetailViewController)
@@ -482,10 +482,24 @@ class DetailViewController: BaseViewController {
     /// Moves the feed detail and story pages (as appropriate) to the detail view. Called when expanding to a regular size class.
     func expandToTwoColumns() {
         isCompact = false
-        
-        appDelegate.feedsNavigationController.popToRootViewController(animated: false)
+
+        if let navigation = appDelegate.feedsNavigationController,
+           let discoveryPrefix = discoveryNavigationPrefix(in: navigation) {
+            navigation.setViewControllers(discoveryPrefix, animated: false)
+        } else {
+            appDelegate.feedsNavigationController.popToRootViewController(animated: false)
+        }
         
         checkViewControllers()
+    }
+
+    private func discoveryNavigationPrefix(in navigation: UINavigationController) -> [UIViewController]? {
+        // DetailViewController.swift retains the live discovery screen while preview readers move between columns.
+        guard #available(iOS 15.0, *),
+              let index = navigation.viewControllers.lastIndex(where: { $0 is DiscoverSitesViewController }) else {
+            return nil
+        }
+        return Array(navigation.viewControllers.prefix(through: index))
     }
     
     /// Prepare the views.
@@ -575,11 +589,14 @@ class DetailViewController: BaseViewController {
                     removeFromFeedsNavigation(viewController: storyPagesViewController)
                 }
 
-                if isFeedShown, let feedDetailViewController, appDelegate.feedsNavigationController.viewControllers.count < 2 {
+                // DetailViewController.swift keeps discovery or other source screens beneath the reader.
+                if isFeedShown, let feedDetailViewController,
+                   !appDelegate.feedsNavigationController.viewControllers.contains(where: { $0 === feedDetailViewController }) {
                     appDelegate.feedsNavigationController.pushViewController(feedDetailViewController, animated: animated)
                 }
                 
-                if shouldShowStoryInCompactNavigation, let storyPagesViewController, appDelegate.feedsNavigationController.viewControllers.count < 3 {
+                if shouldShowStoryInCompactNavigation, let storyPagesViewController,
+                   !appDelegate.feedsNavigationController.viewControllers.contains(where: { $0 === storyPagesViewController }) {
                     appDelegate.feedsNavigationController.pushViewController(storyPagesViewController, animated: animated)
                 }
             }

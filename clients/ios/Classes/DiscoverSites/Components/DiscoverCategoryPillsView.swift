@@ -14,12 +14,10 @@ struct DiscoverCategoryPillsView: View {
     @Binding var selectedCategory: DiscoverCategory?
     @Binding var selectedSubcategory: DiscoverSubcategory?
 
-    private let maxHeight: CGFloat = 120
-
     var body: some View {
         VStack(spacing: 6) {
-            ScrollView(.vertical, showsIndicators: false) {
-                FlowLayout(spacing: 6) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
                     pillButton(label: "All", count: nil, isActive: selectedCategory == nil) {
                         selectedCategory = nil
                         selectedSubcategory = nil
@@ -41,20 +39,12 @@ struct DiscoverCategoryPillsView: View {
                         }
                     }
                 }
-                .padding(8)
+                .padding(.horizontal, 16)
             }
-            .frame(maxHeight: maxHeight)
-            .background(DiscoverColors.cardBackground)
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(DiscoverColors.border.opacity(0.6), lineWidth: 1)
-            )
-            .padding(.horizontal, 16)
 
             if let category = selectedCategory, !category.subcategories.isEmpty {
-                ScrollView(.vertical, showsIndicators: false) {
-                    FlowLayout(spacing: 6) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
                         pillButton(label: "All", count: nil, isActive: selectedSubcategory == nil) {
                             selectedSubcategory = nil
                         }
@@ -73,83 +63,36 @@ struct DiscoverCategoryPillsView: View {
                             }
                         }
                     }
-                    .padding(8)
+                    .padding(.horizontal, 16)
                 }
-                .frame(maxHeight: maxHeight)
-                .background(DiscoverColors.subcategoryBackground)
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(DiscoverColors.border.opacity(0.6), lineWidth: 1)
-                )
-                .padding(.horizontal, 16)
             }
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 12)
     }
 
-    private func pillButton(label: String, count: Int?, isActive: Bool, action: @escaping () -> Void) -> some View {
+    private func pillButton(label: String, count: Int?, isActive: Bool, action: @escaping () -> Void)
+        -> some View
+    {
         Button(action: action) {
             HStack(spacing: 4) {
                 Text(label)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.subheadline.weight(.medium))
                 if let count = count, count > 0 {
                     Text("(\(count))")
-                        .font(.system(size: 11))
+                        .font(.caption)
                 }
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 5)
+            .frame(minHeight: 44)
             .background(isActive ? DiscoverColors.accent : DiscoverColors.cardBackground)
             .foregroundColor(isActive ? .white : DiscoverColors.textSecondary)
-            .cornerRadius(12)
+            .cornerRadius(22)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 22)
                     .stroke(isActive ? Color.clear : DiscoverColors.border, lineWidth: 1)
             )
         }
         .buttonStyle(PlainButtonStyle())
-    }
-}
-
-@available(iOS 15.0, *)
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 6
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let maxWidth = proposal.width ?? .infinity
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        var lineHeight: CGFloat = 0
-
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x + size.width > maxWidth && x > 0 {
-                y += lineHeight + spacing
-                x = 0
-                lineHeight = 0
-            }
-            lineHeight = max(lineHeight, size.height)
-            x += size.width + spacing
-        }
-        return CGSize(width: maxWidth, height: y + lineHeight)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var x = bounds.minX
-        var y = bounds.minY
-        var lineHeight: CGFloat = 0
-
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x + size.width > bounds.maxX && x > bounds.minX {
-                y += lineHeight + spacing
-                x = bounds.minX
-                lineHeight = 0
-            }
-            subview.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
-            lineHeight = max(lineHeight, size.height)
-            x += size.width + spacing
-        }
+        .accessibilityAddTraits(isActive ? .isSelected : [])
     }
 }

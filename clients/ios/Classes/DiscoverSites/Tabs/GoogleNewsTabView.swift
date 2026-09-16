@@ -31,9 +31,6 @@ struct GoogleNewsTabView: View {
                     errorSection(errorMessage)
                 }
 
-                if viewModel.addedSuccess && viewModel.addedFeedUrl != nil {
-                    successSection
-                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -69,11 +66,12 @@ struct GoogleNewsTabView: View {
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
 
-
-            LazyVGrid(columns: [
-                GridItem(.flexible(), spacing: 10),
-                GridItem(.flexible(), spacing: 10)
-            ], spacing: 10) {
+            LazyVGrid(
+                columns: [
+                    GridItem(.flexible(), spacing: 10),
+                    GridItem(.flexible(), spacing: 10),
+                ], spacing: 10
+            ) {
                 ForEach(viewModel.googleNewsState.topics) { topic in
                     topicCard(topic)
                 }
@@ -83,7 +81,7 @@ struct GoogleNewsTabView: View {
 
     private func topicCard(_ topic: GoogleNewsTopic) -> some View {
         Button(action: {
-            viewModel.googleNewsState.selectedTopic = topic
+            viewModel.selectGoogleNewsTopic(topic)
         }) {
             VStack(spacing: 8) {
                 Image(systemName: topic.sfSymbol)
@@ -113,9 +111,7 @@ struct GoogleNewsTabView: View {
         VStack(alignment: .leading, spacing: 10) {
             // Back button
             Button(action: {
-                viewModel.googleNewsState.selectedTopic = nil
-                viewModel.googleNewsState.selectedCategory = nil
-                viewModel.googleNewsState.selectedSubcategory = nil
+                viewModel.selectGoogleNewsTopic(nil)
             }) {
                 HStack(spacing: 4) {
                     Image(systemName: "chevron.left")
@@ -139,31 +135,37 @@ struct GoogleNewsTabView: View {
                         .foregroundColor(DiscoverColors.textPrimary)
                 }
 
-
                 // Categories for this topic
                 if !viewModel.googleNewsState.categories.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(viewModel.googleNewsState.categories) { category in
-                            categoryRow(category)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(viewModel.googleNewsState.categories) { category in
+                                categoryRow(category)
+                            }
                         }
                     }
                 }
 
                 // Subcategory pills when category selected
-                if let category = viewModel.googleNewsState.selectedCategory, !category.subcategories.isEmpty {
+                if let category = viewModel.googleNewsState.selectedCategory, !category.subcategories.isEmpty
+                {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
-                            subcategoryPill(label: "All", isActive: viewModel.googleNewsState.selectedSubcategory == nil) {
-                                viewModel.googleNewsState.selectedSubcategory = nil
+                            subcategoryPill(
+                                label: "All", isActive: viewModel.googleNewsState.selectedSubcategory == nil
+                            ) {
+                                viewModel.selectGoogleNewsSubcategory(nil)
                             }
 
                             ForEach(category.subcategories, id: \.self) { subcategory in
-                                subcategoryPill(label: subcategory, isActive: viewModel.googleNewsState.selectedSubcategory == subcategory) {
-                                    if viewModel.googleNewsState.selectedSubcategory == subcategory {
-                                        viewModel.googleNewsState.selectedSubcategory = nil
-                                    } else {
-                                        viewModel.googleNewsState.selectedSubcategory = subcategory
-                                    }
+                                subcategoryPill(
+                                    label: subcategory,
+                                    isActive: viewModel.googleNewsState.selectedSubcategory == subcategory
+                                ) {
+                                    viewModel.selectGoogleNewsSubcategory(
+                                        viewModel.googleNewsState.selectedSubcategory == subcategory
+                                            ? nil : subcategory
+                                    )
                                 }
                             }
                         }
@@ -177,20 +179,12 @@ struct GoogleNewsTabView: View {
         let isSelected = viewModel.googleNewsState.selectedCategory?.id == category.id
 
         return Button(action: {
-            if isSelected {
-                viewModel.googleNewsState.selectedCategory = nil
-                viewModel.googleNewsState.selectedSubcategory = nil
-            } else {
-                viewModel.googleNewsState.selectedCategory = category
-                viewModel.googleNewsState.selectedSubcategory = nil
-            }
+            viewModel.selectGoogleNewsCategory(isSelected ? nil : category)
         }) {
             HStack {
                 Text(category.name)
                     .font(.system(size: 14, weight: isSelected ? .semibold : .regular))
                     .foregroundColor(isSelected ? DiscoverColors.accent : DiscoverColors.textPrimary)
-
-                Spacer()
 
                 if !category.subcategories.isEmpty {
                     Text("\(category.subcategories.count)")
@@ -202,12 +196,15 @@ struct GoogleNewsTabView: View {
                     .font(.system(size: 12))
                     .foregroundColor(DiscoverColors.textSecondary)
             }
-            .padding(12)
+            .padding(.horizontal, 12)
+            .frame(minHeight: 44)
             .background(isSelected ? DiscoverColors.accent.opacity(0.1) : DiscoverColors.cardBackground)
             .cornerRadius(8)
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? DiscoverColors.accent.opacity(0.4) : DiscoverColors.border.opacity(0.6), lineWidth: 1)
+                    .stroke(
+                        isSelected ? DiscoverColors.accent.opacity(0.4) : DiscoverColors.border.opacity(0.6),
+                        lineWidth: 1)
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -216,9 +213,9 @@ struct GoogleNewsTabView: View {
     private func subcategoryPill(label: String, isActive: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(label)
-                .font(.system(size: 12, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .padding(.horizontal, 10)
-                .padding(.vertical, 5)
+                .frame(minHeight: 44)
                 .background(isActive ? DiscoverColors.accent : DiscoverColors.cardBackground)
                 .foregroundColor(isActive ? .white : DiscoverColors.textSecondary)
                 .cornerRadius(12)
@@ -237,7 +234,6 @@ struct GoogleNewsTabView: View {
             Rectangle()
                 .fill(DiscoverColors.border.opacity(0.5))
                 .frame(height: 1)
-
 
             // Custom query
             VStack(alignment: .leading, spacing: 4) {
@@ -283,13 +279,7 @@ struct GoogleNewsTabView: View {
 
             // Subscribe button
             Button(action: {
-                let topic = resolvedTopicId
-                let query = viewModel.googleNewsState.searchQuery.isEmpty ? nil : viewModel.googleNewsState.searchQuery
-                viewModel.subscribeGoogleNews(
-                    query: query,
-                    topic: topic,
-                    language: viewModel.googleNewsState.language
-                )
+                viewModel.subscribeSelectedGoogleNews()
             }) {
                 HStack {
                     if viewModel.googleNewsState.isSubscribing {
@@ -298,9 +288,12 @@ struct GoogleNewsTabView: View {
                             .scaleEffect(0.8)
                     }
 
-                    Text(viewModel.googleNewsState.isSubscribing ? "Subscribing..." : "Subscribe to Google News Feed")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(.white)
+                    Text(
+                        viewModel.googleNewsState.isSubscribing
+                            ? "Subscribing..." : "Subscribe to Google News Feed"
+                    )
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(.white)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
@@ -316,7 +309,7 @@ struct GoogleNewsTabView: View {
         }
     }
 
-    // MARK: - Error / Success
+    // MARK: - Error
 
     private func errorSection(_ message: String) -> some View {
         HStack(spacing: 8) {
@@ -334,36 +327,9 @@ struct GoogleNewsTabView: View {
         .cornerRadius(8)
     }
 
-    private var successSection: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 14))
-                .foregroundColor(DiscoverColors.accent)
-
-            Text("Successfully subscribed to Google News feed")
-                .font(.system(size: 14))
-                .foregroundColor(DiscoverColors.accent)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(12)
-        .background(DiscoverColors.accent.opacity(0.1))
-        .cornerRadius(8)
-    }
-
     // MARK: - Helpers
 
-    private var resolvedTopicId: String? {
-        if let subcategory = viewModel.googleNewsState.selectedSubcategory {
-            return subcategory
-        }
-        if let category = viewModel.googleNewsState.selectedCategory {
-            return category.id
-        }
-        return viewModel.googleNewsState.selectedTopic?.id
-    }
-
     private var subscribeDisabled: Bool {
-        let hasNoSelection = viewModel.googleNewsState.selectedTopic == nil && viewModel.googleNewsState.searchQuery.isEmpty
-        return hasNoSelection || viewModel.googleNewsState.isSubscribing
+        !viewModel.canSubscribeGoogleNews
     }
 }

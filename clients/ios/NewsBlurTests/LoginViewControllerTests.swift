@@ -39,6 +39,102 @@ final class AddSiteSheetViewControllerTests: XCTestCase {
 @available(iOS 15.0, *)
 @MainActor
 final class DetailViewControllerTests: XCTestCase {
+    func test_tryFeedEntryPointKeepsDiscoveryBelowReader() {
+        let app = DiscoverPreviewNavigationApp()
+        let stories = StoriesCollection()
+        app.storiesCollection = stories
+        app.dictFeeds = NSMutableDictionary(dictionary: ["1": ["id": 1, "feed_title": "Preview Feed"]])
+        let detail = DetailViewController()
+        detail.appDelegate = app
+        detail.isCompact = true
+        app.detailViewController = detail
+        let feeds = FeedsViewController()
+        let discovery = DiscoveryTransitionTestController()
+        let reader = FeedDetailViewController()
+        reader.appDelegate = app
+        detail.feedDetailViewController = reader
+        let navigation = UINavigationController()
+        app.feedsNavigationController = navigation
+        app.feedsViewController = feeds
+        navigation.setViewControllers([feeds, discovery], animated: false)
+
+        app.loadTryFeedDetailView("1", withStory: nil, isSocial: false, withUser: nil, showFindingStory: false)
+
+        XCTAssertEqual(app.readerLoads, 1)
+        XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), [feeds, discovery, reader].map(ObjectIdentifier.init))
+        navigation.popViewController(animated: false)
+        XCTAssertTrue(navigation.topViewController === discovery)
+    }
+
+    func test_discoverySurvivesExpansionAndCompactReaderRestoration() {
+        for includesDiscovery in [false, true] {
+            let app = NewsBlurAppDelegate()
+            let stories = StoriesCollection()
+            stories.activeFeed = ["id": 1, "feed_title": "Preview Feed"]
+            app.storiesCollection = stories
+            let detail = DetailViewController()
+            detail.appDelegate = app
+            detail.isCompact = true
+            app.detailViewController = detail
+            let feeds = FeedsViewController()
+            let discovery = DiscoveryTransitionTestController()
+            discovery.initialTab = .reddit
+            let reader = FeedDetailViewController()
+            reader.appDelegate = app
+            detail.feedDetailViewController = reader
+            let navigation = UINavigationController()
+            app.feedsNavigationController = navigation
+            app.feedsViewController = feeds
+            let prefix: [UIViewController] = includesDiscovery ? [feeds, discovery] : [feeds]
+            navigation.setViewControllers(prefix + [reader], animated: false)
+
+            detail.expandToTwoColumns()
+
+            XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), prefix.map(ObjectIdentifier.init))
+            detail.collapseToSingleColumn()
+            detail.restoreCompactNavigationAfterSplitCollapse(showFeed: true, showStory: false)
+            XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), (prefix + [reader]).map(ObjectIdentifier.init))
+            navigation.popViewController(animated: false)
+            XCTAssertTrue(navigation.topViewController === prefix.last)
+            XCTAssertEqual(discovery.initialTab, .reddit)
+        }
+    }
+
+    func test_compactPreviewPreservesDiscoveryAndAvoidsDuplicateReaderControllers() {
+        for showStory in [false, true] {
+            let app = NewsBlurAppDelegate()
+            let stories = StoriesCollection()
+            stories.activeFeed = ["id": 1, "feed_title": "Preview Feed"]
+            app.storiesCollection = stories
+            app.activeStory = showStory ? ["story_hash": "preview:story"] : nil
+            let detail = DetailViewController()
+            detail.appDelegate = app
+            detail.isCompact = true
+            app.detailViewController = detail
+            let feeds = FeedsViewController()
+            let discovery = UIViewController()
+            let reader = FeedDetailViewController()
+            reader.appDelegate = app
+            let pages = StoryPagesViewController()
+            pages.appDelegate = app
+            detail.feedDetailViewController = reader
+            detail.storyPagesViewController = pages
+            let navigation = UINavigationController()
+            app.feedsNavigationController = navigation
+            app.feedsViewController = feeds
+            navigation.setViewControllers([feeds, discovery], animated: false)
+
+            detail.show(column: .secondary, animated: false)
+            detail.show(column: .secondary, animated: false)
+
+            let expected: [UIViewController] = showStory ? [feeds, discovery, reader, pages] : [feeds, discovery, reader]
+            XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), expected.map(ObjectIdentifier.init))
+            if showStory { navigation.popViewController(animated: false) }
+            navigation.popViewController(animated: false)
+            XCTAssertTrue(navigation.topViewController === discovery)
+        }
+    }
+
     func test_collapseToSingleColumnDoesNotRequireLoadedView() throws {
         let detailController = try XCTUnwrap(
             UIStoryboard(name: "MainInterface", bundle: nil)
@@ -153,6 +249,23 @@ final class DetailViewControllerTests: XCTestCase {
         feedDetailViewController.resetFeedDetail()
 
         XCTAssertLessThanOrEqual(feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0), 1)
+    }
+}
+
+@available(iOS 15.0, *)
+private final class DiscoveryTransitionTestController: DiscoverSitesViewController {
+    // LoginViewControllerTests.swift exercises navigation ownership without starting discovery network requests.
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+}
+
+@MainActor private final class DiscoverPreviewNavigationApp: NewsBlurAppDelegate {
+    var readerLoads = 0
+    override var isPhone: Bool { true }
+    // LoginViewControllerTests.swift exercises the real preview entry point and navigation without fetching stories.
+    override func loadFeedDetailView() {
+        readerLoads += 1
+        detailViewController.show(column: .secondary, animated: false)
     }
 }
 

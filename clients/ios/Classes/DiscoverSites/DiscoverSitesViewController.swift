@@ -7,9 +7,13 @@
 //
 
 import SwiftUI
+import Combine
 
 @available(iOS 15.0, *)
 @objc class DiscoverSitesViewController: BaseViewController {
+    static var viewModelFactory: (() -> DiscoverSitesViewModel)?
+    var initialTab: DiscoverTab = .search
+    private var subscriptions = Set<AnyCancellable>()
     private var hostingController: UIHostingController<DiscoverSitesView>?
     private var viewModel: DiscoverSitesViewModel?
 
@@ -21,8 +25,12 @@ import SwiftUI
 
         updateBackgroundColor()
 
-        let vm = DiscoverSitesViewModel()
+        let vm = Self.viewModelFactory?() ?? DiscoverSitesViewModel()
+        vm.activeTab = initialTab
         self.viewModel = vm
+        vm.$addedSuccess.filter { $0 }.sink { [weak self] _ in
+            self?.appDelegate?.reloadFeedsView(false)
+        }.store(in: &subscriptions)
 
         let discoverView = DiscoverSitesView(
             viewModel: vm,
@@ -67,20 +75,29 @@ import SwiftUI
         view.backgroundColor = backgroundColor
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setToolbarHidden(true, animated: animated)
+        updateBackgroundColor()
+        if let viewModel { viewModel.onTabSelected(viewModel.activeTab) }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel?.stopPolling()
+    }
+
     private func handleTryFeed(_ feed: DiscoverPopularFeed) {
-        let rawDict = feed.rawFeedDict
-        let feedId = feed.id
-        appDelegate?.loadTryFeedDetailView(
-            feedId,
-            withStory: nil,
-            isSocial: false,
-            withUser: rawDict,
-            showFindingStory: false
-        )
+        Task { [weak self] in
+            guard let self, let resolved = await self.viewModel?.resolvePreviewFeed(feed) else { return }
+            self.appDelegate?.loadTryFeedDetailView(
+                resolved.id, withStory: nil, isSocial: false,
+                withUser: resolved.rawFeedDict, showFindingStory: false
+            )
+        }
     }
 
     private func handleAddFeed(_ feed: DiscoverPopularFeed) {
-        let feedAddress = feed.feedAddress
-        appDelegate?.openAddSite(withFeedAddress: feedAddress)
+        viewModel?.addFeed(url: feed.feedAddress)
     }
 }

@@ -22,19 +22,23 @@ struct NewslettersTabView: View {
                     text: $viewModel.newslettersState.searchQuery,
                     isLoading: viewModel.newslettersState.isSearching,
                     onSubmit: {
-                        viewModel.searchFeeds(type: "newsletter", query: viewModel.newslettersState.searchQuery)
+                        viewModel.searchFeeds(
+                            type: "newsletter", query: viewModel.newslettersState.searchQuery)
                     },
                     viewMode: $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
 
-
-                if !viewModel.newslettersState.platformCounts.isEmpty && viewModel.newslettersState.searchQuery.isEmpty {
+                if !viewModel.newslettersState.platformCounts.isEmpty
+                    && viewModel.newslettersState.searchQuery.isEmpty
+                {
                     platformPillsSection
                 }
 
-                if !viewModel.newslettersState.categories.isEmpty && viewModel.newslettersState.searchQuery.isEmpty {
+                if !viewModel.newslettersState.categories.isEmpty
+                    && viewModel.newslettersState.searchQuery.isEmpty
+                {
                     DiscoverCategoryPillsView(
                         categories: viewModel.newslettersState.categories,
                         selectedCategory: $viewModel.newslettersState.selectedCategory,
@@ -49,9 +53,32 @@ struct NewslettersTabView: View {
                 }
 
                 feedsList
+                DiscoverResultsStatusView(
+                    isLoading: viewModel.newslettersState.isLoading || viewModel.newslettersState.isSearching,
+                    isEmpty: viewModel.newslettersState.submittedQuery.isEmpty
+                        ? viewModel.newslettersState.feeds.isEmpty
+                        : viewModel.newslettersState.searchResults.isEmpty,
+                    error: viewModel.newslettersState.errorMessage,
+                    isSearching: !viewModel.newslettersState.submittedQuery.isEmpty,
+                    retry: {
+                        if viewModel.newslettersState.searchQuery.isEmpty {
+                            reloadFeeds()
+                        } else {
+                            viewModel.searchFeeds(
+                                type: "newsletter", query: viewModel.newslettersState.searchQuery)
+                        }
+                    }
+                )
+
             }
         }
         .background(DiscoverColors.background)
+        .scrollDismissesKeyboard(.interactively)
+        .task(id: viewModel.newslettersState.searchQuery) {
+            do { try await Task.sleep(nanoseconds: 350_000_000) } catch { return }
+            viewModel.searchFeeds(type: "newsletter", query: viewModel.newslettersState.searchQuery)
+        }
+
         .onAppear {
             if !viewModel.newslettersState.isCategoriesLoaded {
                 viewModel.loadPopularFeeds(type: "newsletter", category: nil, subcategory: nil, offset: 0)
@@ -69,13 +96,18 @@ struct NewslettersTabView: View {
     private var platformPillsSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                platformPill(label: "All", count: nil, isActive: viewModel.newslettersState.platformFilter == nil) {
+                platformPill(
+                    label: "All", count: nil, isActive: viewModel.newslettersState.platformFilter == nil
+                ) {
                     viewModel.newslettersState.platformFilter = nil
                     reloadFeeds()
                 }
 
                 ForEach(sortedPlatforms, id: \.key) { platform, count in
-                    platformPill(label: platform, count: count, isActive: viewModel.newslettersState.platformFilter == platform) {
+                    platformPill(
+                        label: platform, count: count,
+                        isActive: viewModel.newslettersState.platformFilter == platform
+                    ) {
                         if viewModel.newslettersState.platformFilter == platform {
                             viewModel.newslettersState.platformFilter = nil
                         } else {
@@ -94,23 +126,25 @@ struct NewslettersTabView: View {
         viewModel.newslettersState.platformCounts.sorted { $0.value > $1.value }
     }
 
-    private func platformPill(label: String, count: Int?, isActive: Bool, action: @escaping () -> Void) -> some View {
+    private func platformPill(label: String, count: Int?, isActive: Bool, action: @escaping () -> Void)
+        -> some View
+    {
         Button(action: action) {
             HStack(spacing: 4) {
                 Text(label)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.subheadline.weight(.medium))
                 if let count = count, count > 0 {
                     Text("(\(count))")
-                        .font(.system(size: 11))
+                        .font(.caption)
                 }
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 5)
+            .frame(minHeight: 44)
             .background(isActive ? DiscoverColors.addButtonBackground : DiscoverColors.cardBackground)
             .foregroundColor(isActive ? .white : DiscoverColors.textSecondary)
-            .cornerRadius(12)
+            .cornerRadius(22)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 22)
                     .stroke(isActive ? Color.clear : DiscoverColors.border, lineWidth: 1)
             )
         }
@@ -121,11 +155,17 @@ struct NewslettersTabView: View {
 
     @ViewBuilder
     private var feedsList: some View {
-        let feeds = viewModel.newslettersState.searchQuery.isEmpty
+        let feeds =
+            viewModel.newslettersState.submittedQuery.isEmpty
             ? viewModel.newslettersState.feeds
             : viewModel.newslettersState.searchResults
 
-        LazyVStack(spacing: 12) {
+        LazyVGrid(
+            columns: [
+                viewModel.feedViewMode == .grid
+                    ? GridItem(.adaptive(minimum: 300), spacing: 12, alignment: .top) : GridItem(.flexible())
+            ], alignment: .leading, spacing: 12
+        ) {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
@@ -134,10 +174,10 @@ struct NewslettersTabView: View {
                     onAddFeed: onAddFeed
                 )
                 .onAppear {
-                    if viewModel.newslettersState.searchQuery.isEmpty &&
-                        feed.id == viewModel.newslettersState.feeds.last?.id &&
-                        viewModel.newslettersState.hasMore &&
-                        !viewModel.newslettersState.isLoading {
+                    if viewModel.newslettersState.searchQuery.isEmpty
+                        && feed.id == viewModel.newslettersState.feeds.last?.id
+                        && viewModel.newslettersState.hasMore && !viewModel.newslettersState.isLoading
+                    {
                         loadMore()
                     }
                 }

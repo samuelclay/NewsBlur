@@ -24,12 +24,13 @@ struct DiscoverSearchBarView: View {
                     .foregroundColor(DiscoverColors.textSecondary)
 
                 TextField(placeholder, text: $text)
-                    .font(.system(size: 15))
+                    .font(.body)
                     .foregroundColor(DiscoverColors.textPrimary)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .submitLabel(.search)
                     .onSubmit { onSubmit?() }
+                    .accessibilityIdentifier("discover-search-field")
 
                 if isLoading {
                     ProgressView()
@@ -42,10 +43,12 @@ struct DiscoverSearchBarView: View {
                             .foregroundColor(DiscoverColors.textSecondary)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Clear search")
+                    .frame(minWidth: 32, minHeight: 44)
                 }
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 8)
+            .frame(minHeight: 44)
             .background(DiscoverColors.textFieldBackground)
             .cornerRadius(8)
             .overlay(

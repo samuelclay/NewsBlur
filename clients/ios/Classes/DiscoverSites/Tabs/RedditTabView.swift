@@ -29,7 +29,6 @@ struct RedditTabView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
 
-
                 if !viewModel.redditState.categories.isEmpty && viewModel.redditState.searchQuery.isEmpty {
                     DiscoverCategoryPillsView(
                         categories: viewModel.redditState.categories,
@@ -45,9 +44,30 @@ struct RedditTabView: View {
                 }
 
                 feedsList
+                DiscoverResultsStatusView(
+                    isLoading: viewModel.redditState.isLoading || viewModel.redditState.isSearching,
+                    isEmpty: viewModel.redditState.submittedQuery.isEmpty
+                        ? viewModel.redditState.feeds.isEmpty : viewModel.redditState.searchResults.isEmpty,
+                    error: viewModel.redditState.errorMessage,
+                    isSearching: !viewModel.redditState.submittedQuery.isEmpty,
+                    retry: {
+                        if viewModel.redditState.searchQuery.isEmpty {
+                            reloadFeeds()
+                        } else {
+                            viewModel.searchFeeds(type: "reddit", query: viewModel.redditState.searchQuery)
+                        }
+                    }
+                )
+
             }
         }
         .background(DiscoverColors.background)
+        .scrollDismissesKeyboard(.interactively)
+        .task(id: viewModel.redditState.searchQuery) {
+            do { try await Task.sleep(nanoseconds: 350_000_000) } catch { return }
+            viewModel.searchFeeds(type: "reddit", query: viewModel.redditState.searchQuery)
+        }
+
         .onAppear {
             if !viewModel.redditState.isCategoriesLoaded {
                 viewModel.loadPopularFeeds(type: "reddit", category: nil, subcategory: nil, offset: 0)
@@ -62,11 +82,17 @@ struct RedditTabView: View {
 
     @ViewBuilder
     private var feedsList: some View {
-        let feeds = viewModel.redditState.searchQuery.isEmpty
+        let feeds =
+            viewModel.redditState.submittedQuery.isEmpty
             ? viewModel.redditState.feeds
             : viewModel.redditState.searchResults
 
-        LazyVStack(spacing: 12) {
+        LazyVGrid(
+            columns: [
+                viewModel.feedViewMode == .grid
+                    ? GridItem(.adaptive(minimum: 300), spacing: 12, alignment: .top) : GridItem(.flexible())
+            ], alignment: .leading, spacing: 12
+        ) {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
@@ -75,10 +101,10 @@ struct RedditTabView: View {
                     onAddFeed: onAddFeed
                 )
                 .onAppear {
-                    if viewModel.redditState.searchQuery.isEmpty &&
-                        feed.id == viewModel.redditState.feeds.last?.id &&
-                        viewModel.redditState.hasMore &&
-                        !viewModel.redditState.isLoading {
+                    if viewModel.redditState.searchQuery.isEmpty
+                        && feed.id == viewModel.redditState.feeds.last?.id && viewModel.redditState.hasMore
+                        && !viewModel.redditState.isLoading
+                    {
                         loadMore()
                     }
                 }
