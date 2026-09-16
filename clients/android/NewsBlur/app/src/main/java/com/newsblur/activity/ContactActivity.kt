@@ -13,6 +13,7 @@ import com.newsblur.compose.ContactScreen
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ class ContactActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        applyTheme(prefsRepo.getSelectedTheme())
         setContent {
             NewsBlurTheme(variant = prefsRepo.getSelectedTheme().toVariant(), dynamic = false) {
                 ContactScreen(
