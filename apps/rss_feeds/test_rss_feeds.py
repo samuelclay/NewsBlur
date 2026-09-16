@@ -7063,6 +7063,76 @@ class Test_TextImporterBlockedFallsBackToProxy(TestCase):
         self.assertIsNone(result)
         mock_scrapingbee_get.assert_not_called()
 
+    CHALLENGE_HTML = (
+        b"<html><head><title>Just a moment...</title></head><body>"
+        b"<p>Checking your browser before accessing tmz.com. This process is automatic. Your "
+        b"browser will redirect to your requested content shortly. Please allow up to 5 seconds.</p>"
+        b"<p>DDoS protection by Cloudflare. Ray ID: 8f1c2a3b4c5d6e7f. Performance and security by "
+        b"Cloudflare, please stand by while the verification completes on this page.</p>"
+        b"</body></html>"
+    )
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_challenge_page_from_the_proxy_is_never_saved_as_the_text(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        # Both the direct request and the proxy get the challenge page; the story summary is
+        # short, so the challenge would have outgrown it and been cached as the article.
+        mock_get.return_value = self._response(200, self.CHALLENGE_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            200, self.CHALLENGE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        self.assertEqual(mock_scrapingbee_get.call_count, 1)
+        mock_record.assert_called_once()
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_challenge_title_alone_counts_as_a_block(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget
+    ):
+        # Cloudflare's interstitial without any of its markup ids still has its title.
+        mock_get.return_value = self._response(200, self.CHALLENGE_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            200, self.ARTICLE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+
+        with patch("apps.statistics.rscrapingbee.RScrapingBee.record_response"):
+            result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Chris Brown is slamming", result["content"])
+        self.assertEqual(mock_scrapingbee_get.call_count, 1)
+
+    @override_settings(SCRAPINGBEE_API_KEY=None)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_an_article_that_merely_uses_challenge_wording_is_extracted(self, mock_get, mock_scrapingbee_get):
+        article = (
+            b"<html><head><title>Attention Required at the Border, Says Governor</title></head><body><article>"
+            b"<p>Just a moment after the governor spoke, the crowd went quiet. Attention required, she said, "
+            b"is what the crossing needs, and checking your browser history will not tell you what it is like "
+            b"to wait there for a day. She described a line of trucks that stretched past the horizon and a "
+            b"pair of inspectors trying to keep the whole thing moving before the afternoon heat set in.</p>"
+            b"<p>The speech ran long and the reporters stayed for all of it, which the governor's staff took "
+            b"as a sign that the message had landed with the people it was meant for.</p>"
+            b"</article></body></html>"
+        )
+        mock_get.return_value = self._response(200, article)
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Just a moment after the governor spoke", result["content"])
+        mock_scrapingbee_get.assert_not_called()
+
     @patch("apps.rss_feeds.text_importer.logging.user")
     @patch("apps.statistics.rscrapingbee.RScrapingBee.record")
     @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
