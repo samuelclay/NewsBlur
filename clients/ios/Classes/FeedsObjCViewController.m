@@ -122,6 +122,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 @property (nonatomic) NSInteger lastSection;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *defaultFeedToolbarItems;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
+@property (nonatomic, strong) NSLayoutConstraint *intelligenceControlWidthConstraint;
 @property (nonatomic, strong) NSOperationQueue *faviconPrefetchQueue;
 @property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSBlockOperation *> *faviconPrefetchOperations;
 
@@ -329,22 +330,10 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.intelligenceControl.layer.cornerRadius = 8;
     self.intelligenceControl.clipsToBounds = YES;
 
-    // Set explicit segment widths to control overall size
-    [self.intelligenceControl setWidth:42 forSegmentAtIndex:0]; // All
-    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1]; // Unread
-    [self.intelligenceControl setWidth:58 forSegmentAtIndex:2]; // Focus
-    [self.intelligenceControl setWidth:58 forSegmentAtIndex:3]; // Saved
-
     self.intelligenceControl.translatesAutoresizingMaskIntoConstraints = NO;
     [self.intelligenceControl.heightAnchor constraintEqualToConstant:36].active = YES;
-    if (appDelegate.detailViewController.isPhoneOrCompact) {
-        [self.intelligenceControl.widthAnchor constraintEqualToConstant:232].active = YES;
-    } else {
-        [self.intelligenceControl setContentHuggingPriority:UILayoutPriorityRequired
-                                                    forAxis:UILayoutConstraintAxisHorizontal];
-        [self.intelligenceControl setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                                                  forAxis:UILayoutConstraintAxisHorizontal];
-    }
+    self.intelligenceControlWidthConstraint = [self.intelligenceControl.widthAnchor constraintEqualToConstant:232];
+    self.intelligenceControlWidthConstraint.active = YES;
 
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
@@ -446,11 +435,30 @@ static BOOL NBBoolPreferenceValue(id value) {
         intelligenceItem = [[UIBarButtonItem alloc] initWithCustomView:self.intelligenceControl];
     }
 
+    self.feedViewToolbar.accessibilityIdentifier = @"feed-list-toolbar";
+    self.addBarButton.accessibilityIdentifier = @"feed-list-add";
+    self.settingsBarButton.accessibilityIdentifier = @"feed-list-settings";
+    self.intelligenceControl.accessibilityIdentifier = @"feed-list-intelligence";
+
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270000
+    if (@available(iOS 27.0, *)) {
+        // FeedsObjCViewController.m supplies spacing between these controls. UIKit's additional
+        // item padding can push the filter and the large legacy button images into overflow.
+        self.addBarButton.paddingRemoved = YES;
+        intelligenceItem.paddingRemoved = YES;
+        self.settingsBarButton.paddingRemoved = YES;
+        self.addBarButton.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+        intelligenceItem.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+        self.settingsBarButton.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+    }
+#endif
+
     UIBarButtonItem * (^makeFlexSpace)(void) = ^{
         return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                              target:nil
                                                              action:nil];
     };
+#if TARGET_OS_MACCATALYST
     UIBarButtonItem * (^makeFixedSpace)(CGFloat) = ^(CGFloat width) {
         UIBarButtonItem *space = [[UIBarButtonItem alloc]
                                   initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
@@ -459,9 +467,6 @@ static BOOL NBBoolPreferenceValue(id value) {
         space.width = width;
         return space;
     };
-    CGFloat compactToolbarSpacing = self.appDelegate.detailViewController.isPhoneOrCompact ? 0.0 : 8.0;
-
-#if TARGET_OS_MACCATALYST
     self.feedViewToolbar.items = @[
         makeFixedSpace(16),
         self.addBarButton,
@@ -473,13 +478,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     ];
 #else
     self.feedViewToolbar.items = @[
-        makeFlexSpace(),
         self.addBarButton,
-        makeFixedSpace(compactToolbarSpacing),
+        makeFlexSpace(),
         intelligenceItem,
-        makeFixedSpace(compactToolbarSpacing),
-        self.settingsBarButton,
-        makeFlexSpace()
+        makeFlexSpace(),
+        self.settingsBarButton
     ];
 #endif
 }
@@ -576,9 +579,16 @@ static BOOL NBBoolPreferenceValue(id value) {
     // Non-Face ID devices (iPhone SE): 8pt to match side margins
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
     CGFloat toolbarBottomGap = (safeAreaBottom > 0) ? 12.0 : 8.0;
+#if TARGET_OS_MACCATALYST
     CGFloat compactToolbarSideInset = self.appDelegate.detailViewController.isPhoneOrCompact ? 8.0 : 0.0;
     self.toolbarLeadingConstraint.constant = compactToolbarSideInset;
     self.toolbarTrailingConstraint.constant = compactToolbarSideInset;
+#else
+    // MainInterface.storyboard anchors this toolbar to layout margins, not the view edges.
+    // Subtract those margins so the intended 8pt inset does not become 24pt on phone or 20pt on iPad.
+    self.toolbarLeadingConstraint.constant = self.view.safeAreaInsets.left + 8.0 - self.view.layoutMargins.left;
+    self.toolbarTrailingConstraint.constant = self.view.safeAreaInsets.right + 8.0 - self.view.layoutMargins.right;
+#endif
     self.toolbarBottomConstraint.constant = -toolbarBottomGap;
     CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
     CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom);
@@ -589,10 +599,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
     }
 
-    // Update intelligence control when column width changes (e.g., dragging the feeds divider).
-    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
-        [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
-    }
+    // FeedsObjCViewController.m fits filters to the available toolbar width after resizing either device.
+    [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -768,16 +776,28 @@ static BOOL NBBoolPreferenceValue(id value) {
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
 
-    BOOL useCompactIcons = NO;
-    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
-        CGFloat feedsWidth = self.view.bounds.size.width;
-        if (feedsWidth > 0) {
-            useCompactIcons = feedsWidth < 340;
-        } else {
-            // Width not yet available, fall back to orientation.
-            useCompactIcons = !UIInterfaceOrientationIsLandscape(orientation);
-        }
+    CGFloat toolbarWidth = CGRectGetWidth(self.feedViewToolbar.bounds);
+    if (toolbarWidth <= 0) {
+        toolbarWidth = CGRectGetWidth(self.view.bounds);
+        if (self.appDelegate.detailViewController.isPhoneOrCompact) toolbarWidth -= 16;
     }
+    // FeedsObjCViewController.m reserves two buttons plus toolbar margins before choosing labels.
+    BOOL useCompactIcons = toolbarWidth > 0 ? toolbarWidth < 352 :
+        (!self.appDelegate.detailViewController.isPhoneOrCompact && !UIInterfaceOrientationIsLandscape(orientation));
+    CGFloat controlWidth = useCompactIcons ? 165 : 232;
+#if !TARGET_OS_MACCATALYST
+    if (@available(iOS 27.0, *)) {
+        // FeedsObjCViewController.m reserves the measured iOS 27 toolbar geometry so filters
+        // remain visible: 16pt inner margins, 48pt native button groups, and two 8pt gaps.
+        const CGFloat toolbarInnerMargins = 2 * 16;
+        const CGFloat toolbarButtonGroups = 2 * 48;
+        const CGFloat toolbarGroupSpacing = 2 * 8;
+        CGFloat availableWidth = MAX(0, toolbarWidth - toolbarInnerMargins - toolbarButtonGroups - toolbarGroupSpacing);
+        useCompactIcons = availableWidth < 230;
+        controlWidth = useCompactIcons ? MIN(165, availableWidth) : 230;
+    }
+#endif
+    self.intelligenceControlWidthConstraint.constant = controlWidth;
 
     UIImage *unreadImage;
     UIImage *focusImage;
@@ -787,10 +807,11 @@ static BOOL NBBoolPreferenceValue(id value) {
         focusImage = [Utilities imageNamed:@"indicator-focus" sized:14];
         savedImage = [Utilities imageNamed:@"unread_blue_icn.png" sized:14];
 
-        [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
-        [self.intelligenceControl setWidth:40 forSegmentAtIndex:1];
-        [self.intelligenceControl setWidth:40 forSegmentAtIndex:2];
-        [self.intelligenceControl setWidth:40 forSegmentAtIndex:3];
+        CGFloat segmentScale = controlWidth / 165;
+        [self.intelligenceControl setWidth:45 * segmentScale forSegmentAtIndex:0];
+        [self.intelligenceControl setWidth:40 * segmentScale forSegmentAtIndex:1];
+        [self.intelligenceControl setWidth:40 * segmentScale forSegmentAtIndex:2];
+        [self.intelligenceControl setWidth:40 * segmentScale forSegmentAtIndex:3];
     } else {
         unreadImage = [UIImage imageNamed:@"unread_yellow.png"];
         focusImage = [UIImage imageNamed:@"unread_green.png"];
