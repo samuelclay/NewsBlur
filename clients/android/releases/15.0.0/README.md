@@ -25,6 +25,14 @@ The existing uploads folder is in iCloud Drive, rather than Dropbox:
 
 ## Store status
 
-**Not uploaded or rolled out yet.** The computer-control service failed to start, and browser discovery returned no connected browsers. Live Play versions and existing testing groups could not be inspected. Version code 284 follows the repository's last release, 14.5.8 / 283; confirm availability in Play Console before upload.
+**Submitted to open testing on September 15, 2026.** Uploaded the archived AAB through Play Console using the app owner's account. Play accepted version `284 (15.0.0)` and the 499-character English release notes.
 
-The authorized destination is a testing track only. Use the established closed-testing group if available, or internal testing; the user may provide a track preference. Upload the AAB through Play Console, paste the release notes, complete the test rollout, and verify its actual tester availability or review status. Do not promote to production.
+- Track: **Open testing**, full rollout to that track's testers. No production release was submitted.
+- Validation: no blocking errors and no loss of supported devices. One non-blocking warning recommends uploading native debug symbols; the ReTrace mapping file is attached to the bundle.
+- Submitted the single pending change, `284 (15.0.0) — Start full rollout`, using **Send changes for review**.
+- Verified terminal UI state: **Changes in review**, with quick checks still running. This records submission, not confirmed availability to testers.
+- Managed publishing is off; Google Play controls review completion and subsequent availability.
+- [Publishing overview](https://play.google.com/console/u/3/developers/6280481402178293168/app/4972990522498280751/publishing)
+- [Release review](https://play.google.com/console/u/3/developers/6280481402178293168/app/4972990522498280751/tracks/4698162496597079541/releases/97/review)
+
+![Play Console showing version 15.0.0 in review for open testing](play-testing-submitted.png)
