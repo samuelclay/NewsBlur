@@ -3,12 +3,12 @@
 import json
 import uuid
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.test import TestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 
 from apps.newsletters.models import EmailNewsletter
@@ -16,7 +16,9 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed, MStory
 
 
-class Test_EmailNewsletter(TestCase):
+class NewsletterFixture:
+    """The delivery fixture shared by the transactional and non-transactional tests."""
+
     def setUp(self):
         self.patchers = [
             patch("apps.newsletters.models.redis.Redis"),
@@ -132,6 +134,8 @@ class Test_EmailNewsletter(TestCase):
         self.assertEqual(MStory.objects(story_feed_id=restored.pk).count(), 2)
         self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=restored).exists())
 
+
+class Test_EmailNewsletter(NewsletterFixture, TestCase):
     @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=100)
     @patch.object(EmailNewsletter, "receive_newsletter")
     def test_oversized_webhook_returns_payload_too_large(self, mock_receive_newsletter):
@@ -326,3 +330,57 @@ Original plain newsletter body""",
         self.assertEqual(story.story_title, "May the 4th Be With You!")
         self.assertIn("Original plain newsletter body", story.story_content_str)
         self.assertNotIn("Forwarded Message", story.story_content_str)
+
+
+class Test_EmailNewsletterMergeRace(NewsletterFixture, TransactionTestCase):
+    """Real commits, so a foreign-key failure on a deleted feed surfaces the way it does in
+    production."""
+
+    @patch("apps.rss_feeds.models.MFetchHistory.delete_for_feed", return_value=0)
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    def test_a_merge_landing_right_after_the_story_lock_keeps_the_readers_subscription(
+        self, mock_reader_redis, mock_feed_redis, mock_history
+    ):
+        """The moment delivery lets go of the feed's lock, a merge moves this reader's
+        subscription to the survivor and deletes the feed. The unread flag is written by
+        primary key onto the moved row; a full save would have written the deleted feed id
+        back, failed, and had the save's own recovery delete the moved subscription."""
+        from apps.rss_feeds.models import DuplicateFeed, merge_feeds
+
+        first = self.receive("first")
+        feed = Feed.objects.get(pk=first.story_feed_id)
+        survivor = Feed.objects.create(
+            feed_address=feed.feed_address + "-survivor",
+            feed_link=feed.feed_link,
+            feed_title=feed.feed_title,
+            fetched_once=True,
+            known_good=True,
+        )
+        feed_id = feed.pk
+        merged = []
+
+        def lock_factory(name, **kwargs):
+            lock = MagicMock()
+            lock.name = name
+            lock.acquire.return_value = True
+
+            def release():
+                if name == "merge_feeds:%s" % feed_id and not merged:
+                    merged.append(True)
+                    merge_feeds(survivor.pk, feed_id, force=True)
+
+            lock.release.side_effect = release
+            return lock
+
+        mock_feed_redis.Redis.return_value.lock.side_effect = lock_factory
+
+        second = self.receive("second")
+
+        self.assertEqual(second.story_feed_id, feed_id)
+        self.assertTrue(merged)
+        self.assertFalse(Feed.objects.filter(pk=feed_id).exists())
+        self.assertTrue(DuplicateFeed.objects.filter(duplicate_feed_id=feed_id, feed=survivor).exists())
+        moved = UserSubscription.objects.get(user=self.user, feed=survivor)
+        self.assertTrue(moved.needs_unread_recalc)
+        self.assertEqual(UserSubscription.objects.filter(user=self.user).count(), 1)

@@ -203,8 +203,13 @@ class EmailNewsletter:
                 if updated:
                     story.save()
 
-        usersub.needs_unread_recalc = True
-        usersub.save()
+        # A primary-key update, not a full save: the lock above is released, and a merge
+        # landing now moves this row to the survivor and deletes the old feed. A full save
+        # would write the old feed id back, fail on it, and UserSubscription.save's own
+        # recovery would then delete the reader's moved subscription. The moved row keeps
+        # its id, so the flag lands on it wherever it went. apps/newsletters/models.py
+        if usersub:
+            UserSubscription.objects.filter(pk=usersub.pk).update(needs_unread_recalc=True)
 
         self._publish_to_subscribers(feed, story.story_hash)
 

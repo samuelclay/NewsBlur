@@ -188,6 +188,11 @@ def _extract_date_tuples(date):
 
 
 def extract_story_date(entry):
+    published = entry.get("published")
+    if isinstance(published, datetime.datetime):
+        # Already extracted by an earlier pass over this entry (a retried archive page);
+        # parsing it as a string would fail over to now and lose the real date.
+        return published
     # Do not switch to published_parsed or every story will be dated the fetch time
     publish_date = entry.get("g_parsed") or entry.get("updated_parsed")
     if publish_date:
