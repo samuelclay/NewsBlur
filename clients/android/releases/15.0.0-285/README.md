@@ -17,11 +17,11 @@
 
 Adds a native Contact us page accessible from the main menu and login screen. Contact details remain visible without login, network access, or an email app. [Device verification and four-theme screenshots](../contact-policy-fix/README.md).
 
-Website commits `65ca4bcdc` and `e61430b67` are on main. They add `/contact` and links from the footer and About page. Both website regression tests pass on main.
+Website commits `65ca4bcdc` and `e61430b67` are on main. They add `/contact` and a link from the About page. The footer link was subsequently removed at the user's request; the direct URL remains available.
 
 ## Deployment and submission
 
-- Website deployed on September 16, 2026 using `make deploy_static` from main. Final Ansible recap: all 14 app hosts succeeded with zero failures or unreachable hosts. Public https://www.newsblur.com/contact returns HTTP 200, renders correctly, and includes both email addresses and the footer link.
+- Website deployed on September 16, 2026 using `make deploy_static` from main. Final Ansible recap: all 14 app hosts succeeded with zero failures or unreachable hosts. Public https://www.newsblur.com/contact returns HTTP 200, renders correctly, and includes both email addresses.
 - Initial deployment needed two environment corrections: use the existing NewsBlur virtualenv on the local PATH for boto3, and explicitly fetch the moved Android tag on app hosts. After the tag-fetch interruption, Group A was re-enabled and verified healthy before the full deployment retry.
 - News and magazine apps declaration now points to https://www.newsblur.com/contact. Existing NewsBlur, Inc., Commercial / private, and news aggregator answers remain accurate.
 - Store listing already has https://www.newsblur.com, samuel@newsblur.com, and News & Magazines; no changes were necessary there.
