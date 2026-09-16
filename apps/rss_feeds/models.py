@@ -6,6 +6,7 @@ history, and duplicate feed detection.
 """
 
 import base64
+import contextlib
 import csv
 import datetime
 import difflib
@@ -16,6 +17,7 @@ import os
 import pickle
 import random
 import re
+import threading
 import time
 import urllib.parse
 import zlib
@@ -34,7 +36,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
-from django.db import IntegrityError, models
+from django.db import IntegrityError, models, transaction
 from django.db.models.query import QuerySet
 from django.db.utils import DatabaseError
 from django.template.defaultfilters import slugify
@@ -42,6 +44,7 @@ from django.urls import reverse
 from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_str
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
+from redis.exceptions import LockError
 
 from apps.rss_feeds.tasks import (
     IndexDiscoverStories,
@@ -129,8 +132,14 @@ class Feed(models.Model):
     archive_subscribers = models.IntegerField(default=0, null=True, blank=True)
     pro_subscribers = models.IntegerField(default=0, null=True, blank=True)
     active_premium_subscribers = models.IntegerField(default=-1)
+    # PROTECT, not CASCADE: deleting a feed must never delete the feeds branched from it.
+    # With CASCADE, merge_feeds deleting a stale parent took its live https branches and
+    # every subscription on them (forum #13830). Not SET_NULL either: a null parent is what
+    # marks a feed as public in discovery (apps/discover/views.py), and a branch can be a
+    # reader's private URL. A parent with branches must be merged (merge_feeds re-parents
+    # them) rather than deleted outright. apps/rss_feeds/models.py
     branch_from_feed = models.ForeignKey(
-        "Feed", blank=True, null=True, db_index=True, on_delete=models.CASCADE
+        "Feed", blank=True, null=True, db_index=True, on_delete=models.PROTECT
     )
     last_update = models.DateTimeField(db_index=True)
     next_scheduled_update = models.DateTimeField()
@@ -283,6 +292,22 @@ class Feed(models.Model):
         return "news.google.com" in self.feed_address
 
     @property
+    def is_private_branch(self):
+        """A feed branched from another is a reader's own copy and can carry a personal URL
+        (an access token in the address, a private page as the link), so logs name it by id
+        and the merge inventory keeps its address out of the task log.
+        apps/rss_feeds/models.py"""
+        return bool(self.branch_from_feed_id)
+
+    @property
+    def loggable_address(self):
+        return "private feed %s address" % self.pk if self.is_private_branch else self.feed_address
+
+    @property
+    def loggable_link(self):
+        return "private feed %s link" % self.pk if self.is_private_branch else self.feed_link
+
+    @property
     def is_bluesky_feed(self):
         return "bsky.app/profile/" in self.feed_address
 
@@ -374,8 +399,43 @@ class Feed(models.Model):
         if len(feed_link) > max_feed_link:
             self.feed_link = feed_link[:max_feed_link]
 
+        parking_hash = None
         try:
-            super(Feed, self).save(*args, **kwargs)
+            # The parking-marker lookup and the row write are one transaction, and the lookup
+            # locks the row: restore_merged_feed's parking UPDATE waits for a save that read
+            # the row before the marker was there, and a save that starts after the marker is
+            # committed sees it. Either way the marker survives the save.
+            with transaction.atomic():
+                exists, parking_hash, parked_parent_id = self.row_on_disk(kwargs.get("update_fields"))
+                if not exists:
+                    # The row went away while this instance was held: a merge folded the feed
+                    # into another one (restore_merged_feed folding in a parked feed, say). A
+                    # plain save would insert the deleted id again, and the next fetch would
+                    # find that row instead of the survivor and write stories to a feed whose
+                    # readers have moved on. Follow the merge's redirect instead.
+                    survivor = Feed.get_by_id(self.pk)
+                    logging.debug(
+                        " ***> Feed %s was deleted while a save was pending, %s"
+                        % (
+                            self.pk,
+                            "following its redirect to %s" % survivor.pk if survivor else "no redirect",
+                        )
+                    )
+                    return survivor
+                if parking_hash:
+                    # restore_merged_feed parked this row while it brings the original feed
+                    # back. The marker stays through every save, an address change included
+                    # (a redirect or the Open RSS migration the fetcher saves from outside the
+                    # merge lock): recomputed from a new address nobody holds, the hash would
+                    # save cleanly and the fold-in would delete this feed's stories instead of
+                    # moving them. The row is folded into its restore target below.
+                    self.hash_address_and_link = parking_hash
+                    # The parent restore_merged_feed gave the parked copy is what keeps its
+                    # address out of the merge logs; an instance loaded before the parking
+                    # still carries the old (empty) one and must not write it back.
+                    self.branch_from_feed_id = parked_parent_id
+                    self._state.fields_cache.pop("branch_from_feed", None)
+                super(Feed, self).save(*args, **kwargs)
         except IntegrityError as e:
             logging.debug(" ---> ~FRFeed save collision (%s), checking dupe hash..." % e)
             feed_address = self.feed_address or ""
@@ -411,7 +471,87 @@ class Feed(models.Model):
             )
             pass
 
+        if parking_hash:
+            return self.fold_parked_feed_into_its_restore_target(parking_hash)
+
         return self
+
+    def row_on_disk(self, update_fields=None):
+        """Whether this feed's row still exists (True as well for a new instance that is
+        about to be inserted), the restore-parked- placeholder it carries while
+        restore_merged_feed brings the original feed back (or None), and the parent stored
+        with that placeholder. Only
+        looked up by a save that would write the hash column, since one with update_fields
+        leaves it alone and fails harmlessly on a missing row. Locks the row for the rest of
+        the save's transaction, whether or not it is parked, so a parking UPDATE cannot slip
+        in between this lookup and the write. apps/rss_feeds/models.py"""
+        if not self.pk or (update_fields is not None and "hash_address_and_link" not in update_fields):
+            return True, None, None
+        rows = list(
+            Feed.objects.select_for_update()
+            .filter(pk=self.pk)
+            .values_list("hash_address_and_link", "branch_from_feed_id")
+        )
+        if not rows:
+            # A new instance built with a chosen id (fixtures do this) is meant to be
+            # inserted; only a row this instance was loaded from can have vanished.
+            return self._state.adding, None, None
+        stored_hash, stored_parent_id = rows[0]
+        if stored_hash and stored_hash.startswith(RESTORE_PARKED_HASH_PREFIX):
+            return True, stored_hash, stored_parent_id
+        return True, None, None
+
+    def fold_parked_feed_into_its_restore_target(self, parking_hash):
+        """After a save of a parked row: fold it into the feed restore_merged_feed parked it
+        for, named in the marker (restore-parked-<this id>-for-<target id>), the way the
+        collision on the target's hash used to. The target is what this row's readers
+        subscribed to, whatever address the row has redirected to since, so the holder of
+        its current address is never the destination. When the target row is not there (a
+        restore interrupted before it was recreated) the row stays parked for the rerun,
+        which finds it by the same marker. apps/rss_feeds/models.py"""
+        target_id = restore_target_from_parking_hash(parking_hash)
+        if target_id and Feed.objects.filter(pk=target_id).exists():
+            logging.debug(
+                " ---> ~FRParked feed %s saved, folding it into restored feed %s..." % (self.pk, target_id)
+            )
+            return Feed.get_by_id(merge_feeds(target_id, self.pk))
+        logging.debug(
+            " ---> ~FRParked feed %s saved but restored feed %s is not back yet, leaving it parked"
+            % (self.pk, target_id)
+        )
+        return self
+
+    @classmethod
+    def feed_holding_address(cls, feed_address, feed_link, exclude_ids=()):
+        """The feed a save with this address and link collides with, looked up the way
+        Feed.save does on its IntegrityError: the holder of the canonical hash first, and only
+        when no row has it a feed carrying the exact address and link under a stale hash (a
+        save with update_fields does not recompute the hash). Parking or merging the stale
+        twin while another row still owns the hash would leave the collision in place.
+        apps/rss_feeds/models.py"""
+        holders = cls.feeds_holding_address(feed_address, feed_link, exclude_ids=exclude_ids)
+        return holders[0] if holders else None
+
+    @classmethod
+    def feeds_holding_address(cls, feed_address, feed_link, exclude_ids=()):
+        """Every feed a save with this address and link would collide with, the holder of the
+        canonical hash first and then the feeds carrying the exact address and link under a
+        stale hash, by id. A restore parks and folds in all of them: a stale twin left at
+        the restored address would collide with the restored feed on its own next full save
+        and, with more readers, merge the restored feed away. apps/rss_feeds/models.py"""
+        canonical_hash = cls.generate_hash_address_and_link(feed_address or "", feed_link or "")
+        by_hash = list(
+            cls.objects.filter(hash_address_and_link=canonical_hash)
+            .exclude(pk__in=exclude_ids)
+            .order_by("pk")
+        )
+        seen = [feed.pk for feed in by_hash] + list(exclude_ids)
+        by_address = list(
+            cls.objects.filter(feed_address=feed_address, feed_link=feed_link)
+            .exclude(pk__in=seen)
+            .order_by("pk")
+        )
+        return by_hash + by_address
 
     @classmethod
     def index_all_for_search(cls, offset=0, subscribers=2):
@@ -454,8 +594,12 @@ class Feed(models.Model):
         if self.search_indexed and not force:
             return
 
-        stories = MStory.objects(story_feed_id=self.pk)
+        # no_cache: an Archive feed's stories, content and all, must not accumulate in the
+        # cursor's result cache while they are walked.
+        stories = MStory.objects(story_feed_id=self.pk).no_cache()
         for story in stories:
+            # Under a restore's locks this can walk a large feed; keep the leases, or stop.
+            renew_merge_feeds_locks()
             story.index_story_for_search()
 
         self.search_indexed = True
@@ -470,7 +614,7 @@ class Feed(models.Model):
             logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
             return
 
-        stories = MStory.objects(story_feed_id=self.pk).order_by("-story_date")[:1000]
+        stories = MStory.objects(story_feed_id=self.pk).order_by("-story_date").no_cache()[:1000]
         for index, story in enumerate(stories):
             if index % 100 == 0:
                 logging.debug(f" ---> ~FBIndexing discover story {index} in {self}")
@@ -1845,6 +1989,22 @@ class Feed(models.Model):
             return existing_story, story_has_changed
 
         for story in stories:
+            # Under ProcessFeed's short lease on the feed's merge lock: a story can take a
+            # while (a Google News story's image lookup), so the lease is checked before
+            # each one. A no-op outside a lock.
+            try:
+                renew_merge_feeds_locks()
+            except LockError as e:
+                # The lease is gone. The stories stored so far stay counted, so their unread
+                # counts and notifications still go out; the rest wait for the next fetch,
+                # which ProcessFeed brings forward and for which it leaves the validators
+                # unsaved.
+                logging.debug(
+                    "   ---> [%-30s] ~FRLease lost after %s new stories, leaving the rest to the next fetch: %s"
+                    % (self.log_title[:30], ret_values["new"], e)
+                )
+                ret_values["lease_lost"] = True
+                break
             if verbose:
                 logging.debug(
                     "   ---> [%-30s] ~FBChecking ~SB%s~SN / ~SB%s"
@@ -1962,7 +2122,18 @@ class Feed(models.Model):
                 # if existing_story.story_title != story.get('title'):
                 #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                 if existing_story.story_hash != story.get("story_hash"):
-                    self.update_story_with_new_guid(existing_story, story.get("guid"))
+                    try:
+                        self.update_story_with_new_guid(existing_story, story.get("guid"))
+                        # The migration walked every recent reader; the lease is checked
+                        # again before this story's own write.
+                        renew_merge_feeds_locks()
+                    except LockError as e:
+                        logging.debug(
+                            "   ---> [%-30s] ~FRLease lost while migrating a story's identifier, leaving the rest "
+                            "to the next fetch: %s" % (self.log_title[:30], e)
+                        )
+                        ret_values["lease_lost"] = True
+                        break
 
                 if verbose:
                     logging.debug(
@@ -2053,12 +2224,18 @@ class Feed(models.Model):
         from apps.reader.models import RUserStory
         from apps.social.models import MSharedStory
 
-        existing_story.remove_from_redis()
-        existing_story.remove_from_search_index()
-
         old_hash = existing_story.story_hash
         new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
+        # Walks every recent reader of the feed, renewing the fetch lease as it goes. The
+        # story's old Redis and search entries go only after that walk and one more lease
+        # check: a lease lost in the walk leaves the story exactly as it was, findable by
+        # its old hash, so the next fetch matches it again and redoes the migration (the
+        # read-state copies the walk already made are idempotent) instead of inserting a
+        # duplicate with no read state.
         RUserStory.switch_hash(feed=self, old_hash=old_hash, new_hash=new_hash)
+        renew_merge_feeds_locks()
+        existing_story.remove_from_redis()
+        existing_story.remove_from_search_index()
 
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk, story_hash=old_hash)
         for story in shared_stories:
@@ -3401,8 +3578,32 @@ class Feed(models.Model):
             )
         return total
 
+    def defer_next_fetch(self, delay_sec=None):
+        """Bring the next fetch forward by delay_sec and keep it there through the scheduling
+        calls that follow this fetch (update_all_statistics, and Feed.update's own
+        set_next_scheduled_update after the dispatcher returns), which would otherwise put
+        the feed back on its normal interval. Used when a batch could not be stored under
+        the feed's lock, or only partly. The marker lives exactly as long as the deferral,
+        so the deferred fetch itself schedules normally. apps/rss_feeds/models.py"""
+        if delay_sec is None:
+            delay_sec = FETCH_LOCK_DEFERRAL_SECONDS
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        r.setex(FETCH_DEFERRAL_KEY % self.pk, delay_sec, delay_sec)
+        self.set_next_scheduled_update(delay_fetch_sec=delay_sec)
+
+    def pending_fetch_deferral(self, r):
+        """The deferral defer_next_fetch left for this feed, in seconds, or None."""
+        try:
+            return int(r.get(FETCH_DEFERRAL_KEY % self.pk))
+        except (TypeError, ValueError):
+            return None
+
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False, delay_fetch_sec=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        if delay_fetch_sec is None:
+            # A fetch deferred for the feed's lock must stay deferred through every
+            # scheduling call that follows it in the same run (see defer_next_fetch).
+            delay_fetch_sec = self.pending_fetch_deferral(r)
 
         # Use Cache-Control max-age or Retry-After if provided
         if delay_fetch_sec is not None:
@@ -3896,6 +4097,19 @@ class MStory(mongo.Document):
 
         super(MStory, self).delete(*args, **kwargs)
 
+    def delete_if_still_in_feed(self, feed_id):
+        """Delete this story only while it still belongs to feed_id. A merge or restore moving
+        a feed's stories keeps each document's id and changes its feed and hash, so a trim
+        that loaded the story before the move would otherwise delete the moved copy by id
+        and leave its new Redis and search entries behind. Returns whether it was deleted.
+        apps/rss_feeds/models.py"""
+        deleted = MStory.objects(id=self.id, story_feed_id=feed_id).delete()
+        if deleted:
+            # The loaded copy still carries the old hash, which is what the entries are under.
+            self.remove_from_redis()
+            self.remove_from_search_index()
+        return bool(deleted)
+
     def publish_to_subscribers(self):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
@@ -4014,7 +4228,11 @@ class MStory(mongo.Document):
                     shared_story_count += 1
                     extra_stories_count -= 1
                     continue
-                story.delete()
+                # Conditional on the story still being this feed's: the trim runs outside the
+                # merge lock, and a restore can have moved the story to another feed since it
+                # was loaded here.
+                if not story.delete_if_still_in_feed(feed_id):
+                    extra_stories_count -= 1
             if verbose:
                 existing_story_count = cls.objects(story_feed_id=feed_id).count()
                 logging.debug(
@@ -4769,6 +4987,8 @@ class MStarredStory(mongo.DynamicDocument):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for story in starred_stories:
+                # A popular feed's saved stories take a while; keep the merge's locks alive.
+                renew_merge_feeds_locks()
                 story.story_feed_id = original_feed_id
                 # Update story_hash to reflect new feed_id
                 story.story_hash = story.feed_guid_hash
@@ -4997,6 +5217,7 @@ class MStarredStoryCounts(mongo.Document):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for dup_count in duplicate_counts:
+                renew_merge_feeds_locks()
                 # Find or create matching count for original feed
                 try:
                     orig_count = cls.objects.get(
@@ -5213,6 +5434,13 @@ class MFetchHistory(mongo.Document):
         return history
 
     @classmethod
+    @skip_when_analytics_down(default=0)
+    def delete_for_feed(cls, feed_id):
+        """Drop a merged-away feed's fetch history. Analytics is optional: an outage must
+        never abort merge_feeds partway through (apps/rss_feeds/models.py)."""
+        return cls.objects(feed_id=feed_id).delete()
+
+    @classmethod
     @skip_when_analytics_down(default=empty_fetch_history)
     def add(cls, feed_id, fetch_type, date=None, message=None, code=None, exception=None):
         if not date:
@@ -5291,7 +5519,549 @@ class DuplicateFeed(models.Model):
         super(DuplicateFeed, self).save(*args, **kwargs)
 
 
-def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
+MERGE_FEEDS_INVENTORY_PREFIX = "MERGE_FEEDS_INVENTORY"
+MERGE_FEEDS_INVENTORY_BATCH = 500
+
+
+PRIVATE_FEED_ADDRESS_PLACEHOLDER = "private-feed-address:%s"
+PRIVATE_FEED_LINK_PLACEHOLDER = "private-feed-link:%s"
+
+
+class MMergeFeedsPrivateInventory(mongo.Document):
+    """The address and link of a private branch (a feed with a parent) as they were when a
+    merge inventoried it. The inventory line in the task log carries placeholders for them,
+    since a private branch's address can hold a reader's access token and the logs travel
+    further than the database; restore_merged_feed reads the real values from here by feed
+    id and the inventory's logged_at. apps/rss_feeds/models.py"""
+
+    feed_id = mongo.IntField()
+    logged_at = mongo.StringField()
+    feed_address = mongo.StringField()
+    feed_link = mongo.StringField()
+
+    meta = {
+        "collection": "merge_feeds_private_inventory",
+        "indexes": [("feed_id", "logged_at")],
+        "allow_inheritance": False,
+    }
+
+    @classmethod
+    def keep(cls, feed, logged_at):
+        return cls.objects.create(
+            feed_id=feed.pk, logged_at=logged_at, feed_address=feed.feed_address, feed_link=feed.feed_link
+        )
+
+    @classmethod
+    def lookup(cls, feed_id, logged_at):
+        return cls.objects(feed_id=feed_id, logged_at=logged_at).first()
+
+
+def merge_feeds_inventory_record(record):
+    """Write one merge inventory record as a single JSON line. It goes through the raw
+    "newsblur" logger rather than utils.log.info, whose colorizer rewrites "[" and "]" and
+    would corrupt the JSON. Read back with `manage.py restore_merged_feed`.
+    apps/rss_feeds/models.py
+    """
+    logging.getlogger().info("%s %s" % (MERGE_FEEDS_INVENTORY_PREFIX, json.encode(record)))
+
+
+def folder_names_holding_feed(folders, feed_id, parent=()):
+    """Every folder path whose direct children include feed_id, as a list of names from the
+    top ([] for the root), walking a UserSubscriptionFolders tree (ints are feeds,
+    {name: [...]} dicts are folders). Full paths, so Work/News and Personal/News stay apart."""
+    paths = []
+    for item in folders:
+        if isinstance(item, int) and item == feed_id:
+            paths.append(list(parent))
+        elif isinstance(item, dict):
+            for name, children in item.items():
+                paths.extend(folder_names_holding_feed(children, feed_id, tuple(parent) + (name,)))
+    return paths
+
+
+def log_merge_feeds_inventory(original_feed, duplicate_feed, recovery=False):
+    """Log everything merge_feeds is about to touch, as JSON records, so a bad merge can be
+    undone from the task logs alone with `manage.py restore_merged_feed` (forum #13830: a
+    merge cascade-deleted two feeds and 700 subscriptions with no record of what they were).
+
+    For both feeds: the full Feed row and FeedData rows as Django serializer objects, and
+    every subscription as a serializer object plus the folder names that hold the feed in
+    that reader's tree. That is exactly what a restore needs: the feed row with its original
+    id (folder trees and starred stories point at ids), the subscription rows with their
+    read state, and where in each reader's sidebar the feed belongs. Feeds branched from the
+    duplicate are listed by id only, and a private branch among the two feeds themselves has
+    its address and link replaced by placeholders in the log and kept in
+    MMergeFeedsPrivateInventory instead, since a branch can be a reader's private URL
+    carrying an access token. apps/rss_feeds/models.py
+    """
+    from django.core import serializers
+
+    from apps.reader.models import UserSubscription, UserSubscriptionFolders
+
+    merge = {
+        "original_feed_id": original_feed.pk,
+        "duplicate_feed_id": duplicate_feed.pk,
+        "logged_at": datetime.datetime.utcnow().isoformat(),
+        # A merge that folds a parked feed into a feed being restored is part of a recovery,
+        # not a merge to undo; restore_merged_feed skips these when picking a snapshot.
+        "recovery": recovery,
+    }
+    emitted_subscriptions = {}
+    for role, feed in (("original", original_feed), ("duplicate", duplicate_feed)):
+        emitted_subscriptions[role] = 0
+        feed_object = json.decode(serializers.serialize("json", [feed]))[0]
+        if feed.is_private_branch:
+            MMergeFeedsPrivateInventory.keep(feed, merge["logged_at"])
+            feed_object["fields"]["feed_address"] = PRIVATE_FEED_ADDRESS_PLACEHOLDER % feed.pk
+            feed_object["fields"]["feed_link"] = PRIVATE_FEED_LINK_PLACEHOLDER % feed.pk
+        merge_feeds_inventory_record(
+            {
+                "type": "feed",
+                "role": role,
+                "merge": merge,
+                "object": feed_object,
+                "private": feed.is_private_branch,
+                "stories": MStory.objects(story_feed_id=feed.pk).count(),
+                "starred": MStarredStory.objects(story_feed_id=feed.pk).count(),
+            }
+        )
+        for feed_data in json.decode(serializers.serialize("json", FeedData.objects.filter(feed=feed))):
+            merge_feeds_inventory_record(
+                {"type": "feeddata", "role": role, "merge": merge, "object": feed_data}
+            )
+        # Batched by subscription id so a popular survivor never has every reader's sidebar
+        # in memory at once inside the fetching worker.
+        last_pk = 0
+        while True:
+            batch = list(
+                UserSubscription.objects.filter(feed=feed, pk__gt=last_pk).order_by("pk")[
+                    :MERGE_FEEDS_INVENTORY_BATCH
+                ]
+            )
+            if not batch:
+                break
+            last_pk = batch[-1].pk
+            # A popular feed's inventory takes a while; keep the merge's locks alive.
+            renew_merge_feeds_locks()
+            folder_rows = dict(
+                UserSubscriptionFolders.objects.filter(
+                    user_id__in=[sub.user_id for sub in batch]
+                ).values_list("user_id", "folders")
+            )
+            for subscription in json.decode(serializers.serialize("json", batch)):
+                user_id = subscription["fields"]["user"]
+                folders_json = folder_rows.get(user_id)
+                placements = []
+                if folders_json:
+                    placements = folder_names_holding_feed(json.decode(folders_json), feed.pk)
+                merge_feeds_inventory_record(
+                    {
+                        "type": "subscription",
+                        "role": role,
+                        "merge": merge,
+                        "object": subscription,
+                        "folders": placements,
+                        "has_folder_row": user_id in folder_rows,
+                    }
+                )
+                emitted_subscriptions[role] += 1
+    merge_feeds_inventory_record(
+        {
+            "type": "summary",
+            "merge": merge,
+            # Counts of the records written above, not live queries: a reader subscribing
+            # between the batches and this summary must not make a complete inventory look cut short.
+            "original_subscriptions": emitted_subscriptions["original"],
+            "duplicate_subscriptions": emitted_subscriptions["duplicate"],
+            "branches_of_duplicate": list(
+                Feed.objects.filter(branch_from_feed=duplicate_feed).values_list("pk", flat=True)
+            ),
+            "duplicate_rows": DuplicateFeed.objects.filter(feed=duplicate_feed).count(),
+        }
+    )
+
+
+def move_one_story(story, from_feed_id, to_feed_id, to_feed):
+    """Move one loaded story to to_feed_id, or drop it when the target already has that
+    story. Every write is conditional on the document still belonging to from_feed_id, so
+    two merges of the same parked feed running at once (the restore command and a fetch
+    worker's save) can never delete a story the other one just moved. Returns "moved",
+    "dropped", or "gone". apps/rss_feeds/models.py
+    """
+    guid_hash = story.story_hash.split(":", 1)[1] if story.story_hash and ":" in story.story_hash else None
+    if not guid_hash:
+        return "gone"
+    still_here = MStory.objects(id=story.id, story_feed_id=from_feed_id)
+    new_hash = "%s:%s" % (to_feed_id, guid_hash)
+    if MStory.objects(story_hash=new_hash).count():
+        if still_here.delete():
+            story.remove_from_redis()
+            story.remove_from_search_index()
+            return "dropped"
+        return "gone"
+    # Search and discovery index by the old hash and feed id; drop those entries and
+    # index again under the new feed according to its own indexing settings.
+    changes = dict(set__story_feed_id=to_feed_id, set__story_hash=new_hash)
+    if story.story_permalink and story.story_hash in story.story_permalink:
+        # A newsletter's permalink is its own story hash on this site (the newsletter-story
+        # view, see apps/newsletters/models.py); it has to name the new hash, or the link in
+        # the reader's email opens a 404.
+        changes["set__story_permalink"] = story.story_permalink.replace(story.story_hash, new_hash)
+    try:
+        updated = still_here.update(**changes)
+    except NotUniqueError:
+        # A fetch of the target feed stored this story between the lookup above and the
+        # update; the target copy wins and only the source copy goes.
+        if still_here.delete():
+            story.remove_from_redis()
+            story.remove_from_search_index()
+            return "dropped"
+        return "gone"
+    if not updated:
+        return "gone"
+    # The loaded story still carries the old feed id and hash, so these clear the old
+    # Redis and search entries; the reload below picks up the new ones.
+    story.remove_from_redis()
+    story.remove_from_search_index()
+    story.reload()
+    story.sync_redis()
+    if to_feed and to_feed.search_indexed:
+        story.index_story_for_search()
+    # Discovery indexing embeds the story's content through an outside model, far too slow
+    # to do per story under the merge locks; move_stories_between_feeds queues it.
+    return "moved"
+
+
+def move_stories_between_feeds(from_feed_id, to_feed_id):
+    """Re-home every story of from_feed_id under to_feed_id, dropping a copy whose story the
+    target already has. MStory.save recomputes story_hash from the new feed id and re-syncs
+    Redis, and RUserStory.switch_feed has already moved readers' read state to the new id.
+    Used by merge_feeds for a feed parked by restore_merged_feed, whose stories were fetched
+    while the original row was gone and would otherwise be deleted. apps/rss_feeds/models.py
+    """
+    moved = dropped = 0
+    to_feed = Feed.get_by_id(to_feed_id)
+    to_discover = []
+    # no_cache: a large Archive feed's stories, content and all, must not pile up in the
+    # cursor's result cache inside the worker while they are walked.
+    for story in MStory.objects(story_feed_id=from_feed_id).no_cache():
+        # An Archive feed can take longer than the lease; keep the locks, or stop.
+        renew_merge_feeds_locks()
+        outcome = move_one_story(story, from_feed_id, to_feed_id, to_feed)
+        moved += outcome == "moved"
+        dropped += outcome == "dropped"
+        if outcome == "moved" and to_feed and to_feed.discover_indexed:
+            to_discover.append(story.story_hash)
+            if len(to_discover) >= 1000:
+                queue_discover_indexing(to_discover)
+                to_discover = []
+    if to_discover:
+        queue_discover_indexing(to_discover)
+    logging.info(
+        " ---> merge_feeds moved %s stories from %s to %s (%s duplicates dropped)"
+        % (moved, from_feed_id, to_feed_id, dropped)
+    )
+    return moved, dropped
+
+
+def queue_discover_indexing(story_hashes):
+    """Index moved stories for discovery on the discover_indexer queue, the way a fetch does
+    for new stories, so the embedding requests run in their own task and not under the
+    merge locks. apps/rss_feeds/models.py"""
+    IndexDiscoverStories.apply_async(
+        kwargs=dict(story_ids=list(story_hashes)),
+        queue="discover_indexer",
+        time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+    )
+
+
+# The lease is renewed inside a merge's loops (renew_merge_feeds_locks), so it only has to
+# cover the longest single step, deleting a big duplicate's stories, and it bounds how long a
+# process killed mid-merge keeps its feeds locked. A lease that expired mid-merge would let
+# a second merge of the same feeds start, which is why renewal stops a merge whose lease is
+# gone. apps/rss_feeds/models.py
+MERGE_FEEDS_LOCK_TIMEOUT_SECONDS = 10 * 60
+# The hash restore_merged_feed gives a feed re-added at a lost feed's address while the lost
+# row comes back; Feed.save keeps it and merge_feeds moves such a feed's stories rather than
+# deleting them. apps/rss_feeds/models.py
+RESTORE_PARKED_HASH_PREFIX = "restore-parked-"
+# A held lock is renewed once this much of its lease has passed since it was taken or last
+# renewed. The check runs before every story, subscription or inventory record a locked loop
+# handles and costs a clock read; the renewal itself is one Redis call. What is left of the
+# lease is the margin one slow step (a Google News story's image lookup, a big delete) has to
+# finish in. apps/rss_feeds/models.py
+MERGE_FEEDS_RENEW_AFTER_FRACTION = 1 / 3
+# Tests swap this for a clock they advance by hand.
+_merge_lock_clock = time.monotonic
+# How many times a writer follows a feed merged away while it waited for the feed's lock
+# before it gives up on the write. apps/rss_feeds/models.py
+FEED_WRITE_LOCK_ATTEMPTS = 5
+
+
+def restore_target_from_parking_hash(parking_hash):
+    """The id of the feed a restore-parked-<parked>-for-<target> hash names, or None."""
+    try:
+        return int(parking_hash.rsplit("-for-", 1)[1])
+    except (AttributeError, IndexError, ValueError):
+        return None
+
+
+MERGE_FEEDS_LOCK_BLOCKING_SECONDS = 120
+# A fetch holds its feed's lock only while the batch is written, and a fetch worker killed
+# by its hard time limit never releases it, so the fetch lease is short and renewed before
+# every story add_update_stories handles; a fetch that cannot get the lock quickly (a merge
+# or restore of the feed is running) gives up and comes back on its next schedule rather
+# than holding a worker slot. apps/rss_feeds/models.py
+FETCH_LOCK_TIMEOUT_SECONDS = 2 * 60
+FETCH_LOCK_BLOCKING_SECONDS = 30
+# A fetch that could not get its feed's lock in time comes back this much later; nothing was
+# written and the validators are untouched, so the same response is fetched again, and the
+# wait is not a publisher failure. apps/rss_feeds/models.py
+FETCH_LOCK_DEFERRAL_SECONDS = 5 * 60
+# The Redis key (feed-update pool) that carries a deferral through the scheduling calls
+# that follow a fetch; see Feed.defer_next_fetch. apps/rss_feeds/models.py
+FETCH_DEFERRAL_KEY = "fetch_deferred:%s"
+# A merge that keeps finding yet another feed for the survivor's final save to collide with
+# stops widening its lock set here. apps/rss_feeds/models.py
+MERGE_FEEDS_MAX_LOCKS = 6
+# The merge locks this thread holds, by feed id. merge_feeds_locked ends with a full
+# Feed.save of the survivor, which merges again on a hash collision; that nested merge must
+# not wait on locks its own caller holds, and a long merge renews the leases of all of them.
+# apps/rss_feeds/models.py
+_merge_feeds_locks_held = threading.local()
+
+
+def _merge_locks_held():
+    if not hasattr(_merge_feeds_locks_held, "locks"):
+        _merge_feeds_locks_held.locks = {}
+    return _merge_feeds_locks_held.locks
+
+
+def renew_merge_feeds_locks():
+    """Extend the lease of every merge lock this thread holds back to the full timeout.
+    Called from inside a merge's long loops (a parked feed's stories moving, a popular feed's
+    subscriptions switching, the inventory being logged), so a merge that outlasts a lease
+    keeps its locks; when a lease was already lost, the merge stops here instead of going on
+    unlocked next to another merge of the same feeds. apps/rss_feeds/models.py"""
+    now = _merge_lock_clock()
+    for feed_id, held in list(_merge_locks_held().items()):
+        lock, lease, renewed_at = held
+        if now - renewed_at < lease * MERGE_FEEDS_RENEW_AFTER_FRACTION:
+            continue
+        try:
+            lock.extend(lease, replace_ttl=True)
+        except LockError as e:
+            raise LockError("merge_feeds:%s lease was lost while the merge was running: %s" % (feed_id, e))
+        held[2] = _merge_lock_clock()
+
+
+@contextlib.contextmanager
+def feed_write_lock(feed_id, timeout=None, blocking_timeout=None):
+    """Hold the merge lock of the feed that feed_id resolves to, and yield that feed, or None
+    when it is gone. Once a lock is held the feed is looked up again: a feed merged away
+    while the caller waited resolves to its survivor (Feed.get_by_id follows DuplicateFeed),
+    and the survivor's own lock is what protects its stories, so the stale lock is released
+    and the survivor's taken and checked the same way. ProcessFeed writes a fetch's stories
+    under it and EmailNewsletter stores a delivered newsletter under it, both on the short
+    fetch lease. apps/rss_feeds/models.py"""
+    locked_feed_id = feed_id
+    for attempt in range(FEED_WRITE_LOCK_ATTEMPTS):
+        with merge_feeds_lock(locked_feed_id, timeout=timeout, blocking_timeout=blocking_timeout):
+            feed = Feed.get_by_id(locked_feed_id)
+            if feed is None:
+                logging.debug(" ***> Feed %s was deleted while it was being written to" % locked_feed_id)
+                yield None
+                return
+            if feed.pk != locked_feed_id:
+                logging.debug(
+                    " ***> Feed %s was merged into %s while it was being written to, locking the survivor"
+                    % (locked_feed_id, feed.pk)
+                )
+                locked_feed_id = feed.pk
+                continue
+            yield feed
+            return
+    logging.debug(
+        " ***> Feed %s was merged away %s times while it was being written to, giving up"
+        % (locked_feed_id, FEED_WRITE_LOCK_ATTEMPTS)
+    )
+    yield None
+
+
+class merge_feeds_lock:
+    """Per-feed Redis locks taken in id order, reentrant within a thread, released in reverse
+    even when a later acquisition fails. merge_feeds holds them for both feeds (and for a
+    third feed the survivor's final save would merge with), and ProcessFeed holds the one for
+    the feed it is writing stories to, so a fetch in flight and a merge of the same feed take
+    turns instead of stranding stories under a deleted id.
+
+    Every thread acquires ids in increasing order, nested requests included: a request for an
+    id below one this thread already holds is tried without waiting and fails at once when
+    another worker has it. Waiting there is the one way two workers can each hold a lock the
+    other needs, with both stalled until a blocking timeout fails one of them.
+    apps/rss_feeds/models.py
+    """
+
+    def __init__(self, *feed_ids, timeout=None, blocking_timeout=None):
+        self.feed_ids = [feed_id for feed_id in feed_ids if feed_id]
+        # The lease and how long to wait for it: a merge's by default, a fetch's shorter ones
+        # when ProcessFeed asks. Renewals keep each lock on the lease it was taken with.
+        self.timeout = timeout or MERGE_FEEDS_LOCK_TIMEOUT_SECONDS
+        self.blocking_timeout = blocking_timeout or MERGE_FEEDS_LOCK_BLOCKING_SECONDS
+        self.locks = []
+        self.entered = []
+        self.taken = []
+
+    def __enter__(self):
+        held = _merge_locks_held()
+        self.taken = [feed_id for feed_id in sorted(set(self.feed_ids)) if feed_id not in held]
+        highest_held = max(held) if held else None
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        self.locks = [
+            r.lock("merge_feeds:%s" % feed_id, timeout=self.timeout, blocking_timeout=self.blocking_timeout)
+            for feed_id in self.taken
+        ]
+        try:
+            for feed_id, lock in zip(self.taken, self.locks):
+                # The locks already held (the caller's and the ones taken above) are renewed
+                # while the next one is waited for: several waits of nearly the blocking
+                # timeout would otherwise eat most of the first lease before the body ran.
+                renew_merge_feeds_locks()
+                out_of_order = highest_held is not None and feed_id < highest_held
+                if not lock.acquire(blocking=not out_of_order):
+                    if out_of_order:
+                        raise LockError(
+                            "merge_feeds:%s is held by another worker and this worker already holds "
+                            "merge_feeds:%s; not waiting out of id order" % (feed_id, highest_held)
+                        )
+                    raise LockError(
+                        "merge_feeds:%s was not released within %s seconds" % (feed_id, self.blocking_timeout)
+                    )
+                self.entered.append(lock)
+                # Registered as it is taken, so its lease is tracked from its own acquisition.
+                held[feed_id] = [lock, self.timeout, _merge_lock_clock()]
+            # Every lease is still ours before the body runs.
+            renew_merge_feeds_locks()
+        except BaseException:
+            self._release()
+            raise
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._release()
+
+    def _release(self):
+        # Also after a failed acquisition: a first lock taken before a second timed out must
+        # not stay held until its lease runs out.
+        held = _merge_locks_held()
+        for feed_id in self.taken:
+            held.pop(feed_id, None)
+        for lock in reversed(self.entered):
+            try:
+                lock.release()
+            except LockError as e:
+                # A lease that ran out was already released by Redis; the others still go.
+                logging.debug(" ***> merge_feeds lock %s already released: %s" % (lock.name, e))
+        self.entered = []
+
+
+def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve_branch_from_feed=False):
+    """Which of the two feeds survives a merge, the address it will carry, and the flags the
+    merge runs with. A feed parked by restore_merged_feed always folds into the other one
+    with the other one's parent kept; otherwise the feed with more readers survives, and a
+    feed branched from another gives way to the unbranched one and lends it its address
+    without the underscore. merge_feeds_locked applies the result; merge_feeds uses it to find
+    the third feed the survivor's final save would merge with. apps/rss_feeds/models.py
+    """
+    # A feed parked by restore_merged_feed carries a placeholder hash while the original row
+    # comes back; Feed.save keeps that hash and folds the row into the restored feed on any
+    # save (a fetch worker's included), so whoever gets here first must have it fold into the
+    # restored feed, never the other way round, with the parent kept.
+    parked_duplicate = (duplicate_feed.hash_address_and_link or "").startswith(RESTORE_PARKED_HASH_PREFIX)
+    if parked_duplicate:
+        force = True
+        preserve_branch_from_feed = True
+
+    heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
+    branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
+    survivor_address = original_feed.feed_address
+    if (heavier_dupe or branched_original) and not force:
+        original_feed, duplicate_feed = duplicate_feed, original_feed
+        survivor_address = original_feed.feed_address
+        if branched_original:
+            survivor_address = strip_underscore_from_feed_address(duplicate_feed.feed_address)
+    return original_feed, duplicate_feed, survivor_address, force, preserve_branch_from_feed, parked_duplicate
+
+
+def merge_feeds_collision_id(
+    original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False
+):
+    """The id of a third feed already holding the address and link the survivor is saved
+    with at the end of the merge, or None. Looked up the way Feed.save does on its
+    IntegrityError: by the hash, then by the exact address and link, since the stored hash
+    of either feed can be stale after a save with update_fields. apps/rss_feeds/models.py
+    """
+    try:
+        original_feed = Feed.objects.get(pk=original_feed_id)
+        duplicate_feed = Feed.objects.get(pk=duplicate_feed_id)
+    except Feed.DoesNotExist:
+        return None
+    original_feed, duplicate_feed, survivor_address, _, _, _ = merge_feeds_orientation(
+        original_feed, duplicate_feed, force, preserve_branch_from_feed
+    )
+    third_feed = Feed.feed_holding_address(
+        survivor_address, original_feed.feed_link, exclude_ids=[original_feed.pk, duplicate_feed.pk]
+    )
+    return third_feed.pk if third_feed else None
+
+
+def merge_feeds(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
+    """Fold duplicate_feed into original_feed and delete it. With preserve_branch_from_feed
+    the survivor keeps its own parent (unless that parent is the duplicate being deleted),
+    which restore_merged_feed relies on so a restored private branch never turns public
+    partway through the merge.
+
+    Merges of the same duplicate are serialized on a Redis lock: restore_merged_feed and a
+    fetch worker saving a parked feed can both arrive here, and two interleaved runs could
+    each load a subscription before the other moved it and then delete it as a duplicate.
+
+    The survivor's final save merges again when its address and link already belong to a
+    third feed (see merge_feeds_collision_id), so that feed's lock is taken up front with the
+    other two, in one ordered acquisition: a nested merge that waited for it out of id order
+    could sit in a cycle with another worker merging the same feeds the other way round.
+    apps/rss_feeds/models.py
+    """
+    if original_feed_id == duplicate_feed_id:
+        logging.info(" ***> Merging the same feed. Ignoring...")
+        return original_feed_id
+    if not original_feed_id or not duplicate_feed_id:
+        # Feed.save reaches here with self.pk None when a brand-new feed collides on insert;
+        # there is nothing to lock and the body's missing-feed guard answers.
+        return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
+    # One lock per feed, taken in id order so two merges never wait on each other in a
+    # cycle: merge_feeds(a, b) may swap the two when b has more readers, and merge_feeds(c, a)
+    # touching a at the same time must wait for a's lock as well.
+    lock_ids = {original_feed_id, duplicate_feed_id}
+    while True:
+        with merge_feeds_lock(*lock_ids):
+            collision_id = merge_feeds_collision_id(
+                original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed
+            )
+            if collision_id and collision_id not in lock_ids and len(lock_ids) < MERGE_FEEDS_MAX_LOCKS:
+                # Checked under the locks, so neither feed's address can move underneath the
+                # answer. The wider set is taken again from scratch, in id order, rather than
+                # adding the new id below the ones already held.
+                logging.info(
+                    " ---> merge_feeds(%s, %s): the survivor's address already belongs to feed %s, "
+                    "locking it too" % (original_feed_id, duplicate_feed_id, collision_id)
+                )
+                lock_ids.add(collision_id)
+                continue
+            return merge_feeds_locked(original_feed_id, duplicate_feed_id, force, preserve_branch_from_feed)
+
+
+def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserve_branch_from_feed=False):
+    """The body of merge_feeds; call merge_feeds, which holds the per-duplicate lock."""
     from apps.notifications.models import MUserFeedNotification
     from apps.reader.models import MCustomFeedIcon, UserSubscription
     from apps.social.models import MSharedStory
@@ -5306,25 +6076,31 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         logging.info(" ***> Already deleted feed: %s" % duplicate_feed_id)
         return original_feed_id
 
-    heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
-    branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
-    if (heavier_dupe or branched_original) and not force:
-        original_feed, duplicate_feed = duplicate_feed, original_feed
-        original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
-        if branched_original:
-            original_feed.feed_address = strip_underscore_from_feed_address(duplicate_feed.feed_address)
+    # merge_feeds took the locks for the orientation this decides (and for a third feed the
+    # survivor's final save collides with); it is decided again here from the rows as they
+    # are under the locks.
+    (
+        original_feed,
+        duplicate_feed,
+        survivor_address,
+        force,
+        preserve_branch_from_feed,
+        parked_duplicate,
+    ) = merge_feeds_orientation(original_feed, duplicate_feed, force, preserve_branch_from_feed)
+    original_feed_id, duplicate_feed_id = original_feed.pk, duplicate_feed.pk
+    original_feed.feed_address = survivor_address
 
     logging.info(
         " ---> Feed: [%s - %s] %s - %s"
-        % (original_feed_id, duplicate_feed_id, original_feed, original_feed.feed_link)
+        % (original_feed_id, duplicate_feed_id, original_feed, original_feed.loggable_link)
     )
     logging.info(
         "            Orig ++> %s: (%s subs) %s / %s %s"
         % (
             original_feed.pk,
             original_feed.num_subscribers,
-            original_feed.feed_address,
-            original_feed.feed_link,
+            original_feed.loggable_address,
+            original_feed.loggable_link,
             " [B: %s]" % original_feed.branch_from_feed.pk if original_feed.branch_from_feed else "",
         )
     )
@@ -5333,19 +6109,29 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         % (
             duplicate_feed.pk,
             duplicate_feed.num_subscribers,
-            duplicate_feed.feed_address,
-            duplicate_feed.feed_link,
+            duplicate_feed.loggable_address,
+            duplicate_feed.loggable_link,
             " [B: %s]" % duplicate_feed.branch_from_feed.pk if duplicate_feed.branch_from_feed else "",
         )
     )
 
-    original_feed.branch_from_feed = None
+    log_merge_feeds_inventory(original_feed, duplicate_feed, recovery=parked_duplicate)
+
+    keep_parent = preserve_branch_from_feed and original_feed.branch_from_feed_id not in (
+        None,
+        duplicate_feed.pk,
+    )
+    if not keep_parent:
+        original_feed.branch_from_feed = None
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by("-pk")
     for user_sub in user_subs:
+        renew_merge_feeds_locks()
         user_sub.switch_feed(original_feed, duplicate_feed)
 
-    # Switch starred stories and their counts to the new feed
+    # Switch starred stories and their counts to the new feed. Each of these walks renews
+    # the merge's locks per record; the lease is checked again before every phase that
+    # deletes or rewrites something, so nothing is written under a lease that ran out.
     MStarredStory.switch_feed(original_feed.pk, duplicate_feed.pk)
     MStarredStoryCounts.switch_feed(original_feed.pk, duplicate_feed.pk)
 
@@ -5361,19 +6147,44 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         #     logging.info(" ---> Deleting %s %s" % (duplicate_stories.count(), model))
         duplicate_stories.delete()
 
+    if parked_duplicate:
+        # A parked feed collected its stories while the original row was gone; they move to
+        # the restored feed rather than being deleted, whatever a fetch worker adds meanwhile.
+        move_stories_between_feeds(duplicate_feed.pk, original_feed.pk)
+
+    renew_merge_feeds_locks()
     # Clear Redis story hashes before bulk-deleting stories, since queryset
     # .delete() bypasses the instance MStory.delete() / remove_from_redis().
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     r.delete("F:%s" % duplicate_feed.pk)
     r.delete("zF:%s" % duplicate_feed.pk)
-    delete_story_feed(MStory, "story_feed_id")
+    if not parked_duplicate:
+        # A parked feed's stories were moved above and are moved once more right before the
+        # row goes, so a story a fetch worker adds in between is carried across, never deleted.
+        delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
     delete_story_feed(MFeedIcon, "feed_id")
+    MFetchHistory.delete_for_feed(duplicate_feed.pk)
 
+    redirect_address, redirect_link = duplicate_feed.feed_address, duplicate_feed.feed_link
+    if parked_duplicate:
+        # A parked feed can have followed a publisher's redirect onto an address another live
+        # feed holds. The redirect by id must still resolve (a fetch of the parked feed in
+        # flight lands on the survivor), but that address has to keep resolving to its owner,
+        # so the row carries the survivor's own address instead.
+        address_owner = Feed.feed_holding_address(
+            redirect_address, redirect_link, exclude_ids=[duplicate_feed.pk, original_feed.pk]
+        )
+        if address_owner:
+            logging.info(
+                " ---> merge_feeds: parked feed %s sits at an address feed %s owns; its redirect keeps "
+                "only the id" % (duplicate_feed.pk, address_owner.pk)
+            )
+            redirect_address, redirect_link = original_feed.feed_address, original_feed.feed_link
     try:
         DuplicateFeed.objects.create(
-            duplicate_address=duplicate_feed.feed_address,
-            duplicate_link=duplicate_feed.feed_link,
+            duplicate_address=redirect_address,
+            duplicate_link=redirect_link,
             duplicate_feed_id=duplicate_feed.pk,
             feed=original_feed,
         )
@@ -5391,16 +6202,46 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         " ---> Dupe subscribers (%s): %s, Original subscribers (%s): %s"
         % (duplicate_feed.pk, duplicate_feed.num_subscribers, original_feed.pk, original_feed.num_subscribers)
     )
+    # Until migration 0014 made branch_from_feed PROTECT, deleting the duplicate cascaded to
+    # every feed branched from it, including the survivor when it was one of them (forum
+    # #13830). Re-parent those feeds to the survivor and persist the survivor's cleared parent
+    # before the delete: that keeps them (and their private-branch status) and is also what
+    # lets the protected delete go through.
+    branched_feeds = Feed.objects.filter(branch_from_feed=duplicate_feed).exclude(pk=original_feed.pk)
+    for branched_id in branched_feeds.values_list("pk", flat=True):
+        logging.info(
+            " ---> merge_feeds re-parenting feed %s from %s to %s"
+            % (branched_id, duplicate_feed.pk, original_feed.pk)
+        )
+    branched_feeds.update(branch_from_feed=original_feed)
+    if not keep_parent:
+        Feed.objects.filter(pk=original_feed.pk).update(branch_from_feed=None)
+    if parked_duplicate:
+        move_stories_between_feeds(duplicate_feed.pk, original_feed.pk)
+    renew_merge_feeds_locks()
     if duplicate_feed.pk != original_feed.pk:
         duplicate_feed.delete()
     else:
         logging.debug(" ***> Duplicate feed is the same as original feed. Panic!")
     logging.debug(" ---> Deleted duplicate feed: %s/%s" % (duplicate_feed, duplicate_feed_id))
-    original_feed.branch_from_feed = None
+    if not keep_parent:
+        original_feed.branch_from_feed = None
+    renew_merge_feeds_locks()
     original_feed.count_subscribers()
-    original_feed.save()
+    try:
+        original_feed.save()
+    except LockError as e:
+        # The save collided with a feed merge_feeds did not lock up front (it took the
+        # address in the moment between the collision lookup and now) and that feed's lock
+        # is held elsewhere. This merge's bookkeeping is done; the collision is merged by
+        # the survivor's next save, which every fetch performs.
+        logging.info(
+            " ***> merge_feeds(%s, %s): the survivor's save collided with a feed whose lock is held, "
+            "leaving that merge to the next save: %s" % (original_feed_id, duplicate_feed_id, e)
+        )
     logging.debug(" ---> Now original subscribers: %s" % (original_feed.num_subscribers))
 
+    renew_merge_feeds_locks()
     MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
 
     return original_feed_id
