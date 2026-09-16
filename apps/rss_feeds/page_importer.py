@@ -20,6 +20,7 @@ from pyasn1.error import PyAsn1Error
 from sentry_sdk import capture_exception, flush
 
 from apps.rss_feeds.models import MFeedPage
+from apps.rss_feeds.text_importer import is_blocked_response
 from apps.statistics.rscrapingbee import RScrapingBee
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
@@ -301,26 +302,10 @@ class PageImporter(object):
             return content.decode("utf-8", errors="replace")
 
     def _is_blocked_response(self, response):
-        """Check if a response indicates the request was blocked by anti-bot protection."""
-        if response.status_code in (403, 429, 503):
-            return True
-
-        if response.status_code == 200:
-            content_lower = response.content[:4096].lower()
-            blocked_markers = [
-                b"cf-browser-verification",
-                b"_cf_chl",
-                b"cf-challenge",
-                b"challenge-platform",
-                b"just a moment",
-                b"checking your browser",
-                b"attention required",
-                b"anubis-challenge",
-            ]
-            if any(marker in content_lower for marker in blocked_markers):
-                return True
-
-        return False
+        """Check if a response indicates the request was blocked by anti-bot protection.
+        The statuses and challenge markers live in apps/rss_feeds/text_importer.py so
+        Story view and Text view agree on what a block looks like."""
+        return is_blocked_response(response)
 
     def _fetch_story_with_scrapingbee(self, url):
         """Fetch a story page using ScrapingBee residential proxy."""

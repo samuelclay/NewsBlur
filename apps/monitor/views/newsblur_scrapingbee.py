@@ -23,8 +23,9 @@ class ScrapingBeeUsage(View):
 
         stats = RScrapingBee.get_stats_for_prometheus()
 
-        # Requests today by call site (feed, discovery, original_story, webfeed, webfeed_preview)
-        # and result. Only 200 and 404 cost credits; 500 means the site blocked the proxy too.
+        # Requests today by call site (feed, discovery, original_story, original_text, webfeed,
+        # webfeed_preview) and result. Only 200 and 404 cost credits; 500 means the site blocked
+        # the proxy too.
         for (source, status), count in sorted(stats["calls"].items()):
             formatted_data[
                 f"calls_{source}_{status}"
