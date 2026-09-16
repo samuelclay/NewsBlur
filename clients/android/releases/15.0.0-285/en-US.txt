@@ -1,0 +1,8 @@
+• Added a clearly labeled Contact us page with developer support details, accessible before and after login.
+• Faster startup and smoother scrolling.
+• Animated story navigation and nested folders.
+• Redesigned Add site search and customizable gestures.
+• Full-bleed images and scroll-away reading toolbars.
+• Related stories, synced read states, and links to older stories.
+• Clearer menus, compact controls, and grouped unread counts.
+• Improved offline reading, dwell timers, and themes.

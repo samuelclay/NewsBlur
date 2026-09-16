@@ -21,11 +21,11 @@ Google Play's September 16, 2026 rejection identifies a missing clearly labeled 
 - Alpha APK also builds and installs. Both existing app installations have logged-in accounts, so the login-screen contact link was reviewed in code but not exercised on-device; neither account was logged out.
 - Original Auto theme restored after device checks.
 
-## Release steps still pending
+## Deployment and corrected release
 
-The code is committed, but the website has not been deployed and no corrected Play bundle has been uploaded. Version remains 15.0.0 (284); a new upload needs a higher version code.
+The website is deployed and verified publicly at https://www.newsblur.com/contact. Corrected Android version **15.0.0 (285)** is submitted to open testing and shows **Changes in review**. [Build and submission details](../15.0.0-285/README.md).
 
-Verified Play Console settings already show News & Magazines, samuel@newsblur.com, and https://www.newsblur.com. These need no correction. The News and magazine apps declaration currently points to https://newsblur.com/about; change it to https://www.newsblur.com/contact only after the new page is live, then include the corrected build in the review submission.
+Verified Play Console settings already show News & Magazines, samuel@newsblur.com, and https://www.newsblur.com. These needed no correction. After verifying the live contact page, the News and magazine apps declaration was updated from https://newsblur.com/about to https://www.newsblur.com/contact and included with the corrected build's review submission.
 
 ![Light](newsblur-contact-light.png)
 ![Dark](newsblur-contact-dark.png)
