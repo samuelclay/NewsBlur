@@ -323,10 +323,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
     
     self.intelligenceControl.hidden = YES;
-//    [self.intelligenceControl.subviews objectAtIndex:3].accessibilityLabel = @"All";
-    [self.intelligenceControl.subviews objectAtIndex:2].accessibilityLabel = @"Unread";
-    [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus";
-    [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Saved";
 
     // Set segmented control styling and size
     self.intelligenceControl.layer.cornerRadius = 8;
@@ -782,26 +778,37 @@ static BOOL NBBoolPreferenceValue(id value) {
         }
     }
 
+    UIImage *unreadImage;
+    UIImage *focusImage;
+    UIImage *savedImage;
     if (useCompactIcons) {
-        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];
-        
+        unreadImage = [UIImage imageNamed:@"unread_yellow_icn.png"];
+        focusImage = [Utilities imageNamed:@"indicator-focus" sized:14];
+        savedImage = [Utilities imageNamed:@"unread_blue_icn.png" sized:14];
+
         [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:1];
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:2];
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:3];
     } else {
-        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:1];
-        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue.png"] forSegmentAtIndex:3];
+        unreadImage = [UIImage imageNamed:@"unread_yellow.png"];
+        focusImage = [UIImage imageNamed:@"unread_green.png"];
+        savedImage = [UIImage imageNamed:@"unread_blue.png"];
         
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
         [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
         [self.intelligenceControl setWidth:60 forSegmentAtIndex:3];
     }
-    
+
+    // FeedsObjCViewController.m labels segment images without depending on UIKit's private subview layout.
+    unreadImage.accessibilityLabel = @"Unread";
+    focusImage.accessibilityLabel = @"Focus";
+    savedImage.accessibilityLabel = @"Saved";
+    [self.intelligenceControl setImage:unreadImage forSegmentAtIndex:1];
+    [self.intelligenceControl setImage:focusImage forSegmentAtIndex:2];
+    [self.intelligenceControl setImage:savedImage forSegmentAtIndex:3];
+
     [self.intelligenceControl sizeToFit];
     
 //    NSInteger height = 16;
