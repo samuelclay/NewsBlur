@@ -5,6 +5,7 @@ via feedparser, parses and stores new stories, handles feed redirects and
 errors, and computes intelligence scores after each fetch.
 """
 
+import copy
 import datetime
 import html
 import multiprocessing
@@ -1215,7 +1216,11 @@ class ProcessFeed:
                             f"   ---> [{self.feed.log_title[:30]:<30}] ~FRCouldn't parse Retry-After header: {retry_after}"
                         )
 
-        self.feed_entries = self.fpf.entries
+        # A copy: pre_process_story rewrites each entry in place (the published string
+        # becomes a datetime, the guid is filled in), and an archive page processed again
+        # after a partial write must start from the response as parsed, not from entries
+        # the first pass already changed.
+        self.feed_entries = copy.deepcopy(self.fpf.entries)
 
         # Enrich Bluesky feeds with images from the AT Protocol API
         if is_bluesky_feed(self.feed.feed_address):

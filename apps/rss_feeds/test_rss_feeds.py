@@ -4227,6 +4227,54 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         self.assertEqual(retried.call_count, 2)
 
     @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_retried_archive_page_starts_from_the_response_as_parsed(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """The first pass over a page rewrites each entry's published string into a datetime.
+        Entries with no parsed date tuple rely on that string, and a second pass over the
+        rewritten entries would fail to parse the datetime, fall back to now, and drop the
+        story as too new for the archive. A retry after a partial write works on a fresh
+        copy of the parsed response and stores the rest of the page."""
+        from redis.exceptions import LockNotOwnedError
+
+        from apps.rss_feeds import models as feed_models
+        from utils.feed_fetcher import FEED_OK, ProcessFeed
+
+        feed = self._feed("https://rss.example.com/lineup/archive-retry.xml")
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        mock_redis.Redis.return_value.zrevrangebyscore.return_value = []
+        lock = mock_redis.Redis.return_value.lock.return_value
+        lock.acquire.return_value = True
+        lock.extend.side_effect = [
+            True,
+            True,
+            LockNotOwnedError("Cannot extend a lock that's no longer owned"),
+        ]
+        fpf = self._parsed('"archive"')
+        for entry in fpf.entries:
+            # Only the published string is left to date these entries.
+            entry.pop("published_parsed", None)
+            entry.pop("updated_parsed", None)
+        pfeed = ProcessFeed(feed.pk, fpf, dict(self.options, archive_page=2))
+
+        with patch.object(feed_models, "MERGE_FEEDS_RENEW_AFTER_FRACTION", 0):
+            ret_feed, first = pfeed.process()
+        self.assertEqual((ret_feed, first["new"], first.get("lease_lost")), (FEED_OK, 1, True))
+        self.assertEqual(pfeed.archive_seen_story_hashes, set())
+
+        lock.extend.side_effect = None
+        lock.extend.return_value = True
+        ret_feed, second = pfeed.process()
+
+        self.assertEqual((ret_feed, second["new"], second["same"]), (FEED_OK, 1, 1))
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 2)
+        self.assertEqual(len(pfeed.archive_seen_story_hashes), 2)
+        dates = sorted(story.story_date for story in MStory.objects(story_feed_id=feed.pk))
+        self.assertEqual([d.date() for d in dates], [datetime.date(2026, 9, 14), datetime.date(2026, 9, 14)])
+
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
     @patch("apps.rss_feeds.models.redis")
     def test_an_archive_page_retries_the_same_page_when_the_feed_is_locked(self, mock_redis, mock_history):
         """An archive walk must not step past a page the feed's lock kept it from storing:
