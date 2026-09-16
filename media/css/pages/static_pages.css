@@ -7,6 +7,7 @@
 .NB-static-features .NB-body-inner,
 .NB-static-compare .NB-body-inner,
 .NB-static-about .NB-body-inner,
+.NB-static-contact .NB-body-inner,
 .NB-static-faq .NB-body-inner,
 .NB-static-api .NB-body-inner,
 .NB-static-forgot-password .NB-body-inner {
@@ -3291,6 +3292,7 @@ a.NB-faq-button-secondary:hover {
     .NB-static-features .NB-body-inner,
     .NB-static-compare .NB-body-inner,
     .NB-static-about .NB-body-inner,
+    .NB-static-contact .NB-body-inner,
     .NB-static-faq .NB-body-inner,
     .NB-static-api .NB-body-inner,
     .NB-static-forgot-password .NB-body-inner {
