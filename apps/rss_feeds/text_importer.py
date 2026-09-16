@@ -15,6 +15,7 @@ from pyasn1.error import PyAsn1Error
 from requests.packages.urllib3.exceptions import LocationParseError
 from simplejson.decoder import JSONDecodeError
 
+from apps.statistics.rscrapingbee import RScrapingBee
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
 from utils.story_functions import _normalize_image_url_for_dedup
@@ -71,6 +72,46 @@ def is_google_consent_text(text):
         return False
     privacy_link, accept, reject = (marker in text for marker in GOOGLE_CONSENT_MARKERS)
     return privacy_link or (accept and reject)
+
+
+# A site that blocks NewsBlur's servers answers an article-page request with one of these
+# statuses, or with a 200 whose body is a bot challenge instead of the article. Shared by
+# TextImporter (Text view) and PageImporter (Story view), which fall back to ScrapingBee.
+# apps/rss_feeds/text_importer.py
+BLOCKED_STATUS_CODES = (403, 429, 503)
+BOT_CHALLENGE_MARKERS = (
+    b"cf-browser-verification",
+    b"_cf_chl",
+    b"cf-challenge",
+    b"challenge-platform",
+    b"just a moment",
+    b"checking your browser",
+    b"attention required",
+    b"anubis-challenge",
+)
+
+
+def is_blocked_response(response):
+    """True when an article-page response is the site blocking us rather than the article:
+    a 403, 429 or 503, or a 200 whose first bytes are a bot challenge page."""
+    if response.status_code in BLOCKED_STATUS_CODES:
+        return True
+    if response.status_code == 200:
+        content_start = (response.content or b"")[:4096].lower()
+        return any(marker in content_start for marker in BOT_CHALLENGE_MARKERS)
+    return False
+
+
+class ProxiedPage:
+    """The article page as ScrapingBee returned it, shaped like the requests response
+    TextImporter.fetch_manually reads (content, encoding, url). The url is the story's own
+    address, never the proxy call, so readability resolves links against the article and
+    the API key in the proxy URL never reaches a log or the saved text."""
+
+    def __init__(self, content, encoding, url):
+        self.content = content
+        self.encoding = encoding
+        self.url = url
 
 
 class TextImporter:
@@ -181,6 +222,16 @@ class TextImporter:
         if not resp:
             return
 
+        if is_blocked_response(resp):
+            # Forum #13832: TMZ's CDN answers every article-page request from NewsBlur's
+            # servers with a 403. The feed fetcher already rescues the feed through the paid
+            # proxy, but Text view (and the thumbnails MStory.extract_image_urls saves from it)
+            # came through here with no fallback, so readers got the summary and no images.
+            # Without this check the block page itself was extracted as the article text.
+            resp = self.fetch_blocked_page_with_scrapingbee(resp)
+            if not resp:
+                return
+
         if is_google_consent_url(getattr(resp, "url", None)):
             logging.user(
                 self.request,
@@ -266,6 +317,58 @@ class TextImporter:
             return_document=return_document,
             original_text_doc=original_text_doc,
         )
+
+    def fetch_blocked_page_with_scrapingbee(self, blocked_response):
+        """Fetch the article page through ScrapingBee after the site blocked a direct request.
+        Mirrors PageImporter._fetch_story_with_scrapingbee (apps/rss_feeds/page_importer.py) and
+        is charged to the "original_text" source on the ScrapingBee dashboard. Returns a
+        ProxiedPage, or None when the proxy is unconfigured, the host is over its daily credit
+        cap, or the proxy fetch fails."""
+        url = self.story_url
+        logging.user(
+            self.request,
+            "~SN~FYOriginal text ~FRblocked~FY (%s), retrying with ScrapingBee: %s"
+            % (blocked_response.status_code, url),
+        )
+        api_key = getattr(settings, "SCRAPINGBEE_API_KEY", None)
+        if not api_key:
+            logging.user(self.request, "~SN~FRScrapingBee API key not configured")
+            return None
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError as e:
+            logging.user(self.request, "~SN~FRScrapingBee original text URL rejected: %s" % e)
+            return None
+        if RScrapingBee.host_over_budget(url):
+            # The same daily cap the feed fetcher honors, so one blocked site's Text views
+            # cannot drain the plan. apps/statistics/rscrapingbee.py
+            RScrapingBee.record_capped("original_text", url=url)
+            logging.user(self.request, "~SN~FRScrapingBee original text skipped, host over daily credit cap")
+            return None
+
+        params = {
+            "api_key": api_key,
+            "url": url,
+            "render_js": "false",
+            "return_page_source": "true",
+        }
+        try:
+            response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
+            RScrapingBee.record_response("original_text", response, url=url)
+            if response.status_code == 200 and response.content:
+                logging.user(
+                    self.request,
+                    "~SN~FGScrapingBee original text fetch succeeded: ~SB%s bytes" % len(response.content),
+                )
+                return ProxiedPage(content=response.content, encoding=response.encoding, url=url)
+            logging.user(
+                self.request,
+                "~SN~FRScrapingBee original text fetch failed: status %s" % response.status_code,
+            )
+        except Exception as e:
+            RScrapingBee.record("original_text", None, url=url)
+            logging.user(self.request, "~SN~FRScrapingBee original text fetch error: %s" % e)
+        return None
 
     def process_content(
         self, content, title, url, image, skip_save=False, return_document=False, original_text_doc=None
