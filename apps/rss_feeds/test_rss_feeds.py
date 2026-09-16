@@ -2820,6 +2820,51 @@ class Test_RestoreMergedFeedCommand(TestCase):
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
     @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    def test_a_stale_save_of_a_parked_private_copy_keeps_the_parent_that_redacts_it(
+        self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
+    ):
+        """The restore parked the re-added copy of a private branch with the branch's parent,
+        which is what makes the merge logs name it by id. A worker that loaded the copy
+        before that still holds an empty parent; its save keeps the stored parent along
+        with the parking hash, and the fold-in that follows logs no token."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
+
+        parent = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/redacted-parent.xml",
+            feed_link="https://www.example.com/redacted",
+            feed_title="Parent",
+        )
+        restored = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-stale&user=reader",
+            feed_link="https://www.example.com/redacted",
+            feed_title="Private branch",
+            branch_from_feed=parent,
+        )
+        copy = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-stale&user=reader-copy",
+            feed_link="https://www.example.com/redacted",
+            feed_title="Private branch (copy)",
+        )
+        workers_copy = Feed.objects.get(pk=copy.pk)
+        # The restore parks the copy with the branch's parent, as stage_restored_feed does.
+        Feed.objects.filter(pk=copy.pk).update(
+            feed_address=restored.feed_address,
+            hash_address_and_link=parking_hash(copy.pk, restored.pk),
+            branch_from_feed=parent,
+        )
+
+        workers_copy.feed_title = "Retitled by a stale worker"
+        with self.assertLogs("newsblur", level="DEBUG") as captured:
+            saved = workers_copy.save()
+
+        self.assertEqual(saved.pk, restored.pk)
+        self.assertFalse(Feed.objects.filter(pk=copy.pk).exists())
+        self.assertNotIn("SECRET-TOKEN", "\n".join(captured.output))
+
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
     def test_a_stale_instance_of_a_feed_folded_away_never_recreates_it_on_save(
         self, mock_count, mock_reader_redis, mock_feed_redis, mock_sync
     ):
@@ -4045,6 +4090,94 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         self.assertEqual(feed.etag, '"before"')
         self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 0)
         mock_schedule.assert_called_once_with(delay_fetch_sec=feed_fetcher.FETCH_LOCK_DEFERRAL_SECONDS)
+
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_lease_lost_mid_batch_keeps_the_stored_stories_and_defers_the_rest(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """The lease runs out after the first of two stories is stored. That story keeps its
+        downstream processing (it is counted as new), the validators stay unsaved so the
+        next fetch brings the same response again, and that fetch is brought forward; the
+        second story arrives then, the first counts as unchanged."""
+        from redis.exceptions import LockNotOwnedError
+
+        from apps.rss_feeds import models as feed_models
+        from utils.feed_fetcher import FEED_OK, FETCH_LOCK_DEFERRAL_SECONDS, ProcessFeed
+
+        feed = self._feed("https://rss.example.com/lineup/partial.xml", etag='"before"')
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        mock_redis.Redis.return_value.zrevrangebyscore.return_value = []
+        lock = mock_redis.Redis.return_value.lock.return_value
+        lock.acquire.return_value = True
+        # Entering renews once, the first story once more, and the second story finds the
+        # lease gone.
+        lock.extend.side_effect = [
+            True,
+            True,
+            LockNotOwnedError("Cannot extend a lock that's no longer owned"),
+        ]
+
+        with patch.object(feed_models, "MERGE_FEEDS_RENEW_AFTER_FRACTION", 0):
+            ret_feed, ret_values = ProcessFeed(feed.pk, self._parsed('"after"'), dict(self.options)).process()
+
+        self.assertEqual((ret_feed, ret_values["new"], ret_values["error"]), (FEED_OK, 1, 0))
+        self.assertTrue(ret_values["lease_lost"])
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 1)
+        feed.refresh_from_db()
+        self.assertEqual(feed.etag, '"before"')
+        mock_statistics.assert_called_once()
+        self.assertEqual(mock_statistics.call_args.kwargs["delay_fetch_sec"], FETCH_LOCK_DEFERRAL_SECONDS)
+        self.assertTrue(mock_statistics.call_args.kwargs["has_new_stories"])
+
+        lock.extend.side_effect = None
+        lock.extend.return_value = True
+        ret_feed, ret_values = ProcessFeed(feed.pk, self._parsed('"after"'), dict(self.options)).process()
+
+        self.assertEqual((ret_feed, ret_values["new"], ret_values["same"]), (FEED_OK, 1, 1))
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 2)
+        feed.refresh_from_db()
+        self.assertEqual(feed.etag, '"after"')
+
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.redis")
+    def test_an_archive_page_retries_the_same_page_when_the_feed_is_locked(self, mock_redis, mock_history):
+        """An archive walk must not step past a page the feed's lock kept it from storing:
+        the page is tried again, and if the lock is still held the walk stops there rather
+        than moving on with a hole in the subscriber's history."""
+        from utils import feed_fetcher
+        from utils.feed_fetcher import FeedFetcherWorker, ProcessFeed
+
+        feed = self._feed("https://rss.example.com/lineup/archive.xml")
+        options = dict(self.options, archive_page=2)
+        worker = FeedFetcherWorker(options)
+        pfeed = ProcessFeed(feed.pk, self._parsed('"archive"'), options)
+        mock_redis.Redis.return_value.lock.return_value.acquire.return_value = False
+
+        # A deferral would let the walk move on; under archive_page the lock error surfaces.
+        with self.assertRaises(LockError):
+            pfeed.process()
+
+        attempts = []
+
+        def locked_then_free():
+            attempts.append(1)
+            if len(attempts) < 2:
+                raise LockError("merge_feeds:%s was not released within 30 seconds" % feed.pk)
+            return (feed_fetcher.FEED_OK, dict(new=0, updated=0, same=0, error=0))
+
+        with patch.object(feed_fetcher, "ARCHIVE_PAGE_LOCK_WAIT_SECONDS", 0), patch.object(
+            pfeed, "process", side_effect=locked_then_free
+        ):
+            self.assertTrue(worker.process_archive_page(pfeed, feed))
+        self.assertEqual(len(attempts), 2)
+
+        with patch.object(feed_fetcher, "ARCHIVE_PAGE_LOCK_WAIT_SECONDS", 0), patch.object(
+            pfeed, "process", side_effect=LockError("still held")
+        ) as always_locked:
+            self.assertFalse(worker.process_archive_page(pfeed, feed))
+        self.assertEqual(always_locked.call_count, feed_fetcher.ARCHIVE_PAGE_LOCK_ATTEMPTS)
 
     def test_refresh_feed_tolerates_a_feed_deleted_with_no_redirect(self):
         from utils.feed_fetcher import ProcessFeed

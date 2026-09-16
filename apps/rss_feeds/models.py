@@ -402,7 +402,7 @@ class Feed(models.Model):
             # the row before the marker was there, and a save that starts after the marker is
             # committed sees it. Either way the marker survives the save.
             with transaction.atomic():
-                exists, parking_hash = self.row_on_disk(kwargs.get("update_fields"))
+                exists, parking_hash, parked_parent_id = self.row_on_disk(kwargs.get("update_fields"))
                 if not exists:
                     # The row went away while this instance was held: a merge folded the feed
                     # into another one (restore_merged_feed folding in a parked feed, say). A
@@ -426,6 +426,11 @@ class Feed(models.Model):
                     # save cleanly and the fold-in would delete this feed's stories instead of
                     # moving them. The row is folded into its restore target below.
                     self.hash_address_and_link = parking_hash
+                    # The parent restore_merged_feed gave the parked copy is what keeps its
+                    # address out of the merge logs; an instance loaded before the parking
+                    # still carries the old (empty) one and must not write it back.
+                    self.branch_from_feed_id = parked_parent_id
+                    self._state.fields_cache.pop("branch_from_feed", None)
                 super(Feed, self).save(*args, **kwargs)
         except IntegrityError as e:
             logging.debug(" ---> ~FRFeed save collision (%s), checking dupe hash..." % e)
@@ -469,27 +474,28 @@ class Feed(models.Model):
 
     def row_on_disk(self, update_fields=None):
         """Whether this feed's row still exists (True as well for a new instance that is
-        about to be inserted), and the restore-parked- placeholder it carries while
-        restore_merged_feed brings the original feed back (or None). Only
+        about to be inserted), the restore-parked- placeholder it carries while
+        restore_merged_feed brings the original feed back (or None), and the parent stored
+        with that placeholder. Only
         looked up by a save that would write the hash column, since one with update_fields
         leaves it alone and fails harmlessly on a missing row. Locks the row for the rest of
         the save's transaction, whether or not it is parked, so a parking UPDATE cannot slip
         in between this lookup and the write. apps/rss_feeds/models.py"""
         if not self.pk or (update_fields is not None and "hash_address_and_link" not in update_fields):
-            return True, None
+            return True, None, None
         rows = list(
             Feed.objects.select_for_update()
             .filter(pk=self.pk)
-            .values_list("hash_address_and_link", flat=True)
+            .values_list("hash_address_and_link", "branch_from_feed_id")
         )
         if not rows:
             # A new instance built with a chosen id (fixtures do this) is meant to be
             # inserted; only a row this instance was loaded from can have vanished.
-            return self._state.adding, None
-        stored_hash = rows[0]
+            return self._state.adding, None, None
+        stored_hash, stored_parent_id = rows[0]
         if stored_hash and stored_hash.startswith(RESTORE_PARKED_HASH_PREFIX):
-            return True, stored_hash
-        return True, None
+            return True, stored_hash, stored_parent_id
+        return True, None, None
 
     def fold_parked_feed_into_its_restore_target(self, parking_hash):
         """After a save of a parked row: fold it into the feed restore_merged_feed parked it
@@ -1980,7 +1986,19 @@ class Feed(models.Model):
             # Under ProcessFeed's short lease on the feed's merge lock: a story can take a
             # while (a Google News story's image lookup), so the lease is checked before
             # each one. A no-op outside a lock.
-            renew_merge_feeds_locks()
+            try:
+                renew_merge_feeds_locks()
+            except LockError as e:
+                # The lease is gone. The stories stored so far stay counted, so their unread
+                # counts and notifications still go out; the rest wait for the next fetch,
+                # which ProcessFeed brings forward and for which it leaves the validators
+                # unsaved.
+                logging.debug(
+                    "   ---> [%-30s] ~FRLease lost after %s new stories, leaving the rest to the next fetch: %s"
+                    % (self.log_title[:30], ret_values["new"], e)
+                )
+                ret_values["lease_lost"] = True
+                break
             if verbose:
                 logging.debug(
                     "   ---> [%-30s] ~FBChecking ~SB%s~SN / ~SB%s"
@@ -2098,10 +2116,18 @@ class Feed(models.Model):
                 # if existing_story.story_title != story.get('title'):
                 #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                 if existing_story.story_hash != story.get("story_hash"):
-                    self.update_story_with_new_guid(existing_story, story.get("guid"))
-                    # The migration walked every recent reader; the lease is checked again
-                    # before this story's own write.
-                    renew_merge_feeds_locks()
+                    try:
+                        self.update_story_with_new_guid(existing_story, story.get("guid"))
+                        # The migration walked every recent reader; the lease is checked
+                        # again before this story's own write.
+                        renew_merge_feeds_locks()
+                    except LockError as e:
+                        logging.debug(
+                            "   ---> [%-30s] ~FRLease lost while migrating a story's identifier, leaving the rest "
+                            "to the next fetch: %s" % (self.log_title[:30], e)
+                        )
+                        ret_values["lease_lost"] = True
+                        break
 
                 if verbose:
                     logging.debug(
