@@ -1,6 +1,6 @@
 import zlib
 from socket import error as SocketError
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 import urllib3
@@ -29,6 +29,49 @@ BROKEN_URLS = [
 
 INVALID_XML_CONTROL_CHARACTERS = dict.fromkeys((*range(0x00, 0x09), 0x0B, 0x0C, *range(0x0E, 0x20)))
 
+# Google answers requests from the EU (where NewsBlur's servers are) with a cookie consent
+# interstitial on these hosts instead of the page asked for. Extracting it yields "We use
+# cookies and data..." as the story text (forum #13827), so a fetch that ends up here is
+# treated as a failure. apps/rss_feeds/text_importer.py
+GOOGLE_CONSENT_HOSTS = ("consent.google.com", "consent.youtube.com")
+
+
+# The opening line of that interstitial, as extracted by Mercury or readability, plus the
+# controls that only the consent page itself carries. Stories fetched before the fix cached
+# it as their original text; see MStory.fetch_original_text. An article that merely quotes
+# the opening line does not match: it also needs the privacy-tools link or both buttons.
+GOOGLE_CONSENT_PHRASE = "We use cookies and data, including IP addresses"
+GOOGLE_CONSENT_MARKERS = ("g.co/privacytools", "Accept all", "Reject all")
+
+
+def is_google_news_url(url):
+    """True for a Google News story link (news.google.com/.../articles/<token>)."""
+    try:
+        parsed = urlparse(url or "")
+    except ValueError:
+        return False
+    return parsed.hostname == "news.google.com" and "/articles/" in parsed.path
+
+
+def is_google_consent_url(url):
+    """True when a fetch was redirected to Google's cookie consent wall."""
+    try:
+        return urlparse(url or "").hostname in GOOGLE_CONSENT_HOSTS
+    except ValueError:
+        return False
+
+
+def is_google_consent_text(text):
+    """True when extracted or cached original text is Google's cookie consent wall: the
+    opening line plus either the privacy-tools link or both the Accept and Reject buttons."""
+    if not text:
+        return False
+    text = smart_str(text)
+    if GOOGLE_CONSENT_PHRASE not in text:
+        return False
+    privacy_link, accept, reject = (marker in text for marker in GOOGLE_CONSENT_MARKERS)
+    return privacy_link or (accept and reject)
+
 
 class TextImporter:
     def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
@@ -40,6 +83,7 @@ class TextImporter:
             from apps.rss_feeds.models import Feed
 
             self.story_url = Feed.resolve_google_redirect_url(self.story_url)
+            self.story_url = Feed.resolve_google_news_article_url(self.story_url)
         self.feed = feed
         self.request = request
         self.debug = debug
@@ -106,6 +150,16 @@ class TextImporter:
         url = doc["url"]
         image = doc["lead_image_url"]
 
+        # Mercury reports the requested URL, not always the final host after redirects, so
+        # for a Google News link that could not be decoded the extracted text is checked too.
+        if is_google_consent_url(url) or (
+            is_google_news_url(self.story_url) and is_google_consent_text(text)
+        ):
+            logging.user(
+                self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % url
+            )
+            return
+
         if image and ("http://" in image[1:] or "https://" in image[1:]):
             logging.user(self.request, "~SN~FRRemoving broken image from text: %s" % image)
             image = None
@@ -125,6 +179,13 @@ class TextImporter:
             resp = None
 
         if not resp:
+            return
+
+        if is_google_consent_url(getattr(resp, "url", None)):
+            logging.user(
+                self.request,
+                "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % resp.url,
+            )
             return
 
         @timelimit(5)

@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-09-12T13:26:43-04:00</updated>
+  <updated>2026-09-15T11:03:20-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -23,11 +23,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Matching Stories: see every story behind a tag, author, or classifier</title>
-    <link href="https://blog.newsblur.com/2026/09/12/matching-stories/" rel="alternate" type="text/html" title="Matching Stories: see every story behind a tag, author, or classifier" />
-    <published>2026-09-12T00:00:00-04:00</published>
-    <updated>2026-09-12T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/09/12/matching-stories</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/09/12/matching-stories/">
+    <link href="https://blog.newsblur.com/2026/09/15/matching-stories/" rel="alternate" type="text/html" title="Matching Stories: see every story behind a tag, author, or classifier" />
+    <published>2026-09-15T00:00:00-04:00</published>
+    <updated>2026-09-15T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/09/15/matching-stories</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/09/15/matching-stories/">
       <![CDATA[<p>The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.</p>
 
 <p>Now every tag, author, and URL on a story has a small button next to it: <strong>View matching stories</strong>. Click it and the story list turns into a view of every story on that site that carries that exact value. Not just unread stories, read ones too, so you get the whole picture. It’s the fastest way I’ve found to answer “what else is like this?”</p>
