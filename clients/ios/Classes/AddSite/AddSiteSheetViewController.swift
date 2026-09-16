@@ -72,7 +72,7 @@ import SwiftUI
                 self?.dismiss(animated: true) {
                     let discover = DiscoverSitesViewController()
                     discover.initialTab = tab
-                    NewsBlurAppDelegate.shared()?.feedsNavigationController.pushViewController(discover, animated: true)
+                    NewsBlurAppDelegate.shared()?.detailViewController.showDiscoverSites(discover)
                 }
             }
         )

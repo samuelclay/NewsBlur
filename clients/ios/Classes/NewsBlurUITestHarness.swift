@@ -193,7 +193,7 @@ final class NewsBlurUITestHarness {
             return
         }
         loadFixtureFeedList(on: appDelegate)
-        navigation.pushViewController(DiscoverSitesViewController(), animated: false)
+        appDelegate.openDiscoverSitesView()
     }
 
     private static func configureAddSite(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {

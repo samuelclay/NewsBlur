@@ -1000,6 +1000,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         appDelegate.detailViewController.storiesNavigationItem.leftItemsSupplementBackButton = YES;
         appDelegate.detailViewController.storiesNavigationItem.leftBarButtonItems = storiesItems;
     }
+    [appDelegate.detailViewController addDiscoverPreviewBackButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

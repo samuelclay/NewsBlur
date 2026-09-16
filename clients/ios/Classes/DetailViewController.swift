@@ -10,6 +10,127 @@ import UIKit
 
 /// Manages the detail column of the split view, with the feed detail and/or the story pages.
 class DetailViewController: BaseViewController {
+    private var retainedDiscoveryController: UIViewController?
+    private var discoveryPaneNavigationController: UINavigationController?
+    private var discoveryHiddenViews: [(UIView, Bool)] = []
+    private var discoveryPreviewActive = false
+    private var discoveryPreviousNavigationBarHidden: Bool?
+    private var discoveryPreviousSplitPresentation: (UISplitViewController.DisplayMode, UISplitViewController.SplitBehavior)?
+
+    @objc var isDiscoverSitesVisible: Bool {
+        if let navigation = discoveryPaneNavigationController { return navigation.parent === self }
+        guard let controller = retainedDiscoveryController else { return false }
+        return appDelegate.feedsNavigationController?.topViewController === controller
+    }
+
+    @objc var canReturnToDiscoverSites: Bool { retainedDiscoveryController != nil && discoveryPreviewActive }
+
+    @available(iOS 15.0, *)
+    @objc func showDiscoverSites(_ controller: DiscoverSitesViewController) {
+        dismissDiscoverSites()
+        controller.appDelegate = appDelegate
+        retainedDiscoveryController = controller
+        appDelegate.feedsViewController?.highlightDiscoverySelection()
+        if isPhoneOrCompact {
+            appDelegate.feedsNavigationController.pushViewController(controller, animated: true)
+        } else {
+            mountDiscoveryPane(controller)
+        }
+    }
+
+    private func mountDiscoveryPane(_ controller: UIViewController) {
+        loadViewIfNeeded()
+        guard discoveryPaneNavigationController == nil else { return }
+        removeFromFeedsNavigation(viewController: controller)
+        if let split = appDelegate.splitViewController {
+            discoveryPreviousSplitPresentation = (split.preferredDisplayMode, split.preferredSplitBehavior)
+            dismissFullscreenSidebarOverlayIfNeeded(animated: false)
+        }
+        let navigation = UINavigationController(rootViewController: controller)
+        discoveryPaneNavigationController = navigation
+        // DetailViewController.swift replaces both reader columns while retaining their navigation state.
+        discoveryHiddenViews = view.subviews.map { ($0, $0.isHidden) }
+        discoveryHiddenViews.forEach { $0.0.isHidden = true }
+        addChild(navigation)
+        navigation.view.frame = view.bounds
+        navigation.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(navigation.view)
+        navigation.didMove(toParent: self)
+        if let parentNavigation = navigationController {
+            discoveryPreviousNavigationBarHidden = parentNavigation.isNavigationBarHidden
+            parentNavigation.setNavigationBarHidden(true, animated: false)
+        }
+        if let split = appDelegate.splitViewController {
+            split.preferredSplitBehavior = .tile
+            split.preferredDisplayMode = .oneBesideSecondary
+            split.show(.primary)
+        }
+    }
+
+    private func unmountDiscoveryPane() {
+        guard let navigation = discoveryPaneNavigationController else { return }
+        navigation.willMove(toParent: nil)
+        navigation.view.removeFromSuperview()
+        navigation.removeFromParent()
+        navigation.setViewControllers([], animated: false)
+        discoveryPaneNavigationController = nil
+        discoveryHiddenViews.forEach { $0.0.isHidden = $0.1 }
+        discoveryHiddenViews.removeAll()
+        if let hidden = discoveryPreviousNavigationBarHidden {
+            navigationController?.setNavigationBarHidden(hidden, animated: false)
+            discoveryPreviousNavigationBarHidden = nil
+        }
+        if let previous = discoveryPreviousSplitPresentation, let split = appDelegate.splitViewController {
+            split.preferredSplitBehavior = previous.1
+            split.preferredDisplayMode = previous.0
+            discoveryPreviousSplitPresentation = nil
+        }
+    }
+
+    @objc func dismissDiscoverSites() {
+        let hadDiscovery = retainedDiscoveryController != nil
+        unmountDiscoveryPane()
+        if let controller = retainedDiscoveryController { removeFromFeedsNavigation(viewController: controller) }
+        retainedDiscoveryController = nil
+        discoveryPreviewActive = false
+        navigationItem.leftBarButtonItems?.removeAll { $0.accessibilityIdentifier == "discover-preview-back" }
+        feedDetailViewController?.navigationItem.leftBarButtonItems?.removeAll { $0.accessibilityIdentifier == "discover-preview-back" }
+        if hadDiscovery, !isPhoneOrCompact, topContainerView != nil { checkViewControllers() }
+    }
+
+    @objc func discoverSitesDidAppear(_ controller: UIViewController) {
+        guard retainedDiscoveryController === controller, isDiscoverSitesVisible else { return }
+        // DetailViewController.swift also observes the native compact Back gesture, not just its explicit return button.
+        discoveryPreviewActive = false
+        appDelegate.feedsViewController?.highlightDiscoverySelection()
+    }
+
+    @objc func beginDiscoverPreview() {
+        guard retainedDiscoveryController != nil else { return }
+        discoveryPreviewActive = true
+        unmountDiscoveryPane()
+        if !isPhoneOrCompact, topContainerView != nil { checkViewControllers() }
+    }
+
+    @objc func returnToDiscoverSites() {
+        guard let controller = retainedDiscoveryController else { return }
+        discoveryPreviewActive = false
+        appDelegate.feedsViewController?.highlightDiscoverySelection()
+        if isPhoneOrCompact {
+            appDelegate.feedsNavigationController.popToViewController(controller, animated: true)
+        } else {
+            mountDiscoveryPane(controller)
+        }
+    }
+
+    @objc func addDiscoverPreviewBackButton() {
+        guard canReturnToDiscoverSites, !isPhoneOrCompact else { return }
+        let button = UIBarButtonItem(title: "Discover", style: .plain, target: self, action: #selector(returnToDiscoverSites))
+        button.accessibilityIdentifier = "discover-preview-back"
+        var items = feedDetailNavigationItem.leftBarButtonItems ?? []
+        items.removeAll { $0.accessibilityIdentifier == button.accessibilityIdentifier }
+        feedDetailNavigationItem.leftBarButtonItems = [button] + items
+    }
     /// Preference keys.
     enum Key {
         /// Style of the feed detail list layout.
@@ -416,12 +537,30 @@ class DetailViewController: BaseViewController {
     
     /// Moves the feed detail and story pages (as appropriate) onto the feeds navigation stack. Called when collapsing to a compact size class.
     func collapseToSingleColumn() {
+        let discoveryWasVisible = isDiscoverSitesVisible
+        unmountDiscoveryPane()
         isCompact = true
+        if let controller = retainedDiscoveryController {
+            var controllers: [UIViewController] = [appDelegate.feedsViewController, controller]
+            if !discoveryWasVisible {
+                if let feedDetailViewController {
+                    remove(viewController: feedDetailViewController)
+                    controllers.append(feedDetailViewController)
+                }
+                if shouldShowStoryInCompactNavigation, let storyPagesViewController {
+                    remove(viewController: storyPagesViewController)
+                    controllers.append(storyPagesViewController)
+                }
+            }
+            appDelegate.feedsNavigationController.setViewControllers(controllers, animated: false)
+            if discoveryWasVisible { return }
+        }
         
         checkViewControllers()
     }
 
     func restoreCompactNavigationAfterSplitCollapse(showFeed: Bool, showStory: Bool) {
+        guard !isDiscoverSitesVisible else { return }
         guard isCompact, showFeed || showStory else {
             return
         }
@@ -482,15 +621,15 @@ class DetailViewController: BaseViewController {
     /// Moves the feed detail and story pages (as appropriate) to the detail view. Called when expanding to a regular size class.
     func expandToTwoColumns() {
         isCompact = false
-
-        if let navigation = appDelegate.feedsNavigationController,
-           let discoveryPrefix = discoveryNavigationPrefix(in: navigation) {
-            navigation.setViewControllers(discoveryPrefix, animated: false)
-        } else {
-            appDelegate.feedsNavigationController.popToRootViewController(animated: false)
+        let discoveryWasVisible = isDiscoverSitesVisible
+        appDelegate.feedsNavigationController.popToRootViewController(animated: false)
+        if discoveryWasVisible, let controller = retainedDiscoveryController {
+            mountDiscoveryPane(controller)
+            return
         }
         
         checkViewControllers()
+        addDiscoverPreviewBackButton()
     }
 
     private func discoveryNavigationPrefix(in navigation: UINavigationController) -> [UIViewController]? {
@@ -529,6 +668,7 @@ class DetailViewController: BaseViewController {
         }
         
         manager.update(navigationController)
+        manager.update(discoveryPaneNavigationController)
         manager.update(fullscreenSidebarSupplementaryNavigationController)
         manager.updateBackground(of: view)
         
@@ -903,6 +1043,7 @@ class DetailViewController: BaseViewController {
     }
 
     private func performStoryAutoCollapseIfNeeded() {
+        guard !isDiscoverSitesVisible else { return }
         guard storyTitlesOnLeft else {
             let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
             let shouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
@@ -1085,6 +1226,7 @@ class DetailViewController: BaseViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        if isDiscoverSitesVisible { return }
         
         let currentFeedsWidth = splitViewController?.primaryColumnWidth ?? 320
         
@@ -1372,6 +1514,7 @@ private extension DetailViewController {
         guard isViewLoaded else {
             return
         }
+        if isDiscoverSitesVisible { return }
 
         let isTop = layout == .top
         
