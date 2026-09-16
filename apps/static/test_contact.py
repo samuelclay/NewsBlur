@@ -18,8 +18,8 @@ class Test_ContactPage(SimpleTestCase):
         self.assertContains(response, "android@newsblur.com</a>")
         self.assertContains(response, "mailto:samuel@newsblur.com")
 
-    def test_public_footer_links_to_contact_page(self):
+    def test_public_footer_omits_contact_page(self):
         from django.template.loader import render_to_string
 
         footer = render_to_string("reader/footer.xhtml")
-        self.assertIn('href="%s">Contact us</a>' % reverse("contact"), footer)
+        self.assertNotIn('href="%s"' % reverse("contact"), footer)
