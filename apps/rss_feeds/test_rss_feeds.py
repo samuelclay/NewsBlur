@@ -1070,6 +1070,736 @@ class Test_TextImporterEncoding(TestCase):
         self.assertNotIn("\x01", result["content"])
 
 
+class Test_HttpsUpgradeOnDeadHttp(TestCase):
+    """When a publisher stops answering on port 80 (rss.cbc.ca did on June 30, 2026,
+    forum #13830) every http:// feed address goes quiet with no redirect to follow.
+    FetchFeed retries the same path over https:// and, when that is a live feed, tags
+    the parsed feed so ProcessFeed persists the https address, merging into an
+    existing https twin when one exists."""
+
+    HTTP_ADDRESS = "http://dead-port-80.example.com/lineup/feed.xml"
+    HTTPS_ADDRESS = "https://dead-port-80.example.com/lineup/feed.xml"
+    RSS = (
+        b'<?xml version="1.0"?><rss version="2.0"><channel><title>Dead Port 80</title>'
+        b"<link>https://dead-port-80.example.com/</link>"
+        b"<item><title>Alive over https</title><link>https://dead-port-80.example.com/1</link>"
+        b"<guid>https://dead-port-80.example.com/1</guid></item></channel></rss>"
+    )
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS,
+            feed_link="https://dead-port-80.example.com/",
+            feed_title="Dead Port 80",
+        )
+        self.feed.num_subscribers = 2
+        self.feed.save()
+
+    def _https_response(self, url):
+        response = MagicMock()
+        response.status_code = 200
+        response.content = self.RSS
+        response.text = self.RSS.decode("utf-8")
+        response.headers = {"Content-Type": "application/rss+xml"}
+        response.url = url
+        response.connection = MagicMock()
+        return response
+
+    def _http_dead_https_alive(self, url, **kwargs):
+        if url.startswith("http://"):
+            raise requests.ConnectionError("connection refused on port 80")
+        return self._https_response(url)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_fetch_retries_over_https_and_tags_the_upgrade(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=self._http_dead_https_alive
+        ) as mock_get:
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(len(fpf.entries), 1)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.HTTPS_ADDRESS)
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_fetch_leaves_a_working_http_feed_alone(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get",
+            side_effect=lambda url, **kwargs: self._https_response(url),
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertFalse(fpf.get("upgraded_to_https"))
+        self.assertIsNone(fpf.get("href"))
+
+    def _dead_http_only(self, url, **kwargs):
+        raise requests.ConnectionError("connection refused on port 80")
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_archive_fetch_never_probes_https(self, mock_skip, mock_parse, mock_random, mock_validate):
+        """An archive fetch replaces the address with a history page; migrating the feed to
+        that page would strand every subscriber on old stories."""
+        from utils.feed_fetcher import FetchFeed
+
+        options = {
+            "verbose": False,
+            "force": True,
+            "archive_page": "rfc5005",
+            "archive_page_link": "http://dead-port-80.example.com/lineup/feed.xml?page=7",
+        }
+        fetcher = FetchFeed(self.feed.pk, options)
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=self._dead_http_only) as mock_get:
+            fetcher.fetch()
+
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertTrue(requested, "the archive page should have been requested")
+        self.assertFalse([url for url in requested if url.startswith("https://")])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_landing_page_is_not_an_upgrade(self, mock_skip, mock_parse, mock_random, mock_validate):
+        """A 200 over https that is not a feed (an error or landing page) must not replace the
+        fetch or be tagged for migration; the normal retries still run."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_html(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b"<html><body><h1>Site moved</h1></body></html>"
+            response.headers = {"Content-Type": "text/html"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_html):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_https_probe_sends_no_conditional_headers(self, mock_random, mock_validate):
+        """A healthy https copy would answer a conditional probe with 304, which the probe
+        cannot use, so it sends none of the cache validators."""
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.etag = '"abc123"'
+        self.feed.last_modified = datetime.datetime(2026, 9, 1, 12, 30, 0)
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=self._http_dead_https_alive
+        ) as mock_get:
+            result, fpf = fetcher.fetch()
+
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        http_headers = mock_get.call_args_list[0].kwargs["headers"]
+        probe_headers = mock_get.call_args_list[1].kwargs["headers"]
+        self.assertIn("If-None-Match", http_headers)
+        for name in ("If-None-Match", "If-Modified-Since", "A-IM"):
+            self.assertNotIn(name, probe_headers)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_json_feed_over_https_is_tagged_for_migration(self, mock_random, mock_validate):
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_json(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'{"version": "https://jsonfeed.org/version/1.1"}'
+            response.headers = {"Content-Type": "application/feed+json"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_json), patch.object(
+            FetchFeed, "fetch_json_feed", return_value=self.RSS.decode("utf-8")
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.HTTPS_ADDRESS)
+
+    def _parse_strings_only(self):
+        """feedparser.parse for string bodies (the probe check and the XML branch), None for
+        URLs, so the feedparser fallbacks in fetch() never touch the network."""
+        import feedparser
+
+        real_parse = feedparser.parse
+        return lambda source, **kwargs: (
+            real_parse(source, **kwargs)
+            if isinstance(source, (str, bytes)) and not str(source).startswith("http")
+            else None
+        )
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_xml_error_document_is_not_adopted(self, mock_skip, mock_random, mock_validate):
+        """An XML error document over https looks like a feed by content type but parses to
+        no entries: it must not replace the fetch, and the http retries must still run."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_error_xml(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'<?xml version="1.0"?><error>unavailable</error>'
+            response.headers = {"Content-Type": "application/xml"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch(
+            "utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_error_xml
+        ) as mock_get, patch("utils.feed_fetcher.feedparser.parse", side_effect=self._parse_strings_only()):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+        self.assertTrue(len(requested) >= 3 and requested[2].startswith("http://"), requested)
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_json_error_document_is_not_adopted(self, mock_skip, mock_random, mock_validate):
+        """JSONFetcher turns any JSON object into an Atom feed with a version, so a JSON error
+        response must be rejected by the missing entries, not accepted by the version."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_error_json(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = b'{"error": "unavailable"}'
+            response.headers = {"Content-Type": "application/json"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_error_json), patch(
+            "utils.feed_fetcher.feedparser.parse", side_effect=self._parse_strings_only()
+        ):
+            result, fpf = fetcher.fetch()
+
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_https_probe_timeout_keeps_the_http_retries(
+        self, mock_skip, mock_parse, mock_random, mock_validate
+    ):
+        """A probe that times out or loops on redirects is not a connection error; it must be
+        swallowed like one so the fake-header http retry still runs."""
+        from utils.feed_fetcher import FetchFeed
+
+        def http_dead_https_slow(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            raise requests.ReadTimeout("https took too long")
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_slow) as mock_get:
+            fetcher.fetch()
+
+        requested = [call.args[0] for call in mock_get.call_args_list]
+        self.assertEqual(requested[:2], [self.HTTP_ADDRESS, self.HTTPS_ADDRESS])
+        self.assertTrue(len(requested) >= 3 and requested[2].startswith("http://"), requested)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_non_utf8_feed_over_https_is_still_adopted(self, mock_random, mock_validate):
+        """The probe check must honor the feed's declared encoding rather than forcing UTF-8."""
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        latin1_rss = (
+            '<?xml version="1.0" encoding="ISO-8859-1"?><rss version="2.0"><channel><title>Caf\u00e9 Feed</title>'
+            "<link>https://dead-port-80.example.com/</link><item><title>Crème br\u00fbl\u00e9e</title>"
+            "<link>https://dead-port-80.example.com/2</link><guid>https://dead-port-80.example.com/2</guid></item>"
+            "</channel></rss>"
+        ).encode("iso-8859-1")
+
+        def http_dead_https_latin1(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = latin1_rss
+            response.encoding = "ISO-8859-1"
+            response.headers = {"Content-Type": "application/rss+xml; charset=ISO-8859-1"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": True, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_latin1):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.entries[0].title, "Crème brûlée")
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_feed_declaring_windows_1251_without_an_http_charset_is_decoded_by_its_declaration(
+        self, mock_random, mock_validate
+    ):
+        """The HTTP charset is absent, so the XML declaration must win; verbose logging must not
+        trip over the non-UTF-8 body either."""
+        from utils.feed_fetcher import FEED_OK, FetchFeed
+
+        cyrillic_rss = (
+            '<?xml version="1.0" encoding="windows-1251"?><rss version="2.0"><channel><title>Новости</title>'
+            "<link>https://dead-port-80.example.com/</link><item><title>Привет, мир</title>"
+            "<link>https://dead-port-80.example.com/3</link><guid>https://dead-port-80.example.com/3</guid></item>"
+            "</channel></rss>"
+        ).encode("windows-1251")
+
+        def http_dead_https_cyrillic(url, **kwargs):
+            if url.startswith("http://"):
+                raise requests.ConnectionError("connection refused on port 80")
+            response = self._https_response(url)
+            response.content = cyrillic_rss
+            response.encoding = None
+            response.headers = {"Content-Type": "application/rss+xml"}
+            return response
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": True, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http_dead_https_cyrillic):
+            result, fpf = fetcher.fetch()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.entries[0].title, "Привет, мир")
+        self.assertIn("Привет, мир", fetcher.raw_feed)
+
+    def test_process_feed_persists_the_https_address(self):
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(self.feed.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTPS_ADDRESS)
+
+class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
+    """Feed.save handles the address-hash collision by merging into the existing feed,
+    which needs a real transaction (the failed UPDATE aborts a TestCase's wrapper)."""
+
+    HTTP_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTP_ADDRESS
+    HTTPS_ADDRESS = Test_HttpsUpgradeOnDeadHttp.HTTPS_ADDRESS
+    RSS = Test_HttpsUpgradeOnDeadHttp.RSS
+
+    def setUp(self):
+        # merge_feeds rewrites Redis story hashes and subscriber counts, and tests share
+        # Redis with the dev server (newsblur_web/test_settings.py), so every merge in this
+        # class runs against mocked Redis clients and a no-op subscriber recount.
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(Feed, "count_subscribers"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_process_feed_merges_into_an_existing_https_twin(self):
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        stale = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        stale.num_subscribers = 2
+        stale.save()
+        twin = Feed.objects.create(
+            feed_address=self.HTTPS_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        # The twin is the heavier feed, as it was for every CBC pair, so it is the survivor.
+        twin.num_subscribers = 5
+        twin.save()
+        from apps.reader.models import UserSubscriptionFolders
+
+        user = User.objects.create_user("port80reader", "port80reader@example.com", "password")
+        UserSubscription.objects.create(user=user, feed=stale)
+        # switch_feed only moves a subscription for a user who has a folder tree.
+        UserSubscriptionFolders.objects.create(user=user, folders="[%s]" % stale.pk)
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(stale.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(pfeed.feed_id, twin.pk)
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=twin).exists())
+        self.assertFalse(Feed.objects.filter(pk=stale.pk).exists())
+
+    def test_heavier_http_feed_survives_the_merge_with_the_https_address(self):
+        """When the dead http feed has more subscribers, Feed.save keeps that row and deletes
+        the https twin, so the survivor must still end up on the https address."""
+        import feedparser
+
+        from utils.feed_fetcher import ProcessFeed
+
+        stale = Feed.objects.create(
+            feed_address=self.HTTP_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        stale.num_subscribers = 9
+        stale.save()
+        twin = Feed.objects.create(
+            feed_address=self.HTTPS_ADDRESS, feed_link="https://dead-port-80.example.com/", feed_title="Dead"
+        )
+        twin.num_subscribers = 2
+        twin.save()
+        fpf = feedparser.parse(self.RSS)
+        fpf["upgraded_to_https"] = True
+        fpf["href"] = self.HTTPS_ADDRESS
+        pfeed = ProcessFeed(stale.pk, fpf, {"verbose": False, "force": False})
+        pfeed.refresh_feed()
+
+        pfeed.migrate_https_feed_address()
+
+        self.assertEqual(pfeed.feed_id, stale.pk)
+        self.assertEqual(Feed.objects.get(pk=stale.pk).feed_address, self.HTTPS_ADDRESS)
+        self.assertFalse(Feed.objects.filter(pk=twin.pk).exists())
+
+class Test_TextImporterGoogleNews(TestCase):
+    """Google News feeds link every story through news.google.com/rss/articles/<token>.
+    NewsBlur's servers are in the EU, so following that link lands on Google's cookie
+    consent wall ("Before you continue"), and that boilerplate was being extracted and
+    shown as the story text. Forum #13827. The token must be decoded to the real article
+    URL first, and a consent page must never be saved as original text."""
+
+    GOOGLE_URL = "https://news.google.com/rss/articles/CBMitwFBVV95cUxNNTFWNE1wQVNQ?oc=5"
+    ARTICLE_URL = "https://www.reuters.com/business/ahead-fed-meeting-2026-09-13/"
+    CONSENT_URL = "https://consent.google.com/ml?continue=https://news.google.com/rss/articles/CBMitwFBVV95"
+    CONSENT_HTML = (
+        b"<html><head><title>Before you continue</title></head><body><article>"
+        b"<p>We use cookies and data, including IP addresses, to Deliver and maintain Google services, "
+        b"Track outages and protect against spam, fraud, and abuse.</p>"
+        b"<p>You can also visit g.co/privacytools at any time.</p>"
+        b"<button>Reject all</button><button>Accept all</button></article></body></html>"
+    )
+    QUOTING_HTML = (
+        b"<html><body><article><h1>What Google's consent wall says</h1>"
+        b'<p>Google opens with "We use cookies and data, including IP addresses, to Deliver and '
+        b'maintain Google services", which tells you very little.</p></article></body></html>'
+    )
+
+    def _story(self, url):
+        story = MagicMock()
+        story.story_permalink = url
+        story.story_content_z = None
+        story.image_urls = []
+        return story
+
+    def _consent_response(self):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.content = self.CONSENT_HTML
+        resp.encoding = "utf-8"
+        resp.text = self.CONSENT_HTML.decode("utf-8")
+        resp.url = self.CONSENT_URL
+        resp.headers = {"Content-Type": "text/html; charset=utf-8"}
+        resp.connection = MagicMock()
+        return resp
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
+    def test_resolve_google_news_article_url_decodes_the_token(self, mock_decode):
+        mock_decode.return_value = self.ARTICLE_URL
+
+        self.assertEqual(Feed.resolve_google_news_article_url(self.GOOGLE_URL), self.ARTICLE_URL)
+        mock_decode.assert_called_once_with(self.GOOGLE_URL)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    def test_resolve_google_news_article_url_keeps_the_link_when_decoding_fails(self, mock_decode):
+        self.assertEqual(Feed.resolve_google_news_article_url(self.GOOGLE_URL), self.GOOGLE_URL)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
+    def test_get_permalink_never_decodes_google_news_links(self, mock_decode):
+        """get_permalink runs for every entry on every fetch; decoding costs two HTTP
+        requests per story, so it stays out of the shared permalink helper."""
+        self.assertEqual(Feed.get_permalink({"link": self.GOOGLE_URL}), self.GOOGLE_URL)
+        self.assertEqual(Feed.resolve_google_redirect_url(self.GOOGLE_URL), self.GOOGLE_URL)
+        mock_decode.assert_not_called()
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url")
+    def test_text_importer_fetches_the_decoded_article_url(self, mock_decode):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mock_decode.return_value = self.ARTICLE_URL
+
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+
+        self.assertEqual(importer.story_url, self.ARTICLE_URL)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    @patch("apps.rss_feeds.text_importer.validate_public_url")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_fetch_manually_never_saves_the_google_consent_wall(self, mock_get, mock_validate, mock_decode):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mock_get.return_value = self._consent_response()
+
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+        result = importer.fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        mock_get.assert_called_once()
+
+    @patch("apps.rss_feeds.models.safe_requests_get")
+    def test_google_news_decoder_fetches_the_article_page_through_the_redirect_guard(self, mock_safe_get):
+        """The decoder now runs for story links supplied by feeds, so its page fetch must go
+        through safe_requests_get, which validates every redirect hop."""
+        mock_safe_get.return_value = MagicMock(status_code=200, text="<html></html>")
+
+        self.assertIsNone(MStory._decode_google_news_url(self.GOOGLE_URL))
+        mock_safe_get.assert_called_once()
+        self.assertTrue(mock_safe_get.call_args.args[0].startswith("https://news.google.com/articles/"))
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_shared_story_drops_a_cached_consent_wall_too(self, mock_feed):
+        from apps.social.models import MSharedStory
+
+        shared = MSharedStory(
+            story_feed_id=1, story_permalink=self.GOOGLE_URL, user_id=1, story_guid="shared-consent"
+        )
+        shared.original_text_z = zlib.compress(self.CONSENT_HTML)
+
+        with patch("apps.social.models.TextImporter") as mock_importer:
+            mock_importer.return_value.fetch.return_value = "<p>Real article</p>"
+            text = shared.fetch_original_text()
+
+        self.assertEqual(text, "<p>Real article</p>")
+        self.assertIsNone(shared.original_text_z)
+        mock_importer.return_value.fetch.assert_called_once()
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    def test_fetch_mercury_rejects_consent_text_even_when_it_reports_the_google_news_url(self, mock_decode):
+        """Mercury can echo the requested Google News URL rather than consent.google.com, so
+        the extracted text itself must give the consent wall away."""
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mercury = MagicMock()
+        mercury.json.return_value = {
+            "content": self.CONSENT_HTML.decode("utf-8"),
+            "title": "Before you continue",
+            "url": self.GOOGLE_URL,
+            "lead_image_url": None,
+        }
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+
+        with patch.object(importer, "fetch_request", return_value=mercury):
+            result = importer.fetch_mercury(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    def test_fetch_mercury_never_saves_the_google_consent_wall(self, mock_decode):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        mercury = MagicMock()
+        mercury.json.return_value = {
+            "content": "<p>We use cookies and data, including IP addresses</p>",
+            "title": "Before you continue",
+            "url": self.CONSENT_URL,
+            "lead_image_url": None,
+        }
+        importer = TextImporter(story=self._story(self.GOOGLE_URL))
+
+        with patch.object(importer, "fetch_request", return_value=mercury):
+            result = importer.fetch_mercury(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+
+    @patch("apps.rss_feeds.models.MStory._decode_google_news_url", return_value=None)
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_cached_consent_wall_is_dropped_and_refetched(self, mock_feed, mock_decode):
+        """Stories fetched before the fix cached the consent page as their text; opening them
+        again must fetch the real article instead of serving the cached boilerplate."""
+        story = MStory(
+            story_feed_id=1,
+            story_hash="1:consent",
+            story_guid="consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer, patch.object(
+            MStory, "save"
+        ), patch.object(MStory, "extract_image_urls"):
+            mock_importer.return_value.fetch.return_value = {"content": "<p>Real article</p>", "image": None}
+            text = story.fetch_original_text()
+
+        self.assertEqual(text, "<p>Real article</p>")
+        self.assertIsNone(story.original_text_z)
+        mock_importer.return_value.fetch.assert_called_once_with(return_document=True)
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_google_news_article_quoting_the_consent_wording_is_kept(self, mock_feed):
+        """The article behind a Google News link keeps its Google News permalink after text
+        extraction, so the consent signature needs more than the opening line."""
+        story = MStory(
+            story_feed_id=1,
+            story_hash="1:quoting-google",
+            story_guid="quoting-google-guid",
+            story_title="What Google's consent wall says",
+            story_permalink=self.GOOGLE_URL,
+        )
+        story.original_text_z = zlib.compress(self.QUOTING_HTML)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer:
+            text = story.fetch_original_text()
+
+        self.assertEqual(text, self.QUOTING_HTML)
+        mock_importer.assert_not_called()
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_failed_consent_refetch_never_erases_a_concurrent_success(self, mock_sync, mock_feed):
+        """Two requests load the same consent-wall cache. The first refetch succeeds and
+        saves the article; the second fails and must leave that article in place."""
+        story = MStory(
+            story_feed_id=1,
+            story_guid="concurrent-consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+        story.save()
+        self.addCleanup(lambda: MStory.objects(id=story.id).delete())
+        real_article = zlib.compress(b"<p>Real article</p>")
+        winner = MStory.objects.get(id=story.id)
+        loser = MStory.objects.get(id=story.id)
+
+        def losing_fetch(**kwargs):
+            # The other request finishes its refetch while this one is still in flight.
+            winner.original_text_z = real_article
+            winner.save()
+            return None
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer, patch.object(
+            MStory, "extract_image_urls"
+        ):
+            mock_importer.return_value.fetch.side_effect = losing_fetch
+            text = loser.fetch_original_text()
+
+        self.assertIsNone(text)
+        self.assertEqual(MStory.objects.get(id=story.id).original_text_z, real_article)
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_failed_refetch_after_another_request_cleared_the_cache_never_erases_its_result(
+        self, mock_sync, mock_feed
+    ):
+        """Request A clears the consent cache; request B finds it already cleared, refetches,
+        and fails while A stores the article. B must not save an empty text over it."""
+        story = MStory(
+            story_feed_id=1,
+            story_guid="cleared-first-consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+        story.save()
+        self.addCleanup(lambda: MStory.objects(id=story.id).delete())
+        real_article = zlib.compress(b"<p>Real article</p>")
+        winner = MStory.objects.get(id=story.id)
+        loser = MStory.objects.get(id=story.id)
+        # A has cleared the cache but not yet stored its article.
+        MStory.objects(id=story.id).update(unset__original_text_z=1)
+
+        def losing_fetch(**kwargs):
+            winner.original_text_z = real_article
+            winner.save()
+            return None
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer, patch.object(
+            MStory, "extract_image_urls"
+        ):
+            mock_importer.return_value.fetch.side_effect = losing_fetch
+            text = loser.fetch_original_text()
+
+        self.assertIsNone(text)
+        self.assertEqual(MStory.objects.get(id=story.id).original_text_z, real_article)
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    @patch("apps.rss_feeds.models.MStory.sync_redis")
+    def test_stale_consent_copy_serves_the_text_another_request_already_cached(self, mock_sync, mock_feed):
+        story = MStory(
+            story_feed_id=1,
+            story_guid="stale-consent-guid",
+            story_title="Before you continue",
+            story_permalink=self.GOOGLE_URL,
+            story_date=datetime.datetime.utcnow(),
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+        story.save()
+        self.addCleanup(lambda: MStory.objects(id=story.id).delete())
+        real_article = zlib.compress(b"<p>Real article</p>")
+        stale = MStory.objects.get(id=story.id)
+        MStory.objects(id=story.id).update(set__original_text_z=real_article)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer:
+            text = stale.fetch_original_text()
+
+        self.assertEqual(text, b"<p>Real article</p>")
+        mock_importer.assert_not_called()
+
+    @patch("apps.rss_feeds.models.Feed.get_by_id")
+    def test_unrelated_article_quoting_the_consent_wording_is_kept(self, mock_feed):
+        """Only Google News links get their cached text dropped; an article elsewhere that
+        quotes Google's consent wording keeps its cached full text."""
+        story = MStory(
+            story_feed_id=1,
+            story_hash="1:quoting",
+            story_guid="quoting-guid",
+            story_title="What Google's consent wall says",
+            story_permalink="https://example.com/google-consent-wall-explained",
+        )
+        story.original_text_z = zlib.compress(self.CONSENT_HTML)
+
+        with patch("apps.rss_feeds.models.TextImporter") as mock_importer:
+            text = story.fetch_original_text()
+
+        self.assertEqual(text, self.CONSENT_HTML)
+        self.assertIsNotNone(story.original_text_z)
+        mock_importer.assert_not_called()
+
+
 class Test_MergeFeedsKeepsBranchedFeeds(TransactionTestCase):
     """merge_feeds deletes the duplicate feed. Until branch_from_feed became SET_NULL that
     cascaded to every feed branched from the duplicate, including the survivor itself when
@@ -5974,6 +6704,55 @@ class Test_ScrapingBeeProxy(TestCase):
         self.assertEqual(result, FEED_ERRHTTP)
         self.assertIsNone(parsed)
         mock_history.assert_not_called()
+
+    @patch("utils.feed_fetcher.RScrapingBee.record_skip")
+    @patch("utils.feed_fetcher.RScrapingBee.users_over_budget", return_value=True)
+    @patch("utils.feed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.has_dormant_sole_subscriber", return_value=False)
+    @patch("apps.rss_feeds.models.Feed.proxy_budget_subscriber_ids", return_value=[41, 42])
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    def test_feed_shared_by_active_readers_ignores_the_reader_budget(
+        self, mock_random, mock_subscribers, mock_dormant, mock_over_budget, mock_users_over, mock_skip
+    ):
+        """The per-reader budget exists so one reader's pile of single-subscriber feeds can't
+        drain the pool. A feed with several active readers is the opposite case: one credit
+        serves all of them, so it is never rationed by its readers' budgets. Forum #13832:
+        TMZ (47 active readers) stopped updating because its 20 oldest subscribers had each
+        spent their one-credit share."""
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.active_subscribers = 47
+        self.feed.save()
+        fetcher = FetchFeed(self.feed.pk, {})
+
+        self.assertFalse(fetcher.should_skip_paid_proxy())
+        self.assertFalse(fetcher.skipped_for_user_budget)
+        mock_users_over.assert_not_called()
+        mock_skip.assert_not_called()
+
+    def test_has_multiple_active_subscribers_counts_real_readers_when_cached_count_is_stale(self):
+        """active_subscribers is a cached count, so when it says 0 or 1 the real subscription
+        rows decide: two readers seen inside SUBSCRIBER_EXPIRE days make the feed shared, one
+        recent reader plus one who has drifted away do not."""
+        recent = datetime.datetime.now() - datetime.timedelta(days=1)
+        stale = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE + 30)
+        readers = []
+        for name, last_seen in (("shared_reader_1", recent), ("shared_reader_2", recent)):
+            user = User.objects.create_user(name, f"{name}@example.com", "password")
+            Profile.objects.filter(user=user).update(last_seen_on=last_seen)
+            UserSubscription.objects.create(user=user, feed=self.feed)
+            readers.append(user)
+
+        self.feed.active_subscribers = 0
+        self.feed.num_subscribers = 2
+        self.feed.save()
+        self.assertTrue(self.feed.has_multiple_active_subscribers())
+
+        Profile.objects.filter(user=readers[1]).update(last_seen_on=stale)
+        self.assertFalse(self.feed.has_multiple_active_subscribers())
+
+        self.feed.active_subscribers = 2
+        self.assertTrue(self.feed.has_multiple_active_subscribers())
 
     @override_settings(SCRAPINGBEE_API_KEY="test-key")
     @patch("utils.feed_fetcher.RScrapingBee.record")

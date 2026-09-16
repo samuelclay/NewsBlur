@@ -11,7 +11,8 @@ already recorded in state.json are hidden unless a newer post arrived since they
 were handled, in which case they come back flagged as a follow-up.
 
 Examples:
-    python3 fetch_topics.py                      # last 7 days, newest first
+    python3 fetch_topics.py                      # last 7 days, newest first, at most 3 topics
+    python3 fetch_topics.py --limit 0            # no cap
     python3 fetch_topics.py --days 14
     python3 fetch_topics.py --since 2026-09-01
     python3 fetch_topics.py --topic 13833        # one topic, ignores window and state
@@ -182,7 +183,9 @@ def main():
     parser.add_argument("--me", default="samuelclay", help="Forum username whose replies count (default samuelclay)")
     parser.add_argument("--state", type=pathlib.Path, default=DEFAULT_STATE_PATH, help="Path to state.json")
     parser.add_argument("--all", action="store_true", help="Include topics already recorded in state.json")
-    parser.add_argument("--limit", type=int, default=0, help="Stop after this many topics (0 = no limit)")
+    parser.add_argument(
+        "--limit", type=int, default=3, help="Stop after this many topics (default 3, 0 = no limit)"
+    )
     parser.add_argument("--summary", action="store_true", help="Print the header list only")
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of text")
     args = parser.parse_args()
