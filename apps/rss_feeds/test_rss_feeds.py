@@ -7133,6 +7133,100 @@ class Test_TextImporterBlockedFallsBackToProxy(TestCase):
         self.assertIn("Just a moment after the governor spoke", result["content"])
         mock_scrapingbee_get.assert_not_called()
 
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_fetch_never_saves_a_challenge_page_mercury_extracted(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        # fetch() with its defaults runs Mercury first. Mercury dutifully extracts the
+        # interstitial; that must not be saved, and the manual path must reach the proxy.
+        mercury = self._response(
+            200,
+            json.encode(
+                {
+                    "content": "<div><p>Checking your browser before accessing tmz.com. This process is "
+                    "automatic. Your browser will redirect to your requested content shortly. Please "
+                    "allow up to 5 seconds. DDoS protection by Cloudflare. Ray ID: 8f1c2a3b4c5d6e7f. "
+                    "Performance and security by Cloudflare, please stand by.</p></div>",
+                    "title": "Just a moment...",
+                    "url": self.STORY_URL,
+                    "lead_image_url": None,
+                }
+            ).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        proxied = self._response(
+            200, self.ARTICLE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+        mock_scrapingbee_get.side_effect = lambda url, **kwargs: (
+            mercury if "original_text_fetcher" in url else proxied
+        )
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+
+        result = self._importer().fetch(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Chris Brown is slamming", result["content"])
+        self.assertNotIn("Checking your browser", result["content"])
+        proxy_calls = [c for c in mock_scrapingbee_get.call_args_list if "scrapingbee.com" in c.args[0]]
+        self.assertEqual(len(proxy_calls), 1)
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_relative_links_resolve_against_the_url_the_proxy_was_redirected_to(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        moved_to = "https://www.tmz.com/2026/09/16/moved/chris-brown-venton-jones/"
+        article = self.ARTICLE_HTML.replace(
+            b'src="https://imagez.tmz.com/image/cc/4by3/2026/09/16/lead_md.jpg"', b'src="lead_md.jpg"'
+        )
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            200,
+            article,
+            url="https://app.scrapingbee.com/api/v1",
+            headers={"Spb-cost": "1", "Spb-resolved-url": moved_to},
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result["url"], moved_to)
+        self.assertIn(
+            'src="https://www.tmz.com/2026/09/16/moved/chris-brown-venton-jones/lead_md.jpg"',
+            result["content"],
+        )
+        self.assertNotIn("scrapingbee", result["url"])
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_resolved_url_that_is_not_public_or_is_the_proxy_itself_is_ignored(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        for bogus in (
+            "https://app.scrapingbee.com/api/v1?api_key=test-scrapingbee-key",
+            "http://127.0.0.1/admin",
+            "not a url",
+        ):
+            mock_scrapingbee_get.return_value = self._response(
+                200,
+                self.ARTICLE_HTML,
+                url="https://app.scrapingbee.com/api/v1",
+                headers={"Spb-cost": "1", "Spb-resolved-url": bogus},
+            )
+
+            result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+            self.assertIsNotNone(result, bogus)
+            self.assertEqual(result["url"], self.STORY_URL, bogus)
+
     @patch("apps.rss_feeds.text_importer.logging.user")
     @patch("apps.statistics.rscrapingbee.RScrapingBee.record")
     @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
