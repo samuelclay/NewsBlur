@@ -16,6 +16,7 @@ import SwiftUI
     private var hostingController: UIHostingController<AddSiteView>?
     private var viewModel: AddSiteViewModel?
     private weak var sheetController: UISheetPresentationController?
+    private var isEditingInput = false
 
     @objc var initialFeedAddress: String?
     @objc var onDismiss: (() -> Void)?
@@ -52,13 +53,20 @@ import SwiftUI
             self?.expandSheet()
         }
         viewModel.onResultsCleared = { [weak self] in
-            self?.shrinkSheet()
+            guard let self, !self.isEditingInput else { return }
+            self.shrinkSheet()
         }
 
         let addSiteView = AddSiteView(
             viewModel: viewModel,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
+            },
+            onEditingChanged: { [weak self] isEditing in
+                self?.isEditingInput = isEditing
+                if isEditing {
+                    self?.expandSheet()
+                }
             },
             onDiscover: { [weak self] tab in
                 self?.dismiss(animated: true) {
@@ -91,21 +99,24 @@ import SwiftUI
 
     @objc func setSheetController(_ sheet: UISheetPresentationController?) {
         self.sheetController = sheet
+        sheet?.detents = [.medium(), .large()]
+        sheet?.selectedDetentIdentifier = .medium
+        sheet?.prefersGrabberVisible = true
+        sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
+        sheet?.preferredCornerRadius = 12
     }
 
     private func expandSheet() {
         guard let sheet = sheetController ?? navigationController?.sheetPresentationController else { return }
         sheet.animateChanges {
-            sheet.selectedDetentIdentifier = .medium
+            sheet.selectedDetentIdentifier = .large
         }
     }
 
     private func shrinkSheet() {
         guard let sheet = sheetController ?? navigationController?.sheetPresentationController else { return }
-        if #available(iOS 16.0, *) {
-            sheet.animateChanges {
-                sheet.selectedDetentIdentifier = UISheetPresentationController.Detent.Identifier("addSiteSmall")
-            }
+        sheet.animateChanges {
+            sheet.selectedDetentIdentifier = .medium
         }
     }
 

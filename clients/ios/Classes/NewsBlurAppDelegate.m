@@ -1752,14 +1752,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         nav.navigationBarHidden = YES;
 
         UISheetPresentationController *sheet = nav.sheetPresentationController;
-        UISheetPresentationControllerDetent *smallDetent = [UISheetPresentationControllerDetent customDetentWithIdentifier:@"addSiteSmall" resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext> context) {
-            return 390.0;
-        }];
-        sheet.detents = @[smallDetent, UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        sheet.preferredCornerRadius = 12.0;
-
         [addSiteVC setSheetController:sheet];
 
         [self.feedsNavigationController presentViewController:nav animated:YES completion:nil];

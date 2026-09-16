@@ -171,13 +171,6 @@ final class NewsBlurUITestHarness {
         navigationController.navigationBar.isHidden = true
 
         if let sheet = navigationController.sheetPresentationController {
-            let smallDetent = UISheetPresentationController.Detent.custom(identifier: .init("addSiteSmall")) { _ in
-                390.0
-            }
-            sheet.detents = [smallDetent, .medium(), .large()]
-            sheet.prefersGrabberVisible = true
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = true
-            sheet.preferredCornerRadius = 12.0
             addSiteViewController.setSheetController(sheet)
         }
 
