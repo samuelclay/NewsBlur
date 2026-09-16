@@ -269,7 +269,7 @@ people together to talk about the world.</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="contact_us">Contact us</string>
-    <string name="contact_description">NewsBlur is a news reader and aggregator developed by NewsBlur. Contact the NewsBlur team for app support, questions, or feedback.</string>
+    <string name="contact_description">NewsBlur is a news reader and aggregator developed by NewsBlur, Inc. Contact the NewsBlur team for app support, questions, or feedback.</string>
     <string name="contact_email_label">Email the developer</string>
     <string name="contact_email" translatable="false">android@newsblur.com</string>
     <string name="contact_send_email">Send email</string>
