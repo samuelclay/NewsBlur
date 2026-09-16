@@ -49,6 +49,18 @@ class ScrapingBeeUsage(View):
             "hosts_over_cap"
         ] = f'{chart_name}{{metric="hosts_over_cap"}} {stats["hosts_over_cap"]}'
 
+        # Per-user share of the plan for this billing period, see RScrapingBee.user_period_budget
+        formatted_data["user_budget"] = f'{chart_name}{{metric="user_budget"}} {stats["user_budget"]}'
+        formatted_data[
+            "users_charged_period"
+        ] = f'{chart_name}{{metric="users_charged_period"}} {stats["users_charged_period"]}'
+        formatted_data[
+            "users_over_budget"
+        ] = f'{chart_name}{{metric="users_over_budget"}} {stats["users_over_budget"]}'
+        formatted_data[
+            "users_charged_7d"
+        ] = f'{chart_name}{{metric="users_charged_7d"}} {stats["users_charged_7d"]}'
+
         # Hungriest target hosts today, capped in RScrapingBee.TOP_DOMAINS to bound label cardinality
         for host, credits, requests_count in stats["top_domains"]:
             formatted_data[

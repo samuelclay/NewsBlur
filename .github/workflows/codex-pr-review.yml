@@ -1,0 +1,302 @@
+name: Codex PR Review
+
+# Automated review of every pull request commit. Runs on open, reopen, ready for
+# review, and each push to the PR branch (synchronize); never on pushes to main.
+# Copied from the Tavus developer-portal workflow of the same name and adapted for
+# NewsBlur. .github/workflows/codex-pr-review.yml
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  # A new push cancels the review of the previous head so comments land on current code.
+  group: codex-pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  codex-review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    # Reviews normally finish in 3-9 minutes. Without a timeout, a hung Codex
+    # API call burns the 6-hour default; observed hangs died at ~64 minutes
+    # with "runner lost communication" instead of a clear failure.
+    timeout-minutes: 20
+    # The review job only reads the diff and emits structured output; the
+    # post_feedback job is the one that writes to the PR.
+    permissions:
+      contents: read
+    outputs:
+      final_message: ${{ steps.run_codex.outputs.final-message }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          # Fetch the merge commit plus its parents so `git diff HEAD^1 HEAD`
+          # can resolve the base side of the diff.
+          fetch-depth: 2
+
+      - name: Pre-fetch base and head refs
+        env:
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          git fetch --no-tags origin \
+            "+refs/heads/$PR_BASE_REF:refs/remotes/origin/$PR_BASE_REF" \
+            "+refs/pull/$PR_NUMBER/head:refs/remotes/pull/$PR_NUMBER/head"
+
+      - name: Drop persisted git credentials
+        # Checkout stores the job token in .git/config; remove it before Codex reads the tree.
+        run: |
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          if git config --local --get-regexp 'http\..*\.extraheader'; then
+            echo "::error::persisted git credentials still present after cleanup"
+            exit 1
+          fi
+
+      - name: Codex code review
+        id: run_codex
+        # Pinned to v1.11: the moving v1 tag picked up v1.12 on 2026-08-20,
+        # whose Linux runner-setup rewrite never exits after the review
+        # completes (openai/codex-action#150). Unpin once that is fixed.
+        uses: openai/codex-action@52fe01ec70a42f454c9d2ebd47598f9fd6893d56
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          model: gpt-6-astra
+          effort: medium
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            You are Codex running GPT-6 Astra with Medium thinking.
+            You are reviewing NewsBlur, an open source RSS news reader.
+
+            Business context:
+            - Django 3 backend (apps/ and utils/) with PostgreSQL, MongoDB (mongoengine), Redis, and Elasticsearch, run in Docker and deployed with Ansible to Hetzner. Feed fetching, story scoring, newsletters, and Ask AI run as Celery tasks.
+            - Web frontend is Backbone.js with jQuery and Underscore under media/js/newsblur/ (snake_case methods), with Node services under node/ for text extraction, favicons, and real-time.
+            - Native clients: iOS/macOS under clients/ios (Swift and Objective-C) and Android under clients/android (Kotlin and Java).
+            - Read CLAUDE.md at the repo root for conventions before judging style.
+            - A bug in feed fetching, story deduplication, unread counts, or payments hits every subscriber at once. Treat those, and anything that could leak user data, as high severity.
+
+            Review objective:
+            - Perform a general code review for correctness, security, performance at NewsBlur's scale, maintainability, and tests across the full PR.
+
+            Focus areas (in order):
+            1) Correctness and data safety
+            - Django ORM and mongoengine queries that scan large tables (feeds, stories, subscriptions) without an index, N+1 loops, or writes inside fetch paths that run millions of times a day
+            - Race conditions in Celery tasks, Redis pipelines, and story hashing; changes to story_hash, feed_address, or unread logic
+            - Unhandled None, encoding errors on real-world feed data, timeouts on outbound HTTP (feed fetching must never hang a worker)
+            - Tests: new behavior needs a Test_* class with test_* methods; mocks must patch the module under test
+            2) Security
+            - SSRF on any outbound fetch (utils/url_safety.py validate_public_url and safe_requests_get must guard user-supplied URLs)
+            - XSS in story content rendering, template autoescape bypasses, unsafe HTML scrubbing changes
+            - Secrets or user email addresses in logs, PR text, or fixtures; auth checks on views that touch another user's data
+            3) Product and style
+            - Follows CLAUDE.md: Black at 110 columns, explicit exceptions, comments that name the file, no TODOs or placeholders, readability over cleverness
+            - User-facing copy is plain and human; forum reply drafts in PR bodies are not reviewed for tone
+            - Android UI changes cover light, dark, and black themes; iOS additions are Swift
+
+            Output requirements:
+            - The workspace is checked out to the PR merge commit. Review the PR diff with `git diff HEAD^1 HEAD`.
+            - Return JSON that matches the provided schema.
+            - Put the review summary in `summary`, grouped by severity: Critical, High, Medium, Low.
+            - Put concrete line-specific findings in `inline_comments`.
+            - Only create inline comments for issues that can be anchored to a line in the PR diff.
+            - Leave `inline_comments` empty if there are no concrete line-specific findings.
+            - For each Critical/High issue include:
+              - why it matters (user impact)
+              - a specific fix suggestion
+            - If no major risks are found, explicitly state why this PR is low risk.
+            - Write the summary and every comment in plain language most important point first, short sentences, active voice, project shorthand expanded on first use, and a concrete next step for the author.
+          output-schema: |
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["summary", "inline_comments"],
+              "properties": {
+                "summary": {
+                  "type": "string",
+                  "description": "Markdown summary for the overall PR review."
+                },
+                "inline_comments": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["path", "line", "severity", "body"],
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "description": "Repository-relative file path from the PR diff."
+                      },
+                      "line": {
+                        "type": "integer",
+                        "description": "Right-side file line number to anchor the comment."
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": ["Critical", "High", "Medium", "Low"]
+                      },
+                      "body": {
+                        "type": "string",
+                        "description": "Markdown body for this inline comment."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          sandbox: read-only
+
+  post_feedback:
+    runs-on: ubuntu-latest
+    needs: codex-review
+    if: needs.codex-review.outputs.final_message != ''
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Post Codex feedback
+        uses: actions/github-script@v8
+        env:
+          CODEX_FINAL_MESSAGE: ${{ needs.codex-review.outputs.final_message }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            function parseCodexOutput(raw) {
+              const trimmed = raw.trim();
+              const withoutFence = trimmed
+                .replace(/^```(?:json)?\s*/i, '')
+                .replace(/\s*```$/i, '')
+                .trim();
+              return JSON.parse(withoutFence);
+            }
+
+            function diffRightLines(patch) {
+              const lines = new Set();
+              if (!patch) {
+                return lines;
+              }
+
+              let rightLine = 0;
+              for (const line of patch.split('\n')) {
+                const hunk = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+                if (hunk) {
+                  rightLine = Number(hunk[1]);
+                  continue;
+                }
+
+                if (line.startsWith('+')) {
+                  lines.add(rightLine);
+                  rightLine += 1;
+                } else if (line.startsWith('-')) {
+                  continue;
+                } else if (line.startsWith('\\')) {
+                  continue;
+                } else {
+                  lines.add(rightLine);
+                  rightLine += 1;
+                }
+              }
+
+              return lines;
+            }
+
+            let review;
+            try {
+              review = parseCodexOutput(process.env.CODEX_FINAL_MESSAGE);
+            } catch (error) {
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                event: 'COMMENT',
+                body: [
+                  '<!-- codex-pr-review -->',
+                  '**Codex review: GPT-6 Astra, Medium thinking**',
+                  '',
+                  'Codex returned output that could not be parsed as structured review JSON, so posting the raw review output.',
+                  '',
+                  process.env.CODEX_FINAL_MESSAGE,
+                ].join('\n'),
+              });
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+
+            const diffLinesByPath = new Map(
+              files.map((file) => [file.filename, diffRightLines(file.patch)])
+            );
+
+            const skipped = [];
+            const seen = new Set();
+            const comments = [];
+
+            for (const item of review.inline_comments || []) {
+              const path = String(item.path || '');
+              const line = Number(item.line);
+              const bodyText = String(item.body || '').trim();
+              const rawSeverity = String(item.severity || 'Medium');
+              const severity = ['Critical', 'High', 'Medium', 'Low'].includes(rawSeverity)
+                ? rawSeverity
+                : 'Medium';
+              const key = `${path}:${line}:${bodyText}`;
+              const validLines = diffLinesByPath.get(path);
+
+              if (!path || !Number.isInteger(line) || !bodyText || seen.has(key)) {
+                continue;
+              }
+              seen.add(key);
+
+              if (!validLines || !validLines.has(line)) {
+                skipped.push({ path, line, severity, body: bodyText });
+                continue;
+              }
+
+              comments.push({
+                path,
+                line,
+                side: 'RIGHT',
+                body: `**Codex: GPT-6 Astra, Medium**\n\n**${severity}:** ${bodyText}`,
+              });
+            }
+
+            const bodyParts = [
+              '<!-- codex-pr-review -->',
+              '**Codex review: GPT-6 Astra, Medium thinking**',
+              '',
+              String(review.summary || '').trim() || 'Codex completed the review without a summary.',
+            ];
+
+            if (skipped.length > 0) {
+              bodyParts.push(
+                '',
+                `${skipped.length} finding(s) could not be anchored to the current PR diff and are preserved here:`,
+                ...skipped.map((item) => `- **${item.severity}** \`${item.path}:${item.line}\`: ${item.body.replace(/\s*\n\s*/g, ' ')}`)
+              );
+            }
+
+            const reviewRequest = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              event: 'COMMENT',
+              body: bodyParts.join('\n'),
+            };
+
+            if (comments.length > 0) {
+              reviewRequest.comments = comments;
+            }
+
+            await github.rest.pulls.createReview(reviewRequest);

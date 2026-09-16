@@ -45,10 +45,21 @@ class RScrapingBee:
     SOURCES = ("feed", "discovery", "original_story", "webfeed", "webfeed_preview")
     # ScrapingBee only bills 200 and 404 responses. 500 means the target site blocked
     # even the proxy; "error" means the request to ScrapingBee itself raised.
-    STATUSES = ("200", "304", "404", "500", "other", "error", "capped")
+    # "capped", "dormant" and "user_budget" are proxy requests that were skipped, not made:
+    # the host was over its daily credit cap, the feed's only subscriber hasn't been seen
+    # in a year, or every subscriber has spent their share of the plan for this period.
+    STATUSES = ("200", "304", "404", "500", "other", "error", "capped", "dormant", "user_budget")
     # Fallback when settings.SCRAPINGBEE_HOST_DAILY_CREDIT_CAP isn't set. Only the hottest
     # few hosts (rsshub.app, deviantart, craigslist) spend even half this in a normal day.
     DEFAULT_HOST_DAILY_CREDIT_CAP = 1000
+    # Per-user budgets: a proxied fetch is charged to at most this many of the feed's
+    # subscribers, the computed share is cached this long, per-period ledgers live this long,
+    # and these are the fallbacks when settings or the usage API are missing.
+    USER_SAMPLE = 20
+    USER_BUDGET_CACHE_SECONDS = 600
+    PERIOD_TTL_DAYS = 45
+    DEFAULT_USER_BUDGET_MIN_USERS = 5000
+    FALLBACK_USER_PERIOD_BUDGET = 10
 
     @classmethod
     def _redis(cls):
@@ -96,14 +107,35 @@ class RScrapingBee:
             return 1 if response.status_code in (200, 404) else 0
 
     @classmethod
-    def record(cls, source, status_code=None, url=None, credits=0):
-        """Count one ScrapingBee request. Never raises: stats must not break a fetch."""
+    def period_key(cls):
+        """
+        The billing period a user's credits are charged against: the renewal date from the
+        cached usage API response, or the calendar month when that isn't available. Reads
+        only the cache so a fetch never waits on ScrapingBee's API.
+        """
+        try:
+            cached = cls._redis().get("sbUsage")
+            if cached:
+                renewal = json.loads(cached).get("renewal") or ""
+                if len(renewal) >= 10:
+                    return renewal[:10]
+        except Exception:
+            pass
+        return datetime.date.today().strftime("%Y-%m")
+
+    @classmethod
+    def record(cls, source, status_code=None, url=None, credits=0, user_ids=None):
+        """
+        Count one ScrapingBee request. `user_ids` are the feed's subscribers the credits are
+        charged to for the per-user budget. Never raises: stats must not break a fetch.
+        """
         try:
             r = cls._redis()
             today = cls._date()
             ttl = cls._ttl()
             credits = int(credits or 0)
             host = cls._host(url)
+            user_ids = [str(uid) for uid in (user_ids or [])][: cls.USER_SAMPLE]
 
             pipe = r.pipeline()
             pipe.hincrby(f"sbCalls:{today}", f"{source}:{cls.status_bucket(status_code)}", 1)
@@ -116,6 +148,13 @@ class RScrapingBee:
                 if credits:
                     pipe.zincrby(f"sbDomainCredits:{today}", credits, host)
                     pipe.expire(f"sbDomainCredits:{today}", ttl)
+            if user_ids and credits:
+                period = cls.period_key()
+                pipe.sadd(f"sbUsersCharged:{today}", *user_ids)
+                pipe.expire(f"sbUsersCharged:{today}", 8 * 24 * 60 * 60)
+                for uid in user_ids:
+                    pipe.zincrby(f"sbUserCredits:{period}", credits, uid)
+                pipe.expire(f"sbUserCredits:{period}", cls.PERIOD_TTL_DAYS * 24 * 60 * 60)
             pipe.execute()
         except Exception as e:
             logging.debug(
@@ -143,17 +182,95 @@ class RScrapingBee:
         return cls.host_credits_today(url) >= cls.host_daily_credit_cap()
 
     @classmethod
-    def record_capped(cls, source, url=None):
-        """Count a proxy request that was skipped because its host is over the daily cap."""
+    def user_credits_this_period(cls, user_ids):
+        """Credits charged to each user so far this billing period, {user_id: credits}."""
+        user_ids = list(user_ids or [])
+        if not user_ids:
+            return {}
+        period = cls.period_key()
+        pipe = cls._redis().pipeline()
+        for uid in user_ids:
+            pipe.zscore(f"sbUserCredits:{period}", str(uid))
+        return {uid: int(score or 0) for uid, score in zip(user_ids, pipe.execute())}
+
+    @classmethod
+    def users_charged_recently(cls, days=7):
+        """How many distinct users were charged proxy credits in the last `days` days."""
+        keys = [
+            f"sbUsersCharged:{cls._date(datetime.date.today() - datetime.timedelta(days=offset))}"
+            for offset in range(days)
+        ]
+        return len(cls._redis().sunion(keys))
+
+    @classmethod
+    def user_period_budget(cls):
+        """
+        Credits each user may spend on proxied fetches this billing period. A fixed
+        settings.SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET wins; otherwise the credits left in the
+        period are split across the users charged in the last week (assuming at least
+        SCRAPINGBEE_USER_BUDGET_MIN_USERS of them), so the pool lasts until renewal. Never
+        below one credit, cached for ten minutes, and never raises.
+        """
+        fixed = getattr(settings, "SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET", None)
+        if fixed:
+            return max(1, int(fixed))
+        try:
+            r = cls._redis()
+            cached = r.get("sbUserBudget")
+            if cached:
+                return int(cached)
+            usage = cls.get_account_usage()
+            if not usage:
+                return cls.FALLBACK_USER_PERIOD_BUDGET
+            min_users = int(
+                getattr(settings, "SCRAPINGBEE_USER_BUDGET_MIN_USERS", cls.DEFAULT_USER_BUDGET_MIN_USERS)
+            )
+            users = max(cls.users_charged_recently(days=7), min_users, 1)
+            budget = max(1, int(usage.get("remaining", 0)) // users)
+            r.set("sbUserBudget", budget, ex=cls.USER_BUDGET_CACHE_SECONDS)
+            return budget
+        except Exception as e:
+            logging.debug(" ***> ScrapingBee user budget unavailable: %s" % e)
+            return cls.FALLBACK_USER_PERIOD_BUDGET
+
+    @classmethod
+    def users_over_budget(cls, user_ids):
+        """
+        True when every one of these subscribers has spent their share for the period, so
+        the fetch should wait. Any subscriber with budget left keeps a shared feed alive; a
+        feed with no subscribers is left to the dormant check. Never raises.
+        """
+        if not user_ids:
+            return False
+        try:
+            budget = cls.user_period_budget()
+            spent = cls.user_credits_this_period(user_ids)
+            return all(credits >= budget for credits in spent.values())
+        except Exception as e:
+            logging.debug(" ***> ScrapingBee user budget check failed, allowing fetch: %s" % e)
+            return False
+
+    @classmethod
+    def record_skip(cls, source, reason, url=None):
+        """
+        Count a proxy request that was deliberately skipped. `reason` becomes the status
+        label on the dashboard: "capped" (host over its daily credit cap) or "dormant" (the
+        feed's only subscriber hasn't been seen in a year). Never raises.
+        """
         try:
             r = cls._redis()
             today = cls._date()
             pipe = r.pipeline()
-            pipe.hincrby(f"sbCalls:{today}", f"{source}:capped", 1)
+            pipe.hincrby(f"sbCalls:{today}", f"{source}:{reason}", 1)
             pipe.expire(f"sbCalls:{today}", cls._ttl())
             pipe.execute()
         except Exception as e:
-            logging.debug(" ***> ScrapingBee capped stat not recorded (%s): %s" % (source, e))
+            logging.debug(" ***> ScrapingBee %s stat not recorded (%s): %s" % (reason, source, e))
+
+    @classmethod
+    def record_capped(cls, source, url=None):
+        """Count a proxy request that was skipped because its host is over the daily cap."""
+        cls.record_skip(source, "capped", url=url)
 
     @classmethod
     def record_response(cls, source, response, url=None):
@@ -191,6 +308,13 @@ class RScrapingBee:
         for host, credits in r.zrevrange(f"sbDomainCredits:{today}", 0, cls.TOP_DOMAINS - 1, withscores=True):
             stats["top_domains"].append((host, int(credits), int(domain_requests.get(host, 0))))
         stats["hosts_over_cap"] = r.zcount(f"sbDomainCredits:{today}", stats["host_credit_cap"], "+inf")
+
+        # Per-user budget for the billing period and how many readers have used theirs up
+        period = cls.period_key()
+        stats["user_budget"] = cls.user_period_budget()
+        stats["users_charged_period"] = r.zcard(f"sbUserCredits:{period}")
+        stats["users_over_budget"] = r.zcount(f"sbUserCredits:{period}", stats["user_budget"], "+inf")
+        stats["users_charged_7d"] = cls.users_charged_recently(days=7)
 
         return stats
 

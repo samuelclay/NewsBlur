@@ -1,0 +1,109 @@
+{
+  "topics": {
+    "13833": {
+      "title": "WIRED Newsletters blocked as spam",
+      "url": "https://forum.newsblur.com/t/wired-newsletters-blocked-as-spam/13833",
+      "status": "reply-drafted",
+      "tier": 2,
+      "handled_at": "2026-09-13T23:19:55Z",
+      "last_posted_at": "2026-09-13T21:18:38.917Z",
+      "pr": null,
+      "branch": null,
+      "worktree": null,
+      "note": "550 5.7.1 comes from ImprovMX's MX (SpamAssassin, hard 5.0 cutoff, build v2026.09.11); the mail never reaches newsletter_receive. mtaylor's WIRED feed 10067048 got a story daily through Sep 11, none since. Newsletter volume overall is normal and 7 other WIRED feeds received mail Sep 13, so it is per-email scoring. No code fix possible. Sam chose: email ImprovMX support asking to disable filtering for newsletters.newsblur.com, then post the reply. Reply assumes the email was sent. UPDATE 2026-09-13T23:19:55Z: ImprovMX support replied that the filter cannot be changed per domain, but a webhook destination can append ?spam_check=false to skip it. Sam adds that in the ImprovMX dashboard on the newsletters.newsblur.com catch-all alias (route ^receive/?$ ignores the query string, verified). ImprovMX also flagged DMARC: there is no _dmarc.newsletters.newsblur.com TXT at all (DNS is at DNSimple); v=DMARC1; p=none is enough. Replies assume the dashboard change is done.",
+      "reply": "Found the cause and fixed it. That bounce was coming from ImprovMX, the service that receives mail for newsletters.newsblur.com and hands it to NewsBlur. They pushed an update on September 11 and their spam scoring started putting some WIRED emails right at the 5.0 cutoff, so the message was rejected before it ever reached NewsBlur. Your WIRED feed was getting a story every day through the 11th and then stopped, which matches. ImprovMX gave me a way to skip their spam check for mail headed to NewsBlur, since every newsletter address already has a secret token in it, and that's now on. The next WIRED email should come through. Let me know if it doesn't.",
+      "question": null,
+      "related_topics": [
+        13413
+      ]
+    },
+    "13413": {
+      "title": "Spam detection on newsletters too strict",
+      "url": "https://forum.newsblur.com/t/spam-detection-on-newsletters-too-strict/13413",
+      "status": "reply-drafted",
+      "tier": 2,
+      "handled_at": "2026-09-13T23:19:55Z",
+      "last_posted_at": "2026-07-02T16:18:44.541Z",
+      "pr": null,
+      "branch": null,
+      "worktree": null,
+      "note": "Same ImprovMX SpamAssassin rejection as 13833 (score 5.2, build v2026.01.28). Unanswered since Feb 2026, follow-up July 2. Handled together with 13833 at Sam's request; reply assumes the ImprovMX email was sent. UPDATE 2026-09-13T23:19:55Z: ImprovMX support replied that the filter cannot be changed per domain, but a webhook destination can append ?spam_check=false to skip it. Sam adds that in the ImprovMX dashboard on the newsletters.newsblur.com catch-all alias (route ^receive/?$ ignores the query string, verified). ImprovMX also flagged DMARC: there is no _dmarc.newsletters.newsblur.com TXT at all (DNS is at DNSimple); v=DMARC1; p=none is enough. Replies assume the dashboard change is done.",
+      "reply": "Sorry for the long wait on this. You had it right, the rejections were coming from ImprovMX, which receives mail for newsletters.newsblur.com, and their SpamAssassin scoring bounced anything at 5.0 or above before NewsBlur ever saw it. NewsBlur itself doesn't filter newsletters at all, and I agree the secret token in the address should be enough. ImprovMX gave me a way to skip their spam check for mail headed to NewsBlur and I've turned it on, so those Substack, Kickstarter, and Patreon newsletters should stop bouncing. If you still see a rejection after today, paste it here and I'll dig in.",
+      "question": null,
+      "related_topics": [
+        13833
+      ]
+    },
+    "13832": {
+      "title": "TMZ feed not updating for the last few days",
+      "url": "https://forum.newsblur.com/t/tmz-feed-not-updating-for-the-last-few-days/13832",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-09-13T23:38:53Z",
+      "last_posted_at": "2026-09-13T02:58:43.594Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2130",
+      "branch": "forum-13832-popular-feeds-proxy-budget",
+      "worktree": ".worktree/forum-13832-popular-feeds-proxy-budget",
+      "note": "tmz.com (CloudFront) 403s every request from Hetzner IPs, any UA. Feed 8410 is_forbidden since Sep 13 04:14, last story Sep 11. ScrapingBee fallback skipped by the Sep 10 per-reader budget (plan 96% used, budget floor 1 credit, all 20 budget subscribers charged). Sam chose: feeds with 2+ active readers bypass the reader budget. PR adds Feed.has_multiple_active_subscribers + should_skip_paid_proxy exemption with tests. Reply assumes deploy (make deploy + make celery). Flagged: plan will run out before Sep 30 regardless; this adds ~1,100 fetches/day.",
+      "reply": "TMZ started blocking NewsBlur's servers outright, every request from our IPs gets a 403 from their CDN. When a site does that, NewsBlur fetches the feed through a paid proxy instead, and that proxy is rationed this month because the plan is nearly used up. The rationing was meant for feeds with a single reader, but it caught TMZ too, which has dozens of active readers. I've fixed that so any feed shared by several readers always gets the proxy, and TMZ should catch up on the next fetch. Nothing on your end caused it.",
+      "question": null,
+      "merged_at": "2026-09-16T04:30:00Z",
+      "merge_commit": "6aab1960f",
+      "deploy": "make celery"
+    },
+    "13827": {
+      "title": "Is there any way to stop any Google News Stories",
+      "url": "https://forum.newsblur.com/t/is-there-any-way-to-stop-any-google-news-stories/13827",
+      "status": "merged",
+      "tier": 1,
+      "handled_at": "2026-09-13T23:54:46Z",
+      "last_posted_at": "2026-09-07T18:16:33.164Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2131",
+      "branch": "forum-13827-google-news-consent-wall",
+      "worktree": ".worktree/forum-13827-google-news-consent-wall",
+      "note": "news.google.com/rss/articles/<token> links redirect to consent.google.com from NewsBlur's EU servers and the consent page was extracted as story text. Fix: Feed.resolve_google_redirect_url decodes the token via MStory._decode_google_news_url; TextImporter refuses consent.google.com; fetch_original_text drops cached consent text. Verified decoder works from happ-web-01. Reply assumes deploy (make deploy + make celery).",
+      "reply": "JTTraveler is right that Google News feeds only carry a headline and a link, but that cookie notice was on NewsBlur's side. Google News links go through a news.google.com redirect, and when NewsBlur's servers, which sit in Europe, followed it to pull the article text, Google handed them its cookie consent page instead of the story. That page is what ended up as the text. I've fixed it so NewsBlur decodes the link to the real article first and never keeps that consent page as a story's text. Stories that already show the notice will swap in the real article the next time you open them.",
+      "question": null,
+      "merged_at": "2026-09-16T04:30:00Z",
+      "merge_commit": "316e173f6",
+      "deploy": "make deploy and make celery"
+    },
+    "13830": {
+      "title": "CBC news feeds not showing past June",
+      "url": "https://forum.newsblur.com/t/cbc-news-feeds-not-showing-past-june/13830",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-09-14T03:00:53Z",
+      "last_posted_at": "2026-09-07T07:41:51.836Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2132",
+      "branch": "forum-13830-https-fallback",
+      "worktree": ".worktree/forum-13830-https-fallback",
+      "note": "rss.cbc.ca dropped port 80 on 2026-06-30 with no redirect; 69 http://rss.cbc.ca/lineup/*.xml feeds (7,062 subs) went stale while https twins stayed current. Sam approved merging the 35 twin pairs + rewriting no-twin feeds to https. The merge script (force=True) hit the branch_from_feed CASCADE: deleting stale parent 22641 cascade-deleted its https branches 7284245 and 6547793 plus 702 subscriptions; 3 merges completed cleanly (topstories pairs), 31 remain. Recovery rows were pulled from the 2026-09-13 04:00 pg_dump into cbc_restore.sql (repo root) for Sam to run on hdb-postgres-1; the auto-mode classifier blocked me from running it. Follow-up PR #2133 fixes merge_feeds (SET_NULL migration 0014, re-parenting, inventory logging). After #2133 deploys, rerun the CBC merge for the remaining 31 feeds. Reply assumes the recovery ran and #2132 deployed (make deploy + make celery). RECOVERY DONE 2026-09-14T14:10:37Z: cbc_restore.sql ran on hdb-postgres-1 (feeds 7284245 and 6547793, 715 subscriptions, feeddata, 5 duplicate rows, 153 similar links); a reader had re-added rss-canada as feed 10309750, which was merged into 6547793 (2 subs). Subscribers recounted (632 / 84) and both feeds scheduled for a fetch. Still pending: the 31 remaining stale CBC http feeds after PR #2133 deploys. FOLDER REPAIR 2026-09-14T14:25:57Z: 43 users on 7284245 and 22 on 6547793 had removed the broken entry; each got the feed re-added to the folder their backup tree showed (root when that folder no longer exists), one save per user. Both feeds now have a folder entry for every subscription (632 / 84).",
+      "reply": "You found the right fix. CBC turned off the old http://rss.cbc.ca addresses at the end of June without redirecting them, so every subscription that still used one stopped updating while the https versions kept working. I've moved everyone who was still on an old address over to the working https feeds, so the CBC BC feed that search offers updates again now. NewsBlur will also try https on its own from here on whenever a site drops its old http address like this.",
+      "question": null,
+      "related_prs": [
+        "https://github.com/samuelclay/NewsBlur/pull/2133"
+      ],
+      "merged_at": "2026-09-16T04:30:00Z",
+      "merge_commit": "bf5f0a84a and a88041dd2 (#2132 and #2133)",
+      "deploy": "make deploy, make celery, migration 0014, Celery restart, then the remaining 31 CBC merges"
+    },
+    "13826": {
+      "title": "Android: App crashes if there are no unread items and a feed is selected",
+      "url": "https://forum.newsblur.com/t/android-app-crashes-if-there-are-no-unread-items-and-a-feed-is-selected/13826",
+      "status": "merged",
+      "tier": 1,
+      "handled_at": "2026-09-14T03:12:01Z",
+      "last_posted_at": "2026-09-07T07:29:31.955Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2135",
+      "branch": "forum-13826-android-next-folder-loop",
+      "worktree": ".worktree/forum-13826-android-next-folder-loop",
+      "note": "Play Console top crash for builds 282/283: StackOverflowError in SessionDataSource.getNextNonEmptyFolder (39 reports, 14 users). Recursive next-folder search wrapped forever when no folder had unread feeds. Replaced with a bounded loop; 3 unit tests added, 18 in the class pass. Reply assumes the next Android release ships the fix.",
+      "reply": "Found it. When you open a feed with nothing unread, the app looks for the next folder that still has unread stories, and if there wasn't one anywhere it kept looping through your folders until it ran out of stack and crashed. It's fixed in the next Android release, which I'll push out shortly. Until then, switching the filter to All Stories avoids it.",
+      "question": null,
+      "merged_at": "2026-09-16T04:30:00Z",
+      "merge_commit": "85e13314e",
+      "deploy": "Android release"
+    }
+  }
+}

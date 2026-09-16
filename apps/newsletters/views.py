@@ -185,11 +185,29 @@ def newsletter_receive(request):
     return response
 
 
+def newsletter_story_after_a_merge(story_hash):
+    """The story behind a newsletter permalink whose feed has since been merged into another
+    (restore_merged_feed folding a re-added newsletter feed into the restored one, say). The
+    hash carries the feed id, DuplicateFeed says which feed took that id's place, and the
+    story lives under the survivor's id with the same guid hash. apps/newsletters/views.py"""
+    feed_id, _, guid_hash = story_hash.partition(":")
+    if not feed_id.isdigit() or not guid_hash:
+        return None
+    survivor = Feed.get_by_id(int(feed_id))
+    if not survivor or survivor.pk == int(feed_id):
+        return None
+    return MStory.objects(story_hash="%s:%s" % (survivor.pk, guid_hash)).first()
+
+
 def newsletter_story(request, story_hash):
     try:
         story = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
-        raise Http404
+        # A link mailed before the feed was merged still opens (see apps/rss_feeds/models.py
+        # move_one_story for the stored permalink itself).
+        story = newsletter_story_after_a_merge(story_hash)
+        if story is None:
+            raise Http404
 
     story = Feed.format_story(story)
     return HttpResponse(story["story_content"], content_type="text/html; charset=utf-8")
