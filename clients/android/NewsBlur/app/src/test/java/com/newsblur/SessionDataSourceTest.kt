@@ -161,6 +161,75 @@ class SessionDataSourceTest {
     }
 
     @Test
+    fun `next unread folder returns null when no folder has unread feeds`() {
+        // Forum #13826: with nothing unread anywhere, walking to the next folder wrapped past
+        // the end forever and crashed with a StackOverflowError.
+        val session = Session(FeedSet.folder("F2", setOf("20")), "F2")
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(createFeed("20")),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50"), createFeed("51")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        Assert.assertNull(sessionDs.peekNextSession())
+    }
+
+    @Test
+    fun `next unread feed with no unread anywhere returns null instead of crashing`() {
+        val feed20 = createFeed("20")
+        val session = Session(FeedSet.singleFeed("20"), "F2", feed20)
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(feed20, createFeed("21")),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        Assert.assertNull(sessionDs.peekNextSession())
+    }
+
+    @Test
+    fun `next unread folder wraps around to an earlier folder`() {
+        val session = Session(FeedSet.folder("F5", setOf("50")), "F5")
+        val sessionDs =
+            SessionDataSource(
+                session,
+                folders,
+                listOf(
+                    emptyList(),
+                    listOf(createFeed("20", neutralCount = 2)),
+                    listOf(createFeed("30")),
+                    emptyList(),
+                    listOf(createFeed("50")),
+                ),
+                StateFilter.ALL,
+                emptySet(),
+            )
+
+        sessionDs.peekNextSession()?.let {
+            Assert.assertEquals("F2", it.folderName)
+            Assert.assertEquals(setOf("20"), it.feedSet.flatFeedIds)
+        } ?: Assert.fail("Next unread folder session was null")
+    }
+
+    @Test
     fun `next unread feed session falls through to next unread folder`() {
         val feed20 = createFeed("20", neutralCount = 1)
         val session = Session(FeedSet.singleFeed("20"), "F2", feed20)

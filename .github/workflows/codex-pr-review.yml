@@ -68,11 +68,11 @@ jobs:
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           model: gpt-6-astra
-          effort: xhigh
+          effort: medium
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
-            You are Codex running GPT-6 Astra with Extra High thinking.
+            You are Codex running GPT-6 Astra with Medium thinking.
             You are reviewing NewsBlur, an open source RSS news reader.
 
             Business context:
@@ -218,7 +218,7 @@ jobs:
                 event: 'COMMENT',
                 body: [
                   '<!-- codex-pr-review -->',
-                  '**Codex review: GPT-6 Astra, Extra High thinking**',
+                  '**Codex review: GPT-6 Astra, Medium thinking**',
                   '',
                   'Codex returned output that could not be parsed as structured review JSON, so posting the raw review output.',
                   '',
@@ -268,13 +268,13 @@ jobs:
                 path,
                 line,
                 side: 'RIGHT',
-                body: `**Codex: GPT-6 Astra, Extra High**\n\n**${severity}:** ${bodyText}`,
+                body: `**Codex: GPT-6 Astra, Medium**\n\n**${severity}:** ${bodyText}`,
               });
             }
 
             const bodyParts = [
               '<!-- codex-pr-review -->',
-              '**Codex review: GPT-6 Astra, Extra High thinking**',
+              '**Codex review: GPT-6 Astra, Medium thinking**',
               '',
               String(review.summary || '').trim() || 'Codex completed the review without a summary.',
             ];

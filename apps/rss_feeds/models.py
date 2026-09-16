@@ -49,7 +49,11 @@ from apps.rss_feeds.tasks import (
     ScheduleCountTagsForUser,
     UpdateFeeds,
 )
-from apps.rss_feeds.text_importer import TextImporter
+from apps.rss_feeds.text_importer import (
+    TextImporter,
+    is_google_consent_text,
+    is_google_news_url,
+)
 from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
 from utils import feedfinder_forman, feedfinder_pilgrim
@@ -2886,6 +2890,10 @@ class Feed(models.Model):
         These return a JavaScript redirect page rather than an HTTP redirect,
         so requests/Mercury parser can't follow them. Extract the real URL from
         the 'url' query parameter instead.
+
+        This runs for every entry on every fetch (get_permalink), so it must never make a
+        network request. Google News article tokens, which need one, are decoded only when
+        a story's text is fetched: see resolve_google_news_article_url.
         """
         try:
             parsed = urllib.parse.urlparse(url)
@@ -2897,6 +2905,28 @@ class Feed(models.Model):
         except Exception:
             pass
         return url
+
+    @staticmethod
+    def resolve_google_news_article_url(url):
+        """Decode a Google News story link to the article it points at.
+
+        Google News feeds link every story through
+        https://news.google.com/rss/articles/<token>. Following that from NewsBlur's
+        servers in the EU lands on Google's cookie consent wall rather than the article,
+        and the consent boilerplate was being shown as the story text (forum #13827).
+        Decoding costs up to two HTTP requests (MStory._decode_google_news_url), so only
+        TextImporter calls this, once per original-text fetch; never get_permalink, which
+        runs for every entry on every feed fetch. When the decode endpoint fails, the link
+        is returned untouched and TextImporter refuses the consent page instead
+        (apps/rss_feeds/text_importer.py).
+        """
+        if not is_google_news_url(url):
+            return url
+        try:
+            decoded_url = MStory._decode_google_news_url(url)
+        except Exception:
+            decoded_url = None
+        return decoded_url or url
 
     def _exists_story(self, story, story_content, existing_stories, new_story_hashes, lightweight=False):
         story_in_system = None
@@ -3109,6 +3139,36 @@ class Feed(models.Model):
         if not last_seen:
             return True
         return last_seen < datetime.datetime.now() - datetime.timedelta(days=days)
+
+    def has_multiple_active_subscribers(self):
+        """True when at least two readers of this feed have been seen inside
+        settings.SUBSCRIBER_EXPIRE days, the same window count_subscribers uses for
+        active_subscribers.
+
+        The per-reader ScrapingBee budget (RScrapingBee.users_over_budget in
+        apps/statistics/rscrapingbee.py) is meant to stop one reader's pile of
+        single-subscriber forbidden feeds from draining the plan. A feed shared by several
+        active readers is the opposite case: one proxied fetch serves all of them, so
+        FetchFeed.should_skip_paid_proxy (utils/feed_fetcher.py) never rations it by its
+        readers' budgets. Forum #13832: TMZ, with dozens of active readers, stopped
+        updating because its 20 oldest subscribers had each spent their one-credit share.
+
+        The cached active_subscribers count answers when it is 2 or more. When it says 0
+        or 1 it may just be stale, so the real subscription rows decide, unless
+        num_subscribers already says there is at most one reader in total.
+        """
+        from apps.reader.models import UserSubscription
+
+        if self.active_subscribers is not None and self.active_subscribers > 1:
+            return True
+        if self.num_subscribers is not None and self.num_subscribers <= 1:
+            return False
+
+        seen_since = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        active_readers = UserSubscription.objects.filter(
+            feed=self, user__profile__last_seen_on__gte=seen_since
+        ).values_list("user_id", flat=True)[:2]
+        return len(active_readers) > 1
 
     def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False, pro_speed=False):
         if self.min_to_decay and not force and not premium_speed:
@@ -4383,15 +4443,17 @@ class MStory(mongo.Document):
         except Exception:
             return None
 
-        # Step 1: Fetch the Google News article page to get signature and timestamp
+        # Step 1: Fetch the Google News article page to get signature and timestamp.
+        # safe_requests_get validates every redirect hop, since this now runs for
+        # user-supplied story links (TextImporter) and must never reach an internal address.
         try:
-            resp = requests.get(
+            resp = safe_requests_get(
                 f"https://news.google.com/articles/{base64_str}",
                 timeout=8,
             )
-            if resp.status_code != 200:
+            if not resp or resp.status_code != 200:
                 return None
-        except requests.RequestException:
+        except (requests.RequestException, UnsafeUrlError):
             return None
 
         soup = BeautifulSoup(resp.text, features="lxml")
@@ -4420,6 +4482,7 @@ class MStory(mongo.Document):
                 },
                 data=f"f.req={quote(json.dumps([[payload]]))}",
                 timeout=8,
+                allow_redirects=False,
             )
             if resp.status_code != 200:
                 return None
@@ -4429,8 +4492,48 @@ class MStory(mongo.Document):
         except (requests.RequestException, json.JSONDecodeError, IndexError, TypeError, KeyError):
             return None
 
+    def drop_cached_google_consent_text(self, original_text_z, force=False, request=None):
+        """Clear a cached copy of Google's cookie consent wall so the real article is fetched
+        (forum #13827). Only the exact stale bytes are unset, in one conditional update, so
+        a concurrent request that already cached the real article is never undone; when the
+        update matches nothing the fresh stored text is returned instead. Returns the text to
+        use and whether this call dropped the cache. Shared by MStory and MStarredStory.
+        apps/rss_feeds/models.py
+        """
+        if (
+            not original_text_z
+            or force
+            or not is_google_news_url(self.story_permalink)
+            or not is_google_consent_text(zlib.decompress(original_text_z))
+        ):
+            return original_text_z, False
+        logging.user(request, "~FYCached original text is Google's consent wall, refetching")
+        if not self.id:
+            # Never stored, so there is no shared copy to protect: just drop it in memory.
+            self.original_text_z = None
+            return None, True
+        cleared = self.__class__.objects(id=self.id, original_text_z=original_text_z).update(
+            unset__original_text_z=1
+        )
+        if cleared:
+            self.original_text_z = None
+            return None, True
+        # Another request cleared this cache first. If it has already stored the article,
+        # serve that; if its refetch is still in flight, behave as if this call dropped the
+        # cache so a failed refetch here never saves an empty text over its result.
+        fresh = self.__class__.objects(id=self.id).only("original_text_z").first()
+        self.original_text_z = fresh.original_text_z if fresh else None
+        return self.original_text_z, self.original_text_z is None
+
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
+        # Google News stories fetched before forum #13827 was fixed cached Google's cookie
+        # consent wall as their text. Drop that cache so the real article is fetched; a failed
+        # refetch then leaves the story with no text rather than the consent boilerplate. Only
+        # Google News links qualify, so an article that merely quotes the wording is kept.
+        original_text_z, dropped_consent_cache = self.drop_cached_google_consent_text(
+            original_text_z, force=force, request=request
+        )
 
         if not original_text_z or force:
             feed = Feed.get_by_id(self.story_feed_id)
@@ -4445,6 +4548,12 @@ class MStory(mongo.Document):
                 has_broken_proto = "http://" in lead_image[1:] or "https://" in lead_image[1:]
                 if len(lead_image) < 1024 and not has_broken_proto:
                     self.image_urls = [lead_image]
+            if dropped_consent_cache and not original_doc:
+                # The refetch after dropping a consent-wall cache failed. Saving now would
+                # write this copy's empty original_text_z over a concurrent request's
+                # successful refetch, so leave the stored document alone.
+                logging.user(request, "~FRConsent wall refetch failed, leaving the stored story untouched")
+                return original_text
             try:
                 self.save()
             except NotUniqueError:
@@ -4666,8 +4775,14 @@ class MStarredStory(mongo.DynamicDocument):
                 story.save()
         return count
 
+    drop_cached_google_consent_text = MStory.drop_cached_google_consent_text
+
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
+        # Same consent-wall cache cleanup as MStory.fetch_original_text (forum #13827).
+        original_text_z, dropped_consent_cache = self.drop_cached_google_consent_text(
+            original_text_z, force=force, request=request
+        )
         feed = Feed.get_by_id(self.story_feed_id)
 
         if not original_text_z or force:

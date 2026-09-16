@@ -40,7 +40,7 @@
       "status": "pr-open",
       "tier": 2,
       "handled_at": "2026-09-13T23:38:53Z",
-      "last_posted_at": "2026-09-13T02:58:43.797Z",
+      "last_posted_at": "2026-09-13T02:58:43.594Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2130",
       "branch": "forum-13832-popular-feeds-proxy-budget",
       "worktree": ".worktree/forum-13832-popular-feeds-proxy-budget",
@@ -54,12 +54,43 @@
       "status": "pr-open",
       "tier": 1,
       "handled_at": "2026-09-13T23:54:46Z",
-      "last_posted_at": "2026-09-07T18:16:33.559Z",
+      "last_posted_at": "2026-09-07T18:16:33.164Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2131",
       "branch": "forum-13827-google-news-consent-wall",
       "worktree": ".worktree/forum-13827-google-news-consent-wall",
       "note": "news.google.com/rss/articles/<token> links redirect to consent.google.com from NewsBlur's EU servers and the consent page was extracted as story text. Fix: Feed.resolve_google_redirect_url decodes the token via MStory._decode_google_news_url; TextImporter refuses consent.google.com; fetch_original_text drops cached consent text. Verified decoder works from happ-web-01. Reply assumes deploy (make deploy + make celery).",
       "reply": "JTTraveler is right that Google News feeds only carry a headline and a link, but that cookie notice was on NewsBlur's side. Google News links go through a news.google.com redirect, and when NewsBlur's servers, which sit in Europe, followed it to pull the article text, Google handed them its cookie consent page instead of the story. That page is what ended up as the text. I've fixed it so NewsBlur decodes the link to the real article first and never keeps that consent page as a story's text. Stories that already show the notice will swap in the real article the next time you open them.",
+      "question": null
+    },
+    "13830": {
+      "title": "CBC news feeds not showing past June",
+      "url": "https://forum.newsblur.com/t/cbc-news-feeds-not-showing-past-june/13830",
+      "status": "pr-open",
+      "tier": 2,
+      "handled_at": "2026-09-14T03:00:53Z",
+      "last_posted_at": "2026-09-07T07:41:51.836Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2132",
+      "branch": "forum-13830-https-fallback",
+      "worktree": ".worktree/forum-13830-https-fallback",
+      "note": "rss.cbc.ca dropped port 80 on 2026-06-30 with no redirect; 69 http://rss.cbc.ca/lineup/*.xml feeds (7,062 subs) went stale while https twins stayed current. Sam approved merging the 35 twin pairs + rewriting no-twin feeds to https. The merge script (force=True) hit the branch_from_feed CASCADE: deleting stale parent 22641 cascade-deleted its https branches 7284245 and 6547793 plus 702 subscriptions; 3 merges completed cleanly (topstories pairs), 31 remain. Recovery rows were pulled from the 2026-09-13 04:00 pg_dump into cbc_restore.sql (repo root) for Sam to run on hdb-postgres-1; the auto-mode classifier blocked me from running it. Follow-up PR #2133 fixes merge_feeds (SET_NULL migration 0014, re-parenting, inventory logging). After #2133 deploys, rerun the CBC merge for the remaining 31 feeds. Reply assumes the recovery ran and #2132 deployed (make deploy + make celery). RECOVERY DONE 2026-09-14T14:10:37Z: cbc_restore.sql ran on hdb-postgres-1 (feeds 7284245 and 6547793, 715 subscriptions, feeddata, 5 duplicate rows, 153 similar links); a reader had re-added rss-canada as feed 10309750, which was merged into 6547793 (2 subs). Subscribers recounted (632 / 84) and both feeds scheduled for a fetch. Still pending: the 31 remaining stale CBC http feeds after PR #2133 deploys. FOLDER REPAIR 2026-09-14T14:25:57Z: 43 users on 7284245 and 22 on 6547793 had removed the broken entry; each got the feed re-added to the folder their backup tree showed (root when that folder no longer exists), one save per user. Both feeds now have a folder entry for every subscription (632 / 84).",
+      "reply": "You found the right fix. CBC turned off the old http://rss.cbc.ca addresses at the end of June without redirecting them, so every subscription that still used one stopped updating while the https versions kept working. I've moved everyone who was still on an old address over to the working https feeds, so the CBC BC feed that search offers updates again now. NewsBlur will also try https on its own from here on whenever a site drops its old http address like this.",
+      "question": null,
+      "related_prs": [
+        "https://github.com/samuelclay/NewsBlur/pull/2133"
+      ]
+    },
+    "13826": {
+      "title": "Android: App crashes if there are no unread items and a feed is selected",
+      "url": "https://forum.newsblur.com/t/android-app-crashes-if-there-are-no-unread-items-and-a-feed-is-selected/13826",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-09-14T03:12:01Z",
+      "last_posted_at": "2026-09-07T07:29:31.955Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2135",
+      "branch": "forum-13826-android-next-folder-loop",
+      "worktree": ".worktree/forum-13826-android-next-folder-loop",
+      "note": "Play Console top crash for builds 282/283: StackOverflowError in SessionDataSource.getNextNonEmptyFolder (39 reports, 14 users). Recursive next-folder search wrapped forever when no folder had unread feeds. Replaced with a bounded loop; 3 unit tests added, 18 in the class pass. Reply assumes the next Android release ships the fix.",
+      "reply": "Found it. When you open a feed with nothing unread, the app looks for the next folder that still has unread stories, and if there wasn't one anywhere it kept looping through your folders until it ran out of stack and crashed. It's fixed in the next Android release, which I'll push out shortly. Until then, switching the filter to All Stories avoids it.",
       "question": null
     }
   }

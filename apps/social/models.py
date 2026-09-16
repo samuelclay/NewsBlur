@@ -2774,8 +2774,15 @@ class MSharedStory(mongo.DynamicDocument):
 
         return image_sizes
 
+    drop_cached_google_consent_text = MStory.drop_cached_google_consent_text
+
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
+        # Same consent-wall cache cleanup as MStory.fetch_original_text (forum #13827):
+        # find_story falls back to shared stories once the feed story ages out.
+        original_text_z, dropped_consent_cache = self.drop_cached_google_consent_text(
+            original_text_z, force=force, request=request
+        )
         feed = Feed.get_by_id(self.story_feed_id)
 
         if not original_text_z or force:
