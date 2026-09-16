@@ -1,3 +1,4 @@
+import re
 import zlib
 from socket import error as SocketError
 from urllib.parse import urljoin, urlparse
@@ -77,29 +78,40 @@ def is_google_consent_text(text):
 # A site that blocks NewsBlur's servers answers an article-page request with one of these
 # statuses, or with a 200 whose body is a bot challenge instead of the article. Shared by
 # TextImporter (Text view) and PageImporter (Story view), which fall back to ScrapingBee.
-# apps/rss_feeds/text_importer.py
+# The markup markers are specific to Cloudflare's and Anubis's challenge pages. The phrases
+# are ordinary English an article can use, so only the challenge pages' own <title> text
+# counts, and only inside the <title> tag (an article headlined "Attention Required at the
+# Border" is an article). apps/rss_feeds/text_importer.py
 BLOCKED_STATUS_CODES = (403, 429, 503)
-BOT_CHALLENGE_MARKERS = (
+BOT_CHALLENGE_MARKUP = (
     b"cf-browser-verification",
     b"_cf_chl",
     b"cf-challenge",
     b"challenge-platform",
-    b"just a moment",
-    b"checking your browser",
-    b"attention required",
     b"anubis-challenge",
 )
+BOT_CHALLENGE_TITLES = (
+    b"just a moment...",
+    b"checking your browser",
+    b"attention required! | cloudflare",
+    b"making sure you're not a bot",
+)
+PAGE_TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 
 
 def is_blocked_response(response):
     """True when an article-page response is the site blocking us rather than the article:
-    a 403, 429 or 503, or a 200 whose first bytes are a bot challenge page."""
+    a 403, 429 or 503, or a 200 whose first bytes carry challenge-page markup or whose
+    <title> is a challenge page's."""
     if response.status_code in BLOCKED_STATUS_CODES:
         return True
-    if response.status_code == 200:
-        content_start = (response.content or b"")[:4096].lower()
-        return any(marker in content_start for marker in BOT_CHALLENGE_MARKERS)
-    return False
+    if response.status_code != 200:
+        return False
+    content_start = (response.content or b"")[:4096].lower()
+    if any(marker in content_start for marker in BOT_CHALLENGE_MARKUP):
+        return True
+    title = PAGE_TITLE_RE.search(content_start)
+    return bool(title) and any(phrase in title.group(1) for phrase in BOT_CHALLENGE_TITLES)
 
 
 class ProxiedPage:
@@ -375,6 +387,14 @@ class TextImporter:
             response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
             RScrapingBee.record_response("original_text", response, url=url)
             if response.status_code == 200 and response.content:
+                if is_blocked_response(response):
+                    # The proxy reached the site but got a challenge page itself, which
+                    # nothing downstream checks again; without this it would be cached as
+                    # the article text the moment it outgrew the story summary.
+                    logging.user(
+                        self.request, "~SN~FRScrapingBee original text fetch returned a bot challenge page"
+                    )
+                    return None
                 logging.user(
                     self.request,
                     "~SN~FGScrapingBee original text fetch succeeded: ~SB%s bytes" % len(response.content),
