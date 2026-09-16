@@ -268,6 +268,17 @@ people together to talk about the world.</string>
     <string name="add_folder_error">Could not add folder</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
+    <string name="contact_us">Contact us</string>
+    <string name="contact_description">NewsBlur is a news reader and aggregator developed by NewsBlur. Contact the NewsBlur team for app support, questions, or feedback.</string>
+    <string name="contact_email_label">Email the developer</string>
+    <string name="contact_email" translatable="false">android@newsblur.com</string>
+    <string name="contact_send_email">Send email</string>
+    <string name="contact_website_label">NewsBlur website</string>
+    <string name="contact_website" translatable="false">https://www.newsblur.com</string>
+    <string name="contact_open_website">Visit website</string>
+    <string name="contact_back">Back</string>
+    <string name="contact_no_email_app">No email app is installed. You can select and copy the email address on this page.</string>
+    <string name="contact_no_browser">No web browser is installed. You can select and copy the website address on this page.</string>
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
