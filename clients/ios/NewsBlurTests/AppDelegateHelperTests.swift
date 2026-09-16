@@ -1,6 +1,26 @@
 import XCTest
+import UIKit
 
 @testable import NewsBlur
+
+@MainActor final class Test_FeedFilterAccessibility: XCTestCase {
+    func test_loadingSidebarKeepsImageFiltersAccessible() throws {
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
+        let controller = try XCTUnwrap(storyboard.instantiateViewController(withIdentifier: "FeedsViewController") as? FeedsViewController)
+
+        // AppDelegateHelperTests.swift exercises the startup path that crashed on newer UIKit segment layouts.
+        controller.loadViewIfNeeded()
+
+        let control = try XCTUnwrap(controller.intelligenceControl)
+        XCTAssertEqual(control.numberOfSegments, 4)
+        for (index, label) in [(1, "Unread"), (2, "Focus"), (3, "Saved")] {
+            let image = try XCTUnwrap(control.imageForSegment(at: index))
+            XCTAssertEqual(image.accessibilityLabel, label)
+            control.selectedSegmentIndex = index
+            XCTAssertEqual(control.selectedSegmentIndex, index)
+        }
+    }
+}
 
 final class AppDelegateHelperTests: XCTestCase {
     private let defaults = UserDefaults.standard
