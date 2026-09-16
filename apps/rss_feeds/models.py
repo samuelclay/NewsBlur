@@ -5643,6 +5643,10 @@ MERGE_FEEDS_LOCK_BLOCKING_SECONDS = 120
 # than holding a worker slot. apps/rss_feeds/models.py
 FETCH_LOCK_TIMEOUT_SECONDS = 2 * 60
 FETCH_LOCK_BLOCKING_SECONDS = 30
+# A fetch that could not get its feed's lock in time comes back this much later; nothing was
+# written and the validators are untouched, so the same response is fetched again, and the
+# wait is not a publisher failure. apps/rss_feeds/models.py
+FETCH_LOCK_DEFERRAL_SECONDS = 5 * 60
 # A merge that keeps finding yet another feed for the survivor's final save to collide with
 # stops widening its lock set here. apps/rss_feeds/models.py
 MERGE_FEEDS_MAX_LOCKS = 6
@@ -5745,6 +5749,10 @@ class merge_feeds_lock:
         ]
         try:
             for feed_id, lock in zip(self.taken, self.locks):
+                # The locks already held (the caller's and the ones taken above) are renewed
+                # while the next one is waited for: several waits of nearly the blocking
+                # timeout would otherwise eat most of the first lease before the body ran.
+                renew_merge_feeds_locks()
                 out_of_order = highest_held is not None and feed_id < highest_held
                 if not lock.acquire(blocking=not out_of_order):
                     if out_of_order:
@@ -5756,13 +5764,13 @@ class merge_feeds_lock:
                         "merge_feeds:%s was not released within %s seconds" % (feed_id, self.blocking_timeout)
                     )
                 self.entered.append(lock)
+                # Registered as it is taken, so its lease is tracked from its own acquisition.
+                held[feed_id] = [lock, self.timeout, _merge_lock_clock()]
+            # Every lease is still ours before the body runs.
+            renew_merge_feeds_locks()
         except BaseException:
             self._release()
             raise
-        taken_at = _merge_lock_clock()
-        held.update(
-            {feed_id: [lock, self.timeout, taken_at] for feed_id, lock in zip(self.taken, self.locks)}
-        )
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):

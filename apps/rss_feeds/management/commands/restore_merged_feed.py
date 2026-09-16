@@ -270,9 +270,14 @@ def stage_restored_feed(feed_object, stale_redirects, collisions, log=print):
             with transaction.atomic():
                 stale_redirects.delete()
                 for collision in collisions:
-                    Feed.objects.filter(pk=collision.pk).update(
-                        hash_address_and_link=parking_hash(collision.pk, feed_id)
-                    )
+                    parked_fields = {"hash_address_and_link": parking_hash(collision.pk, feed_id)}
+                    if feed_object["fields"].get("branch_from_feed"):
+                        # A copy re-added at a private branch's address carries the same
+                        # token. Marked as a branch of the same parent, the merge's log
+                        # lines and the recovery's inventory name it by id, like the
+                        # restored feed itself.
+                        parked_fields["branch_from_feed_id"] = feed_object["fields"]["branch_from_feed"]
+                    Feed.objects.filter(pk=collision.pk).update(**parked_fields)
                 deserialize_and_save(feed_object)
             for collision in collisions:
                 # The merge touches Mongo and Redis too, so it runs outside the transaction but

@@ -36,6 +36,7 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.db import IntegrityError
+from redis.exceptions import LockError
 from sentry_sdk import set_user
 
 from apps.notifications.models import MUserClassifierNotification, MUserFeedNotification
@@ -45,6 +46,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.icon_importer import IconImporter
 from apps.rss_feeds.models import (
     FETCH_LOCK_BLOCKING_SECONDS,
+    FETCH_LOCK_DEFERRAL_SECONDS,
     FETCH_LOCK_TIMEOUT_SECONDS,
     Feed,
     MStory,
@@ -1233,7 +1235,19 @@ class ProcessFeed:
                 :max_entries
             ]
 
-        ret_values, story_hashes = self.save_feed_and_stories()
+        try:
+            ret_values, story_hashes = self.save_feed_and_stories()
+        except LockError as e:
+            # The feed is being merged or restored, or another fetch of it is still writing.
+            # Nothing was written and the validators are untouched, so the same response is
+            # fetched again in a few minutes. Internal contention, not a publisher failure:
+            # it must not reach the fetch history or the feed's error backoff.
+            logging.debug(
+                "   ---> [%-30s] ~FYFeed is locked by a merge or another fetch, deferring: %s"
+                % (self.feed.log_title[:30], e)
+            )
+            self.feed.set_next_scheduled_update(delay_fetch_sec=FETCH_LOCK_DEFERRAL_SECONDS)
+            return FEED_SAME, dict(new=0, updated=0, same=0, error=0)
         if ret_values is None:
             return FEED_ERRHTTP, dict(new=0, updated=0, same=0, error=1)
 
