@@ -99,6 +99,14 @@ BOT_CHALLENGE_TITLES = (
 PAGE_TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 
 
+def is_bot_challenge_title(title):
+    """True when a page title is one of the challenge pages' own ("Just a moment...")."""
+    if not title:
+        return False
+    title = smart_bytes(title).lower()
+    return any(phrase in title for phrase in BOT_CHALLENGE_TITLES)
+
+
 def is_blocked_response(response):
     """True when an article-page response is the site blocking us rather than the article:
     a 403, 429 or 503, or a 200 whose first bytes carry challenge-page markup or whose
@@ -111,14 +119,15 @@ def is_blocked_response(response):
     if any(marker in content_start for marker in BOT_CHALLENGE_MARKUP):
         return True
     title = PAGE_TITLE_RE.search(content_start)
-    return bool(title) and any(phrase in title.group(1) for phrase in BOT_CHALLENGE_TITLES)
+    return bool(title) and is_bot_challenge_title(title.group(1))
 
 
 class ProxiedPage:
     """The article page as ScrapingBee returned it, shaped like the requests response
-    TextImporter.fetch_manually reads (content, encoding, url). The url is the story's own
-    address, never the proxy call, so readability resolves links against the article and
-    the API key in the proxy URL never reaches a log or the saved text."""
+    TextImporter.fetch_manually reads (content, encoding, url). The url is the article's
+    final address (the story link, or where the site redirected the proxy), never the
+    proxy call itself, so readability resolves relative links and images against the
+    article and the API key in the proxy URL never reaches a log or the saved text."""
 
     def __init__(self, content, encoding, url):
         self.content = content
@@ -222,6 +231,15 @@ class TextImporter:
         ):
             logging.user(
                 self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % url
+            )
+            return
+
+        if is_bot_challenge_title(title):
+            # Mercury extracted a bot challenge page, not the article. Returning nothing
+            # sends fetch() on to fetch_manually, whose block detection reaches the proxy;
+            # saving it here would have cached "Checking your browser" as the story text.
+            logging.user(
+                self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: bot challenge page at %s" % url
             )
             return
 
@@ -399,7 +417,11 @@ class TextImporter:
                     self.request,
                     "~SN~FGScrapingBee original text fetch succeeded: ~SB%s bytes" % len(response.content),
                 )
-                return ProxiedPage(content=response.content, encoding=response.encoding, url=url)
+                return ProxiedPage(
+                    content=response.content,
+                    encoding=response.encoding,
+                    url=self.proxied_page_url(response, url),
+                )
             logging.user(
                 self.request,
                 "~SN~FRScrapingBee original text fetch failed: status %s" % response.status_code,
@@ -411,6 +433,23 @@ class TextImporter:
                 "~SN~FRScrapingBee original text fetch error: %s" % redact_proxy_error(e, api_key),
             )
         return None
+
+    def proxied_page_url(self, response, url):
+        """The address the article was finally served from. ScrapingBee reports where the
+        site redirected it in the Spb-resolved-url header; that is used when it is a public
+        http(s) URL, otherwise the story link stands. Never the proxy request URL."""
+        resolved = (response.headers.get("Spb-resolved-url") or "").strip()
+        if not resolved or resolved == url:
+            return url
+        try:
+            host = urlparse(resolved).hostname or ""
+            if host.endswith("scrapingbee.com"):
+                return url
+            validate_public_url(resolved)
+        except (UnsafeUrlError, ValueError):
+            return url
+        logging.user(self.request, "~SN~FYProxy followed a redirect to %s" % resolved)
+        return resolved
 
     def process_content(
         self, content, title, url, image, skip_save=False, return_document=False, original_text_doc=None
@@ -426,7 +465,7 @@ class TextImporter:
 
         content = self.add_hero_image(content, story_image_urls)
         if content:
-            content = self.rewrite_content(content)
+            content = self.rewrite_content(content, base_url=url)
 
         full_content_is_longer = False
         if self.feed and self.feed.is_newsletter:
@@ -490,7 +529,9 @@ class TextImporter:
 
         return content
 
-    def rewrite_content(self, content):
+    def rewrite_content(self, content, base_url=None):
+        # base_url is the address the page was actually served from (after any redirect the
+        # proxy followed); the story link is the fallback. apps/rss_feeds/text_importer.py
         soup = BeautifulSoup(content, features="lxml")
 
         for noscript in soup.findAll("noscript"):
@@ -503,7 +544,7 @@ class TextImporter:
             if "src" in img.attrs:
                 src = img["src"]
                 if not src.startswith(("http://", "https://", "//")):
-                    img["src"] = urljoin(self.story_url, src)
+                    img["src"] = urljoin(base_url or self.story_url, src)
 
         return str(soup)
 
