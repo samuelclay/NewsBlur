@@ -7227,6 +7227,55 @@ class Test_TextImporterBlockedFallsBackToProxy(TestCase):
             self.assertIsNotNone(result, bogus)
             self.assertEqual(result["url"], self.STORY_URL, bogus)
 
+    @override_settings(SCRAPINGBEE_API_KEY=None)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_headline_that_contains_a_challenge_title_is_still_an_article(
+        self, mock_get, mock_scrapingbee_get
+    ):
+        privacy_article = (
+            b"<html><head><title>Checking Your Browser Privacy Settings</title></head><body><article>"
+            b"<p>Every browser ships with a privacy panel, and almost nobody opens it. This guide walks "
+            b"through the settings that matter, what each one actually blocks, and which defaults are "
+            b"worth changing before the next time a site asks you to prove you are not a bot.</p>"
+            b"<p>Start with third-party cookies, then look at the permissions list for location and "
+            b"notifications, and finish with the site data that has quietly piled up over the years.</p>"
+            b"</article></body></html>"
+        )
+        mercury = self._response(
+            200,
+            json.encode(
+                {
+                    "content": "<div><p>Every browser ships with a privacy panel, and almost nobody opens it. "
+                    "This guide walks through the settings that matter, what each one actually blocks, and "
+                    "which defaults are worth changing before the next time a site asks you to prove you "
+                    "are not a bot.</p></div>",
+                    "title": "Checking Your Browser Privacy Settings",
+                    "url": self.STORY_URL,
+                    "lead_image_url": None,
+                }
+            ).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        mock_scrapingbee_get.return_value = mercury
+        mock_get.return_value = self._response(200, privacy_article)
+
+        from apps.rss_feeds.text_importer import is_bot_challenge_title
+
+        self.assertFalse(is_bot_challenge_title("Checking Your Browser Privacy Settings"))
+        self.assertFalse(is_bot_challenge_title("Just a moment... with the mayor"))
+        self.assertTrue(is_bot_challenge_title("  Just a moment...\n"))
+        self.assertTrue(is_bot_challenge_title("Attention Required! | Cloudflare"))
+
+        mercury_result = self._importer().fetch(skip_save=True, return_document=True)
+        self.assertIsNotNone(mercury_result)
+        self.assertIn("privacy panel", mercury_result["content"])
+
+        manual_result = self._importer().fetch_manually(skip_save=True, return_document=True)
+        self.assertIsNotNone(manual_result)
+        self.assertIn("privacy panel", manual_result["content"])
+        self.assertFalse(any("scrapingbee.com" in c.args[0] for c in mock_scrapingbee_get.call_args_list))
+
     @patch("apps.rss_feeds.text_importer.logging.user")
     @patch("apps.statistics.rscrapingbee.RScrapingBee.record")
     @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)

@@ -78,10 +78,10 @@ def is_google_consent_text(text):
 # A site that blocks NewsBlur's servers answers an article-page request with one of these
 # statuses, or with a 200 whose body is a bot challenge instead of the article. Shared by
 # TextImporter (Text view) and PageImporter (Story view), which fall back to ScrapingBee.
-# The markup markers are specific to Cloudflare's and Anubis's challenge pages. The phrases
-# are ordinary English an article can use, so only the challenge pages' own <title> text
-# counts, and only inside the <title> tag (an article headlined "Attention Required at the
-# Border" is an article). apps/rss_feeds/text_importer.py
+# The markup markers are specific to Cloudflare's and Anubis's challenge pages. The titles
+# are those pages' own <title> text, compared whole after trimming and lowercasing, so an
+# article headlined "Attention Required at the Border" or "Checking Your Browser Privacy
+# Settings" is still an article. apps/rss_feeds/text_importer.py
 BLOCKED_STATUS_CODES = (403, 429, 503)
 BOT_CHALLENGE_MARKUP = (
     b"cf-browser-verification",
@@ -91,20 +91,22 @@ BOT_CHALLENGE_MARKUP = (
     b"anubis-challenge",
 )
 BOT_CHALLENGE_TITLES = (
-    b"just a moment...",
-    b"checking your browser",
-    b"attention required! | cloudflare",
-    b"making sure you're not a bot",
+    "just a moment...",
+    "attention required! | cloudflare",
+    "making sure you're not a bot!",
+    "making sure you're not a bot",
 )
 PAGE_TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 
 
 def is_bot_challenge_title(title):
-    """True when a page title is one of the challenge pages' own ("Just a moment...")."""
+    """True when a page title is, whole, one of the challenge pages' own ("Just a moment...").
+    Whitespace is collapsed and case ignored; a title that merely contains the words is not
+    a match."""
     if not title:
         return False
-    title = smart_bytes(title).lower()
-    return any(phrase in title for phrase in BOT_CHALLENGE_TITLES)
+    normalized = " ".join(smart_str(title, errors="replace").split()).lower()
+    return normalized in BOT_CHALLENGE_TITLES
 
 
 def is_blocked_response(response):
