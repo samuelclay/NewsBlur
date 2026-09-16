@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db.models import ProtectedError
 
 from apps.rss_feeds.models import Feed
 
@@ -34,4 +35,9 @@ class Command(BaseCommand):
                 feed.count_subscribers(verbose=True)
                 if feed.num_subscribers == 0:
                     print((" ---> Deleting: [%s] %s" % (feed.pk, feed)))
-                    feed.delete()
+                    try:
+                        feed.delete()
+                    except ProtectedError:
+                        # Feed.branch_from_feed is PROTECT: a parent with branches stays
+                        # (its branches may be readers' private URLs) and cleanup moves on.
+                        print((" ---> Kept: [%s] %s still has branched feeds" % (feed.pk, feed)))

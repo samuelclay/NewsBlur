@@ -46,7 +46,7 @@ from apps.analyzer.models import (
 from apps.reader.models import UserSubscription
 
 # from django.utils.html import strip_tags
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, renew_merge_feeds_locks
 from utils import log as logging
 from utils import mongoengine_fields
 from utils.story_functions import truncate_chars
@@ -175,6 +175,7 @@ class MUserFeedNotification(mongo.Document):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for notification in duplicate_notifications:
+                renew_merge_feeds_locks()
                 # Check if user already has notifications for the original feed
                 try:
                     existing = cls.objects.get(user_id=notification.user_id, feed_id=original_feed_id)
