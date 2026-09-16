@@ -347,6 +347,10 @@ final class NewsBlurUITestHarness {
             return
         }
 
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") {
+            appDelegate.selectedIntelligence = 1
+            appDelegate.feedsViewController.intelligenceControl.selectedSegmentIndex = 2
+        }
         switch scenario {
         case .list:
             return
@@ -541,7 +545,17 @@ private enum ReaderUITestFixtures {
         )!
         let payload: [String: Any]
 
-        if request.httpMethod == "POST", mutationPaths.contains(url.path) {
+        if request.httpMethod == "POST", url.path == "/social/share_story",
+           ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") {
+            // NewsBlurUITestHarness.swift models the social endpoint's partial payload without publishing a share.
+            var sharedStory = swiftStoriesPageOne[0]
+            sharedStory.removeValue(forKey: "intelligence")
+            sharedStory.removeValue(forKey: "cluster_stories")
+            sharedStory["shared"] = true
+            sharedStory["shared_by_user"] = true
+            sharedStory["read_status"] = 1
+            payload = ["code": 1, "story": sharedStory, "user_profiles": []]
+        } else if request.httpMethod == "POST", mutationPaths.contains(url.path) {
             payload = ["code": 1]
         } else if url.path == "/reader/feeds" {
             if let index = ProcessInfo.processInfo.arguments.firstIndex(of: "-newsblur-ui-test-feed-delay"),
@@ -761,6 +775,9 @@ private enum ReaderUITestFixtures {
             ],
         ]
 
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-share-focus") {
+            story["intelligence"] = ["feed": 1, "title": 0, "author": 0, "tags": 0]
+        }
         if !clusterStories.isEmpty {
             story["cluster_stories"] = clusterStories
         }
