@@ -22,6 +22,28 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
+    func test_sharingKeepsTheStoryInTheFocusedList() {
+        app.launchArguments += ["-newsblur-ui-test-share-focus"]
+        launch(on: "reader-story-swift-1")
+        let shareLink = app.webViews.links["Share"].firstMatch
+        XCTAssertTrue(shareLink.waitForExistence(timeout: 15), app.debugDescription)
+        if !shareLink.isHittable { app.webViews.firstMatch.swipeUp() }
+        shareLink.tap()
+        let submit = app.buttons["Share"].firstMatch
+        XCTAssertTrue(submit.waitForExistence(timeout: 5), app.debugDescription)
+        submit.tap()
+        XCTAssertTrue(app.webViews.links["Shared"].firstMatch.waitForExistence(timeout: 10), app.debugDescription)
+        attachScreenshot(named: "shared-story-still-in-reader")
+        app.webViews.firstMatch.swipeDown()
+        let back = app.buttons.containing(.staticText, identifier: "Swift Weekly").firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 5), app.debugDescription)
+        back.tap()
+        let sharedRow = app.tables["story-titles-list"].cells["story-row-ui-story-swift-1"]
+        XCTAssertTrue(sharedRow.waitForExistence(timeout: 5))
+        XCTAssertTrue(sharedRow.isHittable)
+        attachScreenshot(named: "shared-story-remains-in-focus")
+    }
+
     func test_feedToolbarKeepsPrimaryControlsVisibleAndOrdered() {
         launch(on: "reader")
         let toolbar = app.toolbars["feed-list-toolbar"]
