@@ -7,6 +7,51 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryFirstPageLoading: XCTestCase {
+    func test_focusedRiverContinuesPagingWithoutAScrollWhenFirstPageDoesNotFillTheList() async throws {
+        let fixture = makeFixture()
+        fixture.app.selectedIntelligence = 1
+        fixture.controller.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+        fixture.table.frame = fixture.controller.view.bounds
+        let previousWindow = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows).first(where: \.isKeyWindow)
+        let window = UIWindow(frame: fixture.controller.view.bounds)
+        window.rootViewController = fixture.controller
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previousWindow?.makeKeyAndVisible() }
+        fixture.controller.finishedAnimatingIn = true
+        fixture.openRiver()
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        XCTAssertEqual(fixture.app.requests.count, 1)
+        var firstPage = makeStories(0..<12)
+        for index in 0..<3 { firstPage[index]["intelligence"] = ["feed": 1] }
+        fixture.app.reply(to: 0, with: response(stories: firstPage))
+        fixture.table.layoutIfNeeded()
+        await settle()
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 3)
+        // StoryFirstPageLoadingTests.swift reproduces ClayPad startup with Focus hiding nine of twelve rows.
+        XCTAssertEqual(fixture.app.requests.count, 2, "An underfilled Focus list must fetch page two without a user scroll")
+        guard fixture.app.requests.count == 2 else { return }
+        XCTAssertEqual(query("page", in: fixture.app.requests[1].url), "2")
+        var secondPage = makeStories(12..<24)
+        secondPage[0]["intelligence"] = ["feed": 1]
+        fixture.app.reply(to: 1, with: response(stories: secondPage))
+        await settle()
+        XCTAssertEqual(fixture.stories.storyLocationsCount, 4)
+        XCTAssertEqual(fixture.app.requests.count, 3, "A partially filtered page must continue fetching while the list is underfilled")
+        guard fixture.app.requests.count == 3 else { return }
+        fixture.app.reply(to: 2, with: response(stories: makeStories(24..<36)))
+        await settle()
+        XCTAssertEqual(fixture.app.requests.count, 4, "A completely filtered page must continue fetching")
+        guard fixture.app.requests.count == 4 else { return }
+        fixture.app.reply(to: 3, with: response(stories: []))
+        await settle()
+        XCTAssertTrue(fixture.controller.pageFinished)
+        XCTAssertFalse(fixture.controller.pageFetching)
+        XCTAssertEqual(fixture.app.requests.count, 4, "An exhausted river must stop fetching and stop its loading indicator")
+    }
+
     func test_nextReadRefreshKeepsPartlyVisibleTitleRevealContinuous() async throws {
         for estimate: CGFloat in [0, 44] {
             let fixture = makeFixture()
