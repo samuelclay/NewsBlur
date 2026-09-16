@@ -25,6 +25,10 @@ struct DiscoverTabBarView: View {
                 .padding(.vertical, 8)
             }
             .background(DiscoverColors.cardBackground)
+            .onAppear {
+                // DiscoverTabBarView.swift restores the selected source after shortcuts and theme rebuilds.
+                proxy.scrollTo(activeTab, anchor: .center)
+            }
             .onChange(of: activeTab) { newTab in
                 withAnimation {
                     proxy.scrollTo(newTab, anchor: .center)
@@ -42,7 +46,7 @@ struct DiscoverTabBarView: View {
                     .font(.system(size: 13, weight: .medium))
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 7)
+            .frame(minHeight: 44)
             .background(tab == activeTab ? DiscoverColors.accent : DiscoverColors.cardBackground)
             .foregroundColor(tab == activeTab ? .white : DiscoverColors.textSecondary)
             .cornerRadius(16)
@@ -52,5 +56,7 @@ struct DiscoverTabBarView: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier("discover-tab-\(tab.rawValue)")
+        .accessibilityAddTraits(tab == activeTab ? .isSelected : [])
     }
 }

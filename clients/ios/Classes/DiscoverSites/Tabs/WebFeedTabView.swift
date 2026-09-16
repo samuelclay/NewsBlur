@@ -13,6 +13,7 @@ struct WebFeedTabView: View {
     @ObservedObject var viewModel: DiscoverSitesViewModel
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
+    @State private var storyHint = ""
     private let explainerCards: [WebFeedExplainerCard] = [
         WebFeedExplainerCard(
             id: "any-site",
@@ -40,7 +41,7 @@ struct WebFeedTabView: View {
             assetName: "web-feed-updates",
             title: "Updates come to you",
             description: "NewsBlur checks for changes and delivers new stories to your feed.",
-            detail: "Pages are re-checked on a configurable schedule and diffed for new content."
+            detail: "New stories arrive alongside your other feeds."
         )
     ]
 
@@ -49,7 +50,7 @@ struct WebFeedTabView: View {
             LazyVStack(spacing: 16) {
                 urlInputSection
 
-                if viewModel.webFeedState.variants.isEmpty && !viewModel.webFeedState.isAnalyzing {
+                if viewModel.webFeedState.variants.isEmpty && !viewModel.webFeedState.isAnalyzing && viewModel.webFeedState.detectedFeedURL == nil {
                     explainerSection
                 }
 
@@ -61,7 +62,33 @@ struct WebFeedTabView: View {
                     errorSection(errorMessage)
                 }
 
+                if let feedURL = viewModel.webFeedState.detectedFeedURL {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("This site already has a feed", systemImage: "dot.radiowaves.left.and.right")
+                            .font(.headline)
+                        Text("Add it directly to your selected folder.").font(.subheadline)
+                        Button("Add feed") { viewModel.addFeed(url: feedURL) }
+                            .buttonStyle(.borderedProminent).tint(DiscoverColors.accent)
+                            .disabled(viewModel.isAdding)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading).padding(16)
+                    .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
+                }
+                if !viewModel.webFeedState.isAnalyzing && (!viewModel.webFeedState.variants.isEmpty || viewModel.webFeedState.errorMessage != nil) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Not the stories you wanted?").font(.headline)
+                        TextField("Paste a story title from the page", text: $storyHint)
+                            .textFieldStyle(.roundedBorder)
+                        Button("Refine with this title") {
+                            viewModel.analyzeWebFeed(url: viewModel.webFeedState.url, hint: storyHint)
+                        }
+                        .frame(minHeight: 44)
+                        .disabled(storyHint.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                    .foregroundColor(DiscoverColors.textPrimary)
+                }
                 if !viewModel.webFeedState.variants.isEmpty {
+
                     variantsSection
                     configureSection
                     subscribeSection
@@ -71,6 +98,7 @@ struct WebFeedTabView: View {
             .padding(.vertical, 12)
         }
         .background(DiscoverColors.background)
+        .scrollDismissesKeyboard(.interactively)
     }
 
     // MARK: - URL Input
@@ -168,11 +196,6 @@ struct WebFeedTabView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.bottom, 8)
 
-            Text(card.detail)
-                .font(.system(size: 11))
-                .foregroundColor(DiscoverColors.textSecondary.opacity(0.9))
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, minHeight: 240, alignment: .top)
         .padding(.horizontal, 16)
@@ -348,7 +371,7 @@ struct WebFeedTabView: View {
             // Staleness slider
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text("Check for updates every")
+                    Text("Alert after no new stories for")
                         .font(.system(size: 13, weight: .medium))
                         .foregroundColor(DiscoverColors.textSecondary)
 

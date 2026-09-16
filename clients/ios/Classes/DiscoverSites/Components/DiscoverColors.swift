@@ -27,7 +27,7 @@ struct DiscoverColors {
     }
 
     static var textSecondary: Color {
-        themedColor(light: 0x90928B, sepia: 0x8B7B6B, medium: 0xA0A0A0, dark: 0xB0B0B0)
+        themedColor(light: 0x697168, sepia: 0x8B7B6B, medium: 0xA0A0A0, dark: 0xB0B0B0)
     }
 
     static var textFieldBackground: Color {
@@ -38,7 +38,7 @@ struct DiscoverColors {
         themedColor(light: 0xCC0000, sepia: 0xCC0000, medium: 0xFF4444, dark: 0xFF4444)
     }
 
-    static let accent = Color(red: 0.416, green: 0.659, blue: 0.310) // #6AA84F
+    static let accent = Color(red: 0.26, green: 0.46, blue: 0.18)
 
     static var tryButtonBackground: Color {
         themedColor(light: 0xF0F1ED, sepia: 0xF0E8DC, medium: 0x555555, dark: 0x3A3A3A)

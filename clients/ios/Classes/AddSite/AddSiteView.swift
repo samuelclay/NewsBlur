@@ -94,6 +94,7 @@ struct AddSiteView: View {
     @ObservedObject var viewModel: AddSiteViewModel
     @StateObject private var themeObserver = AskAIThemeObserver()
     var onDismiss: () -> Void
+    var onDiscover: ((DiscoverTab) -> Void)?
 
     @FocusState private var isURLFieldFocused: Bool
 
@@ -130,8 +131,28 @@ struct AddSiteView: View {
                 autocompleteList
             }
 
+            if viewModel.searchText.isEmpty, let onDiscover {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Discover more to read").font(.subheadline.weight(.semibold))
+                        .foregroundColor(AddSiteColors.textSecondary)
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 4) {
+                        ForEach(DiscoverTab.allCases.filter { $0 != .search }) { tab in
+                            Button { onDiscover(tab) } label: {
+                                Label(tab.label, systemImage: tab.sfSymbol)
+                                    .font(.caption.weight(.medium))
+                                    .frame(maxWidth: .infinity, minHeight: 44)
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundColor(AddSiteColors.textPrimary)
+                            .accessibilityIdentifier("add-site-discover-\(tab.rawValue)")
+                        }
+                    }
+                }
+                .padding(12)
+            }
             Spacer(minLength: 0)
         }
+
         .background(AddSiteColors.background)
         .id(themeObserver.themeVersion)
         .onAppear {

@@ -29,8 +29,8 @@ struct PodcastsTabView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
 
-
-                if !viewModel.podcastsState.categories.isEmpty && viewModel.podcastsState.searchQuery.isEmpty {
+                if !viewModel.podcastsState.categories.isEmpty && viewModel.podcastsState.searchQuery.isEmpty
+                {
                     DiscoverCategoryPillsView(
                         categories: viewModel.podcastsState.categories,
                         selectedCategory: $viewModel.podcastsState.selectedCategory,
@@ -45,9 +45,31 @@ struct PodcastsTabView: View {
                 }
 
                 feedsList
+                DiscoverResultsStatusView(
+                    isLoading: viewModel.podcastsState.isLoading || viewModel.podcastsState.isSearching,
+                    isEmpty: viewModel.podcastsState.submittedQuery.isEmpty
+                        ? viewModel.podcastsState.feeds.isEmpty
+                        : viewModel.podcastsState.searchResults.isEmpty,
+                    error: viewModel.podcastsState.errorMessage,
+                    isSearching: !viewModel.podcastsState.submittedQuery.isEmpty,
+                    retry: {
+                        if viewModel.podcastsState.searchQuery.isEmpty {
+                            reloadFeeds()
+                        } else {
+                            viewModel.searchFeeds(type: "podcast", query: viewModel.podcastsState.searchQuery)
+                        }
+                    }
+                )
+
             }
         }
         .background(DiscoverColors.background)
+        .scrollDismissesKeyboard(.interactively)
+        .task(id: viewModel.podcastsState.searchQuery) {
+            do { try await Task.sleep(nanoseconds: 350_000_000) } catch { return }
+            viewModel.searchFeeds(type: "podcast", query: viewModel.podcastsState.searchQuery)
+        }
+
         .onAppear {
             if !viewModel.podcastsState.isCategoriesLoaded {
                 viewModel.loadPopularFeeds(type: "podcast", category: nil, subcategory: nil, offset: 0)
@@ -62,11 +84,17 @@ struct PodcastsTabView: View {
 
     @ViewBuilder
     private var feedsList: some View {
-        let feeds = viewModel.podcastsState.searchQuery.isEmpty
+        let feeds =
+            viewModel.podcastsState.submittedQuery.isEmpty
             ? viewModel.podcastsState.feeds
             : viewModel.podcastsState.searchResults
 
-        LazyVStack(spacing: 12) {
+        LazyVGrid(
+            columns: [
+                viewModel.feedViewMode == .grid
+                    ? GridItem(.adaptive(minimum: 300), spacing: 12, alignment: .top) : GridItem(.flexible())
+            ], alignment: .leading, spacing: 12
+        ) {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
@@ -75,10 +103,10 @@ struct PodcastsTabView: View {
                     onAddFeed: onAddFeed
                 )
                 .onAppear {
-                    if viewModel.podcastsState.searchQuery.isEmpty &&
-                        feed.id == viewModel.podcastsState.feeds.last?.id &&
-                        viewModel.podcastsState.hasMore &&
-                        !viewModel.podcastsState.isLoading {
+                    if viewModel.podcastsState.searchQuery.isEmpty
+                        && feed.id == viewModel.podcastsState.feeds.last?.id
+                        && viewModel.podcastsState.hasMore && !viewModel.podcastsState.isLoading
+                    {
                         loadMore()
                     }
                 }

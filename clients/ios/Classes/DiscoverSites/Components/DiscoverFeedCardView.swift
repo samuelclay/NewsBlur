@@ -10,119 +10,87 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 struct DiscoverFeedCardView: View {
+    @EnvironmentObject var discovery: DiscoverSitesViewModel
     let feed: DiscoverPopularFeed
     var showStories: Bool = false
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Feed header
-            HStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
                 faviconView
-                    .frame(width: 24, height: 24)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(feed.feedTitle)
-                        .font(.system(size: 14, weight: .semibold))
+                    .frame(width: 32, height: 32)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(feed.feedTitle.isEmpty ? feed.feedAddress : feed.feedTitle)
+                        .font(.headline)
                         .foregroundColor(DiscoverColors.textPrimary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-
-                    HStack(spacing: 8) {
-                        HStack(spacing: 3) {
-                            Image(systemName: "person.2")
-                                .font(.system(size: 10))
-                            (Text("\(feed.numSubscribers)")
-                                .font(.system(size: 11, weight: .semibold))
-                            + Text(" \(feed.numSubscribers == 1 ? "subscriber" : "subscribers")")
-                                .font(.system(size: 11)))
-                                .lineLimit(1)
-                        }
+                        .lineLimit(2)
+                    Text(URL(string: feed.feedLink.isEmpty ? feed.feedAddress : feed.feedLink)?.host ?? feed.feedAddress)
+                        .font(.caption)
                         .foregroundColor(DiscoverColors.textSecondary)
-
-                        if feed.averageStoriesPerMonth > 0 {
-                            HStack(spacing: 3) {
-                                Image(systemName: "doc.text")
-                                    .font(.system(size: 10))
-                                (Text("\(feed.averageStoriesPerMonth)")
-                                    .font(.system(size: 11, weight: .semibold))
-                                + Text(" \(feed.averageStoriesPerMonth == 1 ? "story" : "stories")/mo")
-                                    .font(.system(size: 11)))
-                                    .lineLimit(1)
-                            }
-                            .foregroundColor(DiscoverColors.textSecondary)
-                        }
-                    }
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .minimumScaleFactor(0.85)
+                        .lineLimit(1)
                 }
-                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-
-                if isSubscribed {
-                    Label("Subscribed", systemImage: "checkmark")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(DiscoverColors.accent)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 6)
-                        .fixedSize()
-                } else {
-                    HStack(spacing: 6) {
-                        Button(action: { onTryFeed?(feed) }) {
-                            Text("Try")
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(DiscoverColors.tryButtonText)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(DiscoverColors.tryButtonBackground)
-                                .cornerRadius(6)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .stroke(DiscoverColors.border, lineWidth: 1)
-                                )
-                        }
-                        .buttonStyle(PlainButtonStyle())
-
-                        Button(action: { onAddFeed?(feed) }) {
-                            Text("Add")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(DiscoverColors.accent)
-                                .cornerRadius(6)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                    .fixedSize()
+                Spacer(minLength: 0)
+            }
+            HStack(spacing: 12) {
+                Label(subscriberLabel, systemImage: "person.2")
+                if feed.averageStoriesPerMonth > 0 {
+                    Text(verbatim: "\(feed.averageStoriesPerMonth.formatted()) \(feed.averageStoriesPerMonth == 1 ? "story" : "stories")/month")
                 }
             }
-            .padding(12)
+            .font(.caption)
+            .foregroundColor(DiscoverColors.textSecondary)
+            .lineLimit(2)
 
-            // Stories list
+            if let description = feed.rawFeedDict["description"] as? String, !description.isEmpty {
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundColor(DiscoverColors.textSecondary)
+                    .lineLimit(3)
+            }
+
             if showStories && !feed.stories.isEmpty {
-                Rectangle()
-                    .fill(DiscoverColors.border.opacity(0.5))
-                    .frame(height: 1)
-                    .padding(.horizontal, 12)
-
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(feed.stories.prefix(3)) { story in
-                        storyRow(story)
-                    }
+                Divider()
+                ForEach(feed.stories.prefix(3)) { story in
+                    storyRow(story)
                 }
-                .padding(.horizontal, 12)
-                .padding(.bottom, 8)
             }
+
+            Divider()
+            HStack(spacing: 12) {
+                Button(action: { onTryFeed?(feed) }) {
+                    Label("Try", systemImage: "doc.text.magnifyingglass")
+                        .frame(minWidth: 62, minHeight: 44)
+                }
+                .accessibilityLabel("Try \(feed.feedTitle)")
+                .disabled(discovery.isPreparingPreview)
+                .foregroundColor(DiscoverColors.tryButtonText)
+                Spacer(minLength: 0)
+                if isSubscribed {
+                    Label("Subscribed", systemImage: "checkmark.circle.fill")
+                        .foregroundColor(DiscoverColors.accent)
+                        .frame(minHeight: 44)
+                } else {
+                    Button(action: { onAddFeed?(feed) }) {
+                        Label("Add", systemImage: "plus")
+                            .padding(.horizontal, 16)
+                            .frame(minHeight: 44)
+                            .foregroundColor(.white)
+                            .background(DiscoverColors.accent, in: RoundedRectangle(cornerRadius: 10))
+                    }
+                    .accessibilityLabel("Add \(feed.feedTitle)")
+                    .disabled(discovery.isAdding)
+                }
+            }
+            .font(.subheadline.weight(.semibold))
+            .buttonStyle(.plain)
         }
-        .background(DiscoverColors.cardBackground)
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(DiscoverColors.border.opacity(0.6), lineWidth: 1)
-        )
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(DiscoverColors.border.opacity(0.6), lineWidth: 1))
     }
 
     // MARK: - Favicon
@@ -229,7 +197,13 @@ struct DiscoverFeedCardView: View {
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
+    private var subscriberLabel: String {
+        "\(feed.numSubscribers.formatted()) \(feed.numSubscribers == 1 ? "subscriber" : "subscribers")"
+    }
+
     private var isSubscribed: Bool {
+        if discovery.addedFeedURLs.contains(feed.feedAddress) { return true }
+
         guard let appDelegate = NewsBlurAppDelegate.shared() else { return false }
         return appDelegate.dictFeeds?.object(forKey: feed.id) != nil
     }

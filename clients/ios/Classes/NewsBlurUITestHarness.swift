@@ -40,6 +40,17 @@ final class NewsBlurUITestHarness {
         guard isEnabled, !didPrepareLaunchEnvironment else { return }
 
         didPrepareLaunchEnvironment = true
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: "-newsblur-ui-test-theme"), index + 1 < arguments.count {
+            let theme = arguments[index + 1]
+            if ["light", "sepia", "medium", "dark"].contains(theme) {
+                var domain = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
+                domain["theme_style"] = ["medium", "dark"].contains(theme) ? "dark" : "light"
+                domain["theme_light"] = theme
+                domain["theme_dark"] = theme
+                UserDefaults.standard.setVolatileDomain(domain, forName: UserDefaults.argumentDomain)
+            }
+        }
         UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
 
         if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-reset-gestures") {
@@ -59,7 +70,7 @@ final class NewsBlurUITestHarness {
         }
 
         switch requestedScreen {
-        case "add-site":
+        case "add-site", "discover-sites":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -82,9 +93,24 @@ final class NewsBlurUITestHarness {
         UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
 
         switch requestedScreen {
+        case "discover-sites":
+            didScheduleScenario = true
+            DiscoverSitesViewController.viewModelFactory = {
+                let configuration = URLSessionConfiguration.ephemeral
+                configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
+                return DiscoverSitesViewModel(appEnvironment: AddSiteUITestEnvironment(),
+                                              session: URLSession(configuration: configuration))
+            }
+            configureDiscoverSites(on: appDelegate, remainingRetries: 100)
         case "add-site":
             didScheduleScenario = true
             AddSiteSheetViewController.viewModelFactory = { makeAddSiteViewModel() }
+            DiscoverSitesViewController.viewModelFactory = {
+                let configuration = URLSessionConfiguration.ephemeral
+                configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
+                return DiscoverSitesViewModel(appEnvironment: AddSiteUITestEnvironment(),
+                                              session: URLSession(configuration: configuration))
+            }
             configureAddSite(on: appDelegate, remainingRetries: 20)
         case "preferences":
             didScheduleScenario = true
@@ -146,7 +172,7 @@ final class NewsBlurUITestHarness {
 
         if let sheet = navigationController.sheetPresentationController {
             let smallDetent = UISheetPresentationController.Detent.custom(identifier: .init("addSiteSmall")) { _ in
-                200.0
+                390.0
             }
             sheet.detents = [smallDetent, .medium(), .large()]
             sheet.prefersGrabberVisible = true
@@ -156,6 +182,25 @@ final class NewsBlurUITestHarness {
         }
 
         feedsNavigationController.present(navigationController, animated: false)
+    }
+
+    private static func configureDiscoverSites(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+        guard remainingRetries > 0 else { return }
+        guard let navigation = appDelegate.feedsNavigationController,
+              navigation.viewIfLoaded?.window != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                configureDiscoverSites(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+        if let presented = navigation.presentedViewController {
+            presented.dismiss(animated: false) {
+                configureDiscoverSites(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+        loadFixtureFeedList(on: appDelegate)
+        navigation.pushViewController(DiscoverSitesViewController(), animated: false)
     }
 
     private static func configureAddSite(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
@@ -1007,6 +1052,124 @@ private final class AddSiteUITestURLProtocol: URLProtocol {
         case "/reader/add_url":
             let payload: [String: Any] = ["code": 1]
             return (response, try JSONSerialization.data(withJSONObject: payload))
+        default:
+            throw URLError(.unsupportedURL)
+        }
+    }
+}
+
+// NewsBlurUITestHarness.swift intercepts every Discover request, including mutations and unexpected URLs.
+private final class DiscoverSitesUITestURLProtocol: URLProtocol {
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func stopLoading() {}
+
+    override func startLoading() {
+        do {
+            guard let url = request.url, url.host == ReaderUITestFixtures.baseURL.host else {
+                throw URLError(.unsupportedURL)
+            }
+            let payload = try responsePayload(url: url)
+            let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil,
+                                           headerFields: ["Content-Type": "application/json"])!
+            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+            client?.urlProtocol(self, didLoad: try JSONSerialization.data(withJSONObject: payload))
+            client?.urlProtocolDidFinishLoading(self)
+        } catch {
+            client?.urlProtocol(self, didFailWithError: error)
+        }
+    }
+
+    private func parameters(url: URL) -> [String: String] {
+        var data = request.httpBody ?? Data()
+        if let stream = request.httpBodyStream {
+            stream.open()
+            defer { stream.close() }
+            var buffer = [UInt8](repeating: 0, count: 4096)
+            while stream.hasBytesAvailable {
+                let count = stream.read(&buffer, maxLength: buffer.count)
+                if count <= 0 { break }
+                data.append(contentsOf: buffer.prefix(count))
+            }
+        }
+        let query = String(data: data, encoding: .utf8) ?? ""
+        let components = URLComponents(string: "https://fixture.example/?\(query)")
+        let items = (URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? [])
+            + (components?.queryItems ?? [])
+        return items.reduce(into: [:]) { $0[$1.name] = $1.value ?? "" }
+    }
+
+    private func feed(_ name: String, slug: String) -> [String: Any] {
+        ["feed_title": name, "feed_address": "https://ui-test.newsblur.example/\(slug).xml",
+         "feed_link": "https://ui-test.newsblur.example/\(slug)", "num_subscribers": 1240,
+         "average_stories_per_month": 18, "description": "Independent reporting, useful ideas, and thoughtful stories."]
+    }
+
+    private func responsePayload(url: URL) throws -> [String: Any] {
+        let params = parameters(url: url)
+        switch url.path {
+        case "/discover/trending":
+            return ["trending_feeds": ["fixture-trending": ["feed": feed("The Daily Perspective", slug: "daily"),
+                "stories": [["story_title": "A better way to follow the news", "story_authors": "Alex Morgan"]]]]]
+        case "/discover/autocomplete":
+            return ["term": params["term"] ?? "", "feeds": [
+                ["label": "Swift by Sundell", "value": "https://ui-test.newsblur.example/swift.xml", "num_subscribers": 42]
+            ]]
+        case "/discover/popular_feeds":
+            let type = params["type"] ?? "all"
+            if params["query"] == "catalog fallback" {
+                return ["feeds": [feed("Catalog Science", slug: "catalog-science")], "has_more": false]
+            }
+            let titles = ["all": "The Daily Perspective", "youtube": "Practical Engineering", "reddit": "r/science",
+                          "newsletter": "The Marginalian", "podcast": "Radiolab"]
+            let title = params["subcategory"].map { "\($0) sites" }
+                ?? params["category"].map { "\($0) sites" }
+                ?? titles[type] ?? "Independent Journal"
+            return ["feeds": [feed(title, slug: type)], "has_more": false,
+                    "grouped_categories": [["name": "Technology", "feed_count": 1,
+                                            "subcategories": [["name": "Engineering", "feed_count": 1]]]],
+                    "platform_counts": ["substack": 1, "beehiiv": 1]]
+        case "/discover/youtube/search", "/discover/reddit/search", "/discover/podcast/search":
+            if params["query"] == "catalog fallback" {
+                return ["code": -1, "message": "Reddit API request failed.", "results": []]
+            }
+            let type = url.path.components(separatedBy: "/")[2]
+            return ["results": [feed("\(type.capitalized) Science Result", slug: "\(type)-science")]]
+        case "/discover/newsletter/convert":
+            return ["feed_url": "https://ui-test.newsblur.example/newsletter.xml"]
+        case "/discover/link_popular_feed":
+            return ["feed_id": Int(ReaderUITestFixtures.swiftFeedId) ?? 1]
+        case "/reader/add_url":
+            if params["url"]?.contains("missing") == true {
+                return ["code": -1, "message": "No feed was found at this address. Check the URL and try again."]
+            }
+            if params["url"]?.contains("folder-required") == true && params["folder"] != "Swift" {
+                return ["code": -1, "message": "Choose the Swift folder before adding this fixture."]
+            }
+            return ["code": 1]
+        case "/discover/google-news/feed":
+            return ["feed_url": "https://ui-test.newsblur.example/google-news.xml"]
+        case "/webfeed/analyze":
+            if params["url"]?.contains("blocked") == true {
+                return ["code": -1, "message": "This page could not be accessed. Try a public page."]
+            }
+            if params["url"]?.contains("rss") == true {
+                return ["code": 2, "feed_address": "https://ui-test.newsblur.example/existing.xml"]
+            }
+            return ["code": 1]
+        case "/webfeed/status":
+            return ["status": "complete", "variants_data": ["page_title": "Independent Journal", "html_hash": "fixture-hash",
+                "variants": [
+                    ["label": "Latest articles", "story_container": "//article", "title": ".//h2", "link": ".//a/@href",
+                     "preview_stories": [["title": "How cities are changing", "link": "https://ui-test.newsblur.example/cities"]]],
+                    ["label": "Featured stories", "story_container": "//section/article", "title": ".//h3", "link": ".//a/@href",
+                     "preview_stories": [["title": "Ideas for a quieter internet", "link": "https://ui-test.newsblur.example/ideas"]]]
+                ]]]
+        case "/webfeed/subscribe":
+            guard params["variant_index"] == "1", params["story_container_xpath"] == "//section/article" else {
+                return ["code": -1, "message": "Choose Featured stories to verify the selected variant."]
+            }
+            return ["code": 1]
         default:
             throw URLError(.unsupportedURL)
         }

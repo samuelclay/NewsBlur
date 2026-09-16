@@ -45,7 +45,7 @@ struct PopularTabView: View {
                     }
                 }
 
-                LazyVStack(spacing: 12) {
+                LazyVGrid(columns: [viewModel.feedViewMode == .grid ? GridItem(.adaptive(minimum: 300), spacing: 12, alignment: .top) : GridItem(.flexible())], spacing: 12) {
                     ForEach(viewModel.popularState.feeds) { feed in
                         DiscoverFeedCardView(
                             feed: feed,
@@ -64,11 +64,10 @@ struct PopularTabView: View {
                 .padding(.vertical, 12)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                if viewModel.popularState.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: DiscoverColors.accent))
-                        .padding(.vertical, 20)
-                }
+                DiscoverResultsStatusView(isLoading: viewModel.popularState.isLoading,
+                    isEmpty: viewModel.popularState.feeds.isEmpty,
+                    error: viewModel.popularState.errorMessage, isSearching: false, retry: reloadFeeds)
+
             }
         }
         .background(DiscoverColors.background)

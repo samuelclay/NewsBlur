@@ -59,8 +59,16 @@ import SwiftUI
             viewModel: viewModel,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
+            },
+            onDiscover: { [weak self] tab in
+                self?.dismiss(animated: true) {
+                    let discover = DiscoverSitesViewController()
+                    discover.initialTab = tab
+                    NewsBlurAppDelegate.shared()?.feedsNavigationController.pushViewController(discover, animated: true)
+                }
             }
         )
+
 
         let hostingController = UIHostingController(rootView: addSiteView)
         hostingController.view.backgroundColor = .clear

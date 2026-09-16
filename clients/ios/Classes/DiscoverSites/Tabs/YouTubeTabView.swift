@@ -44,9 +44,30 @@ struct YouTubeTabView: View {
                 }
 
                 feedsList
+                DiscoverResultsStatusView(
+                    isLoading: viewModel.youtubeState.isLoading || viewModel.youtubeState.isSearching,
+                    isEmpty: viewModel.youtubeState.submittedQuery.isEmpty
+                        ? viewModel.youtubeState.feeds.isEmpty : viewModel.youtubeState.searchResults.isEmpty,
+                    error: viewModel.youtubeState.errorMessage,
+                    isSearching: !viewModel.youtubeState.submittedQuery.isEmpty,
+                    retry: {
+                        if viewModel.youtubeState.searchQuery.isEmpty {
+                            reloadFeeds()
+                        } else {
+                            viewModel.searchFeeds(type: "youtube", query: viewModel.youtubeState.searchQuery)
+                        }
+                    }
+                )
+
             }
         }
         .background(DiscoverColors.background)
+        .scrollDismissesKeyboard(.interactively)
+        .task(id: viewModel.youtubeState.searchQuery) {
+            do { try await Task.sleep(nanoseconds: 350_000_000) } catch { return }
+            viewModel.searchFeeds(type: "youtube", query: viewModel.youtubeState.searchQuery)
+        }
+
         .onAppear {
             if !viewModel.youtubeState.isCategoriesLoaded {
                 viewModel.loadPopularFeeds(type: "youtube", category: nil, subcategory: nil, offset: 0)
@@ -61,11 +82,17 @@ struct YouTubeTabView: View {
 
     @ViewBuilder
     private var feedsList: some View {
-        let feeds = viewModel.youtubeState.searchQuery.isEmpty
+        let feeds =
+            viewModel.youtubeState.submittedQuery.isEmpty
             ? viewModel.youtubeState.feeds
             : viewModel.youtubeState.searchResults
 
-        LazyVStack(spacing: 12) {
+        LazyVGrid(
+            columns: [
+                viewModel.feedViewMode == .grid
+                    ? GridItem(.adaptive(minimum: 300), spacing: 12, alignment: .top) : GridItem(.flexible())
+            ], alignment: .leading, spacing: 12
+        ) {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(
                     feed: feed,
@@ -74,10 +101,10 @@ struct YouTubeTabView: View {
                     onAddFeed: onAddFeed
                 )
                 .onAppear {
-                    if viewModel.youtubeState.searchQuery.isEmpty &&
-                        feed.id == viewModel.youtubeState.feeds.last?.id &&
-                        viewModel.youtubeState.hasMore &&
-                        !viewModel.youtubeState.isLoading {
+                    if viewModel.youtubeState.searchQuery.isEmpty
+                        && feed.id == viewModel.youtubeState.feeds.last?.id && viewModel.youtubeState.hasMore
+                        && !viewModel.youtubeState.isLoading
+                    {
                         loadMore()
                     }
                 }
