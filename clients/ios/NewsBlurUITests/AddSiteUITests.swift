@@ -22,6 +22,22 @@ final class AddSiteUITests: XCTestCase {
         XCTAssertTrue(app.buttons["add-site-submit-button"].waitForExistence(timeout: 10))
     }
 
+    func test_addSiteStartsAtHalfHeightWithoutKeyboard() {
+        app.launch()
+        let field = app.textFields["add-site-url-field"]
+        XCTAssertTrue(field.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.keyboards.firstMatch.waitForExistence(timeout: 2))
+        // AddSiteUITests.swift checks the initial presentation before explicitly requesting text input.
+        XCTAssertGreaterThan(field.frame.minY, app.frame.height * 0.45)
+        XCTAssertLessThan(field.frame.minY, app.frame.height * 0.75)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "add-site-half-height-keyboard-hidden"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        field.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+    }
+
     func test_quickAddShowsSourceShortcutsAndOpensYouTube() {
         app.launch()
         let shortcut = app.buttons["add-site-discover-youtube"]

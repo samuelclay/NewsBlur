@@ -1,9 +1,22 @@
 import XCTest
+import UIKit
 
 @testable import NewsBlur
 
 @MainActor
 final class AddSiteViewModelTests: XCTestCase {
+    func test_addSitePresentationStartsAtSystemMediumDetent() throws {
+        let controller = AddSiteSheetViewController()
+        let navigation = UINavigationController(rootViewController: controller)
+        navigation.modalPresentationStyle = .pageSheet
+        let sheet = try XCTUnwrap(navigation.sheetPresentationController)
+        controller.setSheetController(sheet)
+
+        XCTAssertEqual(sheet.detents.map(\.identifier), [.medium, .large])
+        XCTAssertEqual(sheet.selectedDetentIdentifier, .medium)
+        XCTAssertTrue(sheet.prefersGrabberVisible)
+    }
+
     private final class MockAppEnvironment: AddSiteViewModelAppEnvironment {
         var url: String?
         var dictFoldersArray: Any?

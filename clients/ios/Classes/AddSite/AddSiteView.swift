@@ -94,9 +94,13 @@ struct AddSiteView: View {
     @ObservedObject var viewModel: AddSiteViewModel
     @StateObject private var themeObserver = AskAIThemeObserver()
     var onDismiss: () -> Void
+    var onEditingChanged: ((Bool) -> Void)?
     var onDiscover: ((DiscoverTab) -> Void)?
 
-    @FocusState private var isURLFieldFocused: Bool
+    private enum InputField: Hashable {
+        case url, folder
+    }
+    @FocusState private var focusedField: InputField?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -132,31 +136,34 @@ struct AddSiteView: View {
             }
 
             if viewModel.searchText.isEmpty, let onDiscover {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Discover more to read").font(.subheadline.weight(.semibold))
-                        .foregroundColor(AddSiteColors.textSecondary)
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 4) {
-                        ForEach(DiscoverTab.allCases.filter { $0 != .search }) { tab in
-                            Button { onDiscover(tab) } label: {
-                                Label(tab.label, systemImage: tab.sfSymbol)
-                                    .font(.caption.weight(.medium))
-                                    .frame(maxWidth: .infinity, minHeight: 44)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Discover more to read").font(.subheadline.weight(.semibold))
+                            .foregroundColor(AddSiteColors.textSecondary)
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 4) {
+                            ForEach(DiscoverTab.allCases.filter { $0 != .search }) { tab in
+                                Button { onDiscover(tab) } label: {
+                                    Label(tab.label, systemImage: tab.sfSymbol)
+                                        .font(.caption.weight(.medium))
+                                        .frame(maxWidth: .infinity, minHeight: 44)
+                                }
+                                .buttonStyle(.plain)
+                                .foregroundColor(AddSiteColors.textPrimary)
+                                .accessibilityIdentifier("add-site-discover-\(tab.rawValue)")
                             }
-                            .buttonStyle(.plain)
-                            .foregroundColor(AddSiteColors.textPrimary)
-                            .accessibilityIdentifier("add-site-discover-\(tab.rawValue)")
                         }
                     }
+                    .padding(12)
                 }
-                .padding(12)
+                .accessibilityIdentifier("add-site-discovery-shortcuts")
             }
             Spacer(minLength: 0)
         }
 
         .background(AddSiteColors.background)
         .id(themeObserver.themeVersion)
-        .onAppear {
-            isURLFieldFocused = true
+        .onChange(of: focusedField) { field in
+            onEditingChanged?(field != nil)
         }
         .onChange(of: viewModel.searchText) { _ in
             viewModel.onSearchTextChanged()
@@ -223,7 +230,7 @@ struct AddSiteView: View {
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .keyboardType(.URL)
-                    .focused($isURLFieldFocused)
+                    .focused($focusedField, equals: .url)
                     .submitLabel(viewModel.searchText.contains(".") ? .done : .search)
                     .onSubmit {
                         if viewModel.searchText.contains(".") {
@@ -347,6 +354,7 @@ struct AddSiteView: View {
             TextField("New folder name", text: $viewModel.newFolderName)
                 .font(.system(size: 14))
                 .foregroundColor(AddSiteColors.textPrimary)
+                .focused($focusedField, equals: .folder)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
