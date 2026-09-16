@@ -2218,14 +2218,18 @@ class Feed(models.Model):
         from apps.reader.models import RUserStory
         from apps.social.models import MSharedStory
 
-        existing_story.remove_from_redis()
-        existing_story.remove_from_search_index()
-
         old_hash = existing_story.story_hash
         new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
-        # Walks every recent reader of the feed, renewing the fetch lease as it goes.
+        # Walks every recent reader of the feed, renewing the fetch lease as it goes. The
+        # story's old Redis and search entries go only after that walk and one more lease
+        # check: a lease lost in the walk leaves the story exactly as it was, findable by
+        # its old hash, so the next fetch matches it again and redoes the migration (the
+        # read-state copies the walk already made are idempotent) instead of inserting a
+        # duplicate with no read state.
         RUserStory.switch_hash(feed=self, old_hash=old_hash, new_hash=new_hash)
         renew_merge_feeds_locks()
+        existing_story.remove_from_redis()
+        existing_story.remove_from_search_index()
 
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk, story_hash=old_hash)
         for story in shared_stories:
@@ -3512,8 +3516,32 @@ class Feed(models.Model):
             )
         return total
 
+    def defer_next_fetch(self, delay_sec=None):
+        """Bring the next fetch forward by delay_sec and keep it there through the scheduling
+        calls that follow this fetch (update_all_statistics, and Feed.update's own
+        set_next_scheduled_update after the dispatcher returns), which would otherwise put
+        the feed back on its normal interval. Used when a batch could not be stored under
+        the feed's lock, or only partly. The marker lives exactly as long as the deferral,
+        so the deferred fetch itself schedules normally. apps/rss_feeds/models.py"""
+        if delay_sec is None:
+            delay_sec = FETCH_LOCK_DEFERRAL_SECONDS
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        r.setex(FETCH_DEFERRAL_KEY % self.pk, delay_sec, delay_sec)
+        self.set_next_scheduled_update(delay_fetch_sec=delay_sec)
+
+    def pending_fetch_deferral(self, r):
+        """The deferral defer_next_fetch left for this feed, in seconds, or None."""
+        try:
+            return int(r.get(FETCH_DEFERRAL_KEY % self.pk))
+        except (TypeError, ValueError):
+            return None
+
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False, delay_fetch_sec=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        if delay_fetch_sec is None:
+            # A fetch deferred for the feed's lock must stay deferred through every
+            # scheduling call that follows it in the same run (see defer_next_fetch).
+            delay_fetch_sec = self.pending_fetch_deferral(r)
 
         # Use Cache-Control max-age or Retry-After if provided
         if delay_fetch_sec is not None:
@@ -5673,6 +5701,9 @@ FETCH_LOCK_BLOCKING_SECONDS = 30
 # written and the validators are untouched, so the same response is fetched again, and the
 # wait is not a publisher failure. apps/rss_feeds/models.py
 FETCH_LOCK_DEFERRAL_SECONDS = 5 * 60
+# The Redis key (feed-update pool) that carries a deferral through the scheduling calls
+# that follow a fetch; see Feed.defer_next_fetch. apps/rss_feeds/models.py
+FETCH_DEFERRAL_KEY = "fetch_deferred:%s"
 # A merge that keeps finding yet another feed for the survivor's final save to collide with
 # stops widening its lock set here. apps/rss_feeds/models.py
 MERGE_FEEDS_MAX_LOCKS = 6

@@ -1176,6 +1176,7 @@ class ProcessFeed:
     def process(self):
         """Downloads and parses a feed."""
         start = time.time()
+        self.lease_lost = False
         self.refresh_feed()
         self.migrate_openrss_feed_address()
 
@@ -1256,8 +1257,12 @@ class ProcessFeed:
                 "   ---> [%-30s] ~FYFeed is locked by a merge or another fetch, deferring: %s"
                 % (self.feed.log_title[:30], e)
             )
-            self.feed.set_next_scheduled_update(delay_fetch_sec=FETCH_LOCK_DEFERRAL_SECONDS)
+            self.feed.defer_next_fetch(FETCH_LOCK_DEFERRAL_SECONDS)
             return FEED_SAME, dict(new=0, updated=0, same=0, error=0)
+        if self.lease_lost:
+            # Part of the batch was stored; the rest comes with the next fetch, brought
+            # forward and kept there through Feed.update's own scheduling call.
+            self.feed.defer_next_fetch(FETCH_LOCK_DEFERRAL_SECONDS)
         if ret_values is None:
             return FEED_ERRHTTP, dict(new=0, updated=0, same=0, error=1)
 
@@ -1311,7 +1316,8 @@ class ProcessFeed:
                 % (self.feed.log_title[:30], time.time() - start)
             )
 
-        if self.options.get("archive_page", None):
+        if self.options.get("archive_page", None) and not self.lease_lost:
+            # A page only partly stored is not seen: the archive walk retries it.
             self.archive_seen_story_hashes.update(story_hashes)
 
         return FEED_OK, ret_values
@@ -2064,15 +2070,23 @@ class FeedFetcherWorker:
         stops at this page otherwise, so nothing is skipped. utils/feed_fetcher.py"""
         for attempt in range(ARCHIVE_PAGE_LOCK_ATTEMPTS):
             try:
-                pfeed.process()
-                return True
+                ret_feed, ret_values = pfeed.process()
             except LockError as e:
                 logging.debug(
                     "   ---> [%-30s] ~FYArchive page waiting for the feed's lock (try %s of %s): %s"
                     % (feed.log_title[:30], attempt + 1, ARCHIVE_PAGE_LOCK_ATTEMPTS, e)
                 )
-                if attempt + 1 < ARCHIVE_PAGE_LOCK_ATTEMPTS:
-                    time.sleep(ARCHIVE_PAGE_LOCK_WAIT_SECONDS)
+            else:
+                if not (ret_values or {}).get("lease_lost"):
+                    return True
+                # The lease ran out partway through the page: what was stored stays, the
+                # rest is stored when the same page is processed again.
+                logging.debug(
+                    "   ---> [%-30s] ~FYArchive page only partly stored before the lease ran out (try %s of %s)"
+                    % (feed.log_title[:30], attempt + 1, ARCHIVE_PAGE_LOCK_ATTEMPTS)
+                )
+            if attempt + 1 < ARCHIVE_PAGE_LOCK_ATTEMPTS:
+                time.sleep(ARCHIVE_PAGE_LOCK_WAIT_SECONDS)
         logging.info(
             "   ---> [%-30s] ~FRArchive page still locked after %s tries, stopping this archive walk here so "
             "no page is skipped" % (feed.log_title[:30], ARCHIVE_PAGE_LOCK_ATTEMPTS)
