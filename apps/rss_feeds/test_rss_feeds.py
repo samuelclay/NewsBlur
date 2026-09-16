@@ -993,6 +993,8 @@ class Test_TextImporterEncoding(TestCase):
     def _make_mock_response(self, content_bytes, encoding):
         """Create a mock requests response with given raw bytes and encoding."""
         resp = MagicMock()
+        # A fetched page, not a block or an error: fetch_manually checks the status first.
+        resp.status_code = 200
         resp.content = content_bytes
         resp.encoding = encoding
         resp.text = content_bytes.decode(encoding or "utf-8", errors="replace")
@@ -6954,14 +6956,14 @@ class Test_TextImporterBlockedFallsBackToProxy(TestCase):
     )
 
     def _response(self, status_code, content, url=None, headers=None):
-        resp = MagicMock()
+        # A real requests.Response, not a MagicMock: a Response is falsy for any 4xx or 5xx,
+        # which is exactly the property the guard in fetch_manually has to get right.
+        resp = requests.Response()
         resp.status_code = status_code
-        resp.content = content
+        resp._content = content
         resp.encoding = "utf-8"
-        resp.text = content.decode("utf-8", errors="replace")
         resp.url = url or self.STORY_URL
-        resp.headers = headers or {"Content-Type": "text/html; charset=utf-8"}
-        resp.connection = MagicMock()
+        resp.headers.update(headers or {"Content-Type": "text/html; charset=utf-8"})
         return resp
 
     def _story(self):
@@ -7048,6 +7050,41 @@ class Test_TextImporterBlockedFallsBackToProxy(TestCase):
         self.assertIsNotNone(result)
         self.assertIn("Chris Brown is slamming", result["content"])
         mock_scrapingbee_get.assert_not_called()
+
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_an_error_page_that_is_not_a_block_is_neither_extracted_nor_proxied(
+        self, mock_get, mock_scrapingbee_get
+    ):
+        mock_get.return_value = self._response(404, b"<html><body><h1>Not Found</h1></body></html>")
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        mock_scrapingbee_get.assert_not_called()
+
+    @patch("apps.rss_feeds.text_importer.logging.user")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_failed_proxy_call_never_logs_the_api_key(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record, mock_log
+    ):
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        mock_scrapingbee_get.side_effect = requests.ConnectionError(
+            "HTTPSConnectionPool(host='app.scrapingbee.com', port=443): Max retries exceeded with url: "
+            "/api/v1?api_key=test-scrapingbee-key&url=https%3A%2F%2Fwww.tmz.com%2F&render_js=false"
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        mock_record.assert_called_once_with("original_text", None, url=self.STORY_URL)
+        logged = " ".join(str(arg) for call in mock_log.call_args_list for arg in call.args)
+        self.assertIn("ConnectionError", logged)
+        self.assertIn("<api_key>", logged)
+        self.assertNotIn("test-scrapingbee-key", logged)
 
     @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
     @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)

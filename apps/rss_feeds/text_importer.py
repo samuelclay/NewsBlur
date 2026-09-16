@@ -112,6 +112,18 @@ class ProxiedPage:
         self.content = content
         self.encoding = encoding
         self.url = url
+        self.status_code = 200
+        self.ok = True
+
+
+def redact_proxy_error(error, api_key):
+    """The exception type and message for a failed ScrapingBee call, with the API key
+    blanked. requests folds the full request URL, api_key query parameter included, into
+    connection and TLS errors, so the raw exception must never reach a log line."""
+    message = str(error)
+    if api_key:
+        message = message.replace(api_key, "<api_key>")
+    return "%s: %s" % (type(error).__name__, message)
 
 
 class TextImporter:
@@ -219,7 +231,9 @@ class TextImporter:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: too many redirects")
             resp = None
 
-        if not resp:
+        # A requests.Response is falsy for any 4xx or 5xx, so the check has to be against
+        # None or a 403 would return here before the block detection below ever ran.
+        if resp is None:
             return
 
         if is_blocked_response(resp):
@@ -227,10 +241,15 @@ class TextImporter:
             # servers with a 403. The feed fetcher already rescues the feed through the paid
             # proxy, but Text view (and the thumbnails MStory.extract_image_urls saves from it)
             # came through here with no fallback, so readers got the summary and no images.
-            # Without this check the block page itself was extracted as the article text.
+            # A 200 bot challenge page used to be extracted as the article text; now it is
+            # recognized as a block too.
             resp = self.fetch_blocked_page_with_scrapingbee(resp)
-            if not resp:
+            if resp is None:
                 return
+        elif resp.status_code >= 400:
+            # Any other error page has nothing to extract, which is what the falsy response
+            # used to mean here.
+            return
 
         if is_google_consent_url(getattr(resp, "url", None)):
             logging.user(
@@ -367,7 +386,10 @@ class TextImporter:
             )
         except Exception as e:
             RScrapingBee.record("original_text", None, url=url)
-            logging.user(self.request, "~SN~FRScrapingBee original text fetch error: %s" % e)
+            logging.user(
+                self.request,
+                "~SN~FRScrapingBee original text fetch error: %s" % redact_proxy_error(e, api_key),
+            )
         return None
 
     def process_content(
