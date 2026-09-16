@@ -173,6 +173,10 @@ MAX_ENTRIES_HIGH_VOLUME = 250
 HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per fetch
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
+# An archive page that finds the feed's merge lock held is tried again this many times, this
+# far apart, before the archive walk stops at that page. utils/feed_fetcher.py
+ARCHIVE_PAGE_LOCK_ATTEMPTS = 3
+ARCHIVE_PAGE_LOCK_WAIT_SECONDS = 30
 
 # Forbidden feeds are fetched through ScrapingBee, which bills a credit per successful
 # request. Once a feed has failed this many fetches in a row (errors_since_good), the
@@ -1131,6 +1135,8 @@ class ProcessFeed:
         self.feed_entries = []
         self.archive_seen_story_hashes = set()
         self.cache_control_max_age = None
+        # Set when the lease on the feed's merge lock ran out partway through the batch.
+        self.lease_lost = False
 
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
@@ -1238,6 +1244,10 @@ class ProcessFeed:
         try:
             ret_values, story_hashes = self.save_feed_and_stories()
         except LockError as e:
+            if self.options.get("archive_page", None):
+                # An archive walk must not step past this page; it retries the page itself
+                # (FeedFetcherWorker.process_archive_page).
+                raise
             # The feed is being merged or restored, or another fetch of it is still writing.
             # Nothing was written and the validators are untouched, so the same response is
             # fetched again in a few minutes. Internal contention, not a publisher failure:
@@ -1284,7 +1294,7 @@ class ProcessFeed:
         self.feed.update_all_statistics(
             has_new_stories=bool(ret_values["new"]),
             force=self.options["force"],
-            delay_fetch_sec=self.cache_control_max_age * 60 if self.cache_control_max_age else None,
+            delay_fetch_sec=self.next_fetch_delay_seconds(),
         )
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
@@ -1305,6 +1315,14 @@ class ProcessFeed:
             self.archive_seen_story_hashes.update(story_hashes)
 
         return FEED_OK, ret_values
+
+    def next_fetch_delay_seconds(self):
+        """How soon the next fetch is due: the deferral when the lease ran out partway
+        through this batch (the rest of the response is still to be stored), else whatever
+        Cache-Control or Retry-After asked for. utils/feed_fetcher.py"""
+        if self.lease_lost:
+            return FETCH_LOCK_DEFERRAL_SECONDS
+        return self.cache_control_max_age * 60 if self.cache_control_max_age else None
 
     def save_feed_and_stories(self):
         """Writes the stories, then the response's validators and feed attributes, under the
@@ -1346,6 +1364,12 @@ class ProcessFeed:
                 verbose=self.options["verbose"],
                 updates_off=self.options["updates_off"],
             )
+            if ret_values.get("lease_lost"):
+                # Part of the batch is stored and goes on to its unread counts and
+                # notifications; the validators stay as they were so the next fetch, brought
+                # forward below, brings the rest of this same response.
+                self.lease_lost = True
+                return ret_values, story_hashes
             if not self.options.get("archive_page", None):
                 self.compare_feed_attribute_changes()
             return ret_values, story_hashes
@@ -2031,6 +2055,30 @@ class FeedFetcherWorker:
 
         # time_taken = datetime.datetime.utcnow() - self.time_start
 
+    def process_archive_page(self, pfeed, feed):
+        """Process one archive page, trying the same page again when the feed's merge lock
+        is held (a merge or a live fetch of the feed). Deferring the page the way a normal
+        fetch is deferred would let the walk step past it: a numbered walk stops once a page
+        adds nothing and a linked walk moves on to the next link, and no later refresh ever
+        comes back for a historical page. Returns whether the page was processed; the walk
+        stops at this page otherwise, so nothing is skipped. utils/feed_fetcher.py"""
+        for attempt in range(ARCHIVE_PAGE_LOCK_ATTEMPTS):
+            try:
+                pfeed.process()
+                return True
+            except LockError as e:
+                logging.debug(
+                    "   ---> [%-30s] ~FYArchive page waiting for the feed's lock (try %s of %s): %s"
+                    % (feed.log_title[:30], attempt + 1, ARCHIVE_PAGE_LOCK_ATTEMPTS, e)
+                )
+                if attempt + 1 < ARCHIVE_PAGE_LOCK_ATTEMPTS:
+                    time.sleep(ARCHIVE_PAGE_LOCK_WAIT_SECONDS)
+        logging.info(
+            "   ---> [%-30s] ~FRArchive page still locked after %s tries, stopping this archive walk here so "
+            "no page is skipped" % (feed.log_title[:30], ARCHIVE_PAGE_LOCK_ATTEMPTS)
+        )
+        return False
+
     def fetch_and_process_archive_pages(self, feed_id):
         feed = Feed.get_by_id(feed_id)
         first_seen_feed = None
@@ -2134,7 +2182,8 @@ class FeedFetcherWorker:
 
                         # Process the feed BEFORE checking for more links
                         before_story_hashes = len(seen_story_hashes)
-                        pfeed.process()
+                        if not self.process_archive_page(pfeed, feed):
+                            break
                         seen_story_hashes.update(pfeed.archive_seen_story_hashes)
                         after_story_hashes = len(seen_story_hashes)
 
@@ -2195,7 +2244,8 @@ class FeedFetcherWorker:
                         if not first_seen_feed:
                             first_seen_feed = pfeed.fpf
                         before_story_hashes = len(seen_story_hashes)
-                        pfeed.process()
+                        if not self.process_archive_page(pfeed, feed):
+                            break
                         seen_story_hashes.update(pfeed.archive_seen_story_hashes)
                         after_story_hashes = len(seen_story_hashes)
 
