@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-contact{% endblock %}
+{% block title %}Contact us - NewsBlur{% endblock %}
+{% block nav_title %}Contact us{% endblock %}
+{% block head %}
+    <meta name="description" content="Contact NewsBlur developer Samuel Clay or get help with the NewsBlur Android app.">
+{% endblock %}
+
+{% block content %}
+<div class="NB-about-container">
+    <div class="NB-about-hero">
+        <h1 class="NB-about-hero-title">Contact us</h1>
+        <p class="NB-about-card-text">NewsBlur is a news reader and aggregator developed by Samuel Clay.</p>
+    </div>
+
+    <div class="NB-about-section">
+        <h2 class="NB-about-section-title">Contact information</h2>
+        <div class="NB-about-cards">
+            <div class="NB-about-card">
+                <h3 class="NB-about-card-title">General support</h3>
+                <p class="NB-about-card-text">Contact Samuel Clay, NewsBlur's developer, with questions about NewsBlur or your account.</p>
+                <p class="NB-about-card-text"><a href="mailto:samuel@newsblur.com">samuel@newsblur.com</a></p>
+            </div>
+            <div class="NB-about-card">
+                <h3 class="NB-about-card-title">Android support</h3>
+                <p class="NB-about-card-text">Contact the NewsBlur Android team for help with the Android app.</p>
+                <p class="NB-about-card-text"><a href="mailto:android@newsblur.com">android@newsblur.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="NB-about-section">
+        <h2 class="NB-about-section-title">More ways to get help</h2>
+        <p class="NB-about-card-text">Visit the <a href="https://forum.newsblur.com">NewsBlur support forum</a> to ask questions, report problems, or suggest features.</p>
+        <p class="NB-about-card-text">NewsBlur website: <a href="https://www.newsblur.com">www.newsblur.com</a></p>
+    </div>
+</div>
+{% endblock content %}
+{% block footer %}
+    {% render_footer "contact" %}
+{% endblock footer %}
