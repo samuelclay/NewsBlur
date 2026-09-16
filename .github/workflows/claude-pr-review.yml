@@ -40,6 +40,9 @@ jobs:
         uses: anthropics/claude-code-action@c81e3bc69d1b18badbb63ba39581218f02421678 # v1.0.201
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The review text is public on the PR anyway; full output puts the API error in
+          # the job log when a run fails instead of a bare is_error:true.
+          show_full_output: true
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
