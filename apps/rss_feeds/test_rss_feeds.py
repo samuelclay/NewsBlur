@@ -2503,6 +2503,85 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertEqual(Feed.objects.get(pk=lost_id).feed_title, "Retitled by the other run")
         self.assertTrue(UserSubscription.objects.filter(user=reader, feed_id=lost_id).exists())
 
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.rss_feeds.models.Feed.schedule_feed_fetch_immediately", lambda self, **kwargs: self)
+    def test_a_fetch_cannot_take_the_feed_until_its_subscriptions_and_counts_are_restored(self, mock_redis):
+        """Between the row coming back and its subscriptions, a fetch that got the feed would
+        recount its Archive readers as none and trim the recovered stories for good. The
+        restore holds the feed's lock from the row through the subscriptions and the
+        recount, so a fetch arriving meanwhile is refused and comes back later."""
+        import threading
+
+        from django.core.management import call_command
+
+        from apps.rss_feeds import management as management_package  # noqa: F401
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.management.commands import (
+            restore_merged_feed as command_module,
+        )
+        from apps.rss_feeds.models import (
+            FETCH_LOCK_TIMEOUT_SECONDS,
+            log_merge_feeds_inventory,
+            merge_feeds_lock,
+        )
+
+        survivor = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/guardedrow.xml",
+            feed_link="https://www.example.com/guardedrow",
+            feed_title="Example | Guarded row",
+        )
+        lost = Feed.objects.create(
+            feed_address="https://www.example.com/webfeed/rss/rss-guardedrow",
+            feed_link="https://www.example.com/guardedrow",
+            feed_title="Example | Guarded row",
+        )
+        archive_reader = User.objects.create_user("archivist", "archivist@example.com", "password")
+        UserSubscription.objects.create(user=archive_reader, feed=lost)
+        with self.assertLogs("newsblur", level="INFO") as captured:
+            log_merge_feeds_inventory(survivor, lost)
+        log_path = self._inventory_file(captured.output)
+        lost_id = lost.pk
+        lost.delete()
+
+        table = InMemoryMergeLocks()
+        mock_redis.Redis.return_value = table
+        probes = []
+        original_save = command_module.deserialize_and_save
+
+        def probe_fetch():
+            # A fetch worker on another thread, arriving while the subscriptions come back.
+            try:
+                with merge_feeds_lock(lost_id, timeout=FETCH_LOCK_TIMEOUT_SECONDS, blocking_timeout=1):
+                    probes.append("fetch took the feed")
+            except LockError:
+                probes.append("fetch refused")
+
+        def save_and_probe(serialized_object):
+            saved = original_save(serialized_object)
+            if serialized_object["model"] == "reader.usersubscription":
+                self.assertIn(lost_id, feed_models._merge_locks_held())
+                thread = threading.Thread(target=probe_fetch)
+                thread.start()
+                thread.join(10)
+            return saved
+
+        recounted_under_lock = []
+        with patch.object(command_module, "deserialize_and_save", save_and_probe), patch.object(
+            Feed,
+            "count_subscribers",
+            side_effect=lambda *a, **k: recounted_under_lock.append(
+                lost_id in feed_models._merge_locks_held()
+            ),
+        ):
+            call_command("restore_merged_feed", log=log_path, feed_id=lost_id)
+
+        self.assertEqual(probes, ["fetch refused"])
+        self.assertEqual(recounted_under_lock, [True])
+        self.assertTrue(UserSubscription.objects.filter(user=archive_reader, feed_id=lost_id).exists())
+        self.assertFalse(table.held("merge_feeds:%s" % lost_id))
+        probe_fetch()
+        self.assertEqual(probes[-1], "fetch took the feed")
+
     def test_the_re_added_feed_is_parked_and_folded_in_under_both_merge_locks(self):
         """Parking the re-added feed's hash and merging it into the restored row happen
         under the locks of both ids, taken once in id order; the fold-in's own merge_feeds
@@ -4309,9 +4388,14 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
 
         with patch.object(feed_fetcher, "ARCHIVE_PAGE_LOCK_WAIT_SECONDS", 0), patch.object(
             pfeed, "process", side_effect=LockError("still held")
-        ) as always_locked:
+        ) as always_locked, patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async") as requeued:
             self.assertFalse(worker.process_archive_page(pfeed, feed))
         self.assertEqual(always_locked.call_count, feed_fetcher.ARCHIVE_PAGE_LOCK_ATTEMPTS)
+        # The walk stops here, and the import is queued again so the missing pages are
+        # fetched once the lock is free.
+        requeued.assert_called_once_with(
+            args=[[feed.pk]], kwargs={"user_id": None}, countdown=feed_fetcher.FETCH_LOCK_DEFERRAL_SECONDS
+        )
 
     @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
     @patch("apps.rss_feeds.models.MStory.remove_from_redis")

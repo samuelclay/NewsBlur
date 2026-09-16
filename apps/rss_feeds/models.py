@@ -594,6 +594,8 @@ class Feed(models.Model):
         # cursor's result cache while they are walked.
         stories = MStory.objects(story_feed_id=self.pk).no_cache()
         for story in stories:
+            # Under a restore's locks this can walk a large feed; keep the leases, or stop.
+            renew_merge_feeds_locks()
             story.index_story_for_search()
 
         self.search_indexed = True

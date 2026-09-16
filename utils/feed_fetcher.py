@@ -2096,7 +2096,23 @@ class FeedFetcherWorker:
             "   ---> [%-30s] ~FRArchive page still locked after %s tries, stopping this archive walk here so "
             "no page is skipped" % (feed.log_title[:30], ARCHIVE_PAGE_LOCK_ATTEMPTS)
         )
+        self.reschedule_archive_walk(feed)
         return False
+
+    def reschedule_archive_walk(self, feed):
+        """Queue the archive import for this feed again, after the fetch deferral: the walk
+        stopped at a page the feed's lock kept it from storing, and no ordinary refresh ever
+        comes back for historical pages. The walk restarts from the first page; pages
+        already stored are matched as unchanged. utils/feed_fetcher.py"""
+        from apps.profile.tasks import FetchArchiveFeedsChunk
+
+        FetchArchiveFeedsChunk.apply_async(
+            args=[[feed.pk]], kwargs={"user_id": None}, countdown=FETCH_LOCK_DEFERRAL_SECONDS
+        )
+        logging.info(
+            "   ---> [%-30s] ~FYArchive import queued again in %s seconds"
+            % (feed.log_title[:30], FETCH_LOCK_DEFERRAL_SECONDS)
+        )
 
     def fetch_and_process_archive_pages(self, feed_id):
         feed = Feed.get_by_id(feed_id)

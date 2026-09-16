@@ -39,6 +39,7 @@ from apps.rss_feeds.models import (
     MStory,
     merge_feeds,
     merge_feeds_lock,
+    renew_merge_feeds_locks,
 )
 from utils import json_functions
 from utils import log as logging
@@ -232,59 +233,38 @@ def keep_parent_away_from_the_collision(fields, collision, log=print):
 
 
 def stage_restored_feed(feed_object, stale_redirects, collisions, log=print):
-    """Recreate the feed row, parking every re-added feed that holds its address first, under
-    the merge locks of the restored id and of all of them, and fold the parked feeds in
-    before letting go of the locks. Returns the feeds parked and folded in.
+    """Recreate the feed row, parking every re-added feed that holds its address first, and
+    fold the parked feeds in. Runs under the merge locks of the restored id and of all of
+    them, which restore_feed_from_inventory holds from here until the feed's subscriptions
+    are back and it has been recounted. Returns the feeds parked and folded in.
 
     A merge in flight for a re-added feed (a fetch worker's save colliding with a twin,
     say) holds that feed's lock, has already read it as an ordinary duplicate, and deletes
     its stories on the way out. Parking the row from outside the lock would not change that
     merge's mind, and the fold-in afterwards would find no source and report success with
-    the stories gone. Under the locks the address holders are looked up again: the merge
-    that held a lock until now may have deleted or re-hashed a re-added feed, and whichever
-    rows hold the address now are the ones to park, under their own locks. The restored
-    row's existence is checked again under the locks too: another restore of the same feed
-    may have recreated it while this one waited, and writing the snapshot over that row
-    would undo whatever the recovery changed since."""
+    the stories gone."""
     feed_id = feed_object["pk"]
-    while True:
-        with merge_feeds_lock(feed_id, *[collision.pk for collision in collisions]):
-            if Feed.objects.filter(pk=feed_id).exists():
-                log(
-                    "feed %s was recreated by another restore while this one waited; leaving the row alone"
-                    % feed_id
-                )
-                return []
-            current = feeds_holding_address(feed_object["fields"], feed_id)
-            if {feed.pk for feed in current} != {feed.pk for feed in collisions}:
-                log(
-                    "the feeds holding this address changed under the lock: %s now, %s before"
-                    % ([feed.pk for feed in current] or "none", [feed.pk for feed in collisions] or "none")
-                )
-                collisions = current
-                continue
-            for collision in collisions:
-                keep_parent_away_from_the_collision(feed_object["fields"], collision, log=log)
-            # One transaction for the Postgres staging: if recreating the row fails, the
-            # re-added feeds are not left parked under placeholder hashes.
-            with transaction.atomic():
-                stale_redirects.delete()
-                for collision in collisions:
-                    parked_fields = {"hash_address_and_link": parking_hash(collision.pk, feed_id)}
-                    if feed_object["fields"].get("branch_from_feed"):
-                        # A copy re-added at a private branch's address carries the same
-                        # token. Marked as a branch of the same parent, the merge's log
-                        # lines and the recovery's inventory name it by id, like the
-                        # restored feed itself.
-                        parked_fields["branch_from_feed_id"] = feed_object["fields"]["branch_from_feed"]
-                    Feed.objects.filter(pk=collision.pk).update(**parked_fields)
-                deserialize_and_save(feed_object)
-            for collision in collisions:
-                # The merge touches Mongo and Redis too, so it runs outside the transaction but
-                # still under the locks (merge_feeds finds them held and takes nothing new); a
-                # rerun finds the parked rows and finishes them (see parked_feeds_for above).
-                fold_in_parked_feed(feed_id, collision, log=log)
-            return collisions
+    for collision in collisions:
+        keep_parent_away_from_the_collision(feed_object["fields"], collision, log=log)
+    # One transaction for the Postgres staging: if recreating the row fails, the re-added
+    # feeds are not left parked under placeholder hashes.
+    with transaction.atomic():
+        stale_redirects.delete()
+        for collision in collisions:
+            parked_fields = {"hash_address_and_link": parking_hash(collision.pk, feed_id)}
+            if feed_object["fields"].get("branch_from_feed"):
+                # A copy re-added at a private branch's address carries the same token.
+                # Marked as a branch of the same parent, the merge's log lines and the
+                # recovery's inventory name it by id, like the restored feed itself.
+                parked_fields["branch_from_feed_id"] = feed_object["fields"]["branch_from_feed"]
+            Feed.objects.filter(pk=collision.pk).update(**parked_fields)
+        deserialize_and_save(feed_object)
+    for collision in collisions:
+        # The merge touches Mongo and Redis too, so it runs outside the transaction but
+        # still under the locks (merge_feeds finds them held and takes nothing new); a
+        # rerun finds the parked rows and finishes them (see parked_feeds_for above).
+        fold_in_parked_feed(feed_id, collision, log=log)
+    return collisions
 
 
 def tree_holds_feed(folders, feed_id):
@@ -311,7 +291,14 @@ def restore_feed_from_inventory(
     dry_run=False,
     log=print,
 ):
-    """Recreate what is missing for the feed in feed_record. Returns a dict of counts."""
+    """Recreate what is missing for the feed in feed_record. Returns a dict of counts.
+
+    Everything that writes runs under the merge locks of the restored id and of every feed
+    parked for it, from recreating the row through restoring its subscriptions and folders
+    to the recount: a fetch let in between the row and its subscriptions would recount the
+    feed's Archive readers as none and trim the recovered stories to the short retention,
+    which no rerun could bring back since the inventory holds no story content. A fetch
+    that arrives meanwhile waits briefly and comes back a few minutes later."""
     feed_object = json.loads(json.dumps(feed_record["object"]))
     feed_id = feed_object["pk"]
     fields = feed_object["fields"]
@@ -340,7 +327,10 @@ def restore_feed_from_inventory(
         "collision_merged": None,
     }
 
-    if Feed.objects.filter(pk=feed_id).exists():
+    row_missing = not Feed.objects.filter(pk=feed_id).exists()
+    stale_redirects = DuplicateFeed.objects.none()
+    collisions = []
+    if not row_missing:
         log("feed %s already exists, leaving the row alone" % feed_id)
     else:
         # Similar-feed links are a many-to-many to other feeds that may be gone.
@@ -393,16 +383,63 @@ def restore_feed_from_inventory(
             )
             keep_parent_away_from_the_collision(fields, collision, log=log)
         log("creating feed %s %s" % (feed_id, display_address))
-        if not dry_run:
-            parked = stage_restored_feed(feed_object, stale_redirects, collisions, log=log)
-            counts["feed_created"] = 1
-            if parked:
-                counts["collision_merged"] = parked[0].pk
-                counts["collisions_merged"] = [feed.pk for feed in parked]
 
+    if dry_run:
+        return restore_the_rest(
+            feed_id, feeddata_records, subscription_records, counts, dry_run=True, log=log
+        )
+
+    lock_ids = {feed_id} | {feed.pk for feed in collisions} | {feed.pk for feed in parked_feeds_for(feed_id)}
+    while True:
+        with merge_feeds_lock(*lock_ids):
+            if row_missing:
+                if Feed.objects.filter(pk=feed_id).exists():
+                    # Another restore of the same feed got here first; only what it has not
+                    # done yet is done below.
+                    log(
+                        "feed %s was recreated by another restore while this one waited; leaving the row alone"
+                        % feed_id
+                    )
+                    row_missing = False
+                else:
+                    # The address holders are looked up again under the locks: a merge that
+                    # held one of their locks until now may have deleted or re-hashed a
+                    # re-added feed, and whichever rows hold the address now are the ones to
+                    # park, under their own locks.
+                    current = feeds_holding_address(fields, feed_id)
+                    if {feed.pk for feed in current} != {feed.pk for feed in collisions}:
+                        log(
+                            "the feeds holding this address changed under the lock: %s now, %s before"
+                            % (
+                                [feed.pk for feed in current] or "none",
+                                [feed.pk for feed in collisions] or "none",
+                            )
+                        )
+                        collisions = current
+                        lock_ids = (
+                            {feed_id}
+                            | {feed.pk for feed in collisions}
+                            | {feed.pk for feed in parked_feeds_for(feed_id)}
+                        )
+                        continue
+                    parked = stage_restored_feed(feed_object, stale_redirects, collisions, log=log)
+                    counts["feed_created"] = 1
+                    if parked:
+                        counts["collision_merged"] = parked[0].pk
+                        counts["collisions_merged"] = [feed.pk for feed in parked]
+            return restore_the_rest(
+                feed_id, feeddata_records, subscription_records, counts, dry_run=False, log=log
+            )
+
+
+def restore_the_rest(feed_id, feeddata_records, subscription_records, counts, dry_run=False, log=print):
+    """Past the row: parked feeds an interrupted run left, the feed data, every subscription
+    with its folder entry, then the recount, the Redis rebuild, the reindex and the fetch.
+    Under the restore's locks when writing (a rerun that found the row in place holds them
+    too), renewing their leases per record for a popular feed."""
     # An earlier run parked a feed for this restore and stopped before merging it, or the
     # parked feed followed a redirect away from the restored address meanwhile and the
-    # address lookup above no longer sees it; its marker still names this feed.
+    # address lookup no longer sees it; its marker still names this feed.
     for parked in parked_feeds_for(feed_id):
         log("feed %s is still parked from an interrupted run, merging it into %s" % (parked.pk, feed_id))
         if not dry_run:
@@ -419,6 +456,7 @@ def restore_feed_from_inventory(
         counts["feeddata_created"] += 1
 
     for record in subscription_records:
+        renew_merge_feeds_locks()
         subscription_object = json.loads(json.dumps(record["object"]))
         user_id = subscription_object["fields"]["user"]
         if not User.objects.filter(pk=user_id).exists():
@@ -457,6 +495,7 @@ def restore_feed_from_inventory(
     # Always, not only when the row was created here: a restore interrupted after creating
     # the feed is rerun, and the recount and fetch schedule must still happen.
     if not dry_run:
+        renew_merge_feeds_locks()
         feed = Feed.get_by_id(feed_id)
         feed.count_subscribers()
         # Stories moved in from a re-added feed were added to Redis under the restored feed's
