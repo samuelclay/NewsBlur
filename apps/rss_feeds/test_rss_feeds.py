@@ -2657,7 +2657,34 @@ class Test_RestoreMergedFeedCommand(TestCase):
         self.assertFalse(Feed.objects.filter(pk=private_id).exists())
         self.assertEqual(MMergeFeedsPrivateInventory.objects(feed_id=private_id).count(), 1)
 
-        call_command("restore_merged_feed", log=self._inventory_file(captured.output), feed_id=private_id)
+        # The reader re-added the private URL meanwhile: a copy with no parent, which the
+        # recovery parks and folds in. Neither its address nor its link may reach the logs
+        # through the recovery's own merge either.
+        readded_copy = Feed.objects.create(
+            feed_address="https://www.example.com/.rss?feed=SECRET-TOKEN-xyz789&user=reader",
+            feed_link="https://www.example.com/personal?key=SECRET-LINK-key456",
+            feed_title="Example | Personal (reader)",
+        )
+        MStory(
+            story_feed_id=readded_copy.pk,
+            story_guid="private-readded-story",
+            story_title="Fetched by the copy",
+            story_permalink="https://www.example.com/personal/1",
+            story_date=datetime.datetime.utcnow(),
+        ).save()
+        self.addCleanup(lambda: MStory.objects(story_guid="private-readded-story").delete())
+        self.addCleanup(lambda: MMergeFeedsPrivateInventory.objects(feed_id=readded_copy.pk).delete())
+
+        with self.assertLogs("newsblur", level="DEBUG") as recovery, patch(
+            "apps.rss_feeds.models.MStory.sync_redis"
+        ):
+            call_command("restore_merged_feed", log=self._inventory_file(captured.output), feed_id=private_id)
+
+        recovery_logged = "\n".join(recovery.output)
+        self.assertNotIn("SECRET-TOKEN", recovery_logged)
+        self.assertNotIn("SECRET-LINK", recovery_logged)
+        self.assertFalse(Feed.objects.filter(pk=readded_copy.pk).exists())
+        self.assertEqual(MStory.objects(story_guid="private-readded-story").first().story_feed_id, private_id)
 
         restored = Feed.objects.get(pk=private_id)
         self.assertEqual(
@@ -3342,7 +3369,8 @@ class Test_MergeFeedsLock(TestCase):
             sorted(locks), ["merge_feeds:%s" % feed_id for feed_id in sorted([source.pk, target.pk])]
         )
         for lock in locks.values():
-            self.assertEqual(lock.extend.call_count, 3)
+            # Once per story, plus the renewals the lock makes while entering.
+            self.assertGreaterEqual(lock.extend.call_count, 3)
             lock.extend.assert_called_with(MERGE_FEEDS_LOCK_TIMEOUT_SECONDS, replace_ttl=True)
         mock_inline.assert_not_called()
         mock_queue.assert_called_once()
@@ -3366,18 +3394,53 @@ class Test_MergeFeedsLock(TestCase):
         from apps.rss_feeds.models import merge_feeds_lock, move_stories_between_feeds
 
         source, target = self._feeds_with_stories("lost", 2)
-        self._recording_locks(
-            mock_redis, extend_side_effect=LockNotOwnedError("Cannot extend a lock that's no longer owned")
-        )
+        locks = self._recording_locks(mock_redis)
 
         with patch.object(feed_models, "MERGE_FEEDS_RENEW_AFTER_FRACTION", 0):
             with merge_feeds_lock(source.pk, target.pk):
+                # Redis lets the leases go once the merge is under way.
+                for lock in locks.values():
+                    lock.extend.side_effect = LockNotOwnedError("Cannot extend a lock that's no longer owned")
                 with self.assertRaises(LockError) as raised:
                     move_stories_between_feeds(source.pk, target.pk)
 
         self.assertIn("lease was lost", str(raised.exception))
         self.assertEqual(MStory.objects(story_feed_id=source.pk).count(), 2)
         self.assertEqual(MStory.objects(story_feed_id=target.pk).count(), 0)
+
+    @patch("apps.rss_feeds.models.redis")
+    def test_leases_count_from_each_acquisition_and_earlier_locks_are_renewed_while_later_ones_wait(
+        self, mock_redis
+    ):
+        """Four locks each waited 110 seconds for. Registered only once all were held, the
+        first lease would already be 330 seconds old and yet treated as fresh. Each lock is
+        registered as it is taken, and the ones already held are renewed while the next one
+        is waited for and once more before the body runs."""
+        from apps.rss_feeds import models as feed_models
+        from apps.rss_feeds.models import merge_feeds_lock
+
+        clock = {"now": 0.0}
+        extended = []
+
+        def lock_factory(name, **kwargs):
+            lock = MagicMock()
+            lock.name = name
+
+            def acquire(blocking=True):
+                clock["now"] += 110
+                return True
+
+            lock.acquire.side_effect = acquire
+            lock.extend.side_effect = lambda *args, **kwargs: extended.append((name, clock["now"])) or True
+            return lock
+
+        mock_redis.Redis.return_value.lock.side_effect = lock_factory
+        with patch.object(feed_models, "_merge_lock_clock", lambda: clock["now"]):
+            with merge_feeds_lock(10, 20, 30, 40):
+                held = {feed_id: entry[2] for feed_id, entry in feed_models._merge_locks_held().items()}
+
+        self.assertEqual(extended, [("merge_feeds:10", 330), ("merge_feeds:20", 440)])
+        self.assertEqual(held, {10: 330, 20: 440, 30: 330, 40: 440})
 
     @patch("apps.rss_feeds.models.redis")
     def test_a_lock_left_by_a_dead_worker_frees_itself_when_its_lease_runs_out(self, mock_redis):
@@ -3761,7 +3824,7 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         """The response's ETag is only saved once its stories are stored. Saved first, a lock
         that timed out would leave it in place and the publisher could answer the next poll
         with 304 for a batch nobody stored."""
-        from utils.feed_fetcher import FEED_OK, ProcessFeed
+        from utils.feed_fetcher import FEED_OK, FEED_SAME, ProcessFeed
 
         feed = self._feed("https://rss.example.com/lineup/validators.xml", etag='"before"')
         self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
@@ -3769,9 +3832,10 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         lock = mock_redis.Redis.return_value.lock.return_value
         lock.acquire.return_value = False
 
-        with self.assertRaises(LockError):
-            ProcessFeed(feed.pk, self._parsed('"after"'), dict(self.options)).process()
+        ret_feed, ret_values = ProcessFeed(feed.pk, self._parsed('"after"'), dict(self.options)).process()
 
+        # Deferred, not failed: the batch is dropped for now and fetched again shortly.
+        self.assertEqual((ret_feed, ret_values["new"], ret_values["error"]), (FEED_SAME, 0, 0))
         feed.refresh_from_db()
         self.assertEqual(feed.etag, '"before"')
         self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 0)
@@ -3944,6 +4008,43 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         times = [at for kind, at in events]
         widest_gap = max(later - earlier for earlier, later in zip(times, times[1:]))
         self.assertLess(widest_gap, FETCH_LOCK_TIMEOUT_SECONDS)
+
+    @patch("utils.feed_fetcher.IconImporter")
+    @patch("utils.feed_fetcher.PageImporter")
+    @patch("utils.feed_fetcher.FeedFetcherWorker.reset_database_connections")
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_fetch_that_cannot_get_the_lock_is_deferred_not_recorded_as_a_failure(
+        self, mock_redis, mock_statistics, mock_history, mock_reset, mock_page, mock_icon
+    ):
+        """A healthy response that waits behind a restore or a long fetch and gives up on the
+        lock is internal contention: the worker records no fetch error (which would back the
+        feed off and mark it broken), leaves the validators alone so the same response is
+        fetched again, and schedules the retry a few minutes out."""
+        from utils import feed_fetcher
+        from utils.feed_fetcher import FEED_OK, FEED_SAME, FeedFetcherWorker, FetchFeed
+
+        feed = self._feed("https://rss.example.com/lineup/contended.xml", etag='"before"')
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        mock_redis.Redis.return_value.zrevrangebyscore.return_value = []
+        mock_redis.Redis.return_value.lock.return_value.acquire.return_value = False
+        fpf = self._parsed('"after"')
+
+        worker = FeedFetcherWorker({"verbose": False, "force": False, "updates_off": False, "quick": None})
+        with patch.object(FetchFeed, "fetch", return_value=(FEED_OK, fpf)), patch.object(
+            feed_fetcher.random, "random", return_value=0.5
+        ), patch.object(Feed, "set_next_scheduled_update") as mock_schedule:
+            worker.process_feed_wrapper([feed.pk])
+
+        self.assertEqual(worker.feed_stats[FEED_SAME], 1)
+        self.assertEqual(worker.feed_stats[feed_fetcher.FEED_ERREXC], 0)
+        for call in mock_history.call_args_list:
+            self.assertLess(call.args[0], 400, "a lock timeout was recorded as a fetch error: %s" % (call,))
+        feed.refresh_from_db()
+        self.assertEqual(feed.etag, '"before"')
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 0)
+        mock_schedule.assert_called_once_with(delay_fetch_sec=feed_fetcher.FETCH_LOCK_DEFERRAL_SECONDS)
 
     def test_refresh_feed_tolerates_a_feed_deleted_with_no_redirect(self):
         from utils.feed_fetcher import ProcessFeed
