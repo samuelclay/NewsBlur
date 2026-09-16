@@ -1410,6 +1410,7 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
 
         self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTPS_ADDRESS)
 
+
 class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
     """Feed.save handles the address-hash collision by merging into the existing feed,
     which needs a real transaction (the failed UPDATE aborts a TestCase's wrapper)."""
@@ -1492,6 +1493,7 @@ class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
         self.assertEqual(pfeed.feed_id, stale.pk)
         self.assertEqual(Feed.objects.get(pk=stale.pk).feed_address, self.HTTPS_ADDRESS)
         self.assertFalse(Feed.objects.filter(pk=twin.pk).exists())
+
 
 class Test_TextImporterGoogleNews(TestCase):
     """Google News feeds link every story through news.google.com/rss/articles/<token>.
@@ -6921,3 +6923,132 @@ class Test_ProxyBudgetSubscriberIds(TestCase):
             ).proxy_budget_subscriber_ids(),
             [],
         )
+
+
+class Test_PlainUserAgentRetryOnBlockedFetch(TestCase):
+    """bugs.kde.org answers any request whose User-Agent carries a desktop browser string with
+    a 403 (forum #13835). NewsBlur's default fetcher UA ends in one, and the fake-header retry
+    is one, so both fail, while the plain "NewsBlur Feed Fetcher" UA is served the atom feed.
+    That plain UA used to be tried only in fetch_forbidden, which a feed reaches only after a
+    paid proxy fetch succeeded once; a one-subscriber feed over its proxy budget never got
+    there. FetchFeed.fetch now tries the plain UA after the fake-header retry is blocked too,
+    before giving up or spending a proxy credit. utils/feed_fetcher.py"""
+
+    ADDRESS = "https://bugs.example.org/buglist.cgi?component=Clipboard%20widget%20%26%20pop-up&ctype=atom"
+    ATOM = (
+        b'<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">'
+        b'<title>Bug List</title><link rel="alternate" href="https://bugs.example.org/"/>'
+        b"<entry><title>[Bug 1] Clipboard popup loses focus</title>"
+        b'<link rel="alternate" href="https://bugs.example.org/show_bug.cgi?id=1"/>'
+        b"<id>https://bugs.example.org/show_bug.cgi?id=1</id>"
+        b"<updated>2026-09-14T17:00:00Z</updated><summary>It does.</summary></entry></feed>"
+    )
+    FORBIDDEN = (
+        b'<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"><html><head><title>403 Forbidden</title>'
+        b"</head><body><h1>Forbidden</h1><p>You don't have permission to access this resource.</p>"
+        b"<hr><address>Apache/2.4.52 (Ubuntu) Server at bugs.example.org Port 443</address></body></html>"
+    )
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address=self.ADDRESS, feed_link="https://bugs.example.org/", feed_title="Bug List"
+        )
+        self.feed.num_subscribers = 1
+        self.feed.save()
+        self.user_agents = []
+
+    def _response(self, status_code, content, content_type):
+        response = requests.Response()
+        response.status_code = status_code
+        response._content = content
+        response.encoding = "utf-8"
+        response.url = self.ADDRESS
+        response.headers["Content-Type"] = content_type
+        return response
+
+    def _blocks_browser_user_agents(self, blocked_status=403):
+        """Like bugs.kde.org: a browser string anywhere in the UA is refused, the plain UA is served."""
+
+        def get(url, headers=None, **kwargs):
+            user_agent = (headers or {}).get("User-Agent", "")
+            self.user_agents.append(user_agent)
+            if "Mozilla/" in user_agent:
+                return self._response(blocked_status, self.FORBIDDEN, "text/html; charset=iso-8859-1")
+            return self._response(200, self.ATOM, "application/atom+xml; charset=UTF-8")
+
+        return get
+
+    def _fetch(self, side_effect):
+        from utils.feed_fetcher import FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=side_effect) as mock_get, patch(
+            "utils.feed_fetcher.FetchFeed.fetch_scrapingbee", side_effect=AssertionError("paid proxy used")
+        ):
+            result, fpf = fetcher.fetch()
+        return result, fpf, mock_get
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_site_that_refuses_browser_user_agents_is_fetched_with_the_plain_one(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_OK
+
+        result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents())
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(len(fpf.entries), 1)
+        self.assertEqual(fpf.entries[0].title, "[Bug 1] Clipboard popup loses focus")
+        # default UA (browser suffix), fake browser UA, then the plain UA that worked
+        self.assertEqual(len(self.user_agents), 3)
+        self.assertTrue(self.user_agents[0].startswith("NewsBlur Feed Fetcher"))
+        self.assertIn("Mozilla/", self.user_agents[0])
+        self.assertIn("Mozilla/", self.user_agents[1])
+        self.assertEqual(self.user_agents[2], self.feed.plain_user_agent)
+        # a direct fetch that works is not a forbidden feed
+        self.assertFalse(Feed.objects.get(pk=self.feed.pk).is_forbidden)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_site_that_refuses_every_user_agent_still_fails(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP
+
+        def refuse_everyone(url, headers=None, **kwargs):
+            self.user_agents.append((headers or {}).get("User-Agent", ""))
+            return self._response(403, self.FORBIDDEN, "text/html; charset=iso-8859-1")
+
+        result, fpf, mock_get = self._fetch(refuse_everyone)
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertEqual(len(self.user_agents), 3)
+        self.assertEqual(self.user_agents[2], self.feed.plain_user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_rate_limit_is_respected_with_no_retries_at_all(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents(blocked_status=429))
+
+        self.assertEqual(len(self.user_agents), 1)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_missing_feed_gets_the_fake_header_retry_but_not_the_plain_one(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        # A 404 is the feed being gone, not the site refusing our User-Agent: the usual
+        # fake-header retry runs and nothing more, so dead feeds do not cost a third request.
+        result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents(blocked_status=404))
+
+        self.assertEqual(len(self.user_agents), 2)
