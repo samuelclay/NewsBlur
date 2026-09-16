@@ -16,14 +16,14 @@ These hold for every topic, every run. Do not reinterpret them mid-run.
 1. **At most three topics per run, one at a time, newest activity first.** The queue is cut at three (`--limit`, default 3); the rest wait for the next run so open PRs get merged before more pile up. Finish a topic (state recorded) before opening the next. No parallel subagents across topics. A subagent may help inside one topic (for example, a second opinion on a fix) but the loop stays sequential.
 2. **Production is read-only.** Pre-authorized: Django ORM reads, mongoengine reads, redis read commands (`GET`, `HGETALL`, `ZRANGE`, `SMEMBERS`, `KEYS` on a narrow pattern, `INFO`), log greps, `sentry-cli issues list`, Play Console crash reads. Never `.save()`, `.update()`, `.delete()`, `.create()`, bulk writes, redis writes, container restarts, deploys, or `make deploy`/`make celery`. Anything that changes production state is tier 2 and needs an explicit yes through AskUserQuestion, then run exactly the approved command and nothing more.
 3. **Never post to the forum.** Replies are drafted for Sam to paste. Never call any Discourse write endpoint.
-4. **Never merge or push to main.** PRs are opened ready for review with the `forum` label. Sam merges.
+4. **Never merge or push to main.** PRs are opened ready for review with the `forum` label. Sam merges, or says "merge" in the session, in which case the merge procedure in the `commit-pr` skill applies (order, bringing branches up to date, the test-file conflict pattern).
 5. **Tier 1 means no input needed.** The bug is reproducible, the fix is local to the code, no product decision is involved, no user account is touched. Everything else is tier 2.
 6. **Reproduce before fixing.** Per CLAUDE.md: write the failing test first, then fix, then show it passing. If it cannot be reproduced, say so in the PR and the reply rather than guessing.
 7. **Reply-only topics are tier 1.** A how-to question, a known limitation, a duplicate, a "works as designed": draft the reply, record it, move on. No interview needed.
 8. **Ask with AskUserQuestion, never plain text.** Tier 2 decisions, and anything mid-fix that could go two materially different ways.
 9. **When the auto-mode classifier blocks an approved prod write, hand it to Sam.** Write the exact script or SQL to a file at the repo root, print the one-line command that runs it, record `tier2-pending` with that command in the note, and move on. Never look for another route to the same write.
 10. **Before any prod `merge_feeds`, check for branches.** `Feed.objects.filter(branch_from_feed=<duplicate>)` must be empty or re-parented first; until PR #2133 is deployed, a merge that deletes a feed with branches deletes the branches and their subscriptions too (CBC incident, 2026-09-14). Prefer `force=False` so the heavier feed survives. Once #2133 is deployed, every merge logs `MERGE_FEEDS_INVENTORY` JSON lines and a bad one is reversed with `manage.py restore_merged_feed --log FILE --feed-id ID --dry-run` first, then without `--dry-run`; grep the lines from `docker logs task-celery` on the worker that ran the merge.
-11. **A PR is done only when `/commit-pr` says so.** Green CI on the current head, zero unresolved Claude or Codex review threads, marked ready for review. The push-to-clean loop lives in the `commit-pr` skill; this skill never re-implements it.
+11. **A PR is done only when `/commit-pr` says so.** Green CI on the current head, zero unresolved Claude or Codex review threads, marked ready for review. The push-to-clean loop lives in the `commit-pr` skill; this skill never re-implements it. That loop is capped at three review rounds; a fix that keeps growing under review (locks, leases, queues, a new store) has become a subsystem and goes back to Sam through AskUserQuestion before another round, with the PR's size next to its first commit's.
 
 ## Arguments
 
@@ -279,7 +279,7 @@ Present the draft in the final report as plain text, not inside a blockquote.
 }
 ```
 
-`status` is one of `pr-open`, `reply-drafted`, `tier2-pending`, `skipped`, `done`. `last_posted_at` must be copied verbatim from `fetch_topics.py --topic <id> --json` (never typed from memory; the milliseconds matter), because an exact match is how follow-ups are detected. `question` holds the pending AskUserQuestion text for `tier2-pending`. `reply` holds the draft. Keep older keys when updating an entry.
+`status` is one of `pr-open`, `merged` (the PR is on `main`, the reply not yet posted, deploy possibly pending), `reply-drafted`, `tier2-pending`, `skipped`, `done`. `last_posted_at` must be copied verbatim from `fetch_topics.py --topic <id> --json` (never typed from memory; the milliseconds matter), because an exact match is how follow-ups are detected. `question` holds the pending AskUserQuestion text for `tier2-pending`. `reply` holds the draft. Keep older keys when updating an entry.
 
 At the end of the run (or after each topic when the run is long), commit the state file on main, not pushed:
 
@@ -308,6 +308,7 @@ The final message is what Sam reads when he comes back. For each topic handled t
 
   The same linked label goes at the top of the PR body's "Forum reply draft" section and into any email or message draft that refers to a topic.
 - Anything left for him: merge and deploy target (`make deploy`, `make celery`, or both), a `make worktree-close` reminder, a pending question.
+- Any reply whose claim depends on a step Sam still has to run after merging (a deploy, a migration, a data script such as the remaining CBC merges), named next to that reply, so he posts it after the step and not before.
 
 Then a one-line tally: handled, PRs opened, replies drafted, pending questions, skipped. Nothing else.
 

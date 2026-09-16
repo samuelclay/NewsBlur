@@ -124,6 +124,12 @@ If a check fails:
 
 Known NewsBlur failure mode: `test_*_records_no_error` style tests in `Test_ScrapingBeeProxy` fail on the GitHub runner when a test feed's hostname cannot be resolved, because `FetchFeed.fetch` records a 401 before the path under test. The fix is `@patch("utils.feed_fetcher.validate_public_url")` on the test.
 
+Local gate before every push that touches `apps/rss_feeds/models.py`, `apps/reader/models.py`, or `utils/feed_fetcher.py`: the full `apps` suite, not just the touched module, since those files reach every app. Run it in the foreground (a run started with `run_in_background` is killed under host memory pressure; a foreground run that outlives its window is moved to the background and survives). Never run two test invocations against the same worktree at once: they collide on the test database and the second stalls on `DROP DATABASE`. Stop the worktree stack (`make worktree-stop`) while waiting on CI and start it again for the next round.
+
+The Django CI job aborts the test step at 7 minutes (`timeout --signal=ABRT 420`). The suite takes 3 to 4 minutes on a normal runner and the faulthandler dump shows where it was; if the abort hit the suite still progressing normally, the runner was slow: rerun once before looking for a cause.
+
+The Claude review check (`claude-review`) currently fails on every PR before any model output (`is_error:true`, one turn, zero cost: its API call is rejected). The action also skips itself on any PR that changes its own workflow file, so a workflow fix only shows on the next PR after it merges. Report it, do not chase it, and do not treat it as a blocker when Sam says the rest is green.
+
 ### 5.5 Promote the draft, same run
 
 As soon as every required check on the current head is green:
@@ -144,7 +150,7 @@ gh pr checks --json name,workflow,bucket,state,link
 
 `Claude PR Review` and `Codex PR Review` are the automated review tasks. While either has `bucket: pending`, wait for it the way section 5 waits (their recent durations come from `gh run list --workflow=claude-pr-review.yml` and `codex-pr-review.yml`; Codex normally takes 3 to 9 minutes). When neither is pending for the current head, the review wait is over: query the threads once more and handle what they posted.
 
-Review threads, not flat PR comments, are the source of truth. Paginate past 100 if needed.
+Review threads, not flat PR comments, are the source of truth. New threads are appended, so query the tail (`last: 100`); with `first: 100` a PR that reaches its hundred-and-first thread hides every new one, which happened on #2133 at exactly 100.
 
 ```bash
 PR=$(gh pr view --json number -q .number)
@@ -152,11 +158,12 @@ gh api graphql -F owner=samuelclay -F repo=NewsBlur -F number="$PR" -f query='
 query($owner: String!, $repo: String!, $number: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $number) {
-      reviewThreads(first: 100) {
+      reviewThreads(last: 100) {
+        totalCount
         nodes {
           id
           isResolved
-          comments(first: 20) { nodes { author { login } body path line url } }
+          comments(first: 20) { nodes { databaseId author { login } body path line url } }
         }
       }
     }
@@ -172,9 +179,10 @@ For each actionable thread:
 2. Fix it locally with the smallest reasonable change, or decide it is wrong or stale.
 3. Re-run the pre-flight plus any test tied to the comment.
 4. Commit the fix as a new focused commit. Batch the fixes for all open threads into as few commits as make sense, then push once.
-5. Reply only when it helps the reviewer, then resolve the thread:
+5. Reply with what changed and which test covers it (the reviewer's next round reads it), then resolve the thread. The reply goes into the thread through the REST endpoint with the first comment's `databaseId`; `gh api` takes no `-R` flag:
 
 ```bash
+gh api repos/samuelclay/NewsBlur/pulls/$PR/comments -F in_reply_to="$COMMENT_DATABASE_ID" -f body="Fixed in <sha>. ..."
 gh api graphql -f id="$THREAD_ID" -f query='
 mutation($id: ID!) { resolveReviewThread(input: { threadId: $id }) { thread { id isResolved } } }'
 ```
@@ -183,7 +191,18 @@ Resolve without a code change only when the comment is wrong, stale, or already 
 
 After any follow-up push, repeat the review-task check for the new head, wait only while a review task is pending, then `gh pr checks --watch` again.
 
+**Round cap.** Three review rounds per PR. If the fourth round opens new threads, stop and ask Sam with AskUserQuestion, with the size of the PR next to the size of its first commit, whether to continue, split the PR, or merge with the new findings as follow-up issues. Ask sooner when a round's findings are all second-order races in code this PR itself introduced (a bug fix that has grown locks, leases, queues, or a new store is a subsystem, which is a product decision, not a review thread). Codex at medium thinking (its setting since #2136) keeps finding a real but ever finer edge on a growing surface; #2133 ran seventeen rounds and 102 threads before Sam called it, and the loop was not converging. When Sam closes the loop, say so in the PR body's review section so the next reader knows further findings are follow-ups.
+
 **Final verification, mandatory, immediately before ending the turn:** re-run the thread query and `gh pr checks` against the current head and confirm the Goal holds. If not, keep working or report the blocker explicitly.
+
+## When Sam says merge
+
+Only when Sam says so in that session; the skill never merges on its own. The repo uses merge commits, not squashes.
+
+1. Order: workflow and bot PRs first, then the rest oldest first. Check whether Sam already merged one (`gh pr view N --json state,mergedBy`); a commit pushed to a branch after its PR merged is not on `main` and needs its own PR.
+2. `gh pr merge N --merge`. When GitHub answers that the merge commit cannot be created, bring the branch up to date in its worktree with `git merge origin/main` (a merge, not a rebase: the branch has been reviewed as it is), resolve, run the touched app's suite (the full `apps` suite when models or the fetcher changed), push, then merge.
+3. Two PRs that both inserted test classes at the same spot conflict in the test file only, with git interleaving the classes: keep our side of every hunk, re-insert `main`'s new top-level classes whole, and check the merged file's class set is the union of both parents and that a class edited on both sides ends up as `main`'s superset.
+4. After the last merge: stop the worktree stacks, and tell Sam what is merged but not deployed and which post-deploy steps (migrations, data scripts) the forum replies assume.
 
 ## Generic default body (when the caller supplies none)
 
