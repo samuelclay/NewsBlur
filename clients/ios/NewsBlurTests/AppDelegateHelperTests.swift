@@ -116,6 +116,38 @@ final class AppDelegateHelperTests: XCTestCase {
         XCTAssertEqual(toolbar.items?.filter { $0 === add }.count, 1)
         XCTAssertEqual(toolbar.items?.filter { $0 === settings }.count, 1)
         XCTAssertEqual(toolbar.items?.filter { $0.customView === intelligence }.count, 1)
+        // AppDelegateHelperTests.swift keeps the primary feed actions outside overflow and edge-aligned.
+        XCTAssertTrue(toolbar.items?.first === add, "Add must be the leading toolbar item")
+        XCTAssertTrue(toolbar.items?.last === settings, "Settings must be the trailing toolbar item")
+    }
+
+    func test_feedFilterFitsNarrowToolbarAndRestoresLabelsAfterResize() {
+        let controller = FeedsViewController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let toolbar = UIToolbar()
+        let intelligence = UISegmentedControl(items: ["All", "", "", ""])
+        controller.feedViewToolbar = toolbar
+        controller.intelligenceControl = intelligence
+        controller.addBarButton = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
+        controller.settingsBarButton = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
+
+        // AppDelegateHelperTests.swift covers ClayPad's sidebar, ClayPhone, and a wider phone in both directions.
+        for width: CGFloat in [288, 359, 374, 288] {
+            toolbar.frame = CGRect(x: 0, y: 0, width: width, height: 48)
+            controller.layout(for: .portrait)
+            let segmentWidth = (0..<4).reduce(CGFloat.zero) { $0 + intelligence.widthForSegment(at: $1) }
+            if #available(iOS 27.0, *) {
+                XCTAssertLessThanOrEqual(segmentWidth, width - 144 + 0.01)
+                XCTAssertEqual(segmentWidth, width >= 374 ? 230 : min(165, width - 144), accuracy: 0.01)
+            } else {
+                XCTAssertEqual(segmentWidth, width < 352 ? 165 : 230, accuracy: 0.01)
+            }
+            XCTAssertEqual(intelligence.numberOfSegments, 4)
+            for index in 0..<4 {
+                XCTAssertGreaterThanOrEqual(intelligence.widthForSegment(at: index), 34)
+            }
+        }
     }
 
     func test_fadeSelectionAfterSelectedFolderIsRemoved() {

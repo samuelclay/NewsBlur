@@ -22,6 +22,31 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
+    func test_feedToolbarKeepsPrimaryControlsVisibleAndOrdered() {
+        launch(on: "reader")
+        let toolbar = app.toolbars["feed-list-toolbar"]
+        let addButton = app.buttons["feed-list-add"]
+        let settings = app.buttons["feed-list-settings"]
+        let filter = app.segmentedControls["feed-list-intelligence"]
+        XCTAssertTrue(filter.waitForExistence(timeout: 10))
+        let feedsList = app.tables["feeds-list"].firstMatch
+        XCTAssertEqual(toolbar.frame.minX - feedsList.frame.minX, 8, accuracy: 1)
+        XCTAssertEqual(feedsList.frame.maxX - toolbar.frame.maxX, 8, accuracy: 1)
+        XCTAssertTrue(addButton.isHittable)
+        XCTAssertTrue(settings.isHittable)
+        XCTAssertEqual(filter.buttons.count, 4)
+        for button in filter.buttons.allElementsBoundByIndex {
+            XCTAssertTrue(button.isHittable, "Every intelligence filter must remain directly available")
+        }
+        XCTAssertLessThanOrEqual(addButton.frame.maxX, filter.frame.minX)
+        XCTAssertLessThanOrEqual(filter.frame.maxX, settings.frame.minX)
+        XCTAssertLessThan(addButton.frame.minX - toolbar.frame.minX, 30)
+        XCTAssertLessThan(toolbar.frame.maxX - settings.frame.maxX, 30)
+        attachScreenshot(named: "feed-toolbar-primary-controls")
+        addButton.tap()
+        XCTAssertTrue(app.textFields["add-site-url-field"].waitForExistence(timeout: 5))
+    }
+
     func test_readerScenarioWaitsForDelayedFeedFixture() {
         app.launchArguments = ["-newsblur-ui-test-feed-delay", "3"]
         launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
