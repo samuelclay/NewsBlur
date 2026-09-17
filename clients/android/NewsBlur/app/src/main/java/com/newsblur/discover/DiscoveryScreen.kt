@@ -24,6 +24,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -54,11 +56,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -113,7 +117,15 @@ fun DiscoveryScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 DiscoveryTab.entries.forEach { tab ->
+                    val tabVisibility = remember { BringIntoViewRequester() }
+                    LaunchedEffect(state.tab) {
+                        if (state.tab == tab) {
+                            withFrameNanos { }
+                            tabVisibility.bringIntoView()
+                        }
+                    }
                     FilterChip(
+                        modifier = Modifier.bringIntoViewRequester(tabVisibility),
                         selected = state.tab == tab,
                         onClick = { model.selectTab(tab) },
                         label = { Text(tab.title) },
