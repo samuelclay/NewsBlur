@@ -66,7 +66,7 @@ final class DetailViewControllerTests: XCTestCase {
         XCTAssertTrue(navigation.topViewController === discovery)
     }
 
-    func test_discoverySurvivesExpansionAndCompactReaderRestoration() {
+    func test_discoverySurvivesExpansionAndCompactReaderRestoration() throws {
         for includesDiscovery in [false, true] {
             let app = NewsBlurAppDelegate()
             let stories = StoriesCollection()
@@ -79,18 +79,30 @@ final class DetailViewControllerTests: XCTestCase {
             let feeds = FeedsViewController()
             let discovery = DiscoveryTransitionTestController()
             discovery.initialTab = .reddit
-            let reader = FeedDetailViewController()
+            let reader = try XCTUnwrap(
+                UIStoryboard(name: "MainInterface", bundle: nil)
+                    .instantiateViewController(withIdentifier: "FeedDetailViewController") as? FeedDetailViewController
+            )
             reader.appDelegate = app
+            reader.storiesCollection = stories
             detail.feedDetailViewController = reader
             let navigation = UINavigationController()
             app.feedsNavigationController = navigation
             app.feedsViewController = feeds
             let prefix: [UIViewController] = includesDiscovery ? [feeds, discovery] : [feeds]
+            navigation.setViewControllers([feeds], animated: false)
+            if includesDiscovery {
+                // LoginViewControllerTests.swift uses the same retained discovery ownership as the Try action.
+                detail.showDiscoverSites(discovery)
+                detail.beginDiscoverPreview()
+            }
             navigation.setViewControllers(prefix + [reader], animated: false)
 
             detail.expandToTwoColumns()
 
-            XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), prefix.map(ObjectIdentifier.init))
+            XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), [ObjectIdentifier(feeds)])
+            XCTAssertEqual(detail.canReturnToDiscoverSites, includesDiscovery)
+            XCTAssertFalse(detail.isDiscoverSitesVisible)
             detail.collapseToSingleColumn()
             detail.restoreCompactNavigationAfterSplitCollapse(showFeed: true, showStory: false)
             XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), (prefix + [reader]).map(ObjectIdentifier.init))
