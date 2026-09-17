@@ -570,6 +570,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         updateStorySearchPillState();
         if (requestFocus) {
             binding.itemlistSearchQuery.requestFocus();
+            if (storyToolbarAtBottom) binding.itemlistSearchQuery.post(() -> {
+                InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                keyboard.showSoftInput(binding.itemlistSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+            });
         }
     }
 
@@ -579,6 +583,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         binding.itemlistSearchContainer.setVisibility(View.GONE);
         binding.itemlistSearchQuery.clearFocus();
+        if (storyToolbarAtBottom) {
+            InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.hideSoftInputFromWindow(binding.itemlistSearchQuery.getWindowToken(), 0);
+        }
         updateStorySearchLoadingIndicator();
         updateStorySearchPillState();
         runStorySearchNow();

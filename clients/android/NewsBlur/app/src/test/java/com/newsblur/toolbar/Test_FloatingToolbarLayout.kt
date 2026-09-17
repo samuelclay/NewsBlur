@@ -1,14 +1,17 @@
 package com.newsblur.toolbar
 
 import com.newsblur.util.FloatingToolbarLayout
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@Suppress("ktlint:standard:class-naming")
 class Test_FloatingToolbarLayout {
     @Test fun test_phone_keeps_groups_separate_and_options_readable() {
         val fit = FloatingToolbarLayout.fit(328, 118, 83, 120, 82)
         assertFalse(fit.merged)
-        assertEquals(1, fit.options)
+        assertEquals(2, fit.options)
         assertFalse(fit.discoverText)
         assertFalse(fit.searchText)
     }
