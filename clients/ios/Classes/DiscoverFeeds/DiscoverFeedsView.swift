@@ -44,6 +44,7 @@ struct DiscoverFeedsView: View {
             Text("Related sites")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
+                .lineLimit(1)
 
             Spacer()
 
@@ -58,9 +59,20 @@ struct DiscoverFeedsView: View {
             }
             .pickerStyle(.segmented)
             .frame(width: 100)
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(DiscoverColors.textPrimary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Close Related Sites")
+            .hoverEffect(.highlight)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 6)
         .background(DiscoverColors.cardBackground)
     }
 

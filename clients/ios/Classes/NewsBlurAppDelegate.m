@@ -1669,23 +1669,52 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 }
 
-- (void)openDiscoverFeedsDialog:(NSString *)feedId {
-    if (@available(iOS 15.0, *)) {
-        UINavigationController *navController = self.feedsNavigationController;
-        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
-        UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
+- (void)presentDiscoverFeedsController:(DiscoverFeedsViewController *)discoverVC sourceView:(UIView *)sourceView API_AVAILABLE(ios(15.0)) {
+    UINavigationController *presenter = self.navigationControllerForPopover;
+    CGSize presenterSize = presenter.view.bounds.size;
+    BOOL phoneLandscape = self.isPhone && presenterSize.width > presenterSize.height;
 
-        discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
-        discoverNavController.navigationBarHidden = YES;
-
-        UISheetPresentationController *sheet = discoverNavController.sheetPresentationController;
-        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        sheet.preferredCornerRadius = 12.0;
-
-        [navController presentViewController:discoverNavController animated:YES completion:nil];
+    if (!self.isPhone || phoneLandscape) {
+        StoryTitlesHeaderBar *header = self.feedDetailViewController.storyTitlesHeaderBar;
+        UIView *anchorView = sourceView;
+        CGRect anchorRect = sourceView.bounds;
+        UIPopoverArrowDirection arrows = UIPopoverArrowDirectionAny;
+        if (sourceView.window && [sourceView isDescendantOfView:header.headerContainer]) {
+            // NewsBlurAppDelegate.m anchors Related Sites outside the glass so the footer stays available for dismissal.
+            anchorView = header.headerContainer;
+            CGRect buttonRect = [sourceView convertRect:sourceView.bounds toView:anchorView];
+            CGFloat anchorY = header.usesFloatingBottomBar
+                ? [header popoverSourceRectFor:anchorView].origin.y
+                : CGRectGetMaxY(buttonRect) + 8;
+            anchorRect = CGRectMake(CGRectGetMinX(buttonRect), anchorY, CGRectGetWidth(buttonRect), 1);
+            arrows = header.usesFloatingBottomBar ? UIPopoverArrowDirectionDown : UIPopoverArrowDirectionUp;
+        } else if (!sourceView.window) {
+            anchorView = presenter.view;
+            anchorRect = CGRectMake(CGRectGetMidX(anchorView.bounds), CGRectGetMaxY(anchorView.bounds) - 16, 1, 1);
+        }
+        [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:anchorView sourceRect:anchorRect permittedArrowDirections:arrows];
+        return;
     }
+
+    UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
+    discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
+    discoverNavController.navigationBarHidden = YES;
+    discoverNavController.preferredContentSize = CGSizeMake(500, 550);
+
+    UISheetPresentationController *sheet = discoverNavController.sheetPresentationController;
+    sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+    sheet.prefersGrabberVisible = YES;
+    sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+    sheet.preferredCornerRadius = 12.0;
+    // NewsBlurAppDelegate.m keeps an already-open portrait sheet dismissible when the phone rotates.
+    sheet.prefersEdgeAttachedInCompactHeight = YES;
+    sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+
+    [presenter presentViewController:discoverNavController animated:YES completion:nil];
+}
+
+- (void)openDiscoverFeedsDialog:(NSString *)feedId {
+    [self openDiscoverFeedsDialogFromSettingsButton:feedId];
 }
 
 - (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
@@ -1694,13 +1723,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView {
     if (@available(iOS 15.0, *)) {
-        if (!self.isPhone) {
-            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
-
-            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
-        } else {
-            [self openDiscoverFeedsDialog:feedId];
-        }
+        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
+        [self presentDiscoverFeedsController:discoverVC sourceView:sourceView];
     }
 }
 
@@ -1714,34 +1738,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         for (id feedId in feedIds) {
             [feedIdStrings addObject:[NSString stringWithFormat:@"%@", feedId]];
         }
-
-        if (!self.isPhone) {
-            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
-
-            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
-        } else {
-            [self openDiscoverFeedsDialogWithFeedIds:feedIdStrings];
-        }
+        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
+        [self presentDiscoverFeedsController:discoverVC sourceView:sourceView];
     }
 }
 
 - (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds {
-    if (@available(iOS 15.0, *)) {
-        UINavigationController *navController = self.feedsNavigationController;
-        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIds];
-        UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
-
-        discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
-        discoverNavController.navigationBarHidden = YES;
-
-        UISheetPresentationController *sheet = discoverNavController.sheetPresentationController;
-        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        sheet.preferredCornerRadius = 12.0;
-
-        [navController presentViewController:discoverNavController animated:YES completion:nil];
-    }
+    [self openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:feedIds];
 }
 
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress {

@@ -40,6 +40,7 @@ import SwiftUI
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.accessibilityIdentifier = "related-sites-dialog"
         updateBackgroundColor()
 
         let viewModel: DiscoverFeedsViewModel
@@ -55,7 +56,8 @@ import SwiftUI
         let discoverView = DiscoverFeedsView(
             viewModel: viewModel,
             onDismiss: { [weak self] in
-                self?.dismiss(animated: true)
+                guard let self = self else { return }
+                self.dismiss(animated: true, completion: self.onDismiss)
             },
             onTryFeed: { [weak self] feed in
                 self?.handleTryFeed(feed)
