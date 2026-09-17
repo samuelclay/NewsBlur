@@ -339,4 +339,17 @@ class Test_Discovery {
         assertFalse(model.state.value.web.loading)
         assertTrue(model.state.value.web.error!!.contains("timed out"))
     }
+
+    @Test fun test_news_category_and_language_survive_tab_switch_and_recreation() = runTest {
+        val saved = SavedStateHandle()
+        val model = model(saved)
+        model.news(query = "Astronomy", category = "Science", language = "fr")
+        model.selectTab(DiscoveryTab.WEB)
+        model.selectTab(DiscoveryTab.GOOGLE)
+        assertEquals("Science", model.state.value.newsCategory)
+        val restored = model(saved)
+        assertEquals("Astronomy", restored.state.value.newsQuery)
+        assertEquals("Science", restored.state.value.newsCategory)
+        assertEquals("fr", restored.state.value.language)
+    }
 }
