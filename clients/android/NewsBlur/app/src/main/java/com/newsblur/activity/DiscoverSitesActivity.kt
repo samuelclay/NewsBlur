@@ -25,38 +25,60 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DiscoverSitesActivity : NbActivity() {
     private val model: DiscoveryViewModel by viewModels()
-    @Inject @IconLoader lateinit var iconLoader: ImageLoader
+
+    @Inject @IconLoader
+    lateinit var iconLoader: ImageLoader
+
     @Inject lateinit var tryFeedStore: TryFeedStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model.start()
-        lifecycleScope.launch {
-            val (folders, subscribed) = withContext(Dispatchers.IO) {
-                dbHelper.folders to dbHelper.allFeeds.mapNotNull { dbHelper.getFeed(it)?.address }.toSet()
-            }
-            model.setFolders(folders, subscribed)
-        }
+        refreshSubscriptions()
         setContent {
             NewsBlurTheme(variant = prefsRepo.getSelectedTheme().toVariant(), dynamic = false) {
-                val state by model.state.collectAsStateWithLifecycle()
-                LaunchedEffect(state.revision) {
-                    if (state.revision > 0) {
-                        syncServiceState.forceFeedsFolders()
-                        FeedUtils.triggerSync(this@DiscoverSitesActivity)
-                    }
-                }
-                LaunchedEffect(state.preview) {
-                    state.preview?.let { feed ->
-                        tryFeedStore.set(feed)
-                        FeedItemsList.startTryFeedActivity(this@DiscoverSitesActivity, feed)
-                        model.previewOpened()
-                    }
-                }
-                DiscoveryScreen(state, model, prefsRepo.getResolvedTheme(this), iconLoader,
-                    onBack = { finish() },
-                    onQuickAdd = { AddFeedFragment.newInstance().show(supportFragmentManager, "add_site") })
+                DiscoveryContent()
             }
         }
+    }
+
+    override fun handleUpdate(updateType: Int) {
+        if (updateType and com.newsblur.service.NbSyncManager.UPDATE_REBUILD != 0) refreshSubscriptions()
+    }
+
+    private fun refreshSubscriptions() {
+        lifecycleScope.launch {
+            val (folders, subscribed) =
+                withContext(Dispatchers.IO) {
+                    dbHelper.folders to dbHelper.allFeeds.mapNotNull { dbHelper.getFeed(it)?.address }.toSet()
+                }
+            model.setFolders(folders, subscribed)
+        }
+    }
+
+    @androidx.compose.runtime.Composable
+    private fun DiscoveryContent() {
+        val state by model.state.collectAsStateWithLifecycle()
+        LaunchedEffect(state.revision) {
+            if (state.revision > 0) {
+                syncServiceState.forceFeedsFolders()
+                FeedUtils.triggerSync(this@DiscoverSitesActivity)
+            }
+        }
+        LaunchedEffect(state.preview) {
+            state.preview?.let { feed ->
+                tryFeedStore.set(feed)
+                FeedItemsList.startTryFeedActivity(this@DiscoverSitesActivity, feed)
+                model.previewOpened()
+            }
+        }
+        DiscoveryScreen(
+            state,
+            model,
+            prefsRepo.getResolvedTheme(this),
+            iconLoader,
+            onBack = { finish() },
+            onQuickAdd = { AddFeedFragment.newInstance().show(supportFragmentManager, "add_site") },
+        )
     }
 }
