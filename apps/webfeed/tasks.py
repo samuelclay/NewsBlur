@@ -403,10 +403,10 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
                 )
             # Store latest status in Redis for polling (iOS)
             try:
-                status_key = f"webfeed:status:{request_token}"
+                status_key = f"webfeed:status:{user_id}:{request_token}"
                 r.set(status_key, json.dumps(payload, ensure_ascii=False), ex=300)
                 if event_type == "variants" and extra and "variants" in extra:
-                    results_key = f"webfeed:results:{request_token}"
+                    results_key = f"webfeed:results:{user_id}:{request_token}"
                     r.set(results_key, json.dumps(extra, ensure_ascii=False), ex=600)
             except redis.RedisError:
                 pass
