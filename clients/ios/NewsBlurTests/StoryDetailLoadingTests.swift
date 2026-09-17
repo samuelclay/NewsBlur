@@ -1227,14 +1227,13 @@ import XCTest
         fixture.pages.cancelPendingStoryPresentation()
     }
 
-    func test_explicitNextOrSwipeCancelsStagedSelectionBeforeNormalPageNavigation() throws {
-        // StoryDetailLoadingTests.swift keeps Objective-C navigation exceptions visible to synchronous XCTest.
-        func settle() { RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02)) }
+    func test_explicitNextOrSwipeCancelsStagedSelectionBeforeNormalPageNavigation() async throws {
         for swipe in [false, true] {
             let fixture = makePresentationFixture()
             fixture.app.activeStory = fixture.stories[9] as? [AnyHashable: Any]
             fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 2, "animated": true])
-            settle()
+            // StoryDetailLoadingTests.swift yields for StoryDetailObjCViewController.m's queued HTML load.
+            await drainMainQueue()
             let selected = try XCTUnwrap(fixture.pages.nextPage as? StoryLoadPage)
             let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
             let stale = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
@@ -1253,9 +1252,9 @@ import XCTest
             XCTAssertNil(fixture.pages.value(forKey: "pendingPresentationCompletion"))
             XCTAssertNil(fixture.pages.value(forKey: "storyPreparationHost"))
             XCTAssertTrue(selected.view.superview === fixture.pages.scrollView)
-            settle()
+            await drainMainQueue()
             sendReady(to: selected, token: stale, mainFrame: true)
-            settle()
+            await drainMainQueue()
             XCTAssertEqual(fixture.app.presentations, 0)
         }
     }
@@ -2134,6 +2133,14 @@ import XCTest
         try await checkStalledStoryRendering(restoresPosition: false)
     }
 
+    func test_imageWithoutSourceDoesNotBlockStoryPresentation() async throws {
+        try await checkStalledStoryRendering(restoresPosition: false, includesSourcelessImage: true)
+    }
+
+    func test_optionalVideoSetupFailureDoesNotBlockStoryPresentation() async throws {
+        try await checkStalledStoryRendering(restoresPosition: false, failsVideoSetup: true)
+    }
+
     func test_DOMReadyRestoresSavedPositionAfterNativeWebKitLayout() async throws {
         try await checkStalledStoryRendering(restoresPosition: true)
     }
@@ -2147,17 +2154,20 @@ import XCTest
     }
 
     private func checkStalledStoryRendering(restoresPosition: Bool, repeatsStory: Bool = false,
-                                           preparesOffWindow: Bool = false) async throws {
+                                           preparesOffWindow: Bool = false, includesSourcelessImage: Bool = false,
+                                           failsVideoSetup: Bool = false) async throws {
         let resource = try HeldHTTPStoryResource()
         for _ in 0..<60 where resource.port == nil { await delay(0.05) }
         let imageURL = try XCTUnwrap(resource.imageURL)
         let configuration = WKWebViewConfiguration()
         let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: configuration)
+        web.failsVideoSetup = failsVideoSetup
         let page = makePage(web: web)
         page.allowsAppearanceCallbacks = false
         if restoresPosition { page.appDelegate.setValue(ImmediateStoryScrollQueue(), forKey: "database") }
         page.shareHTML = "<img src='\(imageURL)' width='30' height='30'>"
-        page.activeStory = story("first", body: String(repeating: "<p>Readable article paragraph.</p>", count: 150))
+        let missingImage = includesSourcelessImage ? "<img id='missing-source' alt='Image without a source'>" : ""
+        page.activeStory = story("first", body: missingImage + String(repeating: "<p>Readable article paragraph.</p>", count: 150))
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
         let window = UIWindow(windowScene: scene)
@@ -2222,6 +2232,14 @@ import XCTest
         XCTAssertFalse(web.isHidden)
         let body = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Readable article paragraph") == true)
+        if includesSourcelessImage {
+            let imageClass = try await web.evaluateJavaScript("document.querySelector('#missing-source').className") as? String
+            XCTAssertEqual(imageClass, "NB-small-image")
+        }
+        if failsVideoSetup {
+            let attemptedVideoSetup = try await web.evaluateJavaScript("window.nbTestVideoSetupFailed === true") as? Bool
+            XCTAssertEqual(attemptedVideoSetup, true)
+        }
         XCTAssertEqual(page.finishedNavigations, 0)
         let layout = try await web.evaluateJavaScript("JSON.stringify({ready:document.readyState,body:document.body.scrollHeight,viewport:window.innerHeight,fonts:document.fonts.status,fontReady:window.nbTestFontReady,frames:window.nbTestFrames,paint:performance.getEntriesByType('paint'),font:getComputedStyle(document.querySelector('#NB-story')).fontFamily,story:document.querySelector('#NB-story').getBoundingClientRect().height,images:Array.from(document.images).map(i=>[i.src,i.complete,i.naturalWidth])})")
         print("STORY_HELD_RESOURCE_LAYOUT native=\(web.scrollView.contentSize) frame=\(web.frame) inWindow=\(web.window != nil) scene=\(window.windowScene?.activationState.rawValue ?? -1) dom=\(layout)")
@@ -2786,13 +2804,17 @@ private final class StoryScrollCursor: NSObject {
 
 @MainActor private final class RealStoryLoadWebView: WKWebView {
     var fontPreparationCalls = 0
+    var failsVideoSetup = false
     var restorationFrameObserver: ((CGSize) -> Void)?
     var selectionLoadObserver: ((String) -> Void)?
 
     override func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation? {
         // StoryDetailLoadingTests.swift retains the production HTTPS document origin for real WebKit checks.
         selectionLoadObserver?(string)
-        return super.loadHTMLString(string, baseURL: baseURL ?? URL(string: "https://newsblur.com/"))
+        // StoryDetailLoadingTests.swift injects a failing dependency before storyDetailView.js sets up media.
+        let html = failsVideoSetup ? string.replacingOccurrences(of: "var loadImages = function() {", with:
+            "$.fn.fitVids = function() { window.nbTestVideoSetupFailed = true; throw new Error('Video fixture failure'); }; var loadImages = function() {") : string
+        return super.loadHTMLString(html, baseURL: baseURL ?? URL(string: "https://newsblur.com/"))
     }
 
     override func __callAsyncJavaScript(_ functionBody: String, arguments: [String: Any]?, inFrame frame: WKFrameInfo?, in contentWorld: WKContentWorld, completionHandler: ((Any?, Error?) -> Void)? = nil) {
