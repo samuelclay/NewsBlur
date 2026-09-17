@@ -40,6 +40,73 @@ class Test_Discovery {
 
     private fun result(url: String) = json("""{"feeds":[{"feed_url":"$url","title":"Test"}]}""")
 
+    @Test fun test_story_preview_retains_rich_content_instead_of_only_title() {
+        val feed = DiscoveryFeed.parse(json("""{
+            "feed_url":"https://example.com/rss",
+            "stories":[{
+                "story_title":"A story headline",
+                "story_authors":"Ada",
+                "story_timestamp":"1789444800",
+                "story_content":"<p>A useful preview.</p>",
+                "image_urls":["http://example.com/photo.jpg"],
+                "secure_image_thumbnails":{"http://example.com/photo.jpg":"https://imageproxy.newsblur.com/thumbnail"}
+            }]
+        }"""))!!
+        // Test_Discovery.kt: discovery must retain the API fields required by styled story rows.
+        val story = feed.stories.single()
+        assertEquals("A story headline", story.title)
+        assertEquals("Ada", story.authors)
+        assertEquals(1789444800L, story.timestamp)
+        assertEquals("A useful preview.", story.excerpt)
+        assertEquals("https://imageproxy.newsblur.com/thumbnail", story.imageUrl)
+    }
+
+    @Test fun test_story_without_image_or_metadata_has_no_placeholder_values() {
+        val story = DiscoveryStory.parse(json("""{"title":"Australia&#8217;s news","story_timestamp":"invalid","image_urls":null}"""))!!
+        assertEquals("Australia&#8217;s news", story.title)
+        assertEquals("", story.imageUrl)
+        assertEquals("", story.authors)
+        assertEquals("", story.excerpt)
+        assertNull(story.timestamp)
+        assertNull(DiscoveryStory.parse(json("""{"story_content":"An untitled empty item"}""")))
+    }
+
+    @Test fun test_story_excerpt_removes_markup_and_hidden_content() {
+        val story = DiscoveryStory.parse(json("""{
+            "title":"Example",
+            "story_content":"<style>body {color:red}</style><script>alert('no')</script><p>First <b>paragraph</b>.</p><p>Second &amp; third.</p>"
+        }"""))!!
+        assertEquals("First paragraph. Second &amp; third.", story.excerpt)
+        assertEquals("", story.imageUrl)
+    }
+
+    @Test fun test_story_thumbnail_falls_back_to_secure_image_then_original() {
+        val secure = DiscoveryStory.parse(json("""{
+            "title":"Example","image_urls":[null,"", "http://example.com/photo.jpg"],
+            "secure_image_urls":{"http://example.com/photo.jpg":"https://proxy.example.com/photo"}
+        }"""))!!
+        assertEquals("https://proxy.example.com/photo", secure.imageUrl)
+        val original = DiscoveryStory.parse(json("""{"title":"Example","image_urls":["//example.com/photo.jpg"]}"""))!!
+        assertEquals("https://example.com/photo.jpg", original.imageUrl)
+    }
+
+    @Test fun test_story_content_image_is_used_when_image_list_is_missing() {
+        val story = DiscoveryStory.parse(json("""{
+            "title":"Example","story_content":"<p>Preview</p><img src='https://example.com/photo.jpg'>"
+        }"""))!!
+        assertEquals("https://example.com/photo.jpg", story.imageUrl)
+        assertEquals("Preview", story.excerpt)
+        val invalid = DiscoveryStory.parse(json("""{"title":"Example","image_urls":["javascript:alert(1)",{}]}"""))!!
+        assertEquals("", invalid.imageUrl)
+        val relative = DiscoveryStory.parse(json("""{"title":"Example","story_content":"<img src='/photo.jpg'>"}"""))!!
+        assertEquals("", relative.imageUrl)
+    }
+
+    @Test fun test_story_date_falls_back_to_api_utc_date() {
+        val story = DiscoveryStory.parse(json("""{"title":"Example","story_date":"2026-09-15 04:00:00"}"""))!!
+        assertEquals(java.time.Instant.parse("2026-09-15T04:00:00Z").epochSecond, story.timestamp)
+    }
+
     @Test fun test_catalog_id_is_not_a_feed_id() {
         val feed = DiscoveryFeed.parse(json("""{"id":912,"feed_url":"https://example.com/rss","title":"Example"}"""))!!
         assertEquals("", feed.id)
@@ -54,7 +121,7 @@ class Test_Discovery {
                 ),
             )!!
         assertEquals("42", feed.id)
-        assertEquals(listOf("Hello"), feed.stories)
+        assertEquals(listOf("Hello"), feed.stories.map { it.title })
         val source =
             DiscoveryFeed.parse(
                 json(

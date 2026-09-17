@@ -1,6 +1,7 @@
 package com.newsblur.discover
 
 import android.widget.ImageView
+import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -79,6 +80,7 @@ import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.util.AppConstants
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.UIUtils
 
 @Composable
 fun DiscoveryScreen(
@@ -86,6 +88,7 @@ fun DiscoveryScreen(
     model: DiscoveryViewModel,
     theme: ThemeValue,
     loader: ImageLoader,
+    thumbnailLoader: ImageLoader,
     onBack: () -> Unit,
     onQuickAdd: () -> Unit,
 ) {
@@ -239,6 +242,7 @@ fun DiscoveryScreen(
                                     state.grid,
                                     colors,
                                     loader,
+                                    thumbnailLoader,
                                     { model.add(feed) },
                                     { model.preview(feed) },
                                 )
@@ -280,6 +284,7 @@ private fun DiscoveryCard(
     grid: Boolean,
     colors: ReaderSheetPalette.Colors,
     loader: ImageLoader,
+    thumbnailLoader: ImageLoader,
     onAdd: () -> Unit,
     onPreview: () -> Unit,
 ) {
@@ -339,8 +344,9 @@ private fun DiscoveryCard(
             )
         }
         if (!grid) {
-            feed.stories.take(3).forEach {
-                Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            feed.stories.take(3).forEach { story ->
+                HorizontalDivider(color = colors.border)
+                DiscoveryStoryRow(story, colors, thumbnailLoader)
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -352,6 +358,73 @@ private fun DiscoveryCard(
             ) {
                 Text(if (added) "Added" else "Add")
             }
+        }
+    }
+}
+
+@Composable
+private fun DiscoveryStoryRow(
+    story: DiscoveryStory,
+    colors: ReaderSheetPalette.Colors,
+    thumbnailLoader: ImageLoader,
+) {
+    val title = remember(story.title) { UIUtils.fromHtml(story.title).toString().trim() }
+    val authors = remember(story.authors) { UIUtils.fromHtml(story.authors).toString().trim() }
+    val excerpt = remember(story.excerpt) { UIUtils.fromHtml(story.excerpt).toString().trim() }
+    val date = story.timestamp?.let {
+        DateUtils.getRelativeTimeSpanString(it * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
+    }
+    val secondaryText = colors.textPrimary.copy(alpha = 0.85f)
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                title,
+                color = colors.textPrimary,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (authors.isNotBlank() || date != null) {
+                Text(
+                    listOfNotNull(authors.takeIf(String::isNotBlank), date).joinToString(" · "),
+                    color = secondaryText,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            if (excerpt.isNotBlank()) {
+                Text(
+                    excerpt,
+                    color = secondaryText,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+        if (story.imageUrl.isNotBlank()) {
+            AndroidView(
+                modifier = Modifier.size(76.dp).clip(RoundedCornerShape(8.dp)),
+                factory = { context ->
+                    ImageView(context).apply {
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                        importantForAccessibility = android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                    }
+                },
+                update = { view ->
+                    if (view.tag != story.imageUrl) {
+                        view.tag = story.imageUrl
+                        view.setImageDrawable(null)
+                        thumbnailLoader.displayImage(story.imageUrl, view, UIUtils.dp2px(view.context, 76), false)
+                    }
+                },
+            )
         }
     }
 }
