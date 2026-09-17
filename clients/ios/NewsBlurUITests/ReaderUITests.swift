@@ -36,6 +36,45 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_relatedSitesCanBeClosedInLandscape() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Fixture discovery test runs only on the simulator")
+        #else
+        launch(on: "reader-feed-swift")
+        defer { XCUIDevice.shared.orientation = .portrait }
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let button = app.buttons["Related Sites"].firstMatch
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
+        button.tap()
+        XCTAssertTrue(app.staticTexts["Related sites"].firstMatch.waitForExistence(timeout: 5))
+        attachScreenshot(named: "related-sites-landscape")
+        let close = app.buttons["Close Related Sites"].firstMatch
+        XCTAssertTrue(close.waitForExistence(timeout: 3), "Landscape must offer an explicit dismissal control")
+        let dialog = app.otherElements["related-sites-dialog"].firstMatch
+        XCTAssertTrue(dialog.exists)
+        XCTAssertLessThan(dialog.frame.width, app.frame.width - 100)
+        close.tap()
+        XCTAssertTrue(button.waitForExistence(timeout: 5))
+        XCTAssertFalse(close.exists)
+        button.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: 0.45)).tap()
+        XCTAssertFalse(close.exists, "Tapping outside the popover must dismiss it")
+        XCUIDevice.shared.orientation = .portrait
+        button.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let rotatedSheetReady = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            app.frame.width > app.frame.height && close.isHittable
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [rotatedSheetReady], timeout: 10), .completed,
+                       "An already-open portrait sheet must remain dismissible after rotation")
+        attachScreenshot(named: "related-sites-portrait-sheet-rotated")
+        close.tap()
+        XCTAssertFalse(close.exists)
+        #endif
+    }
+
     func test_landscapeHeadersUseCompactHeight() throws {
         XCUIDevice.shared.orientation = .portrait
         defer { XCUIDevice.shared.orientation = .portrait }
