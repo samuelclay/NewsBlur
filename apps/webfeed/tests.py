@@ -853,3 +853,52 @@ class Test_WebFeedProxySkips(TestCase):
         fetcher.config.record_failure.assert_not_called()
         mock_capped.assert_called_once_with("webfeed", url=self.URL)
         self.assertIn("daily proxy credit cap", fetcher.skip_reason)
+
+
+class Test_WebFeedStatus(TestCase):
+    """apps/webfeed/views.py must preserve the worker payload for the iOS poller."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("webfeed_poll_tester")
+        self.client.force_login(self.user)
+        self.request_id = "12345678-1234-1234-1234-123456789012"
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_complete_includes_preview_patterns_and_page_title(self, redis_client):
+        variants = {
+            "page_title": "Example Stories",
+            "html_hash": "page-hash",
+            "variants": [
+                {
+                    "story_container": "//article",
+                    "title": ".//h2/text()",
+                    "preview_stories": [{"title": "First story", "link": "https://example.com/story"}],
+                }
+            ],
+        }
+        redis_client.return_value.get.side_effect = [json.encode({"type": "complete"}), json.encode(variants)]
+        response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        data = json.decode(response.content)
+        self.assertEqual(data["code"], 1)
+        self.assertEqual(data["variants_data"], variants)
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_pending_and_worker_error_are_distinct(self, redis_client):
+        redis_client.return_value.get.return_value = None
+        pending = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(pending.content)["status"], "unknown")
+        redis_client.return_value.get.return_value = json.encode(
+            {"type": "error", "error": "No stories found"}
+        )
+        failed = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(failed.content)["error"], "No stories found")
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_invalid_identifier_does_not_query_redis(self, redis_client):
+        response = self.client.get("/webfeed/status", {"request_id": "not a request id"})
+        self.assertEqual(json.decode(response.content)["status"], "invalid")
+        redis_client.assert_not_called()
+
+    def test_requires_authentication(self):
+        self.client.logout()
+        self.assertEqual(self.client.get("/webfeed/status", {"request_id": self.request_id}).status_code, 403)
