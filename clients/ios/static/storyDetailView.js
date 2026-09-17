@@ -1,3 +1,16 @@
+// StoryDetailObjCViewController.m must receive readiness even if optional media or touch setup fails.
+function notifyStoryDOMReady() {
+    if (!window.sampleText) {
+        notifyLoaded();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', notifyStoryDOMReady, { once: true });
+} else {
+    setTimeout(notifyStoryDOMReady, 0);
+}
+
 var loadImages = function() {
     
     $('.NB-story img, .NB-story video').each(function () {
@@ -92,7 +105,7 @@ function setImage(img) {
 //    console.log("img load", img.src, width, height, img.naturalWidth, img.naturalHeight);
     if ($img.prop('tagName') == 'VIDEO') {
         $img.attr('class', 'NB-large-image');
-    } else if ($img.attr('src').indexOf('feedburner') != - 1) {
+    } else if (($img.attr('src') || '').indexOf('feedburner') != - 1) {
         $img.attr('class', 'NB-feedburner');
     } else if (width >= 300 && height >= 50) {
         $img.attr('class', 'NB-large-image');
@@ -330,7 +343,4 @@ fitVideos();
 
 Zepto(function($) {
       attachFastClick();
-      if (!window.sampleText) {
-        notifyLoaded();
-      }
 });
