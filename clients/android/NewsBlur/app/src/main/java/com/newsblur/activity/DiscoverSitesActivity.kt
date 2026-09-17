@@ -13,6 +13,8 @@ import com.newsblur.di.IconLoader
 import com.newsblur.discover.DiscoveryScreen
 import com.newsblur.discover.DiscoveryViewModel
 import com.newsblur.fragment.AddFeedFragment
+import com.newsblur.service.NbSyncManager.UPDATE_METADATA
+import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.TryFeedStore
@@ -43,7 +45,8 @@ class DiscoverSitesActivity : NbActivity() {
     }
 
     override fun handleUpdate(updateType: Int) {
-        if (updateType and com.newsblur.service.NbSyncManager.UPDATE_REBUILD != 0) refreshSubscriptions()
+        // DiscoverSitesActivity.kt: SyncService publishes new folders through UPDATE_METADATA.
+        if (updateType and (UPDATE_METADATA or UPDATE_REBUILD) != 0) refreshSubscriptions()
     }
 
     private fun refreshSubscriptions() {
