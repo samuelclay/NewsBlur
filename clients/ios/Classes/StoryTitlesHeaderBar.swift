@@ -8,6 +8,16 @@
 
 import UIKit
 
+// StoryTitlesHeaderBar.swift keeps UIKit configuration updates from making toolbar labels multiline.
+private class StoryTitlesPillButton: UIButton {
+    override func layoutSubviews() {
+        titleLabel?.numberOfLines = 1
+        titleLabel?.lineBreakMode = .byClipping
+        super.layoutSubviews()
+        titleLabel?.numberOfLines = 1
+    }
+}
+
 /// Container view that notifies its owner when bounds change so pills can adapt.
 class HeaderContainerView: UIView {
     var onBoundsChange: (() -> Void)?
@@ -29,7 +39,70 @@ class StoryTitlesHeaderBar: NSObject {
     /// The outer container added to the parent view. Pin content views below this.
     let headerContainer = HeaderContainerView()
 
+    // StoryTitlesHeaderBar.swift defaults to the bottom on iPhone and iPad.
+    private(set) var usesFloatingBottomBar = StoryTitlesHeaderBar.prefersBottomBar
+    private static var prefersBottomBar: Bool {
+        #if targetEnvironment(macCatalyst)
+        return false
+        #else
+        let defaultPosition = "bottom"
+        return (UserDefaults.standard.string(forKey: "story_toolbar_position") ?? defaultPosition) == "bottom"
+        #endif
+    }
+
+    private let contentTopGuide = UILayoutGuide()
+    private let contentBottomGuide = UILayoutGuide()
+    var contentTopAnchor: NSLayoutYAxisAnchor { contentTopGuide.topAnchor }
+    var contentBottomAnchor: NSLayoutYAxisAnchor { contentBottomGuide.topAnchor }
+    private var positionConstraints: [NSLayoutConstraint] = []
+    private var pillLayoutConstraints: [NSLayoutConstraint] = []
+    let leadingToolbarGroup = UIVisualEffectView()
+    let trailingToolbarGroup = UIVisualEffectView()
+    let mergedToolbarGroup = UIVisualEffectView()
+    private(set) var usesMergedToolbar = false
+    private var groupPaddingConstraints: [NSLayoutConstraint] = []
+    private var minimumPillWidths: [NSLayoutConstraint] = []
+
+    @objc private func toolbarPreferenceChanged() {
+        guard Self.prefersBottomBar != usesFloatingBottomBar,
+              let parent = headerContainer.superview else { return }
+        usesFloatingBottomBar = Self.prefersBottomBar
+        refreshGlassMaterial()
+        measureOptionsWidths()
+        NSLayoutConstraint.deactivate(positionConstraints + pillLayoutConstraints)
+        buildLayout(in: headerContainer)
+        configurePosition(in: parent)
+        for view in [discoverPill, optionsPill, searchPill, markReadContainer] {
+            view.constraints.first { $0.firstAttribute == .height && $0.secondItem == nil }?.constant = usesFloatingBottomBar ? 44 : 28
+        }
+        minimumPillWidths.forEach { $0.constant = usesFloatingBottomBar ? 44 : 0 }
+        setSearchActive(isSearchActive)
+        updateTheme()
+        parent.setNeedsLayout()
+        parent.layoutIfNeeded()
+        relayoutPills()
+    }
+
+    private func configurePosition(in parent: UIView) {
+        positionConstraints = [
+            usesFloatingBottomBar
+                ? headerContainer.bottomAnchor.constraint(equalTo: parent.keyboardLayoutGuide.topAnchor, constant: -8)
+                : headerContainer.topAnchor.constraint(equalTo: parent.topAnchor),
+            contentTopGuide.topAnchor.constraint(equalTo: usesFloatingBottomBar ? parent.topAnchor : headerContainer.bottomAnchor),
+            contentBottomGuide.topAnchor.constraint(equalTo: usesFloatingBottomBar ? headerContainer.topAnchor : parent.safeAreaLayoutGuide.bottomAnchor)
+        ]
+        NSLayoutConstraint.activate(positionConstraints)
+    }
+
+    // StoryTitlesHeaderBar.swift anchors popovers above the capsule with room to dismiss from the bar.
+    func popoverSourceRect(for source: UIView) -> CGRect {
+        guard usesFloatingBottomBar else { return source.bounds }
+        let top = pillBar.convert(CGPoint(x: 0, y: 4), to: source).y
+        return CGRect(x: 0, y: top - 8, width: source.bounds.width, height: 1)
+    }
+
     let pillBar = UIView()
+
     let discoverPill = StoryTitlesHeaderBar.makePillButton()
     let optionsPill = StoryTitlesHeaderBar.makePillButton()
     let searchPill = StoryTitlesHeaderBar.makePillButton()
@@ -46,15 +119,18 @@ class StoryTitlesHeaderBar: NSObject {
     /// overrides sizing and colors. On iOS, `.system` works well with Configuration.
     private static func makePillButton() -> UIButton {
         #if targetEnvironment(macCatalyst)
-        return UIButton(type: .custom)
+        return StoryTitlesPillButton(type: .custom)
         #else
-        return UIButton(type: .system)
+        let button = StoryTitlesPillButton(type: .system)
+        button.isPointerInteractionEnabled = true
+        return button
         #endif
     }
 
     // MARK: - Private Views
 
     private let pillStack = UIStackView()
+    private let leadingControls = UIStackView()
     private let spacer = UIView()
     private let markReadDivider = UIView()
     private var faviconViews: [UIImageView] = []
@@ -69,7 +145,10 @@ class StoryTitlesHeaderBar: NSObject {
     private var fullOptionsWidth: CGFloat = 0
     private var compactOptionsWidth: CGFloat = 0
     private let markReadWidth: CGFloat = 98
+    private var markReadMenuTitle = "all stories"
+    private var markReadMenuVisibleCount = 0
     private var appliedDiscoverLayout: String?
+    private lazy var optionsIconWidth = measuredPillWidth(title: nil, image: sym("chevron.down", size: 8, weight: .bold), leadingInset: 12, trailingInset: 12)
     private lazy var relatedIconWidth = measuredPillWidth(title: nil, image: discoverImage, leadingInset: 14, trailingInset: 14)
     private lazy var relatedTextWidth = measuredPillWidth(title: "RELATED SITES", image: discoverImage, leadingInset: 14, trailingInset: 12)
     private lazy var briefingTextWidth = measuredPillWidth(title: "BRIEFING SETTINGS", image: dailyBriefingPillImage(), leadingInset: 14, trailingInset: 12)
@@ -134,7 +213,8 @@ class StoryTitlesHeaderBar: NSObject {
         fullOptionsWidth = measuredPillWidth(title: "\(filterText) · \(orderText)", image: image,
                                              trailingImage: true, leadingInset: 16, trailingInset: 14)
         compactOptionsWidth = measuredPillWidth(title: filterText, image: image,
-                                                trailingImage: true, leadingInset: 16, trailingInset: 14)
+                                                trailingImage: true, leadingInset: usesFloatingBottomBar ? 10 : 16,
+                                                trailingInset: usesFloatingBottomBar ? 8 : 14)
     }
 
     private func dailyBriefingPillImage() -> UIImage? {
@@ -156,6 +236,36 @@ class StoryTitlesHeaderBar: NSObject {
 
     // MARK: - Platform-Adaptive Pill API
 
+    private var usesNativeGlass: Bool {
+        #if targetEnvironment(macCatalyst)
+        return false
+        #else
+        if #available(iOS 26.0, *) { return usesFloatingBottomBar }
+        return false
+        #endif
+    }
+
+    // StoryTitlesHeaderBar.swift changes material only when the toolbar's layout mode changes, never while stories paginate.
+    private func refreshGlassMaterial() {
+        #if !targetEnvironment(macCatalyst)
+        for group in [leadingToolbarGroup, trailingToolbarGroup, mergedToolbarGroup] {
+            let effect: UIVisualEffect
+            if #available(iOS 26.0, *) {
+                let interactiveGlass = UIGlassEffect(style: .regular)
+                interactiveGlass.isInteractive = true
+                effect = interactiveGlass
+            } else {
+                effect = UIBlurEffect(style: .systemChromeMaterial)
+            }
+            let isActiveSurface = group === mergedToolbarGroup ? usesMergedToolbar : !usesMergedToolbar
+            group.effect = usesFloatingBottomBar && isActiveSurface ? effect : nil
+            group.layer.cornerRadius = usesFloatingBottomBar ? 22 : 0
+        }
+        groupPaddingConstraints.forEach { $0.constant = usesFloatingBottomBar ? 4 : 0 }
+        pillStack.spacing = usesFloatingBottomBar ? 4 : 6
+        #endif
+    }
+
     /// Sets pill button content. On iOS uses UIButton.Configuration; on Catalyst uses
     /// the legacy button API since Configuration ignores contentInsets, imagePlacement,
     /// and contentHorizontalAlignment on Catalyst.
@@ -166,7 +276,7 @@ class StoryTitlesHeaderBar: NSObject {
                                 imagePadding: CGFloat = 4,
                                 leadingInset: CGFloat,
                                 trailingInset: CGFloat,
-                                lineBreakMode: NSLineBreakMode = .byWordWrapping) {
+                                lineBreakMode: NSLineBreakMode = .byClipping) {
         #if targetEnvironment(macCatalyst)
         button.configuration = nil
         button.setTitle(title, for: .normal)
@@ -189,13 +299,11 @@ class StoryTitlesHeaderBar: NSObject {
             button.titleEdgeInsets = .zero
         }
         #else
-        var config = UIButton.Configuration.plain()
+        var config = button.configuration ?? UIButton.Configuration.plain()
         config.title = title
         config.image = image
         config.imagePlacement = trailingImage ? .trailing : .leading
-        if image != nil && title != nil {
-            config.imagePadding = imagePadding
-        }
+        config.imagePadding = image != nil && title != nil ? imagePadding : 0
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: leadingInset, bottom: 0, trailing: trailingInset)
         if title != nil {
             config.titleTextAttributesTransformer = pillFontTransformer()
@@ -207,15 +315,16 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Updates pill foreground/background colors for the current platform.
     private func setPillColors(_ button: UIButton, bg: UIColor?, tint: UIColor?) {
-        button.backgroundColor = bg
-        button.tintColor = tint
+        if button.backgroundColor != bg { button.backgroundColor = bg }
+        if button.tintColor != tint { button.tintColor = tint }
         #if targetEnvironment(macCatalyst)
         button.setTitleColor(tint, for: .normal)
         #else
         if var config = button.configuration {
-            if let bg = bg {
-                config.background.backgroundColor = bg
-            }
+            let configurationBackground = pillStateBackground(button, normal: bg)
+            let backgroundChanged = config.background.backgroundColor != configurationBackground
+            guard backgroundChanged || config.baseForegroundColor != tint else { return }
+            config.background.backgroundColor = configurationBackground
             config.baseForegroundColor = tint
             button.configuration = config
         }
@@ -227,9 +336,14 @@ class StoryTitlesHeaderBar: NSObject {
     /// Builds the pill bar and adds it as a fixed view at the top of the parent view.
     /// Returns the headerContainer's bottomAnchor for pinning content views below.
     func setup(in parentView: UIView) {
+        if #available(iOS 17.0, *) {
+            parentView.keyboardLayoutGuide.usesBottomSafeArea = false
+        }
         headerContainer.translatesAutoresizingMaskIntoConstraints = false
-        headerContainer.clipsToBounds = true
+        headerContainer.clipsToBounds = false
         parentView.addSubview(headerContainer)
+        parentView.addLayoutGuide(contentTopGuide)
+        parentView.addLayoutGuide(contentBottomGuide)
 
         headerContainer.onBoundsChange = { [weak self] in
             self?.relayoutPills()
@@ -240,15 +354,17 @@ class StoryTitlesHeaderBar: NSObject {
         buildLayout(in: headerContainer)
         updateTheme()
 
-        let heightConstraint = headerContainer.heightAnchor.constraint(equalToConstant: 36)
+        let heightConstraint = headerContainer.heightAnchor.constraint(equalToConstant: usesFloatingBottomBar ? 52 : 36)
         headerHeightConstraint = heightConstraint
 
         NSLayoutConstraint.activate([
-            headerContainer.topAnchor.constraint(equalTo: parentView.topAnchor),
             headerContainer.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
             headerContainer.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
             heightConstraint,
         ])
+        configurePosition(in: parentView)
+        NotificationCenter.default.addObserver(self, selector: #selector(toolbarPreferenceChanged),
+            name: UserDefaults.didChangeNotification, object: nil)
     }
 
     // MARK: - Build Pills
@@ -262,7 +378,20 @@ class StoryTitlesHeaderBar: NSObject {
         pillStack.alignment = .center
         pillStack.distribution = .fill
         pillStack.translatesAutoresizingMaskIntoConstraints = false
-        pillBar.addSubview(pillStack)
+        mergedToolbarGroup.translatesAutoresizingMaskIntoConstraints = false
+        pillBar.addSubview(mergedToolbarGroup)
+        mergedToolbarGroup.contentView.addSubview(pillStack)
+        NSLayoutConstraint.activate([
+            mergedToolbarGroup.topAnchor.constraint(equalTo: pillBar.topAnchor, constant: 4),
+            mergedToolbarGroup.bottomAnchor.constraint(equalTo: pillBar.bottomAnchor, constant: -4)
+        ])
+        leadingControls.axis = .horizontal
+        leadingControls.spacing = 6
+        leadingControls.alignment = .center
+        leadingControls.translatesAutoresizingMaskIntoConstraints = false
+        leadingControls.setContentHuggingPriority(.required, for: .horizontal)
+        leadingToolbarGroup.contentView.addSubview(leadingControls)
+        pillStack.addArrangedSubview(leadingToolbarGroup)
 
         buildDiscoverPill()
         buildOptionsPill()
@@ -274,16 +403,39 @@ class StoryTitlesHeaderBar: NSObject {
         pillStack.addArrangedSubview(spacer)
 
         buildMarkReadPill()
+        trailingToolbarGroup.contentView.addSubview(markReadContainer)
+        pillStack.addArrangedSubview(trailingToolbarGroup)
+        // StoryTitlesHeaderBar.swift gives each side its own glass surface, leaving stories visible between them.
+        for (group, controls) in [(leadingToolbarGroup, leadingControls as UIView), (trailingToolbarGroup, markReadContainer)] {
+            group.translatesAutoresizingMaskIntoConstraints = false
+            group.setContentHuggingPriority(.required, for: .horizontal)
+            group.setContentCompressionResistancePriority(.required, for: .horizontal)
+            groupPaddingConstraints += [
+                controls.leadingAnchor.constraint(equalTo: group.contentView.leadingAnchor),
+                group.contentView.trailingAnchor.constraint(equalTo: controls.trailingAnchor)
+            ]
+            NSLayoutConstraint.activate([
+                controls.topAnchor.constraint(equalTo: group.contentView.topAnchor),
+                controls.bottomAnchor.constraint(equalTo: group.contentView.bottomAnchor)
+            ])
+        }
+        NSLayoutConstraint.activate(groupPaddingConstraints)
+        refreshGlassMaterial()
     }
 
     private func configurePillAppearance(_ button: UIButton) {
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.cornerRadius = 14
+        button.layer.cornerRadius = usesFloatingBottomBar ? 22 : 14
         button.layer.cornerCurve = .continuous
         button.layer.borderWidth = 1.0 / UIScreen.main.scale
-        button.clipsToBounds = true
+        button.clipsToBounds = !usesNativeGlass
         button.titleLabel?.numberOfLines = 1
         button.titleLabel?.lineBreakMode = .byClipping
+        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        // StoryTitlesHeaderBar.swift keeps icon-only controls directly tappable inside each glass group.
+        let minimumWidth = button.widthAnchor.constraint(greaterThanOrEqualToConstant: usesFloatingBottomBar ? 44 : 0)
+        minimumWidth.isActive = true
+        minimumPillWidths.append(minimumWidth)
         addCatalystHighlight(button)
     }
 
@@ -293,7 +445,23 @@ class StoryTitlesHeaderBar: NSObject {
         #if targetEnvironment(macCatalyst)
         button.addTarget(self, action: #selector(pillTouchDown(_:)), for: .touchDown)
         button.addTarget(self, action: #selector(pillTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        #else
+        // StoryTitlesHeaderBar.swift gives each pressed action a visible highlight within the shared glass surface.
+        button.configurationUpdateHandler = { [weak self] button in
+            guard let self, var configuration = button.configuration else { return }
+            let background = self.pillStateBackground(button, normal: button.backgroundColor)
+            guard configuration.background.backgroundColor != background else { return }
+            configuration.background.backgroundColor = background
+            button.configuration = configuration
+        }
         #endif
+    }
+
+    private func pillStateBackground(_ button: UIButton, normal: UIColor?) -> UIColor? {
+        if usesFloatingBottomBar, button.isEnabled, button.isHighlighted {
+            return toolbarForegroundColor?.withAlphaComponent(0.16)
+        }
+        return normal ?? .clear
     }
 
     @objc private func pillTouchDown(_ sender: UIButton) {
@@ -311,10 +479,10 @@ class StoryTitlesHeaderBar: NSObject {
         configurePillAppearance(discoverPill)
         discoverPill.accessibilityLabel = "Related Sites"
         discoverPill.setContentCompressionResistancePriority(.required, for: .horizontal)
-        pillStack.addArrangedSubview(discoverPill)
+        leadingControls.addArrangedSubview(discoverPill)
 
         NSLayoutConstraint.activate([
-            discoverPill.heightAnchor.constraint(equalToConstant: 28)
+            discoverPill.heightAnchor.constraint(equalToConstant: usesFloatingBottomBar ? 44 : 28)
         ])
     }
 
@@ -325,10 +493,10 @@ class StoryTitlesHeaderBar: NSObject {
         configurePillAppearance(optionsPill)
         measureOptionsWidths()
         optionsPill.setContentCompressionResistancePriority(.required, for: .horizontal)
-        pillStack.addArrangedSubview(optionsPill)
+        leadingControls.addArrangedSubview(optionsPill)
 
         NSLayoutConstraint.activate([
-            optionsPill.heightAnchor.constraint(equalToConstant: 28)
+            optionsPill.heightAnchor.constraint(equalToConstant: usesFloatingBottomBar ? 44 : 28)
         ])
     }
 
@@ -337,11 +505,12 @@ class StoryTitlesHeaderBar: NSObject {
                        image: sym("magnifyingglass", size: 11),
                        leadingInset: 14, trailingInset: 14)
         configurePillAppearance(searchPill)
+        searchPill.accessibilityLabel = "Search stories"
         searchPill.setContentCompressionResistancePriority(.required, for: .horizontal)
-        pillStack.addArrangedSubview(searchPill)
+        leadingControls.addArrangedSubview(searchPill)
 
         NSLayoutConstraint.activate([
-            searchPill.heightAnchor.constraint(equalToConstant: 28)
+            searchPill.heightAnchor.constraint(equalToConstant: usesFloatingBottomBar ? 44 : 28)
         ])
     }
 
@@ -354,14 +523,18 @@ class StoryTitlesHeaderBar: NSObject {
         markReadContainer.clipsToBounds = true
         markReadContainer.setContentCompressionResistancePriority(.required, for: .horizontal)
         markReadContainer.setContentHuggingPriority(.required, for: .horizontal)
-        pillStack.addArrangedSubview(markReadContainer)
 
         // Expand button ("+" on left) — tap shows day menu
         setPillContent(markReadExpandButton, title: nil,
                        image: sym("plus", size: 9, weight: .bold),
                        leadingInset: 12, trailingInset: 6)
         markReadExpandButton.translatesAutoresizingMaskIntoConstraints = false
+        #if targetEnvironment(macCatalyst)
         markReadExpandButton.showsMenuAsPrimaryAction = true
+        #else
+        markReadExpandButton.addTarget(self, action: #selector(handleMarkReadExpand), for: .touchUpInside)
+        #endif
+        markReadExpandButton.accessibilityLabel = "Mark Read options"
         addCatalystHighlight(markReadExpandButton)
         markReadContainer.addSubview(markReadExpandButton)
 
@@ -372,10 +545,13 @@ class StoryTitlesHeaderBar: NSObject {
         // Main button (mark-read icon on right) — tap marks all read
         let markReadImage = UIImage(named: "mark-read").map { resizedImage($0, to: CGSize(width: 22, height: 22)) }
         setPillContent(markReadPill, title: nil, image: markReadImage,
-                       leadingInset: 12, trailingInset: 14)
+                       leadingInset: 15, trailingInset: 15)
         markReadPill.translatesAutoresizingMaskIntoConstraints = false
         addCatalystHighlight(markReadPill)
-        // Menu without showsMenuAsPrimaryAction = long press shows menu
+        markReadPill.accessibilityLabel = "Mark all read and return"
+        #if !targetEnvironment(macCatalyst)
+        markReadPill.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleMarkReadLongPress(_:))))
+        #endif
         markReadContainer.addSubview(markReadPill)
 
         // Tap on main button fires markReadTapHandler
@@ -385,7 +561,7 @@ class StoryTitlesHeaderBar: NSObject {
         widthConstraint.priority = UILayoutPriority(999) // StoryTitlesHeaderBar.swift allows UIStackView to hide this compound control.
         markReadWidthConstraint = widthConstraint
         NSLayoutConstraint.activate([
-            markReadContainer.heightAnchor.constraint(equalToConstant: 28),
+            markReadContainer.heightAnchor.constraint(equalToConstant: usesFloatingBottomBar ? 44 : 28),
             widthConstraint,
 
             markReadExpandButton.leadingAnchor.constraint(equalTo: markReadContainer.leadingAnchor),
@@ -411,6 +587,49 @@ class StoryTitlesHeaderBar: NSObject {
         markReadTapHandler?()
     }
 
+    @objc private func handleMarkReadExpand() {
+        presentMarkReadMenu(from: markReadExpandButton)
+    }
+
+    @objc private func handleMarkReadLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        presentMarkReadMenu(from: markReadPill)
+    }
+
+    private func presentMarkReadMenu(from button: UIButton) {
+        guard button.isEnabled else { return }
+        var responder: UIResponder? = headerContainer
+        while let current = responder, !(current is UIViewController) { responder = current.next }
+        guard let owner = responder as? UIViewController,
+              let navigation = owner.navigationController ?? owner as? UINavigationController,
+              navigation.presentedViewController == nil else { return }
+
+        let menu = MenuViewController()
+        // StoryTitlesHeaderBar.swift uses MenuViewController's sized icons because its cells center images at intrinsic size.
+        menu.addFeedListTitle("Mark \(markReadMenuTitle) as read", iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
+            self?.markReadHandler?(0)
+        }
+        if markReadMenuVisibleCount > 0 {
+            let title = markReadMenuVisibleCount == 1 ? "Mark this story as read" : "Mark these \(markReadMenuVisibleCount) stories read"
+            menu.addFeedListTitle(title, iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
+                self?.markReadVisibleHandler?()
+            }
+        }
+        for days in [1, 3, 7, 14] {
+            menu.addFeedListTitle("Older than \(days) \(days == 1 ? "day" : "days")", iconName: "clock", selectionShouldDismiss: true) { [weak self] in
+                self?.markReadHandler?(days)
+            }
+        }
+
+        // StoryTitlesHeaderBar.swift anchors outside the interactive glass so a menu never morphs the entire footer.
+        let buttonRect = button.convert(button.bounds, to: headerContainer)
+        let sourceRect = usesFloatingBottomBar
+            ? CGRect(x: buttonRect.minX, y: popoverSourceRect(for: headerContainer).minY, width: buttonRect.width, height: 1)
+            : buttonRect
+        menu.show(from: navigation, barButtonItem: nil, sourceView: headerContainer,
+                  sourceRect: sourceRect, permittedArrowDirections: usesFloatingBottomBar ? .down : .up)
+    }
+
     // MARK: - Search Container
 
     private func buildSearchContainer(in container: UIView) {
@@ -428,11 +647,12 @@ class StoryTitlesHeaderBar: NSObject {
         searchCancelButton.configuration = cancelConfig
         #endif
         searchCancelButton.translatesAutoresizingMaskIntoConstraints = false
+        searchCancelButton.accessibilityLabel = "Close search"
         addCatalystHighlight(searchCancelButton)
         searchContainer.addSubview(searchCancelButton)
 
         NSLayoutConstraint.activate([
-            searchCancelButton.trailingAnchor.constraint(equalTo: searchContainer.trailingAnchor, constant: -4),
+            searchCancelButton.trailingAnchor.constraint(equalTo: searchContainer.trailingAnchor, constant: -8),
             searchCancelButton.centerYAnchor.constraint(equalTo: searchContainer.centerYAnchor),
             searchCancelButton.widthAnchor.constraint(equalToConstant: 32),
             searchCancelButton.heightAnchor.constraint(equalToConstant: 32),
@@ -447,21 +667,26 @@ class StoryTitlesHeaderBar: NSObject {
         NSLayoutConstraint.activate([
             field.leadingAnchor.constraint(equalTo: searchContainer.leadingAnchor, constant: 8),
             field.trailingAnchor.constraint(equalTo: searchCancelButton.leadingAnchor, constant: -4),
-            field.topAnchor.constraint(equalTo: searchContainer.topAnchor, constant: 2),
-            field.bottomAnchor.constraint(equalTo: searchContainer.bottomAnchor, constant: -6),
+            field.topAnchor.constraint(equalTo: searchContainer.topAnchor, constant: 4),
+            field.bottomAnchor.constraint(equalTo: searchContainer.bottomAnchor, constant: -4),
         ])
     }
 
     // MARK: - Layout
 
     private func buildLayout(in container: UIView) {
-        let pillEdgeInset: CGFloat = 8
+        let pillEdgeInset: CGFloat = usesFloatingBottomBar ? 16 : 8
+        let searchEdgeInset: CGFloat = usesFloatingBottomBar ? 16 : 0
 
-        NSLayoutConstraint.activate([
-            pillBar.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            pillBar.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            pillBar.topAnchor.constraint(equalTo: container.topAnchor),
-            pillBar.heightAnchor.constraint(equalToConstant: 36),
+        pillLayoutConstraints = [
+            mergedToolbarGroup.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: searchEdgeInset),
+            mergedToolbarGroup.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -searchEdgeInset),
+            pillBar.leadingAnchor.constraint(equalTo: container.safeAreaLayoutGuide.leadingAnchor),
+            pillBar.trailingAnchor.constraint(equalTo: container.safeAreaLayoutGuide.trailingAnchor),
+            usesFloatingBottomBar
+                ? pillBar.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+                : pillBar.topAnchor.constraint(equalTo: container.topAnchor),
+            pillBar.heightAnchor.constraint(equalToConstant: usesFloatingBottomBar ? 52 : 36),
 
             pillStack.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: pillEdgeInset),
             pillStack.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -pillEdgeInset),
@@ -470,39 +695,51 @@ class StoryTitlesHeaderBar: NSObject {
 
             spacer.widthAnchor.constraint(greaterThanOrEqualToConstant: 0),
 
-            searchContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            searchContainer.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            searchContainer.topAnchor.constraint(equalTo: pillBar.bottomAnchor),
+            searchContainer.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: searchEdgeInset),
+            searchContainer.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -searchEdgeInset),
+            usesFloatingBottomBar
+                ? searchContainer.bottomAnchor.constraint(equalTo: pillBar.topAnchor)
+                : searchContainer.topAnchor.constraint(equalTo: pillBar.bottomAnchor),
             searchContainer.heightAnchor.constraint(equalToConstant: 36),
-        ])
+        ]
+        NSLayoutConstraint.activate(pillLayoutConstraints)
     }
 
     // MARK: - Theme
 
     func updateTheme() {
         guard let tm = ThemeManager.shared else { return }
+        headerContainer.overrideUserInterfaceStyle = usesFloatingBottomBar ? (tm.isDarkTheme ? .dark : .light) : .unspecified
 
         let barBg = tm.color(fromLightRGB: 0xE3E6E0, sepiaRGB: 0xF3E2CB, mediumRGB: 0x333333, darkRGB: 0x222222)
-        pillBar.backgroundColor = barBg
-        searchContainer.backgroundColor = barBg
+        searchContainer.layer.cornerRadius = usesFloatingBottomBar ? 18 : 0
+        markReadContainer.layer.borderWidth = usesFloatingBottomBar ? 0 : 1 / UIScreen.main.scale
+        markReadContainer.layer.cornerRadius = usesFloatingBottomBar ? 22 : 14
+        markReadContainer.clipsToBounds = !usesNativeGlass
+        for button in [discoverPill, optionsPill, searchPill] {
+            button.layer.cornerRadius = usesFloatingBottomBar ? 22 : 14
+            button.layer.borderWidth = usesFloatingBottomBar ? 0 : 1 / UIScreen.main.scale
+            button.clipsToBounds = !usesNativeGlass
+        }
+        pillBar.backgroundColor = usesFloatingBottomBar ? .clear : barBg
+        searchContainer.backgroundColor = usesFloatingBottomBar ? barBg?.withAlphaComponent(0.95) : barBg
 
         let pillBg = tm.color(fromLightRGB: 0xE3E6E0, sepiaRGB: 0xEADFD0, mediumRGB: 0x444444, darkRGB: 0x2A2A2A)
         let borderColor = tm.color(fromLightRGB: 0xCED0CC, sepiaRGB: 0xD4C8B8, mediumRGB: 0x555555, darkRGB: 0x3A3A3A)
-        let tint = tm.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
+        let tint = toolbarForegroundColor
 
-        for pill in [discoverPill, optionsPill, searchPill] {
+        // StoryTitlesHeaderBar.swift applies the final style once so page refreshes cannot flash opaque pills over glass.
+        let inactivePillBg: UIColor? = usesFloatingBottomBar ? .clear : pillBg
+        for pill in [discoverPill, optionsPill] {
             pill.layer.borderColor = borderColor?.cgColor
-            setPillColors(pill, bg: pillBg, tint: tint)
+            setPillColors(pill, bg: inactivePillBg, tint: tint)
         }
 
-        // Restore search pill highlight if search is active
-        if isSearchActive {
-            applySearchPillColors(active: true)
-            searchPill.layer.borderColor = searchPillBorderColor(active: true)
-        }
+        applySearchPillColors(active: isSearchActive)
+        searchPill.layer.borderColor = searchPillBorderColor(active: isSearchActive)
 
         // Mark read compound pill
-        markReadContainer.backgroundColor = pillBg
+        markReadContainer.backgroundColor = inactivePillBg
         markReadContainer.layer.borderColor = borderColor?.cgColor
         markReadDivider.backgroundColor = borderColor
 
@@ -511,7 +748,7 @@ class StoryTitlesHeaderBar: NSObject {
             #if targetEnvironment(macCatalyst)
             // No configuration on Catalyst
             #else
-            if var config = btn.configuration {
+            if var config = btn.configuration, config.baseForegroundColor != tint {
                 config.baseForegroundColor = tint
                 btn.configuration = config
             }
@@ -561,17 +798,25 @@ class StoryTitlesHeaderBar: NSObject {
         relayoutPills()
     }
 
-    private func applyOptionsTitle(compact: Bool) {
+    private func applyOptionsTitle(compact: Bool, iconOnly: Bool = false) {
         let fullTitle = "\(filterText) · \(orderText)"
-        let title = compact ? filterText : fullTitle
+        let title: String? = iconOnly ? nil : (compact ? filterText : fullTitle)
+        let leadingInset: CGFloat = iconOnly ? 12 : (compact && usesFloatingBottomBar ? 10 : 16)
+        let trailingInset: CGFloat = iconOnly ? 12 : (compact && usesFloatingBottomBar ? 8 : 14)
         optionsPill.accessibilityLabel = fullTitle
         #if targetEnvironment(macCatalyst)
         if optionsPill.title(for: .normal) != title { optionsPill.setTitle(title, for: .normal) }
+        optionsPill.contentEdgeInsets = UIEdgeInsets(top: 0, left: leadingInset, bottom: 0, right: trailingInset)
         #else
-        guard var config = optionsPill.configuration, config.title != title else { return }
+        guard var config = optionsPill.configuration else { return }
+        guard config.title != title || config.contentInsets.leading != leadingInset || config.contentInsets.trailing != trailingInset || config.titleLineBreakMode != .byClipping else { return }
         config.title = title
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: leadingInset, bottom: 0, trailing: trailingInset)
+        config.imagePadding = iconOnly ? 0 : 4
         config.titleTextAttributesTransformer = pillFontTransformer()
+        config.titleLineBreakMode = .byClipping
         optionsPill.configuration = config
+        optionsPill.titleLabel?.numberOfLines = 1
         #endif
     }
 
@@ -590,22 +835,41 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Called from ObjC after layout changes (e.g. rotation) to re-check pill fit.
     func relayoutPills() {
-        let availableWidth = headerContainer.bounds.width
+        trailingToolbarGroup.isHidden = markReadContainer.isHidden
+        let barWidth = headerContainer.bounds.width - headerContainer.safeAreaInsets.left - headerContainer.safeAreaInsets.right
+        let availableWidth = barWidth - (usesFloatingBottomBar ? 32 : 0)
         guard availableWidth > 0 else { return }
+
+        // StoryTitlesHeaderBar.swift keeps separate glass groups when compact controls and a clear gap fit.
+        let leadingCount = [discoverPill, optionsPill, searchPill].filter { !$0.isHidden }.count
+        let minimumMarkReadWidth = ceil(26 + 1 / UIScreen.main.scale + 52)
+        let compactControlsWidth = (discoverPill.isHidden ? 0 : max(44, relatedIconWidth)) +
+            (optionsPill.isHidden ? 0 : max(44, optionsIconWidth)) +
+            (searchPill.isHidden ? 0 : max(44, searchIconWidth)) +
+            (markReadContainer.isHidden ? 0 : minimumMarkReadWidth)
+        let splitWidth = compactControlsWidth + CGFloat(max(0, leadingCount - 1)) * leadingControls.spacing + 16 + 16
+        let shouldMerge = usesFloatingBottomBar && availableWidth < splitWidth
+        if usesMergedToolbar != shouldMerge {
+            usesMergedToolbar = shouldMerge
+            refreshGlassMaterial()
+        }
 
         let visibleCount = [discoverPill, optionsPill, searchPill, markReadContainer].filter { !$0.isHidden }.count
         // StoryTitlesHeaderBar.swift counts only visible stack gaps, including the flexible spacer, and actual compound width.
-        let gapsAndEdges = CGFloat(visibleCount) * pillStack.spacing + 16
-        var fixedWidth = gapsAndEdges + (markReadContainer.isHidden ? 0 : markReadWidth)
-        let minimumDiscoverWidth = discoverPill.isHidden ? 0 : relatedIconWidth
-        let minimumSearchWidth = searchPill.isHidden ? 0 : searchIconWidth
-        let compactOptions = !optionsPill.isHidden &&
-            fixedWidth + minimumDiscoverWidth + minimumSearchWidth + fullOptionsWidth > availableWidth
-        applyOptionsTitle(compact: compactOptions)
-        let optionsWidth = optionsPill.isHidden ? 0 : (compactOptions ? compactOptionsWidth : fullOptionsWidth)
+        let gapsAndEdges = usesFloatingBottomBar
+            ? CGFloat(max(0, leadingCount - 1)) * leadingControls.spacing + 16 + 8
+            : CGFloat(visibleCount) * 6 + 16
+        // StoryTitlesHeaderBar.swift reserves a centered 52-point checkmark target independently of the + button.
+        var fixedWidth = gapsAndEdges + (markReadContainer.isHidden ? 0 : (usesFloatingBottomBar ? minimumMarkReadWidth : markReadWidth))
+        let minimumDiscoverWidth = discoverPill.isHidden ? 0 : max(usesFloatingBottomBar ? 44 : 0, relatedIconWidth)
+        let minimumSearchWidth = searchPill.isHidden ? 0 : max(usesFloatingBottomBar ? 44 : 0, searchIconWidth)
+        let optionsSpace = availableWidth - fixedWidth - minimumDiscoverWidth - minimumSearchWidth
+        let compactOptions = fullOptionsWidth > optionsSpace
+        let iconOnlyOptions = compactOptions && compactOptionsWidth > optionsSpace
+        applyOptionsTitle(compact: compactOptions, iconOnly: iconOnlyOptions)
+        let minimumOptionsWidth = max(usesFloatingBottomBar ? 44 : 0, optionsIconWidth)
+        let optionsWidth = optionsPill.isHidden ? 0 : (iconOnlyOptions ? minimumOptionsWidth : (compactOptions ? compactOptionsWidth : fullOptionsWidth))
         if !markReadContainer.isHidden {
-            // StoryTitlesHeaderBar.swift gives up only empty mark-read padding at narrower divider widths.
-            let minimumMarkReadWidth = 26 + 1 / UIScreen.main.scale + 40
             let remainingWidth = availableWidth - gapsAndEdges - minimumDiscoverWidth - minimumSearchWidth - optionsWidth
             let fittedMarkReadWidth = max(minimumMarkReadWidth, min(markReadWidth, remainingWidth))
             if markReadWidthConstraint?.constant != fittedMarkReadWidth { markReadWidthConstraint?.constant = fittedMarkReadWidth }
@@ -615,11 +879,10 @@ class StoryTitlesHeaderBar: NSObject {
         let discoverDisplay = UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
         let faviconWidth = CGFloat(min(storedFavicons.count, 5)) * 14 + 36
         let prefersFavicons = !isDailyBriefingMode && discoverDisplay == "with_icons" && !storedFavicons.isEmpty
-        let fullDiscoverWidth = isDailyBriefingMode ? briefingTextWidth : (prefersFavicons ? faviconWidth : relatedTextWidth)
-        let preferredDiscoverWidth = discoverPill.isHidden ? 0 : fullDiscoverWidth
-        let compactSearch = fixedWidth + optionsWidth + preferredDiscoverWidth + (searchPill.isHidden ? 0 : searchTextWidth) > availableWidth
+        // StoryTitlesHeaderBar.swift restores Search text as soon as it fits beside the compact discovery icon.
+        let compactSearch = fixedWidth + optionsWidth + minimumDiscoverWidth + (searchPill.isHidden ? 0 : searchTextWidth) > availableWidth
         layoutSearchPill(compact: compactSearch)
-        let searchWidth = searchPill.isHidden ? 0 : (compactSearch ? searchIconWidth : searchTextWidth)
+        let searchWidth = searchPill.isHidden ? 0 : (compactSearch ? minimumSearchWidth : searchTextWidth)
         let discoverSpace = availableWidth - fixedWidth - optionsWidth - searchWidth
 
         if discoverPill.isHidden {
@@ -744,6 +1007,9 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Rebuilds the mark-read UIMenu with the given collection title.
     func updateMarkReadMenuFull(title: String, showVisibleOption: Bool, visibleCount: Int) {
+        markReadMenuTitle = title
+        markReadMenuVisibleCount = showVisibleOption ? visibleCount : 0
+        #if targetEnvironment(macCatalyst)
         var actions: [UIMenuElement] = []
 
         actions.append(UIAction(title: "Mark \(title) as read", image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
@@ -766,6 +1032,7 @@ class StoryTitlesHeaderBar: NSObject {
         let menu = UIMenu(children: actions)
         markReadExpandButton.menu = menu
         markReadPill.menu = menu
+        #endif
     }
 
     /// Shows or hides the search field below the pill bar with animation.
@@ -774,7 +1041,7 @@ class StoryTitlesHeaderBar: NSObject {
         let changed = isSearchActive != active
         isSearchActive = active
 
-        let height: CGFloat = active ? 72 : 36
+        let height: CGFloat = (usesFloatingBottomBar ? 52 : 36) + (active ? 36 : 0)
 
         if active {
             searchContainer.isHidden = false
@@ -819,6 +1086,14 @@ class StoryTitlesHeaderBar: NSObject {
         }
     }
 
+    private var toolbarForegroundColor: UIColor? {
+        guard let tm = ThemeManager.shared else { return nil }
+        if usesFloatingBottomBar {
+            return tm.color(fromLightRGB: 0x30352F, sepiaRGB: 0x493C2E, mediumRGB: 0xF2F2EE, darkRGB: 0xF2F2EE)
+        }
+        return tm.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
+    }
+
     /// Applies both background and foreground colors to the search pill.
     private func applySearchPillColors(active: Bool) {
         guard let tm = ThemeManager.shared else { return }
@@ -828,8 +1103,7 @@ class StoryTitlesHeaderBar: NSObject {
             setPillColors(searchPill, bg: activeBg, tint: .white)
         } else {
             let pillBg = tm.color(fromLightRGB: 0xE3E6E0, sepiaRGB: 0xEADFD0, mediumRGB: 0x444444, darkRGB: 0x2A2A2A)
-            let tint = tm.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
-            setPillColors(searchPill, bg: pillBg, tint: tint)
+            setPillColors(searchPill, bg: usesFloatingBottomBar ? .clear : pillBg, tint: toolbarForegroundColor)
         }
     }
 

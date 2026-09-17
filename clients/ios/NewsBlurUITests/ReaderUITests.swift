@@ -9,6 +9,155 @@ final class ReaderUITests: XCTestCase {
         app = XCUIApplication()
     }
 
+    func test_splitFooterSearchAndMenusAcrossRotation() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Footer fixture runs only on the simulator")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        launch(on: "reader-feed-swift")
+        for orientation in [UIDeviceOrientation.portrait, .landscapeLeft, .portrait] {
+            XCUIDevice.shared.orientation = orientation
+            let search = app.buttons["Search stories"].firstMatch
+            XCTAssertTrue(search.waitForExistence(timeout: 10))
+            attachScreenshot(named: "split-footer-\(orientation.rawValue)")
+            search.tap()
+            XCTAssertTrue(app.textFields.firstMatch.waitForExistence(timeout: 5))
+            attachScreenshot(named: "split-footer-search-\(orientation.rawValue)")
+            let close = app.buttons["Close search"].firstMatch
+            XCTAssertTrue(close.waitForExistence(timeout: 5))
+            close.tap()
+            let options = app.buttons["Mark Read options"].firstMatch
+            options.tap()
+            attachScreenshot(named: "split-footer-mark-read-\(orientation.rawValue)")
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2)).tap()
+            XCTAssertTrue(search.isHittable)
+        }
+        #endif
+    }
+
+    func test_landscapeHeadersUseCompactHeight() throws {
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        #if targetEnvironment(simulator)
+        launch(on: "reader")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        #endif
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        attachScreenshot(named: "rotation-feed-portrait")
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let landscapeSettled = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            let bar = app.navigationBars.firstMatch.frame
+            return app.frame.width > app.frame.height && bar.width > 500 && bar.height < 80
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [landscapeSettled], timeout: 10), .completed)
+        attachScreenshot(named: "rotation-feed-landscape")
+        let feedHeader = app.navigationBars.firstMatch.frame
+        #if targetEnvironment(simulator)
+        let row = feedCell("910001")
+        #else
+        let row = feeds.cells.matching(NSPredicate(format: "label BEGINSWITH %@", "SiliconANGLE feed,")).firstMatch
+        #endif
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.tap()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        attachScreenshot(named: "rotation-stories-landscape")
+        let storyHeader = app.navigationBars.firstMatch.frame
+        XCTAssertTrue(stories.cells.firstMatch.waitForExistence(timeout: 10))
+        stories.cells.firstMatch.tap()
+        XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 15))
+        attachScreenshot(named: "rotation-reader-landscape-before-scrolling")
+        let geometry = XCTAttachment(string: "feed=\(feedHeader) stories=\(storyHeader)\n\(app.debugDescription)")
+        geometry.name = "landscape-header-geometry"
+        geometry.lifetime = .keepAlways
+        add(geometry)
+        XCTAssertLessThanOrEqual(feedHeader.maxY, 44.5)
+        XCTAssertLessThanOrEqual(storyHeader.maxY, 44.5)
+        for expectedList in [stories, feeds] {
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.45))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.45))
+            start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+            XCTAssertTrue(expectedList.waitForExistence(timeout: 5))
+            XCTAssertTrue(expectedList.isHittable)
+        }
+        attachScreenshot(named: "landscape-after-swipe-back")
+        XCUIDevice.shared.orientation = .portrait
+        let portraitSettled = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            app.frame.height > app.frame.width && app.navigationBars.firstMatch.frame.height >= 50
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [portraitSettled], timeout: 10), .completed)
+        attachScreenshot(named: "portrait-header-restored")
+    }
+
+    func test_liveAlphaLandscapeFooterAndSearch() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires NB Alpha on the physical iPhone")
+        #else
+        // ReaderUITests.swift checks rotation against the signed-in account without resetting preferences.
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        let row = feeds.cells.matching(NSPredicate(format: "label BEGINSWITH %@", "SiliconANGLE feed,")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.tap()
+        XCTAssertTrue(app.tables["story-titles-list"].firstMatch.waitForExistence(timeout: 15))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let search = app.buttons["SEARCH"].firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertGreaterThan(app.frame.width, app.frame.height)
+        attachScreenshot(named: "live-alpha-centered-landscape-footer")
+        search.tap()
+        let field = app.textFields["Search stories"].firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertLessThan(field.frame.width, app.frame.width - 100)
+        attachScreenshot(named: "live-alpha-matching-landscape-search")
+        #endif
+    }
+
+    func test_liveAlphaCompletedSwipeBackKeepsIntelligenceLabels() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires NB Alpha on the physical iPhone")
+        #else
+        // ReaderUITests.swift launches the real signed-in account without fixture or preference-reset arguments.
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-newsblur-toolbar-transition-probe"]
+        app.launch()
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20), app.debugDescription)
+        let row = feeds.cells.matching(NSPredicate(format: "label BEGINSWITH %@", "SiliconANGLE feed,")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10), app.debugDescription)
+        row.tap()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15), app.debugDescription)
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.45))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.45))
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+        let toolbar = app.toolbars["feed-list-toolbar"]
+        XCTAssertTrue(toolbar.waitForExistence(timeout: 10))
+        let trace = try XCTUnwrap(toolbar.value as? String)
+        let data = try XCTUnwrap(trace.data(using: .utf8))
+        let samples = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [[String: Double]])
+        XCTAssertFalse(samples.isEmpty, "Must observe the actual interactive transition")
+        let attachment = XCTAttachment(string: trace)
+        attachment.name = "interactive-back-toolbar-geometry"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        let viewportWidth = app.frame.width
+        for sample in samples {
+            XCTAssertEqual(sample["unread"] ?? 0, 68, accuracy: 0.5, "Labels changed during native swipe Back: \(trace)")
+            XCTAssertEqual(sample["toolbar"] ?? 0, viewportWidth, accuracy: 0.5,
+                           "Toolbar width changed during native swipe Back: \(trace)")
+        }
+        attachScreenshot(named: "live-alpha-after-interactive-back")
+        #endif
+    }
+
     func test_readerLaunchShowsFixtureFoldersAndFeeds() {
         launch(on: "reader")
 

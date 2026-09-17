@@ -313,12 +313,13 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         view.addSubview(viewController.view)
         viewController.didMove(toParent: self)
 
-        let topAnchor = storyTitlesHeaderBar?.headerContainer.bottomAnchor ?? view.topAnchor
+        let topAnchor = storyTitlesHeaderBar?.contentTopAnchor ?? view.topAnchor
         NSLayoutConstraint.activate([
             viewController.view.topAnchor.constraint(equalTo: topAnchor),
             viewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             viewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            viewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            viewController.view.bottomAnchor.constraint(equalTo:
+                storyTitlesHeaderBar?.contentBottomAnchor ?? view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -340,6 +341,11 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 
     private func correctReturnFrameIfNeeded() {
         guard let navigationController else { return }
+        // FeedDetailViewController.swift uses safe-area spacing supplied by the compact phone header.
+        if let compactNavigation = navigationController as? CompactPhoneNavigationController,
+           !compactNavigation.compactNavigationBar.isHidden {
+            return
+        }
 
         let containerBounds = view.superview?.bounds ?? navigationController.view.bounds
         let correctedFrame = FeedDetailReturnFrameDecision.correctedFrame(
