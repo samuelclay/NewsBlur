@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.newsblur.R
 import com.newsblur.databinding.StateToggleBinding
@@ -63,12 +64,30 @@ class StateToggleButton(
     ) {
         // StateToggleButton.kt measures the actual capsule space, including large text and split-screen widths.
         val labels = listOf(binding.toggleSomeText, binding.toggleFocusText, binding.toggleSavedText)
-        labels.forEach { it.visibility = View.VISIBLE }
-        binding.root.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec)
+        val naturalWidth =
+            listOf(binding.toggleAll, binding.toggleSome, binding.toggleFocus, binding.toggleSaved).sumOf { button ->
+                val contentWidth =
+                    (0 until button.childCount).sumOf { index ->
+                        val child = button.getChildAt(index)
+                        child.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec)
+                        val margins = child.layoutParams as ViewGroup.MarginLayoutParams
+                        child.measuredWidth + margins.leftMargin + margins.rightMargin
+                    }
+                val margins = button.layoutParams as ViewGroup.MarginLayoutParams
+                val buttonWidth = maxOf(button.minimumWidth, contentWidth + button.paddingLeft + button.paddingRight)
+                buttonWidth + margins.leftMargin + margins.rightMargin
+            }
         val available = MeasureSpec.getSize(widthMeasureSpec)
-        if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED && binding.root.measuredWidth > available) {
-            labels.forEach { it.visibility = View.GONE }
-        }
+        val visibility =
+            if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED &&
+                naturalWidth > available
+            ) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+        // StateToggleButton.kt measures hidden labels directly to avoid toggling layout animations on every pass.
+        labels.forEach { if (it.visibility != visibility) it.visibility = visibility }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
