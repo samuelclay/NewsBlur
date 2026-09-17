@@ -1,16 +1,15 @@
 package com.newsblur.activity
 
 import android.os.Bundle
-import com.newsblur.fragment.AddFeedFragment
+import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
 
-/** FeedSearchActivity.kt keeps existing launch intents working with the unified Add site sheet. */
+/** FeedSearchActivity.kt keeps existing menu and keyboard intents opening discovery. */
 @AndroidEntryPoint
 class FeedSearchActivity : NbActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            AddFeedFragment.newInstance().show(supportFragmentManager, "add_site")
-        }
+        startActivity(Intent(this, DiscoverSitesActivity::class.java))
+        finish()
     }
 }

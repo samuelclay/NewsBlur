@@ -482,7 +482,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickAddButton() {
-        com.newsblur.fragment.AddFeedFragment.newInstance().show(getSupportFragmentManager(), "add_site");
+        startActivity(new Intent(this, DiscoverSitesActivity.class));
     }
 
     private void onClickUserButton() {

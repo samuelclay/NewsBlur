@@ -821,6 +821,10 @@
             android:launchMode="singleTop" />
 
         <activity
+            android:name=".activity.DiscoverSitesActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".activity.SocialFeedReading"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
