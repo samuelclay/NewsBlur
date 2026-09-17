@@ -7,6 +7,7 @@ import android.graphics.drawable.InsetDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Space
@@ -76,6 +77,9 @@ class FloatingStoryToolbar(
         bar.addView(Space(context), LinearLayout.LayoutParams(0, 1, 1f))
         bar.addView(trailing, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(44)))
         binding.itemlistSearchContainer.setPadding(dp(16), dp(4), dp(16), dp(4))
+        // FloatingStoryToolbar.kt keeps landscape keyboards from covering the floating controls with an extract editor.
+        binding.itemlistSearchQuery.imeOptions = binding.itemlistSearchQuery.imeOptions or
+            EditorInfo.IME_FLAG_NO_EXTRACT_UI or EditorInfo.IME_FLAG_NO_FULLSCREEN
         val searchField = binding.itemlistSearchQuery.parent as View
         searchField.layoutParams.height = dp(44)
         searchField.background = capsule(theme)
@@ -129,17 +133,20 @@ class FloatingStoryToolbar(
         if (discover.text.toString() != fittedDiscoverTitle) discover.text = fittedDiscoverTitle
         val fittedSearchTitle = if (fit.searchText) searchTitle else ""
         if (search.text.toString() != fittedSearchTitle) search.text = fittedSearchTitle
+        // FloatingStoryToolbar.kt restores spacing when search hides and reveals Related Sites without changing the fit.
+        var first = true
+        listOf(discover, options, search).forEach { button ->
+            val params = button.layoutParams as LinearLayout.LayoutParams
+            val margin = if (!first && button.visibility == View.VISIBLE) dp(6) else 0
+            if (params.marginStart != margin) {
+                params.marginStart = margin
+                button.layoutParams = params
+            }
+            if (button.visibility == View.VISIBLE) first = false
+        }
         if (fit != lastFit) {
             lastFit = fit
             merged = fit.merged
-            // FloatingStoryToolbar.kt hides gaps for absent controls and keeps mark-read at the trailing edge.
-            var first = true
-            listOf(discover, options, search).forEach { button ->
-                (button.layoutParams as LinearLayout.LayoutParams).apply {
-                    marginStart = if (!first && button.visibility == View.VISIBLE) dp(6) else 0
-                    if (button.visibility == View.VISIBLE) first = false
-                }
-            }
             applyTheme(searchActive)
             bar.requestLayout()
         } else {
