@@ -1,7 +1,7 @@
 package com.newsblur.activity
 
-import android.os.Bundle
 import android.content.Intent
+import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
 
 /** FeedSearchActivity.kt keeps existing menu and keyboard intents opening discovery. */
