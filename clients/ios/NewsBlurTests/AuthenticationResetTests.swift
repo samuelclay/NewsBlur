@@ -4,6 +4,55 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_AuthenticationReset: XCTestCase {
+    func test_showLoginClearsMountedDiscoveryBeforeAnotherAccountSignsIn() async throws {
+        try await assertDiscoveryCleared(showLogin: true, preview: false)
+    }
+
+    func test_successfulLoginClearsRetainedDiscoveryPreview() async throws {
+        try await assertDiscoveryCleared(showLogin: false, preview: true)
+    }
+
+    private func assertDiscoveryCleared(showLogin: Bool, preview: Bool) async throws {
+        let fixture = try await makeFixture(compact: false)
+        defer { fixture.close(); DiscoverSitesViewController.viewModelFactory = nil }
+        let model = DiscoverSitesViewModel()
+        var createdModel = false
+        DiscoverSitesViewController.viewModelFactory = { createdModel = true; return model }
+        let discovery = DiscoverSitesViewController()
+        discovery.initialTab = .googleNews
+        fixture.detail.showDiscoverSites(discovery)
+        // AuthenticationResetTests.swift explicitly loads the child of its offscreen navigation fixture.
+        discovery.loadViewIfNeeded()
+        XCTAssertTrue(createdModel, "The state below must belong to the controller being reset")
+        model.searchState.query = "previous account private query"
+        model.selectedFolder = "Previous account folder"
+        model.webFeedState.analyzedURL = "https://private.example.invalid/articles"
+        model.webFeedState.feedTitle = "Previous analysis"
+        model.webFeedState.requestId = "previous-analysis"
+        model.webFeedState.isAnalyzing = true
+        if preview { fixture.detail.beginDiscoverPreview() }
+        XCTAssertTrue(preview ? fixture.detail.canReturnToDiscoverSites : fixture.detail.isDiscoverSitesVisible)
+        attach(fixture, name: "Discovery retained before account change")
+
+        if showLogin { fixture.app.showLogin() }
+        else {
+            fixture.login.checkPassword()
+            try fixture.app.completePOST(["code": 1])
+        }
+
+        XCTAssertFalse(fixture.detail.isDiscoverSitesVisible)
+        XCTAssertFalse(fixture.detail.canReturnToDiscoverSites)
+        XCTAssertNil(discovery.parent)
+        XCTAssertTrue(model.searchState.query.isEmpty)
+        XCTAssertTrue(model.selectedFolder.isEmpty)
+        XCTAssertTrue(model.webFeedState.analyzedURL.isEmpty)
+        XCTAssertTrue(model.webFeedState.feedTitle.isEmpty)
+        XCTAssertNil(model.webFeedState.requestId)
+        XCTAssertFalse(model.webFeedState.isAnalyzing)
+        fixture.detail.returnToDiscoverSites()
+        XCTAssertFalse(fixture.detail.isDiscoverSitesVisible, "The next account cannot reopen the retained pane")
+    }
+
     func test_successfulLoginClearsCompactBrowsingBeforeDismissalAndBeforeSubscriptionsReturn() async throws {
         try await assertSuccessfulAuthentication(signup: false, compact: true)
     }

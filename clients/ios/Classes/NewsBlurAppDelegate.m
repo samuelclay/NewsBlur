@@ -1457,6 +1457,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showLogin {
+    [self.detailViewController resetDiscoveryForAccountChange];
     if (self.loginViewController.view.window != nil) {
         return;
     }
@@ -2166,6 +2167,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)finishAuthentication {
     // NewsBlurAppDelegate.m starts a new browsing session only after authentication succeeds.
+    [self.detailViewController resetDiscoveryForAccountChange];
     [self.feedsViewController resetForAccountChange];
     [self cancelOfflineQueue];
 

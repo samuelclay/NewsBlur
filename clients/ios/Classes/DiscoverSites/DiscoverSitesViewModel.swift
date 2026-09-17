@@ -650,9 +650,12 @@ class DiscoverSitesViewModel: ObservableObject {
             return
         }
 
+        let generation = lifecycleGeneration
         Task {
+            guard lifecycleGeneration == generation else { return }
             do {
                 let json = try await performRequest(request)
+                guard lifecycleGeneration == generation else { return }
                 webFeedState.isSubscribing = false
 
                 let code = json["code"] as? Int ?? 0
@@ -664,6 +667,7 @@ class DiscoverSitesViewModel: ObservableObject {
                     addedSuccess = true
                 }
             } catch {
+                guard lifecycleGeneration == generation else { return }
                 webFeedState.isSubscribing = false
                 webFeedState.errorMessage = "Subscription failed: \(error.localizedDescription)"
             }
@@ -738,9 +742,12 @@ class DiscoverSitesViewModel: ObservableObject {
         googleNewsState.isSubscribing = true
         googleNewsState.errorMessage = nil
 
+        let generation = lifecycleGeneration
         Task {
+            guard lifecycleGeneration == generation else { return }
             do {
                 let json = try await performRequest(feedRequest)
+                guard lifecycleGeneration == generation else { return }
                 guard let feedUrl = json["feed_url"] as? String, !feedUrl.isEmpty else {
                     googleNewsState.isSubscribing = false
                     googleNewsState.errorMessage = json["message"] as? String ?? "No feed URL returned"
@@ -758,6 +765,7 @@ class DiscoverSitesViewModel: ObservableObject {
                 }
 
                 let addJson = try await performRequest(addRequest)
+                guard lifecycleGeneration == generation else { return }
                 googleNewsState.isSubscribing = false
 
                 let code = addJson["code"] as? Int ?? 0
@@ -769,6 +777,7 @@ class DiscoverSitesViewModel: ObservableObject {
                     addedSuccess = true
                 }
             } catch {
+                guard lifecycleGeneration == generation else { return }
                 googleNewsState.isSubscribing = false
                 googleNewsState.errorMessage = "Failed to subscribe: \(error.localizedDescription)"
             }
@@ -794,10 +803,13 @@ class DiscoverSitesViewModel: ObservableObject {
         }
 
         isAdding = true
+        let generation = lifecycleGeneration
         Task {
-            defer { isAdding = false }
+            guard lifecycleGeneration == generation else { return }
+            defer { if lifecycleGeneration == generation { isAdding = false } }
             do {
                 let json = try await performRequest(request)
+                guard lifecycleGeneration == generation else { return }
                 let code = json["code"] as? Int ?? 0
                 if code <= 0 {
                     addErrorMessage = json["message"] as? String ?? "Failed to add site"
@@ -807,6 +819,7 @@ class DiscoverSitesViewModel: ObservableObject {
                     addedSuccess = true
                 }
             } catch {
+                guard lifecycleGeneration == generation else { return }
                 addErrorMessage = "Failed to add site: \(error.localizedDescription)"
             }
         }
@@ -817,13 +830,16 @@ class DiscoverSitesViewModel: ObservableObject {
         guard !isPreparingPreview else { return nil }
         isPreparingPreview = true
         addErrorMessage = nil
-        defer { isPreparingPreview = false }
+        let generation = lifecycleGeneration
+        defer { if lifecycleGeneration == generation { isPreparingPreview = false } }
         guard let request = makeRequest(path: "/discover/link_popular_feed", params: ["feed_url": feed.feedAddress]) else { return nil }
         do {
             let json = try await performRequest(request)
+            guard lifecycleGeneration == generation else { return nil }
             guard let id = json["feed_id"] as? Int, id > 0 else { throw URLError(.badServerResponse) }
             return DiscoverPopularFeed(feedId: String(id), feedDict: feed.rawFeedDict)
         } catch {
+            guard lifecycleGeneration == generation else { return nil }
             addErrorMessage = "Unable to preview this feed: \(error.localizedDescription)"
             return nil
         }
@@ -899,6 +915,9 @@ class DiscoverSitesViewModel: ObservableObject {
         searchRequests = [:]
         autocompleteRequest = UUID()
         lifecycleGeneration = UUID()
+        analysisStartedAt = nil
+        isAdding = false
+        isPreparingPreview = false
 
         activeTab = .search
         selectedFolder = ""
