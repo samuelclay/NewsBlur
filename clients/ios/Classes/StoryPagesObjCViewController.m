@@ -3079,6 +3079,7 @@
 
 - (void)configureFullScreenPopGesture {
     if (self.fullScreenPopGesture != nil) {
+        [self updatePopGestureForScrollOrientation];
         return;
     }
 
@@ -3106,13 +3107,10 @@
 
 - (void)updatePopGestureForScrollOrientation {
     UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
-    if (self.isHorizontal) {
-        self.fullScreenPopGesture.enabled = NO;
-        navController.interactivePopGestureRecognizer.enabled = YES;
-    } else {
-        self.fullScreenPopGesture.enabled = YES;
-        navController.interactivePopGestureRecognizer.enabled = NO;
-    }
+    BOOL swipeEnabled = [[[NSUserDefaults standardUserDefaults] stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];
+    self.fullScreenPopGesture.enabled = swipeEnabled && !self.isHorizontal;
+    navController.interactivePopGestureRecognizer.enabled = swipeEnabled && self.isHorizontal;
 }
 
 - (void)updateStoriesTheme {
