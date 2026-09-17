@@ -22,6 +22,8 @@ Submitted on September 17, 2026 to **Open testing**, at 100% of that track. Play
 
 Verified **Changes in review**, with quick checks still running and managed publishing off. This records submission, not confirmed tester availability. Production was not changed.
 
+Later on September 17, the requested [15.0.2 follow-up](../15.0.2/README.md) restarted the pending review and became the version listed in review. The 15.0.1 source tag and archived artifacts remain available.
+
 - [Publishing overview](https://play.google.com/console/u/3/developers/6280481402178293168/app/4972990522498280751/publishing)
 - [Release review](https://play.google.com/console/u/3/developers/6280481402178293168/app/4972990522498280751/tracks/4698162496597079541/releases/99/review)
 - [Submission screenshot](play-testing-submitted.png)
