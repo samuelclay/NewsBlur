@@ -324,4 +324,19 @@ class Test_Discovery {
             advanceUntilIdle()
             assertEquals("Archive required", model.state.value.web.error)
         }
+
+    @Test fun test_slow_status_request_does_not_extend_analysis_indefinitely() = runTest {
+        coEvery { api.request("/webfeed/analyze", any(), true) } returns json("""{"code":1}""")
+        coEvery { api.request("/webfeed/status", any(), false) } coAnswers {
+            kotlinx.coroutines.delay(300_000)
+            json("""{"status":"unknown"}""")
+        }
+        val model = model()
+        model.webEdit { it.copy(url = "https://example") }
+        model.analyze()
+        advanceTimeBy(120_001)
+        runCurrent()
+        assertFalse(model.state.value.web.loading)
+        assertTrue(model.state.value.web.error!!.contains("timed out"))
+    }
 }

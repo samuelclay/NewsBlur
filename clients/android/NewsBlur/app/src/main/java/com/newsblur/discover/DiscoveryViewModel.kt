@@ -14,6 +14,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -394,39 +396,43 @@ class DiscoveryViewModel
                             }
                             return@launch
                         }
-                        repeat(40) {
-                            delay(3000)
-                            val status = request("/webfeed/status", mapOf("request_id" to id))
-                            if (token != webGeneration) return@launch
-                            when (status.string("type").ifBlank { status.string("status") }) {
-                                "error" -> throw IOException(status.string("error").ifBlank { status.string("message") })
-                                "variants", "complete" -> {
-                                    val data = status.obj("variants_data") ?: status
-                                    val variants = data.objects("variants").map(WebVariant::parse)
-                                    if (variants.isEmpty()) throw IOException("No story patterns found. Try a page that lists articles.")
-                                    webEdit {
-                                        it.copy(
-                                            loading = false,
-                                            variants = variants,
-                                            selected = 0,
-                                            title =
-                                                data.string("page_title").ifBlank {
-                                                    data.string("feed_title")
-                                                },
-                                            htmlHash =
-                                                data.string(
-                                                    "html_hash",
-                                                ),
-                                            favicon = data.string("favicon_url"),
-                                            message = "Choose the stories to follow",
-                                        )
+                        withTimeout(120_000) {
+                            repeat(40) {
+                                delay(3000)
+                                val status = request("/webfeed/status", mapOf("request_id" to id))
+                                if (token != webGeneration) return@withTimeout
+                                when (status.string("type").ifBlank { status.string("status") }) {
+                                    "error" -> throw IOException(status.string("error").ifBlank { status.string("message") })
+                                    "variants", "complete" -> {
+                                        val data = status.obj("variants_data") ?: status
+                                        val variants = data.objects("variants").map(WebVariant::parse)
+                                        if (variants.isEmpty()) throw IOException("No story patterns found. Try a page that lists articles.")
+                                        webEdit {
+                                            it.copy(
+                                                loading = false,
+                                                variants = variants,
+                                                selected = 0,
+                                                title =
+                                                    data.string("page_title").ifBlank {
+                                                        data.string("feed_title")
+                                                    },
+                                                htmlHash =
+                                                    data.string(
+                                                        "html_hash",
+                                                    ),
+                                                favicon = data.string("favicon_url"),
+                                                message = "Choose the stories to follow",
+                                            )
+                                        }
+                                        return@withTimeout
                                     }
-                                    return@launch
+                                    else -> webEdit { it.copy(message = status.string("message").ifBlank { "Analyzing web page…" }) }
                                 }
-                                else -> webEdit { it.copy(message = status.string("message").ifBlank { "Analyzing web page…" }) }
                             }
+                            throw IOException("Analysis timed out. Please try again.")
                         }
-                        throw IOException("Analysis timed out. Please try again.")
+                    } catch (_: TimeoutCancellationException) {
+                        if (token == webGeneration) webEdit { it.copy(loading = false, error = "Analysis timed out. Please try again.", message = "") }
                     } catch (cancelled: CancellationException) {
                         throw cancelled
                     } catch (error: Exception) {
