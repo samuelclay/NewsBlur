@@ -43,6 +43,7 @@ data class DiscoveryState(
     val web: WebDiscoveryState = WebDiscoveryState(),
     val newsQuery: String = "",
     val newsTopic: String = "",
+    val newsCategory: String = "",
     val language: String = "en",
 ) {
     val page: DiscoveryPage get() = pages[tab] ?: DiscoveryPage()
@@ -65,6 +66,7 @@ class DiscoveryViewModel
                     folder = saved["folder"] ?: AppConstants.ROOT_FOLDER,
                     newsQuery = saved["newsQuery"] ?: "",
                     newsTopic = saved["newsTopic"] ?: "",
+                    newsCategory = saved["newsCategory"] ?: "",
                     language = saved["language"] ?: "en",
                     web = WebDiscoveryState(url = saved["webUrl"] ?: "", hint = saved["webHint"] ?: ""),
                     pages = DiscoveryTab.entries.associateWith { tab -> DiscoveryPage(query = saved["query_${tab.name}"] ?: "") },
@@ -329,11 +331,13 @@ class DiscoveryViewModel
             query: String = state.value.newsQuery,
             topic: String = "",
             language: String = state.value.language,
+            category: String = state.value.newsCategory,
         ) {
             saved["newsQuery"] = query
             saved["newsTopic"] = topic
             saved["language"] = language
-            mutable.update { it.copy(newsQuery = query, newsTopic = topic, language = language) }
+            saved["newsCategory"] = category
+            mutable.update { it.copy(newsQuery = query, newsTopic = topic, newsCategory = category, language = language) }
         }
 
         fun addNews() =

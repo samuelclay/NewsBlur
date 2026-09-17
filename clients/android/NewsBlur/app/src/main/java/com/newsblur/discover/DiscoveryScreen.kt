@@ -58,7 +58,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -536,7 +535,7 @@ private fun GoogleNewsForm(
     model: DiscoveryViewModel,
     colors: ReaderSheetPalette.Colors,
 ) {
-    var category by rememberSaveable { mutableStateOf("") }
+    val category = state.newsCategory
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Follow news that matters to you", style = MaterialTheme.typography.headlineSmall)
         Text("Choose a topic or create a Google News feed for any search.", color = colors.textSecondary)
@@ -553,7 +552,7 @@ private fun GoogleNewsForm(
             },
             colors,
             !state.busy,
-        ) { model.news(query = "", topic = it) }
+        ) { model.news(query = "", topic = it, category = "") }
         DiscoveryChoice(
             "Category",
             category.ifBlank {
@@ -562,11 +561,7 @@ private fun GoogleNewsForm(
             GoogleNewsCatalog.categories.keys.map { it to it },
             colors,
             !state.busy,
-        ) {
-            category =
-                it
-            ; model.news(query = it)
-        }
+        ) { model.news(query = it, category = it) }
         if (category.isNotBlank()) {
             DiscoveryChoice(
                 "Topic",
