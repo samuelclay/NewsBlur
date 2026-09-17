@@ -2,6 +2,7 @@ package com.newsblur.discover
 
 import com.google.gson.JsonObject
 import com.newsblur.domain.Feed
+import com.newsblur.util.DiscoverFeedFreshnessFormatter
 
 enum class DiscoveryTab(
     val title: String,
@@ -25,7 +26,7 @@ data class DiscoveryFeed(
     val link: String = url,
     val image: String = "",
     val subscribers: Int = 0,
-    val stories: List<String> = emptyList(),
+    val stories: List<DiscoveryStory> = emptyList(),
 ) {
     fun asFeed(resolvedId: String = id) =
         Feed().also {
@@ -69,9 +70,58 @@ data class DiscoveryFeed(
                     entry
                         .objects(
                             "stories",
-                        ).map { it.string("story_title").ifBlank { it.string("title") } }
-                        .filter { it.isNotBlank() },
+                        ).mapNotNull(DiscoveryStory::parse),
             )
+        }
+    }
+}
+
+data class DiscoveryStory(
+    val title: String,
+    val authors: String = "",
+    val timestamp: Long? = null,
+    val excerpt: String = "",
+    val imageUrl: String = "",
+) {
+    companion object {
+        private val hiddenContent = Regex("<(script|style)\\b[^>]*>.*?</\\1\\s*>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL))
+        private val tags = Regex("<[^>]+>")
+        private val blockTags = Regex("</?(?:p|div|br|li|h[1-6]|blockquote|tr|td|section|article)\\b[^>]*>", RegexOption.IGNORE_CASE)
+        private val whitespace = Regex("\\s+")
+        private val contentImage = Regex("<img\\b[^>]*\\bsrc\\s*=\\s*[\"']([^\"']+)[\"']", RegexOption.IGNORE_CASE)
+
+        fun parse(json: JsonObject): DiscoveryStory? {
+            val title = json.string("story_title").ifBlank { json.string("title") }
+            if (title.isBlank()) return null
+            val content = hiddenContent.replace(json.string("story_content").ifBlank { json.string("content") }, " ")
+            val images = json.get("image_urls")?.takeIf { it.isJsonArray }?.asJsonArray
+                ?.filter { it.isJsonPrimitive && it.asJsonPrimitive.isString }
+                ?.map { it.asString }.orEmpty()
+            val original = images.firstOrNull { imageAddress(it).isNotEmpty() }
+                ?: contentImage.find(content)?.groupValues?.get(1).orEmpty()
+            val image = listOf(
+                json.obj("secure_image_thumbnails")?.string(original).orEmpty(),
+                json.obj("secure_image_urls")?.string(original).orEmpty(),
+                original,
+            ).firstNotNullOfOrNull { imageAddress(it).takeIf(String::isNotEmpty) }.orEmpty()
+            return DiscoveryStory(
+                title = title,
+                authors = json.string("story_authors").ifBlank { json.string("authors") },
+                timestamp = json.string("story_timestamp").toLongOrNull()?.takeIf { it > 0 && it <= Long.MAX_VALUE / 1000 }
+                    ?: DiscoverFeedFreshnessFormatter.parseApiDateMillis(json.string("story_date"))?.div(1000)?.takeIf { it > 0 },
+                // DiscoveryModels.kt: preserve entities for Android's HTML decoder in DiscoveryStoryRow.
+                excerpt = whitespace.replace(tags.replace(blockTags.replace(content, " "), ""), " ").trim().take(320),
+                imageUrl = image,
+            )
+        }
+
+        private fun imageAddress(value: String): String {
+            val url = value.trim()
+            return when {
+                url.startsWith("//") -> "https:$url"
+                url.startsWith("https://") || url.startsWith("http://") -> url
+                else -> ""
+            }
         }
     }
 }

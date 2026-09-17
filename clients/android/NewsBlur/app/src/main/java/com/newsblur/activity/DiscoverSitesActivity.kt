@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.di.IconLoader
+import com.newsblur.di.ThumbnailLoader
 import com.newsblur.discover.DiscoveryScreen
 import com.newsblur.discover.DiscoveryViewModel
 import com.newsblur.fragment.AddFeedFragment
@@ -32,6 +33,9 @@ class DiscoverSitesActivity : NbActivity() {
 
     @Inject @IconLoader
     lateinit var iconLoader: ImageLoader
+
+    @Inject @ThumbnailLoader
+    lateinit var thumbnailLoader: ImageLoader
 
     @Inject lateinit var tryFeedStore: TryFeedStore
 
@@ -91,6 +95,7 @@ class DiscoverSitesActivity : NbActivity() {
             model,
             prefsRepo.getResolvedTheme(this),
             iconLoader,
+            thumbnailLoader,
             onBack = { finish() },
             onQuickAdd = { AddFeedFragment.newInstance().show(supportFragmentManager, "add_site") },
         )
