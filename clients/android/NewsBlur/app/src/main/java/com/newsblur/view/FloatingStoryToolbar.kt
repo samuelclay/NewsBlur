@@ -3,6 +3,7 @@ package com.newsblur.view
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -19,12 +20,16 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 
 /** FloatingStoryToolbar.kt leaves the original XML top toolbar untouched when the preference is Top. */
-class FloatingStoryToolbar(private val binding: ActivityItemslistBinding, private val theme: ThemeValue) {
+class FloatingStoryToolbar(
+    private val binding: ActivityItemslistBinding,
+    private val theme: ThemeValue,
+) {
     private val context = binding.root.context
     private val leading = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
     private val trailing = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
     private var merged = false
     private var lastFit: FloatingToolbarLayout.Fit? = null
+
     private fun dp(value: Int) = UIUtils.dp2px(context, value)
 
     init {
@@ -50,7 +55,8 @@ class FloatingStoryToolbar(private val binding: ActivityItemslistBinding, privat
         header.clipChildren = false
         header.clipToPadding = false
         listOf(binding.itemlistDiscoverPill, binding.itemlistOptionsPill, binding.itemlistSearchPill).forEachIndexed { index, button ->
-            button.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(44)).apply { if (index > 0) marginStart = dp(6) }
+            button.layoutParams =
+                LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(44)).apply { if (index > 0) marginStart = dp(6) }
             button.minimumWidth = dp(44)
             button.minWidth = dp(44)
             button.maxWidth = Int.MAX_VALUE
@@ -77,7 +83,11 @@ class FloatingStoryToolbar(private val binding: ActivityItemslistBinding, privat
         header.requestLayout()
     }
 
-    fun update(fullOptions: String, compactOptions: String, searchActive: Boolean) {
+    fun update(
+        fullOptions: String,
+        compactOptions: String,
+        searchActive: Boolean,
+    ) {
         val bar = binding.itemlistStoryHeaderBar
         if (bar.width <= 0) return
         val discover = binding.itemlistDiscoverPill
@@ -88,19 +98,40 @@ class FloatingStoryToolbar(private val binding: ActivityItemslistBinding, privat
         val showMark = binding.itemlistMarkReadContainer.visibility == View.VISIBLE
         trailing.visibility = if (showMark) View.VISIBLE else View.GONE
         val width = UIUtils.px2dp(context, bar.width - dp(32)).toInt()
-        fun widthOf(button: MaterialButton, text: String) =
-            UIUtils.px2dp(context, (button.paint.measureText(text) + dp(24 + 14 + 4)).toInt()).toInt().coerceAtLeast(44)
+
+        fun widthOf(
+            button: MaterialButton,
+            text: String,
+        ) = UIUtils.px2dp(context, (button.paint.measureText(text) + dp(24 + 14 + 4)).toInt()).toInt().coerceAtLeast(44)
         val discoverTitle = context.getString(R.string.story_header_related_sites)
         val searchTitle = context.getString(R.string.story_header_search)
-        val fit = FloatingToolbarLayout.fit(width, widthOf(options, fullOptions), widthOf(options, compactOptions),
-            widthOf(discover, discoverTitle), widthOf(search, searchTitle), showDiscover, showSearch, showMark)
-        if (fit != lastFit || options.contentDescription != fullOptions) {
+        val fit =
+            FloatingToolbarLayout.fit(
+                width,
+                widthOf(options, fullOptions),
+                widthOf(options, compactOptions),
+                widthOf(discover, discoverTitle),
+                widthOf(search, searchTitle),
+                showDiscover,
+                showSearch,
+                showMark,
+            )
+        // FloatingStoryToolbar.kt reapplies fitted labels after menu refreshes restore the full title.
+        val optionsTitle =
+            when (fit.options) {
+                2 -> fullOptions
+                1 -> compactOptions
+                else -> ""
+            }
+        if (options.text.toString() != optionsTitle) options.text = optionsTitle
+        options.contentDescription = fullOptions
+        val fittedDiscoverTitle = if (fit.discoverText) discoverTitle else ""
+        if (discover.text.toString() != fittedDiscoverTitle) discover.text = fittedDiscoverTitle
+        val fittedSearchTitle = if (fit.searchText) searchTitle else ""
+        if (search.text.toString() != fittedSearchTitle) search.text = fittedSearchTitle
+        if (fit != lastFit) {
             lastFit = fit
             merged = fit.merged
-            options.text = when (fit.options) { 2 -> fullOptions; 1 -> compactOptions; else -> "" }
-            options.contentDescription = fullOptions
-            discover.text = if (fit.discoverText) discoverTitle else ""
-            search.text = if (fit.searchText) searchTitle else ""
             // FloatingStoryToolbar.kt hides gaps for absent controls and keeps mark-read at the trailing edge.
             var first = true
             listOf(discover, options, search).forEach { button ->
@@ -121,7 +152,7 @@ class FloatingStoryToolbar(private val binding: ActivityItemslistBinding, privat
         binding.itemlistSearchContainer.setBackgroundColor(Color.TRANSPARENT)
         val bar = binding.itemlistStoryHeaderBar
         // FloatingStoryToolbar.kt paints only the capsules, preserving the clear gap between groups.
-        bar.background = if (merged) capsule(theme) else null
+        bar.background = if (merged) InsetDrawable(capsule(theme), dp(16), dp(4), dp(16), dp(4)) else null
         bar.elevation = if (merged) dp(6).toFloat() else 0f
         listOf(leading, trailing).forEach {
             it.background = if (merged) null else capsule(theme)
@@ -138,7 +169,16 @@ class FloatingStoryToolbar(private val binding: ActivityItemslistBinding, privat
             it.cornerRadius = dp(22)
             it.setTextColor(color)
             it.iconTint = ColorStateList.valueOf(color)
-            it.backgroundTintList = ColorStateList.valueOf(if (it === binding.itemlistSearchPill && searchActive) ColorUtils.setAlphaComponent(ReaderSheetPalette.accentArgb(theme), 55) else Color.TRANSPARENT)
+            it.backgroundTintList =
+                ColorStateList.valueOf(
+                    if (it === binding.itemlistSearchPill &&
+                        searchActive
+                    ) {
+                        ColorUtils.setAlphaComponent(ReaderSheetPalette.accentArgb(theme), 55)
+                    } else {
+                        Color.TRANSPARENT
+                    },
+                )
         }
         binding.itemlistMarkReadContainer.background = null
         binding.itemlistMarkReadDivider.setBackgroundColor(ReaderSheetPalette.borderArgb(theme))
@@ -150,7 +190,10 @@ class FloatingStoryToolbar(private val binding: ActivityItemslistBinding, privat
 }
 
 object FloatingToolbarSurface {
-    @JvmStatic fun background(context: android.content.Context, theme: ThemeValue) = GradientDrawable().apply {
+    @JvmStatic fun background(
+        context: android.content.Context,
+        theme: ThemeValue,
+    ) = GradientDrawable().apply {
         cornerRadius = UIUtils.dp2px(context, 26).toFloat()
         setColor(ColorUtils.setAlphaComponent(ReaderSheetPalette.backgroundArgb(theme), 245))
         setStroke(UIUtils.dp2px(context, 1), ReaderSheetPalette.borderArgb(theme))
