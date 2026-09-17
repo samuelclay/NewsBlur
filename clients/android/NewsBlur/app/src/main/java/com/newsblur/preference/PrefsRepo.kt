@@ -401,6 +401,8 @@ class PrefsRepo(
         prefs.edit { putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString()) }
     }
 
+    fun isStoryToolbarAtBottom(): Boolean = prefs.getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
+
     fun getStoryListStyleForFeed(feedId: String): StoryListStyle =
         StoryListStyle.safeValueOf(
             prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()),

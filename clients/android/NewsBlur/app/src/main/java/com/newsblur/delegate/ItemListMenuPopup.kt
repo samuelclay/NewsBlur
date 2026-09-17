@@ -612,31 +612,7 @@ class ItemListMenuPopup(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         )
-        val popupWidth = binding.root.measuredWidth
-        val margin = UIUtils.dp2px(activity, 8)
-        val availableHeight = displayFrame.height() - margin * 2
-        val popupHeight = min(binding.root.measuredHeight, availableHeight)
-        val location = IntArray(2)
-        anchor.getLocationInWindow(location)
-        val minX = displayFrame.left + margin
-        val maxX = displayFrame.right - popupWidth - margin
-        val x =
-            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(activity, 4))
-                .coerceIn(min(minX, maxX), max(minX, maxX))
-        val preferredBelow = location[1] + anchor.height - UIUtils.dp2px(activity, 4)
-        val preferredAbove = location[1] - popupHeight + UIUtils.dp2px(activity, 4)
-        val y =
-            if (preferredBelow + popupHeight <= displayFrame.bottom - margin) {
-                preferredBelow
-            } else {
-                preferredAbove.coerceAtLeast(displayFrame.top + margin)
-            }
-        if (isShowing) {
-            popupWindow.update(x, y, popupWidth, popupHeight)
-        } else {
-            popupWindow.height = popupHeight
-            popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
-        }
+        com.newsblur.util.AnchoredPopover.show(anchor, popupWindow, binding.root.measuredWidth, binding.root.measuredHeight, isShowing)
     }
 
     private fun makeDivider(color: Int): View =

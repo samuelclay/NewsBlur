@@ -442,22 +442,7 @@ class MainFeedListMenuPopup(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         )
-        val popupWidth = binding.root.measuredWidth
-        val popupHeight = binding.root.measuredHeight
-        val location = IntArray(2)
-        anchor.getLocationInWindow(location)
-        val margin = UIUtils.dp2px(activity, 8)
-        val x =
-            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(activity, 4))
-                .coerceIn(displayFrame.left + margin, displayFrame.right - popupWidth - margin)
-        val y =
-            (location[1] - popupHeight + UIUtils.dp2px(activity, 4))
-                .coerceAtLeast(displayFrame.top + margin)
-        if (isShowing) {
-            popupWindow.update(x, y, popupWidth, popupHeight)
-        } else {
-            popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
-        }
+        com.newsblur.util.AnchoredPopover.show(anchor, popupWindow, binding.root.measuredWidth, binding.root.measuredHeight, isShowing)
     }
 
     private fun makeDivider(color: Int): View =

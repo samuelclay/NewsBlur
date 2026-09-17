@@ -155,6 +155,7 @@ data class SettingsUiState(
     val clusterMarkReadSaving: Boolean = false,
     val storyContentPreviewStyle: String = StoryContentPreviewStyle.MEDIUM.name,
     val thumbnailStyle: String = ThumbnailStyle.RIGHT_LARGE.name,
+    val storyToolbarPosition: String = "bottom",
     val markStoryReadBehavior: String = MarkStoryReadBehavior.IMMEDIATELY.name,
     val defaultBrowser: String = DefaultBrowser.SYSTEM_DEFAULT.name,
     val readingFont: String = "DEFAULT",
@@ -223,6 +224,7 @@ fun buildSettingsUiState(
         clusterMarkReadEnabled = prefsRepo.isClusterMarkReadEnabled(),
         storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle().name,
         thumbnailStyle = prefsRepo.getThumbnailStyle().name,
+        storyToolbarPosition = if (prefsRepo.isStoryToolbarAtBottom()) "bottom" else "top",
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior().name,
         defaultBrowser = prefsRepo.getDefaultBrowser().name,
         readingFont = prefsRepo.getFontString(),
@@ -671,6 +673,16 @@ fun SettingsScreen(
             iconColor = NewsblurPurple,
             palette = palette,
         ) {
+            SegmentedSettingsRow(
+                title = stringResource(R.string.settings_story_toolbar_position),
+                icon = Icons.Rounded.Tune,
+                iconColor = NewsblurBlue,
+                selectedValue = state.storyToolbarPosition,
+                options = listOf(ChoiceOption("top", stringResource(R.string.settings_story_toolbar_top)), ChoiceOption("bottom", stringResource(R.string.settings_story_toolbar_bottom))),
+                palette = palette,
+                onSelected = { onStringChanged(PrefConstants.STORY_TOOLBAR_POSITION, it) },
+            )
+            RowDivider(palette)
             SegmentedSettingsRow(
                 title = stringResource(R.string.settings_content_preview).stripTrailingEllipsis(),
                 icon = Icons.Rounded.ShortText,

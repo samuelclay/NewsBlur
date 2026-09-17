@@ -108,6 +108,14 @@ object EdgeToEdgeUtil {
             findViewById<View>(R.id.container)?.applyContentInsets(navBar)
                 ?: findViewById<View>(R.id.content)?.applyContentInsets(navBar)
 
+            // EdgeToEdgeUtil.kt keeps the floating story toolbar above navigation and the search keyboard.
+            if (findViewById<View>(R.id.itemlist_story_header) != null) {
+                findViewById<View>(R.id.content)?.let {
+                    val keyboard = insets.getInsets(WindowInsetsCompat.Type.ime())
+                    it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, maxOf(navBar.bottom, keyboard.bottom))
+                }
+            }
+
             // Reading - activity_reading.xml
             findViewById<View>(R.id.content_bottom_overlay)?.let {
                 it.applyHorizontalNavBarMargins(navBar)
@@ -196,11 +204,10 @@ object EdgeToEdgeUtil {
     }
 
     private fun View.applyBottomToolbarInsets(navBar: Insets) {
-        applyHorizontalNavBarMargins(navBar)
-        if (navBar.left > 0 || navBar.right > 0) {
-            setPadding(paddingLeft, paddingTop, paddingRight, 0)
-        } else {
-            setPadding(paddingLeft, paddingTop, paddingRight, navBar.bottom)
+        updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            leftMargin = navBar.left + UIUtils.dp2px(context, 16)
+            rightMargin = navBar.right + UIUtils.dp2px(context, 16)
+            bottomMargin = navBar.bottom + UIUtils.dp2px(context, 8)
         }
     }
 
