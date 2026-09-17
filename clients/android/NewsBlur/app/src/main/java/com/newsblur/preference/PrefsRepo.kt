@@ -848,7 +848,7 @@ class PrefsRepo(
         if (right) GestureAction.GEST_ACTION_NOTIFICATIONS else GestureAction.GEST_ACTION_MARKREAD,
     )
     fun getFeedLongPressAction() = gestureAction("feed_long_press", GestureAction.GEST_ACTION_READ_RANGE)
-    fun getStoryLongPressAction() = gestureAction("story_long_press", GestureAction.GEST_ACTION_SHARE)
+    fun getStoryLongPressAction() = gestureAction("story_long_press", GestureAction.GEST_ACTION_MENU)
 
     fun getReaderGesture(key: String, fallback: String): String = prefs.getString(key, fallback) ?: fallback
 
