@@ -113,6 +113,20 @@ object EdgeToEdgeUtil {
                 findViewById<View>(R.id.content)?.let {
                     val keyboard = insets.getInsets(WindowInsetsCompat.Type.ime())
                     it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, maxOf(navBar.bottom, keyboard.bottom))
+                    val bottomToolbar = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
+                        .getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
+                    if (bottomToolbar) {
+                        // EdgeToEdgeUtil.kt reserves both search rows when a landscape keyboard leaves no room for the feed title.
+                        val compactSearch = keyboard.bottom > 0 &&
+                            binding.root.height - keyboard.bottom - statusBar.top < UIUtils.dp2px(this, 168)
+                        findViewById<View>(R.id.toolbar)?.visibility = if (compactSearch) View.GONE else View.VISIBLE
+                        val verticalPadding = if (compactSearch) 0 else UIUtils.dp2px(this, 4)
+                        listOf(R.id.itemlist_story_header_bar, R.id.itemlist_search_container).forEach { id ->
+                            findViewById<View>(id)?.let { row ->
+                                row.setPadding(row.paddingLeft, verticalPadding, row.paddingRight, verticalPadding)
+                            }
+                        }
+                    }
                 }
             }
 
