@@ -45,7 +45,12 @@ class FloatingStoryToolbar(
             removeRule(RelativeLayout.BELOW)
             addRule(RelativeLayout.ALIGN_PARENT_TOP)
         }
-        (binding.activityItemlistContainer.layoutParams as RelativeLayout.LayoutParams).addRule(RelativeLayout.ABOVE, header.id)
+        // FloatingStoryToolbar.kt overlays the full-height story viewport instead of reserving a footer strip.
+        (binding.activityItemlistContainer.layoutParams as RelativeLayout.LayoutParams).apply {
+            removeRule(RelativeLayout.ABOVE)
+            addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        }
+        header.bringToFront()
         header.removeView(binding.itemlistSearchContainer)
         header.addView(binding.itemlistSearchContainer, 0)
         val bar = binding.itemlistStoryHeaderBar
