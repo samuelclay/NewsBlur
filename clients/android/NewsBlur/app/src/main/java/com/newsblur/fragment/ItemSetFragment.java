@@ -141,6 +141,10 @@ public class ItemSetFragment extends NbFragment {
     private int bottomNextFeedActivationOffsetPx;
     private int bottomNextFeedActivationDistancePx;
     private int bottomNextFeedBaseBottomMarginPx;
+    @Nullable
+    private View floatingStoryHeader;
+    private final View.OnLayoutChangeListener floatingStoryHeaderLayoutListener =
+            (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> updateBottomNextFeedBottomInset();
     private int storyListScrollState = RecyclerView.SCROLL_STATE_IDLE;
     private int bottomNextFeedActiveDragStartOffsetY;
     private int bottomNextFeedActivationAnchorOffsetY;
@@ -272,6 +276,12 @@ public class ItemSetFragment extends NbFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (prefsRepo.isStoryToolbarAtBottom()) {
+            floatingStoryHeader = requireActivity().findViewById(R.id.itemlist_story_header);
+            if (floatingStoryHeader != null) floatingStoryHeader.addOnLayoutChangeListener(floatingStoryHeaderLayoutListener);
+            binding.getRoot().addOnLayoutChangeListener(floatingStoryHeaderLayoutListener);
+            binding.itemgridfragmentGrid.setClipToPadding(false);
+        }
         storiesViewModel.getActiveStories().observe(getViewLifecycleOwner(), this::setStories);
 
         FeedSet fs = getFeedSet();
@@ -283,6 +293,16 @@ public class ItemSetFragment extends NbFragment {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (floatingStoryHeader != null) {
+            floatingStoryHeader.removeOnLayoutChangeListener(floatingStoryHeaderLayoutListener);
+            floatingStoryHeader = null;
+        }
+        binding.getRoot().removeOnLayoutChangeListener(floatingStoryHeaderLayoutListener);
+        super.onDestroyView();
     }
 
     private void setStories(StoriesViewModel.@NotNull StoryBatch storyBatch) {
@@ -512,6 +532,21 @@ public class ItemSetFragment extends NbFragment {
         if (!(params instanceof ViewGroup.MarginLayoutParams)) return;
         ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
         int targetBottomMargin = bottomNextFeedBaseBottomMarginPx + navBarInsets.bottom;
+        if (floatingStoryHeader != null && floatingStoryHeader.isLaidOut()) {
+            // ItemSetFragment.java draws stories beneath the footer while allowing the final row to scroll above it.
+            int[] listLocation = new int[2];
+            int[] headerLocation = new int[2];
+            RecyclerView grid = binding.itemgridfragmentGrid;
+            grid.getLocationOnScreen(listLocation);
+            floatingStoryHeader.getLocationOnScreen(headerLocation);
+            int overlap = Math.max(0, listLocation[1] + grid.getHeight() - headerLocation[1]);
+            int bottomPadding = overlap + UIUtils.dp2px(requireContext(), 8);
+            if (grid.getPaddingBottom() != bottomPadding) {
+                grid.setPadding(grid.getPaddingLeft(), grid.getPaddingTop(), grid.getPaddingRight(), bottomPadding);
+            }
+            // ItemSetFragment.java keeps the next-feed control above both search and the floating action capsules.
+            targetBottomMargin = bottomNextFeedBaseBottomMarginPx + overlap;
+        }
         if (marginParams.bottomMargin == targetBottomMargin) return;
         marginParams.bottomMargin = targetBottomMargin;
         binding.bottomNextFeedControl.setLayoutParams(marginParams);

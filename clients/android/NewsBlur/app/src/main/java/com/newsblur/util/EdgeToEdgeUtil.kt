@@ -112,10 +112,15 @@ object EdgeToEdgeUtil {
             if (findViewById<View>(R.id.itemlist_story_header) != null) {
                 findViewById<View>(R.id.content)?.let {
                     val keyboard = insets.getInsets(WindowInsetsCompat.Type.ime())
-                    it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, maxOf(navBar.bottom, keyboard.bottom))
                     val bottomToolbar = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
                         .getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
+                    val bottomInset = maxOf(navBar.bottom, keyboard.bottom)
+                    // EdgeToEdgeUtil.kt insets only the floating controls so stories still draw behind them.
+                    it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, if (bottomToolbar) 0 else bottomInset)
                     if (bottomToolbar) {
+                        findViewById<View>(R.id.itemlist_story_header)?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            bottomMargin = bottomInset + UIUtils.dp2px(this@applyView, 8)
+                        }
                         // EdgeToEdgeUtil.kt reserves both search rows when a landscape keyboard leaves no room for the feed title.
                         val compactSearch = keyboard.bottom > 0 &&
                             binding.root.height - keyboard.bottom - statusBar.top < UIUtils.dp2px(this, 168)
