@@ -16,6 +16,7 @@ import Combine
     private var subscriptions = Set<AnyCancellable>()
     private var hostingController: UIHostingController<DiscoverSitesView>?
     private var viewModel: DiscoverSitesViewModel?
+    private var accountGeneration = UUID()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,8 +94,10 @@ import Combine
     }
 
     private func handleTryFeed(_ feed: DiscoverPopularFeed) {
+        let generation = accountGeneration
         Task { [weak self] in
             guard let self, let resolved = await self.viewModel?.resolvePreviewFeed(feed) else { return }
+            guard self.accountGeneration == generation else { return }
             guard self.appDelegate?.detailViewController.isDiscoverSitesVisible == true else { return }
             self.appDelegate?.detailViewController.beginDiscoverPreview()
             self.appDelegate?.loadTryFeedDetailView(
@@ -106,5 +109,17 @@ import Combine
 
     private func handleAddFeed(_ feed: DiscoverPopularFeed) {
         viewModel?.addFeed(url: feed.feedAddress)
+    }
+
+    func resetForAccountChange() {
+        accountGeneration = UUID()
+        subscriptions.removeAll()
+        // DiscoverSitesViewController.swift removes SwiftUI observers before resetting account-owned state.
+        hostingController?.willMove(toParent: nil)
+        hostingController?.view.removeFromSuperview()
+        hostingController?.removeFromParent()
+        hostingController = nil
+        viewModel?.reset()
+        viewModel = nil
     }
 }

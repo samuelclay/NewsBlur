@@ -649,6 +649,50 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.addedFeedURLs.isEmpty)
     }
 
+    func test_accountResetRejectsLateSubscriptionSuccess() async {
+        let viewModel = model()
+        let started = expectation(description: "Subscription request started")
+        let release = DispatchSemaphore(value: 0)
+        ResponseProtocol.handler = { _ in
+            started.fulfill()
+            _ = release.wait(timeout: .now() + 5)
+            return (200, ["code": 1])
+        }
+        viewModel.addFeed(url: "https://example.com/previous-account")
+        await fulfillment(of: [started], timeout: 2)
+        viewModel.reset()
+        XCTAssertFalse(viewModel.isAdding)
+        release.signal()
+        try? await Task.sleep(nanoseconds: 150_000_000)
+        XCTAssertFalse(viewModel.addedSuccess)
+        XCTAssertTrue(viewModel.addedFeedURLs.isEmpty)
+        XCTAssertNil(viewModel.addErrorMessage)
+    }
+
+    func test_accountResetStopsGoogleNewsBeforeItCanSubscribeAsTheNextAccount() async {
+        let viewModel = model()
+        let started = expectation(description: "Google News feed resolution started")
+        let unexpectedSubscription = expectation(description: "No subscription after reset")
+        unexpectedSubscription.isInverted = true
+        let release = DispatchSemaphore(value: 0)
+        ResponseProtocol.handler = { request in
+            if request.url?.path == "/reader/add_url" {
+                unexpectedSubscription.fulfill()
+                return (200, ["code": 1])
+            }
+            started.fulfill()
+            _ = release.wait(timeout: .now() + 5)
+            return (200, ["code": 1, "feed_url": "https://example.com/old-query"])
+        }
+        viewModel.subscribeGoogleNews(query: "private query", topic: nil, language: "en")
+        await fulfillment(of: [started], timeout: 2)
+        viewModel.reset()
+        release.signal()
+        await fulfillment(of: [unexpectedSubscription], timeout: 0.3)
+        XCTAssertFalse(viewModel.addedSuccess)
+        XCTAssertNil(viewModel.googleNewsState.errorMessage)
+    }
+
     func test_unconfirmedSubscriptionDoesNotMarkFeedAdded() async {
         let viewModel = model()
         ResponseProtocol.handler = { _ in (200, ["code": 0]) }

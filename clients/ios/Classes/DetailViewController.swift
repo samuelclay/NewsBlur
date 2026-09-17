@@ -87,6 +87,14 @@ class DetailViewController: BaseViewController {
         }
     }
 
+    @objc func resetDiscoveryForAccountChange() {
+        // DetailViewController.swift owns Discovery even while its preview reader is visible.
+        if #available(iOS 15.0, *), let controller = retainedDiscoveryController as? DiscoverSitesViewController {
+            controller.resetForAccountChange()
+        }
+        dismissDiscoverSites()
+    }
+
     @objc func dismissDiscoverSites() {
         let hadDiscovery = retainedDiscoveryController != nil
         unmountDiscoveryPane()
