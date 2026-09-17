@@ -129,6 +129,16 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
+        binding.bottomToolbar.setBackground(com.newsblur.view.FloatingToolbarSurface.background(this, prefsRepo.getResolvedTheme(this)));
+        binding.bottomToolbar.bringToFront();
+        binding.bottomToolbar.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            View list = findViewById(R.id.folderfeed_list);
+            if (list != null) {
+                int inset = binding.getRoot().getHeight() - binding.bottomToolbar.getTop() + UIUtils.dp2px(this, 8);
+                if (list.getPaddingBottom() != inset) list.setPadding(list.getPaddingLeft(), list.getPaddingTop(), list.getPaddingRight(), inset);
+                if (list instanceof android.view.ViewGroup) ((android.view.ViewGroup) list).setClipToPadding(false);
+            }
+        });
 
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);

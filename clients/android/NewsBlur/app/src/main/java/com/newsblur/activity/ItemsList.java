@@ -101,6 +101,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Inject
     SyncServiceState syncServiceState;
 
+    @Inject @com.newsblur.di.IconLoader
+    com.newsblur.util.ImageLoader relatedIconLoader;
+
+    @Inject
+    com.newsblur.util.TryFeedStore relatedTryFeedStore;
+
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
@@ -155,6 +161,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean readerToolbarHidden = false;
+    private com.newsblur.view.FloatingStoryToolbar floatingStoryToolbar;
+    private boolean storyToolbarAtBottom;
     @Nullable
     private String preparedReturnStoryHash;
     private boolean fetchingBannerDelayElapsed = false;
@@ -297,6 +305,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onResume() {
         super.onResume();
+        if (binding != null && storyToolbarAtBottom != prefsRepo.isStoryToolbarAtBottom()) {
+            recreate();
+            return;
+        }
         if (syncServiceState.isHousekeepingRunning()) finish();
         applyStoryHeaderTheme();
         refreshStoryHeaderControls();
@@ -493,6 +505,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void setupStoryHeader() {
+        storyToolbarAtBottom = prefsRepo.isStoryToolbarAtBottom();
+        if (storyToolbarAtBottom) floatingStoryToolbar = new com.newsblur.view.FloatingStoryToolbar(binding, prefsRepo.getResolvedTheme(this));
         discoverPillExpandedAppearance = captureStoryHeaderPillAppearance(binding.itemlistDiscoverPill);
         searchPillExpandedAppearance = captureStoryHeaderPillAppearance(binding.itemlistSearchPill);
         binding.itemlistDiscoverPill.setOnClickListener(view -> openDiscoverFeeds());
@@ -583,9 +597,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 isActive ? palette.selectedBorderColor : palette.pillBorderColor,
                 isActive ? palette.selectedTextColor : palette.pillTextColor
         );
+        if (floatingStoryToolbar != null) floatingStoryToolbar.applyTheme(isActive);
     }
 
     private void updateStoryHeaderPillLabels() {
+        if (floatingStoryToolbar != null) {
+            floatingStoryToolbar.update(expandedOptionsPillTitle, compactOptionsPillTitle, binding.itemlistSearchContainer.getVisibility() == View.VISIBLE);
+            return;
+        }
         if (updatingStoryHeaderPillLabels) return;
         if (binding.itemlistStoryHeaderBar.getWidth() <= 0) return;
         updatingStoryHeaderPillLabels = true;
@@ -787,6 +806,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void showMarkReadCutoffMenu(View anchor) {
+        if (storyToolbarAtBottom) {
+            dismissItemListMenuPopup();
+            itemListMenuPopup = com.newsblur.delegate.MarkReadCutoffPopover.show(this, anchor, MARK_READ_CUTOFF_DAYS, days -> {
+                long olderThan = System.currentTimeMillis() - (days * MILLIS_PER_DAY);
+                feedUtils.markRead(this, fs, olderThan, null, R.array.mark_older_read_options, this);
+            });
+            return;
+        }
         PopupMenu popupMenu = new PopupMenu(this, anchor);
         for (int i = 0; i < MARK_READ_CUTOFF_DAYS.length; i++) {
             int days = MARK_READ_CUTOFF_DAYS[i];
@@ -889,6 +916,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistMarkReadContainer.setBackground(markReadBackground);
         binding.itemlistMarkReadMoreButton.setColorFilter(palette.pillTextColor);
         binding.itemlistMarkReadButton.setColorFilter(palette.pillTextColor);
+        if (floatingStoryToolbar != null) floatingStoryToolbar.applyTheme(binding.itemlistSearchContainer.getVisibility() == View.VISIBLE);
     }
 
     public boolean shouldShowDiscoverAction() {
@@ -901,6 +929,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     public void openDiscoverFeeds() {
         if (!shouldShowDiscoverAction()) return;
+        if (storyToolbarAtBottom) {
+            dismissItemListMenuPopup();
+            itemListMenuPopup = RelatedSitesPopover.show(this, binding.itemlistDiscoverPill, fs, relatedIconLoader, relatedTryFeedStore);
+            return;
+        }
 
         if (fs.isSingleNormal()) {
             String feedId = fs.getSingleFeed();

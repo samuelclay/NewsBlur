@@ -1,4 +1,8 @@
 <resources>
+    <string name="settings_story_toolbar_position">Story list toolbar position</string>
+    <string name="settings_story_toolbar_top">Top</string>
+    <string name="settings_story_toolbar_bottom">Bottom</string>
+    <string name="story_header_mark_read_cutoff">Choose how far back to mark read</string>
 
     <string name="newsblur">NewsBlur</string>
 

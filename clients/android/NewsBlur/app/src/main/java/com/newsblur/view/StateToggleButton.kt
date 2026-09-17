@@ -3,12 +3,12 @@ package com.newsblur.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
+import com.newsblur.R
 import android.widget.LinearLayout
 import com.newsblur.databinding.StateToggleBinding
 import com.newsblur.util.StateFilter
 import com.newsblur.util.UIUtils
-import com.newsblur.util.setViewGone
-import com.newsblur.util.setViewVisible
 
 class StateToggleButton(
     context: Context,
@@ -20,6 +20,12 @@ class StateToggleButton(
 
     init {
         binding = StateToggleBinding.inflate(LayoutInflater.from(context), this, true)
+        listOf(binding.toggleAll to R.string.state_all, binding.toggleSome to R.string.state_unread,
+            binding.toggleFocus to R.string.state_focus, binding.toggleSaved to R.string.state_saved).forEach { (view, label) ->
+            view.contentDescription = context.getString(label)
+            view.minimumHeight = UIUtils.dp2px(context, 36)
+            view.minimumWidth = UIUtils.dp2px(context, 40)
+        }
         setState(state)
         binding.toggleAll.setOnClickListener { setState(StateFilter.ALL) }
         binding.toggleSome.setOnClickListener { setState(StateFilter.SOME) }
@@ -46,24 +52,18 @@ class StateToggleButton(
         binding.toggleSaved.isEnabled = state != StateFilter.SAVED
         binding.toggleSavedIcon.alpha = if (state == StateFilter.SAVED) 1.0f else 0.6f
 
-        val widthDp = UIUtils.px2dp(context, context.resources.displayMetrics.widthPixels)
-        if (widthDp > 450) {
-            binding.toggleSomeText.setViewVisible()
-            binding.toggleFocusText.setViewVisible()
-            binding.toggleSavedText.setViewVisible()
-        } else if (widthDp > 400) {
-            binding.toggleSomeText.setViewVisible()
-            binding.toggleFocusText.setViewVisible()
-            binding.toggleSavedText.setViewGone()
-        } else if (widthDp > 350) {
-            binding.toggleSomeText.setViewVisible()
-            binding.toggleFocusText.setViewGone()
-            binding.toggleSavedText.setViewGone()
-        } else {
-            binding.toggleSomeText.setViewGone()
-            binding.toggleFocusText.setViewGone()
-            binding.toggleSavedText.setViewGone()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        // StateToggleButton.kt measures the actual capsule space, including large text and split-screen widths.
+        val labels = listOf(binding.toggleSomeText, binding.toggleFocusText, binding.toggleSavedText)
+        labels.forEach { it.visibility = View.VISIBLE }
+        binding.root.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec)
+        val available = MeasureSpec.getSize(widthMeasureSpec)
+        if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED && binding.root.measuredWidth > available) {
+            labels.forEach { it.visibility = View.GONE }
         }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     interface StateChangedListener {
