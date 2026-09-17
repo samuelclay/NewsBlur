@@ -80,22 +80,28 @@ import XCTest
             table.rowReloads = 0
             let recorder = NextTitleRevealRecorder(table: table)
             recorder.start()
+            let finished = expectation(description: "UIKit completes the Next title reveal")
+            fixture.controller.scrollAnimationFinished = { finished.fulfill() }
             // StoryFirstPageLoadingTests.swift exercises the real list callbacks, in the
             // same order as StoryPagesObjCViewController.m's Next/page-swipe completion.
             fixture.app.activeStory = fixture.stories.activeFeedStories[3] as? [AnyHashable: Any]
             fixture.controller.changeActiveFeedDetailRow()
             fixture.app.recentlyReadStories["first-page-3"] = true
             fixture.controller.redrawUnreadStory()
-            let finished = expectation(description: "Next title reveal finishes")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { finished.fulfill() }
-            await fulfillment(of: [finished], timeout: 2)
+            await fulfillment(of: [finished], timeout: 5)
+            fixture.controller.scrollAnimationFinished = nil
             recorder.stop()
             let samples = recorder.offsets
             print("NEXT_TITLE_REVEAL estimate=\(estimate) reloads=\(table.rowReloads) offsets=\(samples)")
             XCTAssertEqual(table.rowReloads, 0, "Marking the Next story read must not rebuild rows during its reveal animation")
             XCTAssertEqual(table.indexPathForSelectedRow, target)
             XCTAssertGreaterThan(samples.max() ?? 0, 0)
-            XCTAssertGreaterThan(Set(samples.map { Int($0) }).count, 5, "The title must visibly scroll instead of jumping")
+            // StoryFirstPageLoadingTests.swift checks actual interpolation, independent of the CI runner's frame rate.
+            let start = try XCTUnwrap(samples.first)
+            let end = try XCTUnwrap(samples.last)
+            XCTAssertTrue(samples.contains { $0 > start + 0.5 && $0 < end - 0.5 },
+                          "The title must visibly scroll through intermediate positions instead of jumping")
+            XCTAssertTrue(table.bounds.contains(table.rectForRow(at: target)), "The completed reveal must fully show the next title")
             for (earlier, later) in zip(samples, samples.dropFirst()) {
                 XCTAssertGreaterThanOrEqual(later + 0.5, earlier, "The reveal must not jump backwards while moving to the next title")
             }
@@ -869,8 +875,11 @@ import XCTest
         try await prime(fixture, stories: stories)
         fixture.app.unreadStoryHashes["first-page-0"] = true
         fixture.app.recentlyReadStories["first-page-1"] = true
+        let cacheLoaded = expectation(description: "Cached stories are published before checking provisional read ownership")
+        fixture.controller.cacheLookupFinished = { cacheLoaded.fulfill() }
         fixture.open()
-        await settle()
+        await fulfillment(of: [cacheLoaded], timeout: 5)
+        fixture.controller.cacheLookupFinished = nil
         let first = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
         let second = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.dropFirst().first)
         XCTAssertFalse(fixture.stories.isStoryUnread(first))
@@ -1507,10 +1516,15 @@ import XCTest
     }
 
     private func settle() async {
-        // StoryFirstPageLoadingTests.swift leaves queued POST callbacks withheld; this only drains rendering/cache callbacks.
+        // StoryFirstPageLoadingTests.swift leaves queued POST callbacks withheld. After the rendering turn,
+        // wait for the actual utility-queue cache work and its main publication, even on a busy CI runner.
         let drained = expectation(description: "main queue and cache callbacks")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { drained.fulfill() }
-        await fulfillment(of: [drained], timeout: 2)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            StoryFirstPageCache.shared.queue.async {
+                DispatchQueue.main.async { drained.fulfill() }
+            }
+        }
+        await fulfillment(of: [drained], timeout: 5)
     }
 
     private func makeFixture() -> FirstPageFixture {
@@ -1654,6 +1668,9 @@ private final class FirstPageLoadingStories: StoriesCollection {
     var holdCache = false
     var heldCache: [() -> Void] = []
     var cacheLookupFinished: (() -> Void)?
+    var scrollAnimationFinished: (() -> Void)?
+    @objc(scrollViewDidEndScrollingAnimation:)
+    func didFinishTitleReveal(_ scrollView: UIScrollView) { scrollAnimationFinished?() }
     func releaseCache() { if !heldCache.isEmpty { heldCache.removeFirst()() } }
     @objc(lookupFirstPageRequest:completion:)
     func lookupSnapshot(_ request: StoryFirstPageRequest, completion: @escaping (StoryFirstPageSnapshot?) -> Void) {
@@ -1713,7 +1730,11 @@ private final class FirstPageLoadingStories: StoriesCollection {
         self.link = link
     }
     @objc private func sample() { offsets.append(table.layer.presentation()?.bounds.origin.y ?? table.contentOffset.y) }
-    func stop() { link?.invalidate(); link = nil }
+    func stop() {
+        offsets.append(table.contentOffset.y)
+        link?.invalidate()
+        link = nil
+    }
 }
 
 private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
