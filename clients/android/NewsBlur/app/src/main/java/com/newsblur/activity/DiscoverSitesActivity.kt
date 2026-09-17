@@ -16,6 +16,8 @@ import com.newsblur.fragment.AddFeedFragment
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
 import com.newsblur.util.FeedUtils
+import com.newsblur.util.FeedSet
+import com.newsblur.util.AppConstants
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.TryFeedStore
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,8 +72,17 @@ class DiscoverSitesActivity : NbActivity() {
         }
         LaunchedEffect(state.preview) {
             state.preview?.let { feed ->
-                tryFeedStore.set(feed)
-                FeedItemsList.startTryFeedActivity(this@DiscoverSitesActivity, feed)
+                val subscribed = withContext(Dispatchers.IO) { dbHelper.getFeed(feed.feedId) }
+                if (subscribed != null || feed.address in state.added) {
+                    if (tryFeedStore.isTryFeed(feed.feedId)) tryFeedStore.clear()
+                    FeedItemsList.startActivity(
+                        this@DiscoverSitesActivity, FeedSet.singleFeed(feed.feedId),
+                        subscribed ?: feed, AppConstants.ROOT_FOLDER, null, null,
+                    )
+                } else {
+                    tryFeedStore.set(feed)
+                    FeedItemsList.startTryFeedActivity(this@DiscoverSitesActivity, feed)
+                }
                 model.previewOpened()
             }
         }

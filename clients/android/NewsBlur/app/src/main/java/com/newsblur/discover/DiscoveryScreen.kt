@@ -344,7 +344,7 @@ private fun DiscoveryCard(
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            TextButton(onClick = onPreview, enabled = enabled) { Text("Try", color = colors.siteLink) }
+            TextButton(onClick = onPreview, enabled = enabled) { Text(if (added) "Open" else "Try", color = colors.siteLink) }
             Button(
                 onClick = onAdd,
                 enabled = enabled && !added,
