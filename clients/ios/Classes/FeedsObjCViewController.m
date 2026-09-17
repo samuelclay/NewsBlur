@@ -252,6 +252,14 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     self.feedTitlesTable.refreshControl = self.refreshControl;
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+    // FeedsObjCViewController.m anchors directly to view edges so interactive navigation's
+    // changing layout margins cannot briefly narrow the toolbar before the next layout pass.
+    if (self.feedViewToolbar && self.toolbarLeadingConstraint && self.toolbarTrailingConstraint) {
+        [NSLayoutConstraint deactivateConstraints:@[self.toolbarLeadingConstraint, self.toolbarTrailingConstraint]];
+        self.toolbarLeadingConstraint = [self.feedViewToolbar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor];
+        self.toolbarTrailingConstraint = [self.view.trailingAnchor constraintEqualToAnchor:self.feedViewToolbar.trailingAnchor];
+        [NSLayoutConstraint activateConstraints:@[self.toolbarLeadingConstraint, self.toolbarTrailingConstraint]];
+    }
 #endif
     if (!self.defaultFeedToolbarItems) {
         self.defaultFeedToolbarItems = self.feedViewToolbar.items;
@@ -590,16 +598,19 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.toolbarLeadingConstraint.constant = compactToolbarSideInset;
     self.toolbarTrailingConstraint.constant = compactToolbarSideInset;
 #else
-    // MainInterface.storyboard anchors this toolbar to layout margins, not the view edges.
-    // Subtract those margins so the intended 8pt inset does not become 24pt on phone or 20pt on iPad.
     CGFloat toolbarSideInset = 8.0;
     if (@available(iOS 27.0, *)) {
         // FeedsObjCViewController.m uses UIKit's own 16pt inner margins on both device sizes
         // so full filter labels fit without a second outer inset.
         toolbarSideInset = 0;
     }
-    self.toolbarLeadingConstraint.constant = self.view.safeAreaInsets.left + toolbarSideInset - self.view.layoutMargins.left;
-    self.toolbarTrailingConstraint.constant = self.view.safeAreaInsets.right + toolbarSideInset - self.view.layoutMargins.right;
+    // FeedsObjCViewController.m sizes the toolbar against the stationary navigation viewport.
+    // During a completed interactive Back, UIKit temporarily clips this moving child view's
+    // safe area; using that inset narrows the toolbar and swaps filter labels for icons.
+    UIView *toolbarViewport = self.navigationController.view ?: self.view;
+    UIEdgeInsets toolbarSafeAreaInsets = toolbarViewport.safeAreaInsets;
+    self.toolbarLeadingConstraint.constant = toolbarSafeAreaInsets.left + toolbarSideInset;
+    self.toolbarTrailingConstraint.constant = toolbarSafeAreaInsets.right + toolbarSideInset;
 #endif
     self.toolbarBottomConstraint.constant = -toolbarBottomGap;
     CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
@@ -844,6 +855,30 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self.intelligenceControl setImage:savedImage forSegmentAtIndex:3];
 
     [self.intelligenceControl sizeToFit];
+
+#if !defined(NS_BLOCK_ASSERTIONS)
+    // FeedsObjCViewController.m records transient geometry for the real swipe-back UI regression.
+    if ([NSProcessInfo.processInfo.arguments containsObject:@"-newsblur-toolbar-transition-probe"]) {
+        static NSMutableArray *transitionSamples;
+        if (self.transitionCoordinator.initiallyInteractive || transitionSamples.count > 0) {
+            if (!transitionSamples) transitionSamples = [NSMutableArray array];
+            if (transitionSamples.count < 200) {
+                [transitionSamples addObject:@{
+                    @"toolbar": @(toolbarWidth),
+                    @"view": @(CGRectGetWidth(self.view.bounds)),
+                    @"unread": @([self.intelligenceControl widthForSegmentAtIndex:1]),
+                    @"leftMargin": @(self.view.layoutMargins.left),
+                    @"rightMargin": @(self.view.layoutMargins.right),
+                    @"leading": @(self.toolbarLeadingConstraint.constant),
+                    @"trailing": @(self.toolbarTrailingConstraint.constant),
+                    @"interactive": @(self.transitionCoordinator.initiallyInteractive)
+                }];
+                NSData *data = [NSJSONSerialization dataWithJSONObject:transitionSamples options:0 error:nil];
+                self.feedViewToolbar.accessibilityValue = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            }
+        }
+    }
+#endif
     
 //    NSInteger height = 16;
 //    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
@@ -1657,6 +1692,20 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     UINavigationController *navController = self.navigationController;
     
+#if !TARGET_OS_MACCATALYST
+    if (@available(iOS 17.0, *)) {
+        [self.feedViewToolbar layoutIfNeeded];
+        CGRect settingsFrame = [self.settingsBarButton frameInView:self.view];
+        CGRect toolbarFrame = [self.feedViewToolbar convertRect:self.feedViewToolbar.bounds toView:self.view];
+        // FeedsObjCViewController.m: a view anchor keeps UIKit from morphing the shared glass toolbar into the menu.
+        CGRect sourceRect = CGRectMake(CGRectGetMinX(settingsFrame), CGRectGetMinY(toolbarFrame) - 9.0,
+                                       CGRectGetWidth(settingsFrame), 1.0);
+        [viewController showFromNavigationController:navController barButtonItem:nil
+                                          sourceView:self.view sourceRect:sourceRect
+                            permittedArrowDirections:UIPopoverArrowDirectionDown];
+        return;
+    }
+#endif
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton permittedArrowDirections:UIPopoverArrowDirectionDown];
 }
 
@@ -4200,7 +4249,11 @@ heightForHeaderInSection:(NSInteger)section {
     [self.userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
-    yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"indicator-unread"]];
+    // FeedsObjCViewController.m builds these views inside the rotation animation.
+    // Start at their display size so the asset's intrinsic size never animates down.
+    yellowIcon = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
+    yellowIcon.image = [UIImage imageNamed:@"indicator-unread"];
+    yellowIcon.contentMode = UIViewContentModeScaleAspectFit;
     [self.userInfoView addSubview:yellowIcon];
     yellowIcon.hidden = YES;
     
@@ -4210,7 +4263,9 @@ heightForHeaderInSection:(NSInteger)section {
     neutralCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:neutralCount];
     
-    greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"indicator-focus"]];
+    greenIcon = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
+    greenIcon.image = [UIImage imageNamed:@"indicator-focus"];
+    greenIcon.contentMode = UIViewContentModeScaleAspectFit;
     [self.userInfoView addSubview:greenIcon];
     greenIcon.hidden = YES;
     

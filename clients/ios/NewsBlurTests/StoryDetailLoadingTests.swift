@@ -1377,6 +1377,10 @@ import XCTest
         XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 0), 64, accuracy: 0.5)
         articleWindow.testSafeAreaTop = 24
         XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 1), 68, accuracy: 0.5)
+        articleWindow.testSafeAreaTop = 0
+        XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 1), 44, accuracy: 0.5,
+                       "An attached landscape window with no status bar must not receive a portrait or notched-device inset")
+        XCTAssertEqual(fixture.pages.topInset(forNavigationBarAlpha: 0), 44, accuracy: 0.5)
     }
 
     private func assertFirstArticleInsetThroughNativeHandoff(isRiver: Bool, savedPosition: Int? = nil, toolbarOffset: CGFloat = 0) async throws {

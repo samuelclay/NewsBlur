@@ -292,7 +292,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             break;
         }
     }
-    [self.storyTitlesTable.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.headerContainer.bottomAnchor].active = YES;
+    [self.storyTitlesTable.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.contentTopAnchor].active = YES;
 
     // Add search field to the header bar's search container (below pill bar)
     [self.storyTitlesHeaderBar addSearchField:self.searchField];
@@ -1153,6 +1153,22 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     [self restorePendingNotificationViewport];
+    // FeedDetailObjCViewController.m leaves room to scroll the final row above the experimental glass bar.
+    if (self.storyTitlesHeaderBar.usesFloatingBottomBar) {
+        CGRect bar = [self.storyTitlesHeaderBar.headerContainer convertRect:self.storyTitlesHeaderBar.headerContainer.bounds toView:self.storyTitlesTable];
+        CGFloat bottom = MAX(0, CGRectGetMaxY(self.storyTitlesTable.bounds) - CGRectGetMinY(bar));
+        UIEdgeInsets inset = self.storyTitlesTable.contentInset;
+        inset.bottom = bottom;
+        if (!UIEdgeInsetsEqualToEdgeInsets(self.storyTitlesTable.contentInset, inset)) {
+            self.storyTitlesTable.contentInset = inset;
+            self.storyTitlesTable.verticalScrollIndicatorInsets = inset;
+        }
+    } else if (self.storyTitlesTable.contentInset.bottom != 0) {
+        UIEdgeInsets inset = self.storyTitlesTable.contentInset;
+        inset.bottom = 0;
+        self.storyTitlesTable.contentInset = inset;
+        self.storyTitlesTable.verticalScrollIndicatorInsets = inset;
+    }
 }
 
 - (void)configureInteractivePopGesture {
@@ -3633,7 +3649,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         [bottomBorder.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor],
         [bottomBorder.heightAnchor constraintEqualToConstant:1],
 
-        [banner.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.headerContainer.bottomAnchor],
+        [banner.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.contentTopAnchor],
         [banner.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
         [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     ]];
@@ -3677,7 +3693,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
         [NSLayoutConstraint deactivateConstraints:toRemove];
         [NSLayoutConstraint activateConstraints:@[
-            [self.fetchingBannerView.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.headerContainer.bottomAnchor]
+            [self.fetchingBannerView.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.contentTopAnchor]
         ]];
     }
 
@@ -3783,7 +3799,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     // Position below try-feed banner if it exists, otherwise below the header pill bar
     NSLayoutAnchor *topAnchor = self.tryFeedBannerView
         ? self.tryFeedBannerView.bottomAnchor
-        : self.storyTitlesHeaderBar.headerContainer.bottomAnchor;
+        : self.storyTitlesHeaderBar.contentTopAnchor;
 
     NSMutableArray<NSLayoutConstraint *> *constraints = [NSMutableArray arrayWithArray:@[
         [mainStack.topAnchor constraintEqualToAnchor:banner.topAnchor constant:8],
@@ -6008,7 +6024,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #else
     if (sender && [sender isKindOfClass:[UIView class]]) {
         UIView *sourceView = (UIView *)sender;
-        [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceView.bounds completionHandler:^(BOOL marked){
+        [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:[self.storyTitlesHeaderBar popoverSourceRectFor:sourceView] completionHandler:^(BOOL marked){
             if (marked) {
                 pop();
             }
@@ -6193,7 +6209,13 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
     }
 #else
-    [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
+    if ([sender isKindOfClass:[UIView class]] && [(UIView *)sender window]) {
+        // FeedDetailObjCViewController.m anchors to the visible button when the compact phone bar hosts it.
+        UIView *sourceView = (UIView *)sender;
+        [viewController showFromNavigationController:navController barButtonItem:nil sourceView:sourceView sourceRect:sourceView.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
+    } else {
+        [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
+    }
 #endif
 }
 
@@ -6346,7 +6368,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:pillView sourceRect:pillView.bounds];
 #else
     UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
-    [viewController showFromNavigationController:navController barButtonItem:nil sourceView:pillView sourceRect:pillView.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
+    [viewController showFromNavigationController:navController barButtonItem:nil sourceView:pillView sourceRect:[self.storyTitlesHeaderBar popoverSourceRectFor:pillView] permittedArrowDirections:self.storyTitlesHeaderBar.usesFloatingBottomBar ? UIPopoverArrowDirectionDown : UIPopoverArrowDirectionUp];
 #endif
 }
 

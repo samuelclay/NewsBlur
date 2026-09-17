@@ -592,7 +592,20 @@ class PreferencesViewModel: ObservableObject {
                 iconColor: .purple,
                 items: [
                     PreferenceItem(
+                        title: "Story list toolbar position",
+                        icon: "rectangle.bottomthird.inset.filled",
+                        iconColor: .blue,
+                        type: .multiValue(
+                            key: "story_toolbar_position",
+                            titles: ["Top", "Bottom"],
+                            values: ["top", "bottom"],
+                            defaultValue: "bottom"
+                        ),
+                        subtitle: "Place the story list controls above or below the stories"
+                    ),
+                    PreferenceItem(
                         title: "Story titles layout",
+
                         icon: "rectangle.split.3x1",
                         iconColor: .purple,
                         type: .multiValue(
@@ -1744,7 +1757,10 @@ struct PickerSheet: View {
 
                                 Spacer()
 
-                                if index == selectedIndex {
+                                if key == "story_toolbar_position" {
+                                    Image(systemName: index == selectedIndex ? "largecircle.fill.circle" : "circle")
+                                        .foregroundColor(PreferencesColors.newsblurGreen)
+                                } else if index == selectedIndex {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(PreferencesColors.newsblurGreen)
                                         .font(.body.bold())

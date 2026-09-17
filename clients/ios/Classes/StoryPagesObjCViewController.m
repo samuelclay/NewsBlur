@@ -1157,16 +1157,16 @@
     UIWindow *window = self.view.window ?: self.pendingPresentationPage.webView.window ?:
         appDelegate.feedsNavigationController.viewIfLoaded.window ?: appDelegate.detailViewController.view.window;
 
-    // Use window's safe area insets for the status bar area (most reliable)
-    CGFloat safeAreaTop = window.safeAreaInsets.top;
-    if (safeAreaTop <= 0) {
+    // StoryPagesObjCViewController.m must respect a real window's zero inset in
+    // landscape instead of replacing it with stale portrait or status bar geometry.
+    CGFloat safeAreaTop;
+    if (window) {
+        safeAreaTop = window.safeAreaInsets.top;
+    } else {
         safeAreaTop = self.view.safeAreaInsets.top;
-    }
-    if (safeAreaTop <= 0) {
-        safeAreaTop = window.windowScene.statusBarManager.statusBarFrame.size.height;
-    }
-    if (safeAreaTop <= 0) {
-        safeAreaTop = 59;  // Fallback for notched devices
+        if (safeAreaTop <= 0) {
+            safeAreaTop = 59;  // Fallback before any presentation window is available.
+        }
     }
 
     // When custom toolbar is used (always on iPhone), content inset is always fixed at

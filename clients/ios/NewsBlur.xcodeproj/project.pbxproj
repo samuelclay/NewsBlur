@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C0A0C701A9B84F5681000002 /* CompactPhoneNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */; };
+		C0A0C701A9B84F5681000003 /* CompactPhoneNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */; };
 		E91620260916000300000001 /* StoryURLContrastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91620260916000300000002 /* StoryURLContrastTests.swift */; };
 		E91620260916000200000001 /* ShareStoryUpdateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91620260916000200000002 /* ShareStoryUpdateTests.swift */; };
 		E91620260916000100000001 /* FeedToolbarLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91620260916000100000002 /* FeedToolbarLayoutTests.swift */; };
@@ -1623,6 +1625,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactPhoneNavigationController.swift; sourceTree = "<group>"; };
 		E91620260916000300000002 /* StoryURLContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryURLContrastTests.swift; sourceTree = "<group>"; };
 		E91620260916000200000002 /* ShareStoryUpdateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareStoryUpdateTests.swift; sourceTree = "<group>"; };
 		E91620260916000100000002 /* FeedToolbarLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedToolbarLayoutTests.swift; sourceTree = "<group>"; };
@@ -3850,6 +3853,7 @@
 				172ECBFF298B156D006371BC /* SwiftUIUtilities.swift */,
 				172AD273251D9F40000BB264 /* Storyboards.swift */,
 				170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */,
+				C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */,
 				170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */,
 				176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */,
 				C0D3C0DE2F2A4A0100000001 /* StoryAutoCollapseDecision.swift */,
@@ -5563,6 +5567,7 @@
 				175792632930605500490924 /* ActivityModule.m in Sources */,
 				175792642930605500490924 /* InteractionsModule.m in Sources */,
 				175792652930605500490924 /* SplitViewController.swift in Sources */,
+				C0A0C701A9B84F5681000002 /* CompactPhoneNavigationController.swift in Sources */,
 				175792662930605500490924 /* ABTableViewCell.m in Sources */,
 				175792672930605500490924 /* PremiumManager.m in Sources */,
 				175792682930605500490924 /* GTMNString+HTML.m in Sources */,
@@ -5819,6 +5824,7 @@
 				437F976F15AE21290007136B /* ActivityModule.m in Sources */,
 				437F977215AE70E30007136B /* InteractionsModule.m in Sources */,
 				170E3CCF24F8A5D8009CE819 /* SplitViewController.swift in Sources */,
+				C0A0C701A9B84F5681000003 /* CompactPhoneNavigationController.swift in Sources */,
 				43A4C3D715B00966008787B5 /* ABTableViewCell.m in Sources */,
 				1715D02B2166B3F900227731 /* PremiumManager.m in Sources */,
 				43A4C3DA15B00966008787B5 /* GTMNString+HTML.m in Sources */,
