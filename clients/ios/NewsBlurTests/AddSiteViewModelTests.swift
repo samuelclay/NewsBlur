@@ -479,6 +479,96 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.newslettersState.hasMore)
     }
 
+    func test_categorySelectionAndAppearanceSharePendingInitialRequest() async {
+        let tabs: [(DiscoverTab, String, (DiscoverSitesViewModel) -> CategoryTabState)] = [
+            (.popular, "all", { $0.popularState }),
+            (.youtube, "youtube", { $0.youtubeState }),
+            (.reddit, "reddit", { $0.redditState }),
+            (.newsletters, "newsletter", { $0.newslettersState }),
+            (.podcasts, "podcast", { $0.podcastsState })
+        ]
+        for (tab, type, state) in tabs {
+            let viewModel = model()
+            let started = expectation(description: "Initial \(type) request started")
+            let release = DispatchSemaphore(value: 0)
+            let lock = NSLock()
+            var requestCount = 0
+            ResponseProtocol.handler = { request in
+                lock.lock()
+                requestCount += 1
+                let firstRequest = requestCount == 1
+                lock.unlock()
+                if firstRequest {
+                    started.fulfill()
+                    XCTAssertEqual(release.wait(timeout: .now() + 5), .success)
+                }
+                return (200, ["code": 1, "feeds": [["title": type, "feed_url": "https://example.com/feed"]]])
+            }
+            viewModel.onTabSelected(tab)
+            await fulfillment(of: [started], timeout: 2)
+            // PopularTabView.swift and source-tab onAppear handlers repeat the initial load before it completes.
+            viewModel.loadPopularFeeds(type: type, category: nil, subcategory: nil, offset: 0)
+            release.signal()
+            await waitUntil { !state(viewModel).isLoading }
+            XCTAssertEqual(requestCount, 1, "Tab selection and appearance should share the pending \(type) request")
+            XCTAssertEqual(state(viewModel).feeds.first?.feedTitle, type)
+        }
+    }
+
+    func test_changedCategoryParametersReplacePendingInitialRequest() async {
+        for changedParameter in ["category", "subcategory", "platform", "include_stories"] {
+            let viewModel = model()
+            let started = expectation(description: "Initial request before \(changedParameter) change")
+            let release = DispatchSemaphore(value: 0)
+            let lock = NSLock()
+            var requestCount = 0
+            ResponseProtocol.handler = { request in
+                let parameters = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!.queryItems!
+                let replacement = parameters.contains { $0.name == changedParameter }
+                lock.lock()
+                requestCount += 1
+                lock.unlock()
+                if !replacement {
+                    started.fulfill()
+                    XCTAssertEqual(release.wait(timeout: .now() + 5), .success)
+                }
+                let title = replacement ? "Changed filter" : "Original filter"
+                return (200, ["code": 1, "feeds": [["title": title, "feed_url": "https://example.com/feed"]]])
+            }
+            viewModel.onTabSelected(.newsletters)
+            await fulfillment(of: [started], timeout: 2)
+            if changedParameter == "platform" { viewModel.newslettersState.platformFilter = "substack" }
+            if changedParameter == "include_stories" { viewModel.feedViewMode = .list }
+            viewModel.loadPopularFeeds(type: "newsletter",
+                                       category: changedParameter == "category" ? "Technology" : nil,
+                                       subcategory: changedParameter == "subcategory" ? "Programming" : nil,
+                                       offset: 0)
+            release.signal()
+            await waitUntil { !viewModel.newslettersState.isLoading }
+            XCTAssertEqual(requestCount, 2, "Changing \(changedParameter) must replace the pending request")
+            XCTAssertEqual(viewModel.newslettersState.feeds.first?.feedTitle, "Changed filter")
+            XCTAssertEqual(viewModel.newslettersState.hasLoadedStories, changedParameter == "include_stories")
+        }
+    }
+
+    func test_categoryRequestCanRetryAfterFailureAndReloadAfterSuccess() async {
+        let viewModel = model()
+        ResponseProtocol.handler = { _ in (503, ["message": "Temporarily unavailable"]) }
+        viewModel.onTabSelected(.popular)
+        await waitUntil { !viewModel.popularState.isLoading }
+        XCTAssertNotNil(viewModel.popularState.errorMessage)
+
+        for title in ["Retry result", "Reload result"] {
+            ResponseProtocol.handler = { _ in
+                (200, ["code": 1, "feeds": [["title": title, "feed_url": "https://example.com/feed"]]])
+            }
+            viewModel.loadPopularFeeds(type: "all", category: nil, subcategory: nil, offset: 0)
+            await waitUntil { !viewModel.popularState.isLoading }
+            XCTAssertNil(viewModel.popularState.errorMessage)
+            XCTAssertEqual(viewModel.popularState.feeds.first?.feedTitle, title)
+        }
+    }
+
     func test_gridCategoryReplacementReloadsStoryPreviewsWhenReturningToList() async {
         let viewModel = model()
         ResponseProtocol.handler = { request in

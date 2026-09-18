@@ -36,7 +36,7 @@ class DiscoverSitesViewModel: ObservableObject {
 
     private let appEnvironment: AddSiteViewModelAppEnvironment
     private let session: URLSession
-    private var categoryRequests: [String: UUID] = [:]
+    private var categoryRequests: [String: (token: UUID, parameters: [String: String])] = [:]
     private var searchRequests: [String: UUID] = [:]
     private var autocompleteRequest = UUID()
     private var analysisStartedAt: Date?
@@ -295,8 +295,6 @@ class DiscoverSitesViewModel: ObservableObject {
 
     func loadPopularFeeds(type: String, category: String?, subcategory: String?, offset: Int) {
         if offset > 0 && categoryTabState(for: type).isLoading { return }
-        let token = UUID()
-        categoryRequests[type] = token
         let includesStories = feedViewMode == .list
         var params: [String: String] = [
             "type": type,
@@ -314,7 +312,11 @@ class DiscoverSitesViewModel: ObservableObject {
         }
 
         if let platform = categoryTabState(for: type).platformFilter { params["platform"] = platform }
+        // PopularTabView.swift and the source tabs can request the same load from selection and onAppear.
+        guard categoryRequests[type]?.parameters != params else { return }
         guard let request = makeRequest(path: "/discover/popular_feeds", params: params) else { return }
+        let token = UUID()
+        categoryRequests[type] = (token, params)
 
         updateCategoryTabState(type: type) { state in
             state.isLoading = true
@@ -326,9 +328,12 @@ class DiscoverSitesViewModel: ObservableObject {
         }
 
         Task {
+            defer {
+                if categoryRequests[type]?.token == token { categoryRequests[type] = nil }
+            }
             do {
                 let json = try await performRequest(request)
-                guard categoryRequests[type] == token else { return }
+                guard categoryRequests[type]?.token == token else { return }
                 let feedsArray = json["feeds"] as? [[String: Any]] ?? []
                 let feeds = feedsArray.compactMap { entry -> DiscoverPopularFeed? in
                     Self.parsePopularFeedEntry(entry)
@@ -372,7 +377,7 @@ class DiscoverSitesViewModel: ObservableObject {
                     }
                 }
             } catch {
-                guard categoryRequests[type] == token else { return }
+                guard categoryRequests[type]?.token == token else { return }
                 updateCategoryTabState(type: type) { $0.isLoading = false; $0.errorMessage = error.localizedDescription }
             }
         }
