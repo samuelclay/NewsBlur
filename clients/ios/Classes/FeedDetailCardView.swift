@@ -25,6 +25,7 @@ struct CardView: View {
     @AppStorage("story_title_swipe_right") private var rightSwipe = "back"
     @AppStorage("story_title_swipe_left") private var leftSwipe = "read"
     @AppStorage("enable_story_swipes") private var swipeActionsEnabled = true
+    @AppStorage("long_press_story_title") private var longPressAction = "show_actions"
 
     private var rightAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(rightSwipe, fallback: .back) }
     private var leftAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(leftSwipe, fallback: .read) }
@@ -94,55 +95,16 @@ struct CardView: View {
                 .tint(Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]))
             }
         }
-        .if(!story.isClusterStory) { view in
+        .if(!story.isClusterStory && (longPressAction == "show_actions" || cache.appDelegate.isMac)) { view in
             view.contextMenu {
-                if !cache.isDashboard {
-                    Button {
-                        cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label(story.isRead ? "Mark as unread" : "Mark as read", image: "mark-read")
-                    }
-
-                    Button {
-                        cache.appDelegate.activeStory = story.dictionary
-                        cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label("Mark newer stories read", image: "mark-read")
-                    }
-
-                    Button {
-                        cache.appDelegate.activeStory = story.dictionary
-                        cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label("Mark older stories read", image: "mark-read")
-                    }
-
-                    Divider()
-
-                    Button {
-                        cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label(story.isSaved ? "Unsave this story" : "Save this story", image: "saved-stories")
-                    }
-                }
-
-                Button {
-                    cache.appDelegate.activeStory = story.dictionary
-                    cache.appDelegate.showSend(to: cache.appDelegate.feedDetailViewController, sender: cache.appDelegate.feedDetailViewController.view)
-                } label: {
-                    Label("Send this story to…", image: "email")
-                }
-
-                Button {
-                    cache.appDelegate.activeStory = story.dictionary
-                    cache.appDelegate.openTrainStory(cache.appDelegate.feedDetailViewController.view)
-                } label: {
-                    Label("Train this story", image: "train")
-                }
+                RowMenuContent(groups: RowActionMenus.story(story, controller: cache.appDelegate.feedDetailViewController,
+                                                            source: cache.appDelegate.feedDetailViewController.view,
+                                                            dashboard: cache.isDashboard))
+            }
+        }
+        .if(!story.isClusterStory && longPressAction != "show_actions" && !cache.appDelegate.isMac) { view in
+            view.onLongPressGesture {
+                RowActionMenus.performStoryShortcut(story, controller: cache.appDelegate.feedDetailViewController)
             }
         }
         .accessibilityIdentifier(storyAccessibilityIdentifier)

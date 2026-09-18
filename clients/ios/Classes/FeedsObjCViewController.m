@@ -2613,6 +2613,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, height + font.pointSize*2);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
     folderTitle.section = (int)section;
+    [(FeedsViewController *)self installFolderContextMenu:folderTitle];
     
     self.folderTitleViews[@(section)] = folderTitle;
     

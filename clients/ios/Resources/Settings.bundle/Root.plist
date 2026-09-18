@@ -775,18 +775,20 @@
 			<string>long_press_feed_title</string>
 			<key>Titles</key>
 			<array>
+				<string>Show actions</string>
 				<string>Choose how far back to mark read</string>
 				<string>Mark all stories read</string>
 				<string>Do nothing</string>
 			</array>
 			<key>Values</key>
 			<array>
+				<string>show_actions</string>
 				<string>mark_read_choose_days</string>
 				<string>mark_read_immediate</string>
 				<string>nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>mark_read_choose_days</string>
+			<string>show_actions</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -865,7 +867,8 @@
 			<string>long_press_story_title</string>
 			<key>Titles</key>
 			<array>
-				<string>Ask AI</string>
+				<string>Show actions</string>
+				<string>Mark older or newer stories read</string>
 				<string>Share</string>
 				<string>Mark as unread</string>
 				<string>Save story</string>
@@ -874,6 +877,7 @@
 			</array>
 			<key>Values</key>
 			<array>
+				<string>show_actions</string>
 				<string>ask</string>
 				<string>open_send_to</string>
 				<string>mark_unread</string>
@@ -882,7 +886,7 @@
 				<string>nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>open_send_to</string>
+			<string>show_actions</string>
 		</dict>
 		<dict>
 			<key>Title</key>

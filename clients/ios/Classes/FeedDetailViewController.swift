@@ -727,54 +727,19 @@ extension FeedDetailViewController {
 //        }
     }
     
-#if targetEnvironment(macCatalyst)
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard GesturePreferences.storyLongPressShowsMenu || isMac else { return nil }
         let location = storyLocation(for: indexPath)
-        
-        guard location < storiesCollection.storyLocationsCount else {
-            return nil
-        }
-        
-        let storyIndex = storiesCollection.index(fromLocation: location)
-        let story = Story(index: storyIndex)
-        
-        appDelegate.activeStory = story.dictionary
-        
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
-            let read = UIAction(title: story.isRead ? "Mark as unread" : "Mark as read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
-                self.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
-                self.reload()
-            }
-            
-            let newer = UIAction(title: "Mark newer stories read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
-                self.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
-                self.reload()
-            }
-            
-            let older = UIAction(title: "Mark older stories read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
-                self.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
-                self.reload()
-            }
-            
-            let saved = UIAction(title: story.isSaved ? "Unsave this story" : "Save this story", image: Utilities.imageNamed("saved-stories", sized: 14)) { action in
-                self.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
-                self.reload()
-            }
-            
-            let send = UIAction(title: "Send this story to…", image: Utilities.imageNamed("email", sized: 14)) { action in
-                self.appDelegate.showSend(to: self, sender: self.view)
-            }
-            
-            let train = UIAction(title: "Train this story", image: Utilities.imageNamed("train", sized:    14)) { action in
-                self.appDelegate.openTrainStory(self.view)
-            }
-            
-            let submenu = UIMenu(title: "", options: .displayInline, children: [saved, send, train])
-            
-            return UIMenu(title: "", children: [read, newer, older, submenu])
-        }
+        guard location >= 0, location < storiesCollection.storyLocationsCount,
+              let cell = tableView.cellForRow(at: indexPath) else { return nil }
+        let index = storiesCollection.index(fromLocation: location)
+        guard index >= 0, index < storiesCollection.activeFeedStories.count,
+              let dictionary = storiesCollection.activeFeedStories[index] as? [String: Any] else { return nil }
+        let story = Story(index: index, dictionary: dictionary)
+        let groups = RowActionMenus.story(story, controller: self, source: cell)
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in RowActionMenus.menu(groups) }
     }
-#endif
+
 }
 
 extension FeedDetailViewController: FeedDetailInteraction {

@@ -9,6 +9,140 @@ final class ReaderUITests: XCTestCase {
         app = XCUIApplication()
     }
 
+    func test_feedFolderAndSpecialRowContextMenus() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-long_press_feed_title", "show_actions"]
+        launch(on: "reader")
+        let feed = feedCell("910001")
+        XCTAssertTrue(feed.waitForExistence(timeout: 15))
+        feed.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Rename site…"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Statistics"].exists)
+        XCTAssertTrue(app.buttons["Delete site…"].exists)
+        attachScreenshot(named: "feed-context-menu")
+        app.buttons["Rename site…"].tap()
+        XCTAssertTrue(app.alerts["Rename Arc News"].waitForExistence(timeout: 5))
+        app.alerts.buttons["Cancel"].tap()
+        XCTAssertTrue(feed.isHittable, "Opening a menu must not navigate away from feeds")
+
+        let folder = folderButton(named: "Tech")
+        folder.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Rename folder…"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Mark as read…"].exists)
+        XCTAssertFalse(app.buttons["Mute site"].exists)
+        attachScreenshot(named: "folder-context-menu")
+        app.buttons["Rename folder…"].tap()
+        XCTAssertTrue(app.alerts["Rename Tech"].waitForExistence(timeout: 5))
+        app.alerts.buttons["Cancel"].tap()
+
+        let all = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "All Site Stories")).firstMatch
+        XCTAssertTrue(all.exists)
+        all.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Mark as read…"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Delete folder…"].exists)
+        attachScreenshot(named: "all-stories-context-menu")
+        #endif
+    }
+
+    func test_storyContextMenuClassic() throws { try checkStoryContextMenu(style: "standard", theme: "light") }
+    func test_storyContextMenuCards() throws { try checkStoryContextMenu(style: "experimental", theme: "medium") }
+
+    func test_storyMenuInLandscapeOpensFeedFromFolder() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.launchArguments += ["-long_press_story_title", "show_actions", "-newsblur-ui-test-theme", "dark"]
+        launch(on: "reader-folder-tech", storyTitlesStyle: "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let story = app.cells.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-")).firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 10))
+        story.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Open feed"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "story-context-menu-landscape-dark")
+        app.buttons["Open feed"].tap()
+        XCTAssertTrue(app.navigationBars.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Swift Weekly")).firstMatch.waitForExistence(timeout: 10))
+        #endif
+    }
+
+    func test_storyCustomLongPressStillSavesDirectly() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        for style in ["standard", "experimental"] {
+            app = XCUIApplication()
+            app.launchArguments = ["-long_press_story_title", "save_story"]
+            launch(on: "reader-feed-swift", storyTitlesStyle: style)
+            XCTAssertTrue(waitForFixtureStoryTitles())
+            let story = app.descendants(matching: .any)["story-row-ui-story-swift-1"].firstMatch
+            XCTAssertTrue(story.waitForExistence(timeout: 10))
+            story.coordinate(withNormalizedOffset: CGVector(dx: 0.4, dy: 0.4)).press(forDuration: 1.2)
+            let saved = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                (story.value as? String)?.contains("Saved") == true
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 5), .completed)
+            XCTAssertFalse(app.buttons["Share link…"].exists)
+        }
+        #endif
+    }
+
+    func test_liveAlphaRowContextMenus() throws {
+        try requireLiveSession()
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-long_press_feed_title", "show_actions", "-long_press_story_title", "show_actions"]
+        app.launch()
+        attachScreenshot(named: "claypad-before-context-menus")
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        let feed = feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable }
+        let target = try XCTUnwrap(feed)
+        target.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Rename site…"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "claypad-feed-context-menu")
+        app.buttons["Rename site…"].tap()
+        XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 5))
+        app.alerts.buttons["Cancel"].tap()
+        target.tap()
+        let story = app.cells.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-")).firstMatch
+        let card = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-")).firstMatch
+        let loaded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in story.exists || card.exists }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 20), .completed)
+        let row = story.exists ? story : card
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.4, dy: 0.4)).press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Share link…"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Train intelligence…"].exists)
+        attachScreenshot(named: "claypad-story-context-menu")
+        // ReaderUITests.swift dismisses through the header without executing a story action on the live account.
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.55, dy: 0.04)).tap()
+    }
+
+    private func checkStoryContextMenu(style: String, theme: String) throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-long_press_story_title", "show_actions", "-newsblur-ui-test-theme", theme]
+        launch(on: "reader-feed-swift", storyTitlesStyle: style)
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let story = style == "standard" ? app.cells["story-row-ui-story-swift-1"].firstMatch : app.staticTexts["Swift Fixture Story One"].firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 10))
+        story.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Save story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Mark as read"].exists)
+        XCTAssertTrue(app.buttons["Share link…"].exists)
+        XCTAssertTrue(app.buttons["Train intelligence…"].exists)
+        XCTAssertFalse(app.buttons["Open feed"].exists, "The current feed does not need an Open feed action")
+        attachScreenshot(named: "story-context-menu-\(style)-\(theme)")
+        app.buttons["Save story"].tap()
+        XCTAssertTrue(story.waitForExistence(timeout: 5))
+        story.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Unsave story"].waitForExistence(timeout: 5))
+        app.buttons["Unsave story"].tap()
+        #endif
+    }
+
     func test_splitFooterSearchAndMenusAcrossRotation() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Footer fixture runs only on the simulator")

@@ -2,6 +2,14 @@ import Foundation
 
 // GesturePreferences.swift keeps feed and story swipe choices independent, including upgrades from the shared toggle.
 @objc final class GesturePreferences: NSObject {
+    @objc static var feedLongPressShowsMenu: Bool {
+        (UserDefaults.standard.string(forKey: "long_press_feed_title") ?? "show_actions") == "show_actions"
+    }
+
+    @objc static var storyLongPressShowsMenu: Bool {
+        (UserDefaults.standard.string(forKey: "long_press_story_title") ?? "show_actions") == "show_actions"
+    }
+
     static let feedActions = ["read", "trainer", "notifications", "statistics"]
     static let feedActionTitles = ["Mark all stories read", "Train intelligence", "Notifications", "Statistics"]
 
