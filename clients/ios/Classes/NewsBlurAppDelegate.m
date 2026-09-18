@@ -3888,16 +3888,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     for (NSString *feedId in feedIds) {
         NSString *feedIdString = [NSString stringWithFormat:@"%@", feedId];
         NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdString];
-        NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy];
+        NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy] ?: [@{@"ps": @0, @"nt": @0, @"ng": @0} mutableCopy];
         NSMutableArray *stories = [NSMutableArray array];
-        NSString *direction = older ? @"<" : @">";
+        // NewsBlurAppDelegate.m includes the selected story, matching reader/models.py's cutoff adjustment.
+        NSString *direction = older ? @"<=" : @">=";
         
         [self.database inDatabase:^(FMDatabase *db) {
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "
                              "INNER JOIN unread_hashes uh ON s.story_hash = uh.story_hash "
-                             "WHERE s.story_feed_id = %@ AND s.story_timestamp %@ %ld",
-                             feedIdString, direction, (long)cutoff];
-            FMResultSet *cursor = [db executeQuery:sql];
+                             "WHERE s.story_feed_id = ? AND s.story_timestamp %@ ?", direction];
+            FMResultSet *cursor = [db executeQuery:sql, feedIdString, @(cutoff)];
             
             while ([cursor next]) {
                 NSDictionary *story = [cursor resultDictionary];
@@ -3936,10 +3936,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             }
             NSString *deleteSql = [NSString
                                    stringWithFormat:@"DELETE FROM unread_hashes "
-                                   "WHERE story_feed_id = \"%@\" "
-                                   "AND story_timestamp < %ld",
-                                   feedIdString, (long)cutoff];
-            [db executeUpdate:deleteSql];
+                                   "WHERE story_feed_id = ? "
+                                   "AND story_timestamp %@ ?", direction];
+            [db executeUpdate:deleteSql, feedIdString, @(cutoff)];
             [db executeUpdate:@"UPDATE unread_counts SET ps = ?, nt = ?, ng = ? WHERE feed_id = ?",
              [newUnreadCounts objectForKey:@"ps"],
              [newUnreadCounts objectForKey:@"nt"],
@@ -3947,6 +3946,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
              feedIdString];
         }];
     }
+    [self.folderCountCache removeAllObjects];
 }
 
 - (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)(void))callback {
@@ -3997,7 +3997,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                              "FROM unread_hashes u WHERE u.story_feed_id IN (\"%@\")",
                              [feeds componentsJoinedByString:@"\",\""]];
             if (cutoff) {
-                sql = [NSString stringWithFormat:@"%@ AND u.story_timestamp < %ld", sql, (long)cutoff];
+                sql = [NSString stringWithFormat:@"%@ AND u.story_timestamp <= %ld", sql, (long)cutoff];
             }
             FMResultSet *cursor = [db executeQuery:sql];
             

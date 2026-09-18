@@ -4,6 +4,212 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_RowActionMenus: XCTestCase {
+    func test_authoritativeBulkReadCountIsPersistedForOfflineFeedAndFolder() async throws {
+        try await verifyAuthoritativeCountPersistence(replaceAccount: false)
+    }
+
+    func test_oldAccountCountResponseCannotOverwriteOfflineCount() async throws {
+        try await verifyAuthoritativeCountPersistence(replaceAccount: true)
+    }
+
+    private func verifyAuthoritativeCountPersistence(replaceAccount: Bool) async throws {
+        let (app, _) = feedFixture()
+        app.activeUsername = "bulk-refresh-" + UUID().uuidString
+        app.selectedIntelligence = 0
+        app.dictFoldersArray = ["Tech"]
+        app.dictFeeds = ["42": ["id": "42", "active": true], "43": ["id": "43", "active": true]]
+        app.dictUnreadCounts = ["42": ["ps": 0, "nt": 60, "ng": 0], "43": ["ps": 0, "nt": 5, "ng": 0]]
+        let database = try XCTUnwrap(FMDatabaseQueue(path: ":memory:"))
+        app.database = database
+        defer { database.close() }
+        database.inDatabase { db in
+            XCTAssertTrue(db!.executeUpdate("CREATE TABLE unread_counts (feed_id TEXT PRIMARY KEY, ps INTEGER, nt INTEGER, ng INTEGER)", withArgumentsIn: []))
+            XCTAssertTrue(db!.executeUpdate("INSERT INTO unread_counts VALUES ('42', 0, 60, 0)", withArgumentsIn: []))
+        }
+        let feeds = PersistedReadMenuFeeds()
+        feeds.appDelegate = app
+        app.feedsViewController = feeds
+        let refreshed = replaceAccount ? nil : expectation(description: "Authoritative count published")
+        feeds.didReload = { refreshed?.fulfill() }
+        feeds.refreshFeedList("42")
+        if replaceAccount {
+            app.activeUsername = "replacement-account"
+            let generation = (feeds.value(forKey: "feedListAccountGeneration") as? NSNumber)?.uintValue ?? 0
+            feeds.setValue(NSNumber(value: generation + 1), forKey: "feedListAccountGeneration")
+        }
+        app.succeedGET?(["feeds": ["42": ["ps": 0, "nt": 2, "ng": 0]]])
+        if let refreshed { await fulfillment(of: [refreshed], timeout: 3) }
+        XCTAssertEqual(app.unreadCount(forFeed: "42"), replaceAccount ? 60 : 2)
+        XCTAssertEqual(app.splitUnreadCount(forFolder: "Tech").nt, replaceAccount ? 65 : 7)
+        database.inDatabase { db in
+            let counts = db!.executeQuery("SELECT nt FROM unread_counts WHERE feed_id = '42'", withArgumentsIn: [])!
+            XCTAssertTrue(counts.next())
+            XCTAssertEqual(counts.int(forColumn: "nt"), replaceAccount ? 60 : 2,
+                           "The authoritative result must replace the provisional partial-cache count on disk")
+            counts.close()
+        }
+    }
+
+    func test_successfulFullFeedMarkReadInvalidatesCachedFeedAndRiver() async throws {
+        try await verifyFullFeedSnapshotInvalidation(replaceAccount: false)
+    }
+
+    func test_lateFullFeedMarkReadInvalidatesOriginalAccountOnly() async throws {
+        try await verifyFullFeedSnapshotInvalidation(replaceAccount: true)
+    }
+
+    private func verifyFullFeedSnapshotInvalidation(replaceAccount: Bool) async throws {
+        let (app, _) = feedFixture()
+        let account = "bulk-full-read-test-" + UUID().uuidString
+        app.activeUsername = account
+        app.dictUnreadCounts = ["42": ["ps": 0, "nt": 70, "ng": 0]]
+        let host = try XCTUnwrap(app.url)
+        let cache = StoryFirstPageCache.shared
+        let feed = try XCTUnwrap(StoryFirstPageRequest(account: account, host: host, url: host + "/reader/feed/42?page=1"))
+        let river = try XCTUnwrap(StoryFirstPageRequest(account: account, host: host, url: host + "/reader/river_stories?page=1"))
+        let replacement = try XCTUnwrap(StoryFirstPageRequest(account: account + "-replacement", host: host, url: feed.url))
+        let response: NSDictionary = ["stories": [["story_hash": "42:old-unread", "story_feed_id": 42,
+                                                    "story_title": "Cached story", "story_content": "<p>Cached body</p>", "read_status": 0]]]
+        for request in [feed, river, replacement] {
+            cache.store(response, request: request, revision: cache.newRevision())
+        }
+        let storedFeed = await snapshot(cache, request: feed)
+        let storedRiver = await snapshot(cache, request: river)
+        let heldFeed = try XCTUnwrap(storedFeed)
+        let heldRiver = try XCTUnwrap(storedRiver)
+        let feeds = BulkReadMenuFeeds()
+        feeds.appDelegate = app
+        app.feedsViewController = feeds
+        feeds.markFeedsRead(["42"], cutoffDays: 0)
+        if replaceAccount { app.activeUsername = account + "-replacement" }
+        app.succeedPOST?()
+
+        // RowActionMenuTests.swift leaves the reload unanswered, as when the server refresh fails after Mark Read succeeds.
+        XCTAssertNil(cache.response(for: heldFeed, provisional: true))
+        XCTAssertNil(cache.response(for: heldRiver, provisional: true))
+        let cachedFeed = await snapshot(cache, request: feed)
+        let cachedRiver = await snapshot(cache, request: river)
+        let otherAccount = await snapshot(cache, request: replacement)
+        XCTAssertNil(cachedFeed, "Reopening an offline feed must not resurrect its unread snapshot")
+        XCTAssertNil(cachedRiver, "Folder snapshots contain the same marked stories")
+        XCTAssertNotNil(otherAccount)
+    }
+
+    private func snapshot(_ cache: StoryFirstPageCache, request: StoryFirstPageRequest) async -> StoryFirstPageSnapshot? {
+        await withCheckedContinuation { continuation in
+            cache.lookup(request) { continuation.resume(returning: $0) }
+        }
+    }
+
+    func test_markOlderFromFourthStoryUpdatesFeedAndFolderUnreadCounts() throws {
+        try verifyBulkRead(older: true)
+    }
+
+    func test_markNewerFromFourthStoryLeavesOlderHashesUnread() throws {
+        try verifyBulkRead(older: false)
+    }
+
+    func test_markOlderRefreshesServerCountsWhenOnlyFirstPageIsCached() throws {
+        try verifyBulkRead(older: true, cachedCount: 12)
+    }
+
+    func test_failedMarkOlderKeepsFeedFolderAndOfflineUnreadCounts() throws {
+        try verifyBulkRead(older: true, succeeds: false)
+    }
+
+    func test_markOlderResponseDoesNotChangeReplacementAccount() throws {
+        try verifyBulkRead(older: true, replaceAccount: true)
+    }
+
+    private func verifyBulkRead(older: Bool, cachedCount: Int = 70, succeeds: Bool = true, replaceAccount: Bool = false) throws {
+        let (app, _) = feedFixture()
+        app.activeUsername = "bulk-read-test-" + UUID().uuidString
+        app.selectedIntelligence = 0
+        app.dictFeeds = ["42": ["id": "42", "feed_title": "Target site", "active": true],
+                         "43": ["id": "43", "feed_title": "Other site", "active": true]]
+        app.dictUnreadCounts = ["42": ["ps": 0, "nt": 69, "ng": 0], "43": ["ps": 0, "nt": 5, "ng": 0]]
+        app.storiesCollection.appDelegate = app
+        app.storiesCollection.activeFeed = app.dictFeeds["42"] as? [AnyHashable: Any]
+        app.storiesCollection.activeFolder = "Tech"
+        let stories: [[String: Any]] = (0..<70).map { index in
+            ["story_hash": "42:bulk-\(index)", "story_feed_id": 42, "story_title": "Story \(index + 1)",
+             "story_timestamp": 1_800_000_000 - index, "read_status": index == 0 ? 1 : 0,
+             "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0]]
+        }
+        app.storiesCollection.activeFeedStories = stories
+        let database = try XCTUnwrap(FMDatabaseQueue(path: ":memory:"))
+        app.database = database
+        defer { database.close() }
+        database.inDatabase { db in
+            guard let db else { XCTFail("Missing fixture database"); return }
+            let schema = """
+                CREATE TABLE stories (story_hash TEXT PRIMARY KEY, story_feed_id INTEGER, story_timestamp INTEGER, story_json TEXT);
+                CREATE TABLE unread_hashes (story_hash TEXT PRIMARY KEY, story_feed_id INTEGER, story_timestamp INTEGER);
+                CREATE TABLE unread_counts (feed_id INTEGER PRIMARY KEY, ps INTEGER, nt INTEGER, ng INTEGER);
+                INSERT INTO unread_counts VALUES (42, 0, 69, 0);
+                """
+            for statement in schema.split(separator: ";") {
+                XCTAssertTrue(db.executeUpdate(String(statement), withArgumentsIn: []))
+            }
+            for (index, story) in stories.prefix(cachedCount).enumerated() {
+                let json = String(data: try! JSONSerialization.data(withJSONObject: story), encoding: .utf8)!
+                XCTAssertTrue(db.executeUpdate("INSERT INTO stories VALUES (?, ?, ?, ?)", withArgumentsIn: [story["story_hash"]!, 42, story["story_timestamp"]!, json]))
+                if index > 0 {
+                    XCTAssertTrue(db.executeUpdate("INSERT INTO unread_hashes VALUES (?, ?, ?)", withArgumentsIn: [story["story_hash"]!, 42, story["story_timestamp"]!]))
+                }
+            }
+        }
+        let feeds = BulkReadMenuFeeds()
+        feeds.appDelegate = app
+        app.feedsViewController = feeds
+        let controller = BulkReadMenuStories()
+        controller.appDelegate = app
+        controller.storiesCollection = app.storiesCollection
+        // RowActionMenuTests.swift seeds the collapsed-folder cache before the action.
+        XCTAssertEqual(app.splitUnreadCount(forFolder: "Tech").nt, 74)
+        let fourth = Story(index: 3, dictionary: stories[3])
+        fourth.isRead = false
+        let action = try XCTUnwrap(RowActionMenus.story(fourth, controller: controller, source: UIView())
+            .flatMap { $0 }.first { $0.id == (older ? "older" : "newer") })
+        action.perform()
+        XCTAssertEqual(app.lastParameters?["direction"] as? String, older ? "older" : "newest")
+        if replaceAccount { app.activeUsername = "replacement-account" }
+        if succeeds { app.succeedPOST?() } else { app.failPOST?() }
+        // RowActionMenuTests.swift models opening story one, then marking story four and everything older read.
+        let applied = succeeds && !replaceAccount
+        let marked = applied ? (older ? cachedCount - 3 : 3) : 0
+        XCTAssertEqual(app.unreadCount(forFeed: "42"), 69 - marked)
+        XCTAssertEqual(app.unreadCount(forFolder: "Tech"), 74 - marked, "The folder retains five unread stories in its other feed")
+        XCTAssertEqual(app.splitUnreadCount(forFolder: "Tech").nt, Int32(74 - marked))
+        XCTAssertEqual(feeds.reloads, applied ? 1 : 0, "Feed and folder badges must refresh after the bulk action")
+        XCTAssertEqual(feeds.headerRefreshes, applied ? 1 : 0)
+        XCTAssertEqual(feeds.refreshedFeedIDs, applied ? ["42"] : [], "Server counts cover unread stories absent from the offline cache")
+        XCTAssertEqual(controller.reloads, applied ? 1 : 0)
+        XCTAssertEqual(controller.failures, succeeds ? 0 : 1)
+        database.inDatabase { db in
+            guard let remaining = db?.executeQuery("SELECT story_hash FROM unread_hashes ORDER BY story_timestamp DESC", withArgumentsIn: []) else { XCTFail("Missing fixture unread rows"); return }
+            var hashes: [String] = []
+            while remaining.next() { hashes.append(remaining.string(forColumn: "story_hash")!) }
+            remaining.close()
+            let expectedIndexes = (1..<cachedCount).filter { !applied || (older ? $0 < 3 : $0 > 3) }
+            XCTAssertEqual(hashes, expectedIndexes.map { "42:bulk-\($0)" })
+            guard let storedCounts = db?.executeQuery("SELECT nt FROM unread_counts WHERE feed_id = 42", withArgumentsIn: []) else { XCTFail("Missing cached count"); return }
+            XCTAssertTrue(storedCounts.next())
+            XCTAssertEqual(storedCounts.int(forColumn: "nt"), Int32(69 - marked))
+            storedCounts.close()
+            guard let storedStories = db?.executeQuery("SELECT story_json FROM stories ORDER BY story_timestamp DESC", withArgumentsIn: []) else { XCTFail("Missing cached stories"); return }
+            var index = 0
+            while storedStories.next() {
+                let data = storedStories.string(forColumn: "story_json")!.data(using: .utf8)!
+                let story = try! JSONSerialization.jsonObject(with: data) as! [String: Any]
+                let isRead = index == 0 || (applied && (older ? index >= 3 : index <= 3))
+                XCTAssertEqual(story["read_status"] as? Int, isRead ? 1 : 0)
+                index += 1
+            }
+            storedStories.close()
+        }
+    }
+
     func test_menuDefaultPreservesExplicitShortcuts() {
         let defaults = UserDefaults.standard
         let keys = ["long_press_feed_title", "long_press_story_title"]
@@ -99,8 +305,40 @@ import UIKit
 @MainActor private final class RowMenuTestApp: NewsBlurAppDelegate {
     var lastURL: String?
     var lastParameters: [String: Any]?
+    var succeedPOST: (() -> Void)?
+    var failPOST: (() -> Void)?
+    var succeedGET: (([String: Any]) -> Void)?
+    override func get(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
+        succeedGET = { response in success?(nil, response) }
+    }
     override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
         lastURL = urlString
         lastParameters = parameters as? [String: Any]
+        succeedPOST = { success?(nil, ["code": 1]) }
+        failPOST = { failure?(nil, NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)) }
     }
+}
+
+@MainActor private final class BulkReadMenuStories: FeedDetailViewController {
+    var reloads = 0
+    var failures = 0
+    override func reloadStories() { reloads += 1 }
+    @objc(requestFailed:) func captureRequestFailure(_ error: NSError) { failures += 1 }
+}
+
+@MainActor private final class BulkReadMenuFeeds: FeedsViewController {
+    var reloads = 0
+    var headerRefreshes = 0
+    var refreshedFeedIDs: [String] = []
+    override func reloadFeedTitlesTable() { reloads += 1 }
+    override func deferredReloadFeedTitlesTable() { reloads += 1 }
+    override func refreshHeaderCounts() { headerRefreshes += 1 }
+    override func refreshFeedList(_ feedID: Any!) { refreshedFeedIDs.append(String(describing: feedID!)) }
+}
+
+@MainActor private final class PersistedReadMenuFeeds: FeedsViewController {
+    var didReload: (() -> Void)?
+    override func reloadFeedTitlesTable() { didReload?() }
+    override func refreshHeaderCounts() {}
+    override func loadFavicons() {}
 }

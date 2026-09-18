@@ -3383,6 +3383,8 @@ heightForHeaderInSection:(NSInteger)section {
         return;
     }
     
+    NSString *account = [appDelegate.activeUsername copy] ?: @"";
+    NSString *host = [appDelegate.url copy] ?: @"";
     NSTimeInterval cutoffTimestamp = [[NSDate date] timeIntervalSince1970];
     cutoffTimestamp -= (days * 60*60*24);
     
@@ -3396,8 +3398,13 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:account host:host];
+        if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
+            ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
+            ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
         [self requestFailedMarkStoryRead:error withParams:params];
     }];
     
@@ -3417,6 +3424,8 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markEverythingReadWithDays:(NSInteger)days infrequent:(BOOL)infrequent {
+    NSString *account = [appDelegate.activeUsername copy] ?: @"";
+    NSString *host = [appDelegate.url copy] ?: @"";
     NSArray *feedIds = [appDelegate allFeedIds];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
@@ -3433,8 +3442,13 @@ heightForHeaderInSection:(NSInteger)section {
     }
 
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:account host:host];
+        if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
+            ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
+            ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
         [self requestFailedMarkStoryRead:error withParams:params];
     }];
     
@@ -4111,6 +4125,16 @@ heightForHeaderInSection:(NSInteger)section {
             countUpdates[feedIdStr] = [newFeedCount dictionaryWithValuesForKeys:@[@"ng", @"nt", @"ps"]];
         }
         
+        // FeedsObjCViewController.m replaces provisional partial-cache counts on disk as well as in the sidebar.
+        [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            if (accountGeneration != self.feedListAccountGeneration) return;
+            for (NSString *feed in countUpdates) {
+                NSDictionary *counts = countUpdates[feed];
+                [db executeUpdate:@"INSERT OR REPLACE INTO unread_counts (feed_id, ps, nt, ng) VALUES (?, ?, ?, ?)",
+                 feed, counts[@"ps"], counts[@"nt"], counts[@"ng"]];
+            }
+        }];
+
         [self dispatchFeedRefreshPublication:^{
             if (accountGeneration != self.feedListAccountGeneration) return;
             for (NSString *feed in countUpdates) {

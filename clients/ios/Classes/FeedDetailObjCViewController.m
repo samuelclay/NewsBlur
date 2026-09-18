@@ -5926,6 +5926,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
+    NSString *account = [appDelegate.activeUsername copy] ?: @"";
+    NSString *host = [appDelegate.url copy] ?: @"";
+    NSUInteger generation = self.fetchRequestId;
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                            self.appDelegate.url];
     NSMutableArray *feedIds = [NSMutableArray array];
@@ -5961,10 +5964,18 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionTask *task, id responseObject) {
+        [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:account host:host];
+        if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
+            ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
         [self.appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
-        // is there a better way to refresh the detail view?
-        [self reloadStories];
+        [self.appDelegate.feedsViewController reloadFeedTitlesTable];
+        [self.appDelegate.feedsViewController refreshHeaderCounts];
+        // FeedDetailObjCViewController.m reconciles badges with the server because offline stories may cover only part of a feed.
+        [self.appDelegate.feedsViewController refreshFeedList:feedIds.count == 1 ? feedIds.firstObject : nil];
+        if (self.fetchRequestId == generation) [self reloadStories];
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
+            ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
         [self requestFailed:error];
     }];
 }
