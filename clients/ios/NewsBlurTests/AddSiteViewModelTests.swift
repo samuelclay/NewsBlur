@@ -359,6 +359,10 @@ final class AddSiteViewModelTests: XCTestCase {
 
 @MainActor
 final class DiscoverSitesViewModelTests: XCTestCase {
+    // AddSiteViewModelTests.swift keeps held responses pending across slow hosted-simulator startup.
+    private static let requestStartTimeout: TimeInterval = 30
+    private static let responseHoldTimeout: TimeInterval = 60
+
     private final class Environment: AddSiteViewModelAppEnvironment {
         var url: String? = "https://example.com"
         var dictFoldersArray: Any? = ["Tech", "daily_briefing", "trending:good_reads", "everything"]
@@ -500,12 +504,12 @@ final class DiscoverSitesViewModelTests: XCTestCase {
                 lock.unlock()
                 if firstRequest {
                     started.fulfill()
-                    XCTAssertEqual(release.wait(timeout: .now() + 5), .success)
+                    XCTAssertEqual(release.wait(timeout: .now() + Self.responseHoldTimeout), .success)
                 }
                 return (200, ["code": 1, "feeds": [["title": type, "feed_url": "https://example.com/feed"]]])
             }
             viewModel.onTabSelected(tab)
-            await fulfillment(of: [started], timeout: 2)
+            await fulfillment(of: [started], timeout: Self.requestStartTimeout)
             // PopularTabView.swift and source-tab onAppear handlers repeat the initial load before it completes.
             viewModel.loadPopularFeeds(type: type, category: nil, subcategory: nil, offset: 0)
             release.signal()
@@ -530,13 +534,13 @@ final class DiscoverSitesViewModelTests: XCTestCase {
                 lock.unlock()
                 if !replacement {
                     started.fulfill()
-                    XCTAssertEqual(release.wait(timeout: .now() + 5), .success)
+                    XCTAssertEqual(release.wait(timeout: .now() + Self.responseHoldTimeout), .success)
                 }
                 let title = replacement ? "Changed filter" : "Original filter"
                 return (200, ["code": 1, "feeds": [["title": title, "feed_url": "https://example.com/feed"]]])
             }
             viewModel.onTabSelected(.newsletters)
-            await fulfillment(of: [started], timeout: 2)
+            await fulfillment(of: [started], timeout: Self.requestStartTimeout)
             if changedParameter == "platform" { viewModel.newslettersState.platformFilter = "substack" }
             if changedParameter == "include_stories" { viewModel.feedViewMode = .list }
             viewModel.loadPopularFeeds(type: "newsletter",
@@ -774,11 +778,11 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         let release = DispatchSemaphore(value: 0)
         ResponseProtocol.handler = { _ in
             started.fulfill()
-            _ = release.wait(timeout: .now() + 5)
+            XCTAssertEqual(release.wait(timeout: .now() + Self.responseHoldTimeout), .success)
             return (200, ["code": 1])
         }
         viewModel.addFeed(url: "https://example.com/previous-account")
-        await fulfillment(of: [started], timeout: 2)
+        await fulfillment(of: [started], timeout: Self.requestStartTimeout)
         viewModel.reset()
         XCTAssertFalse(viewModel.isAdding)
         release.signal()
@@ -800,11 +804,11 @@ final class DiscoverSitesViewModelTests: XCTestCase {
                 return (200, ["code": 1])
             }
             started.fulfill()
-            _ = release.wait(timeout: .now() + 5)
+            XCTAssertEqual(release.wait(timeout: .now() + Self.responseHoldTimeout), .success)
             return (200, ["code": 1, "feed_url": "https://example.com/old-query"])
         }
         viewModel.subscribeGoogleNews(query: "private query", topic: nil, language: "en")
-        await fulfillment(of: [started], timeout: 2)
+        await fulfillment(of: [started], timeout: Self.requestStartTimeout)
         viewModel.reset()
         release.signal()
         await fulfillment(of: [unexpectedSubscription], timeout: 0.3)
