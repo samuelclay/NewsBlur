@@ -1,8 +1,12 @@
 package com.newsblur.image
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@Suppress("ktlint:standard:class-naming")
 class Test_StoryImageSource {
     private val json = """{"generation":3,"token":"42","src":"https://example.com/image.jpg","title":"An image",
         "naturalWidth":1200,"naturalHeight":800,"rect":{"x":0,"y":-20,"width":400,"height":267,"viewportWidth":400}}"""
