@@ -2397,8 +2397,9 @@ import XCTest
         let readingPosition: CGFloat
         if restoresPosition {
             readingPosition = floor(web.scrollView.contentSize.height / 2)
-            await waitForState("Real WebKit saved position restoration completes") {
-                page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+            await waitForState("Real WebKit saved position restoration and its scroll animation complete") {
+                page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false &&
+                    abs(web.scrollView.contentOffset.y - readingPosition) <= 2
             }
         } else {
             readingPosition = 250
