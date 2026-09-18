@@ -16,6 +16,7 @@ object StoryMenuPopover {
     fun show(
         activity: NbActivity,
         anchor: View,
+        highlightedRow: View,
         feedSet: FeedSet,
         story: Story,
         order: StoryOrder,
@@ -24,6 +25,6 @@ object StoryMenuPopover {
     ): PopupWindow {
         val model = PopupMenu(activity, anchor)
         UIUtils.inflateStoryContextMenu(model.menu, model.menuInflater, feedSet, story, order)
-        return ActionMenuPopover.show(activity, anchor, model.menu, theme, selected)
+        return ActionMenuPopover.show(activity, anchor, highlightedRow, model.menu, theme, selected)
     }
 }

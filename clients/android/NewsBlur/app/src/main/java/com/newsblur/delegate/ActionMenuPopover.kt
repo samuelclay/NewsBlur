@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -28,7 +29,25 @@ object ActionMenuPopover {
         menu: Menu,
         theme: ThemeValue,
         selected: MenuItem.OnMenuItemClickListener,
+    ): PopupWindow = show(activity, anchor, anchor, menu, theme, selected)
+
+    fun show(
+        activity: NbActivity,
+        anchor: View,
+        highlightedRow: View,
+        menu: Menu,
+        theme: ThemeValue,
+        selected: MenuItem.OnMenuItemClickListener,
     ): PopupWindow {
+        val originalForeground = highlightedRow.foreground
+        val tint = ColorDrawable(ReaderSheetPalette.menuRowHighlightArgb(theme))
+        val highlight = originalForeground?.let { LayerDrawable(arrayOf(it, tint)) } ?: tint
+        var highlightHeld = false
+        fun restoreHighlight() {
+            if (!highlightHeld) return
+            highlightHeld = false
+            if (highlightedRow.foreground === highlight) highlightedRow.foreground = originalForeground
+        }
         fun dp(value: Int) = UIUtils.dp2px(activity, value)
         val rows = LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
@@ -97,6 +116,7 @@ object ActionMenuPopover {
                     if (submenu != null) {
                         render(submenu, item.title)
                     } else {
+                        restoreHighlight()
                         popup.dismiss()
                         selected.onMenuItemClick(item)
                     }
@@ -118,16 +138,33 @@ object ActionMenuPopover {
             View.MeasureSpec.makeMeasureSpec(popup.width, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         )
-        AnchoredPopover.show(anchor, popup, popup.width, scroll.measuredHeight)
         val detachListener = object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(view: View) = Unit
-            override fun onViewDetachedFromWindow(view: View) = popup.dismiss()
+            override fun onViewDetachedFromWindow(view: View) {
+                restoreHighlight()
+                popup.dismiss()
+            }
         }
         anchor.addOnAttachStateChangeListener(detachListener)
+        if (highlightedRow !== anchor) highlightedRow.addOnAttachStateChangeListener(detachListener)
         scroll.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(view: View) = Unit
-            override fun onViewDetachedFromWindow(view: View) { anchor.removeOnAttachStateChangeListener(detachListener) }
+            override fun onViewDetachedFromWindow(view: View) {
+                restoreHighlight()
+                anchor.removeOnAttachStateChangeListener(detachListener)
+                if (highlightedRow !== anchor) highlightedRow.removeOnAttachStateChangeListener(detachListener)
+            }
         })
+        // ActionMenuPopover.kt owns content teardown because ItemsList supplies its own popup dismiss listener.
+        try {
+            AnchoredPopover.show(anchor, popup, popup.width, scroll.measuredHeight)
+            highlightedRow.foreground = highlight
+            highlightHeld = true
+        } catch (error: RuntimeException) {
+            anchor.removeOnAttachStateChangeListener(detachListener)
+            if (highlightedRow !== anchor) highlightedRow.removeOnAttachStateChangeListener(detachListener)
+            throw error
+        }
         return popup
     }
 }

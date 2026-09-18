@@ -862,6 +862,7 @@ class StoryViewAdapter(
                     storyMenu = StoryMenuPopover.show(
                         context,
                         itemView.findViewById<View>(R.id.story_item_title) ?: itemView,
+                        itemView,
                         fs ?: return,
                         target,
                         fs?.let { prefsRepo.getStoryOrder(it) } ?: StoryOrder.NEWEST,
@@ -1031,7 +1032,10 @@ class StoryViewAdapter(
             is DisplayItem.StoryRow -> {
                 val story = item.story
                 val storyHolder = viewHolder as StoryViewHolder
-                if (storyHolder.story?.storyHash != story.storyHash) storyHolder.cancelRowSwipe()
+                if (storyHolder.story?.storyHash != story.storyHash) {
+                    storyHolder.dismissStoryMenu()
+                    storyHolder.cancelRowSwipe()
+                }
                 storyHolder.story = story
                 bindCommon(storyHolder, story)
 

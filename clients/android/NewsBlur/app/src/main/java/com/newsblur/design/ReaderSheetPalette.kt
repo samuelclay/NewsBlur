@@ -5,6 +5,13 @@ import androidx.compose.ui.graphics.toArgb
 import com.newsblur.util.PrefConstants.ThemeValue
 
 object ReaderSheetPalette {
+    @JvmStatic fun menuRowHighlightArgb(theme: ThemeValue): Int = when (theme) {
+        ThemeValue.DARK -> 0x26FFFFFF
+        ThemeValue.BLACK -> 0x30FFFFFF
+        ThemeValue.SEPIA -> 0x387D5637
+        else -> 0x307A6438
+    }
+
     @JvmStatic fun loadingLowArgb(theme: ThemeValue): Int = when (theme) {
         ThemeValue.DARK -> 0xFF243650.toInt()
         ThemeValue.BLACK -> 0xFF15243A.toInt()
