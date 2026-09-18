@@ -1696,6 +1696,103 @@ import XCTest
         XCTAssertEqual(fixture.app.activeComment?["comment"] as? String, "Still editing")
     }
 
+    func test_regularReaderRelayoutKeepsLiveScrollPositionInsteadOfSavedTop() async throws {
+        let fixture = makePresentationFixture(width: 700)
+        fixture.pages.regularPane = true
+        fixture.app.setValue(ImmediateStoryScrollQueue(position: 1), forKey: "database")
+        let page = fixture.original
+        page.drawStory()
+        await drainMainQueue()
+        let web = try XCTUnwrap(page.webView as? RecordedStoryLoadWebView)
+        sendReady(to: page, token: try tokenFromHTML(try XCTUnwrap(web.loads.last?.html)), mainFrame: true)
+        await waitForState("Initial saved scroll restoration completes") {
+            page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+        }
+        web.scrollView.contentOffset.y = 1250
+        page.setValue(true, forKey: "hasScrolled")
+        // StoryPagesObjCViewController.m reorients the iPad reader when an image overlay returns.
+        fixture.pages.reorientPages()
+        await waitForState("Reader relayout finishes") {
+            page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+        }
+        XCTAssertEqual(web.scrollView.contentOffset.y, 1250, accuracy: 0.5,
+                       "Returning from an image must preserve the live position even when the saved position is top")
+    }
+
+    func test_readerResizePreservesLiveFractionIncludingTopInsteadOfStaleSavedProgress() async throws {
+        for initialOffset: CGFloat in [0, 1250] {
+            let fixture = makeFixture()
+            fixture.app.setValue(ImmediateStoryScrollQueue(position: 500), forKey: "database")
+            fixture.page.drawStory()
+            await drainMainQueue()
+            sendReady(to: fixture.page, token: try tokenFromHTML(try XCTUnwrap(fixture.web.loads.last?.html)), mainFrame: true)
+            await waitForState("Initial saved scroll restoration completes") {
+                fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+            }
+            fixture.web.scrollView.contentOffset.y = initialOffset
+            let coordinator = StoryResizeCoordinator()
+            fixture.page.viewWillTransition(to: CGSize(width: 700, height: 600), with: coordinator)
+            // StoryDetailLoadingTests.swift models WebKit's content reflow between capturing and restoring progress.
+            fixture.web.scrollView.contentSize.height = 4000
+            coordinator.runAnimations()
+            await waitForState("Resize restores live reading progress") {
+                fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+            }
+            let expected = initialOffset > 0 ? initialOffset / 5000 * 4000 : -fixture.web.scrollView.adjustedContentInset.top
+            XCTAssertEqual(fixture.web.scrollView.contentOffset.y, expected, accuracy: 0.5)
+        }
+    }
+
+    func test_readerResizeDoesNotOverrideDraggingAfterWebKitReflow() async throws {
+        let fixture = makeFixture()
+        fixture.app.setValue(ImmediateStoryScrollQueue(position: 1), forKey: "database")
+        fixture.page.drawStory()
+        await drainMainQueue()
+        sendReady(to: fixture.page, token: try tokenFromHTML(try XCTUnwrap(fixture.web.loads.last?.html)), mainFrame: true)
+        await waitForState("Initial saved scroll restoration completes") {
+            fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+        }
+        fixture.web.scrollView.contentOffset.y = 1250
+        fixture.web.defersAsyncJavaScript = true
+        let coordinator = StoryResizeCoordinator()
+        fixture.page.viewWillTransition(to: CGSize(width: 700, height: 600), with: coordinator)
+        coordinator.runAnimations()
+        await waitForState("Resize waits for WebKit layout") { !fixture.web.asyncCompletions.isEmpty }
+        fixture.web.trackedScroll.simulatesDragging = true
+        fixture.web.scrollView.contentOffset.y = 1800
+        fixture.web.asyncCompletions.removeFirst()(true, nil)
+        XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 1800)
+        XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false)
+    }
+
+    func test_readerResizeIgnoresPositionCapturedBeforeNewStoryOrExplicitScroll() async throws {
+        for replacesStory in [false, true] {
+            let fixture = makeFixture()
+            fixture.app.setValue(ImmediateStoryScrollQueue(position: 1), forKey: "database")
+            fixture.page.drawStory()
+            await drainMainQueue()
+            sendReady(to: fixture.page, token: try tokenFromHTML(try XCTUnwrap(fixture.web.loads.last?.html)), mainFrame: true)
+            await waitForState("Initial saved scroll restoration completes") {
+                fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+            }
+            fixture.web.scrollView.contentOffset.y = 1250
+            let coordinator = StoryResizeCoordinator()
+            fixture.page.viewWillTransition(to: CGSize(width: 700, height: 600), with: coordinator)
+            if replacesStory {
+                fixture.page.drawStory()
+            } else {
+                XCTAssertTrue(requestScrollToTop(on: fixture.page))
+            }
+            fixture.web.scrollView.contentOffset.y = 0
+            fixture.web.defersAsyncJavaScript = true
+            coordinator.runAnimations()
+            await drainMainQueue()
+            XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false,
+                           "A stale size transition must not start another saved-position restoration")
+            XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 0)
+        }
+    }
+
     func test_visibleDocumentCanFinishDOMSetupAfterTemporaryPresentation() async throws {
         let fixture = makeFixture()
         fixture.page.drawStory()
@@ -3069,5 +3166,41 @@ private final class StoryScrollCursor: NSObject {
 @MainActor private final class PlainStoryNavigationDelegate: NSObject, WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(navigationAction.request.url?.host == "ios.newsblur.com" ? .cancel : .allow)
+    }
+}
+
+@MainActor private final class StoryResizeCoordinator: NSObject, UIViewControllerTransitionCoordinator {
+    private var animations: [() -> Void] = []
+    let containerView = UIView()
+    let isAnimated = true
+    let presentationStyle = UIModalPresentationStyle.none
+    let initiallyInteractive = false
+    let isInterruptible = true
+    let isInteractive = false
+    let isCancelled = false
+    let transitionDuration: TimeInterval = 0.25
+    let percentComplete: CGFloat = 0
+    let completionVelocity: CGFloat = 1
+    let completionCurve = UIView.AnimationCurve.easeInOut
+    let targetTransform = CGAffineTransform.identity
+
+    func animate(alongsideTransition animation: ((UIViewControllerTransitionCoordinatorContext) -> Void)?,
+                 completion: ((UIViewControllerTransitionCoordinatorContext) -> Void)? = nil) -> Bool {
+        animations.append { animation?(self); completion?(self) }
+        return true
+    }
+    func animateAlongsideTransition(in view: UIView?, animation: ((UIViewControllerTransitionCoordinatorContext) -> Void)?,
+                                    completion: ((UIViewControllerTransitionCoordinatorContext) -> Void)? = nil) -> Bool {
+        animate(alongsideTransition: animation, completion: completion)
+    }
+    func notifyWhenInteractionChanges(_ handler: @escaping (UIViewControllerTransitionCoordinatorContext) -> Void) {}
+    func notifyWhenInteractionEnds(_ handler: @escaping (UIViewControllerTransitionCoordinatorContext) -> Void) {}
+    func viewController(forKey key: UITransitionContextViewControllerKey) -> UIViewController? { nil }
+    func view(forKey key: UITransitionContextViewKey) -> UIView? { nil }
+    func runAnimations() {
+        // StoryDetailLoadingTests.swift runs the resize callbacks after supplying the new document geometry.
+        let pending = animations
+        animations.removeAll()
+        pending.forEach { $0() }
     }
 }
