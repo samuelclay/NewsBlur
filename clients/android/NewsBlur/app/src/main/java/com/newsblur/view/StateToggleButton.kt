@@ -45,6 +45,7 @@ class StateToggleButton(
     fun setState(state: StateFilter) {
         this.state = state
         updateButtonStates()
+        requestLayout()
         stateChangedListener?.changedState(this.state)
     }
 
@@ -63,31 +64,41 @@ class StateToggleButton(
         heightMeasureSpec: Int,
     ) {
         // StateToggleButton.kt measures the actual capsule space, including large text and split-screen widths.
-        val labels = listOf(binding.toggleSomeText, binding.toggleFocusText, binding.toggleSavedText)
+        val labels =
+            listOf(
+                binding.toggleSomeText to StateFilter.SOME,
+                binding.toggleFocusText to StateFilter.BEST,
+                binding.toggleSavedText to StateFilter.SAVED,
+            )
         val naturalWidth =
             listOf(binding.toggleAll, binding.toggleSome, binding.toggleFocus, binding.toggleSaved).sumOf { button ->
                 val contentWidth =
                     (0 until button.childCount).sumOf { index ->
                         val child = button.getChildAt(index)
-                        child.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), heightMeasureSpec)
                         val margins = child.layoutParams as ViewGroup.MarginLayoutParams
+                        // StateToggleButton.kt respects the XML icon size instead of its drawable's intrinsic width.
+                        val childWidthSpec =
+                            if (margins.width >= 0) {
+                                MeasureSpec.makeMeasureSpec(margins.width, MeasureSpec.EXACTLY)
+                            } else {
+                                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+                            }
+                        child.measure(childWidthSpec, heightMeasureSpec)
                         child.measuredWidth + margins.leftMargin + margins.rightMargin
                     }
                 val margins = button.layoutParams as ViewGroup.MarginLayoutParams
                 val buttonWidth = maxOf(button.minimumWidth, contentWidth + button.paddingLeft + button.paddingRight)
                 buttonWidth + margins.leftMargin + margins.rightMargin
             }
-        val available = MeasureSpec.getSize(widthMeasureSpec)
-        val visibility =
-            if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED &&
+        val available = MeasureSpec.getSize(widthMeasureSpec) - paddingLeft - paddingRight
+        val compact =
+            MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED &&
                 naturalWidth > available
-            ) {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
         // StateToggleButton.kt measures hidden labels directly to avoid toggling layout animations on every pass.
-        labels.forEach { if (it.visibility != visibility) it.visibility = visibility }
+        labels.forEach { (label, filter) ->
+            val visibility = if (!compact || state == filter) View.VISIBLE else View.GONE
+            if (label.visibility != visibility) label.visibility = visibility
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
