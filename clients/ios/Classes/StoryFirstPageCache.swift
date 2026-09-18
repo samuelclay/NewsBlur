@@ -139,11 +139,14 @@ import UIKit
                            UInt64(max(0, now().timeIntervalSince1970) * 1_000_000))
         // StoryFirstPageCache.swift invalidates every feed/river snapshot for this account while retaining pending individual story edits.
         journal.floorRevision = lastRevision
+        let schedule = !journal.writeScheduled
         journal.writeScheduled = true
         lock.unlock()
-        queue.async { [self] in
-            loadJournal(request)
-            persistJournal(request)
+        if schedule {
+            queue.async { [self] in
+                loadJournal(request)
+                persistJournal(request)
+            }
         }
     }
 

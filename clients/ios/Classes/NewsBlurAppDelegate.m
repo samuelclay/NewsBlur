@@ -3854,6 +3854,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)markFeedAllRead:(id)feedId {
+    // NewsBlurAppDelegate.m applies bulk reads optimistically, including when their requests fail offline.
+    [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:self.activeUsername host:self.url];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSMutableDictionary *unreadCounts = [NSMutableDictionary dictionary];
     
@@ -3865,6 +3867,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)markFeedReadInCache:(NSArray *)feedIds {
+    if (feedIds.count) {
+        [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:self.activeUsername host:self.url];
+    }
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
         [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -3885,6 +3890,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older {
+    if (feedIds.count) {
+        [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:self.activeUsername host:self.url];
+    }
     for (NSString *feedId in feedIds) {
         NSString *feedIdString = [NSString stringWithFormat:@"%@", feedId];
         NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdString];
