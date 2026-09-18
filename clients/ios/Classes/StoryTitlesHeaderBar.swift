@@ -62,6 +62,7 @@ class StoryTitlesHeaderBar: NSObject {
     private(set) var usesMergedToolbar = false
     private var groupPaddingConstraints: [NSLayoutConstraint] = []
     private var minimumPillWidths: [NSLayoutConstraint] = []
+    private var optionsMinimumWidthConstraint: NSLayoutConstraint?
 
     @objc private func toolbarPreferenceChanged() {
         guard Self.prefersBottomBar != usesFloatingBottomBar,
@@ -436,6 +437,9 @@ class StoryTitlesHeaderBar: NSObject {
         let minimumWidth = button.widthAnchor.constraint(greaterThanOrEqualToConstant: usesFloatingBottomBar ? 44 : 0)
         minimumWidth.isActive = true
         minimumPillWidths.append(minimumWidth)
+        if button === optionsPill {
+            optionsMinimumWidthConstraint = minimumWidth
+        }
         addCatalystHighlight(button)
     }
 
@@ -869,6 +873,12 @@ class StoryTitlesHeaderBar: NSObject {
         applyOptionsTitle(compact: compactOptions, iconOnly: iconOnlyOptions)
         let minimumOptionsWidth = max(usesFloatingBottomBar ? 44 : 0, optionsIconWidth)
         let optionsWidth = optionsPill.isHidden ? 0 : (iconOnlyOptions ? minimumOptionsWidth : (compactOptions ? compactOptionsWidth : fullOptionsWidth))
+        // StoryTitlesHeaderBar.swift restores the measured text width after an icon-only layout;
+        // UIKit can otherwise retain the prior 44pt button frame when its configuration changes.
+        let fittedOptionsWidth = max(usesFloatingBottomBar ? 44 : 0, optionsWidth)
+        if optionsMinimumWidthConstraint?.constant != fittedOptionsWidth {
+            optionsMinimumWidthConstraint?.constant = fittedOptionsWidth
+        }
         if !markReadContainer.isHidden {
             let remainingWidth = availableWidth - gapsAndEdges - minimumDiscoverWidth - minimumSearchWidth - optionsWidth
             let fittedMarkReadWidth = max(minimumMarkReadWidth, min(markReadWidth, remainingWidth))
