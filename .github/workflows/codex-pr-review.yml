@@ -4,6 +4,12 @@ name: Codex PR Review
 # review, and each push to the PR branch (synchronize); never on pushes to main.
 # Copied from the Tavus developer-portal workflow of the same name and adapted for
 # NewsBlur. .github/workflows/codex-pr-review.yml
+#
+# The first review of a PR reads the whole diff against main. Every later push is
+# reviewed incrementally: .github/scripts/codex-review-scope.sh finds the head the
+# previous Codex review covered (stamped into the review marker) and hands Codex only
+# the changes since then, so a 100-commit PR is not re-read in full on each push. A
+# `codex-full-review` label on the PR forces a full review.
 on:
   pull_request:
     types: [opened, reopened, ready_for_review, synchronize]
@@ -29,26 +35,42 @@ jobs:
     # post_feedback job is the one that writes to the PR.
     permissions:
       contents: read
+      # Listing the PR's earlier reviews is how the scope step finds the last reviewed head.
+      pull-requests: read
     outputs:
       final_message: ${{ steps.run_codex.outputs.final-message }}
+      review_scope: ${{ steps.scope.outputs.scope_line }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
-          # Fetch the merge commit plus its parents so `git diff HEAD^1 HEAD`
-          # can resolve the base side of the diff.
-          fetch-depth: 2
+          # Full commit and tree history without blobs (about 16 MB for this repo)
+          # so codex-review-scope.sh can merge the previously reviewed head against
+          # the current base. Blobs are fetched on demand when a diff needs them.
+          fetch-depth: 0
+          filter: blob:none
 
       - name: Pre-fetch base and head refs
         env:
           PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          git fetch --no-tags origin \
+          git fetch --no-tags --filter=blob:none origin \
             "+refs/heads/$PR_BASE_REF:refs/remotes/origin/$PR_BASE_REF" \
             "+refs/pull/$PR_NUMBER/head:refs/remotes/pull/$PR_NUMBER/head"
+
+      - name: Work out what to review
+        # Runs before the credentials are dropped because it fetches the previously
+        # reviewed commit and warms the blobless clone with every blob the diffs need.
+        id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_LABELS_JSON: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: .github/scripts/codex-review-scope.sh
 
       - name: Drop persisted git credentials
         # Checkout stores the job token in .git/config; remove it before Codex reads the tree.
@@ -61,6 +83,8 @@ jobs:
 
       - name: Codex code review
         id: run_codex
+        # Nothing to review when the head was already reviewed or a push only merged main.
+        if: steps.scope.outputs.mode != 'skip'
         # Pinned to v1.11: the moving v1 tag picked up v1.12 on 2026-08-20,
         # whose Linux runner-setup rewrite never exits after the review
         # completes (openai/codex-action#150). Unpin once that is fixed.
@@ -101,7 +125,8 @@ jobs:
             - Android UI changes cover light, dark, and black themes; iOS additions are Swift
 
             Output requirements:
-            - The workspace is checked out to the PR merge commit. Review the PR diff with `git diff HEAD^1 HEAD`.
+            - The workspace is checked out to the PR merge commit.
+            ${{ steps.scope.outputs.instructions }}
             - Return JSON that matches the provided schema.
             - Put the review summary in `summary`, grouped by severity: Critical, High, Medium, Low.
             - Put concrete line-specific findings in `inline_comments`.
@@ -165,6 +190,8 @@ jobs:
         uses: actions/github-script@v8
         env:
           CODEX_FINAL_MESSAGE: ${{ needs.codex-review.outputs.final_message }}
+          REVIEW_SCOPE: ${{ needs.codex-review.outputs.review_scope }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         with:
           github-token: ${{ github.token }}
           script: |
@@ -207,6 +234,17 @@ jobs:
               return lines;
             }
 
+            // The marker records which head this review covered so the next run of
+            // codex-review-scope.sh can review only the commits pushed after it.
+            const headSha = process.env.PR_HEAD_SHA;
+            const marker = `<!-- codex-pr-review head=${headSha} -->`;
+            const scopeLine = (process.env.REVIEW_SCOPE || '').trim();
+            const header = [
+              marker,
+              '**Codex review: GPT-6 Astra, Medium thinking**',
+              ...(scopeLine ? [scopeLine] : []),
+            ];
+
             let review;
             try {
               review = parseCodexOutput(process.env.CODEX_FINAL_MESSAGE);
@@ -215,10 +253,10 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: context.payload.pull_request.number,
+                commit_id: headSha,
                 event: 'COMMENT',
                 body: [
-                  '<!-- codex-pr-review -->',
-                  '**Codex review: GPT-6 Astra, Medium thinking**',
+                  ...header,
                   '',
                   'Codex returned output that could not be parsed as structured review JSON, so posting the raw review output.',
                   '',
@@ -273,8 +311,7 @@ jobs:
             }
 
             const bodyParts = [
-              '<!-- codex-pr-review -->',
-              '**Codex review: GPT-6 Astra, Medium thinking**',
+              ...header,
               '',
               String(review.summary || '').trim() || 'Codex completed the review without a summary.',
             ];
@@ -291,6 +328,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
+              commit_id: headSha,
               event: 'COMMENT',
               body: bodyParts.join('\n'),
             };
