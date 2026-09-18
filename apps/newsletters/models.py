@@ -21,7 +21,14 @@ from apps.notifications.models import MUserFeedNotification
 from apps.notifications.tasks import QueueNotifications
 from apps.profile.models import MSentEmail, Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from apps.rss_feeds.models import Feed, MFetchHistory, MStory
+from apps.rss_feeds.models import (
+    FETCH_LOCK_BLOCKING_SECONDS,
+    FETCH_LOCK_TIMEOUT_SECONDS,
+    Feed,
+    MFetchHistory,
+    MStory,
+    feed_write_lock,
+)
 from utils import log as logging
 from utils.scrubber import Scrubber
 from utils.story_functions import linkify
@@ -109,11 +116,15 @@ class EmailNewsletter:
 
         feed.last_update = datetime.datetime.now()
         feed.last_story_date = datetime.datetime.now()
-        feed.save()
+        # Feed.save returns the feed to go on with: this one, or the feed it was folded into
+        # when it was a duplicate (a feed restore_merged_feed had parked while the original
+        # came back, say). The story below must be written under that feed, never under an
+        # id the save just deleted. apps/newsletters/models.py
+        feed = feed.save() or feed
 
         if feed.feed_title != sender_name:
             feed.feed_title = sender_name
-            feed.save()
+            feed = feed.save() or feed
 
         try:
             usersub = UserSubscription.objects.get(user=user, feed=feed)
@@ -125,7 +136,6 @@ class EmailNewsletter:
             r.publish(user.username, "reload:feeds")
 
         story_guid = params.get("signature") or self._fallback_story_guid(params)
-        story_hash = MStory.ensure_story_hash(story_guid, feed.pk)
         story_content = self._get_content(params)
         story_content = self._maybe_unescape_html(story_content)
         plain_story_content = self._get_content(params, force_plain=True)
@@ -136,48 +146,70 @@ class EmailNewsletter:
         elif plain_story_content and not story_content:
             story_content = plain_story_content
         story_content = self._clean_content(story_content or "")
-        story_params = {
-            "story_feed_id": feed.pk,
-            "story_date": self._clean_story_date(params.get("_story_date") or params.get("timestamp")),
-            "story_title": params["subject"],
-            "story_content": story_content,
-            "story_author_name": params["from"],
-            "story_permalink": "https://%s%s"
-            % (
-                Site.objects.get_current().domain,
-                reverse("newsletter-story", kwargs={"story_hash": story_hash}),
-            ),
-            "story_guid": story_guid,
-            "newsletter_headers": newsletter_headers,
-            "newsletter_identity": newsletter_identity,
-            "newsletter_identity_source": newsletter_identity_source,
-        }
 
-        try:
-            story = MStory.objects.get(story_hash=story_hash)
-        except MStory.DoesNotExist:
-            story = MStory(**story_params)
+        # The story is stored under the feed's merge lock, the way a fetch stores its batch: a
+        # merge of this feed running at the same time waits, and a feed merged away while
+        # this delivery waited resolves to its survivor, which took the reader's subscription
+        # with it. The hash and permalink carry the feed id, so they are built in here.
+        with feed_write_lock(
+            feed.pk, timeout=FETCH_LOCK_TIMEOUT_SECONDS, blocking_timeout=FETCH_LOCK_BLOCKING_SECONDS
+        ) as locked_feed:
+            if locked_feed is None:
+                logging.user(
+                    user, "~FRNewsletter feed %s vanished while its newsletter was being stored" % feed.pk
+                )
+                return
+            if locked_feed.pk != feed.pk:
+                feed = locked_feed
+                usersub = UserSubscription.objects.filter(user=user, feed=feed).first() or usersub
+            story_hash = MStory.ensure_story_hash(story_guid, feed.pk)
+            story_params = {
+                "story_feed_id": feed.pk,
+                "story_date": self._clean_story_date(params.get("_story_date") or params.get("timestamp")),
+                "story_title": params["subject"],
+                "story_content": story_content,
+                "story_author_name": params["from"],
+                "story_permalink": "https://%s%s"
+                % (
+                    Site.objects.get_current().domain,
+                    reverse("newsletter-story", kwargs={"story_hash": story_hash}),
+                ),
+                "story_guid": story_guid,
+                "newsletter_headers": newsletter_headers,
+                "newsletter_identity": newsletter_identity,
+                "newsletter_identity_source": newsletter_identity_source,
+            }
+
             try:
-                story.save()
-            except NotUniqueError:
-                # Mail providers redeliver the same email, and two concurrent deliveries
-                # can both miss the lookup above before one of them saves. The story is
-                # already stored, so use the copy that won. apps/newsletters/models.py
                 story = MStory.objects.get(story_hash=story_hash)
-        else:
-            updated = False
-            if newsletter_headers and not story.newsletter_headers:
-                story.newsletter_headers = newsletter_headers
-                updated = True
-            if newsletter_identity and not story.newsletter_identity:
-                story.newsletter_identity = newsletter_identity
-                story.newsletter_identity_source = newsletter_identity_source
-                updated = True
-            if updated:
-                story.save()
+            except MStory.DoesNotExist:
+                story = MStory(**story_params)
+                try:
+                    story.save()
+                except NotUniqueError:
+                    # Mail providers redeliver the same email, and two concurrent deliveries
+                    # can both miss the lookup above before one of them saves. The story is
+                    # already stored, so use the copy that won. apps/newsletters/models.py
+                    story = MStory.objects.get(story_hash=story_hash)
+            else:
+                updated = False
+                if newsletter_headers and not story.newsletter_headers:
+                    story.newsletter_headers = newsletter_headers
+                    updated = True
+                if newsletter_identity and not story.newsletter_identity:
+                    story.newsletter_identity = newsletter_identity
+                    story.newsletter_identity_source = newsletter_identity_source
+                    updated = True
+                if updated:
+                    story.save()
 
-        usersub.needs_unread_recalc = True
-        usersub.save()
+        # A primary-key update, not a full save: the lock above is released, and a merge
+        # landing now moves this row to the survivor and deletes the old feed. A full save
+        # would write the old feed id back, fail on it, and UserSubscription.save's own
+        # recovery would then delete the reader's moved subscription. The moved row keeps
+        # its id, so the flag lands on it wherever it went. apps/newsletters/models.py
+        if usersub:
+            UserSubscription.objects.filter(pk=usersub.pk).update(needs_unread_recalc=True)
 
         self._publish_to_subscribers(feed, story.story_hash)
 
@@ -324,7 +356,10 @@ class EmailNewsletter:
 
         old_feed_address = feed.feed_address
         feed.feed_address = feed_address
-        feed.save()
+        # The save can hand back another feed: one restore_merged_feed had parked is folded
+        # into the restored feed by its save, and going on with the deleted row would
+        # recreate it at the new address on the next save. apps/newsletters/models.py
+        feed = feed.save() or feed
         logging.info(
             " ---> Updating newsletter feed address: %s -> %s (%s)"
             % (old_feed_address, feed_address, feed.pk)

@@ -1,0 +1,85 @@
+name: Claude PR Review
+
+# Automated review of every pull request commit. Runs on open, reopen, ready for
+# review, and each push to the PR branch (synchronize); never on pushes to main.
+# Copied from the Tavus developer-portal workflow of the same name and adapted for
+# NewsBlur. .github/workflows/claude-pr-review.yml
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  # Required by claude-code-action@v1, which fetches an OIDC token even when
+  # authenticating with an API key. Without it the action aborts.
+  id-token: write
+
+concurrency:
+  # A new push cancels the review of the previous head so comments land on current code.
+  group: claude-pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  claude-review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Claude code review
+        id: claude_review
+        uses: anthropics/claude-code-action@c81e3bc69d1b18badbb63ba39581218f02421678 # v1.0.201
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The review text is public on the PR anyway; full output puts the API error in
+          # the job log when a run fails instead of a bare is_error:true.
+          show_full_output: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            You are reviewing NewsBlur, an open source RSS news reader.
+
+            Business context:
+            - Django 3 backend (apps/ and utils/) with PostgreSQL, MongoDB (mongoengine), Redis, and Elasticsearch, run in Docker and deployed with Ansible to Hetzner. Feed fetching, story scoring, newsletters, and Ask AI run as Celery tasks.
+            - Web frontend is Backbone.js with jQuery and Underscore under media/js/newsblur/ (snake_case methods), with Node services under node/ for text extraction, favicons, and real-time.
+            - Native clients: iOS/macOS under clients/ios (Swift and Objective-C) and Android under clients/android (Kotlin and Java).
+            - Read CLAUDE.md at the repo root for conventions before judging style.
+            - A bug in feed fetching, story deduplication, unread counts, or payments hits every subscriber at once. Treat those, and anything that could leak user data, as high severity.
+
+            Review objective:
+            - Perform a general code review for correctness, security, performance at NewsBlur's scale, maintainability, and tests across the full PR.
+
+            Focus areas (in order):
+            1) Correctness and data safety
+            - Django ORM and mongoengine queries that scan large tables (feeds, stories, subscriptions) without an index, N+1 loops, or writes inside fetch paths that run millions of times a day
+            - Race conditions in Celery tasks, Redis pipelines, and story hashing; changes to story_hash, feed_address, or unread logic
+            - Unhandled None, encoding errors on real-world feed data, timeouts on outbound HTTP (feed fetching must never hang a worker)
+            - Tests: new behavior needs a Test_* class with test_* methods; mocks must patch the module under test
+            2) Security
+            - SSRF on any outbound fetch (utils/url_safety.py validate_public_url and safe_requests_get must guard user-supplied URLs)
+            - XSS in story content rendering, template autoescape bypasses, unsafe HTML scrubbing changes
+            - Secrets or user email addresses in logs, PR text, or fixtures; auth checks on views that touch another user's data
+            3) Product and style
+            - Follows CLAUDE.md: Black at 110 columns, explicit exceptions, comments that name the file, no TODOs or placeholders, readability over cleverness
+            - User-facing copy is plain and human; forum reply drafts in PR bodies are not reviewed for tone
+            - Android UI changes cover light, dark, and black themes; iOS additions are Swift
+
+            Output requirements:
+            - Leave inline comments for concrete issues.
+            - Do not repeat already-reported inline issues unless the code changed or there is new evidence.
+            - Provide a final summary grouped by severity: Critical, High, Medium, Low.
+            - For each Critical/High issue include why it matters (user impact) and a specific fix suggestion.
+            - If no major risks are found, explicitly state why this PR is low risk.
+            - Write the summary and every comment in plain language: most important point first, short sentences, active voice, project shorthand expanded on first use, and a concrete next step for the author.
+          claude_args: |
+            --model claude-fable-5-1
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"

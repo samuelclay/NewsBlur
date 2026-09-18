@@ -337,8 +337,10 @@ SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS = 365
 # SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET at None to split the credits left in the billing
 # period evenly across the users charged in the last week (never assuming fewer than
 # SCRAPINGBEE_USER_BUDGET_MIN_USERS of them), or set a fixed number of credits per user
-# per period. Skips show as status="user_budget" on the dashboard. See
-# RScrapingBee.user_period_budget in apps/statistics/rscrapingbee.py.
+# per period. Only feeds with a single active reader are rationed this way; a feed shared
+# by two or more active readers (Feed.has_multiple_active_subscribers) is always proxied,
+# since one credit serves all of them. Skips show as status="user_budget" on the dashboard.
+# See RScrapingBee.user_period_budget in apps/statistics/rscrapingbee.py.
 SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET = None
 SCRAPINGBEE_USER_BUDGET_MIN_USERS = 5000
 

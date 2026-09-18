@@ -33,6 +33,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         "click .NB-briefing-generate-btn": function (e) {
             e.preventDefault();
             NEWSBLUR.reader.generate_daily_briefing();
+        },
+        "click .NB-classifier-filter-empty-clear": function (e) {
+            e.preventDefault();
+            NEWSBLUR.reader.close_classifier_filter();
+        },
+        "click .NB-classifier-filter-empty-widen": function (e) {
+            e.preventDefault();
+            this.widen_classifier_filter();
         }
     },
 
@@ -600,7 +608,12 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
 
     show_no_more_stories: function () {
-        this.$('.NB-end-line').remove();
+        this.$('.NB-end-line, .NB-classifier-filter-empty').remove();
+        var filter = NEWSBLUR.reader.flags['classifier_filter'];
+        if (filter && !this.collection.length) {
+            this.show_classifier_filter_empty(filter);
+            return;
+        }
         var $end_stories_line = $.make('div', { className: "NB-end-line" }, [
             $.make('div', { className: 'NB-fleuron' })
         ]);
@@ -623,6 +636,43 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
 
         this.$el.append($end_stories_line);
+    },
+
+    show_classifier_filter_empty: function (filter) {
+        var type_label = filter.type === 'url' ? 'URL' : Inflector.capitalize(filter.type);
+        var active_feed = NEWSBLUR.reader.active_feed;
+        var can_widen = active_feed !== 'river:';
+        var context = NEWSBLUR.reader.feed_title(active_feed) || 'this view';
+
+        var $actions = $.make('div', { className: 'NB-classifier-filter-empty-actions' });
+        if (can_widen) {
+            $actions.append($.make('button', {
+                type: 'button',
+                className: 'NB-classifier-filter-empty-widen'
+            }, 'Search All Site Stories'));
+        }
+        $actions.append($.make('button', {
+            type: 'button',
+            className: 'NB-classifier-filter-empty-clear'
+        }, 'Clear filter'));
+
+        var $icon = $.make('div', { className: 'NB-classifier-filter-empty-icon', 'aria-hidden': 'true' });
+        $icon.html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>');
+        this.$el.append($.make('div', { className: 'NB-classifier-filter-empty' }, [
+            $icon,
+            $.make('div', { className: 'NB-classifier-filter-empty-title' }, 'No matches for “' + filter.value + '”'),
+            $.make('div', { className: 'NB-classifier-filter-empty-copy' },
+                type_label + ' filters found no stories in ' + context + '.'),
+            $actions
+        ]));
+    },
+
+    widen_classifier_filter: function (e) {
+        var filter = NEWSBLUR.reader.flags['classifier_filter'];
+        if (!filter) return;
+        NEWSBLUR.reader.open_river_stories(null, null, {
+            classifier_filter: filter
+        });
     },
 
     snap_back_scroll_position: function () {
