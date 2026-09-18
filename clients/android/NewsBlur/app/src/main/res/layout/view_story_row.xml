@@ -109,6 +109,8 @@
         android:layout_below="@id/story_item_feedtitle"
         android:layout_toLeftOf="@id/story_item_shared_icon"
         android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:breakStrategy="balanced"
+        android:hyphenationFrequency="none"
         android:ellipsize="end"
         android:maxLines="3"
         android:textStyle="bold" />
