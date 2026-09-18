@@ -276,6 +276,7 @@ abstract class Reading :
     private var allowImmediateFinish = false
     private var predictiveBackInProgress = false
     private var waitingForPreparedEntrance = false
+    private var waitingForInitialArticle = false
     private var preparedEntranceTimeout: Runnable? = null
     private var preparedEntranceLoading: Snackbar? = null
     private var preparedEntranceStartedAt = 0L
@@ -300,6 +301,7 @@ abstract class Reading :
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
         waitingForPreparedEntrance = savedInstanceBundle == null && !isTaskRoot
+        waitingForInitialArticle = waitingForPreparedEntrance
         if (waitingForPreparedEntrance) {
             PendingTransitionUtils.overrideNoEnterTransition(this)
         } else {
@@ -310,7 +312,7 @@ abstract class Reading :
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
         if (waitingForPreparedEntrance) {
-            // Reading.kt keeps the titles underneath until the local article can join the entrance animation.
+            // Reading.kt enters with the native title; ReadingItemFragment.kt fades in the article separately.
             preparedEntranceStartedAt = SystemClock.uptimeMillis()
             prepareReaderSurface(binding.root)
             binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
@@ -418,7 +420,12 @@ abstract class Reading :
         preparedPageNavigation?.resume()
         if (waitingForPreparedEntrance || preparedPageNavigation?.isPreparing == true) schedulePreparedLoading()
         if (waitingForPreparedEntrance) {
-            pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }?.let(::onReaderPageVisualReady)
+            pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }?.let(::onReaderPageNativeReady)
+        }
+        pager?.currentItem?.let { position ->
+            if (readingAdapter?.getExistingItem(position)?.isArticleVisible() == true) {
+                readingAdapter?.getStory(position)?.storyHash?.let(::onReaderArticleVisible)
+            }
         }
         resumeStoryDwell()
     }
@@ -807,6 +814,7 @@ abstract class Reading :
             pager!!.visibility = View.VISIBLE
             binding.readingEmptyViewText.visibility = View.INVISIBLE
             storyHash = restoreState.storyHash
+            readingAdapter?.getStory(position)?.storyHash?.let(::onReaderPageNativeReady)
             if (readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true) {
                 readingAdapter?.getStory(position)?.storyHash?.let(::onReaderPageVisualReady)
             }
@@ -875,17 +883,42 @@ abstract class Reading :
                 "visual_ready active=${activeHash == readyStoryHash} waiting=$waitingForPreparedEntrance elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}",
             )
         }
+    }
+
+    fun onReaderPageNativeReady(readyStoryHash: String) {
+        val activeHash = pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }
         if (!shouldRevealPreparedReader(waitingForPreparedEntrance, storyHash, activeHash, readyStoryHash, readerIsPaused)) return
-        // Reading.kt waits for the native header/layout pass too, after the WebView compositor is ready.
-        interactiveBackSurface().doOnPreDraw { revealPreparedEntrance("visual_ready") }
+        // Reading.kt validates identity again after layout because the pager can change targets in this interval.
+        interactiveBackSurface().doOnPreDraw {
+            val position = pager?.currentItem
+            if (position != null && readingAdapter?.getStory(position)?.storyHash == readyStoryHash) {
+                revealPreparedEntrance("native_ready")
+            }
+        }
+    }
+
+    fun onReaderArticleVisible(visibleStoryHash: String) {
+        if (readerIsPaused || isFinishing || isDestroyed || storyHash != null) return
+        val position = pager?.currentItem ?: return
+        if (readingAdapter?.getStory(position)?.storyHash != visibleStoryHash) return
+        if (!waitingForInitialArticle) return
+        waitingForInitialArticle = false
+        if (!waitingForPreparedEntrance) {
+            resumeStoryDwell()
+            resumeCurrentStoryReadTimeTracking()
+        }
     }
 
     private fun revealPreparedEntrance(reason: String) {
-        if (reason != "visual_ready" || !waitingForPreparedEntrance || readerIsPaused || isFinishing || isDestroyed) return
+        if (reason != "native_ready" || !waitingForPreparedEntrance || readerIsPaused || isFinishing || isDestroyed || storyHash != null) return
         val activePosition = pager?.currentItem ?: return
-        if (readingAdapter?.getExistingItem(activePosition)?.isReadyForDisplay() != true) return
+        val activeHash = readingAdapter?.getStory(activePosition)?.storyHash ?: return
+        val fragment = readingAdapter?.getExistingItem(activePosition) ?: return
+        if (!fragment.isNativeHeaderReady(activeHash)) return
+        if (fragment.isArticleVisible()) waitingForInitialArticle = false
         waitingForPreparedEntrance = false
         resumeStoryDwell()
+        resumeCurrentStoryReadTimeTracking()
         val surface = interactiveBackSurface()
         preparedEntranceTimeout?.let(surface::removeCallbacks)
         preparedEntranceTimeout = null
@@ -1652,7 +1685,7 @@ abstract class Reading :
             logReaderRestore("markBehavior skipped alreadyRead ${storyDebug(story)}")
             return
         }
-        if (readerIsPaused || waitingForPreparedEntrance || isRestoringState || isFinishing || isDestroyed) return
+        if (readerIsPaused || waitingForPreparedEntrance || waitingForInitialArticle || isRestoringState || isFinishing || isDestroyed) return
 
         val delayMillis = markStoryReadBehavior.getDelayMillis()
         logReaderRestore("markBehavior story=${storyDebug(story)} delayMs=$delayMillis")
@@ -1679,7 +1712,7 @@ abstract class Reading :
     ): Job =
         lifecycleScope.launch(start = CoroutineStart.LAZY) {
             delay(delayMillis)
-            if (isActive && !readerIsPaused && !waitingForPreparedEntrance && !isRestoringState &&
+            if (isActive && !readerIsPaused && !waitingForPreparedEntrance && !waitingForInitialArticle && !isRestoringState &&
                 !isFinishing && !isDestroyed && pendingDwellStory?.storyHash == story.storyHash
             ) markStoryAsRead(story)
         }
@@ -1776,7 +1809,7 @@ abstract class Reading :
     }
 
     private fun beginReadTimeTracking(storyHash: String?) {
-        if (storyHash.isNullOrBlank()) return
+        if (storyHash.isNullOrBlank() || waitingForPreparedEntrance || waitingForInitialArticle) return
 
         val previousStoryHash = readTimeTracker.currentStoryHash
         if (previousStoryHash != null && previousStoryHash != storyHash) {
@@ -1861,6 +1894,7 @@ abstract class Reading :
         readerPageSnapshot?.freezeForExit()
         // Reading.kt must disarm pending entrances before the committed Back animation starts.
         waitingForPreparedEntrance = false
+        waitingForInitialArticle = false
         preparedEntranceTimeout?.let(surface::removeCallbacks)
         preparedEntranceTimeout = null
         preparedEntranceLoading?.dismiss()

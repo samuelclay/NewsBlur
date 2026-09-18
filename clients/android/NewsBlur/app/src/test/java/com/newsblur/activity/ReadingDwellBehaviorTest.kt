@@ -139,6 +139,25 @@ class ReadingDwellBehaviorTest {
     }
 
     @Test
+    fun nativeEntranceDoesNotStartDwellWhileArticleRemainsHidden() = runTest {
+        val fixture = Fixture(MarkStoryReadBehavior.SECONDS_5)
+        fixture.setField("waitingForInitialArticle", true)
+        fixture.select(0)
+        advanceTimeBy(10_000)
+        runCurrent()
+        assertTrue(fixture.marked.isEmpty())
+        fixture.setField("waitingForInitialArticle", false)
+        fixture.invoke("resumeStoryDwell")
+        runCurrent()
+        advanceTimeBy(4_999)
+        runCurrent()
+        assertTrue(fixture.marked.isEmpty())
+        advanceTimeBy(1)
+        runCurrent()
+        assertEquals(listOf("1:0"), fixture.marked)
+    }
+
+    @Test
     fun returningFromHomeStartsANewFullDwellOnTheSameVisibleStory() = runTest {
         val fixture = Fixture(MarkStoryReadBehavior.SECONDS_5)
         fixture.select(0)
