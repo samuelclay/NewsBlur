@@ -49,6 +49,16 @@ class GesturePreferencesTest {
         assertEquals(GestureAction.GEST_ACTION_SHARE, repo.getStoryLongPressAction())
     }
 
+    @Test fun explicitlySelectedSaveStillOnlySaves() {
+        every { preferences.getString("story_long_press", any()) } returns GestureAction.GEST_ACTION_SAVE.name
+        assertEquals(GestureAction.GEST_ACTION_SAVE, repo.getStoryLongPressAction())
+    }
+
+    @Test fun selectedSaveToggleSurvivesPreferenceLoading() {
+        every { preferences.getString("story_long_press", any()) } returns GestureAction.GEST_ACTION_TOGGLE_SAVE.name
+        assertEquals(GestureAction.GEST_ACTION_TOGGLE_SAVE, repo.getStoryLongPressAction())
+    }
+
     @Test fun unknownStoryLongPressChoiceFallsBackToMenu() {
         every { preferences.getString("story_long_press", any()) } returns "obsolete"
         assertEquals(GestureAction.GEST_ACTION_MENU, repo.getStoryLongPressAction())

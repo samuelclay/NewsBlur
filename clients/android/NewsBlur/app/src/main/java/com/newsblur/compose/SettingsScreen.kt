@@ -113,6 +113,7 @@ import com.newsblur.util.AppIconOption
 import com.newsblur.util.DefaultBrowser
 import com.newsblur.util.FeedListOrder
 import com.newsblur.util.GestureAction
+import com.newsblur.util.GestureChoices
 import com.newsblur.util.MarkAllReadConfirmation
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants
@@ -441,16 +442,7 @@ fun SettingsScreen(
             GestureAction.GEST_ACTION_UNSAVE,
             GestureAction.GEST_ACTION_STATISTICS,
         )
-    val storyLongPressOptions =
-        gestureOptions(
-            GestureAction.GEST_ACTION_ASK_AI,
-            GestureAction.GEST_ACTION_SHARE,
-            GestureAction.GEST_ACTION_MARKUNREAD,
-            GestureAction.GEST_ACTION_SAVE,
-            GestureAction.GEST_ACTION_TRAIN,
-            GestureAction.GEST_ACTION_MENU,
-            GestureAction.GEST_ACTION_NONE,
-        )
+    val storyLongPressOptions = gestureOptions(*GestureChoices.storyLongPress.toTypedArray())
     val feedSwipeOptions =
         gestureOptions(
             GestureAction.GEST_ACTION_MARKREAD,
