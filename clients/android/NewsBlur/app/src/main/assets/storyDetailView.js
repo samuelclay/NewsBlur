@@ -18,6 +18,46 @@ function hasProtectedImageClass(img) {
         hasClass(img, 'NB-classifier-icon-dislike-inner');
 }
 
+// storyDetailView.js sends only article images to the origin-scoped native viewer bridge.
+var NB_story_image_sequence = 0;
+function NB_story_image_rect(token, generation) {
+    var load = document.querySelector('meta[name="newsblur-image-generation"]');
+    if (!load || load.content !== String(generation) || !/^\d+$/.test(token)) return null;
+    var image = document.querySelector('img[data-nb-viewer-token="' + token + '"]');
+    if (!image) return null;
+    var rect = image.getBoundingClientRect();
+    return {x: rect.left, y: rect.top, width: rect.width, height: rect.height,
+        viewportWidth: document.documentElement.clientWidth};
+}
+
+function NB_open_story_image(image) {
+    var load = document.querySelector('meta[name="newsblur-image-generation"]');
+    if (!window.NewsBlurImages || !load || !image || image.tagName !== 'IMG' ||
+        !image.closest('.NB-story') || hasProtectedImageClass(image) ||
+        image.closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet') ||
+        !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
+    var src = image.currentSrc || image.src;
+    if (!/^(https?:|data:image\/)/i.test(src)) return false;
+    var token = image.getAttribute('data-nb-viewer-token');
+    if (!token) {
+        token = String(++NB_story_image_sequence);
+        image.setAttribute('data-nb-viewer-token', token);
+    }
+    window.NewsBlurImages.postMessage(JSON.stringify({
+        generation: load.content, token: token, src: src, title: image.alt || image.title || 'Story image',
+        naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
+        rect: NB_story_image_rect(token, load.content)
+    }));
+    return true;
+}
+
+document.addEventListener('click', function(event) {
+    if (NB_open_story_image(event.target)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    }
+}, true);
+
 function setImageClass(img, className) {
     if (img.classList) {
         img.classList.remove('NB-large-image');

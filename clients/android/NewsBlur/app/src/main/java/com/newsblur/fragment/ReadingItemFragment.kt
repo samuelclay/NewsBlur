@@ -122,6 +122,12 @@ class ReadingItemFragment :
     lateinit var storyImageCache: FileCache
 
     @Inject
+    @com.newsblur.di.ImageOkHttpClient
+    lateinit var imageViewerClient: okhttp3.OkHttpClient
+
+    private var storyImageViewer: com.newsblur.image.StoryImageViewer? = null
+
+    @Inject
     lateinit var prefsRepo: PrefsRepo
 
     @Inject
@@ -2125,6 +2131,55 @@ class ReadingItemFragment :
         }
     }
 
+    fun openStoryImage(webview: NewsblurWebview, json: String) {
+        val host = activity ?: return
+        if (view == null || readingWebview !== webview || !isResumed || storyImageViewer != null || host.isFinishing) return
+        val visible = android.graphics.Rect()
+        if (!webview.getGlobalVisibleRect(visible)) return
+        val source = com.newsblur.image.StoryImageSource.parse(json) ?: return
+        if (source.generation != webview.documentGeneration) return
+        val scale = webview.width / source.viewportWidth
+        val location = IntArray(2)
+        webview.getLocationOnScreen(location)
+        val origin = android.graphics.RectF(location[0] + source.x * scale, location[1] + source.y * scale,
+            location[0] + (source.x + source.width) * scale, location[1] + (source.y + source.height) * scale)
+        if (!android.graphics.RectF.intersects(origin, android.graphics.RectF(visible))) return
+        // ReadingItemFragment.kt takes a bounded preview so opening does not wait for another network request.
+        val previewScale = minOf(1f, 1024f / maxOf(source.width * scale, source.height * scale))
+        val preview = runCatching {
+            android.graphics.Bitmap.createBitmap(maxOf(1, (source.width * scale * previewScale).toInt()),
+                maxOf(1, (source.height * scale * previewScale).toInt()), android.graphics.Bitmap.Config.ARGB_8888).also { bitmap ->
+                val canvas = android.graphics.Canvas(bitmap)
+                canvas.scale(previewScale, previewScale)
+                canvas.translate(-source.x * scale, -source.y * scale)
+                webview.draw(canvas)
+            }
+        }.getOrNull()
+        storyImageViewer = com.newsblur.image.StoryImageViewer(host, source, preview, origin, storyImageCache, imageViewerClient,
+            returnRect = { finish ->
+                if (readingWebview !== webview || view == null || source.generation != webview.documentGeneration) {
+                    finish(null)
+                } else {
+                    webview.evaluateJavascript("NB_story_image_rect('${source.token}', ${source.generation});") { result ->
+                        val rect = runCatching {
+                            if (readingWebview !== webview || source.generation != webview.documentGeneration) return@runCatching null
+                            val data = com.google.gson.JsonParser.parseString(result).asJsonObject
+                            val ratio = webview.width / data["viewportWidth"].asFloat
+                            val position = IntArray(2)
+                            webview.getLocationOnScreen(position)
+                            android.graphics.RectF(position[0] + data["x"].asFloat * ratio,
+                                position[1] + data["y"].asFloat * ratio,
+                                position[0] + (data["x"].asFloat + data["width"].asFloat) * ratio,
+                                position[1] + (data["y"].asFloat + data["height"].asFloat) * ratio)
+                                .takeIf { it.left.isFinite() && it.top.isFinite() && it.right.isFinite() && it.bottom.isFinite() &&
+                                    webview.getGlobalVisibleRect(visible) && android.graphics.RectF.intersects(it, android.graphics.RectF(visible)) }
+                        }.getOrNull()
+                        finish(rect)
+                    }
+                }
+            }, onClosed = { storyImageViewer = null }).also { it.show() }
+    }
+
     private fun ensureReadingWebview(): NewsblurWebview {
         readingWebview?.let { return it }
 
@@ -2149,6 +2204,8 @@ class ReadingItemFragment :
     }
 
     private fun destroyReadingWebviewForBackground() {
+        storyImageViewer?.dismiss()
+        storyImageViewer = null
         articleReveal.release()
         documentRenderer.clear()
         cancelPendingConfigurationChangeRestore()
