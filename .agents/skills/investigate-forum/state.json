@@ -146,16 +146,16 @@
     "13839": {
       "title": "Unable to access API, possibly blocked?",
       "url": "https://forum.newsblur.com/t/unable-to-access-api-possibly-blocked/13839",
-      "status": "tier2-pending",
+      "status": "reply-drafted",
       "tier": 2,
       "handled_at": "2026-09-18T16:08:30Z",
       "last_posted_at": "2026-09-18T15:52:49.552Z",
       "pr": null,
       "branch": null,
       "worktree": null,
-      "note": "Source IP 172.237.159.95 (Akamai/Linode) is explicitly dropped by ufw on hwww (rule #1, ufw-user-input DROP). /etc/ufw/user.rules mtime 2026-07-09 12:24:22 EDT is the only timestamp; origin of the ban not recoverable. Adjacent commit b983bb005 (2026-07-10) added 'ruby' to the API UA list in utils/ip_rate_tracker.py. haproxy has no source-IP rules; app-level AttackDetector bans are 24h redis TTLs, so the ufw rule is the only block. Live sample 2026-09-18 16:04Z: 11 dropped packets in 30s. Prometheus (retained back to July) shows no spike on 2026-07-09 in reader endpoints, login views, or total Django requests.",
-      "reply": null,
-      "question": "Forum #13839 (EnzoReaderRSS): Ruby-based reader syncing 20 NewsBlur accounts from one Linode IP 172.237.159.95 gets TCP open timeouts on POST /api/login. Confirmed hwww has 'ufw deny from 172.237.159.95' as rule #1, inserted around 2026-07-09 12:24 EDT (user.rules mtime); no record of why (auth.log rotated, journal starts Jul 22, no shell history, no Claude session). Next day commit b983bb005 'Classify Ruby clients as API traffic'. Prometheus shows no spike on Jul 9. IP now sends ~22 dropped packets/min, 1.56M dropped total. Nothing else blocks it. Options: (a) unblock now with 'sudo ufw delete deny from 172.237.159.95' on hwww and reply with rate expectations; (b) keep the block and ask them for their polling pattern first; (c) you remember the reason and will handle it."
+      "note": "Source IP 172.237.159.95 (Akamai/Linode) is explicitly dropped by ufw on hwww (rule #1, ufw-user-input DROP). /etc/ufw/user.rules mtime 2026-07-09 12:24:22 EDT is the only timestamp; origin of the ban not recoverable. Adjacent commit b983bb005 (2026-07-10) added 'ruby' to the API UA list in utils/ip_rate_tracker.py. haproxy has no source-IP rules; app-level AttackDetector bans are 24h redis TTLs, so the ufw rule is the only block. Live sample 2026-09-18 16:04Z: 11 dropped packets in 30s. Prometheus (retained back to July) shows no spike on 2026-07-09 in reader endpoints, login views, or total Django requests. Sam's decision 2026-09-18: keep the block and ask them for their polling pattern before lifting it. No prod change made. Lifting it later is one command on hwww: sudo ufw delete deny from 172.237.159.95",
+      "reply": "Yes, that IP is blocked at our firewall, and has been since July. So this isn't a routing problem, and it isn't new. I no longer have the logs from when it was added, so before I lift it I'd like to understand what the integration does so it doesn't end up blocked again. Can you share which endpoints you call, how often each account syncs, and what the client does when a request fails or times out? Twenty accounts behind one IP is fine, but the combined rate should stay under roughly 100 requests a minute and failures need to back off instead of retrying right away. Once I have that I'll remove the block.",
+      "question": null
     }
   }
 }
