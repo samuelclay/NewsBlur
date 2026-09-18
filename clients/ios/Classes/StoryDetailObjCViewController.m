@@ -42,6 +42,7 @@
 @property (nonatomic) BOOL preparedWebViewFonts;
 @property (nonatomic, readwrite) BOOL readyForPresentation;
 @property (nonatomic) BOOL preparingStoryPresentation;
+@property (nonatomic) BOOL fadesPreparedStory;
 @property (nonatomic) NSUInteger presentationLayoutGeneration;
 @property (nonatomic) BOOL checkingPresentationLayout;
 @property (nonatomic) BOOL failedWebViewFontPreparation;
@@ -3011,8 +3012,34 @@
     }
 }
 
+- (void)beginStoryPresentationFade {
+    // StoryDetailObjCViewController.m keeps the complete HTML header and body invisible until their shared paint gate.
+    self.fadesPreparedStory = YES;
+    [self.webView.layer removeAllAnimations];
+    self.webView.alpha = 0;
+    self.webView.accessibilityElementsHidden = YES;
+}
+
+- (void)cancelStoryPresentationFade {
+    if (!self.fadesPreparedStory) return;
+    self.fadesPreparedStory = NO;
+    self.webView.hidden = YES;
+    [self invalidateStoryLoad];
+    [self.webView.layer removeAllAnimations];
+    self.webView.alpha = 1;
+    self.webView.accessibilityElementsHidden = NO;
+}
+
 - (void)finishStoryPresentation {
     self.preparingStoryPresentation = NO;
+    if (!self.fadesPreparedStory || !self.readyForPresentation) return;
+    self.fadesPreparedStory = NO;
+    self.webView.accessibilityElementsHidden = NO;
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] fadePreparedStory hash=%@ page=%p gen=%lu", self.activeStoryId, self, (unsigned long)self.storyLoadGeneration);
+    // StoryDetailObjCViewController.m reveals only the finished document; native reader controls are already usable.
+    [UIView animateWithDuration:UIAccessibilityIsReduceMotionEnabled() ? 0 : .14
+                          delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
+                     animations:^{ self.webView.alpha = 1; } completion:nil];
 }
 
 - (void)finishPreparingStoryPresentation {

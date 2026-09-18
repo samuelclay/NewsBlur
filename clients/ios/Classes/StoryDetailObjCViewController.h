@@ -44,6 +44,8 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 @property (nonatomic, readonly) BOOL readyForPresentation;
 - (void)prepareCurrentStoryForPresentation;
 - (void)finishStoryPresentation;
+- (void)beginStoryPresentationFade;
+- (void)cancelStoryPresentationFade;
 - (void)receiveStoryReadyMessage:(WKScriptMessage *)message;
 - (BOOL)isCurrentStoryImageLoad:(NSString *)loadID;
 @property (nonatomic) BOOL lastDragDirectionDown;
