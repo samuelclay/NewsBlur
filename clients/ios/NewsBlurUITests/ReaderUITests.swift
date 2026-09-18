@@ -68,6 +68,14 @@ final class ReaderUITests: XCTestCase {
         let image = app.images["fullscreen-story-image"]
         XCTAssertEqual(image.frame.width, 120, accuracy: 1)
         XCTAssertEqual(image.frame.height, 80, accuracy: 1)
+        image.doubleTap()
+        let zoom = app.scrollViews["story-image-zoom"]
+        expectation(for: NSPredicate(format: "value == 'Zoomed'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        XCTAssertGreaterThan(image.frame.width, 120)
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Fitted'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
         app.buttons["Image actions"].tap()
         XCTAssertFalse(app.buttons["Open Link"].exists)
         XCTAssertFalse(app.buttons["Open Image in Browser"].exists)
