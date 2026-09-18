@@ -7,21 +7,32 @@ import org.junit.Test
 
 class StoryRowPaletteTest {
     @Test
-    fun readMetadataAndHeadingsUseOneColorInEveryTheme() {
-        listOf(ThemeValue.LIGHT, ThemeValue.SEPIA, ThemeValue.DARK, ThemeValue.BLACK).forEach { theme ->
-            assertEquals(StoryRowPalette.feedTitleArgb(theme, true), StoryRowPalette.metadataArgb(theme, true))
+    fun feedNamesAndHeadlinesMatchTheIosThemeHierarchy() {
+        val expected = mapOf(
+            ThemeValue.LIGHT to listOf(0x606060, 0x808080, 0x111111, 0x585858),
+            ThemeValue.SEPIA to listOf(0x606060, 0x808080, 0x333333, 0x585858),
+            ThemeValue.DARK to listOf(0xD0D0D0, 0xB0B0B0, 0xD0D0D0, 0x989898),
+            ThemeValue.BLACK to listOf(0x909090, 0x707070, 0xCCCCCC, 0x888888),
+        )
+        expected.forEach { (theme, colors) ->
+            assertEquals(colors[0] or 0xFF000000.toInt(), StoryRowPalette.feedTitleArgb(theme, false))
+            assertEquals(colors[1] or 0xFF000000.toInt(), StoryRowPalette.feedTitleArgb(theme, true))
+            assertEquals(colors[2] or 0xFF000000.toInt(), StoryRowPalette.storyTitleArgb(theme, false))
+            assertEquals(colors[3] or 0xFF000000.toInt(), StoryRowPalette.storyTitleArgb(theme, true))
         }
     }
 
     @Test
-    fun feedTitleColorsMatchTheUnifiedIosHeadingPalette() {
-        assertEquals(0xFF111111.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.LIGHT, isRead = false))
-        assertEquals(0xFFB8B8B8.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.LIGHT, isRead = true))
-        assertEquals(0xFF333333.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.SEPIA, isRead = false))
-        assertEquals(0xFFB8B8B8.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.SEPIA, isRead = true))
-        assertEquals(0xFFD0D0D0.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.DARK, isRead = false))
-        assertEquals(0xFFA0A0A0.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.DARK, isRead = true))
-        assertEquals(0xFFCCCCCC.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.BLACK, isRead = false))
-        assertEquals(0xFF707070.toInt(), StoryRowPalette.feedTitleArgb(ThemeValue.BLACK, isRead = true))
+    fun previewAndMetadataKeepTheirQuieterReadColors() {
+        val expected = mapOf(
+            ThemeValue.LIGHT to (0x404040 to 0xB8B8B8),
+            ThemeValue.SEPIA to (0x404040 to 0xB8B8B8),
+            ThemeValue.DARK to (0xC0C0C0 to 0xA0A0A0),
+            ThemeValue.BLACK to (0xB0B0B0 to 0x707070),
+        )
+        expected.forEach { (theme, colors) ->
+            assertEquals(colors.first or 0xFF000000.toInt(), StoryRowPalette.metadataArgb(theme, false))
+            assertEquals(colors.second or 0xFF000000.toInt(), StoryRowPalette.metadataArgb(theme, true))
+        }
     }
 }

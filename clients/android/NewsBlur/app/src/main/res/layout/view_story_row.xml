@@ -57,8 +57,8 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/story_item_feedicon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_toRightOf="@id/story_item_inteldot_container"
         app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
 
@@ -67,6 +67,7 @@
         style="?storyFeedTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="16dp"
         android:layout_marginLeft="8dp"
         android:layout_toLeftOf="@id/story_item_thumbnail_right"
         android:layout_toRightOf="@id/story_item_feedicon"
@@ -105,7 +106,7 @@
         style="?storyTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/story_item_feedicon"
+        android:layout_below="@id/story_item_feedtitle"
         android:layout_toLeftOf="@id/story_item_shared_icon"
         android:layout_toRightOf="@id/story_item_inteldot_container"
         android:ellipsize="end"
@@ -124,28 +125,35 @@
         android:lineSpacingExtra="1dp"
         style="?storySnippetText" />
 
-    <!--dynamic spacing-->
-    <TextView
-        style="?storySnippetText"
-        android:id="@+id/story_item_date"
-        android:layout_width="wrap_content"
+    <!-- StoryViewAdapter.kt keeps date and author inside one measured text column. -->
+    <LinearLayout
+        android:id="@+id/story_item_metadata"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_content"
-        android:paddingRight="3dp" />
-
-    <!--dynamic spacing-->
-    <TextView
-        style="?storySnippetText"
-        android:id="@+id/story_item_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/story_item_content"
-        android:layout_toRightOf="@id/story_item_date"
         android:layout_toLeftOf="@id/story_item_thumbnail_right"
-        android:layout_alignBaseline="@+id/story_item_date"
-        android:ellipsize="end"
-        android:singleLine="true" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            style="?storySnippetText"
+            android:id="@+id/story_item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:paddingRight="3dp" />
+
+        <TextView
+            style="?storySnippetText"
+            android:id="@+id/story_item_author"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true" />
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/story_item_inteldot_container"

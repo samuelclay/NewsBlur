@@ -3,7 +3,6 @@
 package com.newsblur.database
 
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Parcelable
 import android.os.SystemClock
 import android.text.TextUtils
@@ -26,6 +25,7 @@ import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.view.doOnLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,6 +53,7 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StoryClusterBadgeViewBinder
 import com.newsblur.util.StoryRowThumbnailVerticalMode
+import com.newsblur.util.StoryRowTypography
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryClusterNavigationDecision
@@ -118,6 +119,8 @@ class StoryViewAdapter(
     private var ignoreIntel = false
     private var singleFeed = false
     private var textSize: Float
+    private val storyMediumTypeface by lazy { ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas) }
+    private val storyBookTypeface by lazy { ResourcesCompat.getFont(context, R.font.whitney_ssm_book_bas) }
     private var thumbnailStyle: ThumbnailStyle
     private var spacingStyle: SpacingStyle
     private val storyOrder: StoryOrder
@@ -935,6 +938,7 @@ class StoryViewAdapter(
     ) : StoryViewHolder(view) {
         var storyAuthor: TextView = view.findViewById(R.id.story_item_author)
         var storySnippet: TextView = view.findViewById(R.id.story_item_content)
+        val storyMetadata: View = view.findViewById(R.id.story_item_metadata)
     }
 
     inner class ClusterRowViewHolder(
@@ -1111,7 +1115,7 @@ class StoryViewAdapter(
             // Check for custom feed icon
             val customFeedIcon: CustomIcon? = BlurDatabaseHelper.getFeedIcon(story.feedId)
             if (customFeedIcon != null) {
-                val iconSize = UIUtils.dp2px(context, 18)
+                val iconSize = UIUtils.dp2px(context, 16)
                 val iconBitmap = CustomIconRenderer.renderIcon(context, customFeedIcon, iconSize)
                 if (iconBitmap != null) {
                     vh.feedIconView.setImageBitmap(iconBitmap)
@@ -1149,12 +1153,12 @@ class StoryViewAdapter(
         }
 
         // dynamic text sizing
-        vh.feedTitleView.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_FEED_TITLE
-        vh.storyTitleView.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_TITLE
-        vh.storyDate.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR
-        vh.feedTitleView.setTypeface(vh.feedTitleView.typeface, Typeface.BOLD)
-        vh.storyTitleView.setTypeface(vh.storyTitleView.typeface, Typeface.BOLD)
-        vh.storyDate.setTypeface(vh.storyDate.typeface, Typeface.NORMAL)
+        val typography = StoryRowTypography.forScale(textSize)
+        vh.feedTitleView.textSize = typography.feedSp
+        vh.storyTitleView.textSize = typography.titleSp
+        vh.storyDate.textSize = typography.metadataSp
+        vh.storyTitleView.typeface = storyMediumTypeface
+        vh.storyDate.typeface = storyMediumTypeface
 
         // dynamic spacing
         val verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context)
@@ -1171,9 +1175,11 @@ class StoryViewAdapter(
     private fun bindReadState(vh: StoryViewHolder, story: Story, animated: Boolean) {
         val isRead = !ignoreReadStatus && story.read
         val theme = prefsRepo.getResolvedTheme(context)
-        val headingColor = StoryRowPalette.feedTitleArgb(theme, isRead)
+        val feedColor = StoryRowPalette.feedTitleArgb(theme, isRead)
+        val headingColor = StoryRowPalette.storyTitleArgb(theme, isRead)
         val metadataColor = StoryRowPalette.metadataArgb(theme, isRead)
-        val textColors = mutableListOf(vh.feedTitleView to headingColor, vh.storyTitleView to headingColor, vh.storyDate to metadataColor)
+        vh.feedTitleView.typeface = if (isRead) storyBookTypeface else storyMediumTypeface
+        val textColors = mutableListOf(vh.feedTitleView to feedColor, vh.storyTitleView to headingColor, vh.storyDate to metadataColor)
         if (vh is StoryRowViewHolder) {
             textColors += vh.storyAuthor to metadataColor
             textColors += vh.storySnippet to metadataColor
@@ -1247,10 +1253,11 @@ class StoryViewAdapter(
             vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, story.authors)
         }
 
-        vh.storyAuthor.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR
-        vh.storySnippet.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
-        vh.storyAuthor.setTypeface(vh.storyAuthor.typeface, Typeface.NORMAL)
-        vh.storySnippet.setTypeface(vh.storySnippet.typeface, Typeface.NORMAL)
+        val typography = StoryRowTypography.forScale(textSize)
+        vh.storyAuthor.textSize = typography.metadataSp
+        vh.storySnippet.textSize = typography.previewSp
+        vh.storyAuthor.typeface = storyMediumTypeface
+        vh.storySnippet.typeface = storyBookTypeface
 
         val contentRightPadding =
             spacingStyle.getStoryContentRightPadding(
@@ -1271,14 +1278,15 @@ class StoryViewAdapter(
             contentRightPadding,
             contentVerticalPadding,
         )
+        vh.storyMetadata.setPadding(0, 0, contentRightPadding, 0)
 
         val verticalContainerMargin = spacingStyle.getStoryContainerMargin(context)
         val feedIconLp = vh.feedIconView.layoutParams as RelativeLayout.LayoutParams
         feedIconLp.setMargins(feedIconLp.leftMargin, verticalContainerMargin, feedIconLp.rightMargin, feedIconLp.bottomMargin)
         val feedTitleLp = vh.feedTitleView.layoutParams as RelativeLayout.LayoutParams
         feedTitleLp.setMargins(feedTitleLp.leftMargin, verticalContainerMargin, feedTitleLp.rightMargin, feedTitleLp.bottomMargin)
-        val storyDateLp = vh.storyDate.layoutParams as RelativeLayout.LayoutParams
-        storyDateLp.setMargins(storyDateLp.leftMargin, storyDateLp.topMargin, storyDateLp.rightMargin, verticalContainerMargin)
+        val metadataLp = vh.storyMetadata.layoutParams as RelativeLayout.LayoutParams
+        metadataLp.setMargins(metadataLp.leftMargin, metadataLp.topMargin, metadataLp.rightMargin, verticalContainerMargin)
 
         if (!thumbnailStyle.isOff() && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
@@ -1737,9 +1745,6 @@ class StoryViewAdapter(
         const val VIEW_TYPE_FOOTER: Int = 3
         const val VIEW_TYPE_CLUSTER_ROW: Int = 4
 
-        private const val DEFAULT_TEXT_SIZE_STORY_FEED_TITLE = 13f
-        private const val DEFAULT_TEXT_SIZE_STORY_TITLE = 14f
-        private const val DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR = 12f
         private const val DEFAULT_TEXT_SIZE_STORY_SNIP = 13f
 
         private const val READ_STORY_ALPHA = 0.35f
