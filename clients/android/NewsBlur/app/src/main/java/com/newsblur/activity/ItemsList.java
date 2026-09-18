@@ -352,7 +352,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         cancelPendingFetchingBanner();
         cancelStoryStatusBannerAnimation();
         dismissItemListMenuPopup();
-        resetInteractiveStoryListSwipe(true);
+        // ItemsList.java keeps the completed swipe offscreen until Android removes its window.
+        if (!isFinishing()) {
+            resetInteractiveStoryListSwipe(true);
+        }
         super.onPause();
         syncServiceState.addRecountCandidate(fs);
     }
@@ -1409,6 +1412,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     @Override
     protected void onDestroy() {
+        if (interactiveSwipeSurface != null) {
+            interactiveSwipeSurface.animate().cancel();
+        }
+        hideInteractiveSwipeUnderlay();
         if (readingLaunchParentRef.get() == this) {
             readingLaunchParentRef.clear();
         }
