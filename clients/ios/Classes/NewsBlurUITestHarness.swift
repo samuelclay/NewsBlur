@@ -53,6 +53,11 @@ final class NewsBlurUITestHarness {
         }
         UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
 
+        if arguments.contains("-newsblur-ui-test-default-story-menu") {
+            // ReaderUITests.swift verifies the real registered default instead of forcing Show actions.
+            UserDefaults.standard.removeObject(forKey: "long_press_story_title")
+        }
+
         if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-reset-gestures") {
             // NewsBlurUITestHarness.swift starts interactive preference tests without pinning controls in the argument domain.
             UserDefaults.standard.setValuesForKeys([
