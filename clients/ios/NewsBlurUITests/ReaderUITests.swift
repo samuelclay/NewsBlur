@@ -983,6 +983,24 @@ final class ReaderUITests: XCTestCase {
         XCTAssertEqual(currentStory.label, "Design Notes Keeps Another Folder Alive")
     }
 
+    func test_readerOpensBeforeDelayedArticleThenRevealsContent() {
+        app.launchArguments += ["-newsblur-ui-test-delayed-story-ready", "-newsblur-ui-test-animations",
+                                "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-feed-swift")
+        let storyList = fixtureStorySurface()
+        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
+        attachScreenshot(named: "reader-before-opening")
+        tapElementCenter(storyCells(in: storyList).element(boundBy: 0))
+
+        XCTAssertTrue(currentStoryProbe().waitForExistence(timeout: 2), "Reader controls must not wait for article readiness")
+        XCTAssertEqual(currentStoryProbe().label, "Swift Fixture Story One")
+        XCTAssertFalse(app.webViews.firstMatch.isHittable, "Unfinished article must remain hidden")
+        attachScreenshot(named: "reader-open-while-article-prepares")
+        expectation(for: NSPredicate(format: "hittable == YES"), evaluatedWith: app.webViews.firstMatch)
+        waitForExpectations(timeout: 10)
+        attachScreenshot(named: "reader-after-article-fades-in")
+    }
+
     func test_selectingFeedLoadsStoriesAndOpeningStoryShowsDetail() {
         launch(on: "reader-feed-swift")
 

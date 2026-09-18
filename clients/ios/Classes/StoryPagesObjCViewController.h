@@ -127,8 +127,10 @@
 - (void)advanceToNextUnread;
 - (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail;
 - (void)animateIntoPlace:(BOOL)animated;
+- (BOOL)shouldOpenReaderImmediately;
 - (void)preparePageForPresentation:(NSInteger)pageIndex completion:(void (^)(NSInteger location))completion;
 - (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated completion:(void (^)(NSInteger location))completion;
+- (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated openReaderImmediately:(BOOL)openImmediately completion:(void (^)(NSInteger location))completion;
 - (void)cancelPendingStoryPresentation;
 - (void)storyDetailReadyForPresentation:(StoryDetailViewController *)page;
 - (void)storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)page;

@@ -41,6 +41,7 @@
 @property (nonatomic, weak) UIViewController *pendingPresentationSource;
 @property (nonatomic, strong) UIView *storyPreparationHost;
 @property (nonatomic) BOOL pendingPresentationAnimated;
+@property (nonatomic) BOOL pendingPresentationOpenedEarly;
 @property (nonatomic, strong) StoryDetailViewController *pendingIntermediatePage;
 @property (nonatomic, strong) UIView *storyIntermediatePreparationHost;
 @property (nonatomic, strong) UIView *storySelectionTransitionHost;
@@ -699,6 +700,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    if (self.pendingPresentationOpenedEarly && self.view.window == nil) [self cancelPendingStoryPresentationForNavigation];
     
     if (!appDelegate.detailViewController.storyTitlesInGridView) {
         appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
@@ -1578,6 +1580,11 @@
     if ((pageController == self.pendingPresentationPage && self.storyPreparationHost) ||
         (pageController == self.pendingIntermediatePage && self.storyIntermediatePreparationHost) ||
         [self.storySelectionTransitionPages containsObject:pageController]) return;
+    if (pageController == self.pendingPresentationPage && self.pendingPresentationOpenedEarly) {
+        // StoryPagesObjCViewController.m allows native entrance/rotation layout without restarting the hidden document.
+        newIndex = pageController.pageIndex;
+        suppressRedraw = YES;
+    }
     BOOL retainedCurrentPage = pageController && pageController == currentPage &&
         [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
     if (retainedCurrentPage) {
@@ -1701,7 +1708,7 @@
                     return;
                 }
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if ((blockPageController == self.pendingPresentationPage && self.storyPreparationHost) ||
+                    if ((blockPageController == self.pendingPresentationPage && (self.storyPreparationHost || self.pendingPresentationOpenedEarly)) ||
                         (blockPageController == self.pendingIntermediatePage && self.storyIntermediatePreparationHost) ||
                         [self.storySelectionTransitionPages containsObject:blockPageController]) return;
                     [blockPageController initStory];
@@ -2172,10 +2179,19 @@
     self.deferredSelectionRedraws = nil;
     [self.storySelectionRedrawCover removeFromSuperview];
     self.storySelectionRedrawCover = nil;
+    [page cancelStoryPresentationFade];
     [page finishStoryPresentation];
     [intermediate finishStoryPresentation];
+    self.pendingPresentationOpenedEarly = NO;
     [self restorePreparedPage:page fromHost:host];
     [self restorePreparedPage:intermediate fromHost:intermediateHost];
+}
+
+- (BOOL)shouldOpenReaderImmediately {
+    UIViewController *visible = appDelegate.feedsNavigationController.visibleViewController;
+    return self.isPhoneOrCompact ?
+        (visible != nil && visible != appDelegate.detailViewController && visible != self) :
+        !currentPage.hasStory;
 }
 
 - (void)preparePageForPresentation:(NSInteger)pageIndex completion:(void (^)(NSInteger))completion {
@@ -2183,6 +2199,10 @@
 }
 
 - (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated completion:(void (^)(NSInteger))completion {
+    [self preparePageForPresentation:pageIndex animated:animated openReaderImmediately:NO completion:completion];
+}
+
+- (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated openReaderImmediately:(BOOL)openImmediately completion:(void (^)(NSInteger))completion {
     BOOL continuingSelection = self.pendingPresentationCollection == appDelegate.storiesCollection &&
         self.pendingPresentationFetch == appDelegate.feedDetailViewController.fetchRequestId;
     if (self.storySelectionTransitionHost) {
@@ -2224,7 +2244,7 @@
         [self cancelPendingStoryPresentation];
         return;
     }
-    BOOL animateSelection = animated && !redrawCover && !self.isPhoneOrCompact && !UIAccessibilityIsReduceMotionEnabled() &&
+    BOOL animateSelection = !openImmediately && animated && !redrawCover && !self.isPhoneOrCompact && !UIAccessibilityIsReduceMotionEnabled() &&
         self.view.window && currentPage.hasStory && !currentPage.webView.hidden &&
         !self.isDraggingScrollview && !self.scrollView.dragging && !self.scrollView.decelerating &&
         currentPage.pageIndex >= 0 && ![currentPage.activeStoryId isEqualToString:hash];
@@ -2281,6 +2301,20 @@
         [page drawStory];
         [page showTextOrStoryView];
     }
+    if (openImmediately) {
+        [[ReadTimeTracker shared] stopTracking];
+        [page beginStoryPresentationFade];
+        UIView *host = self.storyPreparationHost;
+        self.storyPreparationHost = nil;
+        [self restorePreparedPage:page fromHost:host];
+        [self promotePreparedPage:page location:pageIndex];
+        self.pendingPresentationOpenedEarly = YES;
+        self.pendingPresentationCompletion = nil;
+        // StoryPagesObjCViewController.m starts navigation before WebKit finishes, then guards readiness against the new reader source.
+        if (completion) completion(pageIndex);
+        self.pendingPresentationSource = navigation.visibleViewController;
+        if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] earlyReaderOpened hash=%@ page=%p ready=%d", hash, page, page.readyForPresentation);
+    }
     [page updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
     [page prepareCurrentStoryForPresentation];
 }
@@ -2311,7 +2345,7 @@
 
 - (void)storyDetailReadyForPresentation:(StoryDetailViewController *)page {
     if (self.storySelectionTransitionHost) return;
-    if (page != self.pendingPresentationPage || !page.readyForPresentation || !self.pendingPresentationCompletion) return;
+    if (page != self.pendingPresentationPage || !page.readyForPresentation || (!self.pendingPresentationCompletion && !self.pendingPresentationOpenedEarly)) return;
     NSString *hash = self.pendingPresentationHash;
     UINavigationController *navigation = appDelegate.feedsNavigationController;
     BOOL obsolete = self.pendingPresentationCollection != appDelegate.storiesCollection ||
@@ -2446,8 +2480,23 @@
     void (^completion)(NSInteger) = callCompletion ? self.pendingPresentationCompletion : nil;
     BOOL refresh = self.refreshAfterStorySelection;
     NSMutableDictionary<NSString *, StoryDetailViewController *> *deferredRedraws = self.deferredSelectionRedraws;
+    BOOL openedEarly = self.pendingPresentationOpenedEarly;
+    [page finishStoryPresentation];
     [self cancelPendingStoryPresentationWithoutRedraw];
-    // StoryPagesObjCViewController.m promotes one of its existing three controllers after painting and visual movement finish.
+    [self promotePreparedPage:page location:location];
+    // StoryPagesObjCViewController.m excludes the invisible preparation interval from article reading time.
+    if (openedEarly && callCompletion) [[ReadTimeTracker shared] startTrackingWithStoryHash:hash];
+    if (!callCompletion) {
+        self.deferredSelectionRedraws = deferredRedraws;
+        self.refreshAfterStorySelection = refresh;
+    }
+    if (completion) completion(location);
+    if (refresh && callCompletion) [self refreshPages];
+    if (callCompletion) [self replayDeferredSelectionRedraws:deferredRedraws excludingPage:currentPage];
+}
+
+- (void)promotePreparedPage:(StoryDetailViewController *)page location:(NSInteger)location {
+    // StoryPagesObjCViewController.m uses the same selected-page geometry for an early shell and a fully painted transition.
     if (page != currentPage) {
         if (page == nextPage) nextPage = currentPage;
         else previousPage = currentPage;
@@ -2465,13 +2514,6 @@
     [self.scrollView setContentOffset:position animated:NO];
     self.isRepositioningFirstPage = repositioning;
     [self ensureCurrentPageViewIsFrontmost];
-    if (!callCompletion) {
-        self.deferredSelectionRedraws = deferredRedraws;
-        self.refreshAfterStorySelection = refresh;
-    }
-    if (completion) completion(location);
-    if (refresh && callCompletion) [self refreshPages];
-    if (callCompletion) [self replayDeferredSelectionRedraws:deferredRedraws excludingPage:currentPage];
 }
 
 - (void)changePage:(NSInteger)pageIndex {
@@ -2702,7 +2744,7 @@
 
         // Start tracking read time for the new story
         NSString *newHash = [appDelegate.activeStory objectForKey:@"story_hash"];
-        if (newHash) {
+        if (newHash && !self.pendingPresentationOpenedEarly) {
             [[ReadTimeTracker shared] startTrackingWithStoryHash:newHash];
         }
 

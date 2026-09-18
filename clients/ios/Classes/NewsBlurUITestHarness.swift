@@ -805,12 +805,16 @@ private enum ReaderUITestFixtures {
         clusterTier: String? = nil,
         score: Int? = nil
     ) -> [String: Any] {
+        // NewsBlurUITestHarness.swift holds only the fixture's DOM readiness signal while native reader navigation remains free.
+        let delayedReadiness = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-delayed-story-ready")
+            ? "<script>window.sampleText=true;setTimeout(function(){window.sampleText=false;notifyLoaded();},4000);</script>"
+            : ""
         var story: [String: Any] = [
             "id": hash,
             "story_hash": hash,
             "story_feed_id": Int(feedID) ?? 0,
             "story_title": title,
-            "story_content": (ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-images") ? imageViewerContent : "") + content,
+            "story_content": delayedReadiness + (ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-images") ? imageViewerContent : "") + content,
             "story_permalink": "https://ui-test.newsblur.example/story/\(hash)",
             "story_authors": author,
             "short_parsed_date": date,

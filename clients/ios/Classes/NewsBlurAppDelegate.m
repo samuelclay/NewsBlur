@@ -3126,7 +3126,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)deferredChangePage:(NSDictionary *)params {
     __weak typeof(self) weakSelf = self;
-    [self.storyPagesViewController preparePageForPresentation:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue] completion:^(NSInteger location) {
+    BOOL openingReader = [self.storyPagesViewController shouldOpenReaderImmediately];
+    [self.storyPagesViewController preparePageForPresentation:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue] openReaderImmediately:openingReader completion:^(NSInteger location) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) return;
         [strongSelf.storyPagesViewController changePage:location animated:[params[@"animated"] boolValue]];
