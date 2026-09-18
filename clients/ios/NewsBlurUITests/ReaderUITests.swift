@@ -31,6 +31,27 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_groupedStoryListAndReaderSettings() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Story settings use isolated simulator fixtures")
+        #else
+        app.launchArguments = ["-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        app.buttons["Settings"].firstMatch.tap()
+        XCTAssertTrue(app.tables["grouped-action-menu"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "story-list-settings-grouped")
+        app.terminate()
+        app.launchArguments = ["-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader-story-swift-1")
+        let settings = app.buttons["Story settings"]
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        XCTAssertTrue(app.staticTexts["Share on NewsBlur…"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "reader-settings-grouped")
+        #endif
+    }
+
     func test_storyImageViewerZoomMenuAndReturn() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Image viewer uses isolated simulator fixtures")
