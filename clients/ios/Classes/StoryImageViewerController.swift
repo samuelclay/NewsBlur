@@ -198,6 +198,10 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(zoomImage(_:)))
         doubleTap.numberOfTapsRequired = 2
         scroll.addGestureRecognizer(doubleTap)
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(tapImage))
+        // StoryImageViewerController.swift lets a double tap zoom without also dismissing the viewer.
+        singleTap.require(toFail: doubleTap)
+        scroll.addGestureRecognizer(singleTap)
         let pan = UIPanGestureRecognizer(target: self, action: #selector(dragImage(_:)))
         pan.maximumNumberOfTouches = 1
         pan.delegate = self
@@ -292,6 +296,15 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         let size = CGSize(width: scroll.bounds.width / zoom, height: scroll.bounds.height / zoom)
         scroll.zoom(to: CGRect(x: point.x - size.width / 2, y: point.y - size.height / 2,
                                width: size.width, height: size.height), animated: true)
+    }
+
+    @objc private func tapImage() {
+        guard !closing, transitionImage == nil, !dragging, presentedViewController == nil else { return }
+        if scroll.zoomScale > 1.01 {
+            scroll.setZoomScale(1, animated: true)
+        } else {
+            closeImage()
+        }
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
