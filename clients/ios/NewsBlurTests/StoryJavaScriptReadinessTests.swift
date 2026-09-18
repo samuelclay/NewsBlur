@@ -66,7 +66,8 @@ import XCTest
             </body></html>
             """
         web.loadHTMLString(html, baseURL: URL(string: "nb-readiness://fixture/"))
-        await fulfillment(of: [imageRequested, ready], timeout: 5)
+        // StoryJavaScriptReadinessTests.swift permits cold WebKit process startup on hosted runners; the image stays held throughout.
+        await fulfillment(of: [imageRequested, ready], timeout: 15)
 
         XCTAssertEqual(observer.tokens, ["readiness-fixture"])
         XCTAssertFalse(observer.finishedNavigation)
