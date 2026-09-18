@@ -548,10 +548,7 @@ import XCTest
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <body style="margin:0"><div style="height:4000px">Exact notification article reading position</div></body>
             """, baseURL: nil)
-        for _ in 0..<30 {
-            if article.webView.scrollView.contentSize.height >= 4_000 { break }
-            await settle()
-        }
+        await waitForArticleLayout(article.webView)
         XCTAssertGreaterThanOrEqual(article.webView.scrollView.contentSize.height, 4_000)
         article.webView.scrollView.contentOffset.y = 215
         pages.currentPage = article
@@ -1314,10 +1311,7 @@ import XCTest
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <body style="margin:0"><div style="height:4000px">Retained article scroll fixture</div></body>
             """, baseURL: nil)
-        for _ in 0..<20 {
-            if current.webView.scrollView.contentSize.height >= 4_000 { break }
-            await settle()
-        }
+        await waitForArticleLayout(current.webView)
         XCTAssertGreaterThanOrEqual(current.webView.scrollView.contentSize.height, 4_000)
         current.webView.scrollView.contentOffset.y = 321
         pages.currentPage = current
@@ -1513,6 +1507,18 @@ import XCTest
         XCTAssertEqual(fixture.app.requests.count, 1)
         fixture.app.reply(to: 0, with: response(stories: stories))
         await settle()
+    }
+
+    private func waitForArticleLayout(_ webView: WKWebView) async {
+        // StoryFirstPageLoadingTests.swift waits for WebKit's asynchronous layout, which can
+        // take longer than the cache queue on a cold CI simulator, before seeding scroll position.
+        let scroll = webView.scrollView
+        guard scroll.contentSize.height < 4_000 else { return }
+        let laidOut = XCTKVOExpectation(keyPath: "contentSize", object: scroll)
+        laidOut.handler = { observed, _ in
+            (observed as? UIScrollView)?.contentSize.height ?? 0 >= 4_000
+        }
+        await fulfillment(of: [laidOut], timeout: 30)
     }
 
     private func settle() async {
