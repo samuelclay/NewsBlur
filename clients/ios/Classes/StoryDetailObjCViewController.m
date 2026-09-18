@@ -211,6 +211,8 @@
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
         if (inDoubleTap) return;
+        // storyDetailView.js opens article images without triggering the reader's chrome gesture.
+        [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f)", pt.x, pt.y] completionHandler:nil];
 //        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
         [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
             // Special case to handle the story title, Train, Save, and Share buttons.
@@ -227,7 +229,7 @@
             }
             
             // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
-            if (![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+            if (![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
                 [self.appDelegate.storyPagesViewController tappedStory];
             }
         }];
@@ -458,6 +460,9 @@
     [contentController removeScriptMessageHandlerForName:@"newsblurStoryReady"];
     [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
                                          name:@"newsblurStoryReady"];
+    [contentController removeScriptMessageHandlerForName:@"newsblurStoryImage"];
+    [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
+                                         name:@"newsblurStoryImage"];
     // Use HTTPS baseURL so YouTube embeds get a valid Referer header (fixes Error 153).
     // CSS/JS are inlined directly in the HTML to avoid custom scheme issues.
     static NSURL *baseURL;
@@ -806,6 +811,7 @@
                 storyContent = [storyContent
                                 stringByReplacingOccurrencesOfString:escapedURL
                                 withString:cachedUrl.absoluteString];
+                storyContent = [StoryImageOfflineSource annotate:storyContent cachedURL:cachedUrl.absoluteString originalURL:imageUrl];
             }
         }
     // }
@@ -2975,6 +2981,11 @@
     [self webViewNotifyLoaded];
 }
 
+- (BOOL)isCurrentStoryImageLoad:(NSString *)loadID {
+    return self.hasStory && [self isCurrentStoryLoad:self.storyLoadGeneration] &&
+        [loadID isEqualToString:[NSString stringWithFormat:@"%lu", (unsigned long)self.storyLoadGeneration]];
+}
+
 - (void)webViewNotifyLoaded {
     if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] notify page=%p hash=%@ gen=%lu ready=%lu has=%d current=%d", self, self.activeStoryId, (unsigned long)self.storyLoadGeneration, (unsigned long)self.readyStoryLoadGeneration, self.hasStory, [self isCurrentStoryLoad:self.storyLoadGeneration]);
     if (!self.hasStory || ![self isCurrentStoryLoad:self.storyLoadGeneration] ||
@@ -3403,13 +3414,8 @@
 }
 
 - (void)showImageMenu:(CGPoint)pt {
-    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'title');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *title, NSError *error) {
-        [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'alt');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *alt, NSError *error) {
-            [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'src');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *src, NSError * error) {
-                [self previewImage:[NSURL URLWithString:src]];
-            }];
-        }];
-    }];
+    // StoryImageViewerController.swift also handles the reader's existing pinch-to-preview gesture.
+    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f)", pt.x, pt.y] completionHandler:nil];
 }
 
 - (void)showLinkContextMenu:(CGPoint)pt {

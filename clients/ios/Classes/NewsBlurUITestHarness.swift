@@ -759,7 +759,7 @@ private enum ReaderUITestFixtures {
             "story_hash": hash,
             "story_feed_id": Int(feedID) ?? 0,
             "story_title": title,
-            "story_content": content,
+            "story_content": (ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-images") ? imageViewerContent : "") + content,
             "story_permalink": "https://ui-test.newsblur.example/story/\(hash)",
             "story_authors": author,
             "short_parsed_date": date,
@@ -958,6 +958,32 @@ private enum ReaderUITestFixtures {
         for (hash, primary, secondary) in fixtureImages {
             appDelegate.cacheStoryImage(fixtureImage(primary: primary, secondary: secondary), forStoryHash: hash)
         }
+    }
+
+    private static var imageViewerContent: String {
+        // StoryImageViewerTests.swift and ReaderUITests.swift use local images without account mutations.
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 1600, height: 1000), format: format).image { context in
+            UIColor(red: 0.08, green: 0.25, blue: 0.39, alpha: 1).setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1600, height: 1000))
+            UIColor(red: 0.95, green: 0.64, blue: 0.26, alpha: 1).setFill()
+            context.cgContext.fillEllipse(in: CGRect(x: 1050, y: 100, width: 240, height: 240))
+            UIColor(red: 0.23, green: 0.65, blue: 0.63, alpha: 1).setFill()
+            let mountain = UIBezierPath()
+            mountain.move(to: CGPoint(x: 0, y: 1000))
+            mountain.addLine(to: CGPoint(x: 600, y: 300))
+            mountain.addLine(to: CGPoint(x: 1300, y: 1000))
+            mountain.close()
+            mountain.fill()
+            ("A closer look" as NSString).draw(at: CGPoint(x: 90, y: 100), withAttributes: [.font: UIFont.systemFont(ofSize: 75, weight: .bold), .foregroundColor: UIColor.white])
+        }
+        let data = image.pngData()!.base64EncodedString()
+        let small = fixtureImage(primary: .systemOrange, secondary: .systemBlue).pngData()!.base64EncodedString()
+        return """
+        <p><a href="https://example.com/linked-story"><img alt="Image viewer landscape fixture" data-newsblur-original-src="https://example.com/landscape.png" src="data:image/png;base64,\(data)"></a></p>
+        <p><img alt="Small image fixture" width="120" height="120" src="data:image/png;base64,\(small)"></p>
+        """
     }
 
     private static func fixtureImage(primary: UIColor, secondary: UIColor) -> UIImage {

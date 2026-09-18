@@ -4,6 +4,54 @@ import UIKit
 final class ReaderUITests: XCTestCase {
     private var app: XCUIApplication!
 
+    func test_storyImageViewerZoomMenuAndReturn() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image viewer uses isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        attachScreenshot(named: "image-viewer-before")
+        articleImage.tap()
+        let close = app.buttons["Close image"]
+        XCTAssertTrue(close.waitForExistence(timeout: 8))
+        let image = app.images["fullscreen-story-image"]
+        XCTAssertTrue(image.waitForExistence(timeout: 5))
+        let zoom = app.scrollViews["story-image-zoom"]
+        XCTAssertEqual(zoom.frame.width, app.frame.width, accuracy: 2)
+        XCTAssertEqual(zoom.frame.height, app.frame.height, accuracy: 2)
+        attachScreenshot(named: "image-viewer-fitted")
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Zoomed'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Fitted'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        app.buttons["Image actions"].tap()
+        let copy = app.buttons["Copy Image"]
+        XCTAssertTrue(copy.waitForExistence(timeout: 5))
+        XCTAssertTrue(copy.isEnabled)
+        XCTAssertTrue(app.buttons["Save Image"].exists)
+        XCTAssertTrue(app.buttons["Open Image in Browser"].exists)
+        XCTAssertTrue(app.buttons["Open Link"].exists)
+        attachScreenshot(named: "image-viewer-actions")
+        copy.tap()
+        XCTAssertTrue(app.staticTexts["Image copied"].waitForExistence(timeout: 5))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        attachScreenshot(named: "image-viewer-landscape")
+        image.swipeRight()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 5))
+        XCUIDevice.shared.orientation = .portrait
+        articleImage.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        attachScreenshot(named: "image-viewer-returned")
+        #endif
+    }
+
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
