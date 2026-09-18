@@ -677,7 +677,6 @@ open class SyncService :
             currentCoroutineContext().ensureActive()
             finished = true
         } finally {
-            sendSyncUpdate(UPDATE_STATUS)
             if (finished) {
                 commitCurrent {
                     // SyncService.kt keeps a larger target requested after the last page check.
@@ -686,6 +685,7 @@ open class SyncService :
                     }
                 }
             }
+            sendSyncUpdate(UPDATE_STATUS)
         }
     }
 

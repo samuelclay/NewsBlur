@@ -304,34 +304,30 @@ class DefaultSyncServiceState
             callerSeen: Int?,
         ): Boolean {
             synchronized(pendingFeedMutex) {
-                if (exhaustedFeeds.contains(fs) && (fs == lastFeedSet && (callerSeen != null))) {
+                val samePendingFeed = fs == pendingFeed
+                val requiresSession = fs != lastFeedSet || resetFeed == fs || (pendingFeed != null && !samePendingFeed)
+                if (exhaustedFeeds.contains(fs) && !requiresSession && callerSeen != null) {
                     android.util.Log.d(SyncServiceState::class.java.name, "rejecting request for feedset that is exhausted")
                     return false
                 }
-                var alreadyPending = 0
-                if (fs == pendingFeed) alreadyPending = pendingFeedTarget
-                var alreadySeen = feedStoriesSeen[fs]
-                if (alreadySeen == null) alreadySeen = 0
+                val existingTarget = if (samePendingFeed) pendingFeedTarget else 0
+                var alreadyPending = existingTarget
+                var alreadySeen = feedStoriesSeen[fs] ?: 0
                 if ((callerSeen != null) && (callerSeen < alreadySeen)) {
-                    // the caller is probably filtering and thinks they have fewer than we do, so
-                    // update our count to agree with them, and force-allow another requet
+                    // SyncServiceState.kt counts visible stories when filtering hides fetched rows.
                     alreadySeen = callerSeen
                     _feedStoriesSeen.put(fs, callerSeen)
                     alreadyPending = 0
                 }
 
-                pendingFeed = fs
-                pendingFeedTarget = desiredStoryCount
+                if (!requiresSession && (desiredStoryCount <= alreadySeen || desiredStoryCount <= alreadyPending)) {
+                    return false
+                }
 
-                if (fs != lastFeedSet) {
-                    return true
-                }
-                if (desiredStoryCount <= alreadySeen) {
-                    return false
-                }
-                if (desiredStoryCount <= alreadyPending) {
-                    return false
-                }
+                // SyncServiceState.kt only advertises loading when scheduling work and retains
+                // the largest target while the same feed is already being fetched.
+                pendingFeed = fs
+                pendingFeedTarget = maxOf(desiredStoryCount, existingTarget)
             }
             return true
         }
