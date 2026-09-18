@@ -16,6 +16,20 @@ import org.junit.Test
 
 class ReturnedStoryHighlightTest {
     @Test
+    fun openingHighlightSurvivesSameStoryRebindWithoutStartingItsReturnFade() {
+        withFixture { fixture ->
+            fixture.highlight.hold()
+            fixture.highlight.beforeRebind()
+            val readBackground = mockk<Drawable>()
+            fixture.background = readBackground
+            fixture.highlight.afterRebind()
+            verify(exactly = 0) { fixture.animation.start() }
+            fixture.highlight.cancel()
+            assertSame(readBackground, fixture.background)
+        }
+    }
+
+    @Test
     fun highlightWaitsForPresentationAndKeepsItsProgressWhenTheSameStoryRebinds() {
         withFixture { fixture ->
             fixture.highlight.hold()
