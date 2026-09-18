@@ -1066,8 +1066,11 @@ import XCTest
             let travel = abs((values.last ?? 0) - (values.first ?? 0))
             for index in 1..<values.count {
                 let elapsed = times[index] - times[index - 1]
-                // StoryDetailLoadingTests.swift allows a 0.3s ease curve and missed display ticks, but rejects a large jump between neighboring presented frames.
-                let maximumStep = max(60, travel * CGFloat(elapsed) * 8.5 + 2)
+                // StoryDetailLoadingTests.swift can see the old presentation tree on the first callback after a stalled main thread.
+                // Include that missed display interval only for its immediate catch-up frame; uninterrupted frames keep the same velocity bound.
+                let previousInterval = index > 1 ? times[index - 1] - times[index - 2] : 0
+                let catchUpInterval = previousInterval > 0.05 ? previousInterval : 0
+                let maximumStep = max(60, travel * CGFloat(elapsed + catchUpInterval) * 8.5 + 2)
                 XCTAssertLessThanOrEqual(abs(values[index] - values[index - 1]), maximumStep,
                                          "\(name) jumped in \(elapsed)s: \(values[index - 1]) → \(values[index])")
             }
@@ -1760,7 +1763,9 @@ import XCTest
                     let token = try tokenFromHTML(try XCTUnwrap(fixture.web.loads.last?.html))
                     if !readyBeforeReveal { await delay(0.15) }
                     sendReady(to: fixture.page, token: token, mainFrame: true)
-                    await delay(0.2)
+                    await waitForState("Saved top restoration completes") {
+                        fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+                    }
 
                     XCTAssertEqual(fixture.web.scrollView.contentOffset.y, topRest, accuracy: 0.5,
                                    "saved=\(String(describing: savedPosition)) toolbar=\(toolbarOffset) earlyReady=\(readyBeforeReveal)")
@@ -1843,7 +1848,9 @@ import XCTest
             await delay(0.15)
             fixture.web.defersAsyncJavaScript = true
             restoreScroll(on: fixture.page)
-            for _ in 0..<40 where fixture.web.asyncCompletions.isEmpty { await delay(0.01) }
+            await waitForState("Saved position reaches the held layout callback") {
+                !fixture.web.asyncCompletions.isEmpty
+            }
             let completeLayout = try XCTUnwrap(fixture.web.asyncCompletions.first)
 
             if reusesPage {
@@ -1917,12 +1924,12 @@ import XCTest
             // NewsBlurAppDelegate.m encodes a stored top as one; use its real SQLite writer instead of a position spy.
             app.markScrollPosition(position, inStory: fixture.page.activeStory as? [AnyHashable: Any])
             var stored: Int?
-            for _ in 0..<100 where stored == nil {
+            await waitForState("Production SQLite writer persists scroll position") {
                 var statement: OpaquePointer?
                 XCTAssertEqual(sqlite3_prepare_v2(connection, "SELECT scroll FROM story_scrolls", -1, &statement, nil), SQLITE_OK)
                 if sqlite3_step(statement) == SQLITE_ROW { stored = Int(sqlite3_column_int(statement, 0)) }
                 sqlite3_finalize(statement)
-                if stored == nil { await delay(0.01) }
+                return stored != nil
             }
             XCTAssertEqual(stored, max(1, position))
             fixture.page.drawStory()
@@ -1930,7 +1937,9 @@ import XCTest
             fixture.page.viewWillAppear(false)
             fixture.web.scrollView.contentOffset = .zero
             restoreScroll(on: fixture.page)
-            for _ in 0..<100 where fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == true { await delay(0.01) }
+            await waitForState("Persisted scroll position restoration completes") {
+                fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+            }
 
             let expected = position <= 1 ? -fixture.web.scrollView.adjustedContentInset.top : floor(CGFloat(position) / 1000 * fixture.web.scrollView.contentSize.height)
             XCTAssertEqual(fixture.web.scrollView.contentOffset.y, expected, accuracy: 0.5, "input=\(position), persisted=\(String(describing: stored))")
@@ -2109,7 +2118,9 @@ import XCTest
         fixture.page.drawStory()
         await delay(0.15)
         restoreScroll(on: fixture.page)
-        await delay(0.05)
+        await waitForState("Saved position is restored before status-bar scrolling") {
+            fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+        }
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 2_500)
         fixture.web.scrollView.contentInset.top = 64
 
@@ -2320,8 +2331,8 @@ import XCTest
                 window.rootViewController?.addChild(child)
                 detachedPages.append(child)
             }
-            for _ in 0..<40 where detachedPages.contains(where: { $0.value(forKey: "fontWarmupNavigation") != nil }) {
-                await delay(0.05)
+            await waitForState("All off-window bootstrap font promises complete") {
+                detachedPages.allSatisfy { $0.value(forKey: "preparedWebViewFonts") as? Bool == true }
             }
             for (index, child) in detachedPages.enumerated() {
                 let childWeb = try XCTUnwrap(child.webView as? RealStoryLoadWebView)
@@ -2343,18 +2354,21 @@ import XCTest
         web.navigationDelegate = page
         // StoryDetailObjCViewController.m initializes every WKWebView with clearWebView before drawing a story.
         if !preparesOffWindow { page.perform(NSSelectorFromString("clearWebView")) }
-        for _ in 0..<60 where page.finishedNavigations == 0 { await delay(0.05) }
+        await waitForState("Bootstrap navigation and font preparation complete") {
+            page.finishedNavigations > 0 && page.value(forKey: "preparedWebViewFonts") as? Bool == true
+        }
         XCTAssertEqual(page.finishedNavigations, 1)
         page.finishedNavigations = 0
+        let imageRequested = expectation(description: "Story image reaches the held HTTP resource")
+        resource.observeNextRequest { imageRequested.fulfill() }
         let ready = expectation(description: "Full story DOM is ready while its image remains pending")
         page.readyObserver = { ready.fulfill() }
         page.drawStory()
-        await fulfillment(of: [ready], timeout: 5)
+        await fulfillment(of: [ready, imageRequested], timeout: 15)
         _ = try await web.evaluateJavaScript("window.nbTestFontReady=false; document.fonts.ready.then(()=>window.nbTestFontReady=true); window.nbTestFrames=0; requestAnimationFrame(function count(){window.nbTestFrames++; if(window.nbTestFrames<120)requestAnimationFrame(count);});")
-        await delay(0.15)
-        for _ in 0..<40 where web.scrollView.contentSize.height < web.bounds.height + 500 {
+        await waitForState("Ready article receives its first native WebKit layout while the image is held") {
             window.layoutIfNeeded()
-            await delay(0.05)
+            return web.scrollView.contentSize.height > web.bounds.height + 500
         }
 
         XCTAssertGreaterThan(resource.pendingCount, 0)
@@ -2383,7 +2397,9 @@ import XCTest
         let readingPosition: CGFloat
         if restoresPosition {
             readingPosition = floor(web.scrollView.contentSize.height / 2)
-            await delay(0.4)
+            await waitForState("Real WebKit saved position restoration completes") {
+                page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+            }
         } else {
             readingPosition = 250
             web.scrollView.contentOffset = CGPoint(x: 0, y: readingPosition)
@@ -2401,9 +2417,10 @@ import XCTest
             page.perform(NSSelectorFromString("clearWebView"))
             page.activeStory = story("second", body: String(repeating: "<p>Second article paragraph.</p>", count: 220))
             page.drawStory()
-            await fulfillment(of: [secondReady], timeout: 5)
-            await fulfillment(of: [secondImage], timeout: 3)
-            for _ in 0..<40 where web.scrollView.contentSize.height < previousHeight + 500 { await delay(0.05) }
+            await fulfillment(of: [secondReady, secondImage], timeout: 15)
+            await waitForState("Second article receives its larger native WebKit layout") {
+                web.scrollView.contentSize.height > previousHeight + 500
+            }
             XCTAssertGreaterThan(resource.pendingCount, 0)
             XCTAssertGreaterThan(web.scrollView.contentSize.height, previousHeight + 500)
             let secondBody = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent.includes('Second article')") as? Bool
@@ -2515,6 +2532,15 @@ import XCTest
         let selector = NSSelectorFromString("scrollViewShouldScrollToTop:")
         typealias Call = @convention(c) (AnyObject, Selector, UIScrollView) -> Bool
         return unsafeBitCast(page.method(for: selector), to: Call.self)(page, selector, page.webView.scrollView)
+    }
+
+    // StoryDetailLoadingTests.swift waits for observable work, not an assumed low-priority queue or WebKit startup speed.
+    private func waitForState(_ description: String, timeout: TimeInterval = 15,
+                              file: StaticString = #filePath, line: UInt = #line,
+                              _ condition: () -> Bool) async {
+        let deadline = CACurrentMediaTime() + timeout
+        while !condition(), CACurrentMediaTime() < deadline { await delay(0.01) }
+        XCTAssertTrue(condition(), description, file: file, line: line)
     }
 
     private func drainMainQueue() async { await delay(0.01) }
