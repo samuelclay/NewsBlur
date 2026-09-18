@@ -314,8 +314,10 @@ import QuartzCore
         try verifyRowMappings(fixture, storyCount: 100)
     }
 
-    func test_filteredPagesAdvanceOnceAndLaterVisiblePageUsesCorrectModelLocations() async throws {
+    func test_filteredPagesAdvanceOnceAndLaterVisiblePageUsesCorrectModelLocations() throws {
         let fixture = makeFixture(storyCount: 100)
+        let window = try showPaginationFixture(fixture)
+        defer { window.isHidden = true }
         fixture.controller.isOnline = false
         fixture.controller.setValue(40, forKey: "scrollingMarkReadRow")
         fixture.resetMeasurements()
@@ -324,7 +326,7 @@ import QuartzCore
             let nextPage = expectation(description: "Request page \(page) after a filtered response")
             fixture.controller.onOfflinePageLoad = { nextPage.fulfill() }
             fixture.controller.renderStories(makeHiddenStories(indices))
-            await fulfillment(of: [nextPage], timeout: 1)
+            wait(for: [nextPage], timeout: 1)
             fixture.controller.onOfflinePageLoad = nil
 
             XCTAssertEqual(fixture.controller.offlinePageLoads, page - 2)
@@ -356,9 +358,11 @@ import QuartzCore
         XCTAssertEqual(fixture.table.reloadCalls, 1, "An actually empty response still updates the completion row.")
     }
 
-    func test_filteredPageDoesNotAdvanceFarFromTheViewportOrAfterNavigation() async {
+    func test_filteredPageDoesNotAdvanceFarFromTheViewportOrAfterNavigation() throws {
         for changeFeed in [false, true] {
             let fixture = makeFixture(storyCount: 100)
+            let window = try showPaginationFixture(fixture)
+            defer { window.isHidden = true }
             fixture.controller.isOnline = false
             if !changeFeed {
                 fixture.table.contentOffset.y = 0
@@ -372,7 +376,7 @@ import QuartzCore
             if changeFeed {
                 fixture.stories.activeFolder = "another-folder"
             }
-            await fulfillment(of: [unexpectedRequest], timeout: 0.15)
+            wait(for: [unexpectedRequest], timeout: 0.15)
 
             XCTAssertEqual(fixture.controller.offlinePageLoads, 0)
             XCTAssertEqual(fixture.stories.feedPage, 2)
@@ -497,6 +501,19 @@ import QuartzCore
         XCTAssertEqual(cell.storyTitle, "Updated")
         XCTAssertEqual(cell.storyContent, "short")
         XCTAssertLessThan(fixture.controller.tableView(fixture.table, heightForRowAt: path), initialHeight)
+    }
+
+    private func showPaginationFixture(_ fixture: PaginationFixture) throws -> UIWindow {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        let host = UIViewController()
+        window.rootViewController = host
+        // StoryPaginationPerformanceTests.swift supplies a real visible viewport; PaginationRenderController isolates app appearance callbacks.
+        host.view.addSubview(fixture.controller.view)
+        window.isHidden = false
+        host.view.layoutIfNeeded()
+        XCTAssertNotNil(fixture.table.window)
+        return window
     }
 
     private func makeFixture(storyCount: Int) -> PaginationFixture {
@@ -692,6 +709,11 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
     override var isLegacyTable: Bool { legacyTableForTest }
     override var isMarkReadOnScroll: Bool { true }
     override func viewDidLoad() {}
+    // StoryPaginationPerformanceTests.swift exercises table pagination without replacing its isolated app delegate or loading storyboard toolbar items.
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
     override func reload() { reloadTable() }
     override func checkScroll() { if runsScrollCheck { super.checkScroll() } }
     override func scrollViewDidScroll(_ scrollView: UIScrollView!) {}
