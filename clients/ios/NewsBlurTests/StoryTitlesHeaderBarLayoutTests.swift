@@ -5,26 +5,44 @@ import UIKit
 
 @MainActor final class Test_StoryTitlesHeaderBarLayout: XCTestCase {
     private var originalDiscoverDisplay: Any?
+    private var originalToolbarPosition: Any?
 
     override func setUp() {
         super.setUp()
         originalDiscoverDisplay = UserDefaults.standard.object(forKey: "discover_display")
+        originalToolbarPosition = UserDefaults.standard.object(forKey: "story_toolbar_position")
         UserDefaults.standard.set("with_icons", forKey: "discover_display")
+        UserDefaults.standard.set("bottom", forKey: "story_toolbar_position")
     }
 
     override func tearDown() {
         UserDefaults.standard.set(originalDiscoverDisplay, forKey: "discover_display")
+        UserDefaults.standard.set(originalToolbarPosition, forKey: "story_toolbar_position")
         super.tearDown()
     }
 
-    func test_narrowSidebarShortensFilterBeforeCompressingDiscover() {
+    func test_narrowSidebarShortensFilterBeforeCompressingDiscover() throws {
         let (bar, parent) = makeBar(width: 320)
+        // StoryTitlesHeaderBarLayoutTests.swift hosts glass in a window before checking its event routing.
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first(where: \.isKeyWindow)
+        let window = UIWindow(windowScene: scene)
+        let controller = UIViewController()
+        window.rootViewController = controller
+        controller.view.addSubview(parent)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previousWindow?.makeKey() }
+        window.layoutIfNeeded()
+        settle(bar, parent: parent)
         attach(bar, name: "header-narrow-unread")
 
         XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
         XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
         assertVisibleControlsFit(bar)
-        XCTAssertTrue(parent.hitTest(bar.discoverPill.convert(CGPoint(x: bar.discoverPill.bounds.midX, y: bar.discoverPill.bounds.midY), to: parent), with: nil) === bar.discoverPill)
+        let center = bar.discoverPill.convert(CGPoint(x: bar.discoverPill.bounds.midX, y: bar.discoverPill.bounds.midY), to: parent)
+        let hit = parent.hitTest(center, with: nil)
+        XCTAssertTrue(hit === bar.discoverPill || hit?.isDescendant(of: bar.discoverPill) == true,
+                      "Discover must receive touches through its glass group, got \(String(describing: hit))")
     }
 
     func test_wideSidebarKeepsFilterAndSortOrder() {
@@ -57,10 +75,28 @@ import UIKit
                     settle(bar, parent: parent)
                     let fullTitle = "\(filter.uppercased()) · \(order.uppercased())"
                     XCTAssertEqual(bar.optionsPill.accessibilityLabel, fullTitle)
-                    XCTAssertTrue([filter.uppercased(), fullTitle].contains(title(of: bar.optionsPill) ?? ""))
+                    if let visibleTitle = title(of: bar.optionsPill), !visibleTitle.isEmpty {
+                        XCTAssertTrue([filter.uppercased(), fullTitle].contains(visibleTitle))
+                        if let label = bar.optionsPill.titleLabel {
+                            XCTAssertEqual(displayedText(of: bar.optionsPill), visibleTitle)
+                            XCTAssertGreaterThanOrEqual(label.bounds.width, label.intrinsicContentSize.width - 0.5,
+                                                       "The displayed filter must fit without clipping at width \(width)")
+                            let labelFrame = label.convert(label.bounds, to: bar.optionsPill)
+                            XCTAssertGreaterThanOrEqual(labelFrame.minX, -0.5)
+                            XCTAssertLessThanOrEqual(labelFrame.maxX, bar.optionsPill.bounds.width + 0.5)
+                        } else {
+                            XCTFail("A configured filter title must have a rendered label")
+                        }
+                    } else {
+                        // StoryTitlesHeaderBarLayoutTests.swift accepts the narrow-pane chevron instead of wrapped filter text.
+                        XCTAssertNotNil(bar.optionsPill.configuration?.image ?? bar.optionsPill.image(for: .normal))
+                        XCTAssertGreaterThanOrEqual(bar.optionsPill.bounds.width, 44)
+                        XCTAssertNil(displayedText(of: bar.optionsPill),
+                                     "Icon-only mode must not leave stale filter text visible at width \(width)")
+                    }
                     if width >= 390 { XCTAssertEqual(title(of: bar.optionsPill), fullTitle) }
+                    XCTAssertEqual(bar.optionsPill.titleLabel?.numberOfLines, 1)
                     XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
-                    XCTAssertGreaterThanOrEqual(bar.optionsPill.bounds.width, bar.optionsPill.intrinsicContentSize.width - 0.5)
                     assertVisibleControlsFit(bar)
                 }
             }
@@ -68,7 +104,8 @@ import UIKit
     }
 
     func test_hiddenDiscoverAndMarkReadReleaseTheirWidthForTheSortLabel() {
-        let (bar, parent) = makeBar(width: 320)
+        let (bar, parent) = makeBar(width: 360)
+        XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
         bar.updateDiscoverVisibility(isRiver: true, isEverything: true, isSocial: false, isSaved: false, isRead: false, isWidget: false, isInfrequent: false)
         settle(bar, parent: parent)
         XCTAssertTrue(bar.discoverPill.isHidden)
@@ -138,13 +175,20 @@ import UIKit
         let foreground = bar.searchPill.tintColor
         let expandMenu = bar.markReadExpandButton.menu
         let mainMenu = bar.markReadPill.menu
+        #if targetEnvironment(macCatalyst)
         XCTAssertNotNil(expandMenu)
         XCTAssertNotNil(mainMenu)
         let expandActions = expandMenu?.children.compactMap { $0 as? UIAction } ?? []
         let mainActions = mainMenu?.children.compactMap { $0 as? UIAction } ?? []
         XCTAssertEqual(mainActions.map(\.title), expandActions.map(\.title))
         XCTAssertEqual(mainActions.map(\.identifier), expandActions.map(\.identifier))
-        print("HEADER_MENU_INITIAL_SAME_IDENTITY \(mainMenu === expandMenu)")
+        #else
+        // StoryTitlesHeaderBarLayoutTests.swift keeps iOS popovers detached from the interactive glass.
+        XCTAssertNil(expandMenu)
+        XCTAssertNil(mainMenu)
+        XCTAssertTrue(bar.markReadPill.gestureRecognizers?.contains { $0 is UILongPressGestureRecognizer } == true)
+        XCTAssertTrue(bar.markReadExpandButton.actions(forTarget: bar, forControlEvent: .touchUpInside)?.contains("handleMarkReadExpand") == true)
+        #endif
         var mainTaps = 0
         bar.markReadTapHandler = { mainTaps += 1 }
         for width: CGFloat in [320, 600, 320] {
@@ -154,12 +198,22 @@ import UIKit
             XCTAssertEqual(bar.searchPill.tintColor, foreground)
             XCTAssertTrue(bar.isSearchActive)
             XCTAssertFalse(bar.searchContainer.isHidden)
+            #if targetEnvironment(macCatalyst)
             // StoryTitlesHeaderBarLayoutTests.swift allows UIKit to copy a menu when assigning it to separate buttons.
             XCTAssertTrue(bar.markReadExpandButton.menu === expandMenu)
             XCTAssertTrue(bar.markReadPill.menu === mainMenu)
             XCTAssertTrue(bar.markReadExpandButton.showsMenuAsPrimaryAction)
-            // StoryTitlesHeaderBarLayoutTests.swift permits one display pixel of Catalyst stack rounding.
-            XCTAssertEqual(bar.markReadContainer.bounds.width, 98, accuracy: 1 / max(1, bar.markReadContainer.traitCollection.displayScale))
+            #else
+            XCTAssertNil(bar.markReadExpandButton.menu)
+            XCTAssertNil(bar.markReadPill.menu)
+            XCTAssertFalse(bar.markReadExpandButton.showsMenuAsPrimaryAction)
+            #endif
+            // StoryTitlesHeaderBarLayoutTests.swift permits compound width to shrink while preserving the main target.
+            XCTAssertGreaterThanOrEqual(bar.markReadPill.bounds.width, 52)
+            XCTAssertLessThanOrEqual(bar.markReadContainer.bounds.width, 98.5)
+            if width == 600 {
+                XCTAssertEqual(bar.markReadContainer.bounds.width, 98, accuracy: 1 / max(1, bar.markReadContainer.traitCollection.displayScale))
+            }
             XCTAssertEqual(bar.markReadExpandButton.frame.width, 26, accuracy: 0.01)
             XCTAssertEqual(bar.markReadPill.frame.maxX, bar.markReadContainer.bounds.width,
                            accuracy: 1 / max(1, bar.markReadContainer.traitCollection.displayScale))
@@ -193,7 +247,24 @@ import UIKit
     }
 
     private func title(of button: UIButton) -> String? {
-        button.configuration?.title ?? button.title(for: .normal)
+        // StoryTitlesHeaderBarLayoutTests.swift does not fall back to cached legacy text when a configuration intentionally hides its title.
+        if let configuration = button.configuration { return configuration.title }
+        return button.title(for: .normal)
+    }
+
+    private func displayedText(of button: UIButton) -> String? {
+        guard let label = button.titleLabel,
+              let text = label.attributedText?.string ?? label.text,
+              !text.isEmpty,
+              label.bounds.width > 0, label.bounds.height > 0 else { return nil }
+        var ancestor: UIView? = label
+        while let view = ancestor {
+            if view.isHidden || view.alpha <= 0.01 { return nil }
+            if view === button { break }
+            ancestor = view.superview
+        }
+        let visibleFrame = label.convert(label.bounds, to: button).intersection(button.bounds)
+        return visibleFrame.isNull || visibleFrame.isEmpty ? nil : text
     }
 
     private func assertVisibleControlsFit(_ bar: StoryTitlesHeaderBar, file: StaticString = #filePath, line: UInt = #line) {
@@ -208,7 +279,7 @@ import UIKit
         }
         if !bar.searchPill.isHidden { XCTAssertGreaterThanOrEqual(bar.searchPill.bounds.width, 36, file: file, line: line) }
         if !bar.markReadContainer.isHidden {
-            XCTAssertGreaterThanOrEqual(bar.markReadPill.bounds.width, 40, file: file, line: line)
+            XCTAssertGreaterThanOrEqual(bar.markReadPill.bounds.width, 52, file: file, line: line)
             XCTAssertGreaterThanOrEqual(bar.markReadExpandButton.bounds.width, 26, file: file, line: line)
         }
     }
