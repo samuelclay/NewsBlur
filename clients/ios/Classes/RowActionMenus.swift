@@ -84,10 +84,10 @@ import UIKit
             })
             if !collection.isSavedView && !collection.isReadView && !collection.isSocialView && !collection.isDailyBriefing && !collection.isTrending && !collection.isInfrequent {
                 reading += [
-                    action("newer", "Mark newer stories read", newestFirst ? "arrow.up.to.line" : "arrow.down.to.line") {
+                    action("newer", "Mark newer as read", newestFirst ? "arrow.up.to.line" : "arrow.down.to.line") {
                         controller.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
                     },
-                    action("older", "Mark older stories read", newestFirst ? "arrow.down.to.line" : "arrow.up.to.line") {
+                    action("older", "Mark older as read", newestFirst ? "arrow.down.to.line" : "arrow.up.to.line") {
                         controller.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
                     }
                 ]
@@ -112,6 +112,18 @@ import UIKit
                 }
             ]
         }
+        sharing.append(action("share-newsblur", story.isShared ? "Edit NewsBlur share…" : "Share on NewsBlur…", "quote.bubble") {
+            // ShareViewController.m reads the active story and comment when the composer opens and submits.
+            app.activeStory = dictionary
+            let userID = app.dictSocialProfile?["user_id"].map { String(describing: $0) }
+            let comments = dictionary["friend_comments"] as? [[String: Any]] ?? []
+            app.activeComment = comments.first { comment in
+                guard let userID, let author = comment["user_id"] else { return false }
+                return String(describing: author) == userID
+            }
+            app.showShareView(app.activeComment == nil ? "share" : "edit-share", setUserId: nil,
+                              setUsername: nil, setReplyId: nil)
+        })
         var tools: [RowMenuAction] = []
         if !dashboard && collection.isRiverView && !collection.isSavedView && !collection.isSocialView,
            let id = dictionary["story_feed_id"], let feed = app.getFeed(String(describing: id)), !feed.isEmpty {
@@ -123,6 +135,12 @@ import UIKit
             app.activeStory = dictionary
             app.openTrainStory(source)
         })
+        let defaults = UserDefaults.standard
+        if defaults.object(forKey: "show_ask_ai") == nil || defaults.bool(forKey: "show_ask_ai") {
+            tools.append(action("ask-ai", "Ask AI…", "sparkles") {
+                app.openAskAIDialog(dictionary)
+            })
+        }
         return [reading, saving, sharing, tools].filter { !$0.isEmpty }
     }
 

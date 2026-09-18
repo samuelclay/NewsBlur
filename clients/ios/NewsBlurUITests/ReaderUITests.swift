@@ -4,6 +4,33 @@ import UIKit
 final class ReaderUITests: XCTestCase {
     private var app: XCUIApplication!
 
+    func test_groupedSettingsMenusAcrossThemesAndLandscape() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Settings use isolated simulator fixtures")
+        #else
+        for theme in ["light", "sepia", "medium", "dark"] {
+            app.launchArguments = ["-newsblur-ui-test-theme", theme]
+            launch(on: "reader")
+            let settings = app.buttons["feed-list-settings"]
+            XCTAssertTrue(settings.waitForExistence(timeout: 15))
+            settings.tap()
+            let menu = app.tables["grouped-action-menu"]
+            XCTAssertTrue(menu.waitForExistence(timeout: 5))
+            XCTAssertTrue(menu.staticTexts["Preferences"].exists)
+            attachScreenshot(named: "settings-groups-\(theme)")
+            menu.swipeUp()
+            XCTAssertTrue(menu.segmentedControls.firstMatch.exists)
+            attachScreenshot(named: "settings-appearance-\(theme)")
+            XCUIDevice.shared.orientation = .landscapeLeft
+            XCTAssertTrue(menu.waitForExistence(timeout: 5))
+            menu.swipeDown()
+            attachScreenshot(named: "settings-landscape-\(theme)")
+            XCUIDevice.shared.orientation = .portrait
+            app.terminate()
+        }
+        #endif
+    }
+
     func test_storyImageViewerZoomMenuAndReturn() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Image viewer uses isolated simulator fixtures")
@@ -186,7 +213,7 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue((storyRow("ui-bulk-0").value as? String)?.hasPrefix("Read") == true)
         attachScreenshot(named: "bulk-read-before-fourth-story")
         fourth.press(forDuration: 1.2)
-        let older = app.buttons["Mark older stories read"]
+        let older = app.buttons["Mark older as read"]
         XCTAssertTrue(older.waitForExistence(timeout: 5))
         older.tap()
         let fourthRead = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
@@ -229,9 +256,17 @@ final class ReaderUITests: XCTestCase {
         let story = app.cells.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-")).firstMatch
         XCTAssertTrue(story.waitForExistence(timeout: 10))
         story.press(forDuration: 1.2)
-        XCTAssertTrue(app.buttons["Open feed"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Mark as read"].waitForExistence(timeout: 5))
+        let menu = app.collectionViews.firstMatch
+        XCTAssertTrue(menu.waitForExistence(timeout: 5))
+        let openFeed = app.buttons["Open feed"]
+        // ReaderUITests.swift scrolls the native menu's virtualized actions in compact landscape height.
+        for _ in 0..<3 where !openFeed.isHittable {
+            menu.swipeUp()
+        }
+        XCTAssertTrue(openFeed.isHittable)
         attachScreenshot(named: "story-context-menu-landscape-dark")
-        app.buttons["Open feed"].tap()
+        openFeed.tap()
         XCTAssertTrue(app.navigationBars.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Swift Weekly")).firstMatch.waitForExistence(timeout: 10))
         #endif
     }
@@ -291,7 +326,7 @@ final class ReaderUITests: XCTestCase {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Context menus use isolated simulator fixtures")
         #else
-        app.launchArguments += ["-long_press_story_title", "show_actions", "-newsblur-ui-test-theme", theme]
+        app.launchArguments += ["-newsblur-ui-test-default-story-menu", "-show_ask_ai", "YES", "-newsblur-ui-test-theme", theme]
         launch(on: "reader-feed-swift", storyTitlesStyle: style)
         XCTAssertTrue(waitForFixtureStoryTitles())
         let story = style == "standard" ? app.cells["story-row-ui-story-swift-1"].firstMatch : app.staticTexts["Swift Fixture Story One"].firstMatch
@@ -300,7 +335,10 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Save story"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Mark as read"].exists)
         XCTAssertTrue(app.buttons["Share link…"].exists)
+        XCTAssertTrue(app.buttons["Share story…"].exists)
+        XCTAssertTrue(app.buttons["Share on NewsBlur…"].exists)
         XCTAssertTrue(app.buttons["Train intelligence…"].exists)
+        XCTAssertTrue(app.buttons["Ask AI…"].exists)
         XCTAssertFalse(app.buttons["Open feed"].exists, "The current feed does not need an Open feed action")
         attachScreenshot(named: "story-context-menu-\(style)-\(theme)")
         app.buttons["Save story"].tap()

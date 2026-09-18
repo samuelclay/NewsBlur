@@ -436,6 +436,10 @@ import UIKit
     }
 
     func test_storyMenuGroupsReadSaveAndShareWithoutSelectingStory() throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "show_ask_ai")
+        defer { defaults.set(previous, forKey: "show_ask_ai") }
+        defaults.set(true, forKey: "show_ask_ai")
         let (app, _) = feedFixture()
         let controller = FeedDetailViewController()
         controller.appDelegate = app
@@ -445,7 +449,8 @@ import UIKit
         story.isRead = false
         story.isSaved = false
         let groups = RowActionMenus.story(story, controller: controller, source: UIView())
-        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save"], ["share-link", "share-story"], ["train"]])
+        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save"],
+                                                   ["share-link", "share-story", "share-newsblur"], ["train", "ask-ai"]])
         XCTAssertNil(app.activeStory)
         for action in groups.flatMap({ $0 }) { XCTAssertNotNil(action.native.image, action.symbol) }
         app.storiesCollection.isSavedView = true
@@ -454,6 +459,67 @@ import UIKit
         let saved = RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }
         XCTAssertFalse(saved.contains { ["read", "newer", "older", "open-feed"].contains($0.id) })
         XCTAssertEqual(saved.first { $0.id == "save" }?.title, "Unsave story")
+    }
+
+    func test_storyMenuIncludesReaderActionsAndRespectsAskAIPreference() throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "show_ask_ai")
+        defer { defaults.set(previous, forKey: "show_ask_ai") }
+        defaults.set(true, forKey: "show_ask_ai")
+        let (app, _) = feedFixture()
+        let controller = FeedDetailViewController()
+        controller.appDelegate = app
+        controller.storiesCollection = app.storiesCollection
+        let story = try makeStory(index: 0, dictionary: ["story_hash": "42:menu", "story_title": "Menu target",
+                                                        "story_permalink": "https://example.com/menu"], app: app)
+        let actions = RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }
+        // RowActionMenuTests.swift requires the pressed story to expose the reader's sharing and AI tools without selecting it.
+        XCTAssertTrue(actions.contains { $0.id == "ask-ai" })
+        XCTAssertTrue(actions.contains { $0.id == "share-newsblur" })
+        XCTAssertNil(app.activeStory)
+        defaults.set(false, forKey: "show_ask_ai")
+        XCTAssertFalse(RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }.contains { $0.id == "ask-ai" })
+    }
+
+    func test_storyReaderActionsCapturePressedStoryAndMatchItsOwnShareComment() throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "show_ask_ai")
+        defer { defaults.set(previous, forKey: "show_ask_ai") }
+        defaults.set(true, forKey: "show_ask_ai")
+        let (app, _) = feedFixture()
+        app.dictSocialProfile = ["user_id": 7]
+        let controller = FeedDetailViewController()
+        controller.appDelegate = app
+        controller.storiesCollection = app.storiesCollection
+        let dictionary: [String: Any] = ["story_hash": "42:pressed", "story_title": "Pressed story",
+                                         "story_feed_id": 42, "id": "pressed", "shared": true,
+                                         "friend_comments": [["user_id": 8, "comments": "Another reader"],
+                                                             ["user_id": "7", "comments": "My comment"]]]
+        let story = try makeStory(index: 0, dictionary: dictionary, app: app)
+        story.isShared = true
+        let actions = RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }
+        app.activeStory = ["story_hash": "99:current"]
+        app.activeComment = ["user_id": 99, "comments": "Previous story comment"]
+
+        try XCTUnwrap(actions.first { $0.id == "ask-ai" }).perform()
+        XCTAssertEqual(app.askedStory?["story_hash"] as? String, "42:pressed")
+        XCTAssertEqual(app.activeStory["story_hash"] as? String, "99:current")
+
+        let share = try XCTUnwrap(actions.first { $0.id == "share-newsblur" })
+        XCTAssertEqual(share.title, "Edit NewsBlur share…")
+        share.perform()
+        XCTAssertEqual(app.sharedStory?["story_hash"] as? String, "42:pressed")
+        XCTAssertEqual(app.shareType, "edit-share")
+        XCTAssertEqual(app.activeComment["comments"] as? String, "My comment")
+
+        let unshared = try makeStory(index: 1, dictionary: ["story_hash": "42:unshared", "story_title": "New share"], app: app)
+        let newShare = try XCTUnwrap(RowActionMenus.story(unshared, controller: controller, source: UIView())
+            .flatMap { $0 }.first { $0.id == "share-newsblur" })
+        newShare.perform()
+        XCTAssertEqual(app.sharedStory?["story_hash"] as? String, "42:unshared")
+        XCTAssertEqual(app.shareType, "share")
+        XCTAssertNil(app.activeComment, "RowActionMenus.swift must not reuse a comment from another story")
+        XCTAssertNil(app.lastURL, "Opening the composer must never post the story")
     }
 
     private func makeStory(index: Int, dictionary: [String: Any], app: RowMenuTestApp) throws -> Story {
@@ -520,6 +586,14 @@ import UIKit
 }
 
 @MainActor private final class RowMenuTestApp: NewsBlurAppDelegate {
+    var askedStory: [AnyHashable: Any]?
+    var sharedStory: [AnyHashable: Any]?
+    var shareType: String?
+    override func openAskAIDialog(_ story: [AnyHashable: Any]!) { askedStory = story }
+    override func showShareView(_ type: String!, setUserId userId: String!, setUsername username: String!, setReplyId commentIndex: String!) {
+        shareType = type
+        sharedStory = activeStory
+    }
     var lastURL: String?
     var lastParameters: [String: Any]?
     var succeedPOST: (() -> Void)?
