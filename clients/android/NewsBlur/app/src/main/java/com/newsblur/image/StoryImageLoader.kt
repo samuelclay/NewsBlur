@@ -21,8 +21,12 @@ import java.io.InputStream
 import java.net.URLDecoder
 import java.nio.ByteBuffer
 
-class StoryImageLoader(private val cache: FileCache, private val client: OkHttpClient) {
+class StoryImageLoader(
+    private val cache: FileCache,
+    private val client: OkHttpClient,
+) {
     @Volatile private var call: Call? = null
+
     @Volatile private var cancelled = false
 
     fun cancel() {
@@ -30,38 +34,40 @@ class StoryImageLoader(private val cache: FileCache, private val client: OkHttpC
         call?.cancel()
     }
 
-    suspend fun load(source: StoryImageSource): Bitmap = withContext(Dispatchers.IO) {
-        ensureActive()
-        val localName = StoryImageSource.cachedFileName(source.url)
-        val cached = if (localName != null) File(cache.cacheDir, localName) else cache.getCachedFile(source.url)
-        val data = when {
-            cached?.isFile == true -> cached.inputStream().use { readBounded(it) }
-            localName != null -> error("Cached image is no longer available")
-            source.url.startsWith("data:", ignoreCase = true) -> {
-                val comma = source.url.indexOf(',')
-                require(comma > 0)
-                val encoded = source.url.substring(comma + 1)
-                if (source.url.substring(0, comma).endsWith(";base64", ignoreCase = true)) {
-                    Base64.decode(encoded, Base64.DEFAULT)
-                } else {
-                    URLDecoder.decode(encoded.replace("+", "%2B"), "UTF-8").toByteArray(Charsets.UTF_8)
-                }.also { require(it.size <= MAX_BYTES) }
-            }
-            else -> {
-                val request = client.newCall(Request.Builder().url(source.url).build())
-                call = request
-                if (cancelled) request.cancel()
-                request.execute().use { response ->
-                    check(response.isSuccessful)
-                    val body = response.body ?: error("Empty image response")
-                    require(body.contentLength() <= MAX_BYTES)
-                    body.byteStream().use { readBounded(it) }
+    suspend fun load(source: StoryImageSource): Bitmap =
+        withContext(Dispatchers.IO) {
+            ensureActive()
+            val localName = StoryImageSource.cachedFileName(source.url)
+            val cached = if (localName != null) File(cache.cacheDir, localName) else cache.getCachedFile(source.url)
+            val data =
+                when {
+                    cached?.isFile == true -> cached.inputStream().use { readBounded(it) }
+                    localName != null -> error("Cached image is no longer available")
+                    source.url.startsWith("data:", ignoreCase = true) -> {
+                        val comma = source.url.indexOf(',')
+                        require(comma > 0)
+                        val encoded = source.url.substring(comma + 1)
+                        if (source.url.substring(0, comma).endsWith(";base64", ignoreCase = true)) {
+                            Base64.decode(encoded, Base64.DEFAULT)
+                        } else {
+                            URLDecoder.decode(encoded.replace("+", "%2B"), "UTF-8").toByteArray(Charsets.UTF_8)
+                        }.also { require(it.size <= MAX_BYTES) }
+                    }
+                    else -> {
+                        val request = client.newCall(Request.Builder().url(source.url).build())
+                        call = request
+                        if (cancelled) request.cancel()
+                        request.execute().use { response ->
+                            check(response.isSuccessful)
+                            val body = response.body ?: error("Empty image response")
+                            require(body.contentLength() <= MAX_BYTES)
+                            body.byteStream().use { readBounded(it) }
+                        }
+                    }
                 }
-            }
+            ensureActive()
+            decode(data).also { ensureActive() }
         }
-        ensureActive()
-        decode(data).also { ensureActive() }
-    }
 
     private fun readBounded(input: InputStream): ByteArray {
         val result = ByteArrayOutputStream()
@@ -92,17 +98,24 @@ class StoryImageLoader(private val cache: FileCache, private val client: OkHttpC
         options.inSampleSize = 1
         while (maxOf(options.outWidth, options.outHeight) / options.inSampleSize > 4096) options.inSampleSize *= 2
         val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size, options) ?: error("Unsupported image")
-        val orientation = runCatching {
-            ExifInterface(ByteArrayInputStream(data)).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-        }.getOrDefault(ExifInterface.ORIENTATION_NORMAL)
+        val orientation =
+            runCatching {
+                ExifInterface(ByteArrayInputStream(data)).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+            }.getOrDefault(ExifInterface.ORIENTATION_NORMAL)
         val transform = Matrix()
         when (orientation) {
             ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> transform.setScale(-1f, 1f)
             ExifInterface.ORIENTATION_ROTATE_180 -> transform.setRotate(180f)
             ExifInterface.ORIENTATION_FLIP_VERTICAL -> transform.setScale(1f, -1f)
-            ExifInterface.ORIENTATION_TRANSPOSE -> { transform.setRotate(90f); transform.postScale(-1f, 1f) }
+            ExifInterface.ORIENTATION_TRANSPOSE -> {
+                transform.setRotate(90f)
+                transform.postScale(-1f, 1f)
+            }
             ExifInterface.ORIENTATION_ROTATE_90 -> transform.setRotate(90f)
-            ExifInterface.ORIENTATION_TRANSVERSE -> { transform.setRotate(270f); transform.postScale(-1f, 1f) }
+            ExifInterface.ORIENTATION_TRANSVERSE -> {
+                transform.setRotate(270f)
+                transform.postScale(-1f, 1f)
+            }
             ExifInterface.ORIENTATION_ROTATE_270 -> transform.setRotate(270f)
         }
         if (transform.isIdentity) return bitmap

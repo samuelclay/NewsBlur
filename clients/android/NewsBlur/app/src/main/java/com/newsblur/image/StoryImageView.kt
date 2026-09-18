@@ -16,10 +16,16 @@ import android.view.accessibility.AccessibilityNodeInfo
 import kotlin.math.hypot
 import kotlin.math.max
 
-class StoryImageView(context: Context, private val source: StoryImageSource) : View(context) {
+class StoryImageView(
+    context: Context,
+    private val source: StoryImageSource,
+) : View(context) {
     val viewport = ImageViewport()
     var bitmap: Bitmap? = null
-        set(value) { field = value; invalidate() }
+        set(value) {
+            field = value
+            invalidate()
+        }
     var onDismiss: () -> Unit = {}
     var onDrag: (Float) -> Unit = {}
     var onGeometryChanged: () -> Unit = {}
@@ -37,24 +43,34 @@ class StoryImageView(context: Context, private val source: StoryImageSource) : V
     private var panning = false
     private var velocity: VelocityTracker? = null
     private var animation: ValueAnimator? = null
-    private val scaleDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-        override fun onScale(detector: ScaleGestureDetector): Boolean {
-            viewport.scaleTo(viewport.zoom * detector.scaleFactor, detector.focusX, detector.focusY)
-            update()
-            return true
-        }
-    }).apply { isQuickScaleEnabled = false }
-    private val taps = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onDown(e: MotionEvent) = true
-        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-            performClick()
-            return true
-        }
-        override fun onDoubleTap(e: MotionEvent): Boolean {
-            animateZoom(if (viewport.isZoomed) 1f else minOf(3f, viewport.maxZoom), e.x, e.y)
-            return true
-        }
-    })
+    private val scaleDetector =
+        ScaleGestureDetector(
+            context,
+            object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    viewport.scaleTo(viewport.zoom * detector.scaleFactor, detector.focusX, detector.focusY)
+                    update()
+                    return true
+                }
+            },
+        ).apply { isQuickScaleEnabled = false }
+    private val taps =
+        GestureDetector(
+            context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onDown(e: MotionEvent) = true
+
+                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                    performClick()
+                    return true
+                }
+
+                override fun onDoubleTap(e: MotionEvent): Boolean {
+                    animateZoom(if (viewport.isZoomed) 1f else minOf(3f, viewport.maxZoom), e.x, e.y)
+                    return true
+                }
+            },
+        )
 
     init {
         contentDescription = source.title
@@ -63,7 +79,12 @@ class StoryImageView(context: Context, private val source: StoryImageSource) : V
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    override fun onSizeChanged(
+        w: Int,
+        h: Int,
+        oldw: Int,
+        oldh: Int,
+    ) {
         animation?.cancel()
         resetDrag()
         viewport.layout(w.toFloat(), h.toFloat(), source.naturalWidth * density, source.naturalHeight * density)
@@ -112,26 +133,35 @@ class StoryImageView(context: Context, private val source: StoryImageSource) : V
         scaleDetector.onTouchEvent(event)
         taps.onTouchEvent(event)
         when (event.actionMasked) {
-            MotionEvent.ACTION_MOVE -> if (!multiTouch && !scaleDetector.isInProgress && animation?.isRunning != true) {
-                val dx = event.x - downX
-                val dy = event.y - downY
-                if (hypot(dx, dy) > slop) dragging = true
-                if (dragging) {
-                    if (panning || viewport.isZoomed) {
-                        viewport.pan(event.x - lastX, event.y - lastY)
-                    } else {
-                        dragX = dx
-                        dragY = dy
-                        onDrag((hypot(dx, dy) / (320 * density)).coerceIn(0f, 0.85f))
+            MotionEvent.ACTION_MOVE ->
+                if (!multiTouch && !scaleDetector.isInProgress && animation?.isRunning != true) {
+                    val dx = event.x - downX
+                    val dy = event.y - downY
+                    if (hypot(dx, dy) > slop) dragging = true
+                    if (dragging) {
+                        if (panning || viewport.isZoomed) {
+                            viewport.pan(event.x - lastX, event.y - lastY)
+                        } else {
+                            dragX = dx
+                            dragY = dy
+                            onDrag((hypot(dx, dy) / (320 * density)).coerceIn(0f, 0.85f))
+                        }
+                        update()
                     }
-                    update()
                 }
-            }
             MotionEvent.ACTION_UP -> {
                 velocity?.computeCurrentVelocity(1000)
-                if (dragging && !multiTouch && !panning && !viewport.isZoomed &&
-                    ImageViewport.shouldDismiss(dragX / density, dragY / density,
-                        (velocity?.xVelocity ?: 0f) / density, (velocity?.yVelocity ?: 0f) / density)) {
+                if (dragging &&
+                    !multiTouch &&
+                    !panning &&
+                    !viewport.isZoomed &&
+                    ImageViewport.shouldDismiss(
+                        dragX / density,
+                        dragY / density,
+                        (velocity?.xVelocity ?: 0f) / density,
+                        (velocity?.yVelocity ?: 0f) / density,
+                    )
+                ) {
                     onDismiss()
                 } else if (dragX != 0f || dragY != 0f) {
                     restoreDrag()
@@ -150,36 +180,51 @@ class StoryImageView(context: Context, private val source: StoryImageSource) : V
         return true
     }
 
-    private fun animateZoom(target: Float, x: Float, y: Float) {
+    private fun animateZoom(
+        target: Float,
+        x: Float,
+        y: Float,
+    ) {
         animation?.cancel()
         resetDrag()
-        animation = ValueAnimator.ofFloat(viewport.zoom, target).apply {
-            duration = 220
-            addUpdateListener { viewport.scaleTo(it.animatedValue as Float, x, y); update() }
-            start()
-        }
+        animation =
+            ValueAnimator.ofFloat(viewport.zoom, target).apply {
+                duration = 220
+                addUpdateListener {
+                    viewport.scaleTo(it.animatedValue as Float, x, y)
+                    update()
+                }
+                start()
+            }
     }
 
     private fun restoreDrag() {
         animation?.cancel()
         val x = dragX
         val y = dragY
-        animation = ValueAnimator.ofFloat(1f, 0f).apply {
-            duration = 220
-            addUpdateListener {
-                val fraction = it.animatedValue as Float
-                dragX = x * fraction
-                dragY = y * fraction
-                onDrag((hypot(dragX, dragY) / (320 * density)).coerceIn(0f, 0.85f))
-                invalidate()
+        animation =
+            ValueAnimator.ofFloat(1f, 0f).apply {
+                duration = 220
+                addUpdateListener {
+                    val fraction = it.animatedValue as Float
+                    dragX = x * fraction
+                    dragY = y * fraction
+                    onDrag((hypot(dragX, dragY) / (320 * density)).coerceIn(0f, 0.85f))
+                    invalidate()
+                }
+                start()
             }
-            start()
-        }
     }
 
-    private fun resetDrag() { dragX = 0f; dragY = 0f; onDrag(0f) }
+    private fun resetDrag() {
+        dragX = 0f
+        dragY = 0f
+        onDrag(0f)
+    }
+
     private fun update() {
-        androidx.core.view.ViewCompat.setStateDescription(this, if (viewport.isZoomed) "Zoomed" else "Fitted")
+        androidx.core.view.ViewCompat
+            .setStateDescription(this, if (viewport.isZoomed) "Zoomed" else "Fitted")
         invalidate()
     }
 
@@ -189,7 +234,10 @@ class StoryImageView(context: Context, private val source: StoryImageSource) : V
         info.addAction(AccessibilityNodeInfo.AccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, "Zoom image"))
     }
 
-    override fun performAccessibilityAction(action: Int, arguments: android.os.Bundle?): Boolean {
+    override fun performAccessibilityAction(
+        action: Int,
+        arguments: android.os.Bundle?,
+    ): Boolean {
         if (action == AccessibilityNodeInfo.ACTION_LONG_CLICK) {
             animateZoom(if (viewport.isZoomed) 1f else 3f, width / 2f, height / 2f)
             return true
