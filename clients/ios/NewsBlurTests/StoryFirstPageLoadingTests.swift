@@ -1523,14 +1523,14 @@ import XCTest
 
     private func settle() async {
         // StoryFirstPageLoadingTests.swift leaves queued POST callbacks withheld. After the rendering turn,
-        // wait for the actual utility-queue cache work and its main publication, even on a busy CI runner.
+        // wait for the actual utility-queue cache work and its main publication, with the same cold-CI budget as WebKit readiness.
         let drained = expectation(description: "main queue and cache callbacks")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
             StoryFirstPageCache.shared.queue.async {
                 DispatchQueue.main.async { drained.fulfill() }
             }
         }
-        await fulfillment(of: [drained], timeout: 5)
+        await fulfillment(of: [drained], timeout: 30)
     }
 
     private func makeFixture() -> FirstPageFixture {

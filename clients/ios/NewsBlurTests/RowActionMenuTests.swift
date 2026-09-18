@@ -105,6 +105,25 @@ import UIKit
         try verifyBulkRead(older: true)
     }
 
+    func test_bulkReadFixtureWorksWithColdLoggedOutApplicationState() throws {
+        let shared = try XCTUnwrap(NewsBlurAppDelegate.shared)
+        let savedActiveFeeds = shared.dictActiveFeeds
+        let savedFeeds = shared.dictFeeds
+        let savedFeedModels = StoryCache.feeds
+        defer {
+            shared.dictActiveFeeds = savedActiveFeeds
+            shared.dictFeeds = savedFeeds
+            StoryCache.feeds = savedFeedModels
+        }
+        shared.dictActiveFeeds = nil
+        shared.dictFeeds = nil
+        StoryCache.feeds = [:]
+        try verifyBulkRead(older: true)
+        XCTAssertNil(shared.dictActiveFeeds)
+        XCTAssertNil(shared.dictFeeds)
+        XCTAssertTrue(StoryCache.feeds.isEmpty)
+    }
+
     func test_markNewerFromFourthStoryLeavesOlderHashesUnread() throws {
         try verifyBulkRead(older: false)
     }
@@ -167,7 +186,9 @@ import UIKit
         controller.storiesCollection = app.storiesCollection
         // RowActionMenuTests.swift seeds the collapsed-folder cache before the action.
         XCTAssertEqual(app.splitUnreadCount(forFolder: "Tech").nt, 74)
-        let fourth = Story(index: 3, dictionary: stories[3])
+        let fourth = try makeStory(index: 3, dictionary: stories[3], app: app)
+        XCTAssertEqual(fourth.feed?.name, "Target site")
+        XCTAssertEqual(fourth.timestamp, 1_800_000_000 - 3)
         fourth.isRead = false
         let action = try XCTUnwrap(RowActionMenus.story(fourth, controller: controller, source: UIView())
             .flatMap { $0 }.first { $0.id == (older ? "older" : "newer") })
@@ -267,13 +288,13 @@ import UIKit
         XCTAssertTrue(RowActionMenus.isUserFolder("Tech ▸ Swift"))
     }
 
-    func test_storyMenuGroupsReadSaveAndShareWithoutSelectingStory() {
+    func test_storyMenuGroupsReadSaveAndShareWithoutSelectingStory() throws {
         let (app, _) = feedFixture()
         let controller = FeedDetailViewController()
         controller.appDelegate = app
         controller.storiesCollection = app.storiesCollection
-        let story = Story(index: 0, dictionary: ["story_hash": "42:test", "story_title": "Test",
-                                                "story_permalink": "https://example.com/test"])
+        let story = try makeStory(index: 0, dictionary: ["story_hash": "42:test", "story_title": "Test",
+                                                        "story_permalink": "https://example.com/test"], app: app)
         story.isRead = false
         story.isSaved = false
         let groups = RowActionMenus.story(story, controller: controller, source: UIView())
@@ -286,6 +307,26 @@ import UIKit
         let saved = RowActionMenus.story(story, controller: controller, source: UIView()).flatMap { $0 }
         XCTAssertFalse(saved.contains { ["read", "newer", "older", "open-feed"].contains($0.id) })
         XCTAssertEqual(saved.first { $0.id == "save" }?.title, "Unsave story")
+    }
+
+    private func makeStory(index: Int, dictionary: [String: Any], app: RowMenuTestApp) throws -> Story {
+        let shared = try XCTUnwrap(NewsBlurAppDelegate.shared)
+        let savedActiveFeeds = shared.dictActiveFeeds
+        let savedFeeds = shared.dictFeeds
+        let savedCollection = shared.storiesCollection
+        let savedFeedModels = StoryCache.feeds
+        defer {
+            shared.dictActiveFeeds = savedActiveFeeds
+            shared.dictFeeds = savedFeeds
+            shared.storiesCollection = savedCollection
+            StoryCache.feeds = savedFeedModels
+        }
+        // RowActionMenuTests.swift scopes Story.swift and Feed.swift's singleton dependencies to this fixture, even before login.
+        shared.dictActiveFeeds = app.dictFeeds.mutableCopy() as? NSMutableDictionary
+        shared.dictFeeds = app.dictFeeds.mutableCopy() as? NSMutableDictionary
+        shared.storiesCollection = app.storiesCollection
+        StoryCache.feeds = [:]
+        return Story(index: index, dictionary: dictionary)
     }
 
     private func feedFixture() -> (RowMenuTestApp, FeedsViewController) {
