@@ -1114,9 +1114,9 @@ class PreferencesViewModel: ObservableObject {
                 swipe("right", onFeeds: true),
                 PreferenceItem(title: "Long press", icon: "hand.raised", iconColor: .orange,
                                type: .multiValue(key: "long_press_feed_title",
-                                                 titles: ["Choose how far back to mark read", "Mark all stories read", "Do nothing"],
-                                                 values: ["mark_read_choose_days", "mark_read_immediate", "nothing"],
-                                                 defaultValue: "mark_read_choose_days"),
+                                                 titles: ["Show actions", "Choose how far back to mark read", "Mark all stories read", "Do nothing"],
+                                                 values: ["show_actions", "mark_read_choose_days", "mark_read_immediate", "nothing"],
+                                                 defaultValue: "show_actions"),
                                pickerTitle: "Long press on feeds and folders")
             ]),
             PreferenceGroup(title: "Story titles", footer: "Swiping from the left edge always returns to feeds, even when story swipes are off.", items: [
@@ -1126,9 +1126,9 @@ class PreferencesViewModel: ObservableObject {
                 swipe("right", onFeeds: false),
                 PreferenceItem(title: "Long press", icon: "hand.raised", iconColor: .orange,
                                type: .multiValue(key: "long_press_story_title",
-                                                 titles: ["Ask AI", "Share", "Mark as unread", "Save story", "Train intelligence", "Do nothing"],
-                                                 values: ["ask", "open_send_to", "mark_unread", "save_story", "train_story", "nothing"],
-                                                 defaultValue: "open_send_to"), pickerTitle: "Long press on story titles")
+                                                 titles: ["Show actions", "Mark older or newer stories read", "Share", "Mark as unread", "Save story", "Train intelligence", "Do nothing"],
+                                                 values: ["show_actions", "ask", "open_send_to", "mark_unread", "save_story", "train_story", "nothing"],
+                                                 defaultValue: "show_actions"), pickerTitle: "Long press on story titles")
             ]),
             PreferenceGroup(title: "Reading a story", footer: nil, items: [
                 PreferenceItem(title: "Double tap", icon: "hand.tap", iconColor: .blue,
