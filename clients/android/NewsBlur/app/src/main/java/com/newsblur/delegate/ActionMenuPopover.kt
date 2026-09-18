@@ -62,9 +62,10 @@ object ActionMenuPopover {
                 setStroke(dp(1), ReaderSheetPalette.borderArgb(theme))
             }
         }
-        val width = PopupMenuTextScaler.scaledWidthPx(dp(304), activity.prefsRepo.getListTextSize())
+        var width = PopupMenuTextScaler.scaledWidthPx(dp(304), activity.prefsRepo.getListTextSize())
         val popup = PopupWindow(scroll, width, LinearLayout.LayoutParams.WRAP_CONTENT, true)
         fun render(current: Menu, heading: CharSequence? = null) {
+            width = PopupMenuTextScaler.scaledWidthPx(dp(304), activity.prefsRepo.getListTextSize())
             rows.removeAllViews()
             scroll.scrollTo(0, 0)
             if (heading != null) {
@@ -93,6 +94,34 @@ object ActionMenuPopover {
                     })
                 }
                 previousGroup = item.groupId
+                if (item.itemId == R.id.menu_text_size || item.itemId == R.id.menu_theme) {
+                    val choose: (Int) -> Unit = { id ->
+                        val choice = item.subMenu?.findItem(id)
+                        if (choice != null && choice.isEnabled) {
+                            if (item.itemId == R.id.menu_theme) {
+                                if (ListMenuSegments.themes[id] != activity.prefsRepo.getSelectedTheme()) {
+                                    restoreHighlight()
+                                    popup.dismiss()
+                                    selected.onMenuItemClick(choice)
+                                }
+                            } else {
+                                val offset = scroll.scrollY
+                                selected.onMenuItemClick(choice)
+                                render(current, heading)
+                                scroll.post { scroll.scrollTo(0, offset) }
+                            }
+                        }
+                    }
+                    val segments = if (item.itemId == R.id.menu_theme) {
+                        ListMenuSegments.theme(activity, choose)
+                    } else {
+                        ListMenuSegments.fontSize(activity, choose)
+                    }
+                    rows.addView(segments, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                        setMargins(dp(10), dp(6), dp(10), dp(6))
+                    })
+                    continue
+                }
                 val row = ViewMainMenuRowBinding.inflate(LayoutInflater.from(activity), rows, false)
                 val destructive = item.itemId == R.id.menu_mark_all_as_read
                 row.root.minimumHeight = dp(48)

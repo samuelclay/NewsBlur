@@ -6,11 +6,12 @@ import com.newsblur.util.MarkStoryReadBehavior
 
 /** StoryTitleSettingsMenu.kt adds global reading controls without inventing actions for the current feed scope. */
 object StoryTitleSettingsMenu {
-    val actions = FeedMenuPopover.actions.filter { it.group < 4 } + listOf(
-        FeedMenuPopover.Action(R.id.menu_mark_story_read, R.drawable.ic_mark_read, 4),
-        FeedMenuPopover.Action(R.id.menu_text_size, R.drawable.ic_story_text_gray46, 4),
-        FeedMenuPopover.Action(R.id.menu_theme, R.drawable.ic_theme_dot_light, 4),
-    ) + FeedMenuPopover.actions.filter { it.group == 4 }.map { it.copy(group = 5) }
+    val actions = FeedMenuPopover.actions.filter { it.group < 4 } +
+        FeedMenuPopover.Action(R.id.menu_mark_story_read, R.drawable.ic_mark_read, 4) +
+        FeedMenuPopover.actions.filter { it.group == 4 }.map { it.copy(group = 5) } + listOf(
+            FeedMenuPopover.Action(R.id.menu_text_size, R.drawable.ic_story_text_gray46, 6),
+            FeedMenuPopover.Action(R.id.menu_theme, R.drawable.ic_theme_dot_light, 6),
+        )
 
     private val readModes = linkedMapOf(
         R.id.menu_mark_story_read_scroll to MarkStoryReadBehavior.ON_SCROLL,
