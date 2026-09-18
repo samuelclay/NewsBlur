@@ -136,6 +136,75 @@ import UIKit
         try await verifyFullFeedSnapshotInvalidation(replaceAccount: true)
     }
 
+    func test_offlineBulkMarkReadCannotRestoreWarmUnreadSnapshots() async throws {
+        for days in [0, 1] {
+            let (app, _) = feedFixture()
+            let account = "bulk-offline-read-" + UUID().uuidString
+            app.activeUsername = account
+            app.dictUnreadCounts = ["42": ["ps": 0, "nt": 1, "ng": 0]]
+            let host = try XCTUnwrap(app.url)
+            let cache = StoryFirstPageCache.shared
+            let feed = try XCTUnwrap(StoryFirstPageRequest(account: account, host: host, url: host + "/reader/feed/42?page=1"))
+            let river = try XCTUnwrap(StoryFirstPageRequest(account: account, host: host, url: host + "/reader/river_stories?page=1"))
+            let story: [String: Any] = ["story_hash": "42:offline", "story_feed_id": 42,
+                                        "story_title": "Cached unread story", "story_content": "<p>Body</p>",
+                                        "story_timestamp": 1, "read_status": 0, "intelligence": ["feed": 0, "title": 0, "author": 0, "tags": 0]]
+            for request in [feed, river] {
+                cache.store(["stories": [story]], request: request, revision: cache.newRevision())
+            }
+            let storedFeed = await snapshot(cache, request: feed)
+            let storedRiver = await snapshot(cache, request: river)
+            let heldFeed = try XCTUnwrap(storedFeed)
+            let heldRiver = try XCTUnwrap(storedRiver)
+            let database = try XCTUnwrap(FMDatabaseQueue(path: ":memory:"))
+            app.database = database
+            let queued = expectation(description: "Offline story queued for upload")
+            app.didQueueReadStories = { queued.fulfill() }
+            database.inDatabase { db in
+                let schema = """
+                    CREATE TABLE stories (story_hash TEXT PRIMARY KEY, story_feed_id INTEGER, story_timestamp INTEGER, story_json TEXT);
+                    CREATE TABLE unread_hashes (story_hash TEXT PRIMARY KEY, story_feed_id INTEGER, story_timestamp INTEGER);
+                    CREATE TABLE unread_counts (feed_id INTEGER PRIMARY KEY, ps INTEGER, nt INTEGER, ng INTEGER);
+                    INSERT INTO unread_counts VALUES (42, 0, 1, 0);
+                    INSERT INTO unread_hashes VALUES ('42:offline', 42, 1);
+                    """
+                for statement in schema.split(separator: ";") {
+                    XCTAssertTrue(db!.executeUpdate(String(statement), withArgumentsIn: []))
+                }
+                let json = String(data: try! JSONSerialization.data(withJSONObject: story), encoding: .utf8)!
+                XCTAssertTrue(db!.executeUpdate("INSERT INTO stories VALUES ('42:offline', 42, 1, ?)", withArgumentsIn: [json]))
+            }
+            let feeds = BulkReadMenuFeeds()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            feeds.markFeedsRead(["42"], cutoffDays: days)
+            if days == 0 {
+                XCTAssertNil(cache.response(for: heldFeed, provisional: true), "An optimistic full-feed mark must invalidate its unread snapshot before the request completes")
+            }
+            app.failPOST?()
+            await fulfillment(of: [queued], timeout: 2)
+            XCTAssertEqual(app.unreadCount(forFeed: "42"), 0, "The failed request still applies its local bulk read")
+            XCTAssertNil(cache.response(for: heldFeed, provisional: true))
+            XCTAssertNil(cache.response(for: heldRiver, provisional: true))
+            let reopenedFeed = await snapshot(cache, request: feed)
+            let reopenedRiver = await snapshot(cache, request: river)
+            XCTAssertNil(reopenedFeed, "Reopening offline must use the updated local database, not the old unread first page")
+            XCTAssertNil(reopenedRiver)
+            // RowActionMenuTests.swift waits for the real asynchronous full-feed update before verifying the offline fallback and closing its database.
+            let offlineUpdated = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                var unread = 1
+                database.inDatabase { db in
+                    let rows = db!.executeQuery("SELECT COUNT(*) AS unread FROM unread_hashes WHERE story_feed_id = 42", withArgumentsIn: [])!
+                    if rows.next() { unread = Int(rows.int(forColumn: "unread")) }
+                    rows.close()
+                }
+                return unread == 0
+            }, object: nil)
+            await fulfillment(of: [offlineUpdated], timeout: 2)
+            database.close()
+        }
+    }
+
     private func verifyFullFeedSnapshotInvalidation(replaceAccount: Bool) async throws {
         let (app, _) = feedFixture()
         let account = "bulk-full-read-test-" + UUID().uuidString
@@ -456,6 +525,11 @@ import UIKit
     var succeedPOST: (() -> Void)?
     var failPOST: (() -> Void)?
     var succeedGET: (([String: Any]) -> Void)?
+    var didQueueReadStories: (() -> Void)?
+    override func queueReadStories(_ feedsStories: [AnyHashable: Any]!) {
+        if let didQueueReadStories { didQueueReadStories() }
+        else { super.queueReadStories(feedsStories) }
+    }
     override func get(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
         succeedGET = { response in success?(nil, response) }
     }
