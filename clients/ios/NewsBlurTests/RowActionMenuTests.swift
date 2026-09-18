@@ -4,6 +4,84 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_RowActionMenus: XCTestCase {
+    func test_goToFeedFromUnsubscribedSharedStoryOpensFeedPreview() throws {
+        let app = GoToFeedMenuApp()
+        app.dictFeeds = [:]
+        app.dictFolders = ["Tech": [42]]
+        app.dictFoldersArray = ["Tech"]
+        app.dictActiveFeeds = ["77": ["id": 77, "feed_title": "Shared source", "feed_link": "https://example.com/"]]
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.isSocialRiverView = true
+        app.storiesCollection.isSocialView = true
+        app.storiesCollection.isRiverView = true
+        app.activeStory = ["story_feed_id": 77, "story_hash": "77:shared"]
+        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
+        let controller = controllerType.init(nibName: nil, bundle: nil)
+        controller.setValue(app, forKey: "appDelegate")
+        XCTAssertEqual(controller.value(forKey: "isGoToFeedEnabled") as? Bool, true)
+
+        // RowActionMenuTests.swift invokes the same selector as the enabled Story Options menu row.
+        controller.perform(NSSelectorFromString("goToFeed"))
+
+        XCTAssertEqual(app.previewFeedID, "77", "A social story's unsubscribed source still needs a destination")
+        XCTAssertEqual(app.previewFeed?["feed_title"] as? String, "Shared source")
+        XCTAssertEqual(app.previewFeed?["id"] as? Int, 77)
+        XCTAssertFalse(app.previewIsSocial ?? true, "Open the source website, not its social feed")
+        XCTAssertNil(app.previewStoryID, "Go to feed opens the story list rather than reopening the shared story")
+        XCTAssertNil(app.openedFolder)
+        XCTAssertNil(app.activeStory)
+        XCTAssertFalse(app.storiesCollection.isSocialRiverView)
+        XCTAssertFalse(app.storiesCollection.isSocialView)
+        XCTAssertFalse(app.storiesCollection.isRiverView)
+        XCTAssertTrue(app.isTryFeedView)
+        XCTAssertTrue(app.didPresentFeed)
+        XCTAssertEqual((app.dictFeeds["77"] as? [String: Any])?["temp"] as? Bool, true)
+        XCTAssertEqual(app.dictFolders["Tech"] as? [Int], [42], "Preview must not subscribe the source")
+        app.cleanUpTryFeed()
+        XCTAssertNil(app.dictFeeds["77"], "Leaving the preview removes its temporary source")
+    }
+
+    func test_goToFeedWithoutSourceMetadataIsUnavailable() throws {
+        let app = GoToFeedMenuApp()
+        app.dictFeeds = [:]
+        app.dictActiveFeeds = [:]
+        app.dictFolders = [:]
+        app.dictFoldersArray = []
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.isSocialRiverView = true
+        app.activeStory = ["story_feed_id": 77, "story_hash": "77:shared"]
+        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
+        let controller = controllerType.init(nibName: nil, bundle: nil)
+        controller.setValue(app, forKey: "appDelegate")
+
+        XCTAssertEqual(controller.value(forKey: "isGoToFeedEnabled") as? Bool, false)
+        controller.perform(NSSelectorFromString("goToFeed"))
+        XCTAssertNil(app.previewFeedID)
+        XCTAssertFalse(app.didPresentFeed)
+        XCTAssertNotNil(app.activeStory)
+    }
+
+    func test_goToFeedFromSubscribedSharedStoryKeepsFolderNavigation() throws {
+        let app = GoToFeedMenuApp()
+        app.dictFeeds = ["42": ["id": 42, "feed_title": "Subscribed source"]]
+        app.dictFolders = ["Tech": [42]]
+        app.dictFoldersArray = ["Tech"]
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.isSocialRiverView = true
+        app.activeStory = ["story_feed_id": 42, "story_hash": "42:shared"]
+        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
+        let controller = controllerType.init(nibName: nil, bundle: nil)
+        controller.setValue(app, forKey: "appDelegate")
+
+        controller.perform(NSSelectorFromString("goToFeed"))
+
+        XCTAssertEqual(app.openedFolder, "Tech")
+        XCTAssertEqual(app.openedFeedID, "42")
+        XCTAssertNil(app.previewFeedID)
+        XCTAssertNil(app.activeStory)
+        XCTAssertFalse(app.storiesCollection.isSocialRiverView)
+    }
+
     func test_authoritativeBulkReadCountIsPersistedForOfflineFeedAndFolder() async throws {
         try await verifyAuthoritativeCountPersistence(replaceAccount: false)
     }
@@ -340,6 +418,35 @@ import UIKit
         let controller = FeedsViewController()
         controller.appDelegate = app
         return (app, controller)
+    }
+}
+
+@MainActor private final class GoToFeedMenuApp: NewsBlurAppDelegate {
+    var openedFolder: String?
+    var openedFeedID: String?
+    var previewFeedID: String?
+    var previewStoryID: String?
+    var previewIsSocial: Bool?
+    var previewFeed: [AnyHashable: Any]?
+    var didPresentFeed = false
+
+    @objc(presentFeedDetailAfterFeedSelection) func captureFeedPresentation() { didPresentFeed = true }
+
+    override func loadFolder(_ folder: String!, feedID feedId: String!) {
+        openedFolder = folder
+        openedFeedID = feedId
+    }
+
+    override func loadTryFeedDetailView(_ feedId: String!, withStory contentId: String!, isSocial social: Bool,
+                                        withUser user: [AnyHashable: Any]!, showFindingStory showHUD: Bool) {
+        previewFeedID = feedId
+        previewStoryID = contentId
+        previewIsSocial = social
+        previewFeed = user
+        XCTAssertFalse(storiesCollection.isSocialRiverView)
+        XCTAssertFalse(storiesCollection.isSocialView)
+        XCTAssertFalse(storiesCollection.isRiverView)
+        super.loadTryFeedDetailView(feedId, withStory: contentId, isSocial: social, withUser: user, showFindingStory: showHUD)
     }
 }
 

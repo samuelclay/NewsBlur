@@ -34,8 +34,10 @@
 }
 
 - (BOOL)isGoToFeedEnabled {
-    return self.appDelegate.storiesCollection.isRiverView ||
-           self.appDelegate.storiesCollection.isSocialRiverView;
+    BOOL isRiver = self.appDelegate.storiesCollection.isRiverView ||
+                   self.appDelegate.storiesCollection.isSocialRiverView;
+    NSString *feedId = [NSString stringWithFormat:@"%@", self.appDelegate.activeStory[@"story_feed_id"]];
+    return isRiver && [[self.appDelegate getFeed:feedId] isKindOfClass:NSDictionary.class];
 }
 
 - (NSInteger)adjustedRow:(NSInteger)row {
@@ -471,6 +473,8 @@
     NewsBlurAppDelegate *appDelegate = self.appDelegate;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    // FontSettingsViewController.m captures social source metadata before switching to a regular feed preview.
+    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     NSString *targetFolder = nil;
 
     for (NSString *folderName in appDelegate.dictFoldersArray) {
@@ -484,8 +488,7 @@
         if (targetFolder) break;
     }
 
-    if (targetFolder) {
-        NSString *folder = targetFolder;
+    if (targetFolder || [feed isKindOfClass:NSDictionary.class]) {
         // Clear story state so isStoryShown returns NO,
         // preventing showColumn:Secondary from pushing storyPagesVC
         appDelegate.activeStory = nil;
@@ -494,9 +497,15 @@
         // Reset river view so it loads as a single feed, not a folder
         appDelegate.storiesCollection.isRiverView = NO;
         appDelegate.storiesCollection.isSocialRiverView = NO;
+        appDelegate.storiesCollection.isSocialView = NO;
 
-        [appDelegate.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [appDelegate loadFolder:folder feedID:feedIdStr];
+        if (targetFolder) {
+            [appDelegate.feedsNavigationController popToRootViewControllerAnimated:NO];
+            [appDelegate loadFolder:targetFolder feedID:feedIdStr];
+        } else {
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:nil isSocial:NO
+                                     withUser:feed showFindingStory:NO];
+        }
     }
 }
 
