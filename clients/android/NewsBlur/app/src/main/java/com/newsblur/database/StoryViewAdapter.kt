@@ -22,6 +22,7 @@ import android.view.ViewConfiguration
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.view.doOnLayout
@@ -34,6 +35,7 @@ import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.design.StoryRowPalette
+import com.newsblur.delegate.StoryMenuPopover
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
@@ -663,6 +665,13 @@ class StoryViewAdapter(
         val sharedView: View = view.findViewById(R.id.story_item_shared_icon)
 
         var story: Story? = null
+        private var storyMenu: PopupWindow? = null
+
+        fun dismissStoryMenu() {
+            storyMenu?.dismiss()
+            storyMenu = null
+        }
+
         var thumbLoader: PhotoToLoad? = null
         var lastThumbUrl: String? = null
         var lastThumbView: ImageView? = null
@@ -849,7 +858,17 @@ class StoryViewAdapter(
                 GestureAction.GEST_ACTION_SHARE -> feedUtils.sendStoryUrl(target, context)
                 GestureAction.GEST_ACTION_MENU -> {
                     gestureDebounce = false
-                    itemView.showContextMenu()
+                    dismissStoryMenu()
+                    storyMenu = StoryMenuPopover.show(
+                        context,
+                        itemView.findViewById<View>(R.id.story_item_title) ?: itemView,
+                        fs ?: return,
+                        target,
+                        fs?.let { prefsRepo.getStoryOrder(it) } ?: StoryOrder.NEWEST,
+                        prefsRepo.getResolvedTheme(context),
+                    ) { item ->
+                        if (story?.storyHash == target.storyHash) onMenuItemClick(item) else false
+                    }
                 }
                 GestureAction.GEST_ACTION_TRAIN ->
                     if (target.feedId != "0") {
@@ -1383,6 +1402,7 @@ class StoryViewAdapter(
     override fun onViewRecycled(viewHolder: RecyclerView.ViewHolder) {
         cancelReturnHighlight(viewHolder)
         if (viewHolder is StoryViewHolder) {
+            viewHolder.dismissStoryMenu()
             if (viewHolder.thumbLoader != null) viewHolder.thumbLoader?.cancel = true
             viewHolder.lastThumbView = null
             viewHolder.readStateAnimator.cancel()
