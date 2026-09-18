@@ -128,6 +128,57 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         XCTAssertTrue(detail.isDiscoverSitesVisible)
     }
 
+    func test_backToFeedsDoesNotRestoreDismissedDiscoveryAfterResizing() throws {
+        for previewWasActive in [false, true] {
+            let (app, detail, feeds, navigation) = fixture()
+            detail.compactLayout = true
+            app.openDiscoverSitesView()
+            let discovery = try XCTUnwrap(navigation.topViewController)
+            if previewWasActive {
+                detail.beginDiscoverPreview()
+                navigation.pushViewController(UIViewController(), animated: false)
+            }
+            // AddSiteViewModelTests.swift uses the same navigation removal as a completed native Back.
+            navigation.popToRootViewController(animated: false)
+            XCTAssertTrue(navigation.topViewController === feeds)
+            XCTAssertFalse(detail.isDiscoverSitesVisible)
+            // AddSiteViewModelTests.swift exercises navigation without loading the storyboard reader layout.
+            detail.view = nil
+            detail.compactLayout = false
+            detail.expandToTwoColumns()
+            detail.collapseToSingleColumn()
+            XCTAssertFalse(navigation.viewControllers.contains { $0 === discovery },
+                           "Resizing must not resurrect discovery after Back to feeds, including an abandoned preview")
+            XCTAssertFalse(detail.isDiscoverSitesVisible)
+            XCTAssertFalse(detail.canReturnToDiscoverSites)
+            app.openDiscoverSitesView()
+            XCTAssertTrue(detail.isDiscoverSitesVisible)
+            XCTAssertTrue(navigation.topViewController is DiscoverSitesViewController)
+            XCTAssertFalse(navigation.topViewController === discovery)
+        }
+    }
+
+    func test_activeDiscoveryPreviewSurvivesExpansionAndCollapse() throws {
+        let (app, detail, _, navigation) = fixture()
+        detail.compactLayout = true
+        app.openDiscoverSitesView()
+        let discovery = try XCTUnwrap(navigation.topViewController)
+        detail.beginDiscoverPreview()
+        navigation.pushViewController(UIViewController(), animated: false)
+        // AddSiteViewModelTests.swift isolates retained preview routing from storyboard reader layout.
+        detail.view = nil
+        detail.compactLayout = false
+        detail.expandToTwoColumns()
+        XCTAssertTrue(detail.canReturnToDiscoverSites)
+        XCTAssertFalse(detail.isDiscoverSitesVisible)
+        detail.collapseToSingleColumn()
+        XCTAssertTrue(navigation.viewControllers.contains { $0 === discovery })
+        XCTAssertTrue(detail.canReturnToDiscoverSites)
+        detail.returnToDiscoverSites()
+        XCTAssertTrue(navigation.topViewController === discovery)
+        XCTAssertFalse(detail.canReturnToDiscoverSites)
+    }
+
     func test_nativeBackToDiscoveryClearsThePreviewReturnState() throws {
         let (app, detail, _, navigation) = fixture()
         detail.compactLayout = true
