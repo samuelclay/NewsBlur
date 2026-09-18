@@ -26,6 +26,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
@@ -171,6 +172,16 @@ class ReadingItemFragment :
     private var isSocialLoadFinished = false
     private val isWebLoadFinished = AtomicBoolean(false)
     private var isWebVisualStateReady = false
+    private var nativeHeaderStoryHash: String? = null
+    private val articleReveal = ReaderArticleReveal {
+        syncStoryLoadingUi()
+        story?.storyHash?.let { hash ->
+            (activity as? Reading)?.let { reading ->
+                reading.onReaderArticleVisible(hash)
+                reading.onReaderPageVisualReady(hash)
+            }
+        }
+    }
     private val isLoadFinished = AtomicBoolean(false)
     private var savedScrollPosRel = 0f
     private var savedScrollPosPx = 0
@@ -341,6 +352,7 @@ class ReadingItemFragment :
     // WebViews don't automatically pause content like audio and video when they lose focus.  Chain our own
     // state into the webview so it behaves.
     override fun onPause() {
+        articleReveal.pause()
         if (::binding.isInitialized) {
             enableProgress(false)
             captureCurrentScrollPosition(preferAbsoluteRestore = true, reason = "pause")
@@ -372,6 +384,8 @@ class ReadingItemFragment :
         updateAskAiButton()
         ensureReadingWebview().resumeTimers()
         ensureReadingWebview().onResume()
+        articleReveal.resume()
+        story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
     }
 
     override fun onCreateView(
@@ -382,6 +396,7 @@ class ReadingItemFragment :
         binding = FragmentReadingitemBinding.inflate(inflater, container, false)
         readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
         lastMetadataSnapshot = null
+        nativeHeaderStoryHash = null
         lastClusterSnapshot = null
         lastSocialSnapshot = null
 
@@ -424,6 +439,9 @@ class ReadingItemFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
+        view.doOnPreDraw {
+            story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
+        }
 
         readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
         readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
@@ -971,6 +989,7 @@ class ReadingItemFragment :
         binding.readingItemTitle.setOnClickListener { openBrowser() }
 
         setupTagsAndIntel()
+        nativeHeaderStoryHash = story?.storyHash
     }
 
     private fun setupTagsAndIntel() {
@@ -1185,6 +1204,7 @@ class ReadingItemFragment :
 
         binding.readingStoryClusterDivider.visibility = View.VISIBLE
         binding.readingStoryClusterContainer.visibility = View.VISIBLE
+        syncStoryLoadingUi()
     }
 
     private fun hideClusterStories() {
@@ -1447,11 +1467,17 @@ class ReadingItemFragment :
 
     private fun syncStoryLoadingUi() {
         readingItemActionsBinding.actionsContainer.visibility =
-            if (hasCompletedInitialStoryRender) {
+            if (hasCompletedInitialStoryRender && articleReveal.isVisible) {
                 View.VISIBLE
             } else {
                 View.GONE
             }
+        // ReadingItemFragment.kt keeps below-article sections laid out without flashing them under the title.
+        val footerVisibility = if (articleReveal.isVisible) View.VISIBLE else View.INVISIBLE
+        for (section in listOf(binding.readingStoryClusterDivider, binding.readingStoryClusterContainer)) {
+            if (section.visibility != View.GONE) section.visibility = footerVisibility
+        }
+        readingItemActionsBinding.commentsContainer.visibility = footerVisibility
         enableProgress(shouldShowLoadingProgress())
     }
 
@@ -1595,7 +1621,10 @@ class ReadingItemFragment :
                 isRestoringReleasedWebView = false
                 isWebLoadFinished.set(false)
                 isWebVisualStateReady = false
-                ensureReadingWebview().loadDataWithBaseURL(READING_BASE_URL, document.html, "text/html", "UTF-8", null)
+                val webview = ensureReadingWebview()
+                articleReveal.prepare(webview)
+                syncStoryLoadingUi()
+                webview.loadDataWithBaseURL(READING_BASE_URL, document.html, "text/html", "UTF-8", null)
                 hasWebViewContent = true
                 onContentLoadFinished()
             },
@@ -1655,12 +1684,19 @@ class ReadingItemFragment :
     fun onWebVisualStateReady() {
         if (isWebViewReleasedForBackground) return
         isWebVisualStateReady = true
+        articleReveal.ready()
         maybeFinishInitialStoryRender()
         story?.storyHash?.let { (activity as? Reading)?.onReaderPageVisualReady(it) }
     }
 
+    fun isNativeHeaderReady(storyHash: String): Boolean =
+        ::binding.isInitialized && nativeHeaderStoryHash == storyHash &&
+            binding.readingItemTitle.let { it.width > 0 && it.height > 0 && !it.isLayoutRequested }
+
+    fun isArticleVisible(): Boolean = articleReveal.isVisible
+
     fun isReadyForDisplay(): Boolean =
-        hasWebViewContent && isWebVisualStateReady &&
+        hasWebViewContent && isWebVisualStateReady && articleReveal.isVisible &&
             readingWebview?.let { it.width > 0 && it.height > 0 && !it.isLayoutRequested } == true
 
     fun releaseWebViewForBackground() {
@@ -2058,6 +2094,8 @@ class ReadingItemFragment :
         webview.setCustomViewLayout(binding.customViewContainer)
         webview.setWebviewWrapperLayout(binding.readingContainer)
         webview.setBackgroundColor(Color.TRANSPARENT)
+        articleReveal.prepare(webview)
+        syncStoryLoadingUi()
         webview.setOnTouchListener(
             com.newsblur.view.ReaderTapGestures(webview) { twoFingers ->
                 val action =
@@ -2111,6 +2149,7 @@ class ReadingItemFragment :
     }
 
     private fun destroyReadingWebviewForBackground() {
+        articleReveal.release()
         documentRenderer.clear()
         cancelPendingConfigurationChangeRestore()
         invalidateReaderAnchorCapture()

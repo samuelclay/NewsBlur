@@ -16,6 +16,10 @@ class ReadingPageReleaseTest {
             isAccessible = true
             set(fragment, webview)
         }
+        ReadingItemFragment::class.java.getDeclaredField("articleReveal").apply {
+            isAccessible = true
+            set(fragment, ReaderArticleReveal {})
+        }
         ReadingItemFragment::class.java.getDeclaredField("documentRenderer").apply {
             isAccessible = true
             set(fragment, LatestReaderRender<Any, Any>())
