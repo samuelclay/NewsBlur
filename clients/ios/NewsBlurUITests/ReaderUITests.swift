@@ -173,6 +173,47 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_markOlderFromFourthStoryRefreshesFeedAndFolderCounts() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Bulk read uses isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-bulk-read", "-long_press_story_title", "show_actions",
+                                "-default_feed_read_filter", "all", "-910002:read_filter", "all",
+                                "-default_mark_read_filter", "manually"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+        let fourth = storyRow("ui-bulk-3")
+        XCTAssertTrue(fourth.waitForExistence(timeout: 15))
+        XCTAssertTrue((storyRow("ui-bulk-0").value as? String)?.hasPrefix("Read") == true)
+        attachScreenshot(named: "bulk-read-before-fourth-story")
+        fourth.press(forDuration: 1.2)
+        let older = app.buttons["Mark older stories read"]
+        XCTAssertTrue(older.waitForExistence(timeout: 5))
+        older.tap()
+        let fourthRead = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            (fourth.value as? String)?.hasPrefix("Read") == true
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [fourthRead], timeout: 15), .completed)
+        XCTAssertTrue((storyRow("ui-bulk-1").value as? String)?.hasPrefix("Unread") == true)
+        XCTAssertTrue((storyRow("ui-bulk-2").value as? String)?.hasPrefix("Unread") == true)
+        attachScreenshot(named: "bulk-read-after-only-second-and-third-unread")
+        XCTAssertTrue(ensureFeedsListVisible())
+        let feed = feedCell("910002")
+        let counts = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            feed.label == "Swift Weekly feed, 2 unread stories"
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [counts], timeout: 10), .completed)
+        attachScreenshot(named: "bulk-read-feed-and-folder-counts")
+        let folder = folderButton(named: "Swift")
+        let disclosure = CGVector(dx: app.tables["feeds-list"].frame.maxX - 18, dy: folder.frame.midY)
+        app.coordinate(withNormalizedOffset: .zero).withOffset(disclosure).tap()
+        let folderCount = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            folder.label.contains("collapsed, 5 unread stories")
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [folderCount], timeout: 5), .completed)
+        attachScreenshot(named: "bulk-read-collapsed-folder-count")
+        #endif
+    }
+
     func test_storyContextMenuClassic() throws { try checkStoryContextMenu(style: "standard", theme: "light") }
     func test_storyContextMenuCards() throws { try checkStoryContextMenu(style: "experimental", theme: "medium") }
 

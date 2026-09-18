@@ -429,6 +429,54 @@ private enum ReaderUITestFixtures {
     static let swiftClusterPrimaryStoryHash = "ui-story-swift-cluster-1"
     static let swiftClusterMatchStoryHash = "ui-story-swift-cluster-match"
     static let swiftClusterRelatedStoryHash = "ui-story-swift-cluster-related"
+    private static let bulkReadEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-bulk-read")
+    private static let bulkReadLock = NSLock()
+    private static var bulkReadCutoff: Int?
+
+    private static func bulkStories(page: Int) -> [[String: Any]] {
+        bulkReadLock.lock()
+        let cutoff = bulkReadCutoff
+        bulkReadLock.unlock()
+        let start = max(0, page - 1) * 12
+        guard start < 70 else { return [] }
+        return (start..<min(start + 12, 70)).map { index in
+            let timestamp = 1_800_000_000 - index
+            var item = story(hash: "ui-bulk-\(index)", feedID: swiftFeedId,
+                             title: "Bulk story \(index + 1)", content: "<p>Mark older stories read fixture.</p>",
+                             date: "\(index + 1)m", timestamp: timestamp, author: "Reader Fixtures")
+            item["read_status"] = index == 0 || cutoff.map { timestamp <= $0 } == true ? 1 : 0
+            return item
+        }
+    }
+
+    private static var swiftUnreadCount: Int {
+        guard bulkReadEnabled else { return 4 }
+        bulkReadLock.lock()
+        defer { bulkReadLock.unlock() }
+        return (1..<70).filter { index in bulkReadCutoff.map { 1_800_000_000 - index > $0 } ?? true }.count
+    }
+
+    private static func markBulkRead(_ request: URLRequest) throws {
+        var data = request.httpBody ?? Data()
+        if let stream = request.httpBodyStream {
+            stream.open()
+            defer { stream.close() }
+            var buffer = [UInt8](repeating: 0, count: 4096)
+            while stream.hasBytesAvailable {
+                let count = stream.read(&buffer, maxLength: buffer.count)
+                if count <= 0 { break }
+                data.append(contentsOf: buffer.prefix(count))
+            }
+        }
+        let query = String(data: data, encoding: .utf8) ?? ""
+        let items = URLComponents(string: "https://fixture.example/?\(query)")?.queryItems ?? []
+        guard let cutoff = items.first(where: { $0.name == "cutoff_timestamp" })?.value.flatMap(Int.init),
+              items.first(where: { $0.name == "direction" })?.value == "older" else { throw URLError(.badURL) }
+        // NewsBlurUITestHarness.swift matches the server's inclusive older cutoff while leaving most stories unloaded.
+        bulkReadLock.lock()
+        bulkReadCutoff = cutoff
+        bulkReadLock.unlock()
+    }
 
     static func prepareAppState(for appDelegate: NewsBlurAppDelegate) {
         let defaults = UserDefaults.standard
@@ -466,7 +514,7 @@ private enum ReaderUITestFixtures {
     static func unreadCountRows() -> [[String: Any]] {
         [
             ["feed_id": techFeedId, "ps": 0, "nt": 2, "ng": 0],
-            ["feed_id": swiftFeedId, "ps": 0, "nt": 4, "ng": 0],
+            ["feed_id": swiftFeedId, "ps": 0, "nt": swiftUnreadCount, "ng": 0],
             ["feed_id": cultureFeedId, "ps": 0, "nt": 1, "ng": 0],
             ["feed_id": swiftClusterFeedId, "ps": 0, "nt": 3, "ng": 0],
         ]
@@ -507,7 +555,7 @@ private enum ReaderUITestFixtures {
                 swiftFeedId: feed(
                     id: swiftFeedId,
                     title: "Swift Weekly",
-                    unreadCount: 4,
+                    unreadCount: swiftUnreadCount,
                     address: "https://ui-test.newsblur.example/swift.xml"
                 ),
                 cultureFeedId: feed(
@@ -557,6 +605,7 @@ private enum ReaderUITestFixtures {
             sharedStory["read_status"] = 1
             payload = ["code": 1, "story": sharedStory, "user_profiles": []]
         } else if request.httpMethod == "POST", mutationPaths.contains(url.path) {
+            if bulkReadEnabled && url.path == "/reader/mark_feed_as_read" { try markBulkRead(request) }
             payload = ["code": 1]
         } else if url.path == "/reader/feeds" {
             if let index = ProcessInfo.processInfo.arguments.firstIndex(of: "-newsblur-ui-test-feed-delay"),
@@ -565,7 +614,7 @@ private enum ReaderUITestFixtures {
                 Thread.sleep(forTimeInterval: min(max(delay, 0), 5))
             }
             payload = feedListResponse()
-        } else if url.path == "/reader/refresh_feeds" {
+        } else if url.path == "/reader/refresh_feeds" || url.path == "/reader/feed_unread_count" {
             payload = refreshFeedsResponse()
         } else if url.path == "/reader/logout" {
             payload = [
@@ -579,7 +628,9 @@ private enum ReaderUITestFixtures {
             payload = riverStoriesResponse(for: url)
         } else if url.path.hasPrefix("/reader/feed/") {
             let requestedFeedID = feedID(from: url)
-            if pageNumber(from: url) == 1, requestedFeedID == swiftFeedId {
+            if bulkReadEnabled, requestedFeedID == swiftFeedId {
+                payload = feedStoriesResponse(feedID: swiftFeedId, stories: bulkStories(page: pageNumber(from: url)))
+            } else if pageNumber(from: url) == 1, requestedFeedID == swiftFeedId {
                 payload = feedStoriesResponse(feedID: swiftFeedId, stories: swiftStoriesPageOne)
             } else if pageNumber(from: url) == 2, requestedFeedID == swiftFeedId {
                 payload = feedStoriesResponse(feedID: swiftFeedId, stories: swiftStoriesPageTwo)
@@ -603,7 +654,7 @@ private enum ReaderUITestFixtures {
         [
             "feeds": [
                 techFeedId: unreadCount(ps: 0, nt: 2, ng: 0),
-                swiftFeedId: unreadCount(ps: 0, nt: 4, ng: 0),
+                swiftFeedId: unreadCount(ps: 0, nt: swiftUnreadCount, ng: 0),
                 cultureFeedId: unreadCount(ps: 0, nt: 1, ng: 0),
                 swiftClusterFeedId: unreadCount(ps: 0, nt: 3, ng: 0),
             ],
