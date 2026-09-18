@@ -993,6 +993,8 @@ class Test_TextImporterEncoding(TestCase):
     def _make_mock_response(self, content_bytes, encoding):
         """Create a mock requests response with given raw bytes and encoding."""
         resp = MagicMock()
+        # A fetched page, not a block or an error: fetch_manually checks the status first.
+        resp.status_code = 200
         resp.content = content_bytes
         resp.encoding = encoding
         resp.text = content_bytes.decode(encoding or "utf-8", errors="replace")
@@ -1410,6 +1412,7 @@ class Test_HttpsUpgradeOnDeadHttp(TestCase):
 
         self.assertEqual(Feed.objects.get(pk=self.feed.pk).feed_address, self.HTTPS_ADDRESS)
 
+
 class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
     """Feed.save handles the address-hash collision by merging into the existing feed,
     which needs a real transaction (the failed UPDATE aborts a TestCase's wrapper)."""
@@ -1492,6 +1495,7 @@ class Test_HttpsUpgradeMergesIntoTwin(TransactionTestCase):
         self.assertEqual(pfeed.feed_id, stale.pk)
         self.assertEqual(Feed.objects.get(pk=stale.pk).feed_address, self.HTTPS_ADDRESS)
         self.assertFalse(Feed.objects.filter(pk=twin.pk).exists())
+
 
 class Test_TextImporterGoogleNews(TestCase):
     """Google News feeds link every story through news.google.com/rss/articles/<token>.
@@ -6921,3 +6925,553 @@ class Test_ProxyBudgetSubscriberIds(TestCase):
             ).proxy_budget_subscriber_ids(),
             [],
         )
+
+
+class Test_PlainUserAgentRetryOnBlockedFetch(TestCase):
+    """bugs.kde.org answers any request whose User-Agent carries a desktop browser string with
+    a 403 (forum #13835). NewsBlur's default fetcher UA ends in one, and the fake-header retry
+    is one, so both fail, while the plain "NewsBlur Feed Fetcher" UA is served the atom feed.
+    That plain UA used to be tried only in fetch_forbidden, which a feed reaches only after a
+    paid proxy fetch succeeded once; a one-subscriber feed over its proxy budget never got
+    there. FetchFeed.fetch now tries the plain UA after the fake-header retry is blocked too,
+    before giving up or spending a proxy credit. utils/feed_fetcher.py"""
+
+    ADDRESS = "https://bugs.example.org/buglist.cgi?component=Clipboard%20widget%20%26%20pop-up&ctype=atom"
+    ATOM = (
+        b'<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">'
+        b'<title>Bug List</title><link rel="alternate" href="https://bugs.example.org/"/>'
+        b"<entry><title>[Bug 1] Clipboard popup loses focus</title>"
+        b'<link rel="alternate" href="https://bugs.example.org/show_bug.cgi?id=1"/>'
+        b"<id>https://bugs.example.org/show_bug.cgi?id=1</id>"
+        b"<updated>2026-09-14T17:00:00Z</updated><summary>It does.</summary></entry></feed>"
+    )
+    FORBIDDEN = (
+        b'<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"><html><head><title>403 Forbidden</title>'
+        b"</head><body><h1>Forbidden</h1><p>You don't have permission to access this resource.</p>"
+        b"<hr><address>Apache/2.4.52 (Ubuntu) Server at bugs.example.org Port 443</address></body></html>"
+    )
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address=self.ADDRESS, feed_link="https://bugs.example.org/", feed_title="Bug List"
+        )
+        self.feed.num_subscribers = 1
+        self.feed.save()
+        self.user_agents = []
+
+    def _response(self, status_code, content, content_type):
+        response = requests.Response()
+        response.status_code = status_code
+        response._content = content
+        response.encoding = "utf-8"
+        response.url = self.ADDRESS
+        response.headers["Content-Type"] = content_type
+        return response
+
+    def _blocks_browser_user_agents(self, blocked_status=403):
+        """Like bugs.kde.org: a browser string anywhere in the UA is refused, the plain UA is served."""
+
+        def get(url, headers=None, **kwargs):
+            user_agent = (headers or {}).get("User-Agent", "")
+            self.user_agents.append(user_agent)
+            if "Mozilla/" in user_agent:
+                return self._response(blocked_status, self.FORBIDDEN, "text/html; charset=iso-8859-1")
+            return self._response(200, self.ATOM, "application/atom+xml; charset=UTF-8")
+
+        return get
+
+    def _fetch(self, side_effect):
+        from utils.feed_fetcher import FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=side_effect) as mock_get, patch(
+            "utils.feed_fetcher.FetchFeed.fetch_scrapingbee", side_effect=AssertionError("paid proxy used")
+        ):
+            result, fpf = fetcher.fetch()
+        return result, fpf, mock_get
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_site_that_refuses_browser_user_agents_is_fetched_with_the_plain_one(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_OK
+
+        result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents())
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(len(fpf.entries), 1)
+        self.assertEqual(fpf.entries[0].title, "[Bug 1] Clipboard popup loses focus")
+        # default UA (browser suffix), fake browser UA, then the plain UA that worked
+        self.assertEqual(len(self.user_agents), 3)
+        self.assertTrue(self.user_agents[0].startswith("NewsBlur Feed Fetcher"))
+        self.assertIn("Mozilla/", self.user_agents[0])
+        self.assertIn("Mozilla/", self.user_agents[1])
+        self.assertEqual(self.user_agents[2], self.feed.plain_user_agent)
+        # a direct fetch that works is not a forbidden feed
+        self.assertFalse(Feed.objects.get(pk=self.feed.pk).is_forbidden)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_site_that_refuses_every_user_agent_still_fails(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP
+
+        def refuse_everyone(url, headers=None, **kwargs):
+            self.user_agents.append((headers or {}).get("User-Agent", ""))
+            return self._response(403, self.FORBIDDEN, "text/html; charset=iso-8859-1")
+
+        result, fpf, mock_get = self._fetch(refuse_everyone)
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertEqual(len(self.user_agents), 3)
+        self.assertEqual(self.user_agents[2], self.feed.plain_user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_rate_limit_gets_no_user_agent_retries(self, mock_parse, mock_skip, mock_random, mock_validate):
+        # A 429 gets neither the fake-header retry nor the plain-UA retry. The feedparser
+        # fallback that follows (patched out here) is deliberately still reached: it is the
+        # request whose headers ProcessFeed reads Retry-After from, see the Retry-After
+        # handling in utils/feed_fetcher.py, so the backoff the site asked for is honored.
+        result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents(blocked_status=429))
+
+        self.assertEqual(len(self.user_agents), 1)
+        self.assertIn("Mozilla/", self.user_agents[0])
+        self.assertTrue(mock_parse.called)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_missing_feed_gets_the_fake_header_retry_but_not_the_plain_one(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        # A 404 is the feed being gone, not the site refusing our User-Agent: the usual
+        # fake-header retry runs and nothing more, so dead feeds do not cost a third request.
+        result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents(blocked_status=404))
+
+        self.assertEqual(len(self.user_agents), 2)
+
+
+@override_settings(SCRAPINGBEE_API_KEY="test-scrapingbee-key")
+class Test_TextImporterBlockedFallsBackToProxy(TestCase):
+    """TMZ's CDN answers every article-page request from NewsBlur's servers with a 403
+    (forum #13832). The feed itself is rescued by the paid proxy in the fetcher, but Text
+    view and the thumbnails it saves come from TextImporter, which had no proxy fallback,
+    so readers got the summary with no images. A blocked article page is now fetched
+    through ScrapingBee the way PageImporter already does, and a blocked response is never
+    mistaken for the article. apps/rss_feeds/text_importer.py"""
+
+    STORY_URL = "https://www.tmz.com/2026/09/16/chris-brown-calls-out-texas-rep-venton-jones/"
+    ARTICLE_HTML = (
+        b"<html><head><title>Chris Brown Slams Texas Rep</title></head><body><article>"
+        b'<img src="https://imagez.tmz.com/image/cc/4by3/2026/09/16/lead_md.jpg">'
+        b"<p>Chris Brown is slamming Texas State Representative Venton Jones after he apologized "
+        b"for honoring the singer amid backlash. The singer is pissed at Jones for apologizing for "
+        b"appearing on stage with Chris to announce that Chris had been placed on a proclamation, "
+        b"and he made his feelings plain in a long post that ran through the whole episode.</p>"
+        b"<p>Jones had said the proclamation was a mistake and that he regretted the appearance, "
+        b"which is what set the singer off in the first place and kept the story going all day.</p>"
+        b"</article></body></html>"
+    )
+    FORBIDDEN_HTML = (
+        b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><HTML><HEAD>'
+        b"<TITLE>ERROR: The request could not be satisfied</TITLE></HEAD><BODY>"
+        b"<H1>403 ERROR</H1><H2>The request could not be satisfied.</H2>"
+        b"<P>Request blocked. Generated by cloudfront (CloudFront)</P></BODY></HTML>"
+    )
+
+    FIXTURE_HOSTS = ("www.tmz.com",)
+
+    def setUp(self):
+        # validate_public_url resolves hostnames, so with only the HTTP calls mocked these
+        # tests would still need live DNS for www.tmz.com. The fixture answers for the
+        # fixture hosts and rejects everything else, which keeps the private-address and
+        # junk-URL cases meaningful. apps/rss_feeds/text_importer.py
+        patcher = patch(
+            "apps.rss_feeds.text_importer.validate_public_url", side_effect=self._validate_fixture_url
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    @classmethod
+    def _validate_fixture_url(cls, url):
+        from urllib.parse import urlparse
+
+        if urlparse(url).hostname not in cls.FIXTURE_HOSTS:
+            raise UnsafeUrlError("not a fixture host: %s" % url)
+
+    def _response(self, status_code, content, url=None, headers=None):
+        # A real requests.Response, not a MagicMock: a Response is falsy for any 4xx or 5xx,
+        # which is exactly the property the guard in fetch_manually has to get right.
+        resp = requests.Response()
+        resp.status_code = status_code
+        resp._content = content
+        resp.encoding = "utf-8"
+        resp.url = url or self.STORY_URL
+        resp.headers.update(headers or {"Content-Type": "text/html; charset=utf-8"})
+        return resp
+
+    def _story(self):
+        story = MagicMock()
+        story.story_permalink = self.STORY_URL
+        story.story_content_z = None
+        story.image_urls = []
+        return story
+
+    def _importer(self):
+        from apps.rss_feeds.text_importer import TextImporter
+
+        return TextImporter(story=self._story(), story_url=self.STORY_URL)
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_blocked_article_is_fetched_through_scrapingbee(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            200, self.ARTICLE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Chris Brown is slamming", result["content"])
+        self.assertIn("imagez.tmz.com/image/cc/4by3/2026/09/16/lead_md.jpg", result["content"])
+        self.assertNotIn("Request blocked", result["content"])
+        self.assertEqual(result["url"], self.STORY_URL)
+
+        self.assertEqual(mock_scrapingbee_get.call_count, 1)
+        args, kwargs = mock_scrapingbee_get.call_args
+        self.assertEqual(args[0], "https://app.scrapingbee.com/api/v1")
+        self.assertEqual(kwargs["params"]["url"], self.STORY_URL)
+        self.assertEqual(kwargs["params"]["api_key"], "test-scrapingbee-key")
+        self.assertEqual(kwargs["params"]["render_js"], "false")
+        mock_record.assert_called_once()
+        self.assertEqual(mock_record.call_args.args[0], "original_text")
+        self.assertEqual(mock_record.call_args.kwargs["url"], self.STORY_URL)
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_blocked_page_is_never_saved_as_the_text_when_the_proxy_fails(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            500, b"", url="https://app.scrapingbee.com/api/v1", headers={}
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        self.assertEqual(mock_scrapingbee_get.call_count, 1)
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_capped")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=True)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_host_over_its_daily_cap_skips_the_proxy(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record_capped
+    ):
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        mock_scrapingbee_get.assert_not_called()
+        mock_record_capped.assert_called_once_with("original_text", url=self.STORY_URL)
+
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_page_that_answers_normally_never_touches_the_proxy(self, mock_get, mock_scrapingbee_get):
+        mock_get.return_value = self._response(200, self.ARTICLE_HTML)
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Chris Brown is slamming", result["content"])
+        mock_scrapingbee_get.assert_not_called()
+
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_an_error_page_that_is_not_a_block_is_neither_extracted_nor_proxied(
+        self, mock_get, mock_scrapingbee_get
+    ):
+        mock_get.return_value = self._response(404, b"<html><body><h1>Not Found</h1></body></html>")
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        mock_scrapingbee_get.assert_not_called()
+
+    CHALLENGE_HTML = (
+        b"<html><head><title>Just a moment...</title></head><body>"
+        b"<p>Checking your browser before accessing tmz.com. This process is automatic. Your "
+        b"browser will redirect to your requested content shortly. Please allow up to 5 seconds.</p>"
+        b"<p>DDoS protection by Cloudflare. Ray ID: 8f1c2a3b4c5d6e7f. Performance and security by "
+        b"Cloudflare, please stand by while the verification completes on this page.</p>"
+        b"</body></html>"
+    )
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_challenge_page_from_the_proxy_is_never_saved_as_the_text(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        # Both the direct request and the proxy get the challenge page; the story summary is
+        # short, so the challenge would have outgrown it and been cached as the article.
+        mock_get.return_value = self._response(200, self.CHALLENGE_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            200, self.CHALLENGE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        self.assertEqual(mock_scrapingbee_get.call_count, 1)
+        mock_record.assert_called_once()
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_challenge_title_alone_counts_as_a_block(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget
+    ):
+        # Cloudflare's interstitial without any of its markup ids still has its title.
+        mock_get.return_value = self._response(200, self.CHALLENGE_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            200, self.ARTICLE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+
+        with patch("apps.statistics.rscrapingbee.RScrapingBee.record_response"):
+            result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Chris Brown is slamming", result["content"])
+        self.assertEqual(mock_scrapingbee_get.call_count, 1)
+
+    @override_settings(SCRAPINGBEE_API_KEY=None)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_an_article_that_merely_uses_challenge_wording_is_extracted(self, mock_get, mock_scrapingbee_get):
+        article = (
+            b"<html><head><title>Attention Required at the Border, Says Governor</title></head><body><article>"
+            b"<p>Just a moment after the governor spoke, the crowd went quiet. Attention required, she said, "
+            b"is what the crossing needs, and checking your browser history will not tell you what it is like "
+            b"to wait there for a day. She described a line of trucks that stretched past the horizon and a "
+            b"pair of inspectors trying to keep the whole thing moving before the afternoon heat set in.</p>"
+            b"<p>The speech ran long and the reporters stayed for all of it, which the governor's staff took "
+            b"as a sign that the message had landed with the people it was meant for.</p>"
+            b"</article></body></html>"
+        )
+        mock_get.return_value = self._response(200, article)
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Just a moment after the governor spoke", result["content"])
+        mock_scrapingbee_get.assert_not_called()
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_fetch_never_saves_a_challenge_page_mercury_extracted(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        # fetch() with its defaults runs Mercury first. Mercury dutifully extracts the
+        # interstitial; that must not be saved, and the manual path must reach the proxy.
+        mercury = self._response(
+            200,
+            json.encode(
+                {
+                    "content": "<div><p>Checking your browser before accessing tmz.com. This process is "
+                    "automatic. Your browser will redirect to your requested content shortly. Please "
+                    "allow up to 5 seconds. DDoS protection by Cloudflare. Ray ID: 8f1c2a3b4c5d6e7f. "
+                    "Performance and security by Cloudflare, please stand by.</p></div>",
+                    "title": "Just a moment...",
+                    "url": self.STORY_URL,
+                    "lead_image_url": None,
+                }
+            ).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        proxied = self._response(
+            200, self.ARTICLE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+        mock_scrapingbee_get.side_effect = lambda url, **kwargs: (
+            mercury if "original_text_fetcher" in url else proxied
+        )
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+
+        result = self._importer().fetch(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Chris Brown is slamming", result["content"])
+        self.assertNotIn("Checking your browser", result["content"])
+        proxy_calls = [c for c in mock_scrapingbee_get.call_args_list if "scrapingbee.com" in c.args[0]]
+        self.assertEqual(len(proxy_calls), 1)
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_relative_links_resolve_against_the_url_the_proxy_was_redirected_to(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        moved_to = "https://www.tmz.com/2026/09/16/moved/chris-brown-venton-jones/"
+        article = self.ARTICLE_HTML.replace(
+            b'src="https://imagez.tmz.com/image/cc/4by3/2026/09/16/lead_md.jpg"', b'src="lead_md.jpg"'
+        )
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        mock_scrapingbee_get.return_value = self._response(
+            200,
+            article,
+            url="https://app.scrapingbee.com/api/v1",
+            headers={"Spb-cost": "1", "Spb-resolved-url": moved_to},
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result["url"], moved_to)
+        self.assertIn(
+            'src="https://www.tmz.com/2026/09/16/moved/chris-brown-venton-jones/lead_md.jpg"',
+            result["content"],
+        )
+        self.assertNotIn("scrapingbee", result["url"])
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_resolved_url_that_is_not_public_or_is_the_proxy_itself_is_ignored(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        for bogus in (
+            "https://app.scrapingbee.com/api/v1?api_key=test-scrapingbee-key",
+            "http://127.0.0.1/admin",
+            "not a url",
+        ):
+            mock_scrapingbee_get.return_value = self._response(
+                200,
+                self.ARTICLE_HTML,
+                url="https://app.scrapingbee.com/api/v1",
+                headers={"Spb-cost": "1", "Spb-resolved-url": bogus},
+            )
+
+            result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+            self.assertIsNotNone(result, bogus)
+            self.assertEqual(result["url"], self.STORY_URL, bogus)
+
+    @override_settings(SCRAPINGBEE_API_KEY=None)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_headline_that_contains_a_challenge_title_is_still_an_article(
+        self, mock_get, mock_scrapingbee_get
+    ):
+        privacy_article = (
+            b"<html><head><title>Checking Your Browser Privacy Settings</title></head><body><article>"
+            b"<p>Every browser ships with a privacy panel, and almost nobody opens it. This guide walks "
+            b"through the settings that matter, what each one actually blocks, and which defaults are "
+            b"worth changing before the next time a site asks you to prove you are not a bot.</p>"
+            b"<p>Start with third-party cookies, then look at the permissions list for location and "
+            b"notifications, and finish with the site data that has quietly piled up over the years.</p>"
+            b"</article></body></html>"
+        )
+        mercury = self._response(
+            200,
+            json.encode(
+                {
+                    "content": "<div><p>Every browser ships with a privacy panel, and almost nobody opens it. "
+                    "This guide walks through the settings that matter, what each one actually blocks, and "
+                    "which defaults are worth changing before the next time a site asks you to prove you "
+                    "are not a bot.</p></div>",
+                    "title": "Checking Your Browser Privacy Settings",
+                    "url": self.STORY_URL,
+                    "lead_image_url": None,
+                }
+            ).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        mock_scrapingbee_get.return_value = mercury
+        mock_get.return_value = self._response(200, privacy_article)
+
+        from apps.rss_feeds.text_importer import is_bot_challenge_title
+
+        self.assertFalse(is_bot_challenge_title("Checking Your Browser Privacy Settings"))
+        self.assertFalse(is_bot_challenge_title("Just a moment... with the mayor"))
+        self.assertTrue(is_bot_challenge_title("  Just a moment...\n"))
+        self.assertTrue(is_bot_challenge_title("Attention Required! | Cloudflare"))
+
+        mercury_result = self._importer().fetch(skip_save=True, return_document=True)
+        self.assertIsNotNone(mercury_result)
+        self.assertIn("privacy panel", mercury_result["content"])
+
+        manual_result = self._importer().fetch_manually(skip_save=True, return_document=True)
+        self.assertIsNotNone(manual_result)
+        self.assertIn("privacy panel", manual_result["content"])
+        self.assertFalse(any("scrapingbee.com" in c.args[0] for c in mock_scrapingbee_get.call_args_list))
+
+    @patch("apps.rss_feeds.text_importer.logging.user")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_a_failed_proxy_call_never_logs_the_api_key(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record, mock_log
+    ):
+        mock_get.return_value = self._response(403, self.FORBIDDEN_HTML)
+        mock_scrapingbee_get.side_effect = requests.ConnectionError(
+            "HTTPSConnectionPool(host='app.scrapingbee.com', port=443): Max retries exceeded with url: "
+            "/api/v1?api_key=test-scrapingbee-key&url=https%3A%2F%2Fwww.tmz.com%2F&render_js=false"
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNone(result)
+        mock_record.assert_called_once_with("original_text", None, url=self.STORY_URL)
+        logged = " ".join(str(arg) for call in mock_log.call_args_list for arg in call.args)
+        self.assertIn("ConnectionError", logged)
+        self.assertIn("<api_key>", logged)
+        self.assertNotIn("test-scrapingbee-key", logged)
+
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.record_response")
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.host_over_budget", return_value=False)
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    @patch("apps.rss_feeds.text_importer.safe_requests_get")
+    def test_bot_challenge_page_with_a_200_is_treated_as_blocked(
+        self, mock_get, mock_scrapingbee_get, mock_over_budget, mock_record
+    ):
+        challenge = (
+            b"<html><head><title>Just a moment...</title></head><body>"
+            b'<div id="cf-browser-verification">Checking your browser before accessing tmz.com.</div>'
+            b"</body></html>"
+        )
+        mock_get.return_value = self._response(200, challenge)
+        mock_scrapingbee_get.return_value = self._response(
+            200, self.ARTICLE_HTML, url="https://app.scrapingbee.com/api/v1", headers={"Spb-cost": "1"}
+        )
+
+        result = self._importer().fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("Chris Brown is slamming", result["content"])
+        self.assertNotIn("Checking your browser", result["content"])
+        self.assertEqual(mock_scrapingbee_get.call_count, 1)

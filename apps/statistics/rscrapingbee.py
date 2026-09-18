@@ -17,6 +17,7 @@ class RScrapingBee:
     Recorded at each call site:
     - utils/feed_fetcher.py: forbidden feed fetches ("feed") and add-feed discovery ("discovery")
     - apps/rss_feeds/page_importer.py: blocked original story pages ("original_story")
+    - apps/rss_feeds/text_importer.py: blocked Text view article pages ("original_text")
     - utils/webfeed_fetcher.py: web feed fetches ("webfeed")
     - apps/webfeed/tasks.py: web feed analysis/preview fetches ("webfeed_preview")
 
@@ -42,7 +43,7 @@ class RScrapingBee:
     USAGE_CACHE_SECONDS = 300
     USAGE_API_URL = "https://app.scrapingbee.com/api/v1/usage"
     TOP_DOMAINS = 20
-    SOURCES = ("feed", "discovery", "original_story", "webfeed", "webfeed_preview")
+    SOURCES = ("feed", "discovery", "original_story", "original_text", "webfeed", "webfeed_preview")
     # ScrapingBee only bills 200 and 404 responses. 500 means the target site blocked
     # even the proxy; "error" means the request to ScrapingBee itself raised.
     # "capped", "dormant" and "user_budget" are proxy requests that were skipped, not made:
