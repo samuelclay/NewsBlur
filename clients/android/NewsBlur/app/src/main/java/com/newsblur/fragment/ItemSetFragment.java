@@ -208,6 +208,9 @@ public class ItemSetFragment extends NbFragment {
         boolean isDisableAnimations = ViewUtils.isPowerSaveMode(requireContext());
 
         binding.topLoadingIndicator.setEnabled(!isDisableAnimations);
+        binding.topLoadingIndicator.setTheme(prefsRepo.getResolvedTheme(requireContext()));
+        fleuronBinding.bottomLoadingIndicator.setEnabled(!isDisableAnimations);
+        fleuronBinding.bottomLoadingIndicator.setTheme(prefsRepo.getResolvedTheme(requireContext()));
 
         fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
@@ -466,29 +469,36 @@ public class ItemSetFragment extends NbFragment {
         boolean hasStories = hasStories();
         boolean isOffline = !NetworkUtils.isOnline(requireContext());
         boolean waitingForApiResult = !hasStories && !syncServiceState.isFeedSetExhausted(getFeedSet());
+        com.newsblur.util.StoryLoadingState loading = com.newsblur.util.StoryLoadingState.resolve(
+                hasStories, dataSeenYet, syncServiceState.isFeedSetSyncing(getFeedSet()),
+                syncServiceState.isFeedSetExhausted(getFeedSet()), !isOffline);
+        boolean loadingNextPage = loading == com.newsblur.util.StoryLoadingState.NEXT_PAGE;
+        fleuronBinding.bottomLoadingIndicator.setVisibility(loadingNextPage ? View.VISIBLE : View.GONE);
+        fleuronBinding.fleuron.setVisibility(loadingNextPage ? View.GONE : View.VISIBLE);
+        binding.emptyViewText.setVisibility(View.VISIBLE);
 
         if (dataSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
             updateUpgradeBannerText();
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
+            fleuronBinding.bottomLoadingIndicator.setVisibility(View.GONE);
+            fleuronBinding.fleuron.setVisibility(View.VISIBLE);
             fleuronResized = false;
             hideBottomNextFeedControl();
             return;
         }
 
         if ((!dataSeenYet) || syncServiceState.isFeedSetSyncing(getFeedSet()) || waitingForApiResult) {
-            binding.emptyViewText.setText(R.string.empty_list_view_loading);
+            binding.emptyViewText.setText(isOffline ? R.string.sync_status_offline : R.string.empty_list_view_no_stories);
+            binding.emptyViewText.setVisibility(isOffline ? View.VISIBLE : View.GONE);
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
-            binding.emptyViewText.setAlpha(0.4f);
+            binding.emptyViewText.setAlpha(1.0f);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
-            if (isOffline || hasStories || syncServiceState.isFeedSetStoriesFresh(getFeedSet())) {
-                binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
-            } else {
-                binding.topLoadingIndicator.setVisibility(View.VISIBLE);
-            }
-            fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
+            binding.topLoadingIndicator.setVisibility(loading == com.newsblur.util.StoryLoadingState.INITIAL ? View.VISIBLE : View.INVISIBLE);
+            fleuronBinding.containerSubscribe.setVisibility(View.GONE);
+            fleuronBinding.getRoot().setVisibility(loadingNextPage ? View.VISIBLE : View.INVISIBLE);
         } else {
             ReadFilter readFilter = prefsRepo.getReadFilter(getFeedSet());
             if (readFilter == ReadFilter.UNREAD) {
@@ -501,6 +511,7 @@ public class ItemSetFragment extends NbFragment {
             binding.emptyViewImage.setVisibility(View.VISIBLE);
 
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
+            fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
             if (dataSeenYet && syncServiceState.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
                 fleuronBinding.containerSubscribe.setVisibility(View.GONE);
                 fleuronBinding.getRoot().setVisibility(View.VISIBLE);

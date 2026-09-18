@@ -5,6 +5,17 @@ import androidx.compose.ui.graphics.toArgb
 import com.newsblur.util.PrefConstants.ThemeValue
 
 object ReaderSheetPalette {
+    @JvmStatic fun loadingLowArgb(theme: ThemeValue): Int = when (theme) {
+        ThemeValue.DARK -> 0xFF243650.toInt()
+        ThemeValue.BLACK -> 0xFF15243A.toInt()
+        else -> 0xFFE1EBFF.toInt()
+    }
+
+    @JvmStatic fun loadingHighArgb(theme: ThemeValue): Int = when (theme) {
+        ThemeValue.BLACK -> 0xFF456DA6.toInt()
+        else -> 0xFF5C89C9.toInt()
+    }
+
     data class Colors(
         val background: Color,
         val cardBackground: Color,
