@@ -578,6 +578,27 @@ class StoryViewAdapter(
         ).also { it.hold() }
     }
 
+    private fun openHighlightedStory(holder: RecyclerView.ViewHolder, feedSet: FeedSet?, hash: String) {
+        // StoryViewAdapter.kt is also used by Daily Briefing, which has no story-list return lifecycle.
+        if (fs?.isDailyBriefing == true) {
+            listener.onStoryClicked(feedSet, hash)
+            return
+        }
+        // StoryViewAdapter.kt holds the tap through launch; only the existing reader-return path starts its fade.
+        pendingScrollStoryHash = null
+        pendingHighlightStoryHash = null
+        returnPresentationReady = false
+        returnHighlight?.cancel()
+        returnHighlight = null
+        holdReturnHighlight(holder, hash)
+        try {
+            listener.onStoryClicked(feedSet, hash)
+        } catch (exception: RuntimeException) {
+            cancelReturnHighlight(holder)
+            throw exception
+        }
+    }
+
     private fun animateReturnHighlight(rv: RecyclerView, position: Int) {
         val holder = rv.findViewHolderForAdapterPosition(position) ?: return
         val hash = boundStoryHash(holder) ?: return
@@ -738,10 +759,11 @@ class StoryViewAdapter(
                 return
             }
             if (gestureL2R || gestureR2L) return
+            val hash = story?.storyHash?.takeIf { it.isNotBlank() } ?: return
             val now = SystemClock.elapsedRealtime()
             if (now - lastStoryOpenElapsedRealtime < ViewConfiguration.getDoubleTapTimeout().toLong()) return
             lastStoryOpenElapsedRealtime = now
-            listener.onStoryClicked(fs, story?.storyHash)
+            openHighlightedStory(this, fs, hash)
         }
 
         override fun onCreateContextMenu(
@@ -953,13 +975,13 @@ class StoryViewAdapter(
                     )
             ) {
                 is StoryClusterNavigationTarget.DirectReading -> {
-                    listener.onStoryClicked(target.feedSet, target.storyHash)
+                    openHighlightedStory(this, target.feedSet, target.storyHash)
                 }
 
                 is StoryClusterNavigationTarget.FeedListReading -> {
                     val feed = feedUtils.getFeed(feedId)
                     if (feed == null) {
-                        listener.onStoryClicked(target.feedSet, target.storyHash)
+                        openHighlightedStory(this, target.feedSet, target.storyHash)
                         return
                     }
                     feedUtils.currentFolderName =
