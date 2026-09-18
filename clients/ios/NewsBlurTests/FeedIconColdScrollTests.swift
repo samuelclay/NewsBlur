@@ -4,7 +4,7 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedIconColdScroll: XCTestCase {
-    func test_firstPassAfterFeedReloadUsesPreparedArtworkWithoutForegroundDiskReads() throws {
+    func test_firstPassAfterFeedReloadUsesPreparedArtworkWithoutForegroundDiskReads() async throws {
         let feedCount = 651
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -57,7 +57,8 @@ import UIKit
         // FeedIconColdScrollTests.swift fences the real serial worker without blocking main or treating NSCache as a completion signal.
         let prepared = expectation(description: "The feed reload's preparation worker has completed")
         preparationQueue.async { prepared.fulfill() }
-        wait(for: [prepared], timeout: 10)
+        // FeedIconColdScrollTests.swift measures foreground work after 651 real utility-queue decodes, not hosted-runner disk throughput.
+        await fulfillment(of: [prepared], timeout: 60)
         let backgroundReads = cache.diskCache.counts.worker
         let workerKeys = cache.diskCache.uniqueWorkerKeyCount
         let pending = renderer.pendingPreparationCount
