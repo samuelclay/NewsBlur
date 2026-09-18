@@ -102,6 +102,42 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_storyImageSingleTapFitsThenDismissesWithoutStealingDoubleTap() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image viewer uses isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        articleImage.tap()
+        let close = app.buttons["Close image"]
+        XCTAssertTrue(close.waitForExistence(timeout: 8))
+        let image = app.images["fullscreen-story-image"]
+        let zoom = app.scrollViews["story-image-zoom"]
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Zoomed'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        image.swipeLeft()
+        XCTAssertTrue(close.exists, "Dragging while zoomed pans rather than dismissing")
+        XCTAssertEqual(zoom.value as? String, "Zoomed")
+        image.tap()
+        expectation(for: NSPredicate(format: "value == 'Fitted'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        XCTAssertTrue(close.exists, "The first single tap zooms out before another tap dismisses")
+        attachScreenshot(named: "image-viewer-single-tap-fitted")
+        image.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 5))
+        articleImage.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        image.swipeRight()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        attachScreenshot(named: "image-viewer-single-tap-returned")
+        #endif
+    }
+
     func test_smallStoryImageAndSaveToPhotos() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Photos writes only a disposable simulator fixture")
