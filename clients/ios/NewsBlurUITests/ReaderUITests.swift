@@ -56,6 +56,8 @@ final class ReaderUITests: XCTestCase {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Image viewer uses isolated simulator fixtures")
         #else
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
         app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
         launch(on: "reader-story-swift-1")
         let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
@@ -67,8 +69,11 @@ final class ReaderUITests: XCTestCase {
         let image = app.images["fullscreen-story-image"]
         XCTAssertTrue(image.waitForExistence(timeout: 5))
         let zoom = app.scrollViews["story-image-zoom"]
+        let statusBar = XCUIApplication(bundleIdentifier: "com.apple.springboard").statusBars.firstMatch
         XCTAssertEqual(zoom.frame.width, app.frame.width, accuracy: 2)
-        XCTAssertEqual(zoom.frame.height, app.frame.height, accuracy: 2)
+        XCTAssertGreaterThanOrEqual(zoom.frame.minY, statusBar.frame.maxY)
+        XCTAssertLessThan(zoom.frame.height, app.frame.height)
+        XCTAssertLessThanOrEqual(zoom.frame.maxY, app.frame.maxY)
         attachScreenshot(named: "image-viewer-fitted")
         image.doubleTap()
         expectation(for: NSPredicate(format: "value == 'Zoomed'"), evaluatedWith: zoom)
