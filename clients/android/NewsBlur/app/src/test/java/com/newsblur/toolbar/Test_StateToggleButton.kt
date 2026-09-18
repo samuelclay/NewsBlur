@@ -16,6 +16,21 @@ import org.junit.Test
 @Suppress("ktlint:standard:class-naming")
 class Test_StateToggleButton {
     @Test
+    fun test_icon_only_filters_center_content_inside_pressed_highlight() {
+        val document = java.nio.file.Files.newInputStream(java.nio.file.Paths.get("src/main/res/layout/state_toggle.xml")).use {
+            javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(it)
+        }
+        val layouts = document.getElementsByTagName("LinearLayout")
+        for (index in 0 until layouts.length) {
+            val attributes = layouts.item(index).attributes
+            val id = attributes.getNamedItem("android:id")?.nodeValue
+            if (id !in listOf("@+id/toggle_all", "@+id/toggle_some", "@+id/toggle_focus", "@+id/toggle_saved")) continue
+            val gravity = attributes.getNamedItem("android:gravity").nodeValue.split('|')
+            org.junit.Assert.assertTrue("$id must center its icon horizontally within the minimum touch width", "center" in gravity || "center_horizontal" in gravity)
+        }
+    }
+
+    @Test
     fun test_narrow_toolbar_keeps_selected_filter_label() {
         withToolbar { toolbar ->
             toolbar.measure(250, StateFilter.SOME)
