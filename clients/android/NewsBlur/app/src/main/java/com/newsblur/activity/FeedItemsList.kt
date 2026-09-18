@@ -11,6 +11,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
 import com.newsblur.fragment.AddFeedFragment
+import com.newsblur.fragment.ChooseFoldersFragment
 import com.newsblur.fragment.DeleteFeedFragment
 import com.newsblur.fragment.FeedIntelTrainerFragment
 import com.newsblur.fragment.RenameDialogFragment
@@ -75,6 +76,18 @@ class FeedItemsList : ItemsList() {
         }
 
         return when (item.itemId) {
+            R.id.menu_choose_folders -> {
+                ChooseFoldersFragment.newInstance(feed).show(supportFragmentManager, "choose-folders")
+                true
+            }
+            R.id.menu_mute_feed -> {
+                feedUtils.muteFeeds(this, setOf(feed.feedId))
+                true
+            }
+            R.id.menu_unmute_feed -> {
+                feedUtils.unmuteFeeds(this, setOf(feed.feedId))
+                true
+            }
             R.id.menu_delete_feed -> {
                 showDeleteFeedDialog()
                 true
@@ -125,6 +138,9 @@ class FeedItemsList : ItemsList() {
     override fun prepareItemListMenuModel(menu: Menu): Boolean {
         super.prepareItemListMenuModel(menu)
         if (!::feed.isInitialized) return true
+        menu.findItem(R.id.menu_mute_feed).isVisible = !isTryFeed && !fs.isFilterSaved && feed.active
+        menu.findItem(R.id.menu_unmute_feed).isVisible = !isTryFeed && !fs.isFilterSaved && !feed.active
+        menu.findItem(R.id.menu_choose_folders).isVisible = !isTryFeed && !fs.isFilterSaved
 
         when {
             feed.isAndroidNotifyUnread() -> {

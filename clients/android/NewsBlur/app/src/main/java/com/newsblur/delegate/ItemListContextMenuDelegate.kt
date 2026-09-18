@@ -106,6 +106,9 @@ open class ItemListContextMenuDelegateImpl(
         menu.findItem(R.id.menu_discover_related_sites).isVisible = activity.shouldShowDiscoverAction();
 
         if (!fs.isSingleNormal || fs.isFilterSaved) {
+            menu.findItem(R.id.menu_choose_folders).isVisible = false
+            menu.findItem(R.id.menu_mute_feed).isVisible = false
+            menu.findItem(R.id.menu_unmute_feed).isVisible = false
             menu.findItem(R.id.menu_notifications).isVisible = false
             menu.findItem(R.id.menu_delete_feed).isVisible = false
             menu.findItem(R.id.menu_instafetch_feed).isVisible = false

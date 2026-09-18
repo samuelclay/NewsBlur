@@ -121,6 +121,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     // the two-step context menu for feeds requires us to temp store the feed long-pressed so
     // it can be accessed during the sub-menu tap
     private Feed lastMenuFeed;
+    private android.widget.PopupWindow feedMenuPopup;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -230,7 +231,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         adapter.listBackref = new WeakReference<>(binding.folderfeedList); // see note in adapter about backref
         binding.folderfeedList.setAdapter(adapter);
-        new com.newsblur.view.FeedListGestures(binding.folderfeedList, adapter, prefsRepo, feedUtils, (NbActivity) requireActivity());
+        new com.newsblur.view.FeedListGestures(binding.folderfeedList, adapter, prefsRepo, feedUtils, (NbActivity) requireActivity(), this::showFeedMenu);
 
         // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
         binding.folderfeedList.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
@@ -330,9 +331,15 @@ public void checkOpenFolderPreferences() {
 			return;
 		}
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
-		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-        int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
-        int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+        populateFeedMenu(menu, info.packedPosition);
+    }
+
+    private void populateFeedMenu(android.view.Menu menu, long packedPosition) {
+        if (!isMenuPositionValid(packedPosition)) return;
+        MenuInflater inflater = requireActivity().getMenuInflater();
+		int type = ExpandableListView.getPackedPositionType(packedPosition);
+        int childPosition = ExpandableListView.getPackedPositionChild(packedPosition);
+        int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
 
 		switch(type) {
 		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
@@ -347,6 +354,7 @@ public void checkOpenFolderPreferences() {
             inflater.inflate(R.menu.context_folder, menu);
 
             if (adapter.isRowAllStories(groupPosition)) {
+                menu.removeItem(R.id.menu_discover_related_sites);
                 menu.removeItem(R.id.menu_mute_folder);
                 menu.removeItem(R.id.menu_unmute_folder);
                 menu.removeItem(R.id.menu_delete_folder);
@@ -366,6 +374,8 @@ public void checkOpenFolderPreferences() {
                 menu.removeItem(R.id.menu_unmute_feed);
                 menu.removeItem(R.id.menu_mute_feed);
                 menu.removeItem(R.id.menu_notifications);
+                menu.removeItem(R.id.menu_statistics);
+                menu.removeItem(R.id.menu_discover_related_sites);
                 menu.removeItem(R.id.menu_instafetch_feed);
                 menu.removeItem(R.id.menu_intel);
                 menu.removeItem(R.id.menu_rename_feed);
@@ -377,6 +387,8 @@ public void checkOpenFolderPreferences() {
                 menu.removeItem(R.id.menu_choose_folders);
                 menu.removeItem(R.id.menu_rename_feed);
                 menu.removeItem(R.id.menu_notifications);
+                menu.removeItem(R.id.menu_statistics);
+                menu.removeItem(R.id.menu_discover_related_sites);
                 menu.removeItem(R.id.menu_mute_feed);
                 menu.removeItem(R.id.menu_unmute_feed);
                 menu.removeItem(R.id.menu_instafetch_feed);
@@ -424,6 +436,13 @@ public void checkOpenFolderPreferences() {
             lastMenuFeed = adapter.getFeed(groupPosition, childPosition);
             return true;
         }
+        long packed = item.getMenuInfo() instanceof ExpandableListView.ExpandableListContextMenuInfo
+                ? ((ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo()).packedPosition
+                : ExpandableListView.PACKED_POSITION_VALUE_NULL;
+        return onFeedMenuItemSelected(item, packed);
+    }
+
+    private boolean onFeedMenuItemSelected(MenuItem item, long packedPosition) {
         if (item.getItemId() == R.id.menu_notifications_disable) {
             if (lastMenuFeed == null) return true;
             feedUtils.disableNotifications(getActivity(), lastMenuFeed);
@@ -439,12 +458,9 @@ public void checkOpenFolderPreferences() {
             feedUtils.enableUnreadNotifications(getActivity(), lastMenuFeed);
             return true;
         }
-        if (!(item.getMenuInfo() instanceof ExpandableListView.ExpandableListContextMenuInfo)) {
-            return true;
-        }
-		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
-        int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
-        int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+        if (!isMenuPositionValid(packedPosition)) return true;
+        int childPosition = ExpandableListView.getPackedPositionChild(packedPosition);
+        int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
         Folder folderForMenuAction = null;
         if (requiresLiveFolderContextMenuRow(item.getItemId())) {
             folderForMenuAction = adapter.getGroupFolder(groupPosition);
@@ -496,6 +512,15 @@ public void checkOpenFolderPreferences() {
             feedUtils.muteFeeds(getActivity(), dbHelper.feedSetFromFolderName(folderForMenuAction.flatName()).getAllFeeds());
         } else if (item.getItemId() == R.id.menu_unmute_folder) {
             feedUtils.unmuteFeeds(getActivity(), dbHelper.feedSetFromFolderName(folderForMenuAction.flatName()).getAllFeeds());
+        } else if (item.getItemId() == R.id.menu_statistics) {
+            Feed feed = adapter.getFeed(groupPosition, childPosition);
+            if (feed != null) feedUtils.openStatistics((NbActivity) requireActivity(), prefsRepo, feed.feedId);
+        } else if (item.getItemId() == R.id.menu_discover_related_sites) {
+            if (childPosition >= 0) {
+                com.newsblur.activity.DiscoverFeedsActivity.startForFeed(requireContext(), adapter.getFeed(groupPosition, childPosition));
+            } else {
+                com.newsblur.activity.DiscoverFeedsActivity.startForFeeds(requireContext(), adapter.getGroup(groupPosition).getAllFeeds());
+            }
         } else if (item.getItemId() == R.id.menu_instafetch_feed) {
             feedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
         } else if (item.getItemId() == R.id.menu_intel) {
@@ -519,6 +544,49 @@ public void checkOpenFolderPreferences() {
 
 		return super.onContextItemSelected(item);
 	}
+
+    private boolean isMenuPositionValid(long packed) {
+        int group = ExpandableListView.getPackedPositionGroup(packed);
+        if (group < 0 || group >= adapter.getGroupCount()) return false;
+        int type = ExpandableListView.getPackedPositionType(packed);
+        if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) return true;
+        int child = ExpandableListView.getPackedPositionChild(packed);
+        return type == ExpandableListView.PACKED_POSITION_TYPE_CHILD && child >= 0 && child < adapter.getChildrenCount(group);
+    }
+
+    private FeedSet menuFeedSet(long packed) {
+        int group = ExpandableListView.getPackedPositionGroup(packed);
+        int child = ExpandableListView.getPackedPositionChild(packed);
+        return child < 0 ? adapter.getGroup(group) : adapter.getChild(group, child);
+    }
+
+    private void showFeedMenu(View anchor, Long packed) {
+        if (!isMenuPositionValid(packed)) return;
+        if (feedMenuPopup != null) feedMenuPopup.dismiss();
+        androidx.appcompat.widget.PopupMenu model = new androidx.appcompat.widget.PopupMenu(requireContext(), anchor);
+        populateFeedMenu(model.getMenu(), packed);
+        if (!com.newsblur.delegate.FeedMenuPopover.hasVisibleActions(model.getMenu())) return;
+        FeedSet originalScope = menuFeedSet(packed);
+        int group = ExpandableListView.getPackedPositionGroup(packed);
+        int child = ExpandableListView.getPackedPositionChild(packed);
+        Feed notificationFeed = child >= 0 && !adapter.isRowAllSharedStories(group) && !adapter.isRowSavedSearches(group)
+                ? adapter.getFeed(group, child) : null;
+        feedMenuPopup = com.newsblur.delegate.FeedMenuPopover.show((NbActivity) requireActivity(), anchor,
+                model.getMenu(), prefsRepo.getResolvedTheme(requireContext()), item -> {
+            // FolderListFragment.java rejects an old row position after a sync or filter changes the list.
+            if (!isAdded() || !isMenuPositionValid(packed) || !originalScope.equals(menuFeedSet(packed))) return true;
+            lastMenuFeed = notificationFeed;
+            return onFeedMenuItemSelected(item, packed);
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (feedMenuPopup != null) feedMenuPopup.dismiss();
+        feedMenuPopup = null;
+        lastMenuFeed = null;
+        super.onDestroyView();
+    }
 
     static boolean requiresLiveFolderContextMenuRow(int itemId) {
         return itemId == R.id.menu_mute_folder ||

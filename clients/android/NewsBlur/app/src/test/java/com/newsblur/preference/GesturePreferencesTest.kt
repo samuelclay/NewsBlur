@@ -32,7 +32,7 @@ class GesturePreferencesTest {
         assertFalse(repo.isStorySwipesEnabled())
         assertTrue(repo.isFeedSwipesEnabled())
         assertEquals(GestureAction.GEST_ACTION_MENU, repo.getStoryLongPressAction())
-        assertEquals(GestureAction.GEST_ACTION_READ_RANGE, repo.getFeedLongPressAction())
+        assertEquals(GestureAction.GEST_ACTION_MENU, repo.getFeedLongPressAction())
     }
 
     @Test fun explicitStoryLongPressChoiceSurvivesDefaultChange() {
@@ -53,4 +53,18 @@ class GesturePreferencesTest {
         every { preferences.getString("story_long_press", any()) } returns "obsolete"
         assertEquals(GestureAction.GEST_ACTION_MENU, repo.getStoryLongPressAction())
     }
+    @Test fun defaultFeedLongPressOpensFullMenu() {
+        assertEquals(GestureAction.GEST_ACTION_MENU, repo.getFeedLongPressAction())
+    }
+
+    @Test fun explicitlySelectedFeedReadRangeSurvivesDefaultChange() {
+        every { preferences.getString("feed_long_press", any()) } returns GestureAction.GEST_ACTION_READ_RANGE.name
+        assertEquals(GestureAction.GEST_ACTION_READ_RANGE, repo.getFeedLongPressAction())
+    }
+
+    @Test fun unknownFeedLongPressChoiceFallsBackToMenu() {
+        every { preferences.getString("feed_long_press", any()) } returns "obsolete"
+        assertEquals(GestureAction.GEST_ACTION_MENU, repo.getFeedLongPressAction())
+    }
+
 }

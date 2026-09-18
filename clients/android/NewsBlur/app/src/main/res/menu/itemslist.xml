@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_choose_folders" android:title="@string/menu_choose_folders" />
+    <item android:id="@+id/menu_mute_feed" android:title="@string/menu_mute_feed" />
+    <item android:id="@+id/menu_unmute_feed" android:title="@string/menu_unmute_feed" />
     <item android:id="@+id/menu_mark_all_as_read"
           android:title="@string/menu_mark_all_as_read"
           app:showAsAction="ifRoom" android:icon="@drawable/ic_mark_read" />

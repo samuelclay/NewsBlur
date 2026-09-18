@@ -27,6 +27,7 @@ class FeedListGestures(
     private val prefs: PrefsRepo,
     private val feedUtils: FeedUtils,
     private val activity: NbActivity,
+    private val showMenu: java.util.function.BiConsumer<View, Long>,
 ) : View.OnTouchListener {
     private var swipe: RowSwipeGesture? = null
     private var targetRow: View? = null
@@ -41,10 +42,14 @@ class FeedListGestures(
 
     init {
         list.setOnTouchListener(this)
-        list.setOnItemLongClickListener { _, _, position, _ ->
-            val selected = targetAt(position) ?: return@setOnItemLongClickListener false
+        list.setOnItemLongClickListener { _, row, position, _ ->
             val action = prefs.getFeedLongPressAction()
-            if (action == GestureAction.GEST_ACTION_MENU) return@setOnItemLongClickListener false
+            if (action == GestureAction.GEST_ACTION_MENU) {
+                swipe?.cancel()
+                showMenu.accept(row, list.getExpandableListPosition(position))
+                return@setOnItemLongClickListener true
+            }
+            val selected = targetAt(position) ?: return@setOnItemLongClickListener false
             swipe?.cancel()
             perform(selected, action)
             true
