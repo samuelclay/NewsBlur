@@ -245,7 +245,8 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         imageView.frame = CGRect(origin: .zero, size: fittedSize)
         scroll.contentSize = fittedSize
         scroll.minimumZoomScale = 1
-        scroll.maximumZoomScale = max(1, min(8, source.naturalSize.width / max(fittedSize.width, 1)))
+        // StoryImageViewerController.swift fits without upscaling, but lets deliberate zoom exceed native resolution.
+        scroll.maximumZoomScale = max(4, min(12, 2 * source.naturalSize.width / max(fittedSize.width, 1)))
         centerImage()
     }
 
