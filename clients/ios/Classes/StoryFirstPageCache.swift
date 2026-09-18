@@ -130,6 +130,23 @@ import UIKit
         return lastRevision
     }
 
+    @objc(invalidateSnapshotsForAccount:host:)
+    func invalidateSnapshots(account: String?, host: String?) {
+        guard let host, let request = StoryFirstPageRequest(account: account, host: host, url: host + "/") else { return }
+        lock.lock()
+        let journal = journalForRequest(request)
+        lastRevision = max(lastRevision + 1, journal.floorRevision + 1,
+                           UInt64(max(0, now().timeIntervalSince1970) * 1_000_000))
+        // StoryFirstPageCache.swift invalidates every feed/river snapshot for this account while retaining pending individual story edits.
+        journal.floorRevision = lastRevision
+        journal.writeScheduled = true
+        lock.unlock()
+        queue.async { [self] in
+            loadJournal(request)
+            persistJournal(request)
+        }
+    }
+
     @objc(lookupRequest:completion:)
     func lookup(_ request: StoryFirstPageRequest, completion: @escaping (StoryFirstPageSnapshot?) -> Void) {
         lock.lock()
@@ -169,8 +186,12 @@ import UIKit
     private func storeValidated(_ response: NSDictionary, cost: Int, request: StoryFirstPageRequest, revision: UInt64, createdAt: TimeInterval) {
         loadJournal(request)
         lock.lock()
-        let epoch = journalForRequest(request).epoch
+        let journal = journalForRequest(request)
+        let epoch = journal.epoch
+        let superseded = revision < journal.floorRevision
         lock.unlock()
+        // StoryFirstPageCache.swift must not let a request begun before bulk Mark Read replace a newer snapshot when it finally completes.
+        guard !superseded else { return }
         let snapshot = StoryFirstPageSnapshot(request: request, response: response, createdAt: createdAt,
                                              revision: revision, memoryCost: cost, journalEpoch: epoch)
         snapshots.setObject(snapshot, forKey: request.cacheKey as NSString, cost: cost)
@@ -378,12 +399,12 @@ import UIKit
         lock.lock()
         let pending = journal.orderedMutations()
         journal.clear()
-        journal.floorRevision = floor
+        journal.floorRevision = max(journal.floorRevision, floor)
         journal.epoch = epoch
         journal.writeScheduled = true
         for mutation in (persisted + pending).sorted(by: { $0.revision < $1.revision }) { journal.append(mutation) }
         journal.loaded = true
-        lastRevision = max(lastRevision, journal.orderedMutations().last?.revision ?? 0)
+        lastRevision = max(lastRevision, journal.floorRevision, journal.orderedMutations().last?.revision ?? 0)
         lock.unlock()
         // StoryFirstPageCache.swift persists the dirty-session marker before publishing a disk snapshot.
         persistJournal(request)

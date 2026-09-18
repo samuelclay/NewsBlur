@@ -6005,6 +6005,7 @@
 				E91720260916000400000001 /* StoryJavaScriptReadinessTests.swift in Sources */,
 				E91720260916000500000001 /* StoryReaderPopGestureTests.swift in Sources */,
 				72AC992B011F4490943B6F20 /* AuthenticationResetTests.swift in Sources */,
+				D74E3909427F4B3AAF85A030 /* StoryFirstPageCacheTests.swift in Sources */,
 				D74E3909427F4B3AAF85A023 /* StoryFirstPageLoadingTests.swift in Sources */,
 				E91620260916000200000001 /* ShareStoryUpdateTests.swift in Sources */,
 				E91620260916000300000001 /* StoryURLContrastTests.swift in Sources */,

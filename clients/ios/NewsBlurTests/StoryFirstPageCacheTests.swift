@@ -5,6 +5,60 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryFirstPageCache: XCTestCase {
+    func test_bulkReadInvalidationRejectsFeedAndRiverSnapshotsWithoutDroppingOtherAccountsOrEdits() async throws {
+        let fixture = makeCache()
+        let river = try XCTUnwrap(StoryFirstPageRequest(account: "owner", host: fixture.request.host,
+                                                       url: fixture.request.host + "/reader/river_stories?page=1"))
+        let other = try XCTUnwrap(StoryFirstPageRequest(account: "other", host: fixture.request.host, url: fixture.request.url))
+        let otherHost = try XCTUnwrap(StoryFirstPageRequest(account: "owner", host: "https://another.test",
+                                                           url: "https://another.test/reader/feed/1/?page=1"))
+        for request in [fixture.request, river, other, otherHost] {
+            fixture.cache.store(["stories": [makeStory()]], request: request, revision: fixture.cache.newRevision())
+        }
+        let held = try await requireSnapshot(fixture.cache, request: fixture.request)
+        fixture.cache.record(story: ["story_hash": "cache-story", "read_status": 0, "starred": true],
+                             fields: ["read_status", "starred"], account: "owner", host: fixture.request.host)
+
+        fixture.cache.invalidateSnapshots(account: "owner", host: fixture.request.host)
+
+        XCTAssertNil(fixture.cache.response(for: held, provisional: true), "A snapshot already returned to an in-flight lookup must also be rejected")
+        await assertMiss(fixture.cache, request: fixture.request)
+        await assertMiss(fixture.cache, request: river)
+        _ = try await requireSnapshot(fixture.cache, request: other)
+        _ = try await requireSnapshot(fixture.cache, request: otherHost)
+        await flush(fixture.cache)
+        let relaunched = StoryFirstPageCache(directory: fixture.directory)
+        await assertMiss(relaunched, request: fixture.request)
+        await assertMiss(relaunched, request: river)
+        _ = try await requireSnapshot(relaunched, request: other)
+        _ = try await requireSnapshot(relaunched, request: otherHost)
+        let response = relaunched.overlay(["stories": [makeStory()]], request: fixture.request, revision: 0)
+        let story = try XCTUnwrap((response["stories"] as? [[String: Any]])?.first)
+        XCTAssertEqual(story["read_status"] as? Int, 0)
+        XCTAssertEqual(story["starred"] as? Bool, true, "Invalidation must preserve unsynced individual story edits")
+    }
+
+    func test_bulkReadInvalidationRejectsLateOldResponseButAcceptsFreshResponse() async throws {
+        let fixture = makeCache()
+        let oldRevision = fixture.cache.newRevision()
+        fixture.cache.invalidateSnapshots(account: "owner", host: fixture.request.host)
+        // StoryFirstPageCacheTests.swift models a request started before bulk Mark Read completing after it.
+        fixture.cache.storeAuthoritative(["stories": [makeStory()]], request: fixture.request, revision: oldRevision)
+        await assertMiss(fixture.cache, request: fixture.request)
+
+        let newRevision = fixture.cache.newRevision()
+        var readStory = makeStory()
+        readStory["read_status"] = 1
+        fixture.cache.storeAuthoritative(["stories": [readStory]], request: fixture.request, revision: newRevision)
+        let fresh = try await requireSnapshot(fixture.cache, request: fixture.request)
+        XCTAssertEqual((fixture.cache.response(for: fresh, provisional: false)?["stories"] as? [[String: Any]])?.first?["read_status"] as? Int, 1)
+
+        fixture.cache.storeAuthoritative(["stories": [makeStory()]], request: fixture.request, revision: oldRevision)
+        await flush(fixture.cache)
+        let retained = try await requireSnapshot(fixture.cache, request: fixture.request)
+        XCTAssertEqual(retained.revision, newRevision, "A late invalid response must not overwrite the fresh snapshot")
+    }
+
     func test_snapshotOwnsImmutableNestedJSON() async throws {
         let fixture = makeCache()
         let content = NSMutableString(string: "<p>Original body</p>")
