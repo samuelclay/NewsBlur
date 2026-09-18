@@ -1448,7 +1448,9 @@ import XCTest
         let token = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
         web.defersAsyncJavaScript = true
         sendReady(to: selected, token: token, mainFrame: true)
-        for _ in 0..<30 where web.asyncCompletions.isEmpty { await drainMainQueue() }
+        await waitForState("Saved-position query reaches the held JavaScript restoration callback") {
+            !web.asyncCompletions.isEmpty
+        }
         let restore = try XCTUnwrap(web.asyncCompletions.first)
         web.asyncCompletions.removeFirst()
         restore(nil, NSError(domain: WKErrorDomain, code: WKError.javaScriptExceptionOccurred.rawValue))
