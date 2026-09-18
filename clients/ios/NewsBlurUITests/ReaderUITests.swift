@@ -39,6 +39,8 @@ final class ReaderUITests: XCTestCase {
         copy.tap()
         XCTAssertTrue(app.staticTexts["Image copied"].waitForExistence(timeout: 5))
         XCUIDevice.shared.orientation = .landscapeLeft
+        expectation(for: NSPredicate { _, _ in zoom.frame.width > zoom.frame.height }, evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
         attachScreenshot(named: "image-viewer-landscape")
         image.swipeRight()
         XCTAssertTrue(close.waitForNonExistence(timeout: 5))
@@ -50,6 +52,75 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(close.waitForNonExistence(timeout: 5))
         attachScreenshot(named: "image-viewer-returned")
         #endif
+    }
+
+    func test_smallStoryImageAndSaveToPhotos() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Photos writes only a disposable simulator fixture")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader-story-swift-1")
+        let small = app.webViews.images["Small image fixture"].firstMatch
+        XCTAssertTrue(small.waitForExistence(timeout: 20))
+        small.tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        let image = app.images["fullscreen-story-image"]
+        XCTAssertEqual(image.frame.width, 120, accuracy: 1)
+        XCTAssertEqual(image.frame.height, 80, accuracy: 1)
+        app.buttons["Image actions"].tap()
+        XCTAssertFalse(app.buttons["Open Link"].exists)
+        XCTAssertFalse(app.buttons["Open Image in Browser"].exists)
+        app.buttons["Save Image"].tap()
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let permission = springboard.alerts.firstMatch
+        if permission.waitForExistence(timeout: 3) {
+            let allow = permission.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'Allow' AND NOT label CONTAINS[c] 'Don'" )).firstMatch
+            XCTAssertTrue(allow.exists)
+            allow.tap()
+        }
+        XCTAssertTrue(app.staticTexts["Image saved to Photos"].waitForExistence(timeout: 8))
+        attachScreenshot(named: "small-image-saved")
+        app.scrollViews["story-image-zoom"].swipeUp()
+        XCTAssertTrue(app.buttons["Close image"].waitForNonExistence(timeout: 5))
+        #endif
+    }
+
+    func test_liveAlphaImageViewer() throws {
+        try requireLiveSession()
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        attachScreenshot(named: "claypad-image-viewer-initial")
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 20))
+        let feed = app.tables["feeds-list"].cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable }
+        try XCTUnwrap(feed).tap()
+        let rows = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-"))
+        XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 20))
+        var opened = false
+        for row in rows.allElementsBoundByIndex.prefix(5) where row.isHittable {
+            row.tap()
+            let imageReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                self.app.webViews.images.allElementsBoundByIndex.contains { $0.isHittable && $0.frame.width > 100 && $0.frame.height > 60 }
+            }, object: nil)
+            if XCTWaiter.wait(for: [imageReady], timeout: 8) == .completed,
+               let image = app.webViews.images.allElementsBoundByIndex.first(where: { $0.isHittable && $0.frame.width > 100 && $0.frame.height > 60 }) {
+                image.tap()
+                opened = app.buttons["Close image"].waitForExistence(timeout: 5)
+                if opened { break }
+            }
+        }
+        XCTAssertTrue(opened, "A story image must open over every iPad column")
+        let viewer = app.scrollViews["story-image-zoom"]
+        XCTAssertEqual(viewer.frame.width, app.frame.width, accuracy: 2)
+        XCTAssertEqual(viewer.frame.height, app.frame.height, accuracy: 2)
+        attachScreenshot(named: "claypad-fullscreen-image")
+        app.buttons["Image actions"].tap()
+        XCTAssertTrue(app.buttons["Save Image"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "claypad-image-actions")
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)).tap()
+        app.buttons["Close image"].tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForNonExistence(timeout: 5))
+        attachScreenshot(named: "claypad-image-returned")
     }
 
     override func setUpWithError() throws {
