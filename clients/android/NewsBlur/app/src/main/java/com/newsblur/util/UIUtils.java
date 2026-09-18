@@ -592,6 +592,10 @@ public class UIUtils {
             inflater.inflate(R.menu.context_story_oldest, menu);
         }
 
+        if ((!fs.isFolder() && !fs.isAllNormal()) || fs.isFilterSaved() || fs.isForWidget()) {
+            menu.removeItem(R.id.menu_go_to_feed);
+        }
+
         if (story.starred) {
             menu.removeItem(R.id.menu_save_story);
         } else {
