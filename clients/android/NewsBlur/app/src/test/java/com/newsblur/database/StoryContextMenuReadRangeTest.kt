@@ -22,6 +22,33 @@ import org.junit.Test
 
 class StoryContextMenuReadRangeTest {
     @Test
+    fun storyMenusHaveIconsAndSeparateReadSaveShareAndFeedGroups() {
+        for (order in listOf("newest", "oldest")) {
+            val document = Files.newInputStream(Paths.get("src/main/res/menu/context_story_$order.xml")).use {
+                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(it)
+            }
+            val groups = document.getElementsByTagName("group")
+            assertEquals(4, groups.length)
+            val items = document.getElementsByTagName("item")
+            for (index in 0 until items.length) {
+                val attributes = items.item(index).attributes
+                assertTrue("Every story action needs an icon", attributes.getNamedItem("android:icon").nodeValue.startsWith("@drawable/"))
+                if (attributes.getNamedItem("android:id").nodeValue == "@+id/menu_go_to_feed") {
+                    assertEquals("@string/story_menu_open_feed", attributes.getNamedItem("android:title").nodeValue)
+                }
+            }
+            val readActions = groups.item(0).childNodes
+            val directions = (0 until readActions.length).mapNotNull { index ->
+                readActions.item(index).attributes?.getNamedItem("android:id")?.nodeValue
+            }.filter { it.contains("stories_as_read") }
+            assertEquals(
+                if (order == "newest") listOf("newer", "older") else listOf("older", "newer"),
+                directions.map { if (it.contains("newer")) "newer" else "older" },
+            )
+        }
+    }
+
+    @Test
     fun bothMenuResourcesIncludeOlderAndNewerActionsWithOrderSpecificLabels() {
         for (order in listOf("newest", "oldest")) {
             val document = Files.newInputStream(Paths.get("src/main/res/menu/context_story_$order.xml")).use {

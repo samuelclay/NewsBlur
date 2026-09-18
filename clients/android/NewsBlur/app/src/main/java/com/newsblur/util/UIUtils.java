@@ -28,6 +28,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -584,7 +585,7 @@ public class UIUtils {
         }
     }
 
-    public static void inflateStoryContextMenu(ContextMenu menu, MenuInflater inflater, FeedSet fs, Story story, StoryOrder storyOrder) {
+    public static void inflateStoryContextMenu(Menu menu, MenuInflater inflater, FeedSet fs, Story story, StoryOrder storyOrder) {
         if (storyOrder == StoryOrder.NEWEST) {
             inflater.inflate(R.menu.context_story_newest, menu);
         } else {
