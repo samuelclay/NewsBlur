@@ -979,10 +979,13 @@ private enum ReaderUITestFixtures {
             ("A closer look" as NSString).draw(at: CGPoint(x: 90, y: 100), withAttributes: [.font: UIFont.systemFont(ofSize: 75, weight: .bold), .foregroundColor: UIColor.white])
         }
         let data = image.pngData()!.base64EncodedString()
-        let small = fixtureImage(primary: .systemOrange, secondary: .systemBlue).pngData()!.base64EncodedString()
+        let small = UIGraphicsImageRenderer(size: CGSize(width: 120, height: 80), format: format).image { context in
+            UIColor.systemOrange.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 120, height: 80))
+        }.pngData()!.base64EncodedString()
         return """
         <p><a href="https://example.com/linked-story"><img alt="Image viewer landscape fixture" data-newsblur-original-src="https://example.com/landscape.png" src="data:image/png;base64,\(data)"></a></p>
-        <p><img alt="Small image fixture" width="120" height="120" src="data:image/png;base64,\(small)"></p>
+        <p><img alt="Small image fixture" width="120" height="80" src="data:image/png;base64,\(small)"></p>
         """
     }
 
