@@ -628,6 +628,13 @@ class DetailViewController: BaseViewController {
     
     /// Moves the feed detail and story pages (as appropriate) to the detail view. Called when expanding to a regular size class.
     func expandToTwoColumns() {
+        if let controller = retainedDiscoveryController,
+           discoveryPaneNavigationController == nil,
+           !appDelegate.feedsNavigationController.viewControllers.contains(where: { $0 === controller }) {
+            // DetailViewController.swift must inspect the compact stack before expansion removes it.
+            // Native Back can dismiss Discover without going through dismissDiscoverSites().
+            dismissDiscoverSites()
+        }
         isCompact = false
         let discoveryWasVisible = isDiscoverSitesVisible
         appDelegate.feedsNavigationController.popToRootViewController(animated: false)
