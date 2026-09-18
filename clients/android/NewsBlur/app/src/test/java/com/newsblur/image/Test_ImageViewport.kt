@@ -1,8 +1,11 @@
 package com.newsblur.image
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@Suppress("ktlint:standard:class-naming")
 class Test_ImageViewport {
     private fun viewport() = ImageViewport().apply { layout(400f, 800f, 1200f, 800f) }
 
