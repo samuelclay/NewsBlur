@@ -2215,12 +2215,17 @@ import XCTest
                 fixture.web.scrollView.contentOffset.y = 1_000
             }
 
+            let stored = reusesPage ? nil : expectation(description: "Completed status-bar scroll reaches the asynchronous position writer")
+            if let stored { app.observeNextPosition { _ in stored.fulfill() } }
+            let storageRequests = fixture.page.positionStorageRequests
             let selector = NSSelectorFromString("scrollViewDidScrollToTop:")
             XCTAssertTrue(fixture.page.responds(to: selector), "StoryDetailObjCViewController.m must persist the explicit completed native action.")
             if fixture.page.responds(to: selector) {
                 typealias Call = @convention(c) (AnyObject, Selector, UIScrollView) -> Void
                 unsafeBitCast(fixture.page.method(for: selector), to: Call.self)(fixture.page, selector, fixture.web.scrollView)
-                await delay(0.05)
+                XCTAssertEqual(fixture.page.positionStorageRequests - storageRequests, reusesPage ? 0 : 1,
+                               "A reused document must reject the old scroll completion before scheduling persistence")
+                if let stored { await fulfillment(of: [stored], timeout: 5) }
                 XCTAssertEqual(app.positions, reusesPage ? [] : [0])
             }
         }
@@ -2746,6 +2751,7 @@ private final class NextButtonReadingStories: StoriesCollection {
     var navigationActionObserver: ((WKNavigationAction) -> Void)?
     var allowsAppearanceCallbacks = true
     var recordsPosition = false
+    var positionStorageRequests = 0
 
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
@@ -2764,6 +2770,7 @@ private final class NextButtonReadingStories: StoriesCollection {
     override func checkTryFeedStory() {}
     @objc(storeScrollPosition:) func ignorePositionStorage(_ queue: Bool) {
         guard recordsPosition else { return }
+        positionStorageRequests += 1
         let selector = NSSelectorFromString("storeScrollPosition:")
         typealias Call = @convention(c) (AnyObject, Selector, Bool) -> Void
         let implementation = class_getMethodImplementation(StoryDetailObjCViewController.self, selector)!
