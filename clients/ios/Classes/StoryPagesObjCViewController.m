@@ -1394,9 +1394,8 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
     
-    if (!self.isPhoneOrCompact) {
-        [currentPage realignScroll];
-    }
+    // StoryPagesObjCViewController.m preserves the live article offset when returning from an image or other overlay.
+    // Actual viewport changes restore their captured position in StoryDetailObjCViewController.m.
 }
 
 - (void)refreshHeaders {

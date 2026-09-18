@@ -54,6 +54,7 @@
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic) BOOL hasScrolledAwayFromTop;
+@property (nonatomic) BOOL hasLiveScrollFraction;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -401,15 +402,28 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    scrollPct = self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height;
-//    NSLog(@"Current scroll is %2.2f%% (offset %.0f - height %.0f)", scrollPct*100, self.webView.scrollView.contentOffset.y,
-//          self.webView.scrollView.contentSize.height);
+    BOOL preserveLivePosition = hasScrolled && !self.awaitingStoryScrollRestoration &&
+        !self.preparingStoryPresentation && self.hasStory && self.webView.scrollView.contentSize.height > 0 &&
+        !CGSizeEqualToSize(self.view.bounds.size, size);
+    if (preserveLivePosition) {
+        // StoryDetailObjCViewController.m captures current progress only for a real resize, never an overlay's return.
+        scrollPct = MAX(0, self.webView.scrollView.contentOffset.y) / self.webView.scrollView.contentSize.height;
+        self.hasLiveScrollFraction = YES;
+    }
+    NSUInteger generation = self.storyLoadGeneration;
+    NSUInteger scrollActivity = self.storyScrollActivityGeneration;
+    WKWebView *resizingWebView = self.webView;
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         self->_orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
         [self changeWebViewWidth];
         [self drawFeedGradient];
-        [self scrollToLastPosition:NO];
+        if (preserveLivePosition && [self isCurrentStoryLoad:generation] && self.webView == resizingWebView &&
+            self.storyScrollActivityGeneration == scrollActivity && !resizingWebView.scrollView.isTracking &&
+            !resizingWebView.scrollView.isDragging && !resizingWebView.scrollView.isDecelerating) {
+            self->hasScrolled = NO;
+            [self scrollToLastPosition:NO];
+        }
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
     }];
 }
@@ -696,6 +710,7 @@
     self.restoredStoryScrollPosition = NO;
     self.lastWidthClassKey = nil;
     scrollPct = 0;
+    self.hasLiveScrollFraction = NO;
     hasScrolled = NO;
     self.hasScrolledAwayFromTop = NO;
     
@@ -2112,6 +2127,7 @@
     self.hasScrolledAwayFromTop = NO;
     hasScrolled = YES;
     scrollPct = 0;
+    self.hasLiveScrollFraction = NO;
     StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
     if (pagesVC.isCustomToolbarActive) {
         [pagesVC.toolbarScrollHandler reset];
@@ -2443,7 +2459,7 @@
                         return;
                     }
                     strongSelf.awaitingStoryScrollRestoration = NO;
-                    if (!strongSelf->scrollPct) strongSelf->scrollPct = savedFraction;
+                    if (!strongSelf.hasLiveScrollFraction && !strongSelf->scrollPct) strongSelf->scrollPct = savedFraction;
                     NSInteger position = floor(strongSelf->scrollPct * restoringWebView.scrollView.contentSize.height);
                     NSInteger maxPosition = (NSInteger)floor(restoringWebView.scrollView.contentSize.height - restoringWebView.frame.size.height);
                     if (position > maxPosition) position = maxPosition;
