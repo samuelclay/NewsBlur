@@ -1614,6 +1614,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         }];
     }
     
+    [viewController startNewSection];
+
     [viewController addFeedListTitle:@"Mute Sites" iconName:@"feed-menu-mute" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showMuteSites];
     }];
@@ -1630,6 +1632,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate openNotificationsWithFeed:nil];
     }];
 
+    [viewController startNewSection];
+
     [viewController addFeedListTitle:@"Interactions" iconName:@"feed-menu-interactions" selectionShouldDismiss:YES handler:^{
         [self showInteractionsPopover:nil];
     }];
@@ -1638,6 +1642,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate showFindFriends];
     }];
     
+    [viewController startNewSection];
+
     if (appDelegate.isPremium && appDelegate.isPremiumArchive) {
         [viewController addFeedListTitle:@"Premium Archive" iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
@@ -1657,6 +1663,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     }];
     
+    [viewController startNewSection];
+
     [viewController addFeedListTitle:@"Logout" iconName:@"feed-menu-logout" selectionShouldDismiss:YES handler:^{
         [self.appDelegate confirmLogout];
     }];
@@ -1667,6 +1675,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         }];
     }
     
+    [viewController startNewSection];
+
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
         [appDelegate addSplitControlToMenuController:viewController];
     }

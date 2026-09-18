@@ -20,11 +20,12 @@ NSString * const MenuSegmentIndex = @"segmentIndex";
 NSString * const MenuSelectionShouldDismiss = @"selectionShouldDismiss";
 NSString * const MenuHandler = @"handler";
 
-#define kMenuOptionHeight 38
+#define kMenuOptionHeight 48
 
 @interface MenuViewController () <UIPopoverPresentationControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, strong) NSMutableArray *items;
+@property (nonatomic, strong) NSMutableIndexSet *sectionStarts;
 
 @end
 
@@ -33,6 +34,7 @@ NSString * const MenuHandler = @"handler";
 - (id)init {
     if ((self = [super init])) {
         self.items = [NSMutableArray array];
+        self.sectionStarts = [NSMutableIndexSet indexSetWithIndex:0];
         self.checkedRow = -1;
     }
     
@@ -42,8 +44,11 @@ NSString * const MenuHandler = @"handler";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    self.menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.menuTableView.contentInset = UIEdgeInsetsMake(8, 0, 8, 0);
+    self.menuTableView.sectionHeaderTopPadding = 0;
+    self.menuTableView.accessibilityIdentifier = @"grouped-action-menu";
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -55,7 +60,32 @@ NSString * const MenuHandler = @"handler";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    self.menuTableView.scrollEnabled = self.preferredContentSize.height > self.view.frame.size.height;
+    [self updateScrolling];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self updateScrolling];
+}
+
+- (void)updateScrolling {
+    self.menuTableView.scrollEnabled = self.menuTableView.contentSize.height + 16 > self.menuTableView.bounds.size.height;
+    self.menuTableView.alwaysBounceVertical = NO;
+}
+
+- (void)startNewSection {
+    // MenuViewController.m keeps item indices stable for checked rows and segmented-control callbacks.
+    if (self.items.count > 0) [self.sectionStarts addIndex:self.items.count];
+}
+
+- (NSUInteger)startOfSection:(NSInteger)section {
+    NSUInteger start = self.sectionStarts.firstIndex;
+    for (NSInteger index = 0; index < section; index++) start = [self.sectionStarts indexGreaterThanIndex:start];
+    return start;
+}
+
+- (NSUInteger)itemIndexAtIndexPath:(NSIndexPath *)indexPath {
+    return [self startOfSection:indexPath.section] + indexPath.row;
 }
 
 - (void)setCheckedRow:(NSInteger)checkedRow {
@@ -66,7 +96,7 @@ NSString * const MenuHandler = @"handler";
     // MenuViewController.m updates persistent submenu checks without replacing their visible cells.
     for (NSIndexPath *indexPath in self.menuTableView.indexPathsForVisibleRows) {
         UITableViewCell *cell = [self.menuTableView cellForRowAtIndexPath:indexPath];
-        cell.accessoryType = indexPath.row == checkedRow ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+        cell.accessoryType = [self itemIndexAtIndexPath:indexPath] == checkedRow ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
     }
 }
 
@@ -76,19 +106,25 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (CGSize)preferredContentSize {
-    CGSize size = CGSizeMake(100.0, 0.0);
-    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
+    CGSize size = CGSizeMake(280.0, 16.0);
+    UIFont *font = MenuTableViewCell.menuFont;
     
     for (NSDictionary *item in self.items) {
         if (item[MenuSegmentTitles]) {
-            size.width = MAX(size.width, 240.0);
+            size.width = MAX(size.width, 280.0);
         } else {
-            size.width = MAX(size.width, [item[MenuTitle] sizeWithAttributes:@{NSFontAttributeName : font}].width);
+            size.width = MAX(size.width, [item[MenuTitle] sizeWithAttributes:@{NSFontAttributeName : font}].width + 80);
         }
     }
     
-    size.width = MIN(size.width + 50.0, 240.0);
-    size.height = size.height + (self.items.count * 38.0);
+    UIWindow *window = self.viewIfLoaded.window ?: self.presentingViewController.view.window;
+    CGSize available = window ? window.bounds.size : UIScreen.mainScreen.bounds.size;
+    size.width = MIN(size.width, MIN(320, MAX(200, available.width - 32)));
+    for (NSDictionary *item in self.items) {
+        size.height += item[MenuSegmentTitles] ? kMenuOptionHeight : [MenuTableViewCell heightForTitle:item[MenuTitle] width:size.width];
+    }
+    size.height += MAX(0, [self numberOfSectionsInTableView:self.menuTableView] - 1) * 12;
+    size.height = MIN(size.height, MAX(160, available.height - 100));
     
     if (self.navigationController.viewControllers.count > 1) {
         size.width = MAX(size.width, self.view.frame.size.width);
@@ -235,7 +271,7 @@ NSString * const MenuHandler = @"handler";
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
 
     // Determine which theme segment to select based on user's actual choice
     // If user chose Auto, show Auto selected (not the resolved theme)
@@ -255,6 +291,7 @@ NSString * const MenuHandler = @"handler";
     }
     
     UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithFrame:CGRectMake(8, 7, cell.frame.size.width - 8 * 2, kMenuOptionHeight - 7 * 2)];
+    segmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [segmentedControl addTarget:self action:@selector(changeTheme:) forControlEvents:UIControlEventValueChanged];
 
@@ -324,8 +361,8 @@ NSString * const MenuHandler = @"handler";
     [userPreferences synchronize];
     [[ThemeManager themeManager] updateTheme];
 
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    self.navigationController.popoverPresentationController.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     [self.menuTableView reloadData];
 }
 
@@ -334,9 +371,10 @@ NSString * const MenuHandler = @"handler";
     cell.frame = CGRectMake(0.0, 0.0, 240.0, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
 
     UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithFrame:CGRectMake(8, 7, cell.frame.size.width - 8 * 2, kMenuOptionHeight - 7 * 2)];
+    segmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     NSArray *segmentTitles = item[MenuSegmentTitles];
     
     for (NSUInteger idx = 0; idx < segmentTitles.count; idx++) {
@@ -413,7 +451,7 @@ NSString * const MenuHandler = @"handler";
     
     UIPopoverPresentationController *popoverPresentationController = embeddedNavController.popoverPresentationController;
     popoverPresentationController.delegate = self;
-    popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    popoverPresentationController.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     popoverPresentationController.barButtonItem = barButtonItem;
     popoverPresentationController.sourceView = sourceView;
@@ -424,17 +462,41 @@ NSString * const MenuHandler = @"handler";
 
 #pragma mark - Table view data source
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.items.count;
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return MAX(1, [self.sectionStarts countOfIndexesInRange:NSMakeRange(0, self.items.count)]);
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSUInteger start = [self startOfSection:section];
+    NSUInteger next = [self.sectionStarts indexGreaterThanIndex:start];
+    return MIN(next, self.items.count) - start;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return section == 0 ? 0 : 12;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (section == 0) return nil;
+    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 12)];
+    header.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(14, 5.5, MAX(0, header.bounds.size.width - 28), 1 / MAX(1, self.traitCollection.displayScale))];
+    line.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    line.backgroundColor = MenuTableViewCell.menuSeparatorColor;
+    [header addSubview:line];
+    return header;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section { return 0; }
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *item = self.items[indexPath.row];
+    NSUInteger itemIndex = [self itemIndexAtIndexPath:indexPath];
+    NSDictionary *item = self.items[itemIndex];
     
     if (item[MenuThemeSegment]) {
         return [self makeThemeSegmentedTableCell];
     } else if (item[MenuSegmentTitles]) {
-        return [self makeSegmentedTableCellForItem:item forRow:indexPath.row];
+        return [self makeSegmentedTableCellForItem:item forRow:itemIndex];
     } else {
         static NSString *CellIndentifier = @"MenuTableCell";
         MenuTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
@@ -458,16 +520,9 @@ NSString * const MenuHandler = @"handler";
         cell.textLabel.text = title;
         cell.imageView.image = item[MenuIcon];
         
-        if ([item[MenuFeedListIcon] boolValue]) {
-            // MenuViewController.m resolves the gray again when the theme changes in the open menu.
-            cell.imageView.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8C8C8C, 0x8C8C8C, 0xBFBFBF, 0xBFBFBF);
-        } else if (item[MenuIconColor]) {
-            cell.imageView.tintColor = item[MenuIconColor];
-        } else {
-            cell.imageView.tintColor = UIColorFromRGB(0x303030);
-        }
+        cell.imageView.tintColor = MenuTableViewCell.menuIconColor;
         
-        if (self.checkedRow == indexPath.row) {
+        if (self.checkedRow == itemIndex) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         } else {
             cell.accessoryType = UITableViewCellAccessoryNone;
@@ -478,11 +533,12 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return kMenuOptionHeight;
+    NSDictionary *item = self.items[[self itemIndexAtIndexPath:indexPath]];
+    return item[MenuSegmentTitles] ? kMenuOptionHeight : [MenuTableViewCell heightForTitle:item[MenuTitle] width:tableView.bounds.size.width];
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *item = self.items[indexPath.row];
+    NSDictionary *item = self.items[[self itemIndexAtIndexPath:indexPath]];
     
     if (item[MenuSegmentTitles]) {
         return nil;
@@ -492,7 +548,7 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *item = self.items[indexPath.row];
+    NSDictionary *item = self.items[[self itemIndexAtIndexPath:indexPath]];
     
     if (item[MenuSegmentTitles]) {
         return;

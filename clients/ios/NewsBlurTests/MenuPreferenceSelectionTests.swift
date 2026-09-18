@@ -67,6 +67,33 @@ import UIKit
         XCTAssertEqual(reopened.menu.checkedRow, 1)
     }
 
+    func test_groupedRowsPreserveActionCheckmarkAndSegmentTargets() throws {
+        let menu = MenuViewController()
+        var selected = ""
+        menu.startNewSection()
+        menu.addTitle("Read", iconName: "menu_icn_markread.png", selectionShouldDismiss: false) { selected = "read" }
+        menu.startNewSection()
+        menu.startNewSection()
+        menu.addTitle("Save", iconName: "saved-stories", selectionShouldDismiss: false) { selected = "save" }
+        menu.addSegmentedControl(withTitles: ["Compact", "Comfortable"], select: 0, selectionShouldDismiss: false) { selected = "spacing-\($0)" }
+        menu.startNewSection()
+        menu.loadViewIfNeeded()
+        let table = try XCTUnwrap(menu.menuTableView)
+        XCTAssertEqual(menu.numberOfSections(in: table), 2)
+        XCTAssertEqual(menu.tableView(table, numberOfRowsInSection: 0), 1)
+        XCTAssertEqual(menu.tableView(table, numberOfRowsInSection: 1), 2)
+        menu.tableView(table, didSelectRowAt: IndexPath(row: 0, section: 1))
+        XCTAssertEqual(selected, "save")
+        menu.checkedRow = 1
+        XCTAssertEqual(menu.tableView(table, cellForRowAt: IndexPath(row: 0, section: 1)).accessoryType, .checkmark)
+        let segmentCell = menu.tableView(table, cellForRowAt: IndexPath(row: 1, section: 1))
+        let segment = try XCTUnwrap(segmentCell.contentView.subviews.compactMap { $0 as? UISegmentedControl }.first)
+        segment.selectedSegmentIndex = 1
+        segment.sendActions(for: .valueChanged)
+        XCTAssertEqual(selected, "spacing-1")
+        XCTAssertEqual(table.separatorStyle, .none)
+    }
+
     func test_actionMenuRunsHandlerWithoutAddingCheckmark() {
         let menu = MenuViewController()
         var calls = 0

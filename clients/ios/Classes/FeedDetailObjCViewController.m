@@ -6161,6 +6161,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
 
+    [viewController startNewSection];
+
     // Mark story read timing preference (global; no per-site override)
     if (!dashboard) {
         NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 5 seconds", @"After 10 seconds", @"After 30 seconds", @"After 60 seconds", @"Manually"];
@@ -6184,6 +6186,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
+    [viewController startNewSection];
+
     // Layout and display controls moved to Options pill (doOpenOptionsMenu:)
 
     [viewController addThemeSegmentedControl];
@@ -6275,6 +6279,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             }];
         }
     }
+
+    [viewController startNewSection];
 
     // Layout controls (moved from settings menu)
     if (!dashboard) {

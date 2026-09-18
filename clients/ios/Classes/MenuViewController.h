@@ -19,6 +19,8 @@ typedef void (^MenuItemSubmenuHandler)(id selectedValue);
 
 @property (nonatomic) NSInteger checkedRow;
 
+- (void)startNewSection;
+
 - (void)addFeedListTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler;
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler;
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler;
