@@ -555,6 +555,25 @@ def _is_unicode_word_character(character):
     return character == "_" or character.isalnum() or unicodedata.category(character).startswith("M")
 
 
+def classifier_title_matches(story_title, classifier_title):
+    """Return whether a title classifier matches using classifier word-start semantics."""
+    if not story_title or not classifier_title:
+        return False
+
+    story_title_lower = story_title.lower()
+    classifier_title_lower = classifier_title.lower()
+    match_index = story_title_lower.find(classifier_title_lower)
+    classifier_starts_with_word = _is_unicode_word_character(classifier_title_lower[0])
+    while (
+        classifier_starts_with_word
+        and match_index > 0
+        and _is_unicode_word_character(story_title_lower[match_index - 1])
+    ):
+        match_index = story_title_lower.find(classifier_title_lower, match_index + 1)
+
+    return match_index >= 0
+
+
 def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
     """
     Apply title classifiers to a story (non-regex only).
@@ -572,27 +591,12 @@ def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
     if not story_title:
         return score
 
-    story_title_lower = story_title.lower()
-
     for classifier in _applicable_classifiers(classifiers, story["story_feed_id"], folder_feed_ids):
         # Skip regex classifiers - they're handled by apply_classifier_regex
         if getattr(classifier, "is_regex", False):
             continue
 
-        classifier_title_lower = classifier.title.lower()
-        if not classifier_title_lower:
-            continue
-
-        match_index = story_title_lower.find(classifier_title_lower)
-        classifier_starts_with_word = _is_unicode_word_character(classifier_title_lower[0])
-        while (
-            classifier_starts_with_word
-            and match_index > 0
-            and _is_unicode_word_character(story_title_lower[match_index - 1])
-        ):
-            match_index = story_title_lower.find(classifier_title_lower, match_index + 1)
-
-        if match_index >= 0:
+        if classifier_title_matches(story_title, classifier.title):
             if classifier.score <= -2:
                 return classifier.score  # super downvote beats everything
             if classifier.score > 0:

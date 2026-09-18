@@ -143,6 +143,8 @@ class SessionDataSource private constructor(
      * @return The next non empty folder and its feeds based on the given folder name.
      * SessionDataSource.kt checks at most one complete wrap, including the starting folder
      * only after all other folders, so sessions without an eligible target terminate.
+     * Recursing until a folder had unread feeds looped forever when none did and crashed
+     * with a StackOverflowError once the user had read everything (forum #13826).
      */
     private fun getNextNonEmptyFolder(folderName: String): Pair<String, List<Feed>>? {
         val folderIndex = folders.indexOf(folderName)
