@@ -3,6 +3,33 @@ import UIKit
 @testable import NewsBlur
 
 final class Test_StoryImageViewer: XCTestCase {
+    @MainActor func test_tallImageFitsBelowStatusBarWhenSafeAreaChanges() throws {
+        let preview = UIGraphicsImageRenderer(size: CGSize(width: 60, height: 240)).image { context in
+            UIColor.blue.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 60, height: 240))
+        }
+        var body = payload
+        body["naturalWidth"] = 600
+        body["naturalHeight"] = 2400
+        body["src"] = "data:image/png;base64," + (try XCTUnwrap(preview.pngData())).base64EncodedString()
+        let viewer = StoryImageViewerController(source: try XCTUnwrap(StoryImageSource(body)), preview: preview, origin: .zero)
+        let canvas = ImageViewerSafeAreaView(frame: CGRect(x: 0, y: 0, width: 1024, height: 768))
+        viewer.view = canvas
+        viewer.viewDidLoad()
+        for topInset: CGFloat in [24, 48] {
+            canvas.topInset = topInset
+            viewer.viewDidLayoutSubviews()
+            let scroll = try XCTUnwrap(canvas.subviews.compactMap { $0 as? UIScrollView }.first)
+            let image = try XCTUnwrap(scroll.subviews.compactMap { $0 as? UIImageView }.first)
+            let imageFrame = image.convert(image.bounds, to: canvas)
+            XCTAssertEqual(scroll.frame.minY, topInset, accuracy: 0.5)
+            XCTAssertGreaterThanOrEqual(imageFrame.minY, topInset)
+            XCTAssertLessThanOrEqual(imageFrame.maxY, canvas.bounds.maxY)
+            XCTAssertEqual(imageFrame.height, canvas.bounds.height - topInset, accuracy: 0.5)
+            XCTAssertEqual(imageFrame.width / imageFrame.height, 0.25, accuracy: 0.001)
+        }
+    }
+
     func test_fittedImageNeverUpscalesAndPreservesAspectRatio() {
         XCTAssertEqual(StoryImageSource.fittedSize(CGSize(width: 120, height: 80), in: CGSize(width: 1024, height: 768)), CGSize(width: 120, height: 80))
         XCTAssertEqual(StoryImageSource.fittedSize(CGSize(width: 2400, height: 1200), in: CGSize(width: 800, height: 600)), CGSize(width: 800, height: 400))
@@ -47,4 +74,10 @@ final class Test_StoryImageViewer: XCTestCase {
          "title": "An image", "naturalWidth": 1200, "naturalHeight": 800,
          "rect": ["x": 10, "y": 50, "width": 300, "height": 200, "viewportWidth": 375]]
     }
+}
+
+// StoryImageViewerTests.swift exercises iPad-sized layout and inset changes on the shared simulator.
+private final class ImageViewerSafeAreaView: UIView {
+    var topInset: CGFloat = 24
+    override var safeAreaInsets: UIEdgeInsets { UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0) }
 }
