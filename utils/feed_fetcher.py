@@ -179,6 +179,15 @@ FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 ARCHIVE_PAGE_LOCK_ATTEMPTS = 3
 ARCHIVE_PAGE_LOCK_WAIT_SECONDS = 30
 
+# Statuses a site uses to refuse a request because of its User-Agent rather than because the
+# feed is gone: bugs.kde.org answers any UA carrying a desktop browser string with 403 (forum
+# #13835). A fetch that ends in one of these after the fake-header retry is tried once more
+# with the plain "NewsBlur Feed Fetcher" UA before the fetcher gives up or spends a proxy
+# credit. 404 and 410 are not here: those are the feed being gone, and a third request for
+# every dead feed would be waste. 429 is not here either: it asks us to back off.
+# utils/feed_fetcher.py
+BLOCKED_BY_USER_AGENT_STATUSES = (401, 403, 406, 451, 503)
+
 # Forbidden feeds are fetched through ScrapingBee, which bills a credit per successful
 # request. Once a feed has failed this many fetches in a row (errors_since_good), the
 # paid proxies are skipped, with a small chance to retry so a recovered feed is noticed.
@@ -605,16 +614,19 @@ class FetchFeed:
                     self.feed = self.feed.save()
                     self.feed.save_feed_history(304, "Not modified")
                     return FEED_SAME, None
-                if not raw_feed or raw_feed.status_code >= 400:
+                # A requests.Response is falsy for any 4xx or 5xx, so these branches test
+                # for None: with plain truthiness a real 429 fell through to the timeout
+                # branch below and got the fake-header retry it is meant to be spared.
+                if raw_feed is None or raw_feed.status_code >= 400:
                     # Handle 429 rate limiting specially - don't retry immediately
-                    if raw_feed and raw_feed.status_code == 429:
+                    if raw_feed is not None and raw_feed.status_code == 429:
                         logging.debug(
                             "   ***> [%-30s] ~FRFeed fetch was 429 rate limited, respecting backoff: %s"
                             % (self.feed.log_title[:30], raw_feed.headers)
                         )
                         # Don't retry with fake user agent for 429 - respect the rate limit
                         # The Retry-After header will be processed below if present
-                    elif raw_feed:
+                    elif raw_feed is not None:
                         if "openrss.org" in self.feed.feed_address:
                             logging.debug(
                                 "   ***> [%-30s] ~FRopenrss.org feed returned %s, skipping fake UA retry"
@@ -646,6 +658,28 @@ class FetchFeed:
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
                             )
+
+                    if (
+                        raw_feed is not None
+                        and raw_feed.status_code in BLOCKED_BY_USER_AGENT_STATUSES
+                        and "openrss.org" not in self.feed.feed_address
+                    ):
+                        # Forum #13835: bugs.kde.org refuses any User-Agent that carries a
+                        # desktop browser string, which both the default UA and the fake
+                        # header retry above do, and serves the plain NewsBlur UA. That plain
+                        # UA was only ever tried in fetch_forbidden, which a feed reaches after
+                        # a paid proxy fetch succeeded once, so a one-subscriber feed over its
+                        # proxy budget sat at 403 forever. One more direct request is cheaper
+                        # than a proxy credit and needs no budget. utils/feed_fetcher.py
+                        logging.debug(
+                            "   ***> [%-30s] ~FRFeed fetch was %s with a browser UA too, trying the plain one"
+                            % (self.feed.log_title[:30], raw_feed.status_code)
+                        )
+                        raw_feed = safe_requests_get(
+                            self.feed.feed_address,
+                            headers=self.feed.fetch_headers(plain=True),
+                            timeout=15,
+                        )
 
                 # Detect bot challenge pages (e.g., Anubis) that return 200 + text/html
                 # instead of RSS/XML. The fake browser UA in our default User-Agent
