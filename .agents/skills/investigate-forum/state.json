@@ -142,6 +142,20 @@
       "note": "'Critical Error / Something went wrong with the application' is not NewsBlur text (not in the codebase); it is Bored Panda's own site failing inside the Story view iframe. Checked on prod: cathig2855 (premium) has feed 93484 (feeds.feedburner.com/BoredPanda) set to Story view, the only feed they use it for; default view is Feed. Feed 93484 is healthy (657 subs, feed and page fetches 200 today, last story today). They currently have no Bored Panda subscription (deleted after re-adding). Could not reproduce the error in headless Chromium loading a Bored Panda article in an iframe, with or without third-party cookies blocked, so it is likely browser or extension specific on their side. No code change: switching the feed to Feed or Text view avoids the site's page entirely.",
       "reply": "That message is coming from Bored Panda's own site, not from NewsBlur. You have that feed set to Story view, which loads the actual boredpanda.com page inside NewsBlur, and their site is crashing when it loads that way. Switch the view for that feed to Feed or Text using the view buttons at the top of the story list and the stories will read normally. Text view pulls in the full article. The feed itself is healthy and updated today, so nothing needs re-adding.",
       "question": null
+    },
+    "13839": {
+      "title": "Unable to access API, possibly blocked?",
+      "url": "https://forum.newsblur.com/t/unable-to-access-api-possibly-blocked/13839",
+      "status": "tier2-pending",
+      "tier": 2,
+      "handled_at": "2026-09-18T16:08:30Z",
+      "last_posted_at": "2026-09-18T15:52:49.552Z",
+      "pr": null,
+      "branch": null,
+      "worktree": null,
+      "note": "Source IP 172.237.159.95 (Akamai/Linode) is explicitly dropped by ufw on hwww (rule #1, ufw-user-input DROP). /etc/ufw/user.rules mtime 2026-07-09 12:24:22 EDT is the only timestamp; origin of the ban not recoverable. Adjacent commit b983bb005 (2026-07-10) added 'ruby' to the API UA list in utils/ip_rate_tracker.py. haproxy has no source-IP rules; app-level AttackDetector bans are 24h redis TTLs, so the ufw rule is the only block. Live sample 2026-09-18 16:04Z: 11 dropped packets in 30s. Prometheus (retained back to July) shows no spike on 2026-07-09 in reader endpoints, login views, or total Django requests.",
+      "reply": null,
+      "question": "Forum #13839 (EnzoReaderRSS): Ruby-based reader syncing 20 NewsBlur accounts from one Linode IP 172.237.159.95 gets TCP open timeouts on POST /api/login. Confirmed hwww has 'ufw deny from 172.237.159.95' as rule #1, inserted around 2026-07-09 12:24 EDT (user.rules mtime); no record of why (auth.log rotated, journal starts Jul 22, no shell history, no Claude session). Next day commit b983bb005 'Classify Ruby clients as API traffic'. Prometheus shows no spike on Jul 9. IP now sends ~22 dropped packets/min, 1.56M dropped total. Nothing else blocks it. Options: (a) unblock now with 'sudo ufw delete deny from 172.237.159.95' on hwww and reply with rate expectations; (b) keep the block and ask them for their polling pattern first; (c) you remember the reason and will handle it."
     }
   }
 }
