@@ -22,6 +22,50 @@ import org.junit.Test
 
 class StoryContextMenuReadRangeTest {
     @Test
+    fun openFeedIsHiddenInsideTheFeedItself() {
+        val menu = mockk<ContextMenu>(relaxed = true)
+        UIUtils.inflateStoryContextMenu(menu, mockk<MenuInflater>(relaxed = true), FeedSet.singleFeed("11"), Story(), StoryOrder.NEWEST)
+        verify { menu.removeItem(R.id.menu_go_to_feed) }
+    }
+
+    @Test
+    fun openFeedRemainsAvailableWhileReadingFolders() {
+        for (scope in listOf(FeedSet.folder("Folder", setOf("11", "22")), FeedSet.folder("Only one feed", setOf("11")), FeedSet.allFeeds())) {
+            val menu = mockk<ContextMenu>(relaxed = true)
+            UIUtils.inflateStoryContextMenu(menu, mockk<MenuInflater>(relaxed = true), scope, Story(), StoryOrder.NEWEST)
+            verify(exactly = 0) { menu.removeItem(R.id.menu_go_to_feed) }
+        }
+    }
+
+    @Test
+    fun openFeedIsHiddenInSpecialStoryLists() {
+        val scopes = listOf(
+            FeedSet.allSaved(),
+            FeedSet.singleSavedTag("Saved tag"),
+            FeedSet.singleSavedSearch("11", "search"),
+            FeedSet.allRead(),
+            FeedSet.infrequentFeeds(),
+            FeedSet.dailyBriefing(),
+            FeedSet.widelyReadStories(),
+            FeedSet.longReads(),
+            FeedSet.goodReads(),
+            FeedSet.allSocialFeeds(),
+            FeedSet.singleSocialFeed("42", "Reader"),
+            FeedSet.globalShared(),
+            FeedSet.widgetFeeds(null),
+            FeedSet.allFeeds().apply { setFilterSaved(true) },
+            FeedSet.folder("Folder", setOf("11", "22")).apply { setFilterSaved(true) },
+        )
+        for (scope in scopes) {
+            for (order in StoryOrder.entries) {
+                val menu = mockk<ContextMenu>(relaxed = true)
+                UIUtils.inflateStoryContextMenu(menu, mockk<MenuInflater>(relaxed = true), scope, Story(), order)
+                verify { menu.removeItem(R.id.menu_go_to_feed) }
+            }
+        }
+    }
+
+    @Test
     fun storyMenusHaveIconsAndSeparateReadSaveShareAndFeedGroups() {
         for (order in listOf("newest", "oldest")) {
             val document = Files.newInputStream(Paths.get("src/main/res/menu/context_story_$order.xml")).use {
