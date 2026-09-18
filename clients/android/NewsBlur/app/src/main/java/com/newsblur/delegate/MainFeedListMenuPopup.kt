@@ -2,20 +2,14 @@ package com.newsblur.delegate
 
 import android.content.Intent
 import com.newsblur.activity.ContactActivity
-import android.content.res.Configuration
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.button.MaterialButton
 import com.newsblur.R
 import com.newsblur.activity.ImportExportActivity
 import com.newsblur.activity.Main
@@ -34,8 +28,6 @@ import com.newsblur.fragment.LogoutDialogFragment
 import com.newsblur.fragment.NewslettersFragment
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.util.ListTextSize
-import com.newsblur.util.ListTextSize.Companion.fromSize
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.SpacingStyle
@@ -76,7 +68,7 @@ class MainFeedListMenuPopup(
             accessoryColor = accessoryColor,
             popupWindow = popupWindow,
         )
-        configureToggles(binding, popupWindow, palette, anchor)
+        configureToggles(binding, popupWindow, anchor)
         PopupMenuTextScaler.apply(binding.root, prefsRepo.getListTextSize())
 
         popupWindow.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
@@ -249,42 +241,25 @@ class MainFeedListMenuPopup(
     private fun configureToggles(
         binding: PopupMainMenuBinding,
         popupWindow: PopupWindow,
-        palette: PopupPalette,
         anchor: View,
     ) {
-        configureThemeSelector(binding, palette)
-
-        when (fromSize(prefsRepo.getListTextSize())) {
-            ListTextSize.XS -> binding.groupTextSize.check(binding.btnTextSizeXs.id)
-            ListTextSize.S -> binding.groupTextSize.check(binding.btnTextSizeS.id)
-            ListTextSize.M -> binding.groupTextSize.check(binding.btnTextSizeM.id)
-            ListTextSize.L -> binding.groupTextSize.check(binding.btnTextSizeL.id)
-            ListTextSize.XL -> binding.groupTextSize.check(binding.btnTextSizeXl.id)
-            ListTextSize.XXL -> binding.groupTextSize.check(binding.btnTextSizeXxl.id)
-        }
-
+        binding.groupTextSize.addView(ListMenuSegments.fontSize(activity) { id ->
+            val size = ListMenuSegments.fontSizes.getValue(id)
+            fragment.setListTextSize(size)
+            PopupMenuTextScaler.apply(binding.root, size.size)
+            updatePopupLayout(anchor, binding, popupWindow, size.size, isShowing = true)
+        })
+        binding.groupTheme.addView(ListMenuSegments.theme(activity) { id ->
+            val theme = ListMenuSegments.themes.getValue(id)
+            if (theme != prefsRepo.getSelectedTheme()) {
+                popupWindow.dismiss()
+                prefsRepo.setSelectedTheme(theme)
+                UIUtils.restartActivity(activity)
+            }
+        })
         when (prefsRepo.getSpacingStyle()) {
             SpacingStyle.COMFORTABLE -> binding.groupSpacing.check(binding.btnSpacingComfortable.id)
             SpacingStyle.COMPACT -> binding.groupSpacing.check(binding.btnSpacingCompact.id)
-        }
-
-        updateThemeSelection(binding, prefsRepo.getSelectedTheme())
-
-        binding.groupTextSize.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            val textSize =
-                when (checkedId) {
-                    binding.btnTextSizeXs.id -> ListTextSize.XS
-                    binding.btnTextSizeS.id -> ListTextSize.S
-                    binding.btnTextSizeM.id -> ListTextSize.M
-                    binding.btnTextSizeL.id -> ListTextSize.L
-                    binding.btnTextSizeXl.id -> ListTextSize.XL
-                    binding.btnTextSizeXxl.id -> ListTextSize.XXL
-                    else -> return@addOnButtonCheckedListener
-                }
-            fragment.setListTextSize(textSize)
-            PopupMenuTextScaler.apply(binding.root, textSize.size)
-            updatePopupLayout(anchor, binding, popupWindow, textSize.size, isShowing = true)
         }
 
         binding.groupSpacing.addOnButtonCheckedListener { _, checkedId, isChecked ->
@@ -295,93 +270,6 @@ class MainFeedListMenuPopup(
             }
         }
 
-        listOf(
-            binding.btnThemeAuto to ThemeValue.AUTO,
-            binding.btnThemeLight to ThemeValue.LIGHT,
-            binding.btnThemeSepia to ThemeValue.SEPIA,
-            binding.btnThemeDark to ThemeValue.DARK,
-            binding.btnThemeBlack to ThemeValue.BLACK,
-        ).forEach { (button, theme) ->
-            button.setOnClickListener {
-                if (theme == prefsRepo.getSelectedTheme()) return@setOnClickListener
-                updateThemeSelection(binding, theme)
-                popupWindow.dismiss()
-                prefsRepo.setSelectedTheme(theme)
-                UIUtils.restartActivity(activity)
-            }
-        }
-    }
-
-    private fun configureThemeSelector(
-        binding: PopupMainMenuBinding,
-        palette: PopupPalette,
-    ) {
-        val buttonInset = UIUtils.dp2px(activity, 3)
-        val buttonRadius = UIUtils.dp2px(activity, 12)
-
-        binding.groupTheme.setPadding(buttonInset, buttonInset, buttonInset, buttonInset)
-        binding.groupTheme.background =
-            GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = UIUtils.dp2px(activity, 17f)
-                setColor(ContextCompat.getColor(activity, palette.themeGroupBackgroundColor))
-                setStroke(UIUtils.dp2px(activity, 1), ContextCompat.getColor(activity, palette.themeGroupBorderColor))
-            }
-
-        val buttonTint =
-            ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(
-                    ContextCompat.getColor(activity, palette.themeGroupSelectedColor),
-                    Color.TRANSPARENT,
-                ),
-            )
-        val autoTextColors =
-            ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(
-                    ContextCompat.getColor(activity, palette.themeGroupSelectedTextColor),
-                    ContextCompat.getColor(activity, palette.themeGroupTextColor),
-                ),
-            )
-
-        listOf(
-            binding.btnThemeAuto,
-            binding.btnThemeLight,
-            binding.btnThemeSepia,
-            binding.btnThemeDark,
-            binding.btnThemeBlack,
-        ).forEach { button ->
-            button.isCheckable = true
-            button.backgroundTintList = buttonTint
-            button.strokeWidth = 0
-            button.cornerRadius = buttonRadius
-            button.insetTop = 0
-            button.insetBottom = 0
-            button.minimumHeight = 0
-            button.gravity = Gravity.CENTER
-            button.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            button.setPadding(0, 0, 0, 0)
-        }
-        listOf(binding.btnThemeLight, binding.btnThemeSepia, binding.btnThemeDark, binding.btnThemeBlack).forEach { button ->
-            button.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_TOP
-        }
-        binding.btnThemeAuto.setTextColor(autoTextColors)
-    }
-
-    private fun updateThemeSelection(
-        binding: PopupMainMenuBinding,
-        selectedTheme: ThemeValue,
-    ) {
-        listOf(
-            binding.btnThemeAuto to ThemeValue.AUTO,
-            binding.btnThemeLight to ThemeValue.LIGHT,
-            binding.btnThemeSepia to ThemeValue.SEPIA,
-            binding.btnThemeDark to ThemeValue.DARK,
-            binding.btnThemeBlack to ThemeValue.BLACK,
-        ).forEach { (button, theme) ->
-            button.isChecked = theme == selectedTheme
-        }
     }
 
     private fun getSubscriptionTitle(): String =
@@ -467,11 +355,6 @@ class MainFeedListMenuPopup(
                     dividerColor = R.color.row_border_sepia,
                     textColor = R.color.text_sepia,
                     accessoryColor = R.color.button_text_sepia,
-                    themeGroupBackgroundColor = R.color.segmented_control_background_sepia,
-                    themeGroupSelectedColor = R.color.segmented_control_selected_sepia,
-                    themeGroupTextColor = R.color.segmented_control_text_sepia,
-                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_sepia,
-                    themeGroupBorderColor = R.color.segmented_control_border_sepia,
                 )
 
             ThemeValue.DARK ->
@@ -481,11 +364,6 @@ class MainFeedListMenuPopup(
                     dividerColor = R.color.gray30,
                     textColor = R.color.white,
                     accessoryColor = R.color.gray75,
-                    themeGroupBackgroundColor = R.color.segmented_control_background_dark,
-                    themeGroupSelectedColor = R.color.segmented_control_selected_dark,
-                    themeGroupTextColor = R.color.segmented_control_text_dark,
-                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_dark,
-                    themeGroupBorderColor = R.color.segmented_control_border_dark,
                 )
 
             ThemeValue.BLACK ->
@@ -495,11 +373,6 @@ class MainFeedListMenuPopup(
                     dividerColor = R.color.gray30,
                     textColor = R.color.white,
                     accessoryColor = R.color.gray75,
-                    themeGroupBackgroundColor = R.color.segmented_control_background_black,
-                    themeGroupSelectedColor = R.color.segmented_control_selected_black,
-                    themeGroupTextColor = R.color.segmented_control_text_black,
-                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_black,
-                    themeGroupBorderColor = R.color.segmented_control_border_black,
                 )
 
             else ->
@@ -509,11 +382,6 @@ class MainFeedListMenuPopup(
                     dividerColor = R.color.gray85,
                     textColor = R.color.gray20,
                     accessoryColor = R.color.gray55,
-                    themeGroupBackgroundColor = R.color.segmented_control_background_light,
-                    themeGroupSelectedColor = R.color.segmented_control_selected_light,
-                    themeGroupTextColor = R.color.segmented_control_text_light,
-                    themeGroupSelectedTextColor = R.color.segmented_control_selected_text_light,
-                    themeGroupBorderColor = R.color.segmented_control_border_light,
                 )
         }
 
@@ -534,9 +402,4 @@ private data class PopupPalette(
     val dividerColor: Int,
     val textColor: Int,
     val accessoryColor: Int,
-    val themeGroupBackgroundColor: Int,
-    val themeGroupSelectedColor: Int,
-    val themeGroupTextColor: Int,
-    val themeGroupSelectedTextColor: Int,
-    val themeGroupBorderColor: Int,
 )

@@ -73,7 +73,6 @@ class ItemListMenuPopup(
 
         tintSectionHeaders(binding, textColor, accessoryColor)
         styleToggleGroups(binding, palette)
-        configureThemeSelector(binding, palette)
         bindMenu(binding, controller.buildMenuModel(), popupWindow, dividerColor, textColor, accessoryColor, anchor)
         PopupMenuTextScaler.apply(binding.root, activity.prefsRepo.getListTextSize())
 
@@ -167,17 +166,14 @@ class ItemListMenuPopup(
             }
         }
 
-        binding.groupTextSize.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            when (checkedId) {
-                binding.btnTextSizeXs.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xs)
-                binding.btnTextSizeS.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_s)
-                binding.btnTextSizeM.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_m)
-                binding.btnTextSizeL.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_l)
-                binding.btnTextSizeXl.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xl)
-                binding.btnTextSizeXxl.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xxl)
+        binding.groupTextSize.addView(ListMenuSegments.fontSize(activity) { id ->
+            handleTextSizeSelection(binding, popupWindow, anchor, id)
+        })
+        binding.groupTheme.addView(ListMenuSegments.theme(activity) { id ->
+            if (ListMenuSegments.themes.getValue(id) != activity.prefsRepo.getSelectedTheme()) {
+                handleSelection(binding, popupWindow, id, dismissAfter = true)
             }
-        }
+        })
 
         binding.groupSpacing.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
@@ -187,23 +183,6 @@ class ItemListMenuPopup(
             }
         }
 
-        listOf(
-            Triple(binding.btnThemeAuto, R.id.menu_theme_auto, PrefConstants.ThemeValue.AUTO),
-            Triple(binding.btnThemeLight, R.id.menu_theme_light, PrefConstants.ThemeValue.LIGHT),
-            Triple(binding.btnThemeSepia, R.id.menu_theme_sepia, PrefConstants.ThemeValue.SEPIA),
-            Triple(binding.btnThemeDark, R.id.menu_theme_dark, PrefConstants.ThemeValue.DARK),
-            Triple(binding.btnThemeBlack, R.id.menu_theme_black, PrefConstants.ThemeValue.BLACK),
-        ).forEach { (button, itemId, theme) ->
-            button.setOnClickListener {
-                val selectedTheme = selectedTheme(controller.buildMenuModel())
-                if (theme == selectedTheme) {
-                    updateThemeSelection(binding, theme)
-                    return@setOnClickListener
-                }
-                updateThemeSelection(binding, theme)
-                handleSelection(binding, popupWindow, itemId, dismissAfter = true)
-            }
-        }
     }
 
     private fun handleSelection(
@@ -261,30 +240,11 @@ class ItemListMenuPopup(
         if (menu.findItem(R.id.menu_list_style_grid_m)?.isChecked == true) binding.groupListStyle.check(binding.btnListStyleGridM.id)
         if (menu.findItem(R.id.menu_list_style_grid_f)?.isChecked == true) binding.groupListStyle.check(binding.btnListStyleGridF.id)
 
-        if (menu.findItem(R.id.menu_text_size_xs)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeXs.id)
-        if (menu.findItem(R.id.menu_text_size_s)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeS.id)
-        if (menu.findItem(R.id.menu_text_size_m)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeM.id)
-        if (menu.findItem(R.id.menu_text_size_l)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeL.id)
-        if (menu.findItem(R.id.menu_text_size_xl)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeXl.id)
-        if (menu.findItem(R.id.menu_text_size_xxl)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeXxl.id)
 
         if (menu.findItem(R.id.menu_spacing_compact)?.isChecked == true) binding.groupSpacing.check(binding.btnSpacingCompact.id)
         if (menu.findItem(R.id.menu_spacing_comfortable)?.isChecked == true) binding.groupSpacing.check(binding.btnSpacingComfortable.id)
 
-        updateThemeSelection(
-            binding,
-            selectedTheme(menu),
-        )
     }
-
-    private fun selectedTheme(menu: Menu): PrefConstants.ThemeValue =
-        when {
-            menu.findItem(R.id.menu_theme_auto)?.isChecked == true -> PrefConstants.ThemeValue.AUTO
-            menu.findItem(R.id.menu_theme_light)?.isChecked == true -> PrefConstants.ThemeValue.LIGHT
-            menu.findItem(R.id.menu_theme_sepia)?.isChecked == true -> PrefConstants.ThemeValue.SEPIA
-            menu.findItem(R.id.menu_theme_dark)?.isChecked == true -> PrefConstants.ThemeValue.DARK
-            else -> PrefConstants.ThemeValue.BLACK
-        }
 
     private fun styleToggleGroups(
         binding: PopupItemlistMenuBinding,
@@ -296,7 +256,6 @@ class ItemListMenuPopup(
             binding.groupContentPreview to listOf(binding.btnContentPreviewNone, binding.btnContentPreviewSmall, binding.btnContentPreviewMedium, binding.btnContentPreviewLarge),
             binding.groupThumbnailPreview to listOf(binding.btnThumbnailPreviewNone, binding.btnThumbnailPreviewLeftSmall, binding.btnThumbnailPreviewLeftLarge, binding.btnThumbnailPreviewRightSmall, binding.btnThumbnailPreviewRightLarge),
             binding.groupListStyle to listOf(binding.btnListStyleList, binding.btnListStyleGridC, binding.btnListStyleGridM, binding.btnListStyleGridF),
-            binding.groupTextSize to listOf(binding.btnTextSizeXs, binding.btnTextSizeS, binding.btnTextSizeM, binding.btnTextSizeL, binding.btnTextSizeXl, binding.btnTextSizeXxl),
             binding.groupSpacing to listOf(binding.btnSpacingCompact, binding.btnSpacingComfortable),
         ).forEach { (group, buttons) ->
             styleToggleGroup(group, buttons, palette)
@@ -349,78 +308,6 @@ class ItemListMenuPopup(
             button.gravity = Gravity.CENTER
             button.textAlignment = View.TEXT_ALIGNMENT_CENTER
             button.setPadding(0, 0, 0, 0)
-        }
-    }
-
-    private fun configureThemeSelector(
-        binding: PopupItemlistMenuBinding,
-        palette: ItemListPopupPalette,
-    ) {
-        val buttonInset = UIUtils.dp2px(activity, 4)
-        val buttonRadius = UIUtils.dp2px(activity, 7)
-
-        binding.groupTheme.setPadding(buttonInset, buttonInset, buttonInset, buttonInset)
-        binding.groupTheme.background =
-            GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = UIUtils.dp2px(activity, 12f)
-                setColor(ContextCompat.getColor(activity, palette.themeGroupBackgroundColor))
-                setStroke(UIUtils.dp2px(activity, 1), ContextCompat.getColor(activity, palette.themeGroupBorderColor))
-            }
-
-        val buttonTint =
-            ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(
-                    ContextCompat.getColor(activity, palette.themeGroupSelectedColor),
-                    Color.TRANSPARENT,
-                ),
-            )
-        val autoTextColors =
-            ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(
-                    ContextCompat.getColor(activity, palette.themeGroupSelectedTextColor),
-                    ContextCompat.getColor(activity, palette.themeGroupTextColor),
-                ),
-            )
-
-        listOf(
-            binding.btnThemeAuto,
-            binding.btnThemeLight,
-            binding.btnThemeSepia,
-            binding.btnThemeDark,
-            binding.btnThemeBlack,
-        ).forEach { button ->
-            button.isCheckable = true
-            button.backgroundTintList = buttonTint
-            button.strokeWidth = 0
-            button.cornerRadius = buttonRadius
-            button.insetTop = 0
-            button.insetBottom = 0
-            button.minimumHeight = 0
-            button.gravity = Gravity.CENTER
-            button.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            button.setPadding(0, 0, 0, 0)
-        }
-        listOf(binding.btnThemeLight, binding.btnThemeSepia, binding.btnThemeDark, binding.btnThemeBlack).forEach { button ->
-            button.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_TOP
-        }
-        binding.btnThemeAuto.setTextColor(autoTextColors)
-    }
-
-    private fun updateThemeSelection(
-        binding: PopupItemlistMenuBinding,
-        selectedTheme: PrefConstants.ThemeValue,
-    ) {
-        listOf(
-            binding.btnThemeAuto to PrefConstants.ThemeValue.AUTO,
-            binding.btnThemeLight to PrefConstants.ThemeValue.LIGHT,
-            binding.btnThemeSepia to PrefConstants.ThemeValue.SEPIA,
-            binding.btnThemeDark to PrefConstants.ThemeValue.DARK,
-            binding.btnThemeBlack to PrefConstants.ThemeValue.BLACK,
-        ).forEach { (button, theme) ->
-            button.isChecked = theme == selectedTheme
         }
     }
 
