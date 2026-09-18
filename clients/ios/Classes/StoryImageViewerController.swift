@@ -129,7 +129,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     private var task: URLSessionDataTask?
     private var sharedFile: URL?
     private var fittedSize = CGSize.zero
-    private var laidOutSize = CGSize.zero
+    private var laidOutViewport = CGRect.zero
     private var entered = false
     private var closing = false
     private var dragging = false
@@ -146,7 +146,8 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     }
 
     required init?(coder: NSCoder) { fatalError("StoryImageViewerController.swift uses init(source:preview:origin:)") }
-    override var prefersStatusBarHidden: Bool { true }
+    override var prefersStatusBarHidden: Bool { false }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .allButUpsideDown }
 
@@ -232,19 +233,27 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         backdrop.frame = view.bounds
-        scroll.frame = view.bounds
         controls.frame = CGRect(x: view.safeAreaInsets.left + 16, y: view.safeAreaInsets.top + 12,
                                 width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right - 32, height: 48)
         status.frame = CGRect(x: 30, y: view.bounds.height - view.safeAreaInsets.bottom - 72, width: view.bounds.width - 60, height: 44)
         spinner.center = CGPoint(x: view.bounds.midX, y: status.frame.minY - 16)
-        guard laidOutSize != view.bounds.size, !closing else { return }
-        laidOutSize = view.bounds.size
+        let viewport = view.bounds.inset(by: view.safeAreaInsets)
+        guard laidOutViewport != viewport, !closing else { return }
+        laidOutViewport = viewport
+        // StoryImageViewerController.swift keeps zoomed content below the status bar and respects a live dismissal transform.
+        scroll.bounds.size = viewport.size
+        scroll.center = CGPoint(x: viewport.midX, y: viewport.midY)
         layoutImage()
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        view.setNeedsLayout()
     }
 
     private func layoutImage() {
         scroll.setZoomScale(1, animated: false)
-        fittedSize = StoryImageSource.fittedSize(source.naturalSize, in: view.bounds.size)
+        fittedSize = StoryImageSource.fittedSize(source.naturalSize, in: scroll.bounds.size)
         imageView.transform = .identity
         imageView.frame = CGRect(origin: .zero, size: fittedSize)
         scroll.contentSize = fittedSize

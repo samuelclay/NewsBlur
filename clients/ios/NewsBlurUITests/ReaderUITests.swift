@@ -102,6 +102,36 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_storyImageKeepsStatusBarAndReaderGeometry() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image viewer uses isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        let statusBar = XCUIApplication(bundleIdentifier: "com.apple.springboard").statusBars.firstMatch
+        attachScreenshot(named: "reader-status-bar-before-image")
+        XCTAssertTrue(statusBar.exists)
+        let originalStatusFrame = statusBar.frame
+        let originalReaderFrame = app.webViews.firstMatch.frame
+        articleImage.tap()
+        let close = app.buttons["Close image"]
+        XCTAssertTrue(close.waitForExistence(timeout: 8))
+        attachScreenshot(named: "image-viewer-status-bar")
+        XCTAssertTrue(statusBar.exists, "Opening an image must not hide the status bar or resize the reader")
+        XCTAssertEqual(statusBar.frame, originalStatusFrame)
+        let zoom = app.scrollViews["story-image-zoom"]
+        XCTAssertGreaterThanOrEqual(zoom.frame.minY, originalStatusFrame.maxY,
+                                  "The image viewport must stay below the status bar, including while zooming")
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertEqual(statusBar.frame, originalStatusFrame)
+        XCTAssertEqual(app.webViews.firstMatch.frame, originalReaderFrame)
+        #endif
+    }
+
     func test_storyImageSingleTapFitsThenDismissesWithoutStealingDoubleTap() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Image viewer uses isolated simulator fixtures")
