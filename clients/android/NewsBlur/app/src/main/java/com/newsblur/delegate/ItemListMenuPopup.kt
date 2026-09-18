@@ -15,11 +15,9 @@ import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.newsblur.R
 import com.newsblur.activity.ItemsList
 import com.newsblur.databinding.PopupItemlistMenuBinding
-import com.newsblur.databinding.ViewMainMenuRowBinding
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.UIUtils
@@ -43,27 +41,16 @@ class ItemListMenuPopup(
     }
 
     companion object {
-        private val actionItemIds =
-            intArrayOf(
-                R.id.menu_save_search,
-                R.id.menu_rename_folder,
-                R.id.menu_mute_folder,
-                R.id.menu_unmute_folder,
-                R.id.menu_delete_folder,
-                R.id.menu_intel,
-                R.id.menu_notifications,
-                R.id.menu_statistics,
-                R.id.menu_rename_feed,
-                R.id.menu_instafetch_feed,
-                R.id.menu_delete_feed,
-                R.id.menu_infrequent_cutoff,
-            )
-
         @JvmStatic
-        fun hasVisibleActions(menu: Menu): Boolean = actionItemIds.any { menu.findItem(it)?.isVisible == true }
+        fun hasVisibleActions(menu: Menu): Boolean = FeedMenuPopover.hasVisibleActions(menu)
     }
 
     fun show(anchor: View): PopupWindow {
+        if (content == Content.ACTIONS) {
+            return FeedMenuPopover.show(activity, anchor, controller.buildMenuModel(), activity.prefsRepo.getResolvedTheme(activity)) { item ->
+                controller.onMenuItemSelected(item.itemId)
+            }
+        }
         val binding = PopupItemlistMenuBinding.inflate(LayoutInflater.from(activity))
         val popupWindow =
             PopupWindow(
@@ -111,98 +98,10 @@ class ItemListMenuPopup(
     ) {
         binding.dividerActions.visibility = View.GONE
 
-        when (content) {
-            Content.VISUAL -> {
-                binding.containerActions.visibility = View.GONE
-                hideSections(binding, isVisible = true)
-                configureSections(binding, menu, popupWindow, anchor)
-            }
-
-            Content.ACTIONS -> {
-                binding.containerActions.visibility = View.VISIBLE
-                hideSections(binding, isVisible = false)
-                configureActionRows(binding, menu, popupWindow, dividerColor, textColor, accessoryColor)
-            }
-        }
+        binding.containerActions.visibility = View.GONE
+        hideSections(binding, isVisible = true)
+        configureSections(binding, menu, popupWindow, anchor)
     }
-
-    private fun configureActionRows(
-        binding: PopupItemlistMenuBinding,
-        menu: Menu,
-        popupWindow: PopupWindow,
-        dividerColor: Int,
-        textColor: Int,
-        accessoryColor: Int,
-    ) {
-        binding.containerActions.removeAllViews()
-        val rows = buildActionRows(menu, popupWindow)
-        if (rows.isEmpty()) return
-
-        rows.forEachIndexed { index, row ->
-            val rowBinding = ViewMainMenuRowBinding.inflate(LayoutInflater.from(activity), binding.containerActions, false)
-            rowBinding.textMenuTitle.text = row.title
-            rowBinding.textMenuTitle.setTextColor(textColor)
-            rowBinding.iconMenu.setImageResource(row.iconRes)
-            rowBinding.iconMenu.setColorFilter(accessoryColor)
-            rowBinding.iconAccessory.visibility = if (row.showAccessory) View.VISIBLE else View.GONE
-            rowBinding.iconAccessory.setColorFilter(accessoryColor)
-            rowBinding.root.setOnClickListener {
-                popupWindow.dismiss()
-                row.onClick()
-            }
-            binding.containerActions.addView(rowBinding.root)
-            if (index < rows.lastIndex) {
-                binding.containerActions.addView(makeDivider(dividerColor))
-            }
-        }
-    }
-
-    private fun maybeAddActionRow(
-        menu: Menu,
-        itemId: Int,
-        iconRes: Int,
-    ): ActionRow? {
-        val item = menu.findItem(itemId) ?: return null
-        if (!item.isVisible) return null
-        return ActionRow(
-            title = item.title.toString(),
-            iconRes = iconRes,
-            onClick = {
-                controller.onMenuItemSelected(itemId)
-            },
-        )
-    }
-
-    private fun buildActionRows(
-        menu: Menu,
-        popupWindow: PopupWindow,
-    ): List<ActionRow> =
-        buildList {
-            maybeAddActionRow(menu, R.id.menu_rename_folder, R.drawable.ic_file_edit)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_mute_folder, R.drawable.mute_black)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_unmute_folder, R.drawable.mute_black)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_delete_folder, R.drawable.ic_clear)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_intel, R.drawable.ic_feed_train)?.let(::add)
-            menu.findItem(R.id.menu_notifications)?.takeIf { it.isVisible }?.let {
-                add(
-                    ActionRow(
-                        title = it.title.toString(),
-                        iconRes = R.drawable.nb_menu_notifications,
-                        showAccessory = true,
-                        onClick = {
-                            popupWindow.dismiss()
-                            showNotificationsDialog(menu)
-                        },
-                    ),
-                )
-            }
-            maybeAddActionRow(menu, R.id.menu_statistics, R.drawable.ic_burst)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_rename_feed, R.drawable.ic_file_edit)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_instafetch_feed, R.drawable.ic_cloud_download)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_delete_feed, R.drawable.ic_clear)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_infrequent_cutoff, R.drawable.ic_calendar)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_save_search, R.drawable.ic_search)?.let(::add)
-        }
 
     private fun configureSections(
         binding: PopupItemlistMenuBinding,
@@ -567,22 +466,6 @@ class ItemListMenuPopup(
         ).forEach { it.setColorFilter(accessoryColor) }
     }
 
-    private fun showNotificationsDialog(menu: Menu) {
-        val notificationsItem = menu.findItem(R.id.menu_notifications) ?: return
-        val submenu = notificationsItem.subMenu ?: return
-        val titles = Array(submenu.size()) { index -> submenu.getItem(index).title }
-        val checkedIndex = (0 until submenu.size()).firstOrNull { submenu.getItem(it).isChecked } ?: -1
-
-        val dialog =
-            MaterialAlertDialogBuilder(activity)
-            .setTitle(notificationsItem.title)
-            .setSingleChoiceItems(titles, checkedIndex) { dialog, which ->
-                controller.onMenuItemSelected(submenu.getItem(which).itemId)
-                dialog.dismiss()
-            }.show()
-        dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, activity.prefsRepo.getListTextSize()) }
-    }
-
     private fun applyCardWidth(
         binding: PopupItemlistMenuBinding,
         availableWidthPx: Int,
@@ -614,19 +497,6 @@ class ItemListMenuPopup(
         )
         com.newsblur.util.AnchoredPopover.show(anchor, popupWindow, binding.root.measuredWidth, binding.root.measuredHeight, isShowing)
     }
-
-    private fun makeDivider(color: Int): View =
-        View(activity).apply {
-            layoutParams =
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    UIUtils.dp2px(activity, 1),
-                ).apply {
-                    marginStart = UIUtils.dp2px(activity, 44)
-                    marginEnd = UIUtils.dp2px(activity, 14)
-                }
-            setBackgroundColor(color)
-        }
 
     private fun visibleFor(
         menu: Menu,
@@ -713,13 +583,6 @@ class ItemListMenuPopup(
     private fun resolvedTheme(): PrefConstants.ThemeValue =
         activity.prefsRepo.getResolvedTheme(activity)
 }
-
-private data class ActionRow(
-    val title: String,
-    val iconRes: Int,
-    val showAccessory: Boolean = false,
-    val onClick: () -> Unit,
-)
 
 private data class ItemListPopupPalette(
     val backgroundColor: Int,

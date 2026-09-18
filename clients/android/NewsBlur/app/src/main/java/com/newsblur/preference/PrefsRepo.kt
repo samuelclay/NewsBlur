@@ -847,7 +847,7 @@ class PrefsRepo(
         if (right) "feed_swipe_right" else "feed_swipe_left",
         if (right) GestureAction.GEST_ACTION_NOTIFICATIONS else GestureAction.GEST_ACTION_MARKREAD,
     )
-    fun getFeedLongPressAction() = gestureAction("feed_long_press", GestureAction.GEST_ACTION_READ_RANGE)
+    fun getFeedLongPressAction() = gestureAction("feed_long_press", GestureAction.GEST_ACTION_MENU)
     fun getStoryLongPressAction() = gestureAction("story_long_press", GestureAction.GEST_ACTION_MENU)
 
     fun getReaderGesture(key: String, fallback: String): String = prefs.getString(key, fallback) ?: fallback

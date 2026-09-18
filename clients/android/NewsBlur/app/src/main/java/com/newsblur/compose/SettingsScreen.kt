@@ -167,7 +167,7 @@ data class SettingsUiState(
     val storySwipesEnabled: Boolean = true,
     val feedSwipeLeft: String = GestureAction.GEST_ACTION_MARKREAD.name,
     val feedSwipeRight: String = GestureAction.GEST_ACTION_NOTIFICATIONS.name,
-    val feedLongPress: String = GestureAction.GEST_ACTION_READ_RANGE.name,
+    val feedLongPress: String = GestureAction.GEST_ACTION_MENU.name,
     val storyLongPress: String = GestureAction.GEST_ACTION_MENU.name,
     val doubleTapStory: String = "original",
     val twoFingerDoubleTapStory: String = "text",
