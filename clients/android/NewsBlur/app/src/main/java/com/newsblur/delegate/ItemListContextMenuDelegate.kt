@@ -90,7 +90,6 @@ open class ItemListContextMenuDelegateImpl(
             fs.isAllRead
         ) {
             menu.findItem(R.id.menu_read_filter).isVisible = false
-            menu.findItem(R.id.menu_mark_read_on_scroll).isVisible = false
             menu.findItem(R.id.menu_story_content_preview_style).isVisible = false
             menu.findItem(R.id.menu_story_thumbnail_style).isVisible = false
         }
@@ -198,12 +197,7 @@ open class ItemListContextMenuDelegateImpl(
             ListTextSize.XXL -> menu.findItem(R.id.menu_text_size_xxl).isChecked = true
         }
 
-        val isMarkReadOnScroll = prefsRepo.isMarkReadOnFeedScroll()
-        if (isMarkReadOnScroll) {
-            menu.findItem(R.id.menu_mark_read_on_scroll_enabled).isChecked = true
-        } else {
-            menu.findItem(R.id.menu_mark_read_on_scroll_disabled).isChecked = true
-        }
+        StoryTitleSettingsMenu.prepareReadModes(menu, prefsRepo.getMarkStoryReadBehavior())
 
         return true
     }
@@ -215,6 +209,10 @@ open class ItemListContextMenuDelegateImpl(
         searchInputView: EditText,
         saveSearchFeedId: String?,
     ): Boolean {
+        StoryTitleSettingsMenu.behaviorForItem(item.itemId)?.let { behavior ->
+            prefsRepo.setMarkStoryReadBehavior(behavior)
+            return true
+        }
         if (item.itemId == android.R.id.home) {
             activity.finish()
             return true
@@ -310,10 +308,6 @@ open class ItemListContextMenuDelegateImpl(
         } else if (item.itemId == R.id.menu_story_content_preview_large) {
             prefsRepo.setStoryContentPreviewStyle(StoryContentPreviewStyle.LARGE)
             fragment.notifyContentPrefsChanged()
-        } else if (item.itemId == R.id.menu_mark_read_on_scroll_disabled) {
-            prefsRepo.setMarkReadOnScroll(false)
-        } else if (item.itemId == R.id.menu_mark_read_on_scroll_enabled) {
-            prefsRepo.setMarkReadOnScroll(true)
         } else if (item.itemId == R.id.menu_story_thumbnail_left_small) {
             prefsRepo.setThumbnailStyle(ThumbnailStyle.LEFT_SMALL)
             fragment.updateThumbnailStyle()

@@ -42,12 +42,12 @@ class ItemListMenuPopup(
 
     companion object {
         @JvmStatic
-        fun hasVisibleActions(menu: Menu): Boolean = FeedMenuPopover.hasVisibleActions(menu)
+        fun hasVisibleActions(menu: Menu): Boolean = StoryTitleSettingsMenu.hasVisibleActions(menu)
     }
 
     fun show(anchor: View): PopupWindow {
         if (content == Content.ACTIONS) {
-            return FeedMenuPopover.show(activity, anchor, controller.buildMenuModel(), activity.prefsRepo.getResolvedTheme(activity)) { item ->
+            return FeedMenuPopover.showWithActions(activity, anchor, controller.buildMenuModel(), activity.prefsRepo.getResolvedTheme(activity), StoryTitleSettingsMenu.actions) { item ->
                 controller.onMenuItemSelected(item.itemId)
             }
         }
@@ -111,7 +111,6 @@ class ItemListMenuPopup(
     ) {
         binding.sectionOrder.visibility = visibleFor(menu, R.id.menu_story_order)
         binding.sectionReadFilter.visibility = visibleFor(menu, R.id.menu_read_filter)
-        binding.sectionMarkReadOnScroll.visibility = visibleFor(menu, R.id.menu_mark_read_on_scroll)
         binding.sectionContentPreview.visibility = visibleFor(menu, R.id.menu_story_content_preview_style)
         binding.sectionThumbnailPreview.visibility = visibleFor(menu, R.id.menu_story_thumbnail_style)
         binding.sectionListStyle.visibility = visibleFor(menu, R.id.menu_story_list_style)
@@ -134,14 +133,6 @@ class ItemListMenuPopup(
             when (checkedId) {
                 binding.btnReadFilterAll.id -> handleSelection(binding, popupWindow, R.id.menu_read_filter_all_stories, dismissAfter = true)
                 binding.btnReadFilterUnread.id -> handleSelection(binding, popupWindow, R.id.menu_read_filter_unread_only, dismissAfter = true)
-            }
-        }
-
-        binding.groupMarkReadOnScroll.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            when (checkedId) {
-                binding.btnMarkReadOnScrollOff.id -> handleSelection(binding, popupWindow, R.id.menu_mark_read_on_scroll_disabled)
-                binding.btnMarkReadOnScrollOn.id -> handleSelection(binding, popupWindow, R.id.menu_mark_read_on_scroll_enabled)
             }
         }
 
@@ -253,8 +244,6 @@ class ItemListMenuPopup(
         if (menu.findItem(R.id.menu_read_filter_all_stories)?.isChecked == true) binding.groupReadFilter.check(binding.btnReadFilterAll.id)
         if (menu.findItem(R.id.menu_read_filter_unread_only)?.isChecked == true) binding.groupReadFilter.check(binding.btnReadFilterUnread.id)
 
-        if (menu.findItem(R.id.menu_mark_read_on_scroll_disabled)?.isChecked == true) binding.groupMarkReadOnScroll.check(binding.btnMarkReadOnScrollOff.id)
-        if (menu.findItem(R.id.menu_mark_read_on_scroll_enabled)?.isChecked == true) binding.groupMarkReadOnScroll.check(binding.btnMarkReadOnScrollOn.id)
 
         if (menu.findItem(R.id.menu_story_content_preview_none)?.isChecked == true) binding.groupContentPreview.check(binding.btnContentPreviewNone.id)
         if (menu.findItem(R.id.menu_story_content_preview_small)?.isChecked == true) binding.groupContentPreview.check(binding.btnContentPreviewSmall.id)
@@ -304,7 +293,6 @@ class ItemListMenuPopup(
         listOf(
             binding.groupOrder to listOf(binding.btnOrderNewest, binding.btnOrderOldest),
             binding.groupReadFilter to listOf(binding.btnReadFilterAll, binding.btnReadFilterUnread),
-            binding.groupMarkReadOnScroll to listOf(binding.btnMarkReadOnScrollOff, binding.btnMarkReadOnScrollOn),
             binding.groupContentPreview to listOf(binding.btnContentPreviewNone, binding.btnContentPreviewSmall, binding.btnContentPreviewMedium, binding.btnContentPreviewLarge),
             binding.groupThumbnailPreview to listOf(binding.btnThumbnailPreviewNone, binding.btnThumbnailPreviewLeftSmall, binding.btnThumbnailPreviewLeftLarge, binding.btnThumbnailPreviewRightSmall, binding.btnThumbnailPreviewRightLarge),
             binding.groupListStyle to listOf(binding.btnListStyleList, binding.btnListStyleGridC, binding.btnListStyleGridM, binding.btnListStyleGridF),
@@ -444,7 +432,6 @@ class ItemListMenuPopup(
         listOf(
             binding.textSectionOrder,
             binding.textSectionReadFilter,
-            binding.textSectionMarkReadOnScroll,
             binding.textSectionContentPreview,
             binding.textSectionThumbnailPreview,
             binding.textSectionListStyle,
@@ -456,7 +443,6 @@ class ItemListMenuPopup(
         listOf(
             binding.iconSectionOrder,
             binding.iconSectionReadFilter,
-            binding.iconSectionMarkReadOnScroll,
             binding.iconSectionContentPreview,
             binding.iconSectionThumbnailPreview,
             binding.iconSectionListStyle,
@@ -511,7 +497,6 @@ class ItemListMenuPopup(
         listOf(
             binding.sectionOrder,
             binding.sectionReadFilter,
-            binding.sectionMarkReadOnScroll,
             binding.sectionContentPreview,
             binding.sectionThumbnailPreview,
             binding.sectionListStyle,
