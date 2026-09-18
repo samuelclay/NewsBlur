@@ -498,7 +498,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>NewsBlur uses the microphone to let you ask questions about stories using your voice.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>NewsBlur can save photos to your camera roll by long pressing them.</string>
+	<string>NewsBlur lets you save images from stories to your photo library.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>NewsBlur saves story images to Photos when you choose Save Image.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>NewsBlur uses speech recognition to transcribe your voice questions about stories.</string>
 	<key>NSUserActivityTypes</key>

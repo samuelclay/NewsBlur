@@ -21,12 +21,17 @@ final class StoryReadyMessageHandler: NSObject, WKScriptMessageHandler {
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        page?.receiveStoryReadyMessage(message)
+        if message.name == "newsblurStoryImage" {
+            (page as? StoryDetailViewController)?.receiveImageMessage(message)
+        } else {
+            page?.receiveStoryReadyMessage(message)
+        }
     }
 }
 
 /// An individual story.
 class StoryDetailViewController: StoryDetailObjCViewController {
+    var openingImage = false
     /// Convenience initializer to load a new instance of this class from the XIB.
     ///
     /// - Parameter pageIndex: The page index of the story.
