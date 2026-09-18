@@ -37,13 +37,13 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 
 @implementation MarkReadMenuViewController
 
-#define kMenuOptionHeight 38
+#define kMenuOptionHeight 44
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    self.menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -68,15 +68,15 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 }
 
 - (CGSize)preferredContentSize {
-    CGSize size = CGSizeMake(300.0, 190.0);
+    CGSize size = CGSizeMake(300.0, 5 * kMenuOptionHeight);
     
     if (self.olderNewerStoriesCollection) {
-        size = CGSizeMake(300.0, 114.0);
+        size = CGSizeMake(300.0, 3 * kMenuOptionHeight);
     } else if (self.visibleUnreadCount) {
-        size = CGSizeMake(300.0, 228.0);
+        size = CGSizeMake(300.0, 6 * kMenuOptionHeight);
     }
     
-    size.height = size.height + (self.extraItems.count * 38.0);
+    size.height = size.height + (self.extraItems.count * kMenuOptionHeight);
     
     return size;
 }
