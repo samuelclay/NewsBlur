@@ -638,7 +638,11 @@ people together to talk about the world.</string>
 
     <string name="settings_mark_story_read">Mark a story as read…</string>
     <string name="settings_mark_story_read_title">Mark stories read</string>
-    <string name="mark_story_read_immediately">Immediately</string>
+    <string name="mark_story_read_immediately">Only on selection</string>
+    <string name="mark_story_read_on_scroll">On scroll or selection</string>
+    <string name="mark_story_read_1_second">After 1 second</string>
+    <string name="mark_story_read_2_seconds">After 2 seconds</string>
+    <string name="mark_story_read_3_seconds">After 3 seconds</string>
     <string name="mark_story_read_5_seconds">After 5 seconds</string>
     <string name="mark_story_read_10_seconds">After 10 seconds</string>
     <string name="mark_story_read_20_seconds">After 20 seconds</string>
@@ -647,7 +651,11 @@ people together to talk about the world.</string>
     <string name="mark_story_read_60_seconds">After 60 seconds</string>
     <string name="mark_story_read_manually">Manually</string>
     <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
         <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
         <item>@string/mark_story_read_5_seconds</item>
         <item>@string/mark_story_read_10_seconds</item>
         <item>@string/mark_story_read_20_seconds</item>
@@ -658,7 +666,11 @@ people together to talk about the world.</string>
     </string-array>
 
     <string-array name="mark_story_read_values">
+        <item>ON_SCROLL</item>
         <item>IMMEDIATELY</item>
+        <item>SECONDS_1</item>
+        <item>SECONDS_2</item>
+        <item>SECONDS_3</item>
         <item>SECONDS_5</item>
         <item>SECONDS_10</item>
         <item>SECONDS_20</item>
@@ -695,7 +707,7 @@ people together to talk about the world.</string>
     <string name="ask_ai_transcribing">Transcribing…</string>
     <string name="ask_ai_microphone_permission_denied">Microphone permission denied</string>
     <string name="ask_ai_microphone_error">Unable to record audio</string>
-    <string name="settings_confirm_mark_all_read_note">Mark read options are always available via long press on the mark read button.</string>
+    <string name="settings_confirm_mark_all_read_note">Marking all site stories read always asks for confirmation. Long press the mark read button for more options.</string>
     <string name="settings_confirm_mark_all_read_segment_both">Both</string>
     <string name="settings_confirm_mark_all_read_segment_folders">Folders</string>
     <string name="settings_confirm_mark_all_read_segment_never">Never</string>

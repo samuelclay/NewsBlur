@@ -46,6 +46,31 @@ class ReadingDwellBehaviorTest {
     }
 
     @Test
+    fun shortDwellModesWaitForTheirFullSelectedDuration() = runTest {
+        for (mode in listOf(MarkStoryReadBehavior.SECONDS_1, MarkStoryReadBehavior.SECONDS_2, MarkStoryReadBehavior.SECONDS_3)) {
+            val fixture = Fixture(mode)
+            fixture.select(0)
+            fixture.deliverSelectionWork()
+            runCurrent()
+            advanceTimeBy(mode.getDelayMillis() - 1)
+            runCurrent()
+            assertTrue(fixture.marked.isEmpty())
+            advanceTimeBy(1)
+            runCurrent()
+            assertEquals(listOf("1:0"), fixture.marked)
+        }
+    }
+
+    @Test
+    fun scrollModeAlsoMarksAnOpenedStory() = runTest {
+        val fixture = Fixture(MarkStoryReadBehavior.ON_SCROLL)
+        fixture.select(0)
+        fixture.deliverSelectionWork()
+        runCurrent()
+        assertEquals(listOf("1:0"), fixture.marked)
+    }
+
+    @Test
     fun fiveSecondDwellMarksOnlyAtTheConfiguredDeadline() = runTest {
         val fixture = Fixture(MarkStoryReadBehavior.SECONDS_5)
         fixture.select(0)

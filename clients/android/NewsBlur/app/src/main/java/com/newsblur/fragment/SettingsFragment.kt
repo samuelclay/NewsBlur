@@ -37,6 +37,7 @@ import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
 import com.newsblur.util.FeedUtils.Companion.triggerSync
+import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.StoryClusterDisplayDecision
@@ -149,7 +150,11 @@ class SettingsFragment : Fragment() {
         key: String,
         value: String,
     ) {
-        sharedPreferences.edit { putString(key, value) }
+        if (key == PrefConstants.STORY_MARK_READ_BEHAVIOR) {
+            prefsRepo.setMarkStoryReadBehavior(MarkStoryReadBehavior.valueOf(value))
+        } else {
+            sharedPreferences.edit { putString(key, value) }
+        }
         refreshUiState()
     }
 
