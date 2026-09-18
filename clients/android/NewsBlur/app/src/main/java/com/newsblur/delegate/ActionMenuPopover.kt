@@ -94,16 +94,17 @@ object ActionMenuPopover {
                 }
                 previousGroup = item.groupId
                 val row = ViewMainMenuRowBinding.inflate(LayoutInflater.from(activity), rows, false)
+                val destructive = item.itemId == R.id.menu_mark_all_as_read
                 row.root.minimumHeight = dp(48)
                 row.textMenuTitle.apply {
                     text = item.title
                     setSingleLine(false)
                     ellipsize = null
-                    setTextColor(ReaderSheetPalette.textPrimaryArgb(theme))
+                    setTextColor(if (destructive) ReaderSheetPalette.destructiveArgb(theme) else ReaderSheetPalette.textPrimaryArgb(theme))
                 }
                 row.iconMenu.apply {
                     setImageDrawable(item.icon)
-                    imageTintList = ColorStateList.valueOf(ReaderSheetPalette.textSecondaryArgb(theme))
+                    imageTintList = ColorStateList.valueOf(if (destructive) ReaderSheetPalette.destructiveArgb(theme) else ReaderSheetPalette.textSecondaryArgb(theme))
                     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                 }
                 row.root.isEnabled = item.isEnabled

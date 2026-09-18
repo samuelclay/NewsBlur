@@ -5,6 +5,12 @@ import androidx.compose.ui.graphics.toArgb
 import com.newsblur.util.PrefConstants.ThemeValue
 
 object ReaderSheetPalette {
+    @JvmStatic fun destructiveArgb(theme: ThemeValue): Int = when (theme) {
+        ThemeValue.DARK, ThemeValue.BLACK -> 0xFFF08A80.toInt()
+        ThemeValue.SEPIA -> 0xFFAE3F37.toInt()
+        else -> 0xFFB74444.toInt()
+    }
+
     @JvmStatic fun menuRowHighlightArgb(theme: ThemeValue): Int = when (theme) {
         ThemeValue.DARK -> 0x26FFFFFF
         ThemeValue.BLACK -> 0x30FFFFFF

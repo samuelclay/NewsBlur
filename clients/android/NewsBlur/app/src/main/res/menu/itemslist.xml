@@ -37,18 +37,6 @@
             </group>
         </menu>
     </item>
-    <item android:id="@+id/menu_mark_read_on_scroll"
-          android:title="@string/menu_mark_read_on_scroll"
-          app:showAsAction="never" >
-        <menu>
-            <group android:checkableBehavior="single">
-                <item android:id="@+id/menu_mark_read_on_scroll_disabled"
-                    android:title="@string/mark_read_on_scroll_disabled" />
-                <item android:id="@+id/menu_mark_read_on_scroll_enabled"
-                    android:title="@string/mark_read_on_scroll_enabled" />
-            </group>
-        </menu>
-    </item>
     <item android:id="@+id/menu_story_content_preview_style"
           android:title="@string/menu_story_content_preview"
           app:showAsAction="never">
@@ -99,7 +87,7 @@
         </menu>
     </item>
     <item android:id="@+id/menu_text_size"
-        android:title="@string/menu_text_size" >
+        android:title="@string/story_title_list_font_size" >
         <menu>
             <group android:checkableBehavior="single" >
                 <item android:id="@+id/menu_text_size_xs"

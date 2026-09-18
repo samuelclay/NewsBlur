@@ -46,8 +46,19 @@ object FeedMenuPopover {
         theme: ThemeValue,
         selected: MenuItem.OnMenuItemClickListener,
     ): PopupWindow {
+        return showWithActions(activity, anchor, source, theme, actions, selected)
+    }
+
+    fun showWithActions(
+        activity: NbActivity,
+        anchor: View,
+        source: Menu,
+        theme: ThemeValue,
+        configuredActions: List<Action>,
+        selected: MenuItem.OnMenuItemClickListener,
+    ): PopupWindow {
         val menu = PopupMenu(activity, anchor).menu
-        actions.forEachIndexed { index, action ->
+        configuredActions.forEachIndexed { index, action ->
             val item = source.findItem(action.id)?.takeIf { it.isVisible } ?: return@forEachIndexed
             val submenu = item.subMenu
             val copy = if (submenu == null) {
@@ -64,7 +75,8 @@ object FeedMenuPopover {
                         setIcon(when (child.itemId) {
                             R.id.menu_notifications_focus -> R.drawable.ic_indicator_focus
                             R.id.menu_notifications_unread -> R.drawable.ic_indicator_unread
-                            else -> R.drawable.mute_black
+                            R.id.menu_notifications_disable -> R.drawable.mute_black
+                            else -> action.icon
                         })
                     }
                 }
