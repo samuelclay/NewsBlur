@@ -147,7 +147,6 @@ data class SettingsUiState(
     val confirmMarkRangeRead: Boolean = false,
     val loadNextOnMarkRead: Boolean = false,
     val autoOpenFirstUnread: Boolean = false,
-    val markReadOnScroll: Boolean = false,
     val storyClusteringEnabled: Boolean = true,
     val clusterMode: String = StoryClusterDisplayDecision.CLUSTER_MODE_RELATED,
     val isArchive: Boolean = false,
@@ -217,7 +216,6 @@ fun buildSettingsUiState(
         confirmMarkRangeRead = prefsRepo.isConfirmMarkRangeRead(),
         loadNextOnMarkRead = prefsRepo.loadNextOnMarkRead(),
         autoOpenFirstUnread = prefsRepo.isAutoOpenFirstUnread(),
-        markReadOnScroll = prefsRepo.isMarkReadOnFeedScroll(),
         storyClusteringEnabled = StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo),
         clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo),
         isArchive = prefsRepo.getIsArchive(),
@@ -341,16 +339,9 @@ fun SettingsScreen(
             ),
         )
     val markStoryReadOptions =
-        listOf(
-            ChoiceOption(MarkStoryReadBehavior.IMMEDIATELY.name, stringResource(R.string.mark_story_read_immediately)),
-            ChoiceOption(MarkStoryReadBehavior.SECONDS_5.name, stringResource(R.string.mark_story_read_5_seconds)),
-            ChoiceOption(MarkStoryReadBehavior.SECONDS_10.name, stringResource(R.string.mark_story_read_10_seconds)),
-            ChoiceOption(MarkStoryReadBehavior.SECONDS_20.name, stringResource(R.string.mark_story_read_20_seconds)),
-            ChoiceOption(MarkStoryReadBehavior.SECONDS_30.name, stringResource(R.string.mark_story_read_30_seconds)),
-            ChoiceOption(MarkStoryReadBehavior.SECONDS_45.name, stringResource(R.string.mark_story_read_45_seconds)),
-            ChoiceOption(MarkStoryReadBehavior.SECONDS_60.name, stringResource(R.string.mark_story_read_60_seconds)),
-            ChoiceOption(MarkStoryReadBehavior.MANUALLY.name, stringResource(R.string.mark_story_read_manually)),
-        )
+        MarkStoryReadBehavior.options(MarkStoryReadBehavior.entries.firstOrNull { it.name == state.markStoryReadBehavior }).map {
+            ChoiceOption(it.name, stringResource(it.labelRes))
+        }
     val contentPreviewOptions =
         listOf(
             ChoiceOption(
@@ -602,16 +593,6 @@ fun SettingsScreen(
                             onSelect = { onStringChanged(PrefConstants.STORY_MARK_READ_BEHAVIOR, it) },
                         )
                 },
-            )
-            RowDivider(palette)
-            ToggleSettingsRow(
-                title = stringResource(R.string.settings_mark_read_on_feed_scroll),
-                icon = Icons.Rounded.SwapVert,
-                iconColor = NewsblurCyan,
-                checked = state.markReadOnScroll,
-                subtitle = stringResource(R.string.settings_mark_read_on_feed_scroll_sum),
-                palette = palette,
-                onCheckedChange = { onBooleanChanged(PrefConstants.STORIES_MARK_READ_ON_SCROLL, it) },
             )
             RowDivider(palette)
             ToggleSettingsRow(

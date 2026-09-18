@@ -229,7 +229,7 @@ class ReadingItemFragment :
         enableHighlights = prefsRepo.getIsPremium() || prefsRepo.getIsArchive()
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior()
 
-        if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
+        if (markStoryReadBehavior.getDelayMillis() == 0L) {
             sampledQueue = SampledQueue(250, 5)
         }
         if (savedInstanceState != null) {
