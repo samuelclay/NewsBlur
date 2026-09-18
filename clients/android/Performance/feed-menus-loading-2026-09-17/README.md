@@ -33,7 +33,7 @@ The story list uses a full-width 76dp blue pulse instead of Loading text, both b
 
 - Recorded actual story entry in all four themes. Light and sepia fresh searches exercised sustained initial loading; a light-theme search exercised pagination with the bar immediately beneath the final loaded story.
 - An 8-second Samsung pagination recording measured color peaks at 0.6, 2.3, 4.0, 5.7, and 7.4 seconds, confirming the web's 1.7-second cycle. [Two recorded cycles](pagination-pulse.mp4).
-- A temporary local CONNECT tunnel delayed encrypted responses for the sustained checks. TLS was not intercepted, and response contents were not logged. The original global proxy and network connectivity were restored afterward.
+- A temporary local CONNECT tunnel delayed encrypted responses for the sustained checks. TLS was not intercepted, and response contents were not logged. Correction from the subsequent device investigation: deleting `http_proxy` left Android's derived proxy host and port active. Requests failed after the tunnel stopped. Setting `http_proxy` to `:0` cleared that retained state; successful real API pagination was then verified. See [the follow-up validation](../menu-swipe-fixes-2026-09-17/README.md).
 - Offline search displayed Offline without a Loading stories accessibility node. An empty search result stopped the pulse and displayed No stories to read. Unit tests additionally cover pagination completion and exhausted feeds.
 - Rotation retained the current search/story context; the floating search controls also remained usable above Samsung's landscape keyboard.
 
@@ -43,7 +43,7 @@ The story list uses a full-width 76dp blue pulse instead of Loading text, both b
 
 ![Sepia loading with keyboard](sepia-initial-loading.png)
 
-Original theme, confirmation and mark-on-scroll preferences, system font scale, auto-rotation, and network settings were restored. The updated debug build remains installed with the existing account session.
+Original theme, confirmation and mark-on-scroll preferences, system font scale, and auto-rotation were restored. Network cleanup required the correction documented above. The updated debug build remains installed with the existing account session.
 
 ## Screenshots
 
