@@ -24,7 +24,12 @@ class ImageViewport {
         private set
     val isZoomed get() = zoom > 1.01f
 
-    fun layout(width: Float, height: Float, imageWidth: Float, imageHeight: Float) {
+    fun layout(
+        width: Float,
+        height: Float,
+        imageWidth: Float,
+        imageHeight: Float,
+    ) {
         this.width = width
         this.height = height
         val fit = min(1f, min(width / imageWidth.coerceAtLeast(1f), height / imageHeight.coerceAtLeast(1f)))
@@ -40,7 +45,11 @@ class ImageViewport {
         panY = 0f
     }
 
-    fun scaleTo(value: Float, focusX: Float, focusY: Float) {
+    fun scaleTo(
+        value: Float,
+        focusX: Float,
+        focusY: Float,
+    ) {
         val next = value.coerceIn(1f, maxZoom)
         val ratio = next / zoom
         panX = (panX + width / 2 - focusX) * ratio + focusX - width / 2
@@ -49,7 +58,10 @@ class ImageViewport {
         clampPan()
     }
 
-    fun pan(dx: Float, dy: Float) {
+    fun pan(
+        dx: Float,
+        dy: Float,
+    ) {
         panX += dx
         panY += dy
         clampPan()
@@ -63,7 +75,12 @@ class ImageViewport {
     }
 
     companion object {
-        fun shouldDismiss(dxDp: Float, dyDp: Float, vxDp: Float, vyDp: Float): Boolean {
+        fun shouldDismiss(
+            dxDp: Float,
+            dyDp: Float,
+            vxDp: Float,
+            vyDp: Float,
+        ): Boolean {
             val distance = hypot(dxDp, dyDp)
             return distance > 90 || (distance > 25 && hypot(vxDp, vyDp) > 650)
         }

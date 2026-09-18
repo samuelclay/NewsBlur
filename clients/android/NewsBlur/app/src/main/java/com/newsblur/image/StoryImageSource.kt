@@ -27,7 +27,11 @@ data class StoryImageSource(
                     body["generation"].asLong,
                     body["token"].asString,
                     body["src"].asString,
-                    body["title"]?.asString?.take(500).orEmpty().ifBlank { "Story image" },
+                    body["title"]
+                        ?.asString
+                        ?.take(500)
+                        .orEmpty()
+                        .ifBlank { "Story image" },
                     body["naturalWidth"].asFloat,
                     body["naturalHeight"].asFloat,
                     rect["x"].asFloat,
@@ -36,11 +40,22 @@ data class StoryImageSource(
                     rect["height"].asFloat,
                     rect["viewportWidth"].asFloat,
                 ).takeIf { source ->
-                    source.token.matches(Regex("[0-9]{1,12}")) && isAllowedUrl(source.url) &&
-                        listOf(source.x, source.y, source.width, source.height, source.viewportWidth,
-                            source.naturalWidth, source.naturalHeight).all { it.isFinite() } &&
-                        source.naturalWidth > 1 && source.naturalHeight > 1 &&
-                        source.width > 0 && source.height > 0 && source.viewportWidth > 0
+                    source.token.matches(Regex("[0-9]{1,12}")) &&
+                        isAllowedUrl(source.url) &&
+                        listOf(
+                            source.x,
+                            source.y,
+                            source.width,
+                            source.height,
+                            source.viewportWidth,
+                            source.naturalWidth,
+                            source.naturalHeight,
+                        ).all { it.isFinite() } &&
+                        source.naturalWidth > 1 &&
+                        source.naturalHeight > 1 &&
+                        source.width > 0 &&
+                        source.height > 0 &&
+                        source.viewportWidth > 0
                 }
             }.getOrNull()
 
@@ -48,7 +63,8 @@ data class StoryImageSource(
             if (url.startsWith("data:image/", ignoreCase = true)) return url.length <= 44 * 1024 * 1024
             return runCatching {
                 val uri = URI(url)
-                uri.scheme?.lowercase() in setOf("http", "https") && !uri.host.isNullOrBlank() &&
+                uri.scheme?.lowercase() in setOf("http", "https") &&
+                    !uri.host.isNullOrBlank() &&
                     (uri.host != "appassets.androidplatform.net" || cachedFileName(url) != null)
             }.getOrDefault(false)
         }
@@ -58,8 +74,10 @@ data class StoryImageSource(
                 val uri = URI(url)
                 val name = uri.path.removePrefix("/images/")
                 name.takeIf {
-                    uri.scheme == "https" && uri.host == "appassets.androidplatform.net" &&
-                        uri.port in setOf(-1, 443) && uri.path.startsWith("/images/") &&
+                    uri.scheme == "https" &&
+                        uri.host == "appassets.androidplatform.net" &&
+                        uri.port in setOf(-1, 443) &&
+                        uri.path.startsWith("/images/") &&
                         it.matches(Regex("[A-Za-z0-9_-]+\\.[A-Za-z0-9]+"))
                 }
             }.getOrNull()

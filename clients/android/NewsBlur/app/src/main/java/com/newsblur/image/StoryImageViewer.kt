@@ -52,19 +52,29 @@ class StoryImageViewer(
     private val image = StoryImageView(context, source).apply { bitmap = preview }
     private val transition = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
     private val close = ImageButton(context)
-    private val status = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER }
+    private val status =
+        LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+        }
     private val spinner = ProgressBar(context).apply { indeterminateTintList = ColorStateList.valueOf(Color.WHITE) }
-    private val message = TextView(context).apply { setTextColor(Color.WHITE); gravity = Gravity.CENTER; textSize = 14f }
-    private val retry = TextView(context).apply {
-        setText(R.string.image_viewer_retry)
-        setTextColor(Color.WHITE)
-        textSize = 16f
-        gravity = Gravity.CENTER
-        setPadding(dp(20), dp(12), dp(20), dp(12))
-        isClickable = true
-        isFocusable = true
-        setOnClickListener { load() }
-    }
+    private val message =
+        TextView(context).apply {
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            textSize = 14f
+        }
+    private val retry =
+        TextView(context).apply {
+            setText(R.string.image_viewer_retry)
+            setTextColor(Color.WHITE)
+            textSize = 16f
+            gravity = Gravity.CENTER
+            setPadding(dp(20), dp(12), dp(20), dp(12))
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { load() }
+        }
     private var loader: StoryImageLoader? = null
     private var animation: ValueAnimator? = null
     private var closing = false
@@ -83,13 +93,20 @@ class StoryImageViewer(
         status.addView(spinner, LinearLayout.LayoutParams(dp(28), dp(28)))
         status.addView(message, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
         status.addView(retry)
-        root.addView(status, FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM).apply {
-            setMargins(dp(24), 0, dp(24), dp(36))
-        })
+        root.addView(
+            status,
+            FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM).apply {
+                setMargins(dp(24), 0, dp(24), dp(36))
+            },
+        )
         close.apply {
             setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
             imageTintList = ColorStateList.valueOf(Color.WHITE)
-            background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(0xD9333333.toInt()) }
+            background =
+                GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(0xD9333333.toInt())
+                }
             contentDescription = context.getString(R.string.image_viewer_close)
             setPadding(dp(12), dp(12), dp(12), dp(12))
             setOnClickListener { closeAnimated() }
@@ -132,7 +149,12 @@ class StoryImageViewer(
                     hide(WindowInsetsCompat.Type.systemBars())
                 }
             }
-            root.post { if (!closing) { enter(); load() } }
+            root.post {
+                if (!closing) {
+                    enter()
+                    load()
+                }
+            }
         }
         setOnDismissListener {
             closing = true
@@ -147,7 +169,9 @@ class StoryImageViewer(
     }
 
     @Deprecated("Dialog back handling")
-    override fun onBackPressed() { closeAnimated() }
+    override fun onBackPressed() {
+        closeAnimated()
+    }
 
     private fun enter() {
         entered = true
@@ -188,6 +212,7 @@ class StoryImageViewer(
         loader?.cancel()
         animation?.cancel()
         var finished = false
+
         fun finish(rect: RectF?) {
             if (finished || !isShowing) return
             finished = true
@@ -198,37 +223,58 @@ class StoryImageViewer(
         returnRect { finish(it) }
     }
 
-    private fun animateImage(from: RectF, to: RectF, opening: Boolean, complete: () -> Unit) {
+    private fun animateImage(
+        from: RectF,
+        to: RectF,
+        opening: Boolean,
+        complete: () -> Unit,
+    ) {
         val startBackdrop = backdrop.alpha
         val startClose = close.alpha
         transition.setImageBitmap(image.bitmap)
         transition.visibility = View.VISIBLE
         image.visibility = View.INVISIBLE
-        animation = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = if (opening) 300 else 240
-            addUpdateListener {
-                val t = it.animatedValue as Float
-                val rect = RectF(from.left + (to.left - from.left) * t, from.top + (to.top - from.top) * t,
-                    from.right + (to.right - from.right) * t, from.bottom + (to.bottom - from.bottom) * t)
-                transition.layoutParams = FrameLayout.LayoutParams(maxOf(1, rect.width().toInt()), maxOf(1, rect.height().toInt()))
-                transition.x = rect.left
-                transition.y = rect.top
-                backdrop.alpha = if (opening) t else startBackdrop * (1 - t)
-                close.alpha = if (opening) t else startClose * (1 - t)
-                status.alpha = close.alpha
-                transition.alpha = if (opening) 1f else 1f - t
-            }
-            addListener(object : AnimatorListenerAdapter() {
-                private var cancelled = false
-                override fun onAnimationCancel(animation: Animator) { cancelled = true }
-                override fun onAnimationEnd(animation: Animator) {
-                    if (!cancelled) { transition.visibility = View.GONE; complete() }
+        animation =
+            ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = if (opening) 300 else 240
+                addUpdateListener {
+                    val t = it.animatedValue as Float
+                    val rect =
+                        RectF(
+                            from.left + (to.left - from.left) * t,
+                            from.top + (to.top - from.top) * t,
+                            from.right + (to.right - from.right) * t,
+                            from.bottom + (to.bottom - from.bottom) * t,
+                        )
+                    transition.layoutParams = FrameLayout.LayoutParams(maxOf(1, rect.width().toInt()), maxOf(1, rect.height().toInt()))
+                    transition.x = rect.left
+                    transition.y = rect.top
+                    backdrop.alpha = if (opening) t else startBackdrop * (1 - t)
+                    close.alpha = if (opening) t else startClose * (1 - t)
+                    status.alpha = close.alpha
+                    transition.alpha = if (opening) 1f else 1f - t
                 }
-            })
-            start()
-        }
+                addListener(
+                    object : AnimatorListenerAdapter() {
+                        private var cancelled = false
+
+                        override fun onAnimationCancel(animation: Animator) {
+                            cancelled = true
+                        }
+
+                        override fun onAnimationEnd(animation: Animator) {
+                            if (!cancelled) {
+                                transition.visibility = View.GONE
+                                complete()
+                            }
+                        }
+                    },
+                )
+                start()
+            }
     }
 
     private fun dp(value: Int) = (value * context.resources.displayMetrics.density).toInt()
+
     private fun match() = ViewGroup.LayoutParams(-1, -1)
 }
