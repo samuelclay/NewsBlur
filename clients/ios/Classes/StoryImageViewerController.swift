@@ -51,7 +51,7 @@ struct StoryImageSource {
               let height = (value["height"] as? NSNumber)?.doubleValue, let viewport = (value["viewportWidth"] as? NSNumber)?.doubleValue,
               [x, y, width, height, viewport].allSatisfy(\.isFinite),
               width > 0, height > 0, viewport > 0 else { return nil }
-        return (CGRect(x: x, y: y, width: width, height: height), viewport)
+        return (CGRect(x: x, y: y, width: width, height: height), CGFloat(viewport))
     }
 
     static func fittedSize(_ size: CGSize, in bounds: CGSize) -> CGSize {
