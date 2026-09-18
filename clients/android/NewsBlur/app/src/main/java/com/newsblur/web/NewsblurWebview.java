@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 
 import com.newsblur.R;
 import com.newsblur.BuildConfig;
@@ -73,6 +75,15 @@ public class NewsblurWebview extends WebView {
         // do the minimum handling of view swapping so that fullscreen HTML5 works, for videos.
         webChromeClient = new NewsblurWebChromeClient();
         setWebChromeClient(webChromeClient);
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            WebViewCompat.addWebMessageListener(this, "NewsBlurImages",
+                    java.util.Collections.singleton("https://appassets.androidplatform.net"),
+                    (view, message, origin, mainFrame, reply) -> {
+                        if (mainFrame && fragment != null && message.getData() != null) {
+                            fragment.openStoryImage(this, message.getData());
+                        }
+                    });
+        }
     }
 
     public void setWebviewActionDelegate(@NonNull WebviewActionDelegate webviewActionDelegate) {
@@ -141,8 +152,13 @@ public class NewsblurWebview extends WebView {
             android.util.Log.d("NB.Reader", "load_html view=" + System.identityHashCode(this)
                     + " request=" + activeVisualStateRequestId + " chars=" + data.length());
         }
-        super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+        // NewsblurWebview.java rejects image messages from an article replaced during asynchronous loading.
+        String tagged = data.replaceFirst("<head>", "<head><meta name=\"newsblur-image-generation\" content=\""
+                + activeVisualStateRequestId + "\">");
+        super.loadDataWithBaseURL(baseUrl, tagged, mimeType, encoding, historyUrl);
     }
+
+    public long getDocumentGeneration() { return activeVisualStateRequestId; }
 
     private void requestVisualState() {
         if (activeVisualStateRequestId == 0L) return;

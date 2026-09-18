@@ -1,4 +1,8 @@
 <resources>
+    <string name="image_viewer_close">Close image</string>
+    <string name="image_viewer_loading">Loading image…</string>
+    <string name="image_viewer_failed">Could not load the full image.</string>
+    <string name="image_viewer_retry">Try again</string>
     <string name="settings_story_toolbar_position">Story list toolbar position</string>
     <string name="settings_story_toolbar_top">Top</string>
     <string name="settings_story_toolbar_bottom">Bottom</string>
