@@ -369,6 +369,9 @@ class StoryViewAdapter(
                 }
             }
             applyPendingStoryReturn(rv, replacingEmptyList)
+            // StoryViewAdapter.kt needs a presentation frame even when an unchanged diff and held
+            // highlight produce no view updates after the return's first frame waited for this load.
+            if (pendingHighlightStoryHash != null) rv.invalidate()
         }
         if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "commit id=${submission.loadId} rows=${result.items.size} pending=$isUpdatingStories")
         if (latestSubmission === submission) latestSubmission = null

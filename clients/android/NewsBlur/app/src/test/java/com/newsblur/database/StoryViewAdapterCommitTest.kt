@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.domain.Story
 import com.newsblur.util.FeedSet
 import io.mockk.every
+import io.mockk.clearMocks
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
@@ -24,6 +25,25 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoryViewAdapterCommitTest {
+    @Test
+    fun anIdenticalRefreshSchedulesPresentationAfterReturnWaitedForTheDiff() = runTest {
+        withFixture { fixture ->
+            fixture.submit("1:already-read", 1)
+            runCurrent()
+            fixture.showBoundStory("1:already-read")
+
+            fixture.submit("1:already-read", 2)
+            fixture.adapter.requestStoryReturn("1:already-read", fixture.grid, true)
+            fixture.adapter.applyPendingStoryReturn(fixture.grid, presentationFrame = true)
+            verify(exactly = 0) { fixture.adapter["animateReturnHighlight"](fixture.grid, 0) }
+            clearMocks(fixture.grid, answers = false, recordedCalls = true)
+
+            runCurrent()
+
+            verify(atLeast = 1) { fixture.grid.invalidate() }
+        }
+    }
+
     @Test
     fun returningAfterTheLastCommitScrollsImmediatelyAndWaitsForVisiblePresentationToFade() = runTest {
         withFixture { fixture ->
