@@ -479,6 +479,35 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.newslettersState.hasMore)
     }
 
+    func test_gridCategoryReplacementReloadsStoryPreviewsWhenReturningToList() async {
+        let viewModel = model()
+        ResponseProtocol.handler = { request in
+            let parameters = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!.queryItems!
+            let category = parameters.first { $0.name == "category" }!.value!
+            return (200, ["code": 1, "has_more": false, "feeds": [["title": category, "feed_url": "https://example.com/\(category)"]]])
+        }
+        viewModel.feedViewMode = .list
+        viewModel.loadPopularFeeds(type: "popular", category: "A", subcategory: nil, offset: 0)
+        await waitUntil { !viewModel.popularState.isLoading }
+        XCTAssertTrue(viewModel.popularState.hasLoadedStories)
+        viewModel.feedViewMode = .grid
+        viewModel.loadPopularFeeds(type: "popular", category: "B", subcategory: nil, offset: 0)
+        await waitUntil { !viewModel.popularState.isLoading }
+        XCTAssertFalse(viewModel.popularState.hasLoadedStories)
+        viewModel.feedViewMode = .list
+        if !viewModel.popularState.hasLoadedStories {
+            ResponseProtocol.handler = { request in
+                let parameters = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!.queryItems!
+                XCTAssertEqual(parameters.first { $0.name == "include_stories" }?.value, "true")
+                XCTAssertEqual(parameters.first { $0.name == "category" }?.value, "B")
+                return (200, ["code": 1, "feeds": [["title": "B", "feed_url": "https://example.com/B"]]])
+            }
+            viewModel.loadPopularFeeds(type: "popular", category: "B", subcategory: nil, offset: 0)
+            await waitUntil { !viewModel.popularState.isLoading }
+        }
+        XCTAssertTrue(viewModel.popularState.hasLoadedStories)
+    }
+
     func test_newsletterURLConversionProducesSubscribableCard() async {
         let viewModel = model()
         ResponseProtocol.handler = { request in

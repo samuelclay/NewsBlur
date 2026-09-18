@@ -321,6 +321,7 @@ class DiscoverSitesViewModel: ObservableObject {
             state.errorMessage = nil
             if offset == 0 {
                 state.feeds = []
+                state.hasLoadedStories = false
             }
         }
 
@@ -351,6 +352,7 @@ class DiscoverSitesViewModel: ObservableObject {
                 updateCategoryTabState(type: type) { state in
                     if offset == 0 {
                         state.feeds = feeds
+                        state.hasLoadedStories = includesStories
                     } else {
                         var seen = Set(state.feeds.map(\.id))
                         state.feeds.append(contentsOf: feeds.filter { seen.insert($0.id).inserted })
