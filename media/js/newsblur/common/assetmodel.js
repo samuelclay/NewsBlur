@@ -1167,17 +1167,33 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (first_load) {
             this.discovery_snapshot = null;
             this.discovery_cursor = 0;
+            this.discovery_preview = null;
+            this.trending_request_generation = (this.trending_request_generation || 0) + 1;
         }
         var user_id = NEWSBLUR.Globals.user_id;
+        var generation = this.trending_request_generation;
 
         var pre_callback = function (data) {
-            if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id) return;
+            if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id ||
+                generation !== self.trending_request_generation) return;
+            var reveal = false;
             if (options.trending_type === 'discovery') {
                 self.discovery_snapshot = data.discovery_snapshot;
                 self.discovery_cursor = data.discovery_next_cursor;
+                self.discovery_preview = data.discovery_preview;
+                reveal = first_load && (data.discovery_preview ? data.discovery_preview.generated :
+                    self.discovery_opened_user !== user_id);
+                self.discovery_opened_user = user_id;
                 _.each(data.feeds, function (feed) { feed.temp = true; });
             }
             self.load_feed_precallback(data, feed_id, callback, first_load);
+            if (options.trending_type === 'discovery') {
+                if (data.discovery_preview && data.discovery_next_cursor === null) {
+                    self.stories.no_more_stories = true;
+                    self.stories.trigger('no_more_stories');
+                }
+                if (reveal) NEWSBLUR.reveal_discovery_stories();
+            }
         };
 
         this.feed_id = feed_id;
@@ -1189,7 +1205,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter')
-        }, pre_callback, error_callback, {
+        }, pre_callback, function () {
+            if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id ||
+                generation !== self.trending_request_generation) return;
+            $('.NB-discovery-loading').remove();
+            if (error_callback) error_callback.apply(null, arguments);
+        }, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });
@@ -1882,6 +1903,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             setting == 'read_filter') return "starred";
         if (feed_id == "river:global" && setting == "order") return "newest";
         if (feed_id == "trending:discovery" && setting == "order") return "recommended";
+        if (feed_id == "trending:discovery" && setting == "read_filter" &&
+            !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) return "all";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
             var s = setting.substr(0, 1);

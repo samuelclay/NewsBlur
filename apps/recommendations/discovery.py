@@ -11,9 +11,10 @@ from urllib.parse import parse_qsl, urlencode, urlsplit
 import redis
 from django.conf import settings
 from django.core.cache import cache
+from mongoengine import NotUniqueError
 
 from apps.reader.models import UserSubscription
-from apps.recommendations.models import MRecommendationFeedback
+from apps.recommendations.models import MDiscoveryPreview, MRecommendationFeedback
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.social.models import MSharedStory
 from apps.statistics.rtrending import RTrendingStory
@@ -26,6 +27,7 @@ class Discovery:
     CANDIDATES_PER_LIST = 120
     HISTORY_LIMIT = 150
     SNAPSHOT_TTL = 60 * 60
+    PREVIEW_LIMIT = 3
     STOP_WORDS = set(
         "a an and are as at be been but by can could did do does for from had has have he her "
         "here him his how i if in into is it its just like more most my new no not of on one "
@@ -223,6 +225,53 @@ class Discovery:
                     counts_by_feed.clear()
             scored = deferred
         return result
+
+    @classmethod
+    def weekly_page(cls, user_id, page=1, limit=12, cursor=None, now=None):
+        now = now or datetime.datetime.utcnow()
+        week_start = (now - datetime.timedelta(days=now.weekday())).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        resets_at = week_start + datetime.timedelta(days=7)
+        query = MDiscoveryPreview.objects(user_id=user_id, week_start=week_start)
+        preview = query.first()
+        generated = False
+        if preview is None and page == 1:
+            hashes, _, _ = cls.page(user_id, limit=cls.PREVIEW_LIMIT, read_filter="unread")
+            if hashes:
+                generation = uuid.uuid4().hex
+                try:
+                    # discovery.py: Concurrent first opens must return the same winning selection.
+                    preview = query.modify(
+                        upsert=True,
+                        new=True,
+                        set_on_insert__story_hashes=hashes,
+                        set_on_insert__generation=generation,
+                        set_on_insert__expires_date=resets_at + datetime.timedelta(days=14),
+                    )
+                except NotUniqueError:
+                    preview = query.get()
+                generated = preview.generation == generation
+        hashes = preview.story_hashes if preview else []
+        offset = (page - 1) * limit
+        if page > 1 and cursor is not None:
+            if not re.fullmatch(r"[0-9]", str(cursor)) or int(cursor) > len(hashes):
+                raise ValueError("Refresh Discovery to see this week's stories.")
+            offset = int(cursor)
+        # discovery.py: Reading, voting, cache eviction and refresh cannot replace a weekly pick.
+        selected = hashes[offset : offset + limit]
+        selected = [s.story_hash for s in cls.eligible_stories(user_id, selected, include_content=False)]
+        next_cursor = min(offset + limit, len(hashes))
+        return (
+            selected,
+            next_cursor if next_cursor < len(hashes) else None,
+            dict(
+                limited=True,
+                limit=cls.PREVIEW_LIMIT,
+                generated=generated,
+                resets_at=resets_at.isoformat() + "Z",
+            ),
+        )
 
     @classmethod
     def page(cls, user_id, page=1, limit=12, read_filter="unread", snapshot=None, cursor=None):

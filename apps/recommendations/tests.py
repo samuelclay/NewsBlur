@@ -2,12 +2,13 @@ import datetime
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from apps.reader.models import UserSubscription
 from apps.recommendations.discovery import Discovery
-from apps.recommendations.models import MRecommendationFeedback
+from apps.recommendations.models import MDiscoveryPreview, MRecommendationFeedback
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.social.models import MSharedStory
 
@@ -35,6 +36,7 @@ class Test_StoryRecommendationFeedback(TestCase):
         self.client.force_login(self.user)
 
     def tearDown(self):
+        MDiscoveryPreview.objects(user_id__in=[self.user.pk, self.other_user.pk]).delete()
         MRecommendationFeedback.objects(user_id__in=[self.user.pk, self.other_user.pk]).delete()
         MStory.objects(story_hash=self.story.story_hash).delete()
         MStory.objects(story_guid__startswith="discovery-test-").delete()
@@ -290,6 +292,8 @@ class Test_StoryRecommendationFeedback(TestCase):
             self.assertEqual(Discovery.page(self.user.pk, page=2, limit=1, snapshot=snapshot)[0], [])
 
     def test_discovery_response_restores_feedback_and_rejects_anonymous_requests(self):
+        self.user.profile.is_archive = True
+        self.user.profile.save()
         self.vote(-1, surface="discovery")
         with patch.object(Discovery, "page", return_value=([self.story.story_hash], "snapshot", 1)):
             response = self.client.get(
@@ -303,6 +307,121 @@ class Test_StoryRecommendationFeedback(TestCase):
             self.client.get(reverse("load-trending-stories"), {"trending_type": "discovery"}).json()["code"],
             -1,
         )
+
+    def test_discovery_archive_and_pro_have_full_access_and_other_tiers_get_three(self):
+        stories = [self.make_discovery_story("tier-%s" % i, "Article") for i in range(6)]
+        with patch.object(
+            Discovery, "candidate_hashes", return_value=[s.story_hash for s in stories]
+        ), patch.object(Discovery, "reading_examples", return_value=[]):
+            for premium, archive, pro, expected in [
+                (False, False, False, 3),
+                (True, False, False, 3),
+                (True, True, False, 6),
+                (True, False, True, 6),
+            ]:
+                with self.subTest(premium=premium, archive=archive, pro=pro):
+                    profile = self.user.profile
+                    profile.is_premium, profile.is_archive, profile.is_pro = premium, archive, pro
+                    profile.save()
+                    data = self.client.get(
+                        reverse("load-trending-stories"),
+                        dict(
+                            trending_type="discovery",
+                            limit=100,
+                            read_filter="all",
+                            discovery_snapshot="forged",
+                        ),
+                    ).json()
+                    self.assertEqual(len(data["stories"]), expected)
+                    self.assertEqual(bool(data["discovery_preview"]), expected == 3)
+                    if expected == 3:
+                        self.assertIsNone(data["discovery_next_cursor"])
+
+    def test_weekly_preview_survives_cache_clear_voting_and_monday_is_a_new_selection(self):
+        stories = [self.make_discovery_story("weekly-%s" % i, "Article") for i in range(6)]
+        hashes = [s.story_hash for s in stories]
+        sunday = datetime.datetime(2026, 9, 20, 23, 59)
+        with patch.object(Discovery, "page", return_value=(hashes[:3], "unused", 3)) as rank:
+            first = Discovery.weekly_page(self.user.pk, now=sunday)
+            self.assertTrue(first[2]["generated"])
+            self.assertEqual(first[2]["resets_at"], "2026-09-21T00:00:00Z")
+            self.vote(-1, surface="discovery")
+            cache.clear()
+            rank.return_value = (hashes[3:], "new-ranking", 3)
+            again = Discovery.weekly_page(self.user.pk, now=sunday)
+            self.assertEqual(again[0], first[0])
+            self.assertFalse(again[2]["generated"])
+            self.assertEqual(rank.call_count, 1)
+            monday = Discovery.weekly_page(self.user.pk, now=sunday + datetime.timedelta(minutes=1))
+            self.assertEqual(monday[0], hashes[3:])
+            self.assertTrue(monday[2]["generated"])
+            self.assertEqual(rank.call_count, 2)
+
+    def test_weekly_pagination_and_new_subscriptions_do_not_replace_picks(self):
+        stories = [self.make_discovery_story("weekly-page-%s" % i, "Article") for i in range(4)]
+        hashes = [s.story_hash for s in stories]
+        with patch.object(Discovery, "page", return_value=(hashes[:3], "unused", 3)) as rank:
+            first = Discovery.weekly_page(self.user.pk, limit=1)
+            second = Discovery.weekly_page(self.user.pk, page=2, limit=1, cursor=first[1])
+            third = Discovery.weekly_page(self.user.pk, page=3, limit=1, cursor=second[1])
+            self.assertEqual(first[0] + second[0] + third[0], hashes[:3])
+            self.assertIsNone(third[1])
+            self.assertEqual(Discovery.weekly_page(self.user.pk, page=4, limit=1)[0], [])
+            UserSubscription.objects.create(user=self.user, feed_id=stories[0].story_feed_id)
+            self.assertEqual(Discovery.weekly_page(self.user.pk)[0], hashes[1:3])
+            self.assertEqual(rank.call_count, 1)
+            for cursor in ("-1", "4", "forged"):
+                with self.subTest(cursor=cursor), self.assertRaises(ValueError):
+                    Discovery.weekly_page(self.user.pk, page=2, cursor=cursor)
+
+    def test_weekly_preview_keeps_already_read_picks_and_is_account_scoped(self):
+        story = self.make_discovery_story("weekly-read", "Article")
+        with patch.object(Discovery, "page", return_value=([story.story_hash], "unused", 1)):
+            Discovery.weekly_page(self.user.pk)
+        with patch.object(Discovery, "page", side_effect=AssertionError("Already populated")):
+            with patch("apps.recommendations.discovery.redis.Redis") as redis_client:
+                self.assertEqual(Discovery.weekly_page(self.user.pk)[0], [story.story_hash])
+                redis_client.assert_not_called()
+            self.assertEqual(Discovery.weekly_page(self.other_user.pk, page=2)[0], [])
+        self.assertEqual(MDiscoveryPreview.objects(user_id=self.other_user.pk).count(), 0)
+
+    def test_concurrent_first_opens_use_the_winning_weekly_selection(self):
+        first = self.make_discovery_story("weekly-race-first", "Article")
+        other = self.make_discovery_story("weekly-race-other", "Article")
+        now = datetime.datetime(2026, 9, 21, 12)
+
+        def competing_selection(*args, **kwargs):
+            MDiscoveryPreview(
+                user_id=self.user.pk,
+                week_start=now.replace(hour=0),
+                story_hashes=[first.story_hash],
+                generation="other-request",
+                expires_date=now + datetime.timedelta(days=21),
+            ).save()
+            return [other.story_hash], "unused", 1
+
+        with patch.object(Discovery, "page", side_effect=competing_selection):
+            result = Discovery.weekly_page(self.user.pk, now=now)
+        self.assertEqual(result[0], [first.story_hash])
+        self.assertFalse(result[2]["generated"])
+        self.assertEqual(MDiscoveryPreview.objects(user_id=self.user.pk).count(), 1)
+
+    def test_no_candidates_does_not_spend_the_weekly_preview(self):
+        with patch.object(Discovery, "page", return_value=([], "unused", 0)):
+            result = Discovery.weekly_page(self.user.pk)
+        self.assertEqual(result[0], [])
+        self.assertFalse(result[2]["generated"])
+        self.assertEqual(MDiscoveryPreview.objects(user_id=self.user.pk).count(), 0)
+
+    def test_account_deletion_removes_only_its_weekly_selections(self):
+        story = self.make_discovery_story("weekly-delete", "Article")
+        with patch.object(Discovery, "page", return_value=([story.story_hash], "unused", 1)):
+            Discovery.weekly_page(self.user.pk)
+            Discovery.weekly_page(self.other_user.pk)
+        user_id = self.user.pk
+        self.user.delete()
+        self.assertEqual(MDiscoveryPreview.objects(user_id=user_id).count(), 0)
+        self.assertEqual(MDiscoveryPreview.objects(user_id=self.other_user.pk).count(), 1)
 
     def test_discovery_continues_past_newly_ineligible_pages(self):
         stories = [self.make_discovery_story("continuation-%s" % i, "Article") for i in range(5)]

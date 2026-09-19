@@ -98,3 +98,22 @@ test('dialog letters never reach reader keypress shortcuts, while native activat
         view.stop_event({ key, stopPropagation() { assert.fail('Modal keyboard handling was swallowed'); } });
     }
 });
+
+test('equal More and Less activity is visible on opposite sides; an empty summary is a constellation', () => {
+    const NEWSBLUR = { Views: {} };
+    const document = { createElementNS(namespace, tag) {
+        return { tag, attributes: {}, children: [], setAttribute(key, value) { this.attributes[key] = value; },
+            appendChild(child) { this.children.push(child); } };
+    } };
+    const context = vm.createContext({ NEWSBLUR, document, _: underscore, Backbone: { View: { extend: methods => methods } } });
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/recommendation_feedback_view.js'), 'utf8'), context);
+    const empty = NEWSBLUR.recommendation_feedback_chart([], 72, 24, true);
+    assert.equal(empty.attributes.class, 'NB-feedback-constellation');
+    assert.equal(empty.children.filter(shape => shape.tag === 'circle').length, 5);
+    const graph = NEWSBLUR.recommendation_feedback_chart([{ more: 0, less: 0 }, { more: 2, less: 2 }], 72, 24, false);
+    const line = choice => graph.children.find(shape => shape.attributes.class === 'NB-feedback-chart-' + choice);
+    const y = choice => Number(line(choice).attributes.points.split(' ').at(-1).split(',')[1]);
+    assert.ok(y('more') < 12);
+    assert.ok(y('less') > 12);
+    assert.equal(12 - y('more'), y('less') - 12);
+});

@@ -48,6 +48,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         if (NEWSBLUR.reader.active_feed == "trending:discovery") {
             this.options.show_order = false;
+            if (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) this.options.show_readfilter = false;
         }
         if (NEWSBLUR.reader.active_feed == "read") {
             this.options['show_readfilter'] = false;

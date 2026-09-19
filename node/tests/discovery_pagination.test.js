@@ -22,7 +22,8 @@ test('dashboard folder choices do not offer the standalone Discovery stream', ()
 });
 
 test('Discovery continues with the returned cursor and resets it on refresh', () => {
-    const NEWSBLUR = { Globals: { user_id: 1 }, reader: { active_feed: 'trending:discovery' } };
+    const NEWSBLUR = { Globals: { user_id: 1 }, reader: { active_feed: 'trending:discovery' },
+        reveal_discovery_stories() {} };
     const context = vm.createContext({
         NEWSBLUR, _: underscore, Backbone: { Router: { extend: methods => methods } }
     });
@@ -46,4 +47,47 @@ test('Discovery continues with the returned cursor and resets it on refresh', ()
     load(1, true);
     assert.equal(requests[3].data.discovery_cursor, 0);
     assert.equal(requests[3].data.discovery_snapshot, null);
+});
+
+test('weekly preview ends pagination, reveals new picks once, and ignores a superseded opening', () => {
+    let reveals = 0;
+    const events = [], requests = [], loaded = [];
+    const NEWSBLUR = { Globals: { user_id: 1 }, reader: { active_feed: 'trending:discovery' },
+        reveal_discovery_stories() { reveals++; } };
+    const context = vm.createContext({ NEWSBLUR, _: underscore, Backbone: { Router: { extend: methods => methods } } });
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/common/assetmodel.js'), 'utf8'), context);
+    const model = Object.create(NEWSBLUR.AssetModel);
+    model.stories = { trigger: event => events.push(event) };
+    model.view_setting = () => 'all';
+    model.make_request = (url, data, callback) => requests.push(callback);
+    model.load_feed_precallback = data => loaded.push(data);
+    const load = () => model.fetch_trending_stories('trending:discovery', 1, { trending_type: 'discovery' }, null, null, true);
+    const response = { discovery_preview: { limited: true, generated: true }, discovery_next_cursor: null, feeds: [] };
+    load(); load();
+    requests[0](response);
+    assert.equal(loaded.length, 0);
+    requests[1](response);
+    assert.equal(model.stories.no_more_stories, true);
+    assert.deepEqual(events, ['no_more_stories']);
+    assert.equal(reveals, 1);
+    load(); requests[2]({ ...response, discovery_preview: { limited: true, generated: false } });
+    assert.equal(reveals, 1);
+    load(); requests[3](response);
+    assert.equal(reveals, 2);
+});
+
+test('changing reader layout preserves the weekly preview boundary in both story views', () => {
+    const NEWSBLUR = { Views: {}, assets: { discovery_cursor: null }, discovery_preview_active: () => true };
+    const context = vm.createContext({ NEWSBLUR, _: underscore, Backbone: { View: { extend: methods => methods } } });
+    for (const [file, name] of [['story_titles_view.js', 'StoryTitlesView'], ['story_list_view.js', 'StoryListView']]) {
+        vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/', file), 'utf8'), context);
+        const view = Object.create(NEWSBLUR.Views[name]);
+        Object.assign(view, { stories: [], collection: { no_more_stories: true }, $el: { empty() {} }, clear_explainer() {} });
+        view.clear();
+        assert.equal(view.collection.no_more_stories, true, name + ' dropped the preview end marker');
+        NEWSBLUR.discovery_preview_active = () => false;
+        view.clear();
+        assert.equal(view.collection.no_more_stories, false);
+        NEWSBLUR.discovery_preview_active = () => true;
+    }
 });

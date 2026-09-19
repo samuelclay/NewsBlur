@@ -3265,6 +3265,7 @@
 
         open_trending_stories: function (options) {
             options = options || {};
+            this.model.discovery_preview = null;
             var trending_type = options.trending_type || 'well_read';
             var folder_titles = {
                 'well_read': 'Widely Read Stories',

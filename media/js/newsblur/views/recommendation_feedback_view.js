@@ -1,18 +1,43 @@
 // recommendation_feedback_view.js: Current choices, shared by the river header and history dialog.
-NEWSBLUR.recommendation_feedback_chart = function (days, width, height) {
+NEWSBLUR.recommendation_feedback_chart = function (days, width, height, neutral) {
     var namespace = 'http://www.w3.org/2000/svg';
     var svg = document.createElementNS(namespace, 'svg');
     svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
     svg.setAttribute('aria-hidden', 'true');
+    function shape(tag, attributes) {
+        var element = document.createElementNS(namespace, tag);
+        _.each(attributes, function (value, key) { element.setAttribute(key, value); });
+        svg.appendChild(element);
+        return element;
+    }
+    if (neutral) {
+        svg.setAttribute('class', 'NB-feedback-constellation');
+        var stars = [[.08, .65], [.28, .3], [.49, .55], [.7, .2], [.92, .45]];
+        shape('polyline', { points: _.map(stars, function (point) {
+            return point[0] * width + ',' + point[1] * height;
+        }).join(' '), class: 'NB-feedback-constellation-line' });
+        _.each(stars, function (point, index) {
+            shape('circle', { cx: point[0] * width, cy: point[1] * height,
+                r: index === 2 ? 2 : 1.2, class: 'NB-feedback-constellation-star' });
+        });
+        return svg;
+    }
+    var middle = height / 2;
+    shape('line', { x1: 3, x2: width - 3, y1: middle, y2: middle, class: 'NB-feedback-chart-axis' });
     var maximum = Math.max(1, _.max(_.map(days, function (day) { return Math.max(day.more, day.less); })));
     _.each(['more', 'less'], function (choice) {
-        var line = document.createElementNS(namespace, 'polyline');
-        line.setAttribute('points', _.map(days, function (day, i) {
-            return (3 + i * (width - 6) / Math.max(1, days.length - 1)) + ',' +
-                (height - 3 - day[choice] / maximum * (height - 6));
-        }).join(' '));
-        line.setAttribute('class', 'NB-feedback-chart-' + choice);
-        svg.appendChild(line);
+        var points = _.map(days, function (day, i) {
+            return [3 + i * (width - 6) / Math.max(1, days.length - 1),
+                middle + (choice === 'more' ? -1 : 1) * day[choice] / maximum * (middle - 3)];
+        });
+        var coordinates = _.map(points, function (point) { return point.join(','); }).join(' ');
+        shape('polygon', { points: '3,' + middle + ' ' + coordinates + ' ' + (width - 3) + ',' + middle,
+            class: 'NB-feedback-chart-area NB-feedback-chart-area-' + choice });
+        shape('polyline', { points: coordinates, class: 'NB-feedback-chart-' + choice });
+        _.each(points, function (point, i) {
+            if (days[i][choice]) shape('circle', { cx: point[0], cy: point[1], r: 1.5,
+                class: 'NB-feedback-chart-dot NB-feedback-chart-dot-' + choice });
+        });
     });
     _.each(days, function (day, i) {
         var hit = document.createElementNS(namespace, 'rect');
@@ -27,6 +52,43 @@ NEWSBLUR.recommendation_feedback_chart = function (days, width, height) {
         svg.appendChild(hit);
     });
     return svg;
+};
+
+NEWSBLUR.discovery_preview_active = function () {
+    return NEWSBLUR.reader.active_feed === 'trending:discovery' &&
+        NEWSBLUR.assets.discovery_preview && NEWSBLUR.assets.discovery_preview.limited;
+};
+
+NEWSBLUR.discovery_preview_callout = function () {
+    var preview = NEWSBLUR.assets.discovery_preview;
+    var $callout = $('<div class="NB-end-line NB-discovery-preview-end"><div class="NB-feed-story-premium-only"></div></div>');
+    var $content = $callout.children().append(NEWSBLUR.recommendation_feedback_chart([], 96, 32, true));
+    $content.append($('<h3>').text('There’s more to discover'));
+    $content.append($('<p>').text('Three stories, picked for you each week. Get the full Discovery stream with Premium Archive.'));
+    $content.append($('<a href="#" class="NB-discovery-upgrade" data-feature="discovery">').text('Unlock Discovery'));
+    $content.append($('<div class="NB-discovery-next-week">').text('New picks ' +
+        new Date(preview.resets_at).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })));
+    return $callout;
+};
+
+NEWSBLUR.discovery_loading = function () {
+    return $('<div class="NB-end-line NB-discovery-loading" role="status">')
+        .append(NEWSBLUR.recommendation_feedback_chart([], 160, 56, true))
+        .append($('<span>').text('Finding stories for you…'))
+        .append('<div class="NB-discovery-loading-lines"><i></i><i></i><i></i></div>');
+};
+
+NEWSBLUR.reveal_discovery_stories = function () {
+    NEWSBLUR.assets.stories.each(function (story, index) {
+        if (index >= 12) return;
+        _.each([story.story_title_view, story.story_view], function (view) {
+            if (!view) return;
+            view.$el.css('--discovery-reveal-delay', Math.min(index * 110, 770) + 'ms')
+                .addClass('NB-discovery-reveal').one('animationend', function () {
+                    $(this).removeClass('NB-discovery-reveal');
+                });
+        });
+    });
 };
 
 NEWSBLUR.Views.RecommendationFeedbackSummary = Backbone.View.extend({
@@ -44,8 +106,23 @@ NEWSBLUR.Views.RecommendationFeedbackSummary = Backbone.View.extend({
     initialize: function () {
         this.request_number = 0;
         this.listenTo(NEWSBLUR.assets, 'recommendation:updated', this.load);
-        this.$el.text('Your preferences');
+        this.$el.toggleClass('NB-feedback-summary-sidebar', !!this.options.sidebar);
+        this.render_summary({ more: 0, less: 0, days: [] });
         this.load();
+    },
+
+    render_summary: function (summary) {
+        // recommendation_feedback_view.js: Let the first few choices fill the tiny chart; history keeps all 30 days.
+        var first_activity = _.find(summary.days, function (day) { return day.more || day.less; });
+        var days = first_activity ? summary.days.slice(Math.max(0, _.indexOf(summary.days, first_activity) - 1)) : summary.days;
+        this.$el.empty().append(NEWSBLUR.recommendation_feedback_chart(days, 72, 24,
+            !summary.more && !summary.less));
+        if (summary.more || summary.less) {
+            this.$el.append($('<span class="NB-feedback-count unread_count_positive">').text(summary.more));
+            this.$el.append($('<span class="NB-feedback-count unread_count_negative">').text(summary.less));
+        }
+        var label = 'Recommendation preferences: ' + summary.more + ' More, ' + summary.less + ' Less. Open history.';
+        this.$el.attr({ 'aria-label': label, title: label });
     },
 
     stop_event: function (e) { e.stopPropagation(); },
@@ -54,14 +131,12 @@ NEWSBLUR.Views.RecommendationFeedbackSummary = Backbone.View.extend({
         var self = this, request_number = ++this.request_number;
         NEWSBLUR.assets.load_recommendation_feedback({ summary: 1 }, function (data) {
             if (self.removed || request_number !== self.request_number) return;
-            var summary = data.summary;
-            self.$el.empty().append(NEWSBLUR.recommendation_feedback_chart(summary.days, 72, 24));
-            self.$el.append($('<span class="NB-feedback-more-count">').text(summary.more + ' More'));
-            self.$el.append($('<span class="NB-feedback-less-count">').text(summary.less + ' Less'));
-            self.$el.attr('aria-label', 'Recommendation preferences: ' + summary.more + ' More, ' +
-                summary.less + ' Less. Open history.');
+            self.render_summary(data.summary);
         }, function () {
-            if (!self.removed && request_number === self.request_number) self.$el.text('Your preferences');
+            if (!self.removed && request_number === self.request_number) {
+                self.$el.attr({ title: 'Preferences unavailable. Click to retry in history.',
+                    'aria-label': 'Preferences unavailable. Click to retry in history.' });
+            }
         });
     },
 

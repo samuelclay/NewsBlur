@@ -79,9 +79,29 @@ class MRecommendationFeedback(mongo.Document):
         }
 
 
+class MDiscoveryPreview(mongo.Document):
+    """models.py: Persist the weekly allowance independently of evictable ranking caches."""
+
+    user_id = mongo.IntField(required=True)
+    week_start = mongo.DateTimeField(required=True)
+    story_hashes = mongo.ListField(mongo.StringField(), max_length=3)
+    generation = mongo.StringField(required=True)
+    expires_date = mongo.DateTimeField(required=True)
+
+    meta = {
+        "collection": "discovery_preview",
+        "indexes": [
+            {"fields": ["user_id", "week_start"], "unique": True},
+            {"fields": ["expires_date"], "expireAfterSeconds": 0},
+        ],
+        "allow_inheritance": False,
+    }
+
+
 @receiver(post_delete, sender=User)
 def delete_recommendation_feedback(sender, instance, **kwargs):
     MRecommendationFeedback.objects(user_id=instance.pk).delete()
+    MDiscoveryPreview.objects(user_id=instance.pk).delete()
 
 
 class RecommendedFeed(models.Model):

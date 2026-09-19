@@ -10,12 +10,33 @@ expands to fill the button pair, with a brief star flourish that respects reduce
 motion. Click the confirmation to edit, then the selected choice again to clear
 it. Failed requests keep the confirmed preference and offer Retry.
 
-The stream header shows More/Less counts and a sparkline. Clicking it opens a
+Discovery's sidebar count area and stream header show green/red number badges
+and a two-sided sparkline. At 0:0, a muted constellation replaces the counts.
+The compact chart starts just before its first recent choice so a few votes
+remain legible; the history dialog keeps the full 30-day window. Clicking either opens a
 dialog with paginated lists of current choices, controls to switch or clear each
 one, and a 30-day UTC timeline grouped by each choice's last update. Counts cover
 all active choices, including older ones. Cleared choices disappear from the
 lists, counts, and chart. Saved article snapshots remain editable after RSS
 story expiry. Changes also update any currently displayed article controls.
+
+## Archive access and the weekly preview
+
+Premium Archive and Pro readers get the full stream. Other signed-in readers
+get up to three stories per calendar week, resetting Monday at 00:00 UTC. The
+selection is generated on the first open that week, then stored in MongoDB as
+`MDiscoveryPreview`. Refreshes, reading, feedback, browser changes, and cache
+eviction cannot replace those picks. Read stories remain available. Removed or
+newly followed sources are omitted without replenishing the allowance. An empty
+candidate pool does not consume a preview; concurrent first opens use the same
+atomic selection. Weekly records expire two weeks after their reset date and
+are removed when the account is deleted.
+
+While the first response is pending, a small constellation animates above a
+loading state. New picks enter in a short stagger without delaying the request
+or changing read state. Returning to a saved preview skips the entrance motion.
+All motion respects reduced-motion preferences. A callout beneath the preview
+opens the upgrade dialog with personalized Discovery highlighted in Archive.
 
 ## Ranking and data
 
@@ -36,7 +57,7 @@ measure of recommendation quality.
 - The latest 200 nonzero explicit votes contribute stronger positive or negative
   examples. A vote overrides a passive example for that story. Missing feedback
   and brief views are not treated as dislikes.
-- The reading profile is cached for five minutes. A fresh stream load reads
+- The reading profile is cached for five minutes. A fresh full-stream load reads
   current votes and ranks candidates again. Pagination uses a user-owned,
   one-hour snapshot so feedback does not move stories during the current read.
   Access and subscriptions are rechecked on each page. A continuation cursor
@@ -61,6 +82,9 @@ initial implementation. Automatic Focus skipping is also outside this change.
   `discovery_snapshot` plus `discovery_next_cursor`. Subsequent pages pass that
   snapshot and the returned cursor as `discovery_cursor`. Discovery
   requires authentication and supplies the CSRF cookie used by feedback.
+  Non-Archive readers also receive `discovery_preview` with `limited`, `limit`,
+  `generated`, and `resets_at`; a null next cursor ends their weekly selection.
+  Client-supplied limits, filters, and snapshots cannot bypass the weekly gate.
 - `POST /recommendations/story_feedback` accepts `story_hash`, `value` (`-1`,
   `0`, or `1`), and `surface=discovery`. It requires authentication and a CSRF
   token, and returns the persisted value. The legacy `good_reads` surface is
@@ -85,8 +109,8 @@ The optional offline experiment helper reads its OpenRouter key from
 inputs, responses, and the existing $10 budget ledger live under
 the gitignored `.jev-discover/` directory in this worktree (mode `0700`). The key
 is also configured in the private secrets repo's `settings/common_settings.py`
-for the staging secrets sync. The Discovery web path does not need that key. No staging or production
-deployment has been performed for this change.
+for the staging secrets sync. The Discovery web path does not need that key.
+Staging deployment evidence and the exact deployed commit are recorded in PR #2140.
 
 Focused checks:
 
