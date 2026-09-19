@@ -109,8 +109,12 @@ class FeedItemsList : ItemsList() {
             }
 
             R.id.menu_instafetch_feed -> {
-                feedUtils.instaFetchFeed(this, feed.feedId)
-                finish()
+                if (isTryFeed && syncServiceState.getTryFeedRefreshStatus(fs) != com.newsblur.service.TryFeedRefreshStatus.NONE) {
+                    if (syncServiceState.getTryFeedRefreshStatus(fs) != com.newsblur.service.TryFeedRefreshStatus.FETCHING) restartReadingSession()
+                } else {
+                    feedUtils.instaFetchFeed(this, feed.feedId)
+                    finish()
+                }
                 true
             }
 
@@ -294,9 +298,11 @@ class FeedItemsList : ItemsList() {
         }
 
         @JvmStatic
+        @JvmOverloads
         fun startTryFeedActivity(
             context: Context,
             feed: Feed,
+            storyHash: String? = null,
         ) {
             Intent(context, FeedItemsList::class.java)
                 .apply {
@@ -305,6 +311,11 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FEED_SET, FeedSet.singleFeed(feed.feedId))
                     putExtra(EXTRA_IS_TRY_FEED, true)
                     putExtra(EXTRA_TRY_FEED_URL, feed.address)
+                    if (!storyHash.isNullOrBlank()) {
+                        putExtra(EXTRA_STORY_HASH, storyHash)
+                        putExtra(EXTRA_AUTO_OPEN_STORY, true)
+                        putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
+                    }
                 }.also { intent ->
                     context.startActivity(intent)
                 }

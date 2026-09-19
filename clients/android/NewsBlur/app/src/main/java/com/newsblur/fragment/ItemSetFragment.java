@@ -245,6 +245,15 @@ public class ItemSetFragment extends NbFragment {
         adapter = new StoryViewAdapter(((NbActivity) getActivity()), getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, prefsRepo, getOnStoryClickListener());
         adapter.addFooterView(fleuronBinding.getRoot());
         binding.itemgridfragmentGrid.setAdapter(adapter);
+        binding.emptyViewText.setOnClickListener(view -> {
+            com.newsblur.service.TryFeedRefreshStatus status = syncServiceState.getTryFeedRefreshStatus(getFeedSet());
+            if (!hasStories() && (status == com.newsblur.service.TryFeedRefreshStatus.EMPTY || status == com.newsblur.service.TryFeedRefreshStatus.FAILED)) {
+                ItemsList activity = (ItemsList) getActivity();
+                if (activity != null) activity.restartReadingSession();
+            }
+        });
+        binding.emptyViewText.setClickable(false);
+        binding.emptyViewText.setFocusable(false);
 
         // the layout manager needs to know that the footer rows span all the way across
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -476,6 +485,21 @@ public class ItemSetFragment extends NbFragment {
         fleuronBinding.bottomLoadingIndicator.setVisibility(loadingNextPage ? View.VISIBLE : View.GONE);
         fleuronBinding.fleuron.setVisibility(loadingNextPage ? View.GONE : View.VISIBLE);
         binding.emptyViewText.setVisibility(View.VISIBLE);
+        com.newsblur.service.TryFeedRefreshStatus tryFeedStatus = syncServiceState.getTryFeedRefreshStatus(getFeedSet());
+        boolean canRetryTryFeed = !hasStories && (tryFeedStatus == com.newsblur.service.TryFeedRefreshStatus.EMPTY || tryFeedStatus == com.newsblur.service.TryFeedRefreshStatus.FAILED);
+        binding.emptyViewText.setClickable(canRetryTryFeed);
+        binding.emptyViewText.setFocusable(canRetryTryFeed);
+        if (canRetryTryFeed) {
+            binding.emptyViewText.setText(tryFeedStatus == com.newsblur.service.TryFeedRefreshStatus.FAILED ? R.string.try_feed_fetch_failed : R.string.try_feed_empty);
+            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
+            binding.emptyViewText.setAlpha(1.0f);
+            binding.emptyViewImage.setVisibility(View.VISIBLE);
+            binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
+            fleuronBinding.containerSubscribe.setVisibility(View.GONE);
+            fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
+            updateBottomNextFeedControl();
+            return;
+        }
 
         if (dataSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);

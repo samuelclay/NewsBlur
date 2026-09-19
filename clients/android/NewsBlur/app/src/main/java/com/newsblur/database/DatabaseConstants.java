@@ -393,13 +393,22 @@ public class DatabaseConstants {
     public static final String STORY_QUERY_BASE_2 =
         " GROUP BY " + STORY_HASH;
 
-    public static final String SESSION_STORY_QUERY_BASE = 
-        STORY_QUERY_BASE_1 +
+    private static final String SESSION_STORY_SELECTION =
         STORY_HASH + " IN (" +
         " SELECT DISTINCT " + READING_SESSION_STORY_HASH +
         " FROM " + READING_SESSION_TABLE +
         ")" + 
         STORY_QUERY_BASE_2;
+
+    public static final String SESSION_STORY_QUERY_BASE = STORY_QUERY_BASE_1 + SESSION_STORY_SELECTION;
+
+    // FeedItemsList.kt previews have stories before any subscription metadata exists in feeds.
+    public static final String SINGLE_FEED_SESSION_STORY_QUERY =
+        "SELECT " + STORY_COLUMNS +
+        " FROM " + STORY_TABLE +
+        " LEFT JOIN " + FEED_TABLE +
+        " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID +
+        " WHERE " + SESSION_STORY_SELECTION;
 
     public static final String DAILY_BRIEFING_SESSION_STORY_QUERY =
         "SELECT " +

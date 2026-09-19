@@ -1,4 +1,7 @@
 <resources>
+    <string name="try_feed_instafetching">Insta-fetching stories…</string>
+    <string name="try_feed_fetch_failed">Unable to fetch stories. Tap to try again.</string>
+    <string name="try_feed_empty">No stories are available from this site yet. Tap to refresh.</string>
     <string name="image_viewer_close">Close image</string>
     <string name="image_viewer_loading">Loading image…</string>
     <string name="image_viewer_failed">Could not load the full image.</string>
@@ -251,6 +254,8 @@ people together to talk about the world.</string>
     <string name="feed_list_clear_search">Clear search</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="discover_related_sites_title">Related Sites</string>
+    <string name="discover_show_grid">Show grid</string>
+    <string name="discover_show_list">Show list</string>
     <string name="discover_loading">Finding related sites…</string>
     <string name="discover_no_related_sites">No related sites found</string>
     <string name="discover_view_mode_grid">Grid</string>
