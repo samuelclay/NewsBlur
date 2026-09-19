@@ -63,6 +63,10 @@ body.NB-dark {
     color: #83b4e0;
 }
 
+.NB-dark .NB-discovery-preview-end a.NB-discovery-upgrade {
+    color: var(--feedback-background);
+}
+
 .NB-dark .NB-overlay {
     background: rgba(16, 16, 28, 0.3);
 }
