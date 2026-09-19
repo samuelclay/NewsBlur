@@ -41,6 +41,8 @@ class StoryTitlesHeaderBar: NSObject {
 
     // StoryTitlesHeaderBar.swift defaults to the bottom on iPhone and iPad.
     private(set) var usesFloatingBottomBar = StoryTitlesHeaderBar.prefersBottomBar
+    private var systemVerticalBar = false
+    var usesSystemVerticalBar: Bool { systemVerticalBar }
     private static var prefersBottomBar: Bool {
         #if targetEnvironment(macCatalyst)
         return false
@@ -64,6 +66,25 @@ class StoryTitlesHeaderBar: NSObject {
     private var minimumPillWidths: [NSLayoutConstraint] = []
     private var optionsMinimumWidthConstraint: NSLayoutConstraint?
 
+    func setUsesSystemVerticalBar(_ enabled: Bool) {
+        guard systemVerticalBar != enabled else { return }
+        systemVerticalBar = enabled
+        pillBar.isHidden = enabled
+        guard let parent = headerContainer.superview else { return }
+        // StoryTitlesHeaderBar.swift leaves only an active search field in the content area when UIKit owns the side controls.
+        NSLayoutConstraint.deactivate(positionConstraints + pillLayoutConstraints)
+        buildLayout(in: headerContainer)
+        configurePosition(in: parent)
+        headerHeightConstraint?.constant = headerHeight
+        headerContainer.isHidden = enabled && !isSearchActive
+        parent.setNeedsLayout()
+        relayoutPills()
+    }
+
+    private var headerHeight: CGFloat {
+        (usesSystemVerticalBar ? 0 : (usesFloatingBottomBar ? 52 : 36)) + (isSearchActive ? 36 : 0)
+    }
+
     @objc private func toolbarPreferenceChanged() {
         guard Self.prefersBottomBar != usesFloatingBottomBar,
               let parent = headerContainer.superview else { return }
@@ -85,6 +106,15 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     private func configurePosition(in parent: UIView) {
+        if usesSystemVerticalBar {
+            positionConstraints = [
+                headerContainer.bottomAnchor.constraint(equalTo: parent.keyboardLayoutGuide.topAnchor),
+                contentTopGuide.topAnchor.constraint(equalTo: parent.topAnchor),
+                contentBottomGuide.topAnchor.constraint(equalTo: isSearchActive ? headerContainer.topAnchor : parent.safeAreaLayoutGuide.bottomAnchor)
+            ]
+            NSLayoutConstraint.activate(positionConstraints)
+            return
+        }
         positionConstraints = [
             usesFloatingBottomBar
                 ? headerContainer.bottomAnchor.constraint(equalTo: parent.keyboardLayoutGuide.topAnchor, constant: -8)
@@ -160,6 +190,7 @@ class StoryTitlesHeaderBar: NSObject {
     // MARK: - State
 
     private(set) var isSearchActive = false
+    private(set) var nativeMarkReadMenu = UIMenu(children: [])
 
     /// Closure called when the mark-read pill is tapped (marks all read + pops back).
     var markReadTapHandler: (() -> Void)?
@@ -701,9 +732,11 @@ class StoryTitlesHeaderBar: NSObject {
 
             searchContainer.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: searchEdgeInset),
             searchContainer.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -searchEdgeInset),
-            usesFloatingBottomBar
-                ? searchContainer.bottomAnchor.constraint(equalTo: pillBar.topAnchor)
-                : searchContainer.topAnchor.constraint(equalTo: pillBar.bottomAnchor),
+            usesSystemVerticalBar
+                ? searchContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+                : (usesFloatingBottomBar
+                    ? searchContainer.bottomAnchor.constraint(equalTo: pillBar.topAnchor)
+                    : searchContainer.topAnchor.constraint(equalTo: pillBar.bottomAnchor)),
             searchContainer.heightAnchor.constraint(equalToConstant: 36),
         ]
         NSLayoutConstraint.activate(pillLayoutConstraints)
@@ -1019,7 +1052,6 @@ class StoryTitlesHeaderBar: NSObject {
     func updateMarkReadMenuFull(title: String, showVisibleOption: Bool, visibleCount: Int) {
         markReadMenuTitle = title
         markReadMenuVisibleCount = showVisibleOption ? visibleCount : 0
-        #if targetEnvironment(macCatalyst)
         var actions: [UIMenuElement] = []
 
         actions.append(UIAction(title: "Mark \(title) as read", image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
@@ -1040,6 +1072,8 @@ class StoryTitlesHeaderBar: NSObject {
         }
 
         let menu = UIMenu(children: actions)
+        nativeMarkReadMenu = menu
+        #if targetEnvironment(macCatalyst)
         markReadExpandButton.menu = menu
         markReadPill.menu = menu
         #endif
@@ -1051,7 +1085,13 @@ class StoryTitlesHeaderBar: NSObject {
         let changed = isSearchActive != active
         isSearchActive = active
 
-        let height: CGFloat = (usesFloatingBottomBar ? 52 : 36) + (active ? 36 : 0)
+        let height = headerHeight
+        if usesSystemVerticalBar, let parent = headerContainer.superview {
+            NSLayoutConstraint.deactivate(positionConstraints)
+            configurePosition(in: parent)
+            headerContainer.isHidden = !active
+            headerHeightConstraint?.constant = height
+        }
 
         if active {
             searchContainer.isHidden = false
@@ -1067,7 +1107,8 @@ class StoryTitlesHeaderBar: NSObject {
                 self.headerHeightConstraint?.constant = height
                 self.headerContainer.superview?.layoutIfNeeded()
             } completion: { _ in
-                if !active {
+                // StoryTitlesHeaderBar.swift ignores an earlier close animation after the user reopens search.
+                if !active && !self.isSearchActive {
                     self.searchContainer.isHidden = true
                 }
             }

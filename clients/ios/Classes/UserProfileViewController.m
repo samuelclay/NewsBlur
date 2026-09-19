@@ -44,6 +44,8 @@
     self.profileTable = profiles;
     self.profileTable.dataSource = self;
     self.profileTable.delegate = self;
+    self.profileTable.rowHeight = UITableViewAutomaticDimension;
+    self.profileTable.estimatedRowHeight = 78;
     self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.profileTable.backgroundView = nil;
     self.profileTable.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x333333, 0x111111);
@@ -165,11 +167,10 @@
     if (indexPath.section == 0 || indexPath.section == 2) {
         return 180;
     } else {
-        SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
-        int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-                               withUserProfile:self.userProfile
-                                     withWidth:self.view.frame.size.width - 20];
-        return height;
+        if ([ActivityCell shouldCollapseActivity:self.activitiesArray[indexPath.row]]) {
+            return 1;
+        }
+        return UITableViewAutomaticDimension;
     }
 }
 
@@ -191,6 +192,13 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     } else if(indexPath.section == 1) {
+        if ([ActivityCell shouldCollapseActivity:self.activitiesArray[indexPath.row]]) {
+            // UserProfileViewController.m preserves ActivityCell.m's missing-author rule inside the grouped profile table.
+            UITableViewCell *collapsedCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            collapsedCell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+            collapsedCell.userInteractionEnabled = NO;
+            return collapsedCell;
+        }
         SmallActivityCell *cell = [tableView 
                                    dequeueReusableCellWithIdentifier:@"ActivityCellIdentifier"];
         if (cell == nil) {
@@ -201,8 +209,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-          withUserProfile:self.userProfile
-                withWidth:vb.size.width];
+          withUserProfile:self.userProfile];
         
             return cell;
     } else {

@@ -11,6 +11,14 @@
 #import "NewsBlurAppDelegate.h"
 #import <CoreText/CoreText.h>
 
+@interface InteractionCell ()
+@property (nonatomic, strong) NSLayoutConstraint *labelLeadingConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelTrailingConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelTopConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelBottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *minimumContentHeightConstraint;
+@end
+
 @implementation InteractionCell
 
 @synthesize interactionLabel;
@@ -49,44 +57,51 @@
         leftMargin = 20;
         rightMargin = 20;
         avatarSize = 48;
+
+        interaction.translatesAutoresizingMaskIntoConstraints = NO;
+        interaction.numberOfLines = 0;
+        self.labelLeadingConstraint = [interaction.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:leftMargin * 2 + avatarSize];
+        self.labelTrailingConstraint = [interaction.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-rightMargin];
+        self.labelTopConstraint = [interaction.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:topMargin];
+        self.labelBottomConstraint = [interaction.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-bottomMargin];
+        self.minimumContentHeightConstraint = [self.contentView.heightAnchor constraintGreaterThanOrEqualToConstant:avatarSize + topMargin + bottomMargin];
+        self.minimumContentHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+        [NSLayoutConstraint activateConstraints:@[self.labelLeadingConstraint, self.labelTrailingConstraint,
+                                                 self.labelTopConstraint, self.labelBottomConstraint,
+                                                 self.minimumContentHeightConstraint]];
     }
     
     return self;
 }
 
-- (void)layoutSubviews {    
+- (void)updateConstraints {
+    // InteractionCell.m measures text in UIKit's actual content area, including small-cell margins.
+    self.labelLeadingConstraint.constant = leftMargin * 2 + avatarSize;
+    self.labelTrailingConstraint.constant = -rightMargin;
+    self.labelTopConstraint.constant = topMargin;
+    self.labelBottomConstraint.constant = -bottomMargin;
+    self.minimumContentHeightConstraint.constant = avatarSize + topMargin + bottomMargin;
+    [super updateConstraints];
+}
+
+- (void)layoutSubviews {
     [super layoutSubviews];
-    
-    // determine outer bounds
-    [self.interactionLabel sizeToFit];
-    CGRect contentRect = self.frame;
-    CGRect labelFrame = self.interactionLabel.frame;
-    
-    // position avatar to bounds
     self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
-    
-    // position label to bounds
-    labelFrame.origin.x = leftMargin*2 + avatarSize;
-    labelFrame.origin.y = 0;
-    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
-    labelFrame.size.height = contentRect.size.height;
-    self.interactionLabel.frame = labelFrame;
 }
 
 
-- (int)setInteraction:(NSDictionary *)interaction withWidth:(int)width {
-    // must set the height again for dynamic height in heightForRowAtIndexPath in 
-    CGRect interactionLabelRect = self.interactionLabel.bounds;
-    interactionLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
-    interactionLabelRect.size.height = 300;
++ (BOOL)shouldCollapseInteraction:(NSDictionary *)interaction {
+    return interaction[@"with_user"] == NSNull.null;
+}
 
-    self.interactionLabel.frame = interactionLabelRect;
-    self.interactionLabel.numberOfLines = 0;
+- (void)setInteraction:(NSDictionary *)interaction {
+    [self setNeedsUpdateConstraints];
     self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     
     // this is for the rare instance when the with_user doesn't return anything
-    if ([[interaction objectForKey:@"with_user"] class] == [NSNull class]) {
-        return 1;
+    if ([InteractionCell shouldCollapseInteraction:interaction]) {
+        self.interactionLabel.attributedText = nil;
+        return;
     }
     
     UIImage *placeholder = [[NewsBlurAppDelegate sharedAppDelegate] defaultUserAvatar];
@@ -167,11 +182,6 @@
     
     self.interactionLabel.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.interactionLabel.attributedText = attrStr;
-    [self.interactionLabel sizeToFit];
-    
-    int height = self.interactionLabel.frame.size.height;
-    
-    return MAX(height + topMargin + bottomMargin, self.avatarView.frame.size.height + topMargin + bottomMargin);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

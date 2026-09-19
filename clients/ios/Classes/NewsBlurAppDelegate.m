@@ -1036,8 +1036,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         return;
     }
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *behavior = [preferences stringForKey:@"split_behavior"] ?: @"auto";
+    NSString *behavior = self.detailViewController.behaviorString;
     
     if (self.detailViewController.storyTitlesOnLeft) {
         CGSize screenSize = self.splitViewController.view.bounds.size;
@@ -1187,7 +1186,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self hidePopover];
     
     FriendsListViewController *friendsBVC = [[FriendsListViewController alloc] init];
-    UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
+    UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsBVC];
     
     self.friendsListViewController = friendsBVC;
     self.modalNavigationController = friendsNav;
@@ -1299,7 +1298,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }];
     
-    if (!self.isPhone) {
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
         BOOL fromPopover = [self hidePopoverAnimated:NO];
         // Configure popover BEFORE presenting so the anchor is applied on Catalyst
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
@@ -1544,10 +1544,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     trainerViewController.isFeedLoaded = feedLoaded;
     [trainerViewController reload];
     
-    if (!self.isPhone) {
-        //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        //        [navController presentViewController:trainerViewController animated:YES completion:nil];
-        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
+        // NewsBlurAppDelegate.m preserves a trainer's existing navigation parent when reopening after a fold.
+        UIViewController *presentation = self.trainNavigationController ?: self.trainerViewController;
+        [self showPopoverWithViewController:presentation contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]
@@ -1572,8 +1573,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     trainerViewController.isFeedLoaded = YES;
     [trainerViewController reload];
 
-    if (!self.isPhone) {
-        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
+        UIViewController *presentation = self.trainNavigationController ?: self.trainerViewController;
+        [self showPopoverWithViewController:presentation contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
         // Dismiss any existing presented controller (e.g. font settings popover adapted to modal on iPhone)
         void (^presentTrainer)(void) = ^{
@@ -1815,8 +1818,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     UINavigationController *navController = self.feedsNavigationController;
     self.notificationsViewController.feedId = feedId;
     
-    if (!self.isPhone) {
-        [self showPopoverWithViewController:self.notificationsViewController contentSize:CGSizeMake(420, 382) sender:sender];
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
+        // NewsBlurAppDelegate.m reuses a compact notification sheet's wrapper as the expanded popover owner.
+        UIViewController *presentation = self.notificationsNavigationController ?: self.notificationsViewController;
+        [self showPopoverWithViewController:presentation contentSize:CGSizeMake(420, 382) sender:sender];
     } else {
         if (self.notificationsNavigationController == nil) {
             self.notificationsNavigationController = [[UINavigationController alloc]
@@ -2377,7 +2383,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)presentFeedDetailAfterFeedSelection {
-    FeedSelectionPresentation presentation = [FeedSelectionPresentationDecision presentationWithIsPhone:self.isPhone
+    // NewsBlurAppDelegate.m keeps the regular-width phone reader in its split columns when selecting a feed.
+    BOOL usesPhoneNavigation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    FeedSelectionPresentation presentation = [FeedSelectionPresentationDecision presentationWithIsPhone:usesPhoneNavigation
                                                                                   userInterfaceIdiomPhone:[[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone];
 
     if (presentation == FeedSelectionPresentationLoadFeedDetail) {
@@ -3255,7 +3263,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.activeOriginalStoryURL = url;
     originalStoryViewController.customPageTitle = customTitle;
     
-    if (!self.isPhone) {
+    BOOL usesCompactPhoneNavigation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhoneNavigation) {
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [originalStoryViewController view]; // Force viewDidLoad
             [originalStoryViewController loadInitialStory];
@@ -3350,9 +3359,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)closeOriginalStory {
-    if (!self.isPhone) {
-        //        [self.masterContainerViewController transitionFromOriginalView];
-    } else {
+    if (self.originalStoryViewController.presentingViewController) {
+        [self.originalStoryViewController dismissViewControllerAnimated:YES completion:nil];
+    } else if (self.isPhone) {
         if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
             [feedsNavigationController popToViewController:self.storyPagesViewController animated:YES];
         }
@@ -3364,11 +3373,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showFeedsListAnimated:(BOOL)animated {
+    [self.detailViewController cancelCompactNavigationRestoration];
     [self.storyPagesViewController cancelPendingStoryPresentation];
     if (self.splitViewController.isCollapsed) {
-        [self.feedsNavigationController popToRootViewControllerAnimated:YES];
+        [self.feedsNavigationController popToRootViewControllerAnimated:animated];
     } else {
-        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated" animated:YES];
+        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated" animated:animated];
     }
 }
 

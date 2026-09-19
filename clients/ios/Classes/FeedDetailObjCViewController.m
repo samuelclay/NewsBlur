@@ -139,6 +139,13 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) BOOL bottomNextFeedButtonPressActive;
 @property (nonatomic) BOOL hasBottomNextFeedActiveDragStartOffset;
 @property (nonatomic) CGFloat bottomNextFeedActiveDragStartOffsetY;
+@property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalStoryToolbarItems;
+@property (nonatomic, strong) UIBarButtonItem *verticalDiscoverItem;
+@property (nonatomic, strong) UIBarButtonItem *verticalOptionsItem;
+@property (nonatomic, strong) UIBarButtonItem *verticalSettingsItem;
+@property (nonatomic, strong) UIBarButtonItem *verticalSearchItem;
+@property (nonatomic, strong) UIBarButtonItem *verticalMarkReadItem;
+@property (nonatomic, strong) UIBarButtonItem *verticalMarkReadOptionsItem;
 
 - (BOOL)isClusterMarkReadEnabled;
 - (BOOL)isClusterStoryRead:(NSDictionary *)clusterStory parentStory:(NSDictionary *)parentStory;
@@ -936,12 +943,17 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
     UIBarButtonItem *sidebarButton = nil;
     UIBarButtonItem *storiesSidebarButton = nil;
+    // FeedDetailObjCViewController.m keeps a return action while tiled Feeds and story titles replace the reading columns.
+    BOOL shouldReturnFromTiledFeeds = (displayMode == UISplitViewControllerDisplayModeOneBesideSecondary &&
+                                        appDelegate.detailViewController.isPhone &&
+                                        appDelegate.splitViewController.style == UISplitViewControllerStyleDoubleColumn);
     BOOL shouldShowSidebarButton = (displayMode == UISplitViewControllerDisplayModeSecondaryOnly ||
                                     displayMode == UISplitViewControllerDisplayModeOneOverSecondary ||
                                     displayMode == UISplitViewControllerDisplayModeTwoOverSecondary ||
-                                    displayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary);
+                                    displayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary ||
+                                    shouldReturnFromTiledFeeds);
     BOOL isFullscreenOverlayController = self != appDelegate.feedDetailViewController;
-    if (!appDelegate.isPhone && !self.isMac && shouldShowSidebarButton) {
+    if (!self.isPhoneOrCompact && !self.isMac && shouldShowSidebarButton) {
         if (!self.sidebarBarButton) {
             UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
             if (!sidebarImage) {
@@ -984,7 +996,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                                    : @[settingsBarButton];
     NSArray *storiesItems = storiesSidebarButton ? @[storiesSidebarButton] : nil;
 
-    if (appDelegate.isPhone) {
+    if (self.isPhoneOrCompact) {
         appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
     } else if (isFullscreenOverlayController) {
         self.navigationItem.leftItemsSupplementBackButton = YES;
@@ -1037,10 +1049,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
-    if (storiesCollection.activeFeed == nil) {
+    if (storiesCollection.activeFeed == nil && storiesCollection.activeFolder == nil) {
         NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
         
-        if ([appOpening isEqualToString:@"feeds"] && !self.isPhone) {
+        if ([appOpening isEqualToString:@"feeds"] && !self.isPhoneOrCompact) {
             self.messageLabel.text = @"Select a feed to read";
             self.messageView.hidden = NO;
         }
@@ -1152,9 +1164,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    [self configureAdaptiveStoryToolbar];
     [self restorePendingNotificationViewport];
     // FeedDetailObjCViewController.m leaves room to scroll the final row above the experimental glass bar.
-    if (self.storyTitlesHeaderBar.usesFloatingBottomBar) {
+    if (self.storyTitlesHeaderBar.usesSystemVerticalBar ? self.storyTitlesHeaderBar.isSearchActive : self.storyTitlesHeaderBar.usesFloatingBottomBar) {
         CGRect bar = [self.storyTitlesHeaderBar.headerContainer convertRect:self.storyTitlesHeaderBar.headerContainer.bounds toView:self.storyTitlesTable];
         CGFloat bottom = MAX(0, CGRectGetMaxY(self.storyTitlesTable.bounds) - CGRectGetMinY(bar));
         UIEdgeInsets inset = self.storyTitlesTable.contentInset;
@@ -1169,6 +1182,108 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.storyTitlesTable.contentInset = inset;
         self.storyTitlesTable.verticalScrollIndicatorInsets = inset;
     }
+}
+
+- (BOOL)usesVerticalStoryToolbar {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        // FeedDetailObjCViewController.m keeps embedded story-list actions in their column; UIKit collects only the navigation stack's top controller items.
+        return self.navigationController.topViewController == self &&
+            self.traitCollection.verticalBarEdge != UIVerticalBarEdgeUnspecified;
+    }
+#endif
+    return NO;
+}
+
+- (void)configureAdaptiveStoryToolbar {
+    BOOL vertical = [self usesVerticalStoryToolbar];
+    [self.storyTitlesHeaderBar setUsesSystemVerticalBar:vertical];
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        if (self.settingsBarButton.hidden != vertical) self.settingsBarButton.hidden = vertical;
+    }
+#endif
+    if (!vertical) {
+        if (self.toolbarItems == self.verticalStoryToolbarItems && self.verticalStoryToolbarItems) {
+            self.toolbarItems = nil;
+            if (self.navigationController.topViewController == self) {
+                [self.navigationController setToolbarHidden:YES animated:NO];
+            }
+        }
+        return;
+    }
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        if (!self.verticalStoryToolbarItems) {
+            UIBarButtonItem *(^makeItem)(NSString *, NSString *, NSString *, SEL) = ^UIBarButtonItem *(NSString *title, NSString *symbol, NSString *identifier, SEL action) {
+                UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:symbol]
+                                                                       style:UIBarButtonItemStylePlain target:self action:action];
+                item.title = title;
+                item.accessibilityLabel = title;
+                item.accessibilityIdentifier = identifier;
+                // FeedDetailObjCViewController.m lets UIKit position and overflow each story action independently.
+                item.axisBehavior = UIBarButtonItemAxisBehaviorVerticalPreferred;
+                item.sharesBackground = NO;
+                return item;
+            };
+            self.verticalDiscoverItem = makeItem(@"Related Sites", @"sparkle.magnifyingglass", @"story-list-discover", @selector(doOpenDiscoverFromPill:));
+            self.verticalOptionsItem = makeItem(@"Story options", @"line.3.horizontal.decrease", @"story-list-options", @selector(doOpenOptionsMenu:));
+            self.verticalSettingsItem = makeItem(@"Site Settings", @"gearshape", @"story-list-settings", @selector(doOpenSettingsMenu:));
+            self.verticalSearchItem = makeItem(@"Search stories", @"magnifyingglass", @"story-list-search", @selector(doActivateSearch:));
+            self.verticalMarkReadOptionsItem = makeItem(@"Mark Read options", @"plus", @"story-list-mark-read-options", nil);
+            self.verticalMarkReadItem = makeItem(@"Mark all read and return", @"checkmark", @"story-list-mark-read", @selector(doOpenMarkReadMenu:));
+            self.verticalStoryToolbarItems = @[
+                self.verticalDiscoverItem, self.verticalOptionsItem, self.verticalSettingsItem, self.verticalSearchItem,
+                self.verticalMarkReadOptionsItem, self.verticalMarkReadItem
+            ];
+        }
+        if (self.toolbarItems != self.verticalStoryToolbarItems) {
+            self.toolbarItems = self.verticalStoryToolbarItems;
+        }
+        [self updateVerticalStoryToolbarState];
+        if (self.navigationController.topViewController == self && self.navigationController.toolbarHidden) {
+            [self.navigationController setToolbarHidden:NO animated:NO];
+        }
+    }
+#endif
+}
+
+- (void)updateVerticalStoryToolbarState {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        if (self.verticalDiscoverItem.hidden != self.storyTitlesHeaderBar.discoverPill.hidden) {
+            self.verticalDiscoverItem.hidden = self.storyTitlesHeaderBar.discoverPill.hidden;
+        }
+        NSString *discoverTitle = storiesCollection.isDailyBriefing ? @"Daily Briefing Settings" : @"Related Sites";
+        if (![self.verticalDiscoverItem.title isEqualToString:discoverTitle]) {
+            self.verticalDiscoverItem.title = discoverTitle;
+            self.verticalDiscoverItem.accessibilityLabel = discoverTitle;
+            self.verticalDiscoverItem.image = [UIImage systemImageNamed:storiesCollection.isDailyBriefing ? @"slider.horizontal.3" : @"sparkle.magnifyingglass"];
+        }
+        if (![self.verticalOptionsItem.accessibilityLabel isEqualToString:self.storyTitlesHeaderBar.optionsPill.accessibilityLabel]) {
+            self.verticalOptionsItem.accessibilityLabel = self.storyTitlesHeaderBar.optionsPill.accessibilityLabel;
+        }
+        if (self.verticalSearchItem.selected != self.storyTitlesHeaderBar.isSearchActive) {
+            self.verticalSearchItem.selected = self.storyTitlesHeaderBar.isSearchActive;
+        }
+        if (self.verticalSettingsItem.enabled != self.settingsBarButton.enabled) {
+            self.verticalSettingsItem.enabled = self.settingsBarButton.enabled;
+        }
+        BOOL markReadEnabled = self.storyTitlesHeaderBar.markReadPill.enabled;
+        if (self.verticalMarkReadItem.enabled != markReadEnabled) self.verticalMarkReadItem.enabled = markReadEnabled;
+        if (self.verticalMarkReadOptionsItem.enabled != markReadEnabled) self.verticalMarkReadOptionsItem.enabled = markReadEnabled;
+        UIMenu *menu = self.storyTitlesHeaderBar.nativeMarkReadMenu;
+        if (self.verticalMarkReadItem.menu != menu) {
+            self.verticalMarkReadItem.menu = menu;
+            self.verticalMarkReadOptionsItem.menu = menu;
+        }
+        for (UIBarButtonItem *item in self.verticalStoryToolbarItems) {
+            if (![item.tintColor isEqual:self.settingsBarButton.tintColor]) {
+                item.tintColor = self.settingsBarButton.tintColor;
+            }
+        }
+    }
+#endif
 }
 
 - (void)configureInteractivePopGesture {
@@ -1604,6 +1719,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (BOOL)isPhoneOrCompact {
+    if (self.appDelegate.detailViewController) {
+        return self.appDelegate.detailViewController.isPhoneOrCompact;
+    }
     return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
@@ -3464,7 +3582,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
             
             if ([StoryInitialSelectionDecision shouldAutomaticallyOpenFirstStoryWithFeedOpeningPreference:feedOpening
-                                                                                                   isPhone:self.isPhone
+                                                                                                   isPhone:self.isPhone && self.isPhoneOrCompact
                                                                                                isDashboard:self.isDashboard
                                                                                                  usesOverlay:usesOverlay]) {
                 appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
@@ -6092,8 +6210,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
 
     if (storiesCollection.isDailyBriefing) {
-        UIView *sourceView = self.settingsBarButton.customView ?: self.view;
-        [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:sourceView];
+        if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+            [(FeedDetailViewController *)self openDailyBriefingSettingsFromBarButton:sender];
+        } else {
+            UIView *sourceView = self.settingsBarButton.customView ?: self.view;
+            [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:sourceView];
+        }
         return;
     }
     
@@ -6239,7 +6361,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         UIView *sourceView = (UIView *)sender;
         [viewController showFromNavigationController:navController barButtonItem:nil sourceView:sourceView sourceRect:sourceView.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
     } else {
-        [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
+        UIBarButtonItem *item = [sender isKindOfClass:[UIBarButtonItem class]] ? sender :
+            ([self usesVerticalStoryToolbar] ? self.verticalSettingsItem : self.settingsBarButton);
+        [viewController showFromNavigationController:navController barButtonItem:item];
     }
 #endif
 }
@@ -6298,7 +6422,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         NSArray *titles;
         NSArray *values;
 
-        if (appDelegate.detailViewController.isPhone) {
+        if (appDelegate.detailViewController.isPhoneOrCompact) {
             titles = @[@"List", @"Grid"];
             values = @[@"titles_on_left", @"titles_in_grid"];
         } else {
@@ -6313,7 +6437,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         if (self.appDelegate.detailViewController.storyTitlesInGrid) {
             preferenceKey = @"grid_columns";
 
-            if (appDelegate.detailViewController.isPhone) {
+            if (appDelegate.detailViewController.isPhoneOrCompact) {
                 titles = @[@"Auto Cols", @"1", @"2"];
                 values = @[@"auto", @"1", @"2"];
             } else {
@@ -6394,6 +6518,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     menuNavController.delegate = viewController;
     [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:pillView sourceRect:pillView.bounds];
 #else
+    if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+        [viewController showFromNavigationController:navController barButtonItem:sender sourceView:nil sourceRect:CGRectZero permittedArrowDirections:UIPopoverArrowDirectionAny];
+        return;
+    }
     UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
     [viewController showFromNavigationController:navController barButtonItem:nil sourceView:pillView sourceRect:[self.storyTitlesHeaderBar popoverSourceRectFor:pillView] permittedArrowDirections:self.storyTitlesHeaderBar.usesFloatingBottomBar ? UIPopoverArrowDirectionDown : UIPopoverArrowDirectionUp];
 #endif
@@ -6406,6 +6534,27 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
 
     UIView *pillView = self.storyTitlesHeaderBar.discoverPill;
+
+    if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+        if (storiesCollection.isDailyBriefing) {
+            [(FeedDetailViewController *)self openDailyBriefingSettingsFromBarButton:sender];
+        } else if (@available(iOS 15.0, *)) {
+            DiscoverFeedsViewController *discover = nil;
+            if (!storiesCollection.isRiverView && storiesCollection.activeFeed) {
+                discover = [[DiscoverFeedsViewController alloc] initWithFeedId:[NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]]];
+            } else if (storiesCollection.activeFolderFeeds.count > 0) {
+                NSMutableArray<NSString *> *feedIds = [NSMutableArray array];
+                for (id feedId in storiesCollection.activeFolderFeeds) {
+                    [feedIds addObject:[NSString stringWithFormat:@"%@", feedId]];
+                }
+                discover = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIds];
+            }
+            if (discover) {
+                [appDelegate showPopoverWithViewController:discover contentSize:CGSizeMake(500, 550) barButtonItem:sender];
+            }
+        }
+        return;
+    }
 
     if (storiesCollection.isDailyBriefing) {
         [(FeedDetailViewController *)self openDailyBriefingSettingsFrom:pillView];
@@ -6557,6 +6706,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL showVisible = visibleUnreadCount > 0 && visibleUnreadCount < totalUnreadCount;
 
     [self.storyTitlesHeaderBar updateMarkReadMenuFullWithTitle:collectionTitle showVisibleOption:showVisible visibleCount:visibleUnreadCount];
+    [self updateVerticalStoryToolbarState];
 }
 
 - (NSString *)feedIdForSearch {
@@ -6910,7 +7060,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             if ([title isEqualToString:@"everything"]) {
                 title = @"Top Level";
                 iconName = @"menu_icn_all.png";
-            } else if ([title isEqualToString:@"dashboard"] || [title isEqualToString:@"infrequent"]) {
+            } else if ([title isEqualToString:@"dashboard"] || [title isEqualToString:@"infrequent"] ||
+                       [title isEqualToString:@"discover_sites"] || [title isEqualToString:@"daily_briefing"]) {
                 continue;
             } else {
                 NSArray *components = [title componentsSeparatedByString:@" ▸ "];

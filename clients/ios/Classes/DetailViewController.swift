@@ -53,10 +53,12 @@ class DetailViewController: BaseViewController {
         }
         let navigation = UINavigationController(rootViewController: controller)
         discoveryPaneNavigationController = navigation
+        addChild(navigation)
+        // DetailViewController.swift snapshots the underlying reader state, not the temporary hidden host used beside tiled Feeds.
+        restoreReaderBesideStoryTitles()
         // DetailViewController.swift replaces both reader columns while retaining their navigation state.
         discoveryHiddenViews = view.subviews.map { ($0, $0.isHidden) }
         discoveryHiddenViews.forEach { $0.0.isHidden = true }
-        addChild(navigation)
         navigation.view.frame = view.bounds
         navigation.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(navigation.view)
@@ -315,11 +317,20 @@ class DetailViewController: BaseViewController {
     @objc var storyTitlesFromDashboardStory = false
     
     /// Whether or not we are using compact size class, instead of regular size class. (A local property, instead of asking the OS, so it is updated when the split delegate handles the change.)
-    @objc var isCompact = false
+    @objc var isCompact = false {
+        didSet { hasResolvedSplitLayout = true }
+    }
 
-    /// Convenience for phone or compact layout.
+    private var hasResolvedSplitLayout = false
+
+    /// Whether the reader uses a single navigation stack, including a closed regular-width-capable phone.
     @objc var isPhoneOrCompact: Bool {
-        return isPhone || isCompact
+        // DetailViewController.swift trusts split callbacks while UIKit is still updating the child traits.
+        if hasResolvedSplitLayout { return isCompact }
+        let horizontalSizeClass = splitViewController?.traitCollection.horizontalSizeClass
+            ?? viewIfLoaded?.window?.windowScene?.traitCollection.horizontalSizeClass
+            ?? traitCollection.horizontalSizeClass
+        return horizontalSizeClass == .compact || (isPhone && horizontalSizeClass != .regular)
     }
     
     /// Whether or not the views were last set up for compact size class.
@@ -403,9 +414,14 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    /// The split controller behavior as a raw string.
+    /// The split controller behavior for the current reader presentation.
     @objc var behaviorString: String {
-        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
+        let preference = UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
+        // DetailViewController.swift gives expanded phones the two-column iPad portrait reader without rewriting preferences.
+        if isPhone, !isPhoneOrCompact, preference == BehaviorValue.auto || preference == BehaviorValue.tile {
+            return BehaviorValue.displace
+        }
+        return preference
     }
     
     /// Position of the vertical divider between the views.
@@ -550,6 +566,8 @@ class DetailViewController: BaseViewController {
             return false
         }
 
+        if !tiledFeedTitlesConstraints.isEmpty { return false }
+
         if shouldUseNativeFullscreenSidebarOverlay {
             return fullscreenSidebarPresentationState == .fullscreen
         }
@@ -578,6 +596,80 @@ class DetailViewController: BaseViewController {
 
     private var shouldShowStoryInCompactNavigation: Bool {
         hasVisibleStoryForSidebarLayout || isStoryShown
+    }
+
+    private struct CompactCollapseRestoration {
+        let generation: UInt
+        let collection: StoriesCollection
+        let feedID: String?
+        let folder: String?
+        let fetchID: UInt
+        let showFeed: Bool
+        let showStory: Bool
+        let page: StoryDetailViewController?
+        let storyHash: String?
+        let story: [AnyHashable: Any]?
+    }
+    private var compactCollapseGeneration: UInt = 0
+    private var pendingCompactCollapseRestoration: CompactCollapseRestoration?
+
+    func beginCompactNavigationRestoration(showFeed: Bool, showStory: Bool) -> UInt {
+        cancelCompactNavigationRestoration()
+        guard let collection = appDelegate.storiesCollection else { return compactCollapseGeneration }
+        let page = currentStoryController
+        let story = appDelegate.activeStory ?? (page?.activeStory as? [AnyHashable: Any])
+        pendingCompactCollapseRestoration = CompactCollapseRestoration(
+            generation: compactCollapseGeneration, collection: collection,
+            feedID: collection.activeFeed?["id"].map { String(describing: $0) },
+            folder: collection.activeFolder, fetchID: feedDetailViewController?.fetchRequestId ?? 0,
+            showFeed: showFeed, showStory: showStory, page: page,
+            storyHash: story?["story_hash"] as? String, story: story
+        )
+        return compactCollapseGeneration
+    }
+
+    @objc func cancelCompactNavigationRestoration() {
+        compactCollapseGeneration &+= 1
+        pendingCompactCollapseRestoration = nil
+    }
+
+    private func isCurrentCompactCollapse(_ restoration: CompactCollapseRestoration) -> Bool {
+        guard restoration.generation == compactCollapseGeneration,
+              restoration.collection === appDelegate.storiesCollection,
+              restoration.feedID == appDelegate.storiesCollection.activeFeed?["id"].map({ String(describing: $0) }),
+              restoration.folder == appDelegate.storiesCollection.activeFolder,
+              restoration.fetchID == (feedDetailViewController?.fetchRequestId ?? 0),
+              !isDiscoverSitesVisible else { return false }
+        guard restoration.showStory else { return true }
+        guard let page = restoration.page, currentStoryController === page,
+              let hash = restoration.storyHash, page.activeStoryId == hash else { return false }
+        // DetailViewController.swift tolerates only the transient nil selection cleared by compact titles appearance.
+        let activeHash = appDelegate.activeStory?["story_hash"] as? String
+        return activeHash == nil || activeHash == hash
+    }
+
+    @objc func preservesArticleDuringSplitCollapse(_ article: StoryDetailViewController) -> Bool {
+        guard let restoration = pendingCompactCollapseRestoration,
+              restoration.showStory, restoration.page === article else { return false }
+        return isCurrentCompactCollapse(restoration)
+    }
+
+    func completeCompactNavigationRestoration(generation: UInt, split: UISplitViewController) {
+        // DetailViewController.swift waits until UIKit's DidCollapse callback has returned from its final stack mutation.
+        DispatchQueue.main.async { [weak self, weak split] in
+            guard let self, let split,
+                  let restoration = self.pendingCompactCollapseRestoration,
+                  restoration.generation == generation else { return }
+            guard self.isCompact, split.isCollapsed, self.isCurrentCompactCollapse(restoration) else {
+                self.cancelCompactNavigationRestoration()
+                return
+            }
+            if restoration.showStory && self.appDelegate.activeStory == nil {
+                self.appDelegate.activeStory = restoration.story
+            }
+            self.restoreCompactNavigationAfterSplitCollapse(showFeed: restoration.showFeed, showStory: restoration.showStory)
+            self.cancelCompactNavigationRestoration()
+        }
     }
     
     /// Moves the feed detail and story pages (as appropriate) onto the feeds navigation stack. Called when collapsing to a compact size class.
@@ -618,10 +710,16 @@ class DetailViewController: BaseViewController {
         var controllers = discoveryNavigationPrefix(in: nav) ?? [feedsViewController]
 
         if (showFeed || showStory), let feedDetailViewController {
+            if feedDetailViewController.parent !== nav {
+                remove(viewController: feedDetailViewController)
+            }
             controllers.append(feedDetailViewController)
         }
 
         if showStory, let storyPagesViewController {
+            if storyPagesViewController.parent !== nav {
+                remove(viewController: storyPagesViewController)
+            }
             controllers.append(storyPagesViewController)
         }
 
@@ -638,12 +736,15 @@ class DetailViewController: BaseViewController {
 
     private func refreshRestoredStoryPageWhenLaidOut(_ storyPagesViewController: StoryPagesViewController, attempt: Int = 0) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self, weak storyPagesViewController] in
-            guard let self, self.isCompact, let storyPagesViewController else {
+            guard let self, self.isCompact, let storyPagesViewController,
+                  let navigation = self.appDelegate.feedsNavigationController,
+                  storyPagesViewController.parent === navigation,
+                  navigation.topViewController === storyPagesViewController else {
                 return
             }
 
-            self.appDelegate.feedsNavigationController.view.setNeedsLayout()
-            self.appDelegate.feedsNavigationController.view.layoutIfNeeded()
+            navigation.view.setNeedsLayout()
+            navigation.view.layoutIfNeeded()
             storyPagesViewController.view.setNeedsLayout()
             storyPagesViewController.view.layoutIfNeeded()
 
@@ -665,6 +766,7 @@ class DetailViewController: BaseViewController {
     
     /// Moves the feed detail and story pages (as appropriate) to the detail view. Called when expanding to a regular size class.
     func expandToTwoColumns() {
+        cancelCompactNavigationRestoration()
         if let controller = retainedDiscoveryController,
            discoveryPaneNavigationController == nil,
            !appDelegate.feedsNavigationController.viewControllers.contains(where: { $0 === controller }) {
@@ -778,6 +880,7 @@ class DetailViewController: BaseViewController {
     @objc(showColumn:animated:) func show(column: UISplitViewController.Column, animated: Bool) {
         if isCompact {
             if column == .primary {
+                cancelCompactNavigationRestoration()
                 appDelegate.feedsNavigationController.popToRootViewController(animated: animated)
             } else {
                 if !shouldShowStoryInCompactNavigation {
@@ -787,11 +890,13 @@ class DetailViewController: BaseViewController {
                 // DetailViewController.swift keeps discovery or other source screens beneath the reader.
                 if isFeedShown, let feedDetailViewController,
                    !appDelegate.feedsNavigationController.viewControllers.contains(where: { $0 === feedDetailViewController }) {
+                    remove(viewController: feedDetailViewController)
                     appDelegate.feedsNavigationController.pushViewController(feedDetailViewController, animated: animated)
                 }
                 
                 if shouldShowStoryInCompactNavigation, let storyPagesViewController,
                    !appDelegate.feedsNavigationController.viewControllers.contains(where: { $0 === storyPagesViewController }) {
+                    remove(viewController: storyPagesViewController)
                     appDelegate.feedsNavigationController.pushViewController(storyPagesViewController, animated: animated)
                 }
             }
@@ -801,13 +906,145 @@ class DetailViewController: BaseViewController {
             }
             
             if column == .primary {
-                appDelegate.updateSplitBehavior(false)
+                rememberReaderWidthBeforeTiledFeeds()
+                // DetailViewController.swift must not queue secondaryOnly while explicitly revealing the primary column.
+                var preferredBehavior: UISplitViewController.SplitBehavior
+                if isDiscoverSitesVisible {
+                    preferredBehavior = .tile
+                } else if !storyTitlesOnLeft {
+                    preferredBehavior = behavior == .overlay ? .overlay : .displace
+                } else {
+                    let size = splitViewController.view.bounds.size
+                    switch StorySplitBehaviorDecision.preferredBehavior(
+                        for: behaviorString,
+                        width: size.width,
+                        height: size.height,
+                        isMac: appDelegate.isMac
+                    ) {
+                    case .tile: preferredBehavior = .tile
+                    case .overlay: preferredBehavior = .overlay
+                    case .displace: preferredBehavior = .displace
+                    }
+                }
+
+                // DetailViewController.swift uses an overlay because a double-column split cannot displace its secondary.
+                // Tiling Feeds would squeeze the secondary's existing title and article panes into three columns.
+                if isPhone, splitViewController.style == .doubleColumn, preferredBehavior == .displace {
+                    preferredBehavior = .overlay
+                }
+
+                // DetailViewController.swift cancels a pending layout hide even when UIKit still reports the primary as visible.
+                let hasSupplementaryColumn = splitViewController.style == .tripleColumn
+                switch preferredBehavior {
+                case .tile:
+                    splitViewController.preferredDisplayMode = hasSupplementaryColumn ? .twoBesideSecondary : .oneBesideSecondary
+                case .overlay:
+                    splitViewController.preferredDisplayMode = hasSupplementaryColumn ? .twoOverSecondary : .oneOverSecondary
+                default:
+                    splitViewController.preferredDisplayMode = hasSupplementaryColumn ? .twoDisplaceSecondary : .oneBesideSecondary
+                }
+                // DetailViewController.swift applies behavior last because UIKit infers tile when setting oneBesideSecondary.
+                splitViewController.preferredSplitBehavior = preferredBehavior
             }
-            
-            if (splitViewController.displayMode != .secondaryOnly && splitViewController.preferredDisplayMode != .oneBesideSecondary) || splitViewController.preferredDisplayMode != .oneOverSecondary {
-                splitViewController.show(column)
+
+            if column == .secondary, showsStoryTitlesBesideTiledFeeds {
+                revealsStoryTitlesAfterTiledFeeds = true
+                splitViewController.hide(.primary)
             }
+            splitViewController.show(column)
+            updateResolvedFeedSidebarLayout()
         }
+    }
+
+    @objc var showsStoryTitlesBesideTiledFeeds: Bool {
+        guard let split = appDelegate.splitViewController else { return false }
+        return StorySplitBehaviorDecision.shouldShowStoryTitlesBesideTiledFeeds(
+            isPhone: isPhone, isCompact: isPhoneOrCompact,
+            isDoubleColumn: split.style == .doubleColumn,
+            isDiscoverSitesVisible: isDiscoverSitesVisible, storyTitlesOnLeft: storyTitlesOnLeft,
+            displayMode: splitPreferredDisplayMode(for: split.displayMode)
+        )
+    }
+
+    private var revealsStoryTitlesAfterTiledFeeds = false
+    private var tiledFeedOriginalConstraints: [NSLayoutConstraint] = []
+    private var tiledFeedTitlesConstraints: [NSLayoutConstraint] = []
+    private var tiledFeedReaderWasHidden = false
+    private var lastReadingColumnWidth: CGFloat = 0
+
+    private func rememberReaderWidthBeforeTiledFeeds() {
+        guard tiledFeedTitlesConstraints.isEmpty, let reader = topContainerView,
+              !reader.isHidden, reader.bounds.width > 0 else { return }
+        lastReadingColumnWidth = reader.bounds.width
+    }
+
+    private func showTitlesBesideTiledFeeds() {
+        guard let titles = leftContainerView, let reader = topContainerView,
+              let divider = verticalDividerView else { return }
+        let needsPresentationUpdate = tiledFeedTitlesConstraints.isEmpty || titles.isHidden || titles.alpha != 1 ||
+            !divider.isHidden || divider.alpha != 0
+        if tiledFeedTitlesConstraints.isEmpty {
+            let originals = view.constraints.filter { constraint in
+                guard constraint.isActive else { return false }
+                let first = constraint.firstItem as? UIView
+                let second = constraint.secondItem as? UIView
+                let titlesToDivider = (first === titles && second === divider) || (first === divider && second === titles)
+                let readerToDivider = (first === reader && second === divider) || (first === divider && second === reader)
+                return (titlesToDivider || readerToDivider) &&
+                    [.leading, .trailing].contains(constraint.firstAttribute) &&
+                    [.leading, .trailing].contains(constraint.secondAttribute)
+            }
+            guard originals.count == 2 else { return }
+            let readerWidth = lastReadingColumnWidth > 0 ? lastReadingColumnWidth : reader.bounds.width
+            guard readerWidth > 0 else { return }
+            tiledFeedReaderWasHidden = reader.isHidden
+            reader.isHidden = true
+            // DetailViewController.swift retains the original constraints and article viewport while titles fill the native secondary.
+            tiledFeedOriginalConstraints = originals
+            tiledFeedTitlesConstraints = [
+                titles.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+                reader.widthAnchor.constraint(equalToConstant: readerWidth)
+            ]
+            NSLayoutConstraint.deactivate(originals)
+            NSLayoutConstraint.activate(tiledFeedTitlesConstraints)
+        }
+        guard needsPresentationUpdate else { return }
+        titles.isHidden = false
+        titles.alpha = 1
+        divider.isHidden = true
+        divider.alpha = 0
+        appDelegate.feedDetailViewController.updateSidebarButton(for: appDelegate.splitViewController.displayMode)
+        storyPagesViewController?.updateStoryTitleNavigationButtons()
+        view.layoutIfNeeded()
+        storyPagesViewController?.viewIfLoaded?.setNeedsLayout()
+        storyPagesViewController?.viewIfLoaded?.layoutIfNeeded()
+    }
+
+    private func restoreReaderBesideStoryTitles() {
+        guard !tiledFeedTitlesConstraints.isEmpty else { return }
+        NSLayoutConstraint.deactivate(tiledFeedTitlesConstraints)
+        NSLayoutConstraint.activate(tiledFeedOriginalConstraints)
+        tiledFeedTitlesConstraints.removeAll()
+        tiledFeedOriginalConstraints.removeAll()
+        topContainerView.isHidden = tiledFeedReaderWasHidden
+        appDelegate.feedDetailViewController.updateSidebarButton(for: appDelegate.splitViewController.displayMode)
+        storyPagesViewController?.updateStoryTitleNavigationButtons()
+        storyPagesViewController?.viewIfLoaded?.setNeedsLayout()
+    }
+
+    func updateResolvedFeedSidebarLayout() {
+        guard isViewLoaded,
+              leftContainerView != nil, verticalDividerView != nil,
+              verticalDividerViewLeadingConstraint != nil else { return }
+        if !showsStoryTitlesBesideTiledFeeds { restoreReaderBesideStoryTitles() }
+        guard isPhone, !isPhoneOrCompact else { return }
+        if revealsStoryTitlesAfterTiledFeeds, appDelegate.splitViewController.isFeedsListHidden {
+            // DetailViewController.swift preserves an explicit title reveal across UIKit's pending sidebar dismissal.
+            revealsStoryTitlesAfterTiledFeeds = false
+            fullscreenSidebarPresentationState = .storyTitles
+        }
+        // DetailViewController.swift follows UIKit's resolved mode when a partial fold forces tiling despite an overlay preference.
+        performStoryAutoCollapseIfNeeded()
     }
 
     @objc func collapseFeedListIfNeededForStory() {
@@ -835,6 +1072,12 @@ class DetailViewController: BaseViewController {
             return
         }
 
+        if showsStoryTitlesBesideTiledFeeds {
+            revealsStoryTitlesAfterTiledFeeds = true
+            appDelegate.splitViewController.hide(.primary)
+            return
+        }
+
         resetTemporaryFullScreenIfNeeded()
 
         if shouldUseNativeFullscreenSidebarOverlay {
@@ -851,6 +1094,12 @@ class DetailViewController: BaseViewController {
 
     @objc(showStoryTitlesFromKeyboard:) func showStoryTitlesFromKeyboard(_ sender: Any?) {
         guard storyTitlesOnLeft, !isPhoneOrCompact else {
+            return
+        }
+
+        if showsStoryTitlesBesideTiledFeeds {
+            revealsStoryTitlesAfterTiledFeeds = true
+            appDelegate.splitViewController.hide(.primary)
             return
         }
 
@@ -968,6 +1217,11 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterStorySelection() {
+        if showsStoryTitlesBesideTiledFeeds {
+            revealsStoryTitlesAfterTiledFeeds = true
+            appDelegate.splitViewController.hide(.primary)
+            return
+        }
         let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterStorySelection(
             fullscreenSidebarPresentationState
         )
@@ -975,7 +1229,7 @@ class DetailViewController: BaseViewController {
         guard shouldUseNativeFullscreenSidebarOverlay else {
             let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
             let shouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
-                isPhone: isPhone,
+                isPhone: isPhone && isPhoneOrCompact,
                 isCompact: isCompact,
                 hasActiveStory: hasVisibleStoryForSidebarLayout,
                 behavior: StoryAutoCollapseBehavior(rawValue: behaviorString) ?? .auto,
@@ -1102,7 +1356,7 @@ class DetailViewController: BaseViewController {
         guard storyTitlesOnLeft else {
             let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
             let shouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
-                isPhone: isPhone,
+                isPhone: isPhone && isPhoneOrCompact,
                 isCompact: isCompact,
                 hasActiveStory: hasVisibleStoryForSidebarLayout,
                 behavior: StoryAutoCollapseBehavior(rawValue: behaviorString) ?? .auto,
@@ -1139,7 +1393,7 @@ class DetailViewController: BaseViewController {
         }
 
         let baseShouldCollapse = StoryAutoCollapseDecision.shouldCollapse(
-            isPhone: isPhone,
+            isPhone: isPhone && isPhoneOrCompact,
             isCompact: isCompact,
             hasActiveStory: hasVisibleStoryForSidebarLayout,
             behavior: StoryAutoCollapseBehavior(rawValue: behaviorString) ?? .auto,
@@ -1176,7 +1430,10 @@ class DetailViewController: BaseViewController {
         case .storyTitles:
             if let splitViewController {
                 if splitViewController.displayMode == .secondaryOnly {
-                    splitViewController.show(.supplementary)
+                    // DetailViewController.swift reveals embedded titles below; only triple-column splits have a supplementary column.
+                    if splitViewController.style == .tripleColumn {
+                        splitViewController.show(.supplementary)
+                    }
                 } else if splitViewController.displayMode != .oneBesideSecondary
                             && splitViewController.displayMode != .oneOverSecondary {
                     splitViewController.hide(.primary)
@@ -1192,10 +1449,23 @@ class DetailViewController: BaseViewController {
         restoreStoryKeyboardFocusIfNeeded()
     }
 
-    private func setStoryTitlesCollapsed(_ shouldCollapse: Bool, animated: Bool) {
+    private var isAdjustingStoryTitleColumns = false
+
+    private func setStoryTitlesCollapsed(_ requestedCollapse: Bool, animated: Bool) {
+        if !showsStoryTitlesBesideTiledFeeds { restoreReaderBesideStoryTitles() }
         guard storyTitlesOnLeft, !isPhoneOrCompact else {
             return
         }
+
+        guard !isAdjustingStoryTitleColumns else { return }
+        isAdjustingStoryTitleColumns = true
+        defer { isAdjustingStoryTitleColumns = false }
+        if showsStoryTitlesBesideTiledFeeds {
+            showTitlesBesideTiledFeeds()
+            return
+        }
+        let shouldCollapse = requestedCollapse
+        let shouldAnimate = animated
 
         let collapsedLeadingConstant: CGFloat = 0
         let targetLeadingConstant = shouldCollapse ? collapsedLeadingConstant : verticalDividerPosition
@@ -1214,23 +1484,30 @@ class DetailViewController: BaseViewController {
             verticalDividerView.isHidden = false
         }
 
-        view.layoutIfNeeded()
+        if shouldAnimate { view.layoutIfNeeded() }
 
         let animations = {
             self.verticalDividerViewLeadingConstraint.constant = targetLeadingConstant
             self.leftContainerView.alpha = targetAlpha
             self.verticalDividerView.alpha = targetAlpha
+            // DetailViewController.swift makes the next tap follow the new layout as soon as its model frames change.
+            self.appDelegate.feedDetailViewController.updateSidebarButton(for: self.appDelegate.splitViewController.displayMode)
+            self.storyPagesViewController?.updateStoryTitleNavigationButtons()
             self.view.layoutIfNeeded()
+            self.rememberReaderWidthBeforeTiledFeeds()
+            self.storyPagesViewController?.viewIfLoaded?.layoutIfNeeded()
         }
 
         let completion: (Bool) -> Void = { _ in
+            // DetailViewController.swift ignores an outgoing column animation after tiled Feeds has taken over the title pane.
+            guard !self.showsStoryTitlesBesideTiledFeeds,
+                  self.verticalDividerViewLeadingConstraint.constant == targetLeadingConstant,
+                  self.leftContainerView.alpha == targetAlpha else { return }
             self.leftContainerView.isHidden = shouldCollapse
             self.verticalDividerView.isHidden = shouldCollapse
-            self.appDelegate.feedDetailViewController.updateSidebarButton(for: self.appDelegate.splitViewController.displayMode)
-            self.storyPagesViewController?.updateStoryTitleNavigationButtons()
         }
 
-        if animated {
+        if shouldAnimate {
             UIView.animate(withDuration: 0.2, animations: animations, completion: completion)
         } else {
             animations()
@@ -1252,7 +1529,7 @@ class DetailViewController: BaseViewController {
         
         adjustTopConstraint()
     }
-    
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -1290,6 +1567,8 @@ class DetailViewController: BaseViewController {
             }
             return
         }
+
+        if isPhone, !isPhoneOrCompact { adjustTopConstraint() }
         
         let currentFeedsWidth = splitViewController?.primaryColumnWidth ?? 320
         
@@ -1297,11 +1576,33 @@ class DetailViewController: BaseViewController {
             feedsWidth = currentFeedsWidth
         }
         performStoryAutoCollapseIfNeeded()
+        if !showsStoryTitlesBesideTiledFeeds { rememberReaderWidthBeforeTiledFeeds() }
         storyPagesViewController?.updateStoryTitleNavigationButtons()
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        if isPhone, !isPhoneOrCompact { adjustTopConstraint() }
     }
     
     private func adjustTopConstraint() {
-        guard let scene = view.window?.windowScene else {
+        guard let topConstraint = topContainerTopConstraint else { return }
+        // DetailViewController.swift stops adjusting the departed split column once compact navigation owns the reader.
+        if isCompact, storyPagesViewController?.parent !== self {
+            return
+        }
+        guard let window = view.window, let scene = window.windowScene else {
+            return
+        }
+
+        if isPhone, !isPhoneOrCompact, storyTitlesOnLeft, !isDiscoverSitesVisible {
+            // MainInterface.storyboard ties this host to the shared safe area; the article must not follow the left title bar's minimization.
+            let protectedTop = window.bounds.minY + window.safeAreaInsets.top
+            let articleTop = view.convert(CGPoint(x: window.bounds.minX, y: protectedTop), from: window).y
+            let compensation = view.safeAreaLayoutGuide.layoutFrame.minY - articleTop
+            if abs(topConstraint.constant - compensation) > 0.5 {
+                topConstraint.constant = compensation
+            }
             return
         }
         
@@ -1577,6 +1878,7 @@ private extension DetailViewController {
         guard isViewLoaded else {
             return
         }
+        if !showsStoryTitlesBesideTiledFeeds { restoreReaderBesideStoryTitles() }
         if isDiscoverSitesVisible { return }
 
         let isTop = layout == .top
@@ -1632,7 +1934,8 @@ private extension DetailViewController {
             }
             
             verticalDividerViewLeadingConstraint.constant = -13
-            horizontalDividerViewBottomConstraint.constant = -13
+            // MainInterface.storyboard has a 5-point divider and 1-point gap; this keeps the reader at the host's bottom edge.
+            horizontalDividerViewBottomConstraint.constant = -6
             wasGridView = true
         } else if layout == .left {
             if feedDetailViewController == nil {
@@ -1654,7 +1957,7 @@ private extension DetailViewController {
                 verticalDividerView.alpha = 0
                 verticalDividerView.isHidden = true
             }
-            horizontalDividerViewBottomConstraint.constant = -13
+            horizontalDividerViewBottomConstraint.constant = -6
             appDelegate.updateSplitBehavior(true)
             wasGridView = false
         } else {
@@ -1708,6 +2011,8 @@ private extension DetailViewController {
         }
         
         if viewController.parent !== self {
+            // DetailViewController.swift completes the departing navigation handoff before mounting the expanded column.
+            remove(viewController: viewController)
             addChild(viewController)
         } else if viewController.view.superview === containerView {
             return
@@ -1736,8 +2041,10 @@ private extension DetailViewController {
         removeFromFeedsNavigation(viewController: viewController)
         
         viewController.willMove(toParent: nil)
+        viewController.viewIfLoaded?.removeFromSuperview()
         viewController.removeFromParent()
-        viewController.view.removeFromSuperview()
+        // DetailViewController.swift returns root-view sizing to UIKit after removing the old column's constraints.
+        viewController.viewIfLoaded?.translatesAutoresizingMaskIntoConstraints = true
     }
     
     func removeFromFeedsNavigation(viewController: UIViewController?) {

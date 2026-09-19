@@ -324,6 +324,19 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    // StoryDetailObjCViewController.m retains only the captured article while UIKit temporarily removes the compact stack.
+    if (self.parentViewController == pages && pages.currentPage == self && self.hasStory &&
+        [appDelegate.detailViewController preservesArticleDuringSplitCollapse:self]) return;
+    BOOL isOwnedActiveArticle = self.parentViewController == pages && pages.currentPage == self &&
+        self.hasStory && [self.activeStoryId isEqualToString:appDelegate.activeStory[@"story_hash"]];
+    BOOL isVisibleCompactReader = pages.parentViewController == appDelegate.feedsNavigationController &&
+        appDelegate.feedsNavigationController.topViewController == pages;
+    BOOL isOwnedExpandedReader = pages.parentViewController == appDelegate.detailViewController &&
+        !appDelegate.detailViewController.isCompact;
+    // StoryDetailObjCViewController.m can receive a departing split column's disappearance after its reader has moved.
+    if (isOwnedActiveArticle && (isVisibleCompactReader || isOwnedExpandedReader)) return;
     
     if (!appDelegate.showingSafariViewController &&
         appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
@@ -432,6 +445,7 @@
     UIInterfaceOrientation orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
     [super viewWillLayoutSubviews];
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.appDelegate.storyPagesViewController hasHiddenReaderAncestor]) return;
         [self.appDelegate.storyPagesViewController layoutForInterfaceOrientation:orientation];
         [self changeWebViewWidth];
         [self drawFeedGradient];
@@ -450,7 +464,8 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+    if (self.appDelegate.detailViewController) return self.appDelegate.detailViewController.isPhoneOrCompact;
+    return self.isPhone || self.appDelegate.isCompactWidth;
 }
 
 // allow keyboard commands
@@ -1057,6 +1072,21 @@
     }
 
     StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+    BOOL pinsFeedHeader = pagesVC.usesVerticalReaderToolbar ||
+        (appDelegate.detailViewController.isPhone && !self.isPhoneOrCompact);
+
+    // StoryDetailObjCViewController.m keeps the pinned article feed header opaque above scrolling article content.
+    self.feedTitleGradient.backgroundColor = pinsFeedHeader ? UIColorFromRGB(NEWSBLUR_WHITE_COLOR) : nil;
+
+    if (pinsFeedHeader) {
+        CGFloat scale = self.webView.window.screen.scale ?: UIScreen.mainScreen.scale;
+        CGRect frame = self.feedTitleGradient.frame;
+        // StoryDetailObjCViewController.m follows the page only during a top pull; ordinary reading keeps the feed header pinned.
+        CGFloat top = MAX(self.webView.scrollView.contentInset.top, -self.webView.scrollView.contentOffset.y);
+        frame.origin.y = floor(top * scale) / scale;
+        self.feedTitleGradient.frame = frame;
+        return;
+    }
 
     // Get current scroll state
     CGFloat contentInsetTop = self.webView.scrollView.contentInset.top;
@@ -1127,7 +1157,9 @@
 }
 
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition force:(BOOL)force {
-    if (!appDelegate.isCompactWidth && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+    if ([appDelegate.storyPagesViewController hasHiddenReaderAncestor]) return;
+    // StoryDetailObjCViewController.m clears a compact reader's old inset when unfolding into regular columns.
+    if (!self.isPhoneOrCompact && !appDelegate.storyPagesViewController.usesVerticalReaderToolbar && fabs(self.webView.scrollView.contentInset.top) < 0.5) {
         [self updateFeedTitleGradientPosition];
         return;
     }
@@ -2856,6 +2888,8 @@
     // the view is laid out at its final device width (e.g., XIB default 414pt vs
     // iPhone 13's 390pt), baking the wrong width into the viewport meta tag.
     if (self.hasStory) {
+        // StoryDetailObjCViewController.m may have cached a resize against the outgoing document before this navigation committed.
+        self.lastWidthClassKey = nil;
         [self changeWebViewWidth];
     }
 }
@@ -3008,6 +3042,8 @@
     if (!self.hasStory || ![self isCurrentStoryLoad:self.storyLoadGeneration] ||
         self.readyStoryLoadGeneration == self.storyLoadGeneration) return;
     self.readyStoryLoadGeneration = self.storyLoadGeneration;
+    // StoryDetailObjCViewController.m also sizes ready content before slow subresources trigger didFinishNavigation.
+    self.lastWidthClassKey = nil;
     [self revealCurrentStory];
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
@@ -3204,6 +3240,7 @@
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
 
     self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x000000);
+    [self updateFeedTitleGradientPosition];
     
     if ([ThemeManager themeManager].isDarkTheme) {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
@@ -3705,6 +3742,7 @@
 }
 
 - (void)changeWebViewWidth {
+    if ([appDelegate.storyPagesViewController hasHiddenReaderAncestor]) return;
     // Don't do this in the background, to avoid scrolling to the top unnecessarily
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         return;
@@ -3776,7 +3814,7 @@
     self.lastWidthClassKey = widthClassKey;
 
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"var w = Math.floor(window.innerWidth || document.documentElement.clientWidth || %li);"
+                          @"var w = %li;"
                           "if (document.body) { document.body.className = '%@ %@ %@ NB-width-' + w; }"
                           "var viewport = document.getElementById('viewport');"
                           "if (viewport) { viewport.setAttribute('content', 'width=%li, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'); }",

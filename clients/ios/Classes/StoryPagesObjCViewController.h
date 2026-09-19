@@ -93,6 +93,7 @@
 @property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic, readonly) BOOL useCustomToolbar;
+@property (nonatomic, readonly) BOOL usesVerticalReaderToolbar;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
@@ -104,6 +105,7 @@
 @property (nonatomic, strong) StoryToolbarScrollHandler *toolbarScrollHandler;
 
 - (void)resizeScrollView;
+- (BOOL)hasHiddenReaderAncestor;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)updateStatusBarState;
@@ -171,6 +173,7 @@
 - (IBAction)autoscrollFaster:(UIButton *)sender;
 
 - (IBAction)openSendToDialog:(id)sender;
+- (void)openStoryTrainerFromKeyboard:(id)sender;
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
 - (void)changeToNextPage:(id)sender;
