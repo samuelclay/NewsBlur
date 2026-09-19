@@ -1165,8 +1165,23 @@ import XCTest
             page.drawStory()
             page.prepareCurrentStoryForPresentation()
         }
-        for _ in 0..<200 where articlePages.contains(where: { !$0.readyForPresentation }) { await delay(0.025) }
-        XCTAssertTrue(articlePages.allSatisfy(\.readyForPresentation))
+        let readinessStartedAt = CACurrentMediaTime()
+        let readinessBudget: TimeInterval = 15
+        func initialArticleReadiness() -> String {
+            let states = zip(articlePages, initialLocations).map { page, expectedLocation in
+                "expected=next-button-\(expectedLocation) actual=\(page.activeStoryId ?? "nil") index=\(page.pageIndex) " +
+                    "ready=\(page.readyForPresentation) hasStory=\(page.hasStory) " +
+                    "loading=\(page.webView.isLoading) inWindow=\(page.webView.window === window) " +
+                    "finished=\((page as? StoryLoadPage)?.finishedNavigations ?? -1) " +
+                    "preparedFonts=\(String(describing: page.value(forKey: "preparedWebViewFonts"))) " +
+                    "contentSize=\(page.webView.scrollView.contentSize)"
+            }.joined(separator: "\n")
+            return "Initial Next-button article pages must be ready before starting either animation; " +
+                "elapsed=\(CACurrentMediaTime() - readinessStartedAt)s deadline=\(readinessBudget)s\n\(states)"
+        }
+        try await requireState(initialArticleReadiness(), timeout: readinessBudget) {
+            articlePages.allSatisfy(\.readyForPresentation)
+        }
         for page in articlePages { page.finishStoryPresentation() }
         pages.scrollView.contentOffset = CGPoint(x: 2 * 660, y: 0)
         pages.scrollView.delegate = pages
@@ -2912,6 +2927,15 @@ import XCTest
         let deadline = CACurrentMediaTime() + timeout
         while !condition(), CACurrentMediaTime() < deadline { await delay(0.01) }
         XCTAssertTrue(condition(), description, file: file, line: line)
+    }
+
+    // StoryDetailLoadingTests.swift aborts a dependent gesture when its startup precondition fails, and samples native diagnostics only after waiting.
+    private func requireState(_ description: @autoclosure () -> String, timeout: TimeInterval = 15,
+                              file: StaticString = #filePath, line: UInt = #line,
+                              _ condition: () -> Bool) async throws {
+        let deadline = CACurrentMediaTime() + timeout
+        while !condition(), CACurrentMediaTime() < deadline { await delay(0.01) }
+        _ = try XCTUnwrap(condition() ? true : nil, description(), file: file, line: line)
     }
 
     private func drainMainQueue() async { await delay(0.01) }
