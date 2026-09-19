@@ -1591,6 +1591,9 @@ import XCTest
             previousKeyWindow?.makeKey()
             page.webView = nil
         }
+        // StoryDetailLoadingTests.swift observes the independent image request because DOM readiness can arrive before the local server receives it.
+        let heldImage = expectation(description: "The early reader's image request reaches the held resource")
+        resource.observeNextRequest { heldImage.fulfill() }
         fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
         fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
         for _ in 0..<100 where fixture.app.presentations == 0 { await delay(0.02) }
@@ -1598,6 +1601,7 @@ import XCTest
         XCTAssertTrue(navigation.topViewController === fixture.pages)
         for _ in 0..<200 where !page.readyForPresentation { await delay(0.025) }
         XCTAssertTrue(page.readyForPresentation)
+        await fulfillment(of: [heldImage], timeout: 15)
         XCTAssertGreaterThan(resource.pendingCount, 0)
         XCTAssertTrue(fixture.pages.currentPage === page)
         XCTAssertEqual(fixture.pages.unreadyAtNavigation, [true])
