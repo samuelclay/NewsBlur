@@ -9,14 +9,13 @@ import Foundation
         let statements = [
             "DROP TABLE IF EXISTS temp.offline_retained_hashes",
             "CREATE TEMP TABLE offline_retained_hashes (story_hash TEXT PRIMARY KEY)",
-            "INSERT INTO offline_retained_hashes SELECT story_hash FROM unread_hashes ORDER BY story_timestamp \(order), story_hash ASC LIMIT \(limit)",
             // OfflineCacheCleanup.swift reserves capacity for unread stories that have not downloaded yet.
+            "INSERT INTO offline_retained_hashes SELECT story_hash FROM unread_hashes ORDER BY story_timestamp \(order), story_hash ASC LIMIT \(limit)",
             "INSERT OR IGNORE INTO offline_retained_hashes SELECT s.story_hash FROM stories s WHERE NOT EXISTS (SELECT 1 FROM unread_hashes u WHERE u.story_hash = s.story_hash) ORDER BY s.story_timestamp DESC, s.story_hash ASC LIMIT MAX(0, \(limit) - (SELECT COUNT(*) FROM offline_retained_hashes))",
             "DELETE FROM stories WHERE story_hash NOT IN (SELECT story_hash FROM offline_retained_hashes)",
             "DELETE FROM unread_hashes WHERE story_hash NOT IN (SELECT story_hash FROM offline_retained_hashes)",
             "DELETE FROM cached_text WHERE NOT EXISTS (SELECT 1 FROM stories s WHERE s.story_hash = cached_text.story_hash)",
             "DELETE FROM cached_images WHERE NOT EXISTS (SELECT 1 FROM stories s WHERE s.story_hash = cached_images.story_hash)",
-            "DELETE FROM story_scrolls WHERE NOT EXISTS (SELECT 1 FROM stories s WHERE s.story_hash = story_scrolls.story_hash)",
             "DROP TABLE temp.offline_retained_hashes"
         ]
         return statements.allSatisfy { database.executeUpdate($0, withArgumentsIn: []) }

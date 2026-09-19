@@ -155,6 +155,7 @@
                           (float)appDelegate.totalUncachedImagesCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
         [self.appDelegate.feedsViewController showCachingNotifier:@"Images" progress:progress hoursBack:hours];
     });
 }
@@ -166,6 +167,8 @@
     }
     
     NSData *responseData = UIImageJPEGRepresentation(image, 0.6);
+    __block BOOL stored = NO;
+    __block BOOL storageFailed = NO;
     [self.appDelegate.database inDatabase:^(FMDatabase *db) {
         if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
         // OfflineFetchImages.m serializes file creation with pruning and checks that this image is still retained.
@@ -173,10 +176,29 @@
         if (!retained) return;
         NSString *filename = [[Utilities md5:imageUrl] stringByAppendingPathExtension:@"jpeg"];
         NSURL *fileURL = [[self.appDelegate.documentsURL URLByAppendingPathComponent:@"story_images"] URLByAppendingPathComponent:filename];
-        if (![responseData writeToURL:fileURL atomically:YES]) return;
-        [db executeUpdate:@"UPDATE cached_images SET image_cached = 1 WHERE story_hash = ? AND image_url = ?", storyHash, imageUrl];
+        NSError *writeError = nil;
+        if (![responseData writeToURL:fileURL options:NSDataWritingAtomic error:&writeError]) {
+            NSLog(@"OfflineFetchImages.m could not write cached image: %@", writeError);
+            storageFailed = YES;
+            [self cancel];
+            return;
+        }
+        stored = [db executeUpdate:@"UPDATE cached_images SET image_cached = 1 WHERE story_hash = ? AND image_url = ?", storyHash, imageUrl] && [db changes] > 0;
+        if (!stored) {
+            NSLog(@"OfflineFetchImages.m could not record cached image: %@", [db lastErrorMessage]);
+            storageFailed = YES;
+            [self cancel];
+        }
     }];
-    if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
+    if (storageFailed) {
+        // OfflineFetchImages.m stops retrying an unwritable cache while keeping the image pending for a later sync.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.appDelegate.clearingOfflineCache) return;
+            [self.appDelegate.feedsViewController showDoneNotifier];
+            [self.appDelegate finishBackground];
+        });
+    }
+    if (!stored || self.isCancelled || self.appDelegate.clearingOfflineCache) return;
     if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
         if (storyTimestamp > self.appDelegate.latestCachedImageDate) self.appDelegate.latestCachedImageDate = storyTimestamp;
     } else if (!self.appDelegate.latestCachedImageDate || storyTimestamp < self.appDelegate.latestCachedImageDate) {
