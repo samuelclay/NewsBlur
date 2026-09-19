@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 8;
+	static final int VERSION = 9;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);
@@ -80,9 +80,9 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int previousVersion, int nextVersion) {
-        if (previousVersion == 6) {
-            // Folder.java reconstructs paths from the cached parent list. Preserve feeds,
-            // stories and queued offline actions while replacing the folder primary key.
+        if (previousVersion >= 6 && previousVersion < 9) {
+            // Folder.java reconstructs segment keys from the cached parent list. Display
+            // paths can collide when a folder title contains the hierarchy separator.
             db.execSQL("ALTER TABLE " + DatabaseConstants.FOLDER_TABLE + " RENAME TO folders_legacy");
             db.execSQL(DatabaseConstants.FOLDER_SQL);
             try (android.database.Cursor cursor = db.query("folders_legacy", null, null, null, null, null, null)) {
@@ -92,11 +92,11 @@ public class BlurDatabase extends SQLiteOpenHelper {
                 }
             }
             db.execSQL("DROP TABLE folders_legacy");
-        }
-        if (previousVersion >= 6 && previousVersion < 8) {
-            // ClusterReadStore.kt backfills only membership, preserving cached stories and queued actions.
-            ClusterReadStore.createTables(db);
-            ClusterReadStore.backfill(db);
+            if (previousVersion < 8) {
+                // ClusterReadStore.kt backfills membership without replacing cached stories or queued actions.
+                ClusterReadStore.createTables(db);
+                ClusterReadStore.backfill(db);
+            }
             return;
         }
         dropAndRecreateTables(db);
