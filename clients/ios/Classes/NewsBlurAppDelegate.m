@@ -1375,12 +1375,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 
     if (!self.showingSafariViewController) {
-        // Try popover dismissal first (iPad/Mac with sourceRect)
+        // NewsBlurAppDelegate.m only closes the share composer; story preparation must leave other dialogs open.
         if (self.shareViewController.presentingViewController &&
             self.shareViewController.modalPresentationStyle == UIModalPresentationPopover) {
-            [self hidePopoverAnimated:YES];
-        } else {
-            [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+            [self.shareViewController dismissViewControllerAnimated:YES completion:nil];
+        } else if (self.shareViewController && self.shareNavigationController.presentingViewController &&
+                   [self.shareNavigationController.viewControllers containsObject:self.shareViewController]) {
+            [self.shareNavigationController dismissViewControllerAnimated:YES completion:nil];
         }
         [self.shareViewController.commentField resignFirstResponder];
     }
