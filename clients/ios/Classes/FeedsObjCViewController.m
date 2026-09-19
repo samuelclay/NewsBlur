@@ -23,6 +23,7 @@
 #import "AddSiteViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
+#import "PINDiskCache.h"
 #import "UIImageView+AFNetworking.h"
 #import "NBBarButtonItem.h"
 #import "UISearchBar+Field.h"
@@ -2283,23 +2284,38 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)preferencesButtonTappedWithKey:(NSString *)key action:(NSString *)action {
     if ([key isEqualToString:@"offline_cache_empty_stories"]) {
-        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-        dispatch_async(queue, ^{
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:key];
-            });
-            [self.appDelegate.database inDatabase:^(FMDatabase *db) {
-                [db executeUpdate:@"VACUUM"];
-                [self.appDelegate setupDatabase:db force:YES];
-                [db executeUpdate:@"DELETE FROM stories"];
-                [db executeUpdate:@"DELETE FROM text"];
-                [db executeUpdate:@"DELETE FROM cached_images"];
-                [self.appDelegate deleteAllCachedImages];
-                dispatch_sync(dispatch_get_main_queue(), ^{
-                    [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
-                                                              forKey:key];
-                });
+        if (self.appDelegate.clearingOfflineCache) return;
+        self.appDelegate.clearingOfflineCache = YES;
+        [self.appDelegate cancelOfflineQueue];
+        [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:key];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            __block BOOL success = NO;
+            [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+                success = [OfflineCacheCleanup clearDatabase:db];
+                *rollback = !success;
             }];
+            BOOL databaseCleared = success;
+            void (^finishDeletion)(BOOL) = ^(BOOL imagesRemoved) {
+                success = success && imagesRemoved;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (databaseCleared) [self.appDelegate.activeCachedImages removeAllObjects];
+                    self.appDelegate.clearingOfflineCache = NO;
+                    NSString *message = success ? @"Cleared all stories and images!" : @"Could not completely clear the cache. Please try again.";
+                    [[NSUserDefaults standardUserDefaults] setObject:message forKey:key];
+                });
+            };
+            if (success) {
+                [self.appDelegate.database inDatabase:^(FMDatabase *db) {
+                    BOOL imagesRemoved = [OfflineCacheCleanup removeUnreferencedImagesWithDatabase:db directory:[self.appDelegate.documentsURL URLByAppendingPathComponent:@"story_images"]];
+                    BOOL compacted = [OfflineCacheCleanup compactDatabase:db force:YES];
+                    success = imagesRemoved && compacted;
+                }];
+                BOOL snapshotsRemoved = [[StoryFirstPageCache shared] clearSnapshots];
+                success = success && snapshotsRemoved;
+                [self.appDelegate deleteAllCachedImagesWithCompletion:finishDeletion];
+            } else {
+                finishDeletion(NO);
+            }
         });
     } else if ([key isEqualToString:@"import_prefs"]) {
         UIViewController *presenter = [self.appDelegate.feedsNavigationController presentedViewController];
@@ -2610,6 +2626,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     [appDelegate.detailViewController dismissDiscoverSites];
     
+    [self.appDelegate.feedDetailViewController beginExplicitFeedSelection];
     [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
     [appDelegate.storiesCollection reset];
     
@@ -3048,6 +3065,7 @@ heightForHeaderInSection:(NSInteger)section {
     } else if ([folder isEqualToString:@"discover_sites"]) {
         [appDelegate openDiscoverSitesView];
     } else {
+        [self.appDelegate.feedDetailViewController beginExplicitFeedSelection];
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
     }
 

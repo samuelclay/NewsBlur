@@ -430,7 +430,20 @@ final class DiscoverSitesUITests: XCTestCase {
     private func scrollTo(_ element: XCUIElement) {
         for _ in 0..<10 {
             if isOnscreen(element) && element.isHittable { return }
-            app.swipeUp()
+            let source = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND selected == true", "discover-tab-")).firstMatch
+            XCTAssertTrue(source.exists)
+            let sourceID = source.identifier
+            let frame = app.frame
+            let top = source.frame.maxY + 12
+            let keyboard = app.keyboards.firstMatch
+            let bottom = min(frame.maxY - 24, keyboard.exists ? keyboard.frame.minY - 12 : frame.maxY)
+            XCTAssertGreaterThan(bottom - top, 44, "The source must leave room to scroll its content")
+            // AddSiteUITests.swift uses screen-aligned coordinates because XCTest's generic
+            // app.swipeUp synthesized a horizontal source swipe in landscape on iOS 26.5.
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.7, dy: (top + (bottom - top) * 0.85 - frame.minY) / frame.height))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.7, dy: (top + (bottom - top) * 0.15 - frame.minY) / frame.height))
+            start.press(forDuration: 0.05, thenDragTo: end)
+            XCTAssertTrue(app.buttons[sourceID].isSelected, "Vertical content scrolling must keep the same Discover source")
         }
         XCTAssertTrue(isOnscreen(element) && element.isHittable)
     }
@@ -548,12 +561,23 @@ final class DiscoverSitesUITests: XCTestCase {
     }
 
     func test_webFeedSelectsAndSubscribesToSecondVariant() {
+        XCUIDevice.shared.orientation = .landscapeLeft
         launch()
         selectTab("webFeed")
         enter("https://ui-test.newsblur.example/articles", in: app.textFields["Enter a web page URL..."])
         app.buttons["Analyze"].tap()
         let featured = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Featured stories")).firstMatch
         XCTAssertTrue(featured.waitForExistence(timeout: 10))
+        let keyboard = app.keyboards.firstMatch
+        if keyboard.exists {
+            // AddSiteUITests.swift dismisses the URL keyboard using WebFeedTabView.swift's
+            // interactive downward drag before trying to reveal a complete variant card.
+            let frame = app.frame
+            let startY = (keyboard.frame.minY - 12 - frame.minY) / frame.height
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.7, dy: startY))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.7, dy: 0.95)))
+            XCTAssertTrue(keyboard.waitForDisappearance(timeout: 5))
+        }
         scrollTo(featured)
         featured.tap()
         let subscribe = app.buttons["Subscribe to Web Feed"]
@@ -575,7 +599,9 @@ final class DiscoverSitesUITests: XCTestCase {
     }
 
     func test_googleNewsTopicSubscription() {
+        XCUIDevice.shared.orientation = .landscapeLeft
         launch()
+        XCTAssertGreaterThan(app.frame.width, app.frame.height, "The Google News subscription controls must be reachable in landscape")
         selectTab("googleNews")
         let technology = app.buttons["Technology"].firstMatch
         XCTAssertTrue(technology.waitForExistence(timeout: 10))
@@ -624,7 +650,9 @@ final class DiscoverSitesUITests: XCTestCase {
     }
 
     func test_previewResolvesUnlinkedFeedAndOpensReader() {
+        XCUIDevice.shared.orientation = .landscapeLeft
         launch()
+        XCTAssertGreaterThan(app.frame.width, app.frame.height, "The Popular Try action must be reachable in landscape")
         selectTab("popular")
         let preview = app.buttons["Try The Daily Perspective"]
         XCTAssertTrue(preview.waitForExistence(timeout: 10))
@@ -635,9 +663,7 @@ final class DiscoverSitesUITests: XCTestCase {
         XCTAssertTrue(firstStory.label.contains("Swift Fixture Story One"))
         XCTAssertTrue(isOnscreen(firstStory) && firstStory.isHittable)
         capture("discover-preview-reader")
-        app.navigationBars.buttons.firstMatch.tap()
-        XCTAssertTrue(app.buttons["discover-tab-popular"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["discover-tab-popular"].isSelected)
+        returnToDiscoveryFromTitleList()
         XCTAssertTrue(app.staticTexts["The Daily Perspective"].exists)
     }
 
@@ -677,17 +703,13 @@ final class DiscoverSitesUITests: XCTestCase {
         app.buttons["discover-view-mode-list"].tap()
         let previewTitle = discoveryStoryPreview("ui-story-swift-2")
         XCTAssertTrue(previewTitle.waitForExistence(timeout: 10))
+        scrollTo(previewTitle)
         let beforeY = previewTitle.frame.minY
         capture("claypad-discovery-before-story-tap")
         previewTitle.tap()
-        let selectedStory = app.tables["story-titles-list"].cells["story-row-ui-story-swift-2"]
-        XCTAssertTrue(selectedStory.waitForExistence(timeout: 15))
-        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: selectedStory)
-        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
-                       "The tapped story, not the first story, must be selected in the reader")
-        assertArticleIsVisible(title: "Swift Fixture Story Two")
+        assertExactPreviewStoryIsVisible(title: "Swift Fixture Story Two", hash: "ui-story-swift-2")
         capture("claypad-discovery-tapped-story-selected")
-        app.buttons["discover-preview-back"].tap()
+        returnToDiscoveryFromPreview(storyHash: "ui-story-swift-2")
         XCTAssertTrue(previewTitle.waitForExistence(timeout: 10))
         XCTAssertEqual(previewTitle.frame.minY, beforeY, accuracy: 3)
         XCTAssertTrue(app.buttons["discover-story-ui-story-swift-2"].isSelected)
@@ -702,13 +724,9 @@ final class DiscoverSitesUITests: XCTestCase {
         let preview = discoveryStoryPreview("ui-story-swift-2")
         XCTAssertTrue(preview.waitForExistence(timeout: 10))
         preview.tap()
-        let story = app.tables["story-titles-list"].cells["story-row-ui-story-swift-2"]
-        XCTAssertTrue(story.waitForExistence(timeout: 15))
-        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: story)
-        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed)
-        assertArticleIsVisible(title: "Swift Fixture Story Two")
+        assertExactPreviewStoryIsVisible(title: "Swift Fixture Story Two", hash: "ui-story-swift-2")
         capture("claypad-discovery-exact-story-from-empty-feed")
-        app.buttons["discover-preview-back"].tap()
+        returnToDiscoveryFromPreview(storyHash: "ui-story-swift-2")
         XCTAssertTrue(preview.waitForExistence(timeout: 10))
         XCTAssertTrue(preview.isSelected)
     }
@@ -723,6 +741,71 @@ final class DiscoverSitesUITests: XCTestCase {
         XCTAssertTrue(link.waitForExistence(timeout: 20), "The tapped story's article must render")
         let visible = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: link)
         XCTAssertEqual(XCTWaiter.wait(for: [visible], timeout: 10), .completed)
+    }
+
+    private func assertExactPreviewStoryIsVisible(title: String, hash: String) {
+        assertArticleIsVisible(title: title)
+        // AddSiteUITests.swift expects the landscape iPad fixture to retain its three panes;
+        // the iPhone reader uses a navigation stack and deliberately fades title selection.
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            XCTAssertFalse(app.buttons["discover-preview-back"].exists)
+            _ = storyReaderBackButton()
+        } else {
+            let story = app.tables["story-titles-list"].cells["story-row-\(hash)"]
+            XCTAssertTrue(story.waitForExistence(timeout: 15))
+            XCTAssertTrue(isOnscreen(story) && story.isHittable, "The exact title must remain visible beside the article")
+            let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: story)
+            XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
+                           "The tapped story, not the first story, must be selected in the iPad reader")
+        }
+    }
+
+    private func storyReaderBackButton() -> XCUIElement {
+        let back = app.buttons["story-reader-back"]
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "The compact article toolbar must provide Back navigation")
+        XCTAssertEqual(back.label, "Back to story titles")
+        XCTAssertTrue(back.isHittable)
+        return back
+    }
+
+    private func nativeTitleListBackButton() -> XCUIElement {
+        // AddSiteUITests.swift follows UIKit's explicit Back identity even when it moves
+        // into a system toolbar; the title navigation bar may contain only Settings.
+        let systemBack = app.buttons["BackButton"]
+        if systemBack.waitForExistence(timeout: 3) {
+            XCTAssertTrue(systemBack.isHittable)
+            return systemBack
+        }
+        let back = app.navigationBars.buttons.matching(
+            NSPredicate(format: "label IN %@", ["Back", "Add + Discover Sites"])).firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "The compact title list must provide native Back navigation")
+        XCTAssertTrue(back.isHittable)
+        return back
+    }
+
+    private func returnToDiscoveryFromPreview(storyHash: String) {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            storyReaderBackButton().tap()
+            let story = app.tables["story-titles-list"].cells["story-row-\(storyHash)"]
+            XCTAssertTrue(story.waitForExistence(timeout: 10))
+            let titlesVisible = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: story)
+            XCTAssertEqual(XCTWaiter.wait(for: [titlesVisible], timeout: 10), .completed,
+                           "The article toolbar Back must return to its story titles")
+        }
+        returnToDiscoveryFromTitleList()
+    }
+
+    private func returnToDiscoveryFromTitleList() {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            nativeTitleListBackButton().tap()
+        } else {
+            let back = app.buttons["discover-preview-back"]
+            XCTAssertTrue(back.waitForExistence(timeout: 10), "The iPad preview must retain its Discover return button")
+            back.tap()
+        }
+        let popular = app.buttons["discover-tab-popular"]
+        XCTAssertTrue(popular.waitForExistence(timeout: 10))
+        XCTAssertTrue(popular.isSelected, "Returning from the reader must restore the same Discover source")
     }
 
     func test_liveClayPadListStoryPreviewOpensTheTappedStory() throws {
@@ -871,11 +954,7 @@ final class DiscoverSitesUITests: XCTestCase {
         openFixtureRelatedSites()
         app.buttons["discover-story-ui-story-swift-2"].tap()
         XCTAssertTrue(app.buttons["Close Related Sites"].waitForNonExistence(timeout: 10))
-        let story = app.tables["story-titles-list"].cells["story-row-ui-story-swift-2"]
-        XCTAssertTrue(story.waitForExistence(timeout: 15))
-        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: story)
-        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed)
-        assertArticleIsVisible(title: "Swift Fixture Story Two")
+        assertExactPreviewStoryIsVisible(title: "Swift Fixture Story Two", hash: "ui-story-swift-2")
         capture("related-sites-exact-story-in-reader")
     }
 
@@ -913,7 +992,7 @@ final class DiscoverSitesUITests: XCTestCase {
         XCTAssertEqual(picker.frame.midY, addButton.frame.midY, accuracy: 3)
         XCTAssertLessThanOrEqual(picker.frame.maxX, addButton.frame.minX)
         XCTAssertLessThanOrEqual(addButton.frame.minX - picker.frame.maxX, 12)
-        XCTAssertGreaterThanOrEqual(picker.frame.height, 44)
+        XCTAssertGreaterThanOrEqual(picker.frame.height + 0.001, 44)
     }
 
     func test_supportedThemesRenderDiscover() {

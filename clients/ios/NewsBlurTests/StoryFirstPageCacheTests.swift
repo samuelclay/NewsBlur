@@ -5,6 +5,37 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryFirstPageCache: XCTestCase {
+    func test_manualCacheDeletionRemovesSnapshotFilesButPreservesPendingEdits() async throws {
+        let fixture = makeCache()
+        let revision = fixture.cache.newRevision()
+        fixture.cache.store(["stories": [makeStory()]], request: fixture.request, revision: revision)
+        let held = try await requireSnapshot(fixture.cache, request: fixture.request)
+        fixture.cache.record(story: ["story_hash": "cache-story", "read_status": 0, "starred": true],
+                             fields: ["read_status", "starred"], account: "owner", host: fixture.request.host)
+        await flush(fixture.cache)
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(at: fixture.directory, includingPropertiesForKeys: nil)
+            .contains { $0.pathExtension == "json" })
+
+        XCTAssertTrue(fixture.cache.clearSnapshots())
+
+        XCTAssertNil(fixture.cache.response(for: held, provisional: false))
+        await assertMiss(fixture.cache, request: fixture.request)
+        fixture.cache.storeAuthoritative(["stories": [makeStory()]], request: fixture.request, revision: revision)
+        await flush(fixture.cache)
+        await assertMiss(fixture.cache, request: fixture.request)
+        let files = try FileManager.default.contentsOfDirectory(at: fixture.directory, includingPropertiesForKeys: nil)
+        XCTAssertFalse(files.contains { $0.pathExtension == "json" })
+        XCTAssertTrue(files.contains { $0.pathExtension == "journal" })
+        let relaunched = StoryFirstPageCache(directory: fixture.directory)
+        await assertMiss(relaunched, request: fixture.request)
+        let response = relaunched.overlay(["stories": [makeStory()]], request: fixture.request, revision: 0)
+        let story = try XCTUnwrap((response["stories"] as? [[String: Any]])?.first)
+        XCTAssertEqual(story["read_status"] as? Int, 0)
+        XCTAssertEqual(story["starred"] as? Bool, true)
+        fixture.cache.storeAuthoritative(["stories": [makeStory()]], request: fixture.request, revision: fixture.cache.newRevision())
+        _ = try await requireSnapshot(fixture.cache, request: fixture.request)
+    }
+
     func test_bulkReadInvalidationRejectsFeedAndRiverSnapshotsWithoutDroppingOtherAccountsOrEdits() async throws {
         let fixture = makeCache()
         let river = try XCTUnwrap(StoryFirstPageRequest(account: "owner", host: fixture.request.host,

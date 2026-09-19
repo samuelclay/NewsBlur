@@ -94,6 +94,7 @@
 - (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
 - (StoryFirstPageLoad *)prepareCachedFirstPage;
+- (void)beginExplicitFeedSelection;
 - (BOOL)isCurrentFirstPageLoad:(StoryFirstPageLoad *)load;
 - (BOOL)hasRetainedFirstPageStory;
 - (NSInteger)consumeRetainedFirstPageStoryInDirection:(NSInteger)direction;

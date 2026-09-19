@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E91820260918000100000001 /* DuoPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91820260918000100000002 /* DuoPresentationTests.swift */; };
+		CA1384000000000000000001 /* OfflineCacheCleanupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1384000000000000000002 /* OfflineCacheCleanupTests.swift */; };
 		C0A0C701A9B84F5681000002 /* CompactPhoneNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */; };
 		C0A0C701A9B84F5681000003 /* CompactPhoneNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */; };
 		E91620260916000300000001 /* StoryURLContrastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91620260916000300000002 /* StoryURLContrastTests.swift */; };
@@ -1478,7 +1479,9 @@
 		A91320260000000000000011 /* StoryPreloadFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000012 /* StoryPreloadFailureTests.swift */; };
 		C1A3E5F7092B4D6F8192A001 /* StoryFaviconPrefetchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A3E5F7092B4D6F8192A002 /* StoryFaviconPrefetchTests.swift */; };
 		D74E3909427F4B3AAF85A027 /* StoryFirstPageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */; };
+		AC1384000000000000000001 /* OfflineCacheCleanup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1384000000000000000003 /* OfflineCacheCleanup.swift */; };
 		D74E3909427F4B3AAF85A028 /* StoryFirstPageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */; };
+		AC1384000000000000000002 /* OfflineCacheCleanup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1384000000000000000003 /* OfflineCacheCleanup.swift */; };
 		D74E3909427F4B3AAF85A030 /* StoryFirstPageCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */; };
 		D74E3909427F4B3AAF85A032 /* StoryTextLayoutPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */; };
 		D74E3909427F4B3AAF85A034 /* StoryTextLayoutCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */; };
@@ -1644,6 +1647,7 @@
 
 /* Begin PBXFileReference section */
 		E91820260918000100000002 /* DuoPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoPresentationTests.swift; sourceTree = "<group>"; };
+		CA1384000000000000000002 /* OfflineCacheCleanupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCacheCleanupTests.swift; sourceTree = "<group>"; };
 		C0A0C701A9B84F5681000001 /* CompactPhoneNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactPhoneNavigationController.swift; sourceTree = "<group>"; };
 		E91620260916000300000002 /* StoryURLContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryURLContrastTests.swift; sourceTree = "<group>"; };
 		E91620260916000200000002 /* ShareStoryUpdateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareStoryUpdateTests.swift; sourceTree = "<group>"; };
@@ -2574,6 +2578,7 @@
 		A91320260000000000000012 /* StoryPreloadFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreloadFailureTests.swift; sourceTree = "<group>"; };
 		C1A3E5F7092B4D6F8192A002 /* StoryFaviconPrefetchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFaviconPrefetchTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFirstPageCache.swift; sourceTree = "<group>"; };
+		AC1384000000000000000003 /* OfflineCacheCleanup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCacheCleanup.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFirstPageCacheTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutPerformanceTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutCache.swift; sourceTree = "<group>"; };
@@ -2791,6 +2796,7 @@
 				D74E3909427F4B3AAF85A013 /* FeedIconRenderer.swift */,
 				D74E3909427F4B3AAF85A022 /* StoryDetailAssetCache.swift */,
 				D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */,
+				AC1384000000000000000003 /* OfflineCacheCleanup.swift */,
 				D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */,
 				D74E3909427F4B3AAF85A045 /* StoryThumbnailPrefetcher.swift */,
 				23E966198BD700C25CF4103B /* ReaderPerformance.swift */,
@@ -3813,6 +3819,7 @@
 				D74E3909427F4B3AAF85A015 /* FeedIconRendererTests.swift */,
 				D74E3909427F4B3AAF85A017 /* StoryDetailAssetPerformanceTests.swift */,
 				D74E3909427F4B3AAF85A019 /* HiddenFeedRowPerformanceTests.swift */,
+				CA1384000000000000000002 /* OfflineCacheCleanupTests.swift */,
 				D74E3909427F4B3AAF85A024 /* StoryFirstPageLoadingTests.swift */,
 				D74E3909427F4B3AAF85A026 /* StoryDetailLoadingTests.swift */,
 				E91720260916000400000002 /* StoryJavaScriptReadinessTests.swift */,
@@ -5788,6 +5795,7 @@
 				D74E3909427F4B3AAF85A011 /* FeedIconRenderer.swift in Sources */,
 				D74E3909427F4B3AAF85A020 /* StoryDetailAssetCache.swift in Sources */,
 				D74E3909427F4B3AAF85A027 /* StoryFirstPageCache.swift in Sources */,
+				AC1384000000000000000001 /* OfflineCacheCleanup.swift in Sources */,
 				D74E3909427F4B3AAF85A034 /* StoryTextLayoutCache.swift in Sources */,
 				D74E3909427F4B3AAF85A043 /* StoryThumbnailPrefetcher.swift in Sources */,
 				452F7CC253F066DDE7A3E212 /* ReaderPerformance.swift in Sources */,
@@ -6049,6 +6057,7 @@
 				D74E3909427F4B3AAF85A012 /* FeedIconRenderer.swift in Sources */,
 				D74E3909427F4B3AAF85A021 /* StoryDetailAssetCache.swift in Sources */,
 				D74E3909427F4B3AAF85A028 /* StoryFirstPageCache.swift in Sources */,
+				AC1384000000000000000002 /* OfflineCacheCleanup.swift in Sources */,
 				D74E3909427F4B3AAF85A035 /* StoryTextLayoutCache.swift in Sources */,
 				D74E3909427F4B3AAF85A044 /* StoryThumbnailPrefetcher.swift in Sources */,
 				78C134BF5A92B4328336073C /* ReaderPerformance.swift in Sources */,
@@ -6092,6 +6101,7 @@
 				E91720260916000500000001 /* StoryReaderPopGestureTests.swift in Sources */,
 				72AC992B011F4490943B6F20 /* AuthenticationResetTests.swift in Sources */,
 				D74E3909427F4B3AAF85A030 /* StoryFirstPageCacheTests.swift in Sources */,
+				CA1384000000000000000001 /* OfflineCacheCleanupTests.swift in Sources */,
 				D74E3909427F4B3AAF85A023 /* StoryFirstPageLoadingTests.swift in Sources */,
 				E91620260916000200000001 /* ShareStoryUpdateTests.swift in Sources */,
 				E91620260916000300000001 /* StoryURLContrastTests.swift in Sources */,
@@ -6164,6 +6174,7 @@
 				D74E3909427F4B3AAF85A014 /* FeedIconRendererTests.swift in Sources */,
 				D74E3909427F4B3AAF85A016 /* StoryDetailAssetPerformanceTests.swift in Sources */,
 				D74E3909427F4B3AAF85A018 /* HiddenFeedRowPerformanceTests.swift in Sources */,
+				CA1384000000000000000001 /* OfflineCacheCleanupTests.swift in Sources */,
 				D74E3909427F4B3AAF85A023 /* StoryFirstPageLoadingTests.swift in Sources */,
 				D74E3909427F4B3AAF85A025 /* StoryDetailLoadingTests.swift in Sources */,
 				C1A3E5F7092B4D6F8192A001 /* StoryFaviconPrefetchTests.swift in Sources */,

@@ -68,6 +68,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) NSInteger oldLocation;
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (nonatomic, strong) StoryFirstPageLoad *firstPageLoad;
+@property (nonatomic, copy) NSDictionary *explicitSelectionSource;
 @property (nonatomic) BOOL restoringFirstPageViewport;
 @property (nonatomic) BOOL reconcilingFirstPageArticle;
 @property (nonatomic, strong) NSURLSessionDataTask *notificationStoryLookupTask;
@@ -2492,21 +2493,52 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     return [self feedRequestURLForPage:1];
 }
 
+- (NSDictionary *)firstPageSelectionSource {
+    if (![self normalFirstPageRequestURL]) return nil;
+    NSString *source = storiesCollection.isRiverView ?
+        [@"folder:" stringByAppendingString:storiesCollection.activeFolder] :
+        [NSString stringWithFormat:@"feed:%@", storiesCollection.activeFeed[@"id"]];
+    return @{@"account": appDelegate.activeUsername ?: @"", @"host": appDelegate.url ?: @"", @"source": source};
+}
+
+- (void)beginExplicitFeedSelection {
+    // FeedDetailObjCViewController.m identifies the source, not its changing unread feed-ID membership.
+    self.explicitSelectionSource = [self firstPageSelectionSource];
+}
+
 - (StoryFirstPageLoad *)prepareCachedFirstPage {
     NSString *url = [self normalFirstPageRequestURL];
     StoryFirstPageRequest *request = [[StoryFirstPageRequest alloc] initWithAccount:appDelegate.activeUsername host:appDelegate.url url:url];
+    NSDictionary *previousSource = self.explicitSelectionSource;
+    self.explicitSelectionSource = nil;
     if (!request) { self.firstPageLoad = nil; return nil; }
     StoryFirstPageCache *cache = StoryFirstPageCache.shared;
     StoryFirstPageLoad *load = [[StoryFirstPageLoad alloc] initWithRequest:request revision:cache.newRevision generation:self.fetchRequestId];
     self.firstPageLoad = load;
     storiesCollection.feedPage = 1;
+    load.defersSnapshotUntilOffline = [previousSource isEqualToDictionary:[self firstPageSelectionSource]];
+    // FeedDetailObjCViewController.m treats tapping the same source as a fresh selection, without replaying its old list.
+    if (!load.defersSnapshotUntilOffline) [self loadCachedFirstPage:load fallbackToOffline:NO];
+    return load;
+}
+
+- (void)loadCachedFirstPage:(StoryFirstPageLoad *)load fallbackToOffline:(BOOL)fallbackToOffline {
+    StoryFirstPageCache *cache = StoryFirstPageCache.shared;
     __weak typeof(self) weakSelf = self;
-    [self lookupFirstPageRequest:request completion:^(StoryFirstPageSnapshot *snapshot) {
+    [self lookupFirstPageRequest:load.request completion:^(StoryFirstPageSnapshot *snapshot) {
         typeof(self) self = weakSelf;
-        if (!self || ![self isCurrentFirstPageLoad:load] || !load.pending || !snapshot) return;
+        if (!self || ![self isCurrentFirstPageLoad:load] || load.authoritativeReceived ||
+            (!load.pending && !(fallbackToOffline && !self.isOnline))) return;
+        if (!snapshot) {
+            if (fallbackToOffline) [self loadOfflineStories];
+            return;
+        }
         NSDictionary *response = [cache responseForSnapshot:snapshot provisional:YES];
         NSArray *cachedStories = response[@"stories"];
-        if (!cachedStories.count) return;
+        if (!cachedStories.count) {
+            if (fallbackToOffline) [self loadOfflineStories];
+            return;
+        }
         load.displayedSnapshot = YES;
         self.restoringFirstPageViewport = YES;
         // FeedDetailObjCViewController.m installs only list-local presentation state for a provisional first page.
@@ -2532,8 +2564,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.scrollingMarkReadRow = NSNotFound;
         self.restoringFirstPageViewport = NO;
         [self cacheImagesForStories:cachedStories];
+        if (fallbackToOffline) [self testForTryFeed];
     }];
-    return load;
 }
 
 - (void)lookupFirstPageRequest:(StoryFirstPageRequest *)request completion:(void (^)(StoryFirstPageSnapshot *))completion {
@@ -2931,7 +2963,14 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     if (!self.isOnline) {
         self.firstPageLoad.pending = NO;
-        if (page == 1 && self.firstPageLoad.displayedSnapshot) self.pageFetching = NO;
+        if (page == 1 && self.firstPageLoad.displayedSnapshot) {
+            self.pageFetching = NO;
+            [self testForTryFeed];
+        }
+        else if (page == 1 && self.firstPageLoad.defersSnapshotUntilOffline) {
+            self.pageFetching = NO;
+            [self loadCachedFirstPage:self.firstPageLoad fallbackToOffline:YES];
+        }
         else [self loadOfflineStories];
         if (!self.isShowingFetching) {
             [self showFetchingBanner:@"Offline" isOffline:YES];
@@ -2975,7 +3014,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.isOnline = NO;
         self.isShowingFetching = NO;
         // FeedDetailObjCViewController.m keeps account-scoped provisional rows available if refresh fails.
-        if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
+        if (feedPage == 1 && firstPageLoad.defersSnapshotUntilOffline) [self loadCachedFirstPage:firstPageLoad fallbackToOffline:YES];
+        else if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
+        else [self testForTryFeed];
         [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
@@ -3117,7 +3158,14 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (!self.isOnline) {
         self.firstPageLoad.pending = NO;
         [self hideFetchingBanner];
-        if (page == 1 && self.firstPageLoad.displayedSnapshot) self.pageFetching = NO;
+        if (page == 1 && self.firstPageLoad.displayedSnapshot) {
+            self.pageFetching = NO;
+            [self testForTryFeed];
+        }
+        else if (page == 1 && self.firstPageLoad.defersSnapshotUntilOffline) {
+            self.pageFetching = NO;
+            [self loadCachedFirstPage:self.firstPageLoad fallbackToOffline:YES];
+        }
         else [self loadOfflineStories];
         return;
     } else {
@@ -3159,7 +3207,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
         [self clearTryFeedSearchState];
         // FeedDetailObjCViewController.m keeps account-scoped provisional rows available if refresh fails.
-        if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
+        if (feedPage == 1 && firstPageLoad.defersSnapshotUntilOffline) [self loadCachedFirstPage:firstPageLoad fallbackToOffline:YES];
+        else if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
+        else [self testForTryFeed];
         [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
@@ -3380,6 +3430,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             return;
         }
         [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            if (self.appDelegate.clearingOfflineCache) return;
             for (NSDictionary *story in confirmedNewStories) {
                 [db executeUpdate:@"INSERT into stories"
                  "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
@@ -3571,6 +3622,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
         if (appDelegate.activeStory == nil && self.cameFromFeedsList) {
+            // FeedDetailObjCViewController.m permits manual cached-row selection, but auto-opening waits for fresh ordering.
+            if (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline) return;
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
             
             if (storyIndex == -1 || self.deferredLoadStoryCount > 0) {
