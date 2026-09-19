@@ -4424,6 +4424,8 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
+    // FeedsObjCViewController.m keeps the cleared account header intact until the authenticated subscription response arrives.
+    if (self.awaitingAuthenticatedFeedList) return;
     [self.userInfoView removeFromSuperview];
     [self updateFeedNavigationBarForHeader];
 #if TARGET_OS_MACCATALYST
@@ -4603,7 +4605,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)refreshHeaderCounts {
-    if (!appDelegate.activeUsername) {
+    if (self.awaitingAuthenticatedFeedList || !appDelegate.activeUsername) {
         userAvatarButton.hidden = YES;
         return;
     }
