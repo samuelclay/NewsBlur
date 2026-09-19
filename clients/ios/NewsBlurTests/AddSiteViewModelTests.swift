@@ -667,8 +667,14 @@ final class AddSiteViewModelTests: XCTestCase {
         viewModel.searchText = "https://example.com/feed"
         viewModel.addSite()
 
-        await waitUntil { viewModel.errorMessage == "Already subscribed" && !viewModel.isAdding }
+        await waitUntil { !viewModel.isAdding }
+        XCTAssertEqual(viewModel.errorMessage, "Already subscribed")
         XCTAssertFalse(viewModel.addedSuccess)
+    }
+
+    func test_expiredWaitStillChecksCompletedState() async {
+        // AddSiteViewModelTests.swift may resume after its deadline when the hosted main actor is busy; completed work must still be observed.
+        await waitUntil(timeout: 0) { true }
     }
 
     private func makeSession() -> URLSession {
@@ -721,15 +727,14 @@ final class AddSiteViewModelTests: XCTestCase {
     ) async {
         let deadline = Date().addingTimeInterval(timeout)
 
-        while Date() < deadline {
-            if condition() {
+        while !condition() {
+            guard Date() < deadline else {
+                XCTFail("Timed out waiting for condition")
                 return
             }
 
             try? await Task.sleep(nanoseconds: 10_000_000)
         }
-
-        XCTFail("Timed out waiting for condition")
     }
 }
 
