@@ -6422,7 +6422,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         NSArray *titles;
         NSArray *values;
 
-        if (appDelegate.detailViewController.isPhoneOrCompact) {
+        if (appDelegate.detailViewController.isPhone && appDelegate.detailViewController.isPhoneOrCompact) {
             titles = @[@"List", @"Grid"];
             values = @[@"titles_on_left", @"titles_in_grid"];
         } else {
@@ -6437,7 +6437,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         if (self.appDelegate.detailViewController.storyTitlesInGrid) {
             preferenceKey = @"grid_columns";
 
-            if (appDelegate.detailViewController.isPhoneOrCompact) {
+            if (appDelegate.detailViewController.isPhone && appDelegate.detailViewController.isPhoneOrCompact) {
                 titles = @[@"Auto Cols", @"1", @"2"];
                 values = @[@"auto", @"1", @"2"];
             } else {

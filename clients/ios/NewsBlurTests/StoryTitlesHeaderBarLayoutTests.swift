@@ -115,6 +115,35 @@ import UIKit
         XCTAssertTrue(choices.contains(["Auto Cols", "1", "2", "3", "4"]), "Expanded Duo should offer all grid column counts")
     }
 
+    func test_compactPadOptionsKeepAllLayoutsAndGridColumns() throws {
+        for compact in [false, true] {
+            let app = NewsBlurAppDelegate()
+            let detail = HeaderPadGridDetail()
+            detail.appDelegate = app
+            detail.isCompact = compact
+            detail.traitOverrides.horizontalSizeClass = compact ? .compact : .regular
+            detail.traitOverrides.verticalSizeClass = .regular
+            app.detailViewController = detail
+            let collection = StoriesCollection()
+            collection.activeFeed = ["id": 1, "feed_title": "Synthetic iPad feed"]
+            app.storiesCollection = collection
+            let stories = HeaderDuoStories()
+            stories.appDelegate = app
+            stories.storiesCollection = collection
+            let navigation = HeaderDuoMenuNavigation(rootViewController: stories)
+            detail.feedDetailViewController = stories
+            app.feedsNavigationController = navigation
+
+            stories.doOpenOptionsMenu(UIBarButtonItem(title: "Options", style: .plain, target: nil, action: nil))
+
+            let menu = try XCTUnwrap((navigation.capturedPresentation as? UINavigationController)?.topViewController as? MenuViewController)
+            let items = try XCTUnwrap(menu.value(forKey: "items") as? [[String: Any]])
+            let choices = items.compactMap { $0["segmentTitles"] as? [String] }
+            XCTAssertTrue(choices.contains(["layout-split.png", "layout-top2.png", "layout-full.png", "layout-list.png", "layout-magazine.png", "layout-grid.png"]), "An iPad must retain all layout choices when compact=\(compact)")
+            XCTAssertTrue(choices.contains(["Auto Cols", "1", "2", "3", "4"]), "An iPad must retain all grid column counts when compact=\(compact)")
+        }
+    }
+
     func test_expandedPhoneStoryListOffersSidebarInOverlayMode() throws {
         guard UIDevice.current.userInterfaceIdiom == .phone else { throw XCTSkip("Requires a phone test host") }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
@@ -859,6 +888,8 @@ import UIKit
                                 "Feeds must start at the left edge of the story-list heading, not in the centered shared title above the reader")
         XCTAssertLessThanOrEqual(sourceFrame.maxX, storyColumnFrame.maxX,
                                 "The current feed title must stay over its story list rather than extend into the reader heading")
+        XCTAssertEqual(sourceFrame.midX, storyColumnFrame.midX, accuracy: 1,
+                       "The feed/source title must be centered within its story-list column")
         XCTAssertGreaterThanOrEqual(buttonFrame.width, 44)
         XCTAssertGreaterThanOrEqual(buttonFrame.height, 44)
         XCTAssertGreaterThanOrEqual(buttonFrame.minY, barFrame.minY - 1)
@@ -867,6 +898,10 @@ import UIKit
         XCTAssertEqual(buttonFrame.midY, sourceFrame.midY, accuracy: 1)
         let gearFrame = settingsButton.convert(settingsButton.bounds, to: host.window)
         XCTAssertGreaterThan(gearFrame.width, 0)
+        XCTAssertGreaterThanOrEqual(gearFrame.maxX, storyColumnFrame.maxX - 32,
+                                    "Settings must be at the right edge of the story-list heading")
+        XCTAssertLessThanOrEqual(gearFrame.maxX, storyColumnFrame.maxX - 8,
+                                 "Settings must retain a usable inset from the column edge")
         XCTAssertFalse(gearFrame.intersects(buttonFrame), "The title action must not cover Settings")
         XCTAssertFalse(gearFrame.intersects(sourceFrame), "The live source title must not cover Settings")
         XCTAssertTrue(host.window.hitTest(CGPoint(x: buttonFrame.midX, y: buttonFrame.midY), with: nil)?.isDescendant(of: button) == true,
@@ -894,6 +929,10 @@ import UIKit
                                 "Long folder names must not move the Feeds action away from the leading edge")
         XCTAssertLessThanOrEqual(longTitleFrame.maxX, storyColumnFrame.maxX,
                                 "Long folder names must truncate within the story-list column")
+        XCTAssertEqual(longTitleFrame.midX, storyColumnFrame.midX, accuracy: 1,
+                       "Truncation must preserve the source title's column-centered alignment")
+        XCTAssertGreaterThanOrEqual(longGearFrame.maxX, storyColumnFrame.maxX - 32)
+        XCTAssertLessThanOrEqual(longGearFrame.maxX, storyColumnFrame.maxX - 8)
         XCTAssertFalse(longGearFrame.intersects(longTitleFrame), "UIKit must constrain long titles before they overlap Settings")
         XCTAssertFalse(longGearFrame.intersects(longButtonFrame))
         let longScreenshot = UIGraphicsImageRenderer(bounds: host.window.bounds).image { _ in
@@ -1628,14 +1667,34 @@ import UIKit
     }
 }
 
-@MainActor private final class HeaderDuoRegularDetail: DetailViewController {
+@MainActor private class HeaderDuoRegularHeightDetail: DetailViewController {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        // StoryTitlesHeaderBarLayoutTests.swift models the inner display independently of the simulator host's traits.
+        traitOverrides.verticalSizeClass = .regular
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        traitOverrides.verticalSizeClass = .regular
+    }
+}
+
+@MainActor private final class HeaderDuoRegularDetail: HeaderDuoRegularHeightDetail {
     override var isPhone: Bool { true }
     override var storyTitlesInGrid: Bool { true }
     override var areStoryTitlesCollapsed: Bool { false }
     override func addDiscoverPreviewBackButton() {}
 }
 
-@MainActor private final class HeaderDuoTiledSidebarDetail: DetailViewController {
+@MainActor private final class HeaderPadGridDetail: DetailViewController {
+    override var isPhone: Bool { false }
+    override var storyTitlesInGrid: Bool { true }
+    override var areStoryTitlesCollapsed: Bool { false }
+    override func addDiscoverPreviewBackButton() {}
+}
+
+@MainActor private final class HeaderDuoTiledSidebarDetail: HeaderDuoRegularHeightDetail {
     var simulatesPhone = true
     var simulatesCollapsedTitles = true
     override var isPhone: Bool { simulatesPhone }
