@@ -417,7 +417,9 @@ import XCTest
             let recorder = NextTitleRevealRecorder(table: table)
             let ready = expectation(description: "The title table has stable native presentation frames")
             let finished = expectation(description: "UIKit completes the Next title reveal")
-            fixture.controller.scrollAnimationFinished = { finished.fulfill() }
+            fixture.controller.scrollAnimationFinished = {
+                recorder.finishAfterPresentation { finished.fulfill() }
+            }
             // StoryFirstPageLoadingTests.swift exercises the real list callbacks, in the
             // same order as StoryPagesObjCViewController.m's Next/page-swipe completion.
             recorder.start {
@@ -438,6 +440,7 @@ import XCTest
             // StoryFirstPageLoadingTests.swift checks actual interpolation, independent of the CI runner's frame rate.
             let start = try XCTUnwrap(samples.first)
             let end = try XCTUnwrap(samples.last)
+            XCTAssertEqual(end, table.contentOffset.y, accuracy: 0.5, "The final recorded offset must be a displayed frame")
             XCTAssertTrue(samples.contains { $0 > start + 0.5 && $0 < end - 0.5 },
                           "The title must visibly scroll through intermediate positions instead of jumping")
             XCTAssertTrue(table.bounds.contains(table.rectForRow(at: target)), "The completed reveal must fully show the next title")
@@ -2105,12 +2108,14 @@ private final class FirstPageLoadingStories: StoriesCollection {
     var offsets: [CGFloat] = []
     private var link: CADisplayLink?
     private var whenReady: (() -> Void)?
+    private var whenPresented: (() -> Void)?
     private var stableFrames = 0
     init(table: UITableView) { self.table = table }
     func start(whenReady: @escaping () -> Void) {
         offsets = []
         stableFrames = 0
         self.whenReady = whenReady
+        whenPresented = nil
         let link = CADisplayLink(target: self, selector: #selector(sample))
         link.add(to: .main, forMode: .common)
         self.link = link
@@ -2131,12 +2136,21 @@ private final class FirstPageLoadingStories: StoriesCollection {
             return
         }
         offsets.append(presentation.bounds.origin.y)
+        if abs(presentation.bounds.origin.y - table.contentOffset.y) < 0.5 {
+            let completion = whenPresented
+            whenPresented = nil
+            completion?()
+        }
+    }
+    func finishAfterPresentation(_ completion: @escaping () -> Void) {
+        // StoryFirstPageLoadingTests.swift observes UIKit's final displayed frame after its scroll completion, which can precede that frame.
+        whenPresented = completion
     }
     func stop() {
-        offsets.append(table.contentOffset.y)
         link?.invalidate()
         link = nil
         whenReady = nil
+        whenPresented = nil
     }
 }
 
