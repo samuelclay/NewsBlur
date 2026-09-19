@@ -2645,6 +2645,7 @@ import XCTest
                                            preparesOffWindow: Bool = false, includesSourcelessImage: Bool = false,
                                            failsVideoSetup: Bool = false) async throws {
         let resource = try HeldHTTPStoryResource()
+        defer { resource.stop() }
         for _ in 0..<60 where resource.port == nil { await delay(0.05) }
         let imageURL = try XCTUnwrap(resource.imageURL)
         let configuration = WKWebViewConfiguration()
@@ -2661,6 +2662,10 @@ import XCTest
         let window = trackFixtureWindow(UIWindow(windowScene: scene))
         window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
         window.rootViewController = UIViewController()
+        defer {
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
         var detachedPages: [StoryLoadPage] = []
         if preparesOffWindow {
             let container = UIScrollView(frame: web.frame)
@@ -2682,6 +2687,9 @@ import XCTest
             await waitForState("All off-window bootstrap font promises complete") {
                 detachedPages.allSatisfy { $0.value(forKey: "preparedWebViewFonts") as? Bool == true }
             }
+            // StoryDetailLoadingTests.swift must not evaluate JavaScript after WebKit failed to prepare its bootstrap.
+            _ = try XCTUnwrap(detachedPages.allSatisfy { $0.value(forKey: "preparedWebViewFonts") as? Bool == true } ? detachedPages : nil,
+                              "Off-window bootstrap font preparation must succeed before inspecting the documents")
             for (index, child) in detachedPages.enumerated() {
                 let childWeb = try XCTUnwrap(child.webView as? RealStoryLoadWebView)
                 let stages = try await childWeb.evaluateJavaScript("JSON.stringify({stage:window.nbTestFontStage,fonts:document.fonts.status,faces:Array.from(document.fonts,f=>[f.family,f.status]),width:document.body?.offsetWidth,height:document.body?.offsetHeight})")
@@ -2694,17 +2702,14 @@ import XCTest
             window.rootViewController?.view.addSubview(web)
         }
         window.makeKeyAndVisible()
-        defer {
-            resource.stop()
-            window.isHidden = true
-            previousKeyWindow?.makeKey()
-        }
         web.navigationDelegate = page
         // StoryDetailObjCViewController.m initializes every WKWebView with clearWebView before drawing a story.
         if !preparesOffWindow { page.perform(NSSelectorFromString("clearWebView")) }
         await waitForState("Bootstrap navigation and font preparation complete") {
             page.finishedNavigations > 0 && page.value(forKey: "preparedWebViewFonts") as? Bool == true
         }
+        _ = try XCTUnwrap(page.finishedNavigations > 0 && page.value(forKey: "preparedWebViewFonts") as? Bool == true ? page : nil,
+                          "Bootstrap navigation and font preparation must succeed before drawing the story")
         XCTAssertEqual(page.finishedNavigations, 1)
         page.finishedNavigations = 0
         let imageRequested = expectation(description: "Story image reaches the held HTTP resource")
@@ -2712,7 +2717,9 @@ import XCTest
         let ready = expectation(description: "Full story DOM is ready while its image remains pending")
         page.readyObserver = { ready.fulfill() }
         page.drawStory()
-        await fulfillment(of: [ready, imageRequested], timeout: 15)
+        let storyReady = await XCTWaiter.fulfillment(of: [ready, imageRequested], timeout: 15)
+        _ = try XCTUnwrap(storyReady == .completed ? web : nil,
+                          "Story DOM and held image request must be ready before JavaScript inspection (\(storyReady))")
         _ = try await web.evaluateJavaScript("window.nbTestFontReady=false; document.fonts.ready.then(()=>window.nbTestFontReady=true); window.nbTestFrames=0; requestAnimationFrame(function count(){window.nbTestFrames++; if(window.nbTestFrames<120)requestAnimationFrame(count);});")
         await waitForState("Ready article receives its first native WebKit layout while the image is held") {
             window.layoutIfNeeded()
@@ -2775,7 +2782,9 @@ import XCTest
             page.perform(NSSelectorFromString("clearWebView"))
             page.activeStory = story("second", body: String(repeating: "<p>Second article paragraph.</p>", count: 220))
             page.drawStory()
-            await fulfillment(of: [secondReady, secondImage], timeout: 15)
+            let secondStoryReady = await XCTWaiter.fulfillment(of: [secondReady, secondImage], timeout: 15)
+            _ = try XCTUnwrap(secondStoryReady == .completed ? web : nil,
+                              "Second story DOM and held image request must be ready before JavaScript inspection (\(secondStoryReady))")
             await waitForState("Second article receives its larger native WebKit layout") {
                 web.scrollView.contentSize.height > previousHeight + 500
             }

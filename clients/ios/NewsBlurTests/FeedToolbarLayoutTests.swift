@@ -211,23 +211,34 @@ import WebKit
         pages.scrollView.contentSize = CGSize(width: 8 * 474, height: 600)
         pages.scrollView.contentOffset = CGPoint(x: 6 * 474, y: 0)
         app.activeStory = collection.activeFeedStories[6] as? [AnyHashable: Any]
+        let window = UIWindow(frame: pages.view.bounds)
         let navigation = DuoPagerResizeNavigationDelegate()
-        let loaded = expectation(description: "Three local pager documents loaded")
-        loaded.expectedFulfillmentCount = articles.count
-        navigation.didLoad = { loaded.fulfill() }
+        let loaded = articles.map { expectation(description: "Local pager article \($0.pageIndex) loaded") }
+        let loadsByWebView = Dictionary(uniqueKeysWithValues: zip(articles, loaded).map {
+            (ObjectIdentifier($0.0.webView), $0.1)
+        })
+        var finishedWebViews = Set<ObjectIdentifier>()
+        navigation.didLoad = { webView in
+            let identity = ObjectIdentifier(webView)
+            if finishedWebViews.insert(identity).inserted { loadsByWebView[identity]?.fulfill() }
+        }
         var selectionObservation: NSKeyValueObservation?
         var observesPager = false
         defer {
             selectionObservation?.invalidate()
+            navigation.didLoad = nil
             pages.scrollView.delegate = nil
             if observesPager { pages.scrollView.removeObserver(pages, forKeyPath: "contentOffset") }
             for article in articles {
                 article.webView.navigationDelegate = nil
                 article.webView.stopLoading()
+                article.webView.removeFromSuperview()
                 article.view.removeFromSuperview()
                 article.webView = nil
                 article.appDelegate = nil
             }
+            pages.view.removeFromSuperview()
+            window.isHidden = true
             pages.currentPage = nil
             pages.nextPage = nil
             pages.previousPage = nil
@@ -238,13 +249,27 @@ import WebKit
             collection.appDelegate = nil
             app.storiesCollection = nil
         }
+        // FeedToolbarLayoutTests.swift loads its real WebKit documents in a mounted, non-key window instead of depending on off-window process scheduling.
+        window.addSubview(pages.view)
+        window.isHidden = false
+        window.layoutIfNeeded()
         for article in articles {
+            XCTAssertTrue(article.webView.window === window)
             article.webView.navigationDelegate = navigation
             article.webView.loadHTMLString("<html><body>Loaded article \(article.pageIndex)</body></html>", baseURL: nil)
         }
-        await fulfillment(of: [loaded], timeout: 10)
-        let originalDocument = try await selected.webView.evaluateJavaScript("document.body.innerText") as? String
-        XCTAssertEqual(originalDocument, "Loaded article 6")
+        let readiness = await XCTWaiter.fulfillment(of: loaded, timeout: 10)
+        XCTAssertEqual(readiness, .completed, "All three local documents must finish before testing pager selection")
+        guard readiness == .completed else { return }
+        var documents: [String] = []
+        for article in articles {
+            let document = try await article.webView.evaluateJavaScript("document.body.innerText") as? String
+            let expected = "Loaded article \(article.pageIndex)"
+            XCTAssertEqual(document, expected, "Every cached page must contain its own complete document before the gesture")
+            guard document == expected else { return }
+            documents.append(expected)
+        }
+        let originalDocument = documents[1]
         let originalGeneration = selected.value(forKey: "storyLoadGeneration") as? UInt
         var changedHashes: [String] = []
         selectionObservation = app.observe(\.activeStory, options: [.old, .new]) { _, change in
@@ -799,9 +824,14 @@ import WebKit
             if !compactReader {
                 XCTAssertTrue(owner.contentScrollView(for: .top) === stories.storyTitlesTable,
                               "Hiding the article must preserve the story-title header's independent scroll source")
+                XCTAssertFalse(owner.toolbarItems?.contains { $0.accessibilityIdentifier?.hasPrefix("reader-") == true } == true,
+                               "Feeds and story titles must not inherit the hidden reader's side controls")
+            } else {
+                // FeedToolbarLayoutTests.swift hides the entire compact wrapper here; the reader still owns its stored items until Back changes the top controller.
+                XCTAssertTrue(owner === pages)
+                XCTAssertTrue(navigation.isToolbarHidden,
+                              "A hidden compact reader must release its visible native toolbar")
             }
-            XCTAssertFalse(owner.toolbarItems?.contains { $0.accessibilityIdentifier?.hasPrefix("reader-") == true } == true,
-                           "Feeds and story titles must not inherit the hidden reader's side controls")
             XCTAssertEqual(web.bounds.width, originalWidth, accuracy: 0.5,
                            "Releasing hidden reader chrome must preserve its retained article viewport")
         }
@@ -889,6 +919,47 @@ import WebKit
                 XCTAssertEqual(split.preferredSplitBehavior, .overlay)
             }
             capture("reader-sidebar-restored")
+        }
+        if checksNativeHeaderMinimization, app.detailViewController.isPhoneOrCompact {
+            let navigation = try XCTUnwrap(pages.navigationController)
+            XCTAssertTrue(navigation.topViewController === pages)
+            XCTAssertTrue(navigation.popViewController(animated: true) === pages,
+                          "The compact native Back action must return from the reader to its story list")
+            try await waitForSettledView(stories)
+            // FeedToolbarLayoutTests.swift exercises a queued retained-reader update after a real navigation handoff.
+            pages.perform(NSSelectorFromString("updateReaderToolbarPresentation"))
+            try await waitForSettledView(stories)
+            XCTAssertTrue(navigation.topViewController === stories)
+            XCTAssertFalse(navigation.isToolbarHidden)
+            let storyItems = stories.toolbarItems ?? []
+            for identifier in ["story-list-options", "story-list-search", "story-list-mark-read"] {
+                XCTAssertTrue(storyItems.contains { $0.accessibilityIdentifier == identifier },
+                              "Back must restore the story list's native \(identifier) action")
+            }
+            XCTAssertFalse(storyItems.contains { $0.accessibilityIdentifier?.hasPrefix("reader-") == true })
+            XCTAssertFalse(stories.contentScrollView(for: .top) === scroller,
+                           "The story list must not inherit its departing article's native header scroll source")
+            capture("reader-back-to-stories")
+
+            XCTAssertTrue(navigation.popViewController(animated: true) === stories)
+            let feeds = try XCTUnwrap(app.feedsViewController)
+            try await waitForSettledView(feeds)
+            pages.perform(NSSelectorFromString("updateReaderToolbarPresentation"))
+            try await waitForSettledView(feeds)
+            XCTAssertTrue(navigation.topViewController === feeds)
+            XCTAssertFalse(navigation.isToolbarHidden)
+            let feedItems = feeds.toolbarItems ?? []
+            for identifier in ["feed-list-add", "feed-list-settings", "feed-list-intelligence-all",
+                               "feed-list-intelligence-unread", "feed-list-intelligence-focus", "feed-list-intelligence-saved"] {
+                XCTAssertTrue(feedItems.contains { $0.accessibilityIdentifier == identifier },
+                              "Back must restore the feed list's native \(identifier) action")
+            }
+            XCTAssertFalse(feedItems.contains {
+                $0.accessibilityIdentifier?.hasPrefix("reader-") == true ||
+                    $0.accessibilityIdentifier?.hasPrefix("story-list-") == true
+            })
+            XCTAssertFalse(feeds.contentScrollView(for: .top) === scroller)
+            capture("reader-back-to-feeds")
         }
     }
 
@@ -2204,6 +2275,7 @@ import WebKit
     override func viewDidLoad() {}
     override func viewWillLayoutSubviews() {}
     override func viewDidLayoutSubviews() {}
+    override func viewSafeAreaInsetsDidChange() {}
     override func updateStoryTitleNavigationButtons() {}
     override func setNextPreviousButtons() {}
     override func setTextButton() {}
@@ -2232,8 +2304,8 @@ import WebKit
 }
 
 @MainActor private final class DuoPagerResizeNavigationDelegate: NSObject, WKNavigationDelegate {
-    var didLoad: (() -> Void)?
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { didLoad?() }
+    var didLoad: ((WKWebView) -> Void)?
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { didLoad?(webView) }
 }
 
 @MainActor private final class DuoScrollingHeaderPages: StoryPagesViewController {
