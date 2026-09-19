@@ -180,6 +180,51 @@ final class Test_DuoLiveUI: XCTestCase {
             capture("duo-live-reading-selected-\(index)")
             let web = try XCTUnwrap(app.webViews.allElementsBoundByIndex.first { $0.isHittable })
             let titleState = try storyHeaderState(list)
+            if index == 0 {
+                let storyTitle = probe.label
+                let renderedTitle = web.staticTexts.matching(NSPredicate(format: "label == %@", storyTitle)).firstMatch
+                // DuoLiveUITests.swift returns a previously read article to its actual top through touch input before recording the pull.
+                var reachedTop = false
+                for _ in 0..<6 {
+                    let before = renderedTitle.frame
+                    web.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25))
+                        .press(forDuration: 0.05,
+                               thenDragTo: web.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8)),
+                               withVelocity: .slow, thenHoldForDuration: 0)
+                    if renderedTitle.isHittable, web.frame.contains(renderedTitle.frame),
+                       abs(renderedTitle.frame.minY - before.minY) <= 1 {
+                        reachedTop = true
+                        break
+                    }
+                }
+                XCTAssertTrue(reachedTop, "The rendered article title must stop moving at the document top before the recorded pull")
+                let titleFrameAtTop = renderedTitle.frame
+                let webFrameAtTop = web.frame
+                let feedHeader = try XCTUnwrap(flattened(try web.snapshot()).first {
+                    $0.elementType == .staticText && !$0.label.isEmpty && $0.label != storyTitle &&
+                        $0.frame.width > 20 && $0.frame.height > 0 &&
+                        $0.frame.minY >= webFrameAtTop.minY && $0.frame.maxY <= webFrameAtTop.minY + 25
+                }, "The native river feed label must be visible in the pinned top strip")
+                try assertStoryHeaderUnchanged(titleState, list: list)
+                capture("duo-live-reading-before-top-pull")
+                print("DUO_TOP_PULL_READY hash=\(hash) title=\(storyTitle)")
+                fflush(stdout)
+                web.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25))
+                    .press(forDuration: 0.05,
+                           thenDragTo: web.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8)),
+                           withVelocity: .slow, thenHoldForDuration: 2)
+                try waitForLiveReader(probe, expectedHash: hash)
+                XCTAssertEqual(probe.label, storyTitle, "The pull must preserve the selected article and its rendered document")
+                let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                    renderedTitle.isHittable && abs(renderedTitle.frame.minY - titleFrameAtTop.minY) <= 1 &&
+                        web.staticTexts.matching(NSPredicate(format: "label == %@", feedHeader.label))
+                            .allElementsBoundByIndex.contains { abs($0.frame.minY - feedHeader.frame.minY) <= 1 }
+                }, object: nil)
+                XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 10), .completed,
+                               "The article and native feed header must settle back to their original protected top after the pull")
+                try assertStoryHeaderUnchanged(titleState, list: list)
+                capture("duo-live-reading-top-pull-settled")
+            }
             web.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8))
                 .press(forDuration: 0.05, thenDragTo: web.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25)))
             XCTAssertEqual(probe.value as? String, hash, "Scrolling an article must retain the selected story")

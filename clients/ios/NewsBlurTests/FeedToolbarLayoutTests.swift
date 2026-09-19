@@ -25,6 +25,11 @@ import WebKit
         scroll.contentInsetAdjustmentBehavior = .never
         scroll.contentSize = CGSize(width: 390, height: 1_511)
         web.addSubview(scroll)
+        let unobstructedScroll = DuoScrollingHeaderScrollView(frame: scroll.frame)
+        unobstructedScroll.contentInsetAdjustmentBehavior = .never
+        unobstructedScroll.contentSize = scroll.contentSize
+        unobstructedScroll.automaticallyAdjustsScrollIndicatorInsets = false
+        web.insertSubview(unobstructedScroll, belowSubview: scroll)
         let header = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 25))
         page.feedTitleGradient = header
         web.addSubview(header)
@@ -43,23 +48,12 @@ import WebKit
             app.detailViewController = nil
         }
 
-        func nativeVerticalIndicator() throws -> UIView {
-            try XCTUnwrap(scroll.subviews.first {
+        func nativeVerticalIndicator(in scrollView: UIScrollView) throws -> UIView {
+            try XCTUnwrap(scrollView.subviews.first {
                 $0.bounds.width > 0 && $0.bounds.width <= 8 && $0.bounds.height > 20 &&
-                $0.frame.maxX >= scroll.bounds.maxX - 12
+                $0.frame.maxX >= scrollView.bounds.maxX - 12
             }, "The native scroll view must render its vertical indicator")
         }
-        // FeedToolbarLayoutTests.swift measures the host screen's corner clearance separately from NewsBlur's header inset.
-        scroll.simulatedSafeAreaInsets = .zero
-        scroll.automaticallyAdjustsScrollIndicatorInsets = false
-        scroll.verticalScrollIndicatorInsets = .zero
-        scroll.flashScrollIndicators()
-        scroll.layoutIfNeeded()
-        let unobstructedIndicator = try nativeVerticalIndicator()
-        let nativeMinimumTop = web.convert(unobstructedIndicator.bounds, from: unobstructedIndicator).minY
-        XCTAssertLessThan(nativeMinimumTop, 58 + 10 + 2,
-                          "The host must leave enough indicator travel to detect the unrelated 58pt story-list header")
-        scroll.automaticallyAdjustsScrollIndicatorInsets = true
 
         for pose in [(vertical: true, compact: true), (vertical: true, compact: false),
                      (vertical: false, compact: false)] {
@@ -69,7 +63,19 @@ import WebKit
                 window.protectedTop = protectedTop
                 scroll.simulatedSafeAreaInsets = UIEdgeInsets(top: protectedTop + 58, left: 0, bottom: 34, right: 0)
                 scroll.contentInset = UIEdgeInsets(top: protectedTop, left: 0, bottom: 0, right: 0)
+                unobstructedScroll.simulatedSafeAreaInsets = UIEdgeInsets(top: protectedTop, left: 0, bottom: 34, right: 0)
+                unobstructedScroll.contentInset = scroll.contentInset
                 for headerHeight in [CGFloat(10), 25] {
+                    // FeedToolbarLayoutTests.swift compares with native geometry for this exact inset; screen-corner clearance is not a fixed zero-inset floor.
+                    unobstructedScroll.verticalScrollIndicatorInsets = UIEdgeInsets(top: protectedTop + headerHeight - 1,
+                                                                                    left: 0, bottom: 34, right: 0)
+                    unobstructedScroll.contentOffset = CGPoint(x: 0, y: -protectedTop)
+                    unobstructedScroll.flashScrollIndicators()
+                    unobstructedScroll.layoutIfNeeded()
+                    let unobstructedIndicator = try nativeVerticalIndicator(in: unobstructedScroll)
+                    let unobstructedTop = web.convert(unobstructedIndicator.bounds, from: unobstructedIndicator).minY
+                    XCTAssertLessThan(unobstructedTop, protectedTop + headerHeight + 2 + 58,
+                                      "The native control must leave enough indicator travel to detect the unrelated 58pt story-list header")
                     header.frame.size.height = headerHeight
                     scroll.verticalScrollIndicatorInsets = UIEdgeInsets(top: headerHeight - 1, left: 0, bottom: 0, right: 0)
                     scroll.contentOffset = CGPoint(x: 0, y: -protectedTop)
@@ -86,9 +92,9 @@ import WebKit
                                    "The shared automatic-adjustment policy must also preserve horizontal indicator protection")
                     XCTAssertEqual(scroll.verticalScrollIndicatorInsets.right, 0, accuracy: 0.5,
                                    "The pager already excludes the native side toolbar")
-                    let indicator = try nativeVerticalIndicator()
+                    let indicator = try nativeVerticalIndicator(in: scroll)
                     let topFrame = web.convert(indicator.bounds, from: indicator)
-                    XCTAssertEqual(topFrame.minY, max(nativeMinimumTop, protectedTop + headerHeight + 2), accuracy: 1,
+                    XCTAssertEqual(topFrame.minY, unobstructedTop, accuracy: 1,
                                    "The native scrollbar must begin beside its own article header, not below the other column's title bar: \(pose)")
 
                     scroll.contentOffset.y = scroll.contentSize.height - scroll.bounds.height
