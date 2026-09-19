@@ -46,3 +46,15 @@ The original theme and both read-marking preferences were restored and compared 
 `image-fixtures.js` documents the temporary DOM fixtures. `ImageTouch.java` is an adb-shell gesture helper compiled with the Android SDK and run through `app_process`; it does not install an APK or instrumentation package.
 
 The first automation attempt encountered a UIAutomator idle timeout after closing the landscape viewer, and a separate fixture lookup assumed WebViews were taller than 500 pixels. The automation was corrected to retry fresh hierarchy reads and accept short documents. These were harness failures, not image-viewer crashes.
+
+## Status bar follow-up
+
+The initial viewer hid both system bars, changing the reader's available insets. The follow-up included in Android 15.0.4 keeps both bars visible and uses light icons against the black backdrop, matching the updated iOS status bar behavior.
+
+`test_system_bars.rb` failed on the previous Samsung build with `FAIL: statusBars hidden while image viewer is open`. After installing the fix, it passed in portrait and landscape for Light, Dark, Black, and Sepia. Run it with an image already open:
+
+```sh
+ruby clients/android/Performance/story-image-viewer-2026-09-18/test_system_bars.rb <adb-serial>
+```
+
+For the same Neowin article in each theme, the native WebView position and dimensions and the DOM viewport, body, and image rectangles were identical before opening, while the viewer was open, and after dismissal. Double-tap zoom, single-tap reset, and Android Back also passed. The 13 image JVM tests and JavaScript image bridge suite passed. Local screenshots and geometry measurements are in `/tmp/image-status-proof/`.
