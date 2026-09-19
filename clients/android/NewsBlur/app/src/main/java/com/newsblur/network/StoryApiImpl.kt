@@ -26,6 +26,24 @@ class StoryApiImpl(
     private val gson: Gson,
     private val networkClient: NetworkClient,
 ) : StoryApi {
+    override suspend fun getTryFeedStories(
+        feedId: String,
+        order: StoryOrder,
+        filter: ReadFilter,
+        forceRefresh: kotlin.Boolean,
+    ): StoriesResponse? {
+        val path = if (forceRefresh) APIConstants.PATH_REFRESH_FEED else APIConstants.PATH_FEED_STORIES
+        val url = APIConstants.buildUrl(path).toUri().buildUpon().appendPath(feedId).build().toString()
+        val values = ValueMultimap().apply {
+            put(APIConstants.PARAMETER_PAGE_NUMBER, "1")
+            put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)
+            put(APIConstants.PARAMETER_READ_FILTER, filter.parameterValue)
+            put(APIConstants.PARAMETER_ORDER, order.parameterValue)
+            if (!forceRefresh) put("insta_fetch", APIConstants.VALUE_TRUE)
+        }
+        return networkClient.getCancellable(url, values).getResponse(gson, StoriesResponse::class.java)
+    }
+
     override suspend fun getStories(
         fs: FeedSet,
         pageNumber: Int,

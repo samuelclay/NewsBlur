@@ -1393,7 +1393,9 @@ public class BlurDatabaseHelper {
             return rawQuery(DatabaseConstants.DAILY_BRIEFING_SESSION_STORY_QUERY, null, cancellationSignal);
         }
 
-        StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
+        StringBuilder q = new StringBuilder(fs.getSingleFeed() != null
+                ? DatabaseConstants.SINGLE_FEED_SESSION_STORY_QUERY
+                : DatabaseConstants.SESSION_STORY_QUERY_BASE);
 
         if (fs.isAllRead()) {
             q.append(" ORDER BY ").append(DatabaseConstants.READ_STORY_ORDER);

@@ -10,15 +10,21 @@ import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.PrefConstants
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.Response
 import okio.ByteString
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.coroutines.resume
 
 class NetworkClientImpl(
     private val context: Context,
@@ -53,6 +59,35 @@ class NetworkClientImpl(
         urlString: String,
         valueMap: ValueMultimap,
     ): APIResponse = get(urlString + "?" + valueMap.getParameterString())
+
+    override suspend fun getCancellable(urlString: String, valueMap: ValueMultimap): APIResponse {
+        if (!NetworkUtils.isOnline(context)) return APIResponse()
+        val request = Request.Builder().url(urlString + "?" + valueMap.getParameterString())
+        addCookieHeader(request)
+        request.header("User-Agent", customUserAgent)
+        return suspendCancellableCoroutine { continuation ->
+            // NetworkClientImpl.kt keeps bounded preview refreshes cancellable during headers and body reads.
+            val call = client.newCall(request.build())
+            val started = System.currentTimeMillis()
+            continuation.invokeOnCancellation { call.cancel() }
+            call.enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    if (continuation.isActive) continuation.resume(APIResponse())
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    response.use {
+                        val result = try {
+                            APIResponse(it, System.currentTimeMillis() - started)
+                        } catch (_: IOException) {
+                            APIResponse()
+                        }
+                        if (continuation.isActive) continuation.resume(result)
+                    }
+                }
+            })
+        }
+    }
 
     override suspend fun post(
         urlString: String,

@@ -91,6 +91,10 @@ interface SyncServiceState {
 
     fun isFeedSetStoriesFresh(fs: FeedSet?): Boolean
 
+    fun getTryFeedRefreshStatus(fs: FeedSet?): TryFeedRefreshStatus
+
+    fun setTryFeedRefreshStatus(fs: FeedSet, status: TryFeedRefreshStatus)
+
     fun getPendingInfo(): String
 
     fun getSyncStatusMessage(
@@ -158,13 +162,18 @@ class DefaultSyncServiceState
         override var lastActionCount: Int = 0
 
         private val sessionGeneration = AtomicLong()
+        @Volatile
+        private var tryFeedRefresh: Pair<FeedSet, TryFeedRefreshStatus>? = null
         override val readingSessionGeneration: Long get() = sessionGeneration.get()
 
         @Volatile
         override var pendingFeed: FeedSet? = null
             set(value) {
                 synchronized(pendingFeedMutex) {
-                    if (field != value) sessionGeneration.incrementAndGet()
+                    if (field != value) {
+                        sessionGeneration.incrementAndGet()
+                        if (value != null) tryFeedRefresh = null
+                    }
                     field = value
                 }
             }
@@ -229,6 +238,7 @@ class DefaultSyncServiceState
         override fun resetFetchState(fs: FeedSet?) {
             synchronized(pendingFeedMutex) {
                 synchronized(resetFeedMutex) {
+                    tryFeedRefresh = null
                     sessionGeneration.incrementAndGet()
                     Log.d(SyncServiceState::class.java.name, "requesting feed fetch state reset")
                     resetFeed = fs
@@ -249,6 +259,13 @@ class DefaultSyncServiceState
         override fun isFeedSetSyncing(fs: FeedSet?) = fs == pendingFeed
 
         override fun isFeedSetStoriesFresh(fs: FeedSet?) = (_feedStoriesSeen[fs] ?: 0) >= 1
+
+        override fun getTryFeedRefreshStatus(fs: FeedSet?): TryFeedRefreshStatus =
+            tryFeedRefresh?.takeIf { it.first == fs }?.second ?: TryFeedRefreshStatus.NONE
+
+        override fun setTryFeedRefreshStatus(fs: FeedSet, status: TryFeedRefreshStatus) {
+            tryFeedRefresh = FeedSet.fromCompactSerial(fs.toCompactSerial()) to status
+        }
 
         override fun getPendingInfo(): String =
             StringBuilder()
@@ -334,6 +351,7 @@ class DefaultSyncServiceState
 
         override fun clearState() {
             synchronized(pendingFeedMutex) {
+                tryFeedRefresh = null
                 sessionGeneration.incrementAndGet()
                 pendingFeed = null
                 resetFeed = null
@@ -397,6 +415,7 @@ class DefaultSyncServiceState
         override fun resetReadingSession(dbHelper: BlurDatabaseHelper) {
             Log.d(SyncServiceState::class.simpleName, "requesting reading session reset")
             synchronized(pendingFeedMutex) {
+                tryFeedRefresh = null
                 sessionGeneration.incrementAndGet()
                 pendingFeed = null
                 dbHelper.sessionFeedSet = null

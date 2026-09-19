@@ -40,6 +40,7 @@ import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.ReadingAction
 import com.newsblur.util.StateFilter
+import com.newsblur.util.TryFeedStore
 import com.newsblur.util.doLocal
 import com.newsblur.util.doRemote
 import com.newsblur.util.toContentValues
@@ -67,6 +68,9 @@ open class SyncService :
     CoroutineScope {
     @Inject
     lateinit var storyApi: StoryApi
+
+    @Inject
+    lateinit var tryFeedStore: TryFeedStore
 
     @Inject
     lateinit var feedApi: FeedApi
@@ -642,7 +646,7 @@ open class SyncService :
                 currentCoroutineContext().ensureActive()
 
                 pageNumber++
-                val apiResponse =
+                var apiResponse =
                     storyApi.getStories(
                         fs,
                         pageNumber,
@@ -653,6 +657,35 @@ open class SyncService :
                 currentCoroutineContext().ensureActive()
 
                 if (!isStoryResponseGood(apiResponse)) return
+
+                // SyncService.kt refreshes only a confirmed empty first API page, never an empty SQL cursor.
+                if (TryFeedStoryFetcher.shouldRefresh(fs, pageNumber, apiResponse, tryFeedStore.isTryFeed(fs.getSingleFeed()))) {
+                    if (!commitCurrent { syncServiceState.setTryFeedRefreshStatus(fs, TryFeedRefreshStatus.FETCHING) }) return
+                    sendSyncUpdate(UPDATE_STATUS)
+                    val refresh = TryFeedStoryFetcher(storyApi).refresh(fs.getSingleFeed()!!, cursorFilters.storyOrder, cursorFilters.readFilter) {
+                        commitCurrent() {} && tryFeedStore.isTryFeed(fs.getSingleFeed())
+                    }
+                    when (refresh) {
+                        is TryFeedStoryFetcher.Result.Complete -> {
+                            apiResponse = refresh.response
+                            if (!commitCurrent {
+                                syncServiceState.setTryFeedRefreshStatus(fs, if (refresh.response.stories.isEmpty()) TryFeedRefreshStatus.EMPTY else TryFeedRefreshStatus.NONE)
+                            }) return
+                        }
+                        TryFeedStoryFetcher.Result.Failed -> {
+                            // SyncService.kt exhausts this attempt so list observers cannot restart it; explicit refresh resets it.
+                            if (!commitCurrent {
+                                syncServiceState.setTryFeedRefreshStatus(fs, TryFeedRefreshStatus.FAILED)
+                                syncServiceState.addFeedSetExhausted(fs)
+                                syncServiceState.addFeedPagesSeen(fs, pageNumber)
+                                finished = true
+                            }) return
+                            sendSyncUpdate(UPDATE_STORY or UPDATE_STATUS)
+                            return
+                        }
+                        TryFeedStoryFetcher.Result.Stale -> return
+                    }
+                }
 
                 // SyncService.kt validates and inserts under the same session lock used by resets.
                 if (!commitCurrent(requireReadySession = true) {
