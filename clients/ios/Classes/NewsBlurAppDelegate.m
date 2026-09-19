@@ -1187,7 +1187,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self hidePopover];
     
     FriendsListViewController *friendsBVC = [[FriendsListViewController alloc] init];
-    UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
+    UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsBVC];
     
     self.friendsListViewController = friendsBVC;
     self.modalNavigationController = friendsNav;
@@ -4318,8 +4318,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         return; // nothing to do, already showing this controller
     }
     
-    [self hidePopoverAnimated:YES];
-
     viewController.modalPresentationStyle = UIModalPresentationPopover;
     viewController.preferredContentSize = contentSize;
     
@@ -4361,10 +4359,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         popoverPresentationController.sourceRect = sourceRect;
     }
     
-    [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:^{
-        popoverPresentationController.passthroughViews = nil;
-        // NSLog(@"%@ canBecomeFirstResponder? %d", viewController, viewController.canBecomeFirstResponder);
-//        [viewController becomeFirstResponder];
+    // NewsBlurAppDelegate.m waits for the previous menu to finish dismissing before opening its destination.
+    [self hidePopoverAnimated:YES completion:^{
+        [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:^{
+            popoverPresentationController.passthroughViews = nil;
+        }];
     }];
 }
 

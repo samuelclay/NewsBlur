@@ -4,6 +4,268 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedToolbarLayout: XCTestCase {
+    func test_livePadReselectingFeedClearsPreviousReader() async throws {
+        let (app, feeds, window) = try await livePadDialogFixture()
+        captureLiveDialog(window, name: "reselection-before")
+        let defaults = UserDefaults.standard
+        let opening = defaults.object(forKey: "feed_opening")
+        defaults.set("story", forKey: "feed_opening")
+        defer {
+            if let opening { defaults.set(opening, forKey: "feed_opening") }
+            else { defaults.removeObject(forKey: "feed_opening") }
+        }
+        let reader = try XCTUnwrap(app.feedDetailViewController)
+        let folders = try XCTUnwrap(app.dictFoldersArray as? [String])
+        let path = try XCTUnwrap(feeds.feedTitlesTable.indexPathsForVisibleRows?.first { index in
+            guard folders.indices.contains(index.section),
+                  let ids = app.dictFolders[folders[index.section]] as? [Any], ids.indices.contains(index.row) else { return false }
+            return app.dictFeeds[String(describing: ids[index.row])] != nil
+        })
+        let folder = folders[path.section]
+        let ids = try XCTUnwrap(app.dictFolders[folder] as? [Any])
+        let feedID = String(describing: ids[path.row])
+        for target in ["all", "feed"] {
+            func select() {
+                if target == "all" { feeds.selectEverything(nil) }
+                else { feeds.selectFeed(feedID, inFolder: folder) }
+            }
+            select()
+            for _ in 0..<200 where app.storiesCollection.storyLocationsCount == 0 {
+                try await Task.sleep(nanoseconds: 100_000_000)
+            }
+            XCTAssertGreaterThan(app.storiesCollection.storyLocationsCount, 0)
+            reader.tableView(reader.storyTitlesTable, didSelectRowAt: IndexPath(row: 0, section: 0))
+            for _ in 0..<100 where app.storyPagesViewController.currentPage.webView.isHidden {
+                try await Task.sleep(nanoseconds: 50_000_000)
+            }
+            let start = CACurrentMediaTime()
+            for frame in 0..<50 {
+                if [10, 25, 40].contains(frame) {
+                    select()
+                    XCTAssertNil(app.activeStory, "Reselecting \(target) must immediately clear the previous story")
+                    XCTAssertEqual(app.storiesCollection.storyLocationsCount, 0,
+                                   "Reselecting \(target) must wait for fresh titles instead of replaying the old snapshot")
+                    XCTAssertTrue(app.storyPagesViewController.currentPage.webView.isHidden,
+                                  "Reselecting \(target) must hide the previous article while loading")
+                }
+                // FeedToolbarLayoutTests.swift records real ClayPad frames and their timestamps for a replay video.
+                captureLiveDialog(window, name: String(format: "reselect-%@-%03d-%.3f", target, frame, CACurrentMediaTime() - start))
+                try await Task.sleep(nanoseconds: 100_000_000)
+            }
+        }
+    }
+
+    func test_livePadStoryContextDialogsRemainPresented() async throws {
+        let (app, _, window) = try await livePadDialogFixture()
+        let controller = try XCTUnwrap(app.feedDetailViewController as? FeedDetailViewController)
+        for _ in 0..<200 where controller.storiesCollection.activeFeedStories?.isEmpty != false {
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        let dictionary = try XCTUnwrap(controller.storiesCollection.activeFeedStories?.first as? [String: Any])
+        let story = Story(index: 0, dictionary: dictionary)
+        let previousStory = app.activeStory
+        defer { app.activeStory = previousStory }
+        for actionID in ["train", "share-link", "share-story", "share-newsblur", "ask-ai"] {
+            try await dismissLiveDialog(in: window)
+            let action = try XCTUnwrap(RowActionMenus.story(story, controller: controller, source: controller.view)
+                .flatMap { $0 }.first { $0.id == actionID })
+            captureLiveDialog(window, name: "ipad-story-\(actionID)-before")
+            action.perform()
+            try await assertLiveDialogRemainsPresented(in: window, name: "ipad-story-\(actionID)")
+            // FeedToolbarLayoutTests.swift opens composers without sharing or submitting an AI request.
+            try await dismissLiveDialog(in: window)
+        }
+    }
+
+    func test_livePadFeedContextDialogsRemainPresented() async throws {
+        let (app, feeds, window) = try await livePadDialogFixture()
+        let previousFeed = app.storiesCollection.activeFeed
+        defer {
+            app.storiesCollection.activeFeed = previousFeed
+            app.feedDetailViewController.storyCache.reload()
+        }
+        for actionID in ["train", "statistics", "notifications", "related", "mark-read", "rename", "delete"] {
+            try await dismissLiveDialog(in: window)
+            let folders = try XCTUnwrap(app.dictFoldersArray as? [String])
+            let path = try XCTUnwrap(feeds.feedTitlesTable.indexPathsForVisibleRows?.first { index in
+                guard folders.indices.contains(index.section),
+                      let ids = app.dictFolders[folders[index.section]] as? [Any], ids.indices.contains(index.row) else { return false }
+                let id = String(describing: ids[index.row])
+                return app.dictFeeds[id] != nil && !app.isSocialFeed(id) && !app.isSavedFeed(id)
+            })
+            let folder = folders[path.section]
+            let ids = try XCTUnwrap(app.dictFolders[folder] as? [Any])
+            let source = try XCTUnwrap(feeds.feedTitlesTable.cellForRow(at: path))
+            let action = try XCTUnwrap(feeds.feedActions(feedID: String(describing: ids[path.row]), folder: folder, source: source)
+                .flatMap { $0 }.first { $0.id == actionID })
+            captureLiveDialog(window, name: "ipad-feed-\(actionID)-before")
+            action.perform()
+            try await assertLiveDialogRemainsPresented(in: window, name: "ipad-feed-\(actionID)")
+            // FeedToolbarLayoutTests.swift only opens confirmations; it never performs Mark Read, Rename, or Delete.
+            try await dismissLiveDialog(in: window)
+        }
+    }
+
+    func test_livePadFeedSettingsDestinationsRemainPresented() async throws {
+        let (app, feeds, window) = try await livePadDialogFixture()
+        var titles = ["Preferences", "Mute Sites", "Organize Sites", "Widget Sites", "Notifications",
+                      "Interactions", "Find Friends", "Premium", "Logout"]
+        if ["samuel", "Dejal"].contains(app.activeUsername ?? "") { titles.append("Login as") }
+        for title in titles {
+            try await dismissLiveDialog(in: window)
+            feeds.showSettingsPopover(nil)
+            try await waitForLiveDialog(in: window)
+            let presentation = try XCTUnwrap(liveDialog(in: window))
+            let menu = try XCTUnwrap((presentation as? UINavigationController)?.topViewController as? MenuViewController)
+            let table = try XCTUnwrap(menu.menuTableView)
+            var selectedPath: IndexPath?
+            for section in 0..<menu.numberOfSections(in: table) {
+                for row in 0..<menu.tableView(table, numberOfRowsInSection: section) {
+                    let path = IndexPath(row: row, section: section)
+                    let text = menu.tableView(table, cellForRowAt: path).textLabel?.text ?? ""
+                    if text == title || (title == "Premium" && (text.contains("Premium") || text.contains("Archive"))) ||
+                        (title == "Login as" && text.hasPrefix("Login as")) {
+                        selectedPath = path
+                    }
+                }
+            }
+            let path = try XCTUnwrap(selectedPath, "Missing Settings destination: \(title)")
+            table.scrollToRow(at: path, at: .middle, animated: false)
+            captureLiveDialog(window, name: "ipad-settings-\(title)-before")
+            menu.tableView(table, didSelectRowAt: path)
+            try await assertLiveDialogRemainsPresented(in: window, excluding: presentation, name: "ipad-settings-\(title)")
+            // FeedToolbarLayoutTests.swift dismisses appearance/account dialogs without changing settings or submitting actions.
+            try await dismissLiveDialog(in: window)
+        }
+    }
+
+    private func livePadDialogFixture() async throws -> (NewsBlurAppDelegate, FeedsViewController, UIWindow) {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the connected iPad Alpha app")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad, Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+            throw XCTSkip("Requires NB Alpha on iPad")
+        }
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        app.showFeedsList(animated: false)
+        let feeds = try XCTUnwrap(app.feedsViewController)
+        for _ in 0..<200 where feeds.viewIfLoaded?.window == nil || feeds.feedTitlesTable.visibleCells.isEmpty {
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        let window = try XCTUnwrap(feeds.view.window)
+        try await dismissLiveDialog(in: window)
+        return (app, feeds, window)
+        #endif
+    }
+
+    private func liveDialog(in window: UIWindow, excluding excluded: UIViewController? = nil) -> UIViewController? {
+        var visited = Set<ObjectIdentifier>()
+        func find(_ controller: UIViewController) -> UIViewController? {
+            guard visited.insert(ObjectIdentifier(controller)).inserted else { return nil }
+            if let presented = controller.presentedViewController,
+               presented !== excluded, !presented.isBeingDismissed {
+                return presented
+            }
+            return controller.children.lazy.compactMap { find($0) }.first
+        }
+        return window.rootViewController.flatMap { find($0) }
+    }
+
+    private func waitForLiveDialog(in window: UIWindow, excluding excluded: UIViewController? = nil) async throws {
+        for _ in 0..<100 {
+            if let dialog = liveDialog(in: window, excluding: excluded),
+               dialog.viewIfLoaded?.window === window, !dialog.isBeingPresented { return }
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+        XCTFail("FeedToolbarLayoutTests.swift expected a rendered, settled dialog")
+    }
+
+    private func assertLiveDialogRemainsPresented(in window: UIWindow, excluding excluded: UIViewController? = nil,
+                                                 name: String) async throws {
+        try await waitForLiveDialog(in: window, excluding: excluded)
+        let dialog = try XCTUnwrap(liveDialog(in: window, excluding: excluded), name)
+        for _ in 0..<20 {
+            XCTAssertNotNil(dialog.presentingViewController, name)
+            XCTAssertTrue(dialog.viewIfLoaded?.window === window, name)
+            XCTAssertFalse(dialog.isBeingDismissed, name)
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+        captureLiveDialog(window, name: name)
+    }
+
+    private func dismissLiveDialog(in window: UIWindow) async throws {
+        if let dialog = liveDialog(in: window) {
+            await withCheckedContinuation { continuation in
+                dialog.dismiss(animated: false) { continuation.resume() }
+            }
+        }
+        XCTAssertNil(liveDialog(in: window))
+    }
+
+    private func captureLiveDialog(_ window: UIWindow, name: String) {
+        let screenshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        let attachment = XCTAttachment(image: screenshot)
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    func test_livePadFeedTrainerRemainsPresented() async throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the connected iPad Alpha app")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad,
+              Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha" else {
+            throw XCTSkip("Requires NB Alpha on iPad")
+        }
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        app.showFeedsList(animated: false)
+        let feeds = try XCTUnwrap(app.feedsViewController)
+        for _ in 0..<200 where feeds.viewIfLoaded?.window == nil || feeds.feedTitlesTable.visibleCells.isEmpty {
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        let window = try XCTUnwrap(feeds.view.window)
+        func capture(_ name: String) {
+            let screenshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+                window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+            }
+            let attachment = XCTAttachment(image: screenshot)
+            attachment.name = name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        capture("ipad-trainer-before")
+        let folders = try XCTUnwrap(app.dictFoldersArray as? [String])
+        let path = try XCTUnwrap(feeds.feedTitlesTable.indexPathsForVisibleRows?.first { index in
+            guard folders.indices.contains(index.section),
+                  let ids = app.dictFolders[folders[index.section]] as? [Any], ids.indices.contains(index.row) else { return false }
+            return app.dictFeeds[String(describing: ids[index.row])] != nil
+        })
+        let folder = folders[path.section]
+        let ids = try XCTUnwrap(app.dictFolders[folder] as? [Any])
+        let source = try XCTUnwrap(feeds.feedTitlesTable.cellForRow(at: path))
+        let action = try XCTUnwrap(feeds.feedActions(feedID: String(describing: ids[path.row]), folder: folder, source: source)
+            .flatMap { $0 }.first { $0.id == "train" })
+        action.perform()
+        for _ in 0..<50 where app.trainerViewController.presentingViewController == nil {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        capture("ipad-trainer-opened")
+        for _ in 0..<30 {
+            XCTAssertNotNil(app.trainerViewController.presentingViewController,
+                            "Feed navigation must not dismiss the trainer after opening it")
+            XCTAssertFalse(app.trainerViewController.isBeingDismissed)
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        capture("ipad-trainer-settled")
+        await withCheckedContinuation { continuation in
+            app.trainerViewController.dismiss(animated: false) { continuation.resume() }
+        }
+        #endif
+    }
+
     func test_livePhoneLandscapeNavigationUsesCompactHeader() async throws {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the physical SE landscape safe area")
