@@ -34,10 +34,12 @@ object AnchoredPopover {
             )
         if (updating) {
             popup.update(fit.x, fit.y, fit.width, fit.height)
+            return
         } else {
-            popup.width = fit.width
-            popup.height = fit.height
-            popup.showAtLocation(anchor.rootView, Gravity.TOP or Gravity.LEFT, fit.x, fit.y)
+            PopoverEntranceAnimation.show(
+                anchor, popup, Gravity.TOP or Gravity.LEFT, fit.x, fit.y, fit.width, fit.height,
+                location[0] + anchor.width / 2f, location[1] + anchor.height / 2f,
+            )
         }
         // AnchoredPopover.kt dismisses stale windows when rotation or keyboard movement moves their anchor.
         val listener =
