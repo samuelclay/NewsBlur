@@ -7,7 +7,7 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class FolderHierarchyTest {
-    @Test fun parserRetainsLiteralSeparatorsAlongsideNestedFolders() {
+    @Test fun test_parser_retains_literal_separators_and_nested_folders() {
         val response = FeedFolderResponse(
             """{"authenticated":true,"folders":[{"A ▸ B":[1]},{"A":[{"B":[2]}]}],"feeds":{}}""",
             Gson(),

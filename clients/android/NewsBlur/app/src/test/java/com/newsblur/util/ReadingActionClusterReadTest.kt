@@ -18,7 +18,7 @@ import org.junit.Test
 
 class ReadingActionClusterReadTest {
     @Test
-    fun bulkReadKeepsOriginalTimeForInitialApplyAndFollowupReplay() {
+    fun test_bulk_read_preserves_original_time_during_replay() {
         val db = mockk<BlurDatabaseHelper>(relaxed = true)
         val action = ReadingAction.MarkFeedRead(FeedSet.singleFeed("2"), olderThan = 500, time = 100)
         val restored = ReadingAction.fromJson(ReadingAction.toJson(action))
