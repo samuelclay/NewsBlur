@@ -16,6 +16,35 @@ import UIKit
         try await verifyManualDeletion(wal: false, imageCleanupSucceeds: false)
     }
 
+    func test_manualDeletionWaitsForCacheCompletionBeforeReportingSuccess() async throws {
+        let fixture = try OfflineCleanupFixture()
+        defer { fixture.close() }
+        fixture.seed(count: 1)
+        let cacheStarted = expectation(description: "Cache cleanup started after database deletion")
+        fixture.app.cacheCleanupStarted = { cacheStarted.fulfill() }
+        let defaults = UserDefaults.standard
+        let key = "offline_cache_empty_stories"
+        let oldValue = defaults.object(forKey: key)
+        defer { defaults.set(oldValue, forKey: key) }
+        let controller = FeedsViewController()
+        controller.appDelegate = fixture.app
+
+        controller.perform(NSSelectorFromString("preferencesButtonTappedWithKey:action:"), with: key, with: "deleteOfflineStories")
+        await fulfillment(of: [cacheStarted], timeout: 10)
+
+        XCTAssertEqual(fixture.count("stories"), 0)
+        XCTAssertEqual(defaults.string(forKey: key), "Deleting...")
+        XCTAssertTrue(fixture.app.clearingOfflineCache)
+        let completion = try XCTUnwrap(fixture.app.pendingCacheCompletion)
+        completion(true)
+        let deadline = Date().addingTimeInterval(10)
+        while fixture.app.clearingOfflineCache, Date() < deadline {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        XCTAssertFalse(fixture.app.clearingOfflineCache)
+        XCTAssertEqual(defaults.string(forKey: key), "Cleared all stories and images!")
+    }
+
     private func verifyManualDeletion(wal: Bool, imageCleanupSucceeds: Bool = true) async throws {
         let fixture = try OfflineCleanupFixture()
         defer { fixture.close() }
@@ -384,8 +413,17 @@ private final class OfflineCleanupFixture {
 private final class OfflineCleanupApp: NewsBlurAppDelegate {
     var fixtureDocumentsURL: URL!
     var imageCleanupSucceeds = true
+    var cacheCleanupStarted: (() -> Void)?
+    var pendingCacheCompletion: ((Bool) -> Void)?
     override var documentsURL: URL! { fixtureDocumentsURL }
     // OfflineCacheCleanupTests.swift isolates the database from the simulator's shared image cache and network.
-    override func deleteAllCachedImages(completion: @escaping (Bool) -> Void) { completion(imageCleanupSucceeds) }
+    override func deleteAllCachedImages(completion: @escaping (Bool) -> Void) {
+        if let cacheCleanupStarted {
+            pendingCacheCompletion = completion
+            cacheCleanupStarted()
+        } else {
+            completion(imageCleanupSucceeds)
+        }
+    }
     override func startOfflineFetchStories() {}
 }

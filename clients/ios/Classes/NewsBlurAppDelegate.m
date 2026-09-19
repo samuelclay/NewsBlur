@@ -6,6 +6,7 @@
 //
 
 #import "NewsBlurAppDelegate.h"
+#import <WebKit/WebKit.h>
 #import "ActivitiesViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "FirstTimeUserViewController.h"
@@ -6887,7 +6888,15 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)deleteAllCachedImagesWithCompletion:(void (^)(BOOL))completion {
     [self deleteAllCachedImages];
-    [PINDiskCache emptyTrashWithCompletion:completion];
+    [PINDiskCache emptyTrashWithCompletion:^(BOOL imagesRemoved) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // NewsBlurAppDelegate.m deletes only WebKit caches, preserving cookies and signed-in websites.
+            NSSet *cacheTypes = [NSSet setWithObjects:WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache, nil];
+            [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:cacheTypes modifiedSince:[NSDate distantPast] completionHandler:^{
+                completion(imagesRemoved);
+            }];
+        });
+    }];
 }
 
 - (void)deleteAllCachedImages {
