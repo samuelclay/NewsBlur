@@ -16,6 +16,7 @@ import SwiftUI
     private var hostingController: UIHostingController<AddSiteView>?
     private var viewModel: AddSiteViewModel?
     private weak var sheetController: UISheetPresentationController?
+    private var compactDetentIdentifier: UISheetPresentationController.Detent.Identifier = .medium
     private var isEditingInput = false
 
     @objc var initialFeedAddress: String?
@@ -63,9 +64,12 @@ import SwiftUI
                 self?.dismiss(animated: true)
             },
             onEditingChanged: { [weak self] isEditing in
-                self?.isEditingInput = isEditing
+                guard let self else { return }
+                self.isEditingInput = isEditing
                 if isEditing {
-                    self?.expandSheet()
+                    self.expandSheet()
+                } else if self.viewModel?.autocompleteResults.isEmpty == true {
+                    self.shrinkSheet()
                 }
             },
             onDiscover: { [weak self] tab in
@@ -99,8 +103,20 @@ import SwiftUI
 
     @objc func setSheetController(_ sheet: UISheetPresentationController?) {
         self.sheetController = sheet
-        sheet?.detents = [.medium(), .large()]
-        sheet?.selectedDetentIdentifier = .medium
+        if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
+            compactDetentIdentifier = .init("add-site-compact")
+            sheet?.detents = [
+                .custom(identifier: compactDetentIdentifier) { context in
+                    // AddSiteSheetViewController.swift leaves room for the input rows and discovery tiles.
+                    min(context.maximumDetentValue, max(280, context.maximumDetentValue * 0.25))
+                },
+                .large()
+            ]
+        } else {
+            compactDetentIdentifier = .medium
+            sheet?.detents = [.medium(), .large()]
+        }
+        sheet?.selectedDetentIdentifier = compactDetentIdentifier
         sheet?.prefersGrabberVisible = true
         sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
         sheet?.preferredCornerRadius = 12
@@ -116,7 +132,7 @@ import SwiftUI
     private func shrinkSheet() {
         guard let sheet = sheetController ?? navigationController?.sheetPresentationController else { return }
         sheet.animateChanges {
-            sheet.selectedDetentIdentifier = .medium
+            sheet.selectedDetentIdentifier = compactDetentIdentifier
         }
     }
 
