@@ -691,6 +691,7 @@ import XCTest
             parser.release()
             motion.stop()
             fixture.pages.beforeNavigation = nil
+            fixture.pages.selectionTransitionStarted = nil
             fixture.pages.cancelPendingStoryPresentation()
             window.isHidden = true
             window.rootViewController = nil
@@ -698,8 +699,10 @@ import XCTest
             for page in realPages { page.webView.stopLoading(); page.webView = nil }
         }
         for page in realPages { page.perform(NSSelectorFromString("clearWebView")) }
-        for _ in 0..<100 where realPages.contains(where: { $0.value(forKey: "preparedWebViewFonts") as? Bool != true }) { await delay(0.03) }
-        XCTAssertTrue(realPages.allSatisfy { $0.value(forKey: "preparedWebViewFonts") as? Bool == true })
+        await waitForState("All three WebKit pages finish their bundled-font bootstrap") {
+            realPages.allSatisfy { $0.value(forKey: "preparedWebViewFonts") as? Bool == true }
+        }
+        guard realPages.allSatisfy({ $0.value(forKey: "preparedWebViewFonts") as? Bool == true }) else { return }
         for index in 0...1 {
             let page = realPages[index]
             page.pageIndex = index
@@ -709,35 +712,43 @@ import XCTest
             page.drawStory()
             page.prepareCurrentStoryForPresentation()
         }
-        for _ in 0..<150 where !realPages[0].readyForPresentation || !realPages[1].readyForPresentation { await delay(0.02) }
-        XCTAssertTrue(realPages[0].readyForPresentation)
-        XCTAssertTrue(realPages[1].readyForPresentation)
+        await waitForState("Both initial articles are painted before selecting a distant story") {
+            realPages[0].readyForPresentation && realPages[1].readyForPresentation
+        }
+        guard realPages[0].readyForPresentation && realPages[1].readyForPresentation else { return }
         for index in 0...1 {
             realPages[index].finishStoryPresentation()
             realPages[index].view.frame = CGRect(x: CGFloat(index) * 390, y: 0, width: 390, height: 844)
         }
         realPages[0].webView.scrollView.contentOffset.y = 280
         let initialReadingPosition = realPages[0].webView.scrollView.contentOffset.y
+        let started = expectation(description: "The prepared destination starts its real article scan")
         let completed = expectation(description: "Real article selection finishes its visible scan")
         fixture.pages.beforeNavigation = { _ in completed.fulfill() }
+        fixture.pages.selectionTransitionStarted = { passingPages in
+            XCTAssertEqual(Set(passingPages.compactMap(\.activeStoryId)), Set(["painted-0", "painted-1", "painted-20"]))
+            XCTAssertTrue(passingPages.allSatisfy { $0.readyForPresentation && !$0.webView.isHidden })
+            if replacesTextDuringMotion {
+                guard let target = passingPages.first(where: { $0.activeStoryId == "painted-20" }) else {
+                    XCTFail("The real selection animation must contain the destination article")
+                    started.fulfill()
+                    return
+                }
+                target.webView.uiDelegate = parser
+                (target.webView as? RealStoryLoadWebView)?.selectionLoadObserver = { html in
+                    print("TITLE_REPLACEMENT_SUBMISSION replacement=\(html.contains("Full text replacement")) parser=\(html.contains("hold replacement"))")
+                }
+                let fullText = "<script>alert('hold replacement until its painted cover is visible')</script><h2>Full text replacement</h2>" + String(repeating: "<p>Prepared article 21, with its full text now available.</p>", count: 60)
+                target.perform(NSSelectorFromString("finishFetchText:storyId:"), with: fullText, with: "painted-20")
+                XCTAssertTrue(target.inTextView)
+                XCTAssertEqual(target.activeStory["original_text"] as? String, fullText)
+            }
+            started.fulfill()
+        }
         motion.start()
         fixture.app.activeStory = stories[20] as? [AnyHashable: Any]
         fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 20, "animated": true])
-        for _ in 0..<200 where fixture.pages.value(forKey: "storySelectionTransitionHost") == nil && fixture.pages.pageChanges.isEmpty { await delay(0.01) }
-        let passingPages = try XCTUnwrap(fixture.pages.value(forKey: "storySelectionTransitionPages") as? [StoryDetailViewController])
-        XCTAssertEqual(Set(passingPages.compactMap(\.activeStoryId)), Set(["painted-0", "painted-1", "painted-20"]))
-        XCTAssertTrue(passingPages.allSatisfy { $0.readyForPresentation && !$0.webView.isHidden })
-        if replacesTextDuringMotion {
-            let target = try XCTUnwrap(passingPages.first { $0.activeStoryId == "painted-20" })
-            target.webView.uiDelegate = parser
-            (target.webView as? RealStoryLoadWebView)?.selectionLoadObserver = { html in
-                print("TITLE_REPLACEMENT_SUBMISSION replacement=\(html.contains("Full text replacement")) parser=\(html.contains("hold replacement"))")
-            }
-            let fullText = "<script>alert('hold replacement until its painted cover is visible')</script><h2>Full text replacement</h2>" + String(repeating: "<p>Prepared article 21, with its full text now available.</p>", count: 60)
-            target.perform(NSSelectorFromString("finishFetchText:storyId:"), with: fullText, with: "painted-20")
-            XCTAssertTrue(target.inTextView)
-            XCTAssertEqual(target.activeStory["original_text"] as? String, fullText)
-        }
+        await fulfillment(of: [started], timeout: 15)
         await delay(0.12)
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
@@ -1079,22 +1090,49 @@ import XCTest
         for (earlier, later) in zip(titles.cellPositions, titles.cellPositions.dropFirst()) {
             XCTAssertLessThanOrEqual(later, earlier + 0.5, "The drawn fourth cell must continuously move up into view")
         }
-        func assertContinuous(_ values: [CGFloat], times: [CFTimeInterval], name: String) {
+        func assertContinuous(_ values: [CGFloat], times: [CFTimeInterval], frameDurations: [CFTimeInterval], name: String) {
             guard values.count > 1 else { return }
             let travel = abs((values.last ?? 0) - (values.first ?? 0))
             for index in 1..<values.count {
                 let elapsed = times[index] - times[index - 1]
-                let maximumStep = max(60, travel * CGFloat(elapsed) * 8.5 + 2)
+                let maximumStep = NextButtonReadingRecorder.maximumContinuousStep(
+                    travel: travel, elapsed: elapsed, frameDuration: frameDurations[index])
                 XCTAssertLessThanOrEqual(abs(values[index] - values[index - 1]), maximumStep,
                                          "\(name) jumped in \(elapsed)s: \(values[index - 1]) → \(values[index])")
             }
         }
-        assertContinuous(titles.offsets, times: titles.sampleTimes, name: "Title table")
-        assertContinuous(titles.cellPositions, times: titles.cellSampleTimes, name: "Drawn target cell")
+        assertContinuous(titles.offsets, times: titles.sampleTimes, frameDurations: titles.frameDurations, name: "Title table")
+        assertContinuous(titles.cellPositions, times: titles.cellSampleTimes, frameDurations: titles.cellFrameDurations, name: "Drawn target cell")
         let body = try await pages.currentPage.webView.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Prepared article 4") == true)
         attachPanes("Landscape after Next: fourth title selected and read beside the actual fourth article")
         print("NEXT_BUTTON_LANDSCAPE reloads=\(table.rowReloads) callbacks=\(feed.events) callback_times=\(feed.eventTimes.map { $0 - nextTappedAt }) times=\(titles.sampleTimes.map { $0 - nextTappedAt }) table=\(titles.offsets) drawn_cell=\(titles.cellPositions) article=\(motion.positions)")
+    }
+
+    func test_nextButtonMotionSamplingAllowsOneDisplayFrameButRejectsASnapAfterADelayedCallback() {
+        // StoryDetailLoadingTests.swift replays the hosted trace that missed the 155.67-point
+        // presentation snapshot: 111 → 204.67 was reported only 13.47 ms apart after a callback gap.
+        let times: [CFTimeInterval] = [0.1277251667, 0.1443918333, 0.2642516667, 0.2777251667,
+                                      0.2943918333, 0.3110585, 0.3277251667, 0.3443918333,
+                                      0.3610585, 0.3777251667, 0.3943918333, 1.5831730417]
+        let offsets: [CGFloat] = [0, 0, 111, 204.6666666667, 257, 311, 365, 417.3333333333,
+                                  466.6666666667, 511, 549.3333333333, 622]
+        func excessiveSteps(_ positions: [CGFloat]) -> [Int] {
+            let travel = abs(positions.last! - positions.first!)
+            return (1..<positions.count).filter { index in
+                abs(positions[index] - positions[index - 1]) > NextButtonReadingRecorder.maximumContinuousStep(
+                    travel: travel, elapsed: times[index] - times[index - 1], frameDuration: 1.0 / 60)
+            }
+        }
+        XCTAssertTrue(excessiveSteps(offsets).isEmpty)
+        XCTAssertTrue(excessiveSteps(offsets.map { 660 - $0 }).isEmpty, "Drawn cell geometry has the same sampling tolerance")
+
+        var jumpedOffsets = offsets
+        jumpedOffsets[3] = 400
+        XCTAssertTrue(excessiveSteps(jumpedOffsets).contains(3), "The preceding 119.86 ms gap must not excuse a new sudden jump")
+        var snappedOffsets = offsets
+        for index in 3..<snappedOffsets.count { snappedOffsets[index] = 622 }
+        XCTAssertTrue(excessiveSteps(snappedOffsets).contains(3), "A snap to the destination must still fail")
     }
 
     func test_refreshWhileASelectedArticleIsPaintingDoesNotReturnToThePreviousStory() async throws {
@@ -2139,7 +2177,9 @@ import XCTest
         fixture.page.drawStory()
         await drainMainQueue()
         restoreScroll(on: fixture.page)
-        for _ in 0..<60 where fixture.web.asyncCompletions.isEmpty { await delay(0.01) }
+        await waitForState("The saved-position query reaches its held first-paint callback") {
+            !fixture.web.asyncCompletions.isEmpty
+        }
         let complete = try XCTUnwrap(fixture.web.asyncCompletions.first)
 
         fixture.page.activeStory = story("second", body: "New article before the old native frame arrives")
@@ -2776,6 +2816,20 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     var unreadyAtNavigation: [Bool] = []
     var runsActualPageChanges = false
     var beforeNavigation: ((StoryDetailViewController) -> Void)?
+    var selectionTransitionStarted: (([StoryDetailViewController]) -> Void)?
+    @objc(animatePreparedStorySelection:location:) func observeSelectionTransition(_ page: StoryDetailViewController, location: Int) {
+        let selector = NSSelectorFromString("animatePreparedStorySelection:location:")
+        typealias Call = @convention(c) (AnyObject, Selector, StoryDetailViewController, Int) -> Void
+        let implementation = class_getMethodImplementation(StoryPagesObjCViewController.self, selector)!
+        unsafeBitCast(implementation, to: Call.self)(self, selector, page, location)
+        // StoryDetailLoadingTests.swift inspects the live transition at its start, before its short animation can complete between polling turns.
+        guard let animator = value(forKey: "storySelectionAnimator") as? UIViewPropertyAnimator,
+              animator.state == .active,
+              let pages = value(forKey: "storySelectionTransitionPages") as? [StoryDetailViewController] else { return }
+        let observer = selectionTransitionStarted
+        selectionTransitionStarted = nil
+        observer?(pages)
+    }
     override func changePage(_ pageIndex: Int, animated: Bool) {
         pageChanges.append(pageIndex)
         hiddenAtNavigation.append(currentPage.webView.isHidden)
@@ -2880,6 +2934,14 @@ private final class NextButtonReadingStories: StoriesCollection {
     private(set) var cellPositions: [CGFloat] = []
     private(set) var sampleTimes: [CFTimeInterval] = []
     private(set) var cellSampleTimes: [CFTimeInterval] = []
+    private(set) var frameDurations: [CFTimeInterval] = []
+    private(set) var cellFrameDurations: [CFTimeInterval] = []
+
+    static func maximumContinuousStep(travel: CGFloat, elapsed: CFTimeInterval, frameDuration: CFTimeInterval) -> CGFloat {
+        // StoryDetailLoadingTests.swift allows one nominal frame of presentation/timestamp skew,
+        // independent of any preceding callback delay; it never carries a stall forward as motion credit.
+        max(60, travel * CGFloat(elapsed + frameDuration) * 8.5 + 2)
+    }
     init(table: UITableView, window: UIWindow, target: IndexPath) {
         self.table = table
         self.window = window
@@ -2896,10 +2958,12 @@ private final class NextButtonReadingStories: StoriesCollection {
         // StoryDetailLoadingTests.swift pairs presentation geometry with the displayed frame's timestamp, not a delayed main-thread callback's arrival time.
         offsets.append(presentation.bounds.origin.y)
         sampleTimes.append(link.timestamp)
+        frameDurations.append(link.duration)
         if let cell = table.cellForRow(at: target)?.layer.presentation() {
             // StoryDetailLoadingTests.swift measures the actual cell through all animated ancestors, not only UITableView's model offset.
             cellPositions.append(cell.convert(CGPoint.zero, to: root).y)
             cellSampleTimes.append(link.timestamp)
+            cellFrameDurations.append(link.duration)
         }
     }
 }
