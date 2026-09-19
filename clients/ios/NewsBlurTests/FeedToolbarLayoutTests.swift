@@ -5,6 +5,141 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedToolbarLayout: XCTestCase {
+    func test_duoArticleScrollIndicatorExcludesListHeaderAndKeepsBottomProtection() throws {
+        let app = NewsBlurAppDelegate()
+        let detail = DuoPhoneReaderLayout()
+        detail.appDelegate = app
+        app.detailViewController = detail
+        let pages = DuoScrollingHeaderPages(nibName: nil, bundle: nil)
+        pages.appDelegate = app
+        detail.storyPagesViewController = pages
+        let page = DuoScrollingHeaderPage(nibName: nil, bundle: nil)
+        page.appDelegate = app
+        page.loadViewIfNeeded()
+        pages.currentPage = page
+        page.view.frame.size = CGSize(width: 390, height: 669)
+        let web = try XCTUnwrap(page.webView)
+        web.frame = page.view.bounds
+        let scroll = try XCTUnwrap(web.scrollView as? DuoScrollingHeaderScrollView)
+        scroll.frame = web.bounds
+        scroll.contentInsetAdjustmentBehavior = .never
+        scroll.contentSize = CGSize(width: 390, height: 1_511)
+        web.addSubview(scroll)
+        let header = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 25))
+        page.feedTitleGradient = header
+        web.addSubview(header)
+        let window = DuoIndicatorWindow(frame: page.view.bounds)
+        window.addSubview(page.view)
+        window.isHidden = false
+        defer {
+            window.isHidden = true
+            page.view.removeFromSuperview()
+            page.webView = nil
+            page.appDelegate = nil
+            pages.currentPage = nil
+            pages.appDelegate = nil
+            detail.storyPagesViewController = nil
+            detail.appDelegate = nil
+            app.detailViewController = nil
+        }
+
+        for pose in [(vertical: true, compact: true), (vertical: true, compact: false),
+                     (vertical: false, compact: false)] {
+            detail.isCompact = pose.compact
+            pages.verticalToolbar = pose.vertical
+            for protectedTop in [CGFloat(0), 22] {
+                window.protectedTop = protectedTop
+                scroll.simulatedSafeAreaInsets = UIEdgeInsets(top: protectedTop + 58, left: 0, bottom: 34, right: 0)
+                scroll.contentInset = UIEdgeInsets(top: protectedTop, left: 0, bottom: 0, right: 0)
+                for headerHeight in [CGFloat(10), 25] {
+                    header.frame.size.height = headerHeight
+                    scroll.verticalScrollIndicatorInsets = UIEdgeInsets(top: headerHeight - 1, left: 0, bottom: 0, right: 0)
+                    scroll.contentOffset = CGPoint(x: 0, y: -protectedTop)
+                    page.updateFeedTitleGradientPosition()
+                    scroll.flashScrollIndicators()
+                    scroll.layoutIfNeeded()
+
+                    XCTAssertFalse(scroll.automaticallyAdjustsScrollIndicatorInsets,
+                                   "The independent Duo article must not inherit the story-list navigation bar's 58pt obstruction")
+                    XCTAssertEqual(scroll.verticalScrollIndicatorInsets.top, protectedTop + headerHeight - 1, accuracy: 0.5)
+                    XCTAssertEqual(scroll.verticalScrollIndicatorInsets.bottom, 34, accuracy: 0.5,
+                                   "Removing the unrelated top obstruction must retain the window's real bottom protection")
+                    XCTAssertEqual(scroll.horizontalScrollIndicatorInsets.bottom, 34, accuracy: 0.5,
+                                   "The shared automatic-adjustment policy must also preserve horizontal indicator protection")
+                    XCTAssertEqual(scroll.verticalScrollIndicatorInsets.right, 0, accuracy: 0.5,
+                                   "The pager already excludes the native side toolbar")
+                    let indicator = try XCTUnwrap(scroll.subviews.first {
+                        $0.bounds.width > 0 && $0.bounds.width <= 8 && $0.bounds.height > 20 &&
+                        $0.frame.maxX >= scroll.bounds.maxX - 12
+                    }, "The native scroll view must render its vertical indicator")
+                    let topFrame = web.convert(indicator.bounds, from: indicator)
+                    XCTAssertEqual(topFrame.minY, protectedTop + headerHeight + 2, accuracy: 1,
+                                   "The native scrollbar must begin beside its own article header, not below the other column's title bar: \(pose)")
+
+                    scroll.contentOffset.y = scroll.contentSize.height - scroll.bounds.height
+                    scroll.flashScrollIndicators()
+                    scroll.layoutIfNeeded()
+                    let bottomFrame = web.convert(indicator.bounds, from: indicator)
+                    XCTAssertLessThanOrEqual(bottomFrame.maxY, web.bounds.maxY - 34,
+                                             "The scrollbar must stop above the device's protected bottom edge")
+                }
+            }
+        }
+    }
+
+    func test_duoArticleIndicatorRestoresConventionalPhoneAndIPadPolicy() throws {
+        for originallyAutomatic in [true, false] {
+            let app = NewsBlurAppDelegate()
+            let detail = DuoPhoneReaderLayout()
+            detail.appDelegate = app
+            app.detailViewController = detail
+            let pages = DuoScrollingHeaderPages(nibName: nil, bundle: nil)
+            pages.appDelegate = app
+            detail.storyPagesViewController = pages
+            let page = DuoScrollingHeaderPage(nibName: nil, bundle: nil)
+            page.appDelegate = app
+            page.loadViewIfNeeded()
+            pages.currentPage = page
+            let web = try XCTUnwrap(page.webView)
+            let scroll = try XCTUnwrap(web.scrollView as? DuoScrollingHeaderScrollView)
+            scroll.simulatedSafeAreaInsets = UIEdgeInsets(top: 58, left: 0, bottom: 34, right: 0)
+            let originalInsets = UIEdgeInsets(top: 9, left: 2, bottom: 7, right: 3)
+            let originalHorizontalInsets = UIEdgeInsets(top: 0, left: 4, bottom: 13, right: 5)
+            scroll.verticalScrollIndicatorInsets = originalInsets
+            scroll.horizontalScrollIndicatorInsets = originalHorizontalInsets
+            scroll.automaticallyAdjustsScrollIndicatorInsets = originallyAutomatic
+            let header = UIView(frame: CGRect(x: 0, y: 0, width: 360, height: 10))
+            page.feedTitleGradient = header
+            web.addSubview(header)
+            defer {
+                page.webView = nil
+                page.appDelegate = nil
+                pages.currentPage = nil
+                pages.appDelegate = nil
+                detail.storyPagesViewController = nil
+                detail.appDelegate = nil
+                app.detailViewController = nil
+            }
+
+            for legacy in [(phone: true, compact: true), (phone: false, compact: false)] {
+                detail.simulatesPhone = true
+                detail.isCompact = false
+                pages.verticalToolbar = true
+                page.updateFeedTitleGradientPosition()
+                XCTAssertFalse(scroll.automaticallyAdjustsScrollIndicatorInsets)
+                detail.simulatesPhone = legacy.phone
+                detail.isCompact = legacy.compact
+                pages.verticalToolbar = false
+                page.updateFeedTitleGradientPosition()
+                XCTAssertEqual(scroll.automaticallyAdjustsScrollIndicatorInsets, originallyAutomatic,
+                               "Leaving Duo layout must restore the previous native indicator policy: \(legacy)")
+                XCTAssertEqual(scroll.verticalScrollIndicatorInsets, originalInsets,
+                               "Duo-only indicator geometry must not remain on a conventional phone or iPad")
+                XCTAssertEqual(scroll.horizontalScrollIndicatorInsets, originalHorizontalInsets)
+            }
+        }
+    }
+
     func test_activePagerDragResizePreservesSelectedArticleAndDocument() async throws {
         try await auditPagerResizeSelection(resizesViewport: true)
     }
@@ -124,6 +259,8 @@ import WebKit
             pages.setValue(false, forKey: "isRepositioningFirstPage")
             XCTAssertEqual(selected.value(forKey: "storyLoadGeneration") as? UInt, originalGeneration)
             let document = try await selected.webView.evaluateJavaScript("document.body.innerText") as? String
+            XCTAssertEqual(app.activeStory?["story_hash"] as? String, "resize:6",
+                           "A delayed resize callback must not leave the model on a different article than the document")
             XCTAssertEqual(document, originalDocument)
             XCTAssertEqual(selected.documentInvalidations, 0, "Relayout must not clear or redraw the loaded document")
         } else {
@@ -1747,6 +1884,14 @@ import WebKit
 @MainActor private final class DuoPhoneReaderLayout: DetailViewController {
     var simulatesPhone = true
     override var isPhone: Bool { simulatesPhone }
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        if #available(iOS 17.0, *) { traitOverrides.verticalSizeClass = .regular }
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        if #available(iOS 17.0, *) { traitOverrides.verticalSizeClass = .regular }
+    }
 }
 
 @MainActor private final class DuoPendingTiledReaderDetail: DetailViewController {
@@ -1838,10 +1983,19 @@ import WebKit
 }
 
 @MainActor private final class DuoScrollingHeaderScrollView: UIScrollView {
+    var simulatedSafeAreaInsets: UIEdgeInsets?
     var simulatesTracking = false
     var simulatesDragging = false
+    override var safeAreaInsets: UIEdgeInsets { simulatedSafeAreaInsets ?? super.safeAreaInsets }
     override var isTracking: Bool { simulatesTracking }
     override var isDragging: Bool { simulatesDragging }
+}
+
+@MainActor private final class DuoIndicatorWindow: UIWindow {
+    var protectedTop: CGFloat = 0
+    override var safeAreaInsets: UIEdgeInsets {
+        UIEdgeInsets(top: protectedTop, left: 0, bottom: 34, right: 0)
+    }
 }
 
 @MainActor private final class LandscapeReaderWindow: UIWindow {

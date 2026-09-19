@@ -88,6 +88,7 @@
 - (void)animatePreparedStorySelection:(StoryDetailViewController *)page location:(NSInteger)location;
 - (void)prepareSelectionReplacement:(StoryDetailViewController *)page redraw:(BOOL)redraw;
 - (void)cancelPendingStoryPresentationWithoutRedraw;
+- (BOOL)hasPendingPagerViewportChange;
 
 @end
 
@@ -2097,8 +2098,22 @@
 //    }
 }
 
+- (BOOL)hasPendingPagerViewportChange {
+    UIView *pageView = self.currentPage.viewIfLoaded;
+    if (!self.currentPage.hasStory || self.currentPage.pageIndex < 0 ||
+        !pageView || pageView.superview != self.scrollView) return NO;
+
+    // StoryPagesObjCViewController.m receives offset callbacks from UIKit's bounds setter before reorientPages can resize the mounted article.
+    CGFloat pageAmount = self.isHorizontal ? CGRectGetWidth(pageView.bounds) : CGRectGetHeight(pageView.bounds);
+    CGFloat viewportAmount = self.isHorizontal ? CGRectGetWidth(self.scrollView.bounds) : CGRectGetHeight(self.scrollView.bounds);
+    if (!self.isHorizontal && self.currentlyTogglingNavigationBar && !self.isNavigationBarHidden) {
+        viewportAmount -= 20.0; // StoryPagesObjCViewController.m applies this legacy page-height adjustment in applyNewIndex.
+    }
+    return fabs(pageAmount - viewportAmount) > 0.5;
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-    if (inRotation || self.isRepositioningFirstPage || self.storySelectionTransitionHost) return;
+    if (inRotation || self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self setStoryFromScroll]; return; }
     NSInteger currentPageIndex = currentPage.pageIndex;
     CGSize size = self.scrollView.bounds.size;
@@ -2372,7 +2387,7 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-    if (self.isRepositioningFirstPage || self.storySelectionTransitionHost) return;
+    if (self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
@@ -3014,7 +3029,7 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
-    if (self.isRepositioningFirstPage || self.storySelectionTransitionHost) return;
+    if (self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     BOOL retainedFirstPageStory = [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
     if (retainedFirstPageStory && !self.scrollView.dragging && !self.scrollView.decelerating) return;
     CGSize size = self.scrollView.bounds.size;
