@@ -53,6 +53,75 @@ import QuartzCore
         XCTAssertEqual(fixture.stories.storyLocationsCount, 112)
     }
 
+    func test_relatedSitesPopoverStaysOpenWhenPagingPreparesTheNextStory() async throws {
+        let fixture = makeFixture(storyCount: 12)
+        fixture.controller.capturesNextPage = true
+        fixture.controller.pageFetching = false
+        let app = fixture.appDelegate
+        let pages = PaginationPopoverPages()
+        pages.appDelegate = app
+        app.testStoryPages = pages
+        pages.loadViewIfNeeded()
+        pages.scrollView = UIScrollView(frame: fixture.table.bounds)
+        pages.view.addSubview(pages.scrollView)
+        let current = PaginationPopoverStoryPage()
+        current.appDelegate = app
+        current.pageIndex = 11
+        current.activeStory = NSMutableDictionary(dictionary: makeStories(11..<12)[0])
+        current.activeStoryId = "pagination-11"
+        let next = PaginationPopoverStoryPage()
+        next.appDelegate = app
+        next.pageIndex = -2
+        pages.currentPage = current
+        pages.nextPage = next
+        pages.scrollingToPage = -1
+        let drawn = expectation(description: "The pending next-page callback prepares its newly available story")
+        next.didDraw = { drawn.fulfill() }
+
+        // StoryPaginationPerformanceTests.swift starts the production neighbor lookup before its page exists.
+        pages.applyNewIndex(12, pageController: next)
+        let finishNextPage = try XCTUnwrap(fixture.controller.pendingNextPage)
+        XCTAssertNil(next.activeStory)
+
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first(where: \.isKeyWindow)
+        let window = UIWindow(windowScene: scene)
+        let navigation = UINavigationController(rootViewController: UIViewController())
+        app.feedsNavigationController = navigation
+        window.rootViewController = navigation
+        window.makeKeyAndVisible()
+        URLProtocol.registerClass(PaginationRelatedSitesURLProtocol.self)
+        let related = DiscoverFeedsViewController(feedId: "pagination-dialog-test")
+        related.appDelegate = app
+        related.modalPresentationStyle = .popover
+        related.preferredContentSize = CGSize(width: 500, height: 550)
+        related.popoverPresentationController?.sourceView = navigation.view
+        related.popoverPresentationController?.sourceRect = CGRect(x: 40, y: 80, width: 44, height: 44)
+        defer {
+            navigation.dismiss(animated: false)
+            window.isHidden = true
+            previousWindow?.makeKey()
+            URLProtocol.unregisterClass(PaginationRelatedSitesURLProtocol.self)
+            app.feedsNavigationController = nil
+            app.testStoryPages = nil
+        }
+        let presented = expectation(description: "Related Sites is presented before the pending page completes")
+        navigation.present(related, animated: false) { presented.fulfill() }
+        await fulfillment(of: [presented], timeout: 3)
+        XCTAssertTrue(navigation.presentedViewController === related)
+        XCTAssertNotNil(related.view.window)
+
+        fixture.controller.renderStories(makeStories(12..<24))
+        finishNextPage()
+        await fulfillment(of: [drawn], timeout: 3)
+
+        XCTAssertEqual(next.activeStoryId, "pagination-12")
+        XCTAssertEqual(next.initializations, 1, "The actual story init must run through share-composer cleanup")
+        XCTAssertFalse(related.isBeingDismissed, "Preparing a paginated story must not dismiss Related Sites")
+        XCTAssertTrue(navigation.presentedViewController === related)
+        XCTAssertNotNil(related.view.window)
+    }
+
     func test_compareFullReloadAndTailInsertionAtIncreasingStoryCounts() throws {
         for count in [100, 1_000, 5_000] {
             for mode in [PaginationApplyMode.productionReload, .experimentalTailInsertion] {
@@ -513,6 +582,12 @@ import QuartzCore
         window.isHidden = false
         host.view.layoutIfNeeded()
         XCTAssertNotNil(fixture.table.window)
+        // StoryPaginationPerformanceTests.swift establishes the append baseline with the window's
+        // actual orientation: portrait iPad short titles differ from the detached view's layout.
+        fixture.controller.reloadTable()
+        fixture.table.layoutIfNeeded()
+        fixture.table.contentOffset.y = max(0, fixture.table.contentSize.height - fixture.table.bounds.height - 40)
+        fixture.table.layoutIfNeeded()
         return window
     }
 
@@ -682,6 +757,11 @@ private struct PaginationCellSnapshot: Equatable {
 private final class PaginationAppDelegate: NewsBlurAppDelegate {
     var fontLookups = 0
     weak var testFeedDetail: FeedDetailViewController?
+    weak var testStoryPages: StoryPagesViewController?
+
+    override var storyPagesViewController: StoryPagesViewController! {
+        testStoryPages ?? super.storyPagesViewController
+    }
 
     override var feedDetailViewController: FeedDetailViewController! {
         get { testFeedDetail }
@@ -698,6 +778,8 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class PaginationRenderController: FeedDetailViewController {
+    var capturesNextPage = false
+    var pendingNextPage: (() -> Void)?
     var heightCalls = 0
     var legacyTableForTest = true
     var loadingPresentations = 0
@@ -718,6 +800,14 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
     override func checkScroll() { if runsScrollCheck { super.checkScroll() } }
     override func scrollViewDidScroll(_ scrollView: UIScrollView!) {}
     override func loadingFeed() { loadingPresentations += 1 }
+    override func fetchNextPage(_ callback: (() -> Void)!) {
+        if capturesNextPage {
+            pendingNextPage = callback
+            pageFetching = true
+        } else {
+            super.fetchNextPage(callback)
+        }
+    }
     override func loadOfflineStories() {
         offlinePageLoads += 1
         onOfflinePageLoad?()
@@ -740,6 +830,43 @@ private final class PaginationAppDelegate: NewsBlurAppDelegate {
 
     @objc(updateBottomNextFeedControlForScroll:)
     func suppressNavigationControls(_ scroll: UIScrollView) {}
+}
+
+@MainActor private final class PaginationPopoverPages: StoryPagesViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 780)) }
+    override func viewDidLoad() {}
+    override func setTextButton() {}
+}
+
+@MainActor private final class PaginationPopoverStoryPage: StoryDetailViewController {
+    var initializations = 0
+    var didDraw: (() -> Void)?
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 780)) }
+    override func viewDidLoad() {}
+    override func initStory() {
+        initializations += 1
+        super.initStory()
+    }
+    // StoryPaginationPerformanceTests.swift leaves the production story initialization intact and omits only WebKit rendering.
+    override func clearStory() { activeStoryId = activeStory?["story_hash"] as? String }
+    override func drawFeedGradient() {}
+    override func drawStory() { didDraw?() }
+    override func showTextOrStoryView() {}
+}
+
+private final class PaginationRelatedSitesURLProtocol: URLProtocol {
+    override class func canInit(with request: URLRequest) -> Bool {
+        request.url?.path == "/discover/similar/pagination-dialog-test/"
+    }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func startLoading() {
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil,
+                                       headerFields: ["Content-Type": "application/json"])!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: Data("{\"feeds\":[],\"has_more\":false}".utf8))
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    override func stopLoading() {}
 }
 
 private final class PaginationStoriesCollection: StoriesCollection {
