@@ -1367,9 +1367,12 @@ import UIKit
         window.makeKeyAndVisible()
         defer { window.isHidden = true; previousWindow?.makeKey() }
         window.layoutIfNeeded()
+        // StoryTitlesHeaderBarLayoutTests.swift gives this synthetic sidebar 320 usable points even when the phone remains in landscape.
+        parent.frame.origin = controller.view.safeAreaLayoutGuide.layoutFrame.origin
         settle(bar, parent: parent)
         attach(bar, name: "header-narrow-unread")
 
+        XCTAssertEqual(bar.headerContainer.safeAreaLayoutGuide.layoutFrame.width, 320, accuracy: 0.5)
         XCTAssertEqual(title(of: bar.optionsPill), "UNREAD")
         XCTAssertGreaterThanOrEqual(bar.discoverPill.bounds.width, 40)
         assertVisibleControlsFit(bar)

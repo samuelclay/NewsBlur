@@ -4,6 +4,125 @@ import UIKit
 final class ReaderUITests: XCTestCase {
     private var app: XCUIApplication!
 
+    func test_feedContextDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Train intelligence…", { self.app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'What do you'")).firstMatch }),
+            ("Notifications", { self.app.staticTexts["SITE NOTIFICATIONS"].firstMatch }),
+            ("Statistics", { self.app.webViews.firstMatch }),
+            ("Related sites", { self.app.buttons["Close Related Sites"].firstMatch }),
+            ("Mark as read…", { self.app.staticTexts["Mark site as read"].firstMatch }),
+            ("Rename site…", { self.app.alerts["Rename Arc News"] }),
+            ("Delete site…", { self.app.alerts["Delete Arc News?"] })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-long_press_feed_title", "show_actions", "-newsblur-ui-test-animations"]
+            launch(on: "reader")
+            let feed = feedCell("910001")
+            XCTAssertTrue(feed.waitForExistence(timeout: 15))
+            feed.press(forDuration: 1.2)
+            let action = app.buttons[title].firstMatch
+            XCTAssertTrue(action.waitForExistence(timeout: 5), title)
+            action.tap()
+            verifyDialogPersists(destination(), named: "feed-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_feedSettingsDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Preferences", { self.app.staticTexts["Preferences"].firstMatch }),
+            ("Mute Sites", { self.app.navigationBars.matching(NSPredicate(format: "identifier BEGINSWITH 'Mute'")).firstMatch }),
+            ("Organize Sites", { self.app.navigationBars["Organize Sites"] }),
+            ("Widget Sites", { self.app.navigationBars.matching(NSPredicate(format: "identifier CONTAINS 'Widget'")).firstMatch }),
+            ("Notifications", { self.app.staticTexts["ALL NOTIFICATIONS"].firstMatch }),
+            ("Find Friends", { self.app.searchFields["Search by email or username"].firstMatch })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-newsblur-ui-test-animations"]
+            launch(on: "reader")
+            let settings = app.buttons["feed-list-settings"]
+            XCTAssertTrue(settings.waitForExistence(timeout: 15))
+            settings.tap()
+            let menu = app.tables["grouped-action-menu"].firstMatch
+            XCTAssertTrue(menu.waitForExistence(timeout: 5))
+            let action = menu.staticTexts[title].firstMatch
+            if !action.isHittable { menu.swipeUp() }
+            XCTAssertTrue(action.isHittable, title)
+            action.tap()
+            XCTAssertTrue(menu.waitForNonExistence(timeout: 5), "The settings menu should finish closing before its destination opens")
+            verifyDialogPersists(destination(), named: "settings-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_storyContextDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Train intelligence…", { self.app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'What do you'")).firstMatch }),
+            ("Share link…", { self.app.otherElements["ActivityListView"].firstMatch }),
+            ("Share story…", { self.app.otherElements["ActivityListView"].firstMatch }),
+            ("Share on NewsBlur…", { self.app.staticTexts["Share this story"].firstMatch }),
+            ("Ask AI…", { self.app.staticTexts["Summarize"].firstMatch })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-long_press_story_title", "show_actions", "-show_ask_ai", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+            XCTAssertTrue(waitForFixtureStoryTitles())
+            app.cells["story-row-ui-story-swift-1"].firstMatch.press(forDuration: 1.2)
+            let action = app.buttons[title].firstMatch
+            XCTAssertTrue(action.waitForExistence(timeout: 5), title)
+            action.tap()
+            verifyDialogPersists(destination(), named: "story-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_readerSettingsDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Train this story", { self.app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'What do you'")).firstMatch }),
+            ("Send to...", { self.app.otherElements["ActivityListView"].firstMatch }),
+            ("Share on NewsBlur…", { self.app.staticTexts["Share this story"].firstMatch }),
+            ("Ask AI", { self.app.staticTexts["Summarize"].firstMatch })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-show_ask_ai", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader-story-swift-1")
+            let settings = app.buttons["Story settings"]
+            XCTAssertTrue(settings.waitForExistence(timeout: 15))
+            settings.tap()
+            let action = app.staticTexts[title].firstMatch
+            XCTAssertTrue(action.waitForExistence(timeout: 5), title)
+            action.tap()
+            verifyDialogPersists(destination(), named: "reader-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    private func verifyDialogPersists(_ destination: XCUIElement, named name: String) {
+        XCTAssertTrue(destination.waitForExistence(timeout: 10), name)
+        attachScreenshot(named: name + "-opened")
+        // ReaderUITests.swift observes the transition window without submitting any dialog action.
+        let vanished = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in !destination.exists }, object: nil)
+        vanished.isInverted = true
+        XCTAssertEqual(XCTWaiter.wait(for: [vanished], timeout: 2), .completed, name)
+        attachScreenshot(named: name + "-settled")
+    }
+
     func test_groupedSettingsMenusAcrossThemesAndLandscape() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Settings use isolated simulator fixtures")
@@ -392,6 +511,30 @@ final class ReaderUITests: XCTestCase {
             XCTAssertFalse(app.buttons["Share link…"].exists)
         }
         #endif
+    }
+
+    func test_liveAlphaFeedTrainerStaysOpen() throws {
+        try requireLiveSession()
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-long_press_feed_title", "show_actions"]
+        app.launch()
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        attachScreenshot(named: "feed-trainer-before-opening")
+        let target = try XCTUnwrap(feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable })
+        target.press(forDuration: 1.2)
+        let train = app.buttons["Train intelligence…"].firstMatch
+        XCTAssertTrue(train.waitForExistence(timeout: 5))
+        attachScreenshot(named: "feed-trainer-menu")
+        train.tap()
+        let trainer = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "What do you")).firstMatch
+        XCTAssertTrue(trainer.waitForExistence(timeout: 8))
+        attachScreenshot(named: "feed-trainer-presented")
+        let vanished = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in !trainer.exists }, object: nil)
+        vanished.isInverted = true
+        XCTAssertEqual(XCTWaiter.wait(for: [vanished], timeout: 3), .completed,
+                       "Feed navigation must not dismiss the trainer immediately after it opens")
+        attachScreenshot(named: "feed-trainer-settled")
     }
 
     func test_liveAlphaRowContextMenus() throws {

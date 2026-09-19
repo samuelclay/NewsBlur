@@ -343,6 +343,185 @@ import XCTest
         }
     }
 
+    func test_explicitReselectionClearsWarmRowsUntilFreshResponseAndRetainsOfflineFallback() async throws {
+        for river in [false, true] {
+            for fails in [false, true] {
+                let fixture = makeFixture()
+                fixture.app.storyPresented = {}
+                let feeds = FirstPageSelectionFeeds()
+                feeds.appDelegate = fixture.app
+                fixture.app.feedsViewController = feeds
+                fixture.app.dictFoldersArray = NSMutableArray(array: ["dashboard", "discover_sites", "daily_briefing", "infrequent", "everything", "Sites"])
+                fixture.app.dictFolders = ["Sites": [1]]
+                fixture.app.riverFeeds = [1]
+                fixture.stories.activeFolder = "Sites"
+                if river { fixture.openRiver() } else { fixture.open() }
+                fixture.app.releaseReadFlush()
+                fixture.app.releaseSavedFlush()
+                await settle()
+                fixture.app.reply(to: 0, with: response())
+                await settle()
+                fixture.app.activeStory = fixture.stories.activeFeedStories.first as? [AnyHashable: Any]
+
+                if river { feeds.selectEverything(nil) }
+                else { feeds.selectFeed("1", inFolder: "Sites") }
+                await settle()
+                XCTAssertTrue(fixture.hashes.isEmpty, "Explicit reselection must not replay the previous list while refreshing")
+                XCTAssertNil(fixture.app.activeStory)
+
+                fixture.app.releaseReadFlush()
+                fixture.app.releaseSavedFlush()
+                await settle()
+                if fails { fixture.app.fail(to: fixture.app.requests.count - 1) }
+                else { fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(100..<112))) }
+                await settle()
+                XCTAssertEqual(fixture.hashes, (fails ? 0..<12 : 100..<112).map { "first-page-\($0)" })
+            }
+        }
+    }
+
+    func test_automaticFirstStoryWaitsForFreshPageInsteadOfOpeningCachedArticle() async throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "feed_opening")
+        defaults.set("story", forKey: "feed_opening")
+        defer {
+            if let previous { defaults.set(previous, forKey: "feed_opening") }
+            else { defaults.removeObject(forKey: "feed_opening") }
+        }
+        let fixture = makeFixture()
+        try await prime(fixture)
+        var openedHashes: [String] = []
+        fixture.app.storyPresented = { openedHashes.append(fixture.app.activeStory?["story_hash"] as? String ?? "missing") }
+        fixture.open()
+        await settle()
+        XCTAssertFalse(fixture.hashes.isEmpty, "A normal warm open still shows cached rows immediately")
+        fixture.controller.testForTryFeed()
+        XCTAssertNil(fixture.app.activeStory, "The initial selection must wait for the refreshed first story")
+        XCTAssertTrue(openedHashes.isEmpty)
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(100..<112)))
+        fixture.controller.testForTryFeed()
+        XCTAssertEqual(openedHashes, ["first-page-100"])
+    }
+
+    func test_failedWarmRefreshAutomaticallyOpensCachedFirstStoryForFeedsAndRivers() async throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "feed_opening")
+        defaults.set("story", forKey: "feed_opening")
+        defer {
+            if let previous { defaults.set(previous, forKey: "feed_opening") }
+            else { defaults.removeObject(forKey: "feed_opening") }
+        }
+        for river in [false, true] {
+            let fixture = makeFixture()
+            fixture.app.storyPresented = {}
+            fixture.app.riverFeeds = [1]
+            func open() {
+                if river { fixture.openRiver() } else { fixture.open() }
+            }
+            open()
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            fixture.app.reply(to: 0, with: response())
+            await settle()
+
+            var openedHashes: [String] = []
+            fixture.app.storyPresented = { openedHashes.append(fixture.app.activeStory?["story_hash"] as? String ?? "missing") }
+            open()
+            await settle()
+            XCTAssertFalse(fixture.hashes.isEmpty)
+            fixture.controller.testForTryFeed()
+            XCTAssertNil(fixture.app.activeStory)
+            XCTAssertTrue(openedHashes.isEmpty, "Cached articles must wait for the refresh while online")
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+
+            // StoryFirstPageLoadingTests.swift delivers failure after the initial appearance selection attempt.
+            fixture.app.fail(to: fixture.app.requests.count - 1)
+            await settle()
+
+            XCTAssertFalse(fixture.controller.isOnline)
+            XCTAssertEqual(openedHashes, ["first-page-0"], "The cached first story should open when the refresh fails for river=\(river)")
+        }
+    }
+
+    func test_warmOfflineFallbackOpensOnceAndPreservesManualSelection() async throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "feed_opening")
+        defaults.set("story", forKey: "feed_opening")
+        defer {
+            if let previous { defaults.set(previous, forKey: "feed_opening") }
+            else { defaults.removeObject(forKey: "feed_opening") }
+        }
+        for river in [false, true] {
+            for alreadyOffline in [false, true] {
+                for manuallySelected in [false, true] {
+                    let fixture = makeFixture()
+                    fixture.app.storyPresented = {}
+                    fixture.app.riverFeeds = [1]
+                    func open() {
+                        if river { fixture.openRiver() } else { fixture.open() }
+                    }
+                    open()
+                    fixture.app.releaseReadFlush()
+                    fixture.app.releaseSavedFlush()
+                    await settle()
+                    fixture.app.reply(to: 0, with: response())
+                    await settle()
+
+                    var openedHashes: [String] = []
+                    fixture.app.storyPresented = { openedHashes.append(fixture.app.activeStory?["story_hash"] as? String ?? "missing") }
+                    open()
+                    await settle()
+                    XCTAssertFalse(fixture.hashes.isEmpty)
+                    fixture.controller.testForTryFeed()
+                    XCTAssertTrue(openedHashes.isEmpty)
+                    if manuallySelected {
+                        fixture.app.activeStory = fixture.stories.activeFeedStories[3] as? [AnyHashable: Any]
+                    }
+                    if alreadyOffline { fixture.controller.isOnline = false }
+                    fixture.app.releaseReadFlush()
+                    fixture.app.releaseSavedFlush()
+                    await settle()
+                    if !alreadyOffline {
+                        fixture.app.fail(to: fixture.app.requests.count - 1)
+                        await settle()
+                    }
+
+                    let context = "river=\(river), alreadyOffline=\(alreadyOffline), manuallySelected=\(manuallySelected)"
+                    XCTAssertEqual(openedHashes, manuallySelected ? [] : ["first-page-0"], context)
+                    XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String,
+                                   manuallySelected ? "first-page-3" : "first-page-0", context)
+                    fixture.controller.testForTryFeed()
+                    XCTAssertEqual(openedHashes, manuallySelected ? [] : ["first-page-0"], "Appearance must not reopen a selected story: \(context)")
+                }
+            }
+        }
+    }
+
+    func test_switchingAwayThenBackStillUsesWarmFirstPage() async throws {
+        let fixture = makeFixture()
+        try await prime(fixture)
+        let feeds = FirstPageSelectionFeeds()
+        feeds.appDelegate = fixture.app
+        fixture.app.feedsViewController = feeds
+        fixture.app.dictFoldersArray = NSMutableArray(array: ["Sites"])
+        fixture.app.dictFolders = ["Sites": [1, 2]]
+        fixture.app.dictFeeds["2"] = ["id": 2, "feed_title": "Second feed", "active": 1]
+        fixture.stories.activeFolder = "Sites"
+        feeds.selectFeed("2", inFolder: "Sites")
+        await settle()
+        XCTAssertTrue(fixture.hashes.isEmpty)
+        feeds.selectFeed("1", inFolder: "Sites")
+        await settle()
+        XCTAssertEqual(fixture.hashes, (0..<12).map { "first-page-\($0)" })
+        XCTAssertNil(fixture.app.activeStory)
+    }
+
     func test_focusedRiverContinuesPagingWithoutAScrollWhenFirstPageDoesNotFillTheList() async throws {
         let fixture = makeFixture()
         fixture.app.selectedIntelligence = 1
@@ -417,7 +596,9 @@ import XCTest
             let recorder = NextTitleRevealRecorder(table: table)
             let ready = expectation(description: "The title table has stable native presentation frames")
             let finished = expectation(description: "UIKit completes the Next title reveal")
-            fixture.controller.scrollAnimationFinished = { finished.fulfill() }
+            fixture.controller.scrollAnimationFinished = {
+                recorder.finishAfterPresentation { finished.fulfill() }
+            }
             // StoryFirstPageLoadingTests.swift exercises the real list callbacks, in the
             // same order as StoryPagesObjCViewController.m's Next/page-swipe completion.
             recorder.start {
@@ -438,6 +619,7 @@ import XCTest
             // StoryFirstPageLoadingTests.swift checks actual interpolation, independent of the CI runner's frame rate.
             let start = try XCTUnwrap(samples.first)
             let end = try XCTUnwrap(samples.last)
+            XCTAssertEqual(end, table.contentOffset.y, accuracy: 0.5, "The final recorded offset must be a displayed frame")
             XCTAssertTrue(samples.contains { $0 > start + 0.5 && $0 < end - 0.5 },
                           "The title must visibly scroll through intermediate positions instead of jumping")
             XCTAssertTrue(table.bounds.contains(table.rectForRow(at: target)), "The completed reveal must fully show the next title")
@@ -2022,6 +2204,12 @@ private final class FirstPageLoadingStories: StoriesCollection {
     override var activeOrder: String! { order }
 }
 
+@MainActor private final class FirstPageSelectionFeeds: FeedsViewController {
+    override func viewDidLoad() {}
+    @objc(highlightSelection) func suppressSelectionChrome() {}
+    override func clearDashboard() {}
+}
+
 @MainActor private final class FirstPageLoadingController: FeedDetailViewController {
     var usesProductionDeferredReload = false
     var fetchingTitle: String?
@@ -2105,12 +2293,14 @@ private final class FirstPageLoadingStories: StoriesCollection {
     var offsets: [CGFloat] = []
     private var link: CADisplayLink?
     private var whenReady: (() -> Void)?
+    private var whenPresented: (() -> Void)?
     private var stableFrames = 0
     init(table: UITableView) { self.table = table }
     func start(whenReady: @escaping () -> Void) {
         offsets = []
         stableFrames = 0
         self.whenReady = whenReady
+        whenPresented = nil
         let link = CADisplayLink(target: self, selector: #selector(sample))
         link.add(to: .main, forMode: .common)
         self.link = link
@@ -2131,12 +2321,21 @@ private final class FirstPageLoadingStories: StoriesCollection {
             return
         }
         offsets.append(presentation.bounds.origin.y)
+        if abs(presentation.bounds.origin.y - table.contentOffset.y) < 0.5 {
+            let completion = whenPresented
+            whenPresented = nil
+            completion?()
+        }
+    }
+    func finishAfterPresentation(_ completion: @escaping () -> Void) {
+        // StoryFirstPageLoadingTests.swift observes UIKit's final displayed frame after its scroll completion, which can precede that frame.
+        whenPresented = completion
     }
     func stop() {
-        offsets.append(table.contentOffset.y)
         link?.invalidate()
         link = nil
         whenReady = nil
+        whenPresented = nil
     }
 }
 
