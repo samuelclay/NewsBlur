@@ -1304,6 +1304,9 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_rotatingFromStoryDetailKeepsStoryVisibleWhenReturningToPortrait() {
+        let originalOrientation = XCUIDevice.shared.orientation
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = originalOrientation }
         launch(on: "reader-feed-swift")
 
         let storyList = fixtureStorySurface()
@@ -1317,10 +1320,13 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
         XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
         XCTAssertTrue(isVisibleOnScreen(currentStory), "Story should be visible before rotation: \(debugVisibility(currentStory))")
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .portrait))
         attachScreenshot(named: "portrait-story")
 
         XCUIDevice.shared.orientation = .landscapeLeft
         XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .landscapeLeft))
         attachScreenshot(named: "landscape-story")
 
         XCUIDevice.shared.orientation = .portrait
@@ -1328,7 +1334,52 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
         XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
         XCTAssertTrue(isVisibleOnScreen(currentStory), "Story should stay visible after returning to portrait: \(debugVisibility(currentStory))")
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .portrait))
         attachScreenshot(named: "portrait-after-rotate")
+    }
+
+    private func waitForRenderedFixtureArticle(orientation: UIDeviceOrientation) -> Bool {
+        // ReaderUITests.swift scopes readiness to the rendered WKWebView, since the native model probe remains present while an article is blank.
+        let titlePredicate = NSPredicate(format: "label == %@", "Swift Fixture Story One")
+        let bodyPredicate = NSPredicate(format: "label BEGINSWITH %@",
+                                        "The first Swift story should open in the detail reader.")
+        var previousFrames: [CGRect]?
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            let appFrame = app.frame
+            guard XCUIDevice.shared.orientation == orientation,
+                  (appFrame.width > appFrame.height) == orientation.isLandscape,
+                  let web = app.webViews.allElementsBoundByIndex.first(where: { $0.isHittable }) else {
+                previousFrames = nil
+                return false
+            }
+            let title = web.descendants(matching: .any).matching(titlePredicate).firstMatch
+            let body = web.staticTexts.matching(bodyPredicate).firstMatch
+            guard title.exists, body.exists, title.isHittable, body.isHittable else {
+                previousFrames = nil
+                return false
+            }
+            let webFrame = web.frame
+            let titleFrame = title.frame
+            let bodyFrame = body.frame
+            let visibleWebFrame = appFrame.intersection(webFrame)
+            guard !visibleWebFrame.isEmpty, !titleFrame.isEmpty, !bodyFrame.isEmpty,
+                  visibleWebFrame.contains(titleFrame), visibleWebFrame.intersects(bodyFrame) else {
+                previousFrames = nil
+                return false
+            }
+            let frames = [appFrame, webFrame, titleFrame, bodyFrame]
+            defer { previousFrames = frames }
+            return previousFrames == frames
+        }, object: nil)
+        let completed = XCTWaiter.wait(for: [ready], timeout: 10) == .completed
+        if !completed {
+            attachScreenshot(named: "article-not-rendered-after-rotation-\(orientation.rawValue)")
+            let diagnostic = XCTAttachment(string: "expectedOrientation=\(orientation.rawValue) actualOrientation=\(XCUIDevice.shared.orientation.rawValue) appFrame=\(app.frame)\n\(app.debugDescription)")
+            diagnostic.name = "article-rotation-readiness"
+            diagnostic.lifetime = .keepAlways
+            add(diagnostic)
+        }
+        return completed
     }
 
     func test_conventionalPhoneReaderKeepsOneReadablePaneAcrossRotation() throws {
