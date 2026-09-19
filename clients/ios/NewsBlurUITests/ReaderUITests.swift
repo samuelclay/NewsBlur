@@ -561,7 +561,9 @@ final class ReaderUITests: XCTestCase {
         XCTAssertLessThanOrEqual(feedHeader.maxY, 44.5)
         XCTAssertLessThanOrEqual(storyHeader.maxY, 44.5)
         for expectedList in [stories, feeds] {
-            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.45))
+            // ReaderUITests.swift starts at the actual screen edge; a percentage becomes 9.6pt in landscape and can miss UIKit's edge recognizer.
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.45))
+                .withOffset(CGVector(dx: 2, dy: 0))
             let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.45))
             start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
             XCTAssertTrue(expectedList.waitForExistence(timeout: 5))
