@@ -3,8 +3,248 @@ import UIKit
 
 @testable import NewsBlur
 
+final class Test_DiscoverStoryPreview: XCTestCase {
+    func test_titleDecodesEntitiesAndRemovesInlineMarkup() throws {
+        let story = try XCTUnwrap(DiscoverStory(dict: [
+            "story_hash": "42:example",
+            "story_title": "A &amp; <strong>B</strong>: &lt;code&gt; &#39;ready&#39;"
+        ]))
+        XCTAssertEqual(story.id, "42:example")
+        XCTAssertEqual(story.title, "A & B: <code> 'ready'")
+    }
+
+    func test_excerptSeparatesParagraphsAndLineBreaksAndDecodesEntities() throws {
+        let story = try XCTUnwrap(DiscoverStory(dict: [
+            "story_hash": "42:example",
+            "story_content": "<p>First &amp; <strong>second</strong>.</p><p>Third&nbsp;line<br>Fourth line.</p>"
+        ]))
+        XCTAssertEqual(story.excerpt, "First & second. Third line Fourth line.")
+    }
+
+    func test_excerptOmitsScriptsStylesAndComments() throws {
+        let story = try XCTUnwrap(DiscoverStory(dict: [
+            "story_hash": "42:example",
+            "story_content": "<STYLE>.hidden { color: red; }</STYLE><script>window.secret = 'hidden';</script><!-- hidden comment --><p>Visible body.</p>"
+        ]))
+        XCTAssertEqual(story.excerpt, "Visible body.")
+    }
+
+    func test_titleAndExcerptPreserveRawMathComparisons() throws {
+        let story = try XCTUnwrap(DiscoverStory(dict: [
+            "story_hash": "42:math", "story_title": "1 < 2 &amp; 3 > 2",
+            "story_content": "<p>Values satisfy 1 < 2 &amp; 3 > 2.</p>"
+        ]))
+        XCTAssertEqual(story.title, "1 < 2 & 3 > 2")
+        XCTAssertEqual(story.excerpt, "Values satisfy 1 < 2 & 3 > 2.")
+    }
+
+    func test_missingAndImageOnlyContentHaveNoExcerpt() throws {
+        for content in [nil, "", "<p><img src='https://example.com/photo.jpg' alt='Photo'></p>"] as [String?] {
+            var dictionary: [String: Any] = ["story_hash": "42:example"]
+            dictionary["story_content"] = content
+            let story = try XCTUnwrap(DiscoverStory(dict: dictionary))
+            XCTAssertEqual(story.excerpt, "")
+        }
+    }
+
+    func test_excerptBoundsLongArticlesAndOmitsIncompleteScripts() throws {
+        let longStory = try XCTUnwrap(DiscoverStory(dict: [
+            "story_hash": "42:long",
+            "story_content": "<p>" + String(repeating: "x", count: 20_000) + "</p>"
+        ]))
+        XCTAssertEqual(longStory.excerpt, String(repeating: "x", count: 500))
+
+        let scriptStory = try XCTUnwrap(DiscoverStory(dict: [
+            "story_hash": "42:script",
+            "story_content": "<script>" + String(repeating: "hidden", count: 3_000)
+        ]))
+        XCTAssertEqual(scriptStory.excerpt, "")
+    }
+
+    func test_popularAndTrendingFeedsPreserveStoryContentExcerpts() {
+        let stories: [[String: Any]] = [[
+            "story_hash": "42:example", "story_title": "Example", "story_content": "<p>Actual article text.</p>"
+        ]]
+        let popular = DiscoverPopularFeed(feedId: "42", feedDict: [:], storiesArray: stories)
+        let trending = DiscoverFeed(feedId: "42", feedDict: [:], storiesArray: stories)
+        XCTAssertEqual(popular.stories.first?.excerpt, "Actual article text.")
+        XCTAssertEqual(trending.stories.first?.excerpt, "Actual article text.")
+    }
+}
+
 @MainActor
 final class Test_DiscoverPanePresentation: XCTestCase {
+    func test_discoveryProvidesInteractivePagesInsteadOfOnlySwitchingAfterSwipes() throws {
+        let model = DiscoverSitesViewModel()
+        model.searchState.isTrendingLoaded = true
+        DiscoverSitesViewController.viewModelFactory = { model }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        let discovery = DiscoverSitesViewController()
+        window.rootViewController = UINavigationController(rootViewController: discovery)
+        window.isHidden = false
+        defer {
+            window.isHidden = true
+            DiscoverSitesViewController.viewModelFactory = nil
+        }
+        window.layoutIfNeeded()
+        discovery.view.layoutIfNeeded()
+
+        func descendants(_ view: UIView) -> [UIView] {
+            view.subviews.flatMap { [$0] + descendants($0) }
+        }
+        let pager = try XCTUnwrap(descendants(discovery.view).compactMap { $0 as? UIScrollView }.first {
+            $0.isPagingEnabled && $0.bounds.width > 0
+        }, "Discovery needs a real pager so adjacent pages follow the finger before release")
+        XCTAssertGreaterThan(pager.contentSize.width, pager.bounds.width)
+        pager.setContentOffset(CGPoint(x: pager.bounds.width * 0.4, y: 0), animated: false)
+        XCTAssertEqual(pager.contentOffset.x, pager.bounds.width * 0.4, accuracy: 1)
+        XCTAssertEqual(model.activeTab, .search, "An unfinished drag must not prematurely commit another source")
+    }
+
+    func test_tryFeedAppearsUnderDiscoveryWithoutMovingSidebarSections() throws {
+        let (app, _, feeds, _) = fixture()
+        let folders = ["dashboard", "discover_sites", "daily_briefing", "infrequent", "everything", "Tech"]
+        app.dictFoldersArray = NSMutableArray(array: folders)
+        app.dictFolders = ["Tech": ["42"]]
+        app.dictFeeds = ["42": ["id": 42, "feed_title": "Subscribed site"]]
+
+        app.addTryFeed(toSidebar: ["id": 100, "feed_title": "Preview site"])
+
+        XCTAssertEqual(app.dictFoldersArray as? [String], folders,
+                       "Preview must preserve the fixed Dashboard, Discover, Briefing, Infrequent, and All Stories sections")
+        XCTAssertEqual(app.dictFolders["discover_sites"] as? [String], ["100"])
+        XCTAssertEqual(feeds.currentRowAtIndexPath, IndexPath(row: 0, section: 1))
+        XCTAssertEqual(feeds.tableView(UITableView(), numberOfRowsInSection: 1), 1)
+
+        app.addTryFeed(toSidebar: ["id": 101, "feed_title": "Another preview"])
+        XCTAssertNil(app.dictFeeds["100"])
+        XCTAssertEqual(app.dictFolders["discover_sites"] as? [String], ["101"])
+        XCTAssertEqual(app.dictFoldersArray as? [String], folders)
+
+        app.removeTryFeedFromSidebar()
+        XCTAssertNil(app.dictFeeds["101"])
+        XCTAssertNil(app.dictFolders["discover_sites"])
+        XCTAssertEqual(app.dictFolders["Tech"] as? [String], ["42"])
+        XCTAssertEqual(app.dictFoldersArray as? [String], folders)
+
+        app.addTryFeed(toSidebar: ["id": 42, "feed_title": "Subscribed site"])
+        XCTAssertEqual(app.dictFolders["discover_sites"] as? [String], ["42"])
+        app.removeTryFeedFromSidebar()
+        XCTAssertNotNil(app.dictFeeds["42"], "Leaving a subscribed preview must preserve the subscription")
+        XCTAssertEqual(app.dictFolders["Tech"] as? [String], ["42"])
+        XCTAssertNil(feeds.currentRowAtIndexPath)
+        XCTAssertEqual(feeds.currentSection, 1)
+    }
+
+    func test_sidebarDiscoverySelectionReturnsToTheRetainedPageAfterPreview() throws {
+        let (app, detail, _, _) = fixture()
+        app.openDiscoverSitesView()
+        let discovery = try XCTUnwrap(descendants(of: detail).first { $0 is DiscoverSitesViewController })
+        detail.beginDiscoverPreview()
+
+        app.openDiscoverSitesView()
+
+        XCTAssertTrue(detail.isDiscoverSitesVisible)
+        XCTAssertFalse(detail.canReturnToDiscoverSites)
+        XCTAssertTrue(descendants(of: detail).contains { $0 === discovery },
+                      "The sidebar must return to the same discovery page and its scroll position")
+    }
+
+    func test_openingDiscoveryAfterCompactBackStartsANewPage() throws {
+        let (app, detail, feeds, navigation) = fixture()
+        detail.compactLayout = true
+        app.openDiscoverSitesView()
+        let previousDiscovery = try XCTUnwrap(navigation.topViewController)
+        detail.beginDiscoverPreview()
+        navigation.pushViewController(UIViewController(), animated: false)
+        navigation.popToRootViewController(animated: false)
+
+        app.openDiscoverSitesView()
+
+        XCTAssertTrue(navigation.viewControllers.first === feeds)
+        XCTAssertTrue(navigation.topViewController is DiscoverSitesViewController)
+        XCTAssertFalse(navigation.topViewController === previousDiscovery)
+    }
+
+    func test_discoveryPreviewRestoresHiddenThreeColumnTitlesAtTheExistingWidth() throws {
+        let (app, detail, _, _) = fixture()
+        let titles = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 820))
+        let divider = UIView(frame: CGRect(x: 320, y: 0, width: 1, height: 820))
+        detail.view.addSubview(titles)
+        detail.view.addSubview(divider)
+        detail.leftContainerView = titles
+        detail.verticalDividerView = divider
+        let leading = divider.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor,
+                                                       constant: detail.verticalDividerPosition)
+        detail.view.addConstraint(leading)
+        detail.verticalDividerViewLeadingConstraint = leading
+        detail.feedDetailViewController = DiscoveryPreviewTestFeedDetail()
+        app.splitViewController = SplitViewController(style: .tripleColumn)
+
+        // AddSiteViewModelTests.swift reproduces the retained hidden reader containers after leaving Dashboard.
+        titles.isHidden = true
+        divider.isHidden = true
+        app.openDiscoverSitesView()
+        detail.beginDiscoverPreview()
+        UIView.performWithoutAnimation { detail.dismissFullscreenSidebarOverlayAfterFeedSelection() }
+
+        XCTAssertTrue(detail.canReturnToDiscoverSites)
+        XCTAssertFalse(titles.isHidden, "Trying a site must reveal the existing story-title column")
+        XCTAssertEqual(titles.alpha, 1)
+        XCTAssertFalse(divider.isHidden)
+        XCTAssertEqual(divider.alpha, 1)
+        XCTAssertEqual(leading.constant, detail.verticalDividerPosition)
+    }
+
+    func test_discoveryStatusBackgroundCoversNavigationSafeAreaAcrossThemesAndSizes() throws {
+        let (app, detail, _, _) = fixture()
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        let navigation = UINavigationController(rootViewController: detail)
+        navigation.additionalSafeAreaInsets.top = 32
+        navigation.view.backgroundColor = .white
+        window.rootViewController = navigation
+        window.isHidden = false
+        let theme = ThemeManager.shared.theme
+        defer {
+            detail.dismissDiscoverSites()
+            ThemeManager.shared.theme = theme
+            window.isHidden = true
+            withExtendedLifetime(app) {}
+        }
+
+        detail.showDiscoverSites(DiscoveryStatusTestController())
+        let background = try XCTUnwrap(navigation.view.subviews.first {
+            $0.accessibilityIdentifier == "discover-status-bar-background"
+        })
+        XCTAssertFalse(background.isUserInteractionEnabled)
+
+        // AddSiteViewModelTests.swift uses a live navigation window, including UIKit's own status-area wrappers.
+        for theme in ["light", "sepia", "medium", "dark"] {
+            ThemeManager.shared.theme = theme
+            detail.updateTheme()
+            for size in [CGSize(width: 880, height: 820), CGSize(width: 640, height: 1024)] {
+                navigation.view.bounds.size = size
+                navigation.view.setNeedsLayout()
+                navigation.view.layoutIfNeeded()
+                detail.viewDidLayoutSubviews()
+                XCTAssertGreaterThan(background.bounds.height, 0)
+                XCTAssertEqual(background.frame.minY, 0, accuracy: 0.5)
+                XCTAssertEqual(background.frame.width, navigation.view.bounds.width, accuracy: 0.5)
+                XCTAssertEqual(background.frame.maxY, navigation.view.safeAreaLayoutGuide.layoutFrame.minY, accuracy: 0.5)
+                XCTAssertTrue(navigation.view.subviews.last === background,
+                              "The status fill must cover navigation wrapper views, not just color their parent")
+                let discoveryNavigation = try XCTUnwrap(detail.children.first as? UINavigationController)
+                XCTAssertEqual(background.backgroundColor, discoveryNavigation.navigationBar.backgroundColor)
+            }
+        }
+
+        detail.beginDiscoverPreview()
+        XCTAssertNil(background.superview)
+        XCTAssertEqual(navigation.view.backgroundColor, UIColor.white)
+    }
+
     func test_livePadDiscoveryFillsContentAndKeepsSidebarSelection() async throws {
         // AddSiteViewModelTests.swift exercises the signed Alpha app without replacing its account or preferences.
 #if targetEnvironment(simulator)
@@ -97,6 +337,9 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         detail.beginDiscoverPreview()
         XCTAssertFalse(detail.isDiscoverSitesVisible)
         XCTAssertTrue(detail.canReturnToDiscoverSites)
+        XCTAssertTrue(detail.feedDetailNavigationItem.leftBarButtonItems?.contains {
+            $0.accessibilityIdentifier == "discover-preview-back"
+        } == true)
         XCTAssertFalse(titles.isHidden || article.isHidden)
         XCTAssertTrue(hiddenDivider.isHidden)
 
@@ -214,22 +457,47 @@ final class Test_DiscoverPanePresentation: XCTestCase {
 
 @MainActor private final class DiscoveryPaneTestDetail: DetailViewController {
     var compactLayout = false
+    private var testFeedsWidth: CGFloat = 320
+    override var feedsWidth: CGFloat {
+        get { testFeedsWidth }
+        set { testFeedsWidth = newValue }
+    }
     override var isPhoneOrCompact: Bool { compactLayout || isCompact }
+    override var behaviorString: String { BehaviorValue.tile }
+    override var layout: Layout {
+        get { .left }
+        set {}
+    }
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 880, height: 820)) }
     override func viewDidLoad() {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewDidLayoutSubviews() {
+        if isDiscoverSitesVisible || leftContainerView != nil { super.viewDidLayoutSubviews() }
+    }
+}
+
+@MainActor private final class DiscoveryStatusTestController: DiscoverSitesViewController {
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+}
+
+@MainActor private final class DiscoveryPreviewTestFeedDetail: FeedDetailViewController {
+    override func updateSidebarButton(for displayMode: UISplitViewController.DisplayMode) {}
 }
 
 @MainActor
 final class AddSiteViewModelTests: XCTestCase {
-    func test_addSitePresentationStartsAtSystemMediumDetent() throws {
+    func test_addSitePresentationStartsAtCompactDetentOnPadAndMediumOnPhone() throws {
         let controller = AddSiteSheetViewController()
         let navigation = UINavigationController(rootViewController: controller)
         navigation.modalPresentationStyle = .pageSheet
         let sheet = try XCTUnwrap(navigation.sheetPresentationController)
         controller.setSheetController(sheet)
 
-        XCTAssertEqual(sheet.detents.map(\.identifier), [.medium, .large])
-        XCTAssertEqual(sheet.selectedDetentIdentifier, .medium)
+        let initial = UIDevice.current.userInterfaceIdiom == .pad
+            ? UISheetPresentationController.Detent.Identifier("add-site-compact") : .medium
+        XCTAssertEqual(sheet.detents.map(\.identifier), [initial, .large])
+        XCTAssertEqual(sheet.selectedDetentIdentifier, initial)
         XCTAssertTrue(sheet.prefersGrabberVisible)
     }
 

@@ -17,6 +17,7 @@ class DiscoverSitesViewModel: ObservableObject {
     @Published var activeTab: DiscoverTab = .search
     @Published var selectedFolder: String = ""
     @Published var feedViewMode: DiscoverSitesFeedViewMode = .grid
+    @Published var selectedPreviewStoryID: String?
 
     @Published var searchState = SearchTabState()
     @Published var webFeedState = WebFeedTabState()
@@ -925,6 +926,7 @@ class DiscoverSitesViewModel: ObservableObject {
         analysisStartedAt = nil
         isAdding = false
         isPreparingPreview = false
+        selectedPreviewStoryID = nil
 
         activeTab = .search
         selectedFolder = ""

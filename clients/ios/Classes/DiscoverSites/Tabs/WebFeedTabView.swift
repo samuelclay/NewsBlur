@@ -67,9 +67,15 @@ struct WebFeedTabView: View {
                         Label("This site already has a feed", systemImage: "dot.radiowaves.left.and.right")
                             .font(.headline)
                         Text("Add it directly to your selected folder.").font(.subheadline)
-                        Button("Add feed") { viewModel.addFeed(url: feedURL) }
-                            .buttonStyle(.borderedProminent).tint(DiscoverColors.accent)
-                            .disabled(viewModel.isAdding)
+                        HStack(spacing: 8) {
+                            DiscoverFolderPicker(viewModel: viewModel,
+                                                 identifier: "discover-folder-picker-webfeed-detected")
+                            Button("Add feed") { viewModel.addFeed(url: feedURL) }
+                                .frame(minHeight: 44)
+                                .buttonStyle(.borderedProminent).tint(DiscoverColors.accent)
+                                .disabled(viewModel.isAdding)
+                                .accessibilityIdentifier("discover-add-webfeed-detected")
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading).padding(16)
                     .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
@@ -398,54 +404,6 @@ struct WebFeedTabView: View {
             }
             .toggleStyle(SwitchToggleStyle(tint: DiscoverColors.accent))
 
-            // Folder picker
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Folder")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(DiscoverColors.textSecondary)
-
-                Menu {
-                    Button(action: { viewModel.selectedFolder = "" }) {
-                        HStack {
-                            Text("-- Top Level --")
-                            if viewModel.selectedFolder.isEmpty {
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
-
-                    ForEach(viewModel.folders, id: \.self) { folder in
-                        Button(action: { viewModel.selectedFolder = folder }) {
-                            HStack {
-                                Text(viewModel.folderDisplayName(folder))
-                                if viewModel.selectedFolder == folder {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Text(viewModel.displayFolder)
-                            .font(.system(size: 14))
-                            .foregroundColor(DiscoverColors.textPrimary)
-
-                        Spacer()
-
-                        Image(systemName: "chevron.up.chevron.down")
-                            .font(.system(size: 12))
-                            .foregroundColor(DiscoverColors.textSecondary)
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-                    .background(DiscoverColors.textFieldBackground)
-                    .cornerRadius(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(DiscoverColors.border, lineWidth: 1)
-                    )
-                }
-            }
         }
         .padding(12)
         .background(DiscoverColors.cardBackground)
@@ -459,31 +417,36 @@ struct WebFeedTabView: View {
     // MARK: - Subscribe
 
     private var subscribeSection: some View {
-        Button(action: {
-            viewModel.subscribeWebFeed()
-        }) {
-            HStack {
-                if viewModel.webFeedState.isSubscribing {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(0.8)
-                }
+        HStack(spacing: 8) {
+            DiscoverFolderPicker(viewModel: viewModel, identifier: "discover-folder-picker-webfeed")
+            Button(action: {
+                viewModel.subscribeWebFeed()
+            }) {
+                HStack {
+                    if viewModel.webFeedState.isSubscribing {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(0.8)
+                    }
 
-                Text(viewModel.webFeedState.isSubscribing ? "Subscribing..." : "Subscribe to Web Feed")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(.white)
+                    Text(viewModel.webFeedState.isSubscribing ? "Subscribing..." : "Subscribe")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 44)
+                .background(
+                    viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing
+                        ? DiscoverColors.accent.opacity(0.5)
+                        : DiscoverColors.accent
+                )
+                .cornerRadius(10)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(
-                viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing
-                    ? DiscoverColors.accent.opacity(0.5)
-                    : DiscoverColors.accent
-            )
-            .cornerRadius(10)
+            .buttonStyle(PlainButtonStyle())
+            .disabled(viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing)
+            .accessibilityLabel("Subscribe to Web Feed")
+            .accessibilityIdentifier("discover-subscribe-webfeed")
         }
-        .buttonStyle(PlainButtonStyle())
-        .disabled(viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing)
     }
 }
 

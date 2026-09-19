@@ -41,6 +41,7 @@ struct DiscoverCategoryPillsView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            .accessibilityIdentifier("discover-category-row")
 
             if let category = selectedCategory, !category.subcategories.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -65,6 +66,7 @@ struct DiscoverCategoryPillsView: View {
                     }
                     .padding(.horizontal, 16)
                 }
+                .accessibilityIdentifier("discover-subcategory-row")
             }
         }
         .padding(.vertical, 12)

@@ -5,6 +5,7 @@ import SwiftUI
 struct SearchTabView: View {
     @ObservedObject var viewModel: DiscoverSitesViewModel
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
+    var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
 
     private var query: String { viewModel.searchState.query.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -23,16 +24,19 @@ struct SearchTabView: View {
                 .onChange(of: viewModel.searchState.query) { viewModel.searchAutocomplete(query: $0) }
 
                 if isURL {
-                    Button {
-                        viewModel.addFeed(url: query)
-                    } label: {
-                        Label(viewModel.isAdding ? "Adding site…" : "Add this site", systemImage: "plus.circle.fill")
-                            .font(.headline).frame(maxWidth: .infinity, minHeight: 44)
+                    HStack(spacing: 8) {
+                        DiscoverFolderPicker(viewModel: viewModel, identifier: "discover-folder-picker-url")
+                        Button {
+                            viewModel.addFeed(url: query)
+                        } label: {
+                            Label(viewModel.isAdding ? "Adding site…" : "Add this site", systemImage: "plus.circle.fill")
+                                .font(.headline).frame(minHeight: 44)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(DiscoverColors.accent)
+                        .disabled(viewModel.isAdding)
+                        .accessibilityIdentifier("discover-add-url")
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(DiscoverColors.accent)
-                    .disabled(viewModel.isAdding)
-                    .accessibilityIdentifier("discover-add-url")
                 }
 
                 if query.isEmpty {
@@ -72,7 +76,7 @@ struct SearchTabView: View {
             : GridItem(.flexible())], spacing: 12) {
             ForEach(feeds) { feed in
                 DiscoverFeedCardView(feed: feed, showStories: viewModel.feedViewMode == .list,
-                    onTryFeed: onTryFeed, onAddFeed: onAddFeed)
+                    onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
             }
         }
     }

@@ -1769,6 +1769,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)openDiscoverSitesView {
     if (@available(iOS 15.0, *)) {
+        if (self.detailViewController.canReturnToDiscoverSites) {
+            [self.detailViewController returnToDiscoverSites];
+            return;
+        }
         DiscoverSitesViewController *discoverVC = [[DiscoverSitesViewController alloc] init];
 
         [self.detailViewController showDiscoverSites:discoverVC];
@@ -2427,8 +2431,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     storiesCollection.activeFolder = nil;
     storiesCollection.isRiverView = NO;
 
-    // Add try feed temporarily to sidebar
-    if (self.isTryFeedView) {
+    // NewsBlurAppDelegate.m keeps subscribed and unsubscribed Discovery previews under the same sidebar heading.
+    if (self.isTryFeedView || self.detailViewController.canReturnToDiscoverSites) {
         [self addTryFeedToSidebar:feed];
     }
 
@@ -2488,30 +2492,32 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         self.dictFeeds[feedIdStr] = mutableFeed;
     }
 
-    // Add a "try_feed" section at position 0
-    if (self.dictFoldersArray) {
-        [self.dictFoldersArray removeObject:@"try_feed"];
-        [self.dictFoldersArray insertObject:@"try_feed" atIndex:0];
-    }
-
-    NSMutableDictionary *mutableFolders = [self.dictFolders mutableCopy];
-    mutableFolders[@"try_feed"] = @[feedIdStr];
+    // NewsBlurAppDelegate.m uses the existing Discover section so fixed sidebar section indexes stay intact.
+    NSMutableDictionary *mutableFolders = [self.dictFolders mutableCopy] ?: [NSMutableDictionary dictionary];
+    mutableFolders[@"discover_sites"] = @[feedIdStr];
     self.dictFolders = mutableFolders;
 
     // Select the try feed cell in the sidebar
-    self.feedsViewController.currentRowAtIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    NSUInteger discoverySection = self.dictFoldersArray ?
+        [self.dictFoldersArray indexOfObject:@"discover_sites"] : NSNotFound;
+    self.feedsViewController.currentRowAtIndexPath = discoverySection == NSNotFound ? nil :
+        [NSIndexPath indexPathForRow:0 inSection:discoverySection];
     self.feedsViewController.currentSection = -1;
     [self.feedsViewController reloadFeedTitlesTable];
 }
 
 - (void)removeTryFeedFromSidebar {
     NSString *feedIdStr = self.tryFeedFeedId;
+    NSIndexPath *selectedRow = self.feedsViewController.currentRowAtIndexPath;
+    BOOL selectedPreview = selectedRow && selectedRow.section < self.dictFoldersArray.count &&
+        [self.dictFoldersArray[selectedRow.section] isEqualToString:@"discover_sites"];
 
-    // Remove "try_feed" section
+    // NewsBlurAppDelegate.m also removes the legacy section when replacing an older preview.
     [self.dictFoldersArray removeObject:@"try_feed"];
 
     NSMutableDictionary *mutableFolders = [self.dictFolders mutableCopy];
     [mutableFolders removeObjectForKey:@"try_feed"];
+    [mutableFolders removeObjectForKey:@"discover_sites"];
     self.dictFolders = mutableFolders;
 
     // Remove temp feed from dictFeeds (only if it was temporary)
@@ -2522,6 +2528,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    if (selectedPreview) {
+        [self.feedsViewController highlightDiscoverySelection];
+    }
     [self.feedsViewController reloadFeedTitlesTable];
 }
 
@@ -4309,7 +4318,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     
     [self hidePopoverAnimated:YES];
-    
+
     viewController.modalPresentationStyle = UIModalPresentationPopover;
     viewController.preferredContentSize = contentSize;
     

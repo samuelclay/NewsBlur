@@ -2017,6 +2017,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     NSUInteger requestId = self.fetchRequestId;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (requestId != self.fetchRequestId || self.firstPageLoad.pending) return;
+        if ([self respondsToSelector:@selector(isAutomaticallyRefreshingTryFeed)] &&
+            [(FeedDetailViewController *)self isAutomaticallyRefreshingTryFeed]) return;
         if (!self.storiesCollection.storyLocationsCount && !self.pageFinished &&
             self.storiesCollection.feedPage == 1 && self.isOnline) {
             self.isShowingFetching = YES;
@@ -3403,6 +3405,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.isLegacyTable && self.storyTitlesTable.window != nil;
     BOOL wasRestoring = self.restoringFirstPageViewport;
     if (isNotificationSelection) {
+        // FeedDetailObjCViewController.m clears the prior empty-reader message before it can suppress sections in this synchronous reload.
+        self.messageView.hidden = YES;
         // FeedDetailObjCViewController.m resolves estimated rows and any intelligence-filter change before jumping to a notification.
         self.restoringFirstPageViewport = YES;
         [(FeedDetailViewController *)self resetPendingReloadsForFeedChange];
@@ -3415,7 +3419,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return NO;
     }
 
-    if (self.isLegacyTable && self.storyTitlesTable.window != nil && indexPath.row < [self.storyTitlesTable numberOfRowsInSection:0]) {
+    // FeedDetailObjCViewController.m can receive an exact story while the reader transition still has no table sections.
+    if (self.isLegacyTable && self.storyTitlesTable.window != nil &&
+        indexPath.section < self.storyTitlesTable.numberOfSections &&
+        indexPath.row < [self.storyTitlesTable numberOfRowsInSection:indexPath.section]) {
         if (isNotificationSelection) {
             [self.storyTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
             [self.storyTitlesTable layoutIfNeeded];
@@ -3547,7 +3554,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
         NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
         if (self.deferredLoadStoryCount < 10 && self.isLegacyTable &&
-            (!indexPath || indexPath.row >= [self.storyTitlesTable numberOfRowsInSection:0])) {
+            (!indexPath || indexPath.section >= self.storyTitlesTable.numberOfSections ||
+             indexPath.row >= [self.storyTitlesTable numberOfRowsInSection:indexPath.section])) {
             NSLog(@"⚠️ deferredLoadStoryWithHash %@ is not laid out; will retry in %@ seconds", storyHash, @(self.deferredLoadStoryCount));
             self.deferredLoadStoryCount += 1;
             [self deferredLoadStoryWithHash:storyHash];
@@ -5609,6 +5617,8 @@ finish_height_measurement:
     if (!self.isMarkReadOnScroll) return;
 
     UITableView *table = self.storyTitlesTable;
+    // FeedDetailObjCViewController.m waits for native sections before computing the mark-read scroll cursor.
+    if (table.numberOfSections == 0) return;
     CGFloat visibleTop = table.contentOffset.y + table.adjustedContentInset.top;
     CGPoint topPoint = CGPointMake(CGRectGetMidX(table.bounds), visibleTop);
     NSIndexPath *indexPath = [table indexPathForRowAtPoint:topPoint];

@@ -195,6 +195,174 @@ import QuartzCore
 
 /// List of stories for a feed.
 class FeedDetailViewController: FeedDetailObjCViewController {
+    private struct TryFeedRefreshContext: Equatable {
+        let account: String
+        let host: String
+        let feedID: String
+        let readFilter: String
+        let order: String
+        let generation: UInt
+    }
+
+    private final class TryFeedRefresh {
+        let context: TryFeedRefreshContext
+        var poll: DispatchWorkItem?
+        var timeout: DispatchWorkItem?
+
+        init(context: TryFeedRefreshContext) { self.context = context }
+
+        func cancel() {
+            poll?.cancel()
+            timeout?.cancel()
+        }
+    }
+
+    private var tryFeedRefresh: TryFeedRefresh?
+    private var attemptedTryFeedRefresh: TryFeedRefreshContext?
+    var tryFeedRefreshPollInterval: TimeInterval { 2 }
+    var tryFeedRefreshTimeout: TimeInterval { 60 }
+
+    @objc var isAutomaticallyRefreshingTryFeed: Bool { tryFeedRefresh != nil }
+
+    private var tryFeedRefreshContext: TryFeedRefreshContext? {
+        guard let app = appDelegate, let collection = storiesCollection,
+              !collection.inSearch, (!app.inFindingStoryMode || app.tryFeedStoryId == nil),
+              !collection.isRiverView, !collection.isSocialView,
+              !collection.isSavedView, !collection.isReadView, !collection.isWidgetView,
+              app.isTryFeedView || app.detailViewController?.canReturnToDiscoverSites == true,
+              let feedID = collection.activeFeed?["id"],
+              let previewID = app.tryFeedFeedId,
+              String(describing: feedID) == previewID else { return nil }
+        return TryFeedRefreshContext(account: app.activeUsername ?? "", host: app.url ?? "",
+                                     feedID: previewID, readFilter: collection.activeReadFilter ?? "all",
+                                     order: collection.activeOrder ?? "newest", generation: fetchRequestId)
+    }
+
+    override func resetFeedDetail() {
+        cancelTryFeedRefresh()
+        super.resetFeedDetail()
+    }
+
+    override func reloadStories() {
+        cancelTryFeedRefresh()
+        super.reloadStories()
+    }
+
+    override func finishedLoadingFeed(_ results: [AnyHashable: Any]!, feedPage: Int, feedId: String!) {
+        super.finishedLoadingFeed(results, feedPage: feedPage, feedId: feedId)
+        guard feedPage == 1, let stories = results?["stories"] as? [Any], stories.isEmpty,
+              let receivedID = results?["feed_id"], String(describing: receivedID) == feedId,
+              let context = tryFeedRefreshContext, context.feedID == feedId,
+              attemptedTryFeedRefresh != context else { return }
+        startTryFeedRefresh(context)
+    }
+
+    override func instafetchFeed() {
+        guard tryFeedRefreshContext != nil, storiesCollection.storyCount == 0 else {
+            super.instafetchFeed()
+            return
+        }
+        guard tryFeedRefresh == nil else { return }
+        fetchRequestId += 1
+        guard let context = tryFeedRefreshContext else { return }
+        startTryFeedRefresh(context)
+    }
+
+    private func cancelTryFeedRefresh() {
+        if tryFeedRefresh != nil { finishRefresh() }
+        tryFeedRefresh?.cancel()
+        tryFeedRefresh = nil
+        attemptedTryFeedRefresh = nil
+    }
+
+    private func startTryFeedRefresh(_ context: TryFeedRefreshContext) {
+        tryFeedRefresh?.cancel()
+        let refresh = TryFeedRefresh(context: context)
+        tryFeedRefresh = refresh
+        attemptedTryFeedRefresh = context
+        pageFetching = true
+        pageFinished = false
+        isOnline = true
+        isShowingFetching = true
+        messageView.isHidden = true
+        showFetchingBanner("Fetching stories from this site...", isOffline: false)
+
+        let timeout = DispatchWorkItem { [weak self, weak refresh] in
+            guard let self, let refresh, self.isCurrentTryFeedRefresh(refresh) else { return }
+            self.finishTryFeedRefresh(refresh, response: nil)
+        }
+        refresh.timeout = timeout
+        DispatchQueue.main.asyncAfter(deadline: .now() + tryFeedRefreshTimeout, execute: timeout)
+        requestTryFeedRefresh(refresh, force: true)
+    }
+
+    private func isCurrentTryFeedRefresh(_ refresh: TryFeedRefresh) -> Bool {
+        guard tryFeedRefresh === refresh else { return false }
+        guard tryFeedRefreshContext == refresh.context else {
+            refresh.cancel()
+            tryFeedRefresh = nil
+            return false
+        }
+        return true
+    }
+
+    private func requestTryFeedRefresh(_ refresh: TryFeedRefresh, force: Bool) {
+        guard isCurrentTryFeedRefresh(refresh) else { return }
+        let endpoint = force ? "refresh_feed" : "feed"
+        let url = "\(refresh.context.host)/reader/\(endpoint)/\(refresh.context.feedID)"
+        var parameters: [String: Any] = ["page": 1, "include_hidden": true,
+                                       "read_filter": refresh.context.readFilter, "order": refresh.context.order]
+        if !force { parameters["insta_fetch"] = true }
+        appDelegate.get(url, parameters: parameters, success: { [weak self, weak refresh] _, object in
+            guard let self, let refresh, self.isCurrentTryFeedRefresh(refresh) else { return }
+            guard let response = object as? [AnyHashable: Any],
+                  let feedID = response["feed_id"], String(describing: feedID) == refresh.context.feedID,
+                  let stories = response["stories"] as? [Any] else {
+                self.finishTryFeedRefresh(refresh, response: nil)
+                return
+            }
+            if !stories.isEmpty {
+                self.finishTryFeedRefresh(refresh, response: response)
+            } else if response["has_exception"] as? Bool == true {
+                self.finishTryFeedRefresh(refresh, response: nil)
+            } else if response["not_yet_fetched"] as? Bool == true || response["fetched_once"] as? Bool == false {
+                // reader.js polls unfetched Try feeds until the fetch completes.
+                let poll = DispatchWorkItem { [weak self, weak refresh] in
+                    guard let self, let refresh else { return }
+                    self.requestTryFeedRefresh(refresh, force: false)
+                }
+                refresh.poll = poll
+                DispatchQueue.main.asyncAfter(deadline: .now() + self.tryFeedRefreshPollInterval, execute: poll)
+            } else {
+                self.finishTryFeedRefresh(refresh, response: response)
+            }
+        }, failure: { [weak self, weak refresh] _, _ in
+            guard let self, let refresh, self.isCurrentTryFeedRefresh(refresh) else { return }
+            self.finishTryFeedRefresh(refresh, response: nil)
+        })
+    }
+
+    private func finishTryFeedRefresh(_ refresh: TryFeedRefresh, response: [AnyHashable: Any]?) {
+        guard isCurrentTryFeedRefresh(refresh) else { return }
+        refresh.cancel()
+        tryFeedRefresh = nil
+        if let response {
+            storiesCollection.feedPage = 1
+            finishedLoadingFeed(response, feedPage: 1, feedId: refresh.context.feedID)
+        }
+        pageFetching = false
+        isShowingFetching = false
+        hideFetchingBanner()
+        finishRefresh()
+        if storiesCollection.storyCount == 0 {
+            pageFinished = true
+            messageLabel.text = response == nil
+                ? "Unable to fetch stories. Pull to refresh to try again."
+                : "No stories are available from this site yet."
+            messageView.isHidden = false
+        }
+    }
+
     private var gridViewController: UIHostingController<FeedDetailGridView>?
     
     private var dashboardViewController: UIHostingController<FeedDetailDashboardView>?

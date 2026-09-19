@@ -15,6 +15,8 @@ class DetailViewController: BaseViewController {
     private var discoveryHiddenViews: [(UIView, Bool)] = []
     private var discoveryPreviewActive = false
     private var discoveryPreviousNavigationBarHidden: Bool?
+    private var discoveryPreviousNavigationBackground: (UIView, UIColor?)?
+    private var discoveryStatusBarBackground: UIView?
     private var discoveryPreviousSplitPresentation: (UISplitViewController.DisplayMode, UISplitViewController.SplitBehavior)?
 
     @objc var isDiscoverSitesVisible: Bool {
@@ -23,7 +25,10 @@ class DetailViewController: BaseViewController {
         return appDelegate.feedsNavigationController?.topViewController === controller
     }
 
-    @objc var canReturnToDiscoverSites: Bool { retainedDiscoveryController != nil && discoveryPreviewActive }
+    @objc var canReturnToDiscoverSites: Bool {
+        guard let controller = retainedDiscoveryController, discoveryPreviewActive else { return false }
+        return !isPhoneOrCompact || appDelegate.feedsNavigationController.viewControllers.contains { $0 === controller }
+    }
 
     @available(iOS 15.0, *)
     @objc func showDiscoverSites(_ controller: DiscoverSitesViewController) {
@@ -58,8 +63,23 @@ class DetailViewController: BaseViewController {
         navigation.didMove(toParent: self)
         if let parentNavigation = navigationController {
             discoveryPreviousNavigationBarHidden = parentNavigation.isNavigationBarHidden
+            discoveryPreviousNavigationBackground = (parentNavigation.view, parentNavigation.view.backgroundColor)
             parentNavigation.setNavigationBarHidden(true, animated: false)
         }
+        let statusBarHost = navigationController?.view ?? view!
+        let statusBarBackground = UIView()
+        statusBarBackground.accessibilityIdentifier = "discover-status-bar-background"
+        statusBarBackground.isUserInteractionEnabled = false
+        statusBarBackground.translatesAutoresizingMaskIntoConstraints = false
+        statusBarHost.addSubview(statusBarBackground)
+        NSLayoutConstraint.activate([
+            statusBarBackground.topAnchor.constraint(equalTo: statusBarHost.topAnchor),
+            statusBarBackground.leadingAnchor.constraint(equalTo: statusBarHost.leadingAnchor),
+            statusBarBackground.trailingAnchor.constraint(equalTo: statusBarHost.trailingAnchor),
+            statusBarBackground.bottomAnchor.constraint(equalTo: statusBarHost.safeAreaLayoutGuide.topAnchor)
+        ])
+        discoveryStatusBarBackground = statusBarBackground
+        updateDiscoveryPaneTheme()
         if let split = appDelegate.splitViewController {
             split.preferredSplitBehavior = .tile
             split.preferredDisplayMode = .oneBesideSecondary
@@ -74,11 +94,17 @@ class DetailViewController: BaseViewController {
         navigation.removeFromParent()
         navigation.setViewControllers([], animated: false)
         discoveryPaneNavigationController = nil
+        discoveryStatusBarBackground?.removeFromSuperview()
+        discoveryStatusBarBackground = nil
         discoveryHiddenViews.forEach { $0.0.isHidden = $0.1 }
         discoveryHiddenViews.removeAll()
         if let hidden = discoveryPreviousNavigationBarHidden {
             navigationController?.setNavigationBarHidden(hidden, animated: false)
             discoveryPreviousNavigationBarHidden = nil
+        }
+        if let (backgroundView, color) = discoveryPreviousNavigationBackground {
+            backgroundView.backgroundColor = color
+            discoveryPreviousNavigationBackground = nil
         }
         if let previous = discoveryPreviousSplitPresentation, let split = appDelegate.splitViewController {
             split.preferredSplitBehavior = previous.1
@@ -93,6 +119,16 @@ class DetailViewController: BaseViewController {
             controller.resetForAccountChange()
         }
         dismissDiscoverSites()
+    }
+
+    private func updateDiscoveryPaneTheme() {
+        guard let navigation = discoveryPaneNavigationController else { return }
+        ThemeManager.shared?.update(navigation)
+        // DetailViewController.swift colors both navigation roots where the status-bar safe area is exposed.
+        let color = navigation.navigationBar.backgroundColor ?? navigation.navigationBar.barTintColor
+        navigation.view.backgroundColor = color
+        navigationController?.view.backgroundColor = color
+        discoveryStatusBarBackground?.backgroundColor = color
     }
 
     @objc func dismissDiscoverSites() {
@@ -118,6 +154,7 @@ class DetailViewController: BaseViewController {
         discoveryPreviewActive = true
         unmountDiscoveryPane()
         if !isPhoneOrCompact, topContainerView != nil { checkViewControllers() }
+        addDiscoverPreviewBackButton()
     }
 
     @objc func returnToDiscoverSites() {
@@ -683,7 +720,10 @@ class DetailViewController: BaseViewController {
         }
         
         manager.update(navigationController)
-        manager.update(discoveryPaneNavigationController)
+        updateDiscoveryPaneTheme()
+        if #available(iOS 15.0, *), let discovery = retainedDiscoveryController as? DiscoverSitesViewController {
+            discovery.updateTheme()
+        }
         manager.update(fullscreenSidebarSupplementaryNavigationController)
         manager.updateBackground(of: view)
         
@@ -1162,8 +1202,10 @@ class DetailViewController: BaseViewController {
         let targetAlpha: CGFloat = shouldCollapse ? 0 : 1
 
         guard verticalDividerViewLeadingConstraint.constant != targetLeadingConstant
-                || leftContainerView.isHidden == shouldCollapse
-                || leftContainerView.alpha != targetAlpha else {
+                || leftContainerView.isHidden != shouldCollapse
+                || verticalDividerView.isHidden != shouldCollapse
+                || leftContainerView.alpha != targetAlpha
+                || verticalDividerView.alpha != targetAlpha else {
             return
         }
 
@@ -1241,7 +1283,13 @@ class DetailViewController: BaseViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if isDiscoverSitesVisible { return }
+        if isDiscoverSitesVisible {
+            // DetailViewController.swift keeps UIKit's navigation wrapper from covering the themed status area.
+            if let background = discoveryStatusBarBackground {
+                background.superview?.bringSubviewToFront(background)
+            }
+            return
+        }
         
         let currentFeedsWidth = splitViewController?.primaryColumnWidth ?? 320
         

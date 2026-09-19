@@ -65,6 +65,7 @@ struct DiscoverSearchBarView: View {
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 80)
+                .accessibilityIdentifier("discover-view-mode")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
