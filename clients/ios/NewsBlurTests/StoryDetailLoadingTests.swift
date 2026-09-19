@@ -684,6 +684,9 @@ import XCTest
         }
         stories[0]["read_status"] = 1
         stories[20]["read_status"] = 1
+        // StoryDetailLoadingTests.swift controls destination readiness while the neighbor completes selection's new paint check.
+        stories[20]["story_content"] = "<script>alert('hold destination until its intermediate article is prepared')</script>" +
+            (stories[20]["story_content"] as? String ?? "")
         collection.activeFeedStories = stories
         collection.storyCount = Int32(stories.count)
         collection.storyLocationsCount = Int32(stories.count)
@@ -698,7 +701,10 @@ import XCTest
         window.makeKeyAndVisible()
         let motion = StorySelectionFrameRecorder(view: realPages[0].view, window: window, horizontal: true)
         let parser = HeldStoryParser()
+        let destinationParser = HeldStoryParser()
+        realPages[2].webView.uiDelegate = destinationParser
         defer {
+            destinationParser.release()
             parser.release()
             motion.stop()
             fixture.pages.beforeNavigation = nil
@@ -759,6 +765,12 @@ import XCTest
         motion.start()
         fixture.app.activeStory = stories[20] as? [AnyHashable: Any]
         fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 20, "animated": true])
+        XCTAssertFalse(realPages[1].readyForPresentation, "Selection must start a fresh paint check for the intermediate article")
+        await waitForState("The intermediate article finishes its second paint check while destination parsing is held") {
+            destinationParser.isHeld && realPages[1].readyForPresentation
+        }
+        guard destinationParser.isHeld && realPages[1].readyForPresentation else { return }
+        destinationParser.release()
         await fulfillment(of: [started], timeout: 15)
         await delay(0.12)
         let format = UIGraphicsImageRendererFormat()
