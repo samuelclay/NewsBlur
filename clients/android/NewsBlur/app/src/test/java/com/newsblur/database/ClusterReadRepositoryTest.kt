@@ -87,7 +87,7 @@ class ClusterReadRepositoryTest {
         assertTrue(backend.countChanges.isEmpty())
     }
 
-    @Test fun bulkReadFollowupReplayPreservesLaterManualUnreadAcrossStoredAndEmbeddedCopies() {
+    @Test fun test_bulk_read_replay_preserves_later_manual_unread() {
         backend.stories["2:child"] = ClusterReadRepository.State("2", 0, false)
         backend.parents["1:parent"] = arrayOf(child("2:child", 0))
         repository.applyBulkRead(listOf("2:child"), 100)
@@ -102,7 +102,7 @@ class ClusterReadRepositoryTest {
         assertTrue(backend.countChanges.isEmpty())
     }
 
-    @Test fun delayedReadReplayDoesNotMakeANewerUnreadActionLookStale() {
+    @Test fun test_delayed_read_replay_preserves_newer_unread() {
         backend.stories["2:child"] = ClusterReadRepository.State("2", 0, false)
         repository.apply(listOf("2:child"), true, false, 100)
         repository.apply(listOf("2:child"), true, false, 100)
@@ -113,7 +113,7 @@ class ClusterReadRepositoryTest {
         assertEquals(200L, backend.changedAt["2:child"])
     }
 
-    @Test fun olderSameStateReplayCannotLowerALaterReceiptTimestamp() {
+    @Test fun test_older_same_state_replay_preserves_later_receipt() {
         repository.apply(listOf("2:child"), true, false, 200)
         repository.applyBulkRead(listOf("2:child"), 100)
         repository.apply(listOf("2:child"), false, false, 150)
