@@ -15,7 +15,7 @@ import com.newsblur.util.AppConstants;
 
 public class Folder {
 
-    /** Leaf title. Folder.java uses flatName() for identity, never this title alone. */
+    /** Leaf title. Folder.java uses path segments for identity and flatName() for display. */
 	public String name;
     /** List, drilling down from root to this folder of containing folders. NOTE: this is a path! */
     public List<String> parents = new ArrayList<>();
@@ -39,12 +39,22 @@ public class Folder {
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.FOLDER_NAME, name);
+        values.put(DatabaseConstants.FOLDER_KEY, storageKey());
         values.put(DatabaseConstants.FOLDER_PATH, flatName());
 		values.put(DatabaseConstants.FOLDER_PARENT_NAMES, DatabaseConstants.flattenStringList(parents));
 		values.put(DatabaseConstants.FOLDER_CHILDREN_NAMES, DatabaseConstants.flattenStringList(children));
         values.put(DatabaseConstants.FOLDER_FEED_IDS, DatabaseConstants.flattenStringList(feedIds));
 		return values;
 	}
+
+    public String storageKey() {
+        List<String> path = new ArrayList<>();
+        for (String parent : parents) {
+            if (!AppConstants.ROOT_FOLDER.equals(parent)) path.add(parent);
+        }
+        path.add(name);
+        return DatabaseConstants.flattenStringList(path);
+    }
 
     public String flatName() {
         StringBuilder builder = new StringBuilder();
@@ -93,12 +103,12 @@ public class Folder {
 	@Override
 	public boolean equals(Object otherFolder) {
         if (! (otherFolder instanceof Folder)) return false;
-		return flatName().equals(((Folder) otherFolder).flatName());
+		return storageKey().equals(((Folder) otherFolder).storageKey());
 	}
 
     @Override
     public int hashCode() {
-        return flatName().hashCode();
+        return storageKey().hashCode();
     }
 	
     public final static Comparator<String> FolderNameComparator = new Comparator<String>() {
