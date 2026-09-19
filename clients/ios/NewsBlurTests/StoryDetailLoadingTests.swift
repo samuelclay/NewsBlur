@@ -1556,6 +1556,8 @@ import XCTest
         for _ in 0..<60 where resource.port == nil { await delay(0.05) }
         let imageURL = try XCTUnwrap(resource.imageURL)
         let fixture = makePresentationFixture()
+        // StoryDetailLoadingTests.swift exercises compact native navigation on both phone and iPad test hosts.
+        fixture.app.compactWidthOverride = true
         let collection = fixture.app.storiesCollection
         let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
         let page = makePage(web: web, app: fixture.app)
@@ -1595,6 +1597,7 @@ import XCTest
         let heldImage = expectation(description: "The early reader's image request reaches the held resource")
         resource.observeNextRequest { heldImage.fulfill() }
         fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        XCTAssertTrue(fixture.pages.shouldOpenReaderImmediately(), "The fixture must enter the reader before article readiness")
         fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
         for _ in 0..<100 where fixture.app.presentations == 0 { await delay(0.02) }
         XCTAssertEqual(fixture.app.presentations, 1)
