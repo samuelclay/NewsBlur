@@ -195,6 +195,174 @@ import QuartzCore
 
 /// List of stories for a feed.
 class FeedDetailViewController: FeedDetailObjCViewController {
+    private struct TryFeedRefreshContext: Equatable {
+        let account: String
+        let host: String
+        let feedID: String
+        let readFilter: String
+        let order: String
+        let generation: UInt
+    }
+
+    private final class TryFeedRefresh {
+        let context: TryFeedRefreshContext
+        var poll: DispatchWorkItem?
+        var timeout: DispatchWorkItem?
+
+        init(context: TryFeedRefreshContext) { self.context = context }
+
+        func cancel() {
+            poll?.cancel()
+            timeout?.cancel()
+        }
+    }
+
+    private var tryFeedRefresh: TryFeedRefresh?
+    private var attemptedTryFeedRefresh: TryFeedRefreshContext?
+    var tryFeedRefreshPollInterval: TimeInterval { 2 }
+    var tryFeedRefreshTimeout: TimeInterval { 60 }
+
+    @objc var isAutomaticallyRefreshingTryFeed: Bool { tryFeedRefresh != nil }
+
+    private var tryFeedRefreshContext: TryFeedRefreshContext? {
+        guard let app = appDelegate, let collection = storiesCollection,
+              !collection.inSearch, (!app.inFindingStoryMode || app.tryFeedStoryId == nil),
+              !collection.isRiverView, !collection.isSocialView,
+              !collection.isSavedView, !collection.isReadView, !collection.isWidgetView,
+              app.isTryFeedView || app.detailViewController?.canReturnToDiscoverSites == true,
+              let feedID = collection.activeFeed?["id"],
+              let previewID = app.tryFeedFeedId,
+              String(describing: feedID) == previewID else { return nil }
+        return TryFeedRefreshContext(account: app.activeUsername ?? "", host: app.url ?? "",
+                                     feedID: previewID, readFilter: collection.activeReadFilter ?? "all",
+                                     order: collection.activeOrder ?? "newest", generation: fetchRequestId)
+    }
+
+    override func resetFeedDetail() {
+        cancelTryFeedRefresh()
+        super.resetFeedDetail()
+    }
+
+    override func reloadStories() {
+        cancelTryFeedRefresh()
+        super.reloadStories()
+    }
+
+    override func finishedLoadingFeed(_ results: [AnyHashable: Any]!, feedPage: Int, feedId: String!) {
+        super.finishedLoadingFeed(results, feedPage: feedPage, feedId: feedId)
+        guard feedPage == 1, let stories = results?["stories"] as? [Any], stories.isEmpty,
+              let receivedID = results?["feed_id"], String(describing: receivedID) == feedId,
+              let context = tryFeedRefreshContext, context.feedID == feedId,
+              attemptedTryFeedRefresh != context else { return }
+        startTryFeedRefresh(context)
+    }
+
+    override func instafetchFeed() {
+        guard tryFeedRefreshContext != nil, storiesCollection.storyCount == 0 else {
+            super.instafetchFeed()
+            return
+        }
+        guard tryFeedRefresh == nil else { return }
+        fetchRequestId += 1
+        guard let context = tryFeedRefreshContext else { return }
+        startTryFeedRefresh(context)
+    }
+
+    private func cancelTryFeedRefresh() {
+        if tryFeedRefresh != nil { finishRefresh() }
+        tryFeedRefresh?.cancel()
+        tryFeedRefresh = nil
+        attemptedTryFeedRefresh = nil
+    }
+
+    private func startTryFeedRefresh(_ context: TryFeedRefreshContext) {
+        tryFeedRefresh?.cancel()
+        let refresh = TryFeedRefresh(context: context)
+        tryFeedRefresh = refresh
+        attemptedTryFeedRefresh = context
+        pageFetching = true
+        pageFinished = false
+        isOnline = true
+        isShowingFetching = true
+        messageView.isHidden = true
+        showFetchingBanner("Fetching stories from this site...", isOffline: false)
+
+        let timeout = DispatchWorkItem { [weak self, weak refresh] in
+            guard let self, let refresh, self.isCurrentTryFeedRefresh(refresh) else { return }
+            self.finishTryFeedRefresh(refresh, response: nil)
+        }
+        refresh.timeout = timeout
+        DispatchQueue.main.asyncAfter(deadline: .now() + tryFeedRefreshTimeout, execute: timeout)
+        requestTryFeedRefresh(refresh, force: true)
+    }
+
+    private func isCurrentTryFeedRefresh(_ refresh: TryFeedRefresh) -> Bool {
+        guard tryFeedRefresh === refresh else { return false }
+        guard tryFeedRefreshContext == refresh.context else {
+            refresh.cancel()
+            tryFeedRefresh = nil
+            return false
+        }
+        return true
+    }
+
+    private func requestTryFeedRefresh(_ refresh: TryFeedRefresh, force: Bool) {
+        guard isCurrentTryFeedRefresh(refresh) else { return }
+        let endpoint = force ? "refresh_feed" : "feed"
+        let url = "\(refresh.context.host)/reader/\(endpoint)/\(refresh.context.feedID)"
+        var parameters: [String: Any] = ["page": 1, "include_hidden": true,
+                                       "read_filter": refresh.context.readFilter, "order": refresh.context.order]
+        if !force { parameters["insta_fetch"] = true }
+        appDelegate.get(url, parameters: parameters, success: { [weak self, weak refresh] _, object in
+            guard let self, let refresh, self.isCurrentTryFeedRefresh(refresh) else { return }
+            guard let response = object as? [AnyHashable: Any],
+                  let feedID = response["feed_id"], String(describing: feedID) == refresh.context.feedID,
+                  let stories = response["stories"] as? [Any] else {
+                self.finishTryFeedRefresh(refresh, response: nil)
+                return
+            }
+            if !stories.isEmpty {
+                self.finishTryFeedRefresh(refresh, response: response)
+            } else if response["has_exception"] as? Bool == true {
+                self.finishTryFeedRefresh(refresh, response: nil)
+            } else if response["not_yet_fetched"] as? Bool == true || response["fetched_once"] as? Bool == false {
+                // reader.js polls unfetched Try feeds until the fetch completes.
+                let poll = DispatchWorkItem { [weak self, weak refresh] in
+                    guard let self, let refresh else { return }
+                    self.requestTryFeedRefresh(refresh, force: false)
+                }
+                refresh.poll = poll
+                DispatchQueue.main.asyncAfter(deadline: .now() + self.tryFeedRefreshPollInterval, execute: poll)
+            } else {
+                self.finishTryFeedRefresh(refresh, response: response)
+            }
+        }, failure: { [weak self, weak refresh] _, _ in
+            guard let self, let refresh, self.isCurrentTryFeedRefresh(refresh) else { return }
+            self.finishTryFeedRefresh(refresh, response: nil)
+        })
+    }
+
+    private func finishTryFeedRefresh(_ refresh: TryFeedRefresh, response: [AnyHashable: Any]?) {
+        guard isCurrentTryFeedRefresh(refresh) else { return }
+        refresh.cancel()
+        tryFeedRefresh = nil
+        if let response {
+            storiesCollection.feedPage = 1
+            finishedLoadingFeed(response, feedPage: 1, feedId: refresh.context.feedID)
+        }
+        pageFetching = false
+        isShowingFetching = false
+        hideFetchingBanner()
+        finishRefresh()
+        if storiesCollection.storyCount == 0 {
+            pageFinished = true
+            messageLabel.text = response == nil
+                ? "Unable to fetch stories. Pull to refresh to try again."
+                : "No stories are available from this site yet."
+            messageView.isHidden = false
+        }
+    }
+
     private var gridViewController: UIHostingController<FeedDetailGridView>?
     
     private var dashboardViewController: UIHostingController<FeedDetailDashboardView>?
@@ -313,12 +481,13 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         view.addSubview(viewController.view)
         viewController.didMove(toParent: self)
 
-        let topAnchor = storyTitlesHeaderBar?.headerContainer.bottomAnchor ?? view.topAnchor
+        let topAnchor = storyTitlesHeaderBar?.contentTopAnchor ?? view.topAnchor
         NSLayoutConstraint.activate([
             viewController.view.topAnchor.constraint(equalTo: topAnchor),
             viewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             viewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            viewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            viewController.view.bottomAnchor.constraint(equalTo:
+                storyTitlesHeaderBar?.contentBottomAnchor ?? view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -340,6 +509,11 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 
     private func correctReturnFrameIfNeeded() {
         guard let navigationController else { return }
+        // FeedDetailViewController.swift uses safe-area spacing supplied by the compact phone header.
+        if let compactNavigation = navigationController as? CompactPhoneNavigationController,
+           !compactNavigation.compactNavigationBar.isHidden {
+            return
+        }
 
         let containerBounds = view.superview?.bounds ?? navigationController.view.bounds
         let correctedFrame = FeedDetailReturnFrameDecision.correctedFrame(
@@ -448,6 +622,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
     
     var reloadWorkItem: DispatchWorkItem?
+    private weak var activeStorySwipeCell: MCSwipeTableViewCell?
+    private var reloadDeferredForStorySwipe = false
     
     var pendingStories = [Story.ID : Story]()
     
@@ -498,10 +674,54 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         configureDataSource()
     }
 
+    @objc func resetForAccountChange() {
+        storiesCollection.reset()
+        resetFeedDetail()
+        // FeedDetailObjCViewController.m's offline fallback only belongs to a selected feed.
+        pageFinished = true
+        storiesCollection.inSearch = false
+        storiesCollection.searchQuery = nil
+        storiesCollection.savedSearchQuery = nil
+        storyCache.resetForAccountChange()
+        title = nil
+        navigationItem.titleView = nil
+        // FeedDetailObjCViewController.m uses this same state before any feed is selected.
+        messageLabel.text = "Select a feed to read"
+        messageView.isHidden = false
+        reloadImmediately()
+    }
+
     @objc func resetPendingReloadsForFeedChange() {
         reloadWorkItem?.cancel()
         reloadWorkItem = nil
         pendingStories.removeAll()
+        activeStorySwipeCell = nil
+        reloadDeferredForStorySwipe = false
+        swipingIndexPath = nil
+        swipingStoryHash = nil
+    }
+
+    override func swipeTableViewCellDidStartSwiping(_ cell: MCSwipeTableViewCell!) {
+        super.swipeTableViewCellDidStartSwiping(cell)
+        activeStorySwipeCell = cell
+    }
+
+    override func swipeTableViewCell(_ cell: MCSwipeTableViewCell!,
+                                    didEndSwipingSwipingWith state: MCSwipeTableViewCellState,
+                                    mode: MCSwipeTableViewCellMode) {
+        guard activeStorySwipeCell === cell else { return }
+        super.swipeTableViewCell(cell, didEndSwipingSwipingWith: state, mode: mode)
+    }
+
+    override func swipeTableViewCellDidFinishSwiping(_ cell: MCSwipeTableViewCell!) {
+        guard activeStorySwipeCell === cell else { return }
+        activeStorySwipeCell = nil
+        swipingIndexPath = nil
+        swipingStoryHash = nil
+        if reloadDeferredForStorySwipe {
+            reloadDeferredForStorySwipe = false
+            deferredReload()
+        }
     }
     
     @objc override func reload() {
@@ -628,12 +848,25 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 
 extension FeedDetailViewController {
     func configureDataSource(story: Story? = nil) {
+        // FeedDetailViewController.swift keeps a page response from recycling the cell before its swipe action finishes.
+        if activeStorySwipeCell != nil {
+            reloadDeferredForStorySwipe = true
+            return
+        }
+
         if isDailyBriefingView {
             refreshDailyBriefingPresentation()
 
             if shouldShowDailyBriefingStoryTitles {
                 reloadTable()
             }
+            return
+        }
+
+        // FeedDetailViewController.swift: the native table reads StoriesCollection directly.
+        // Only build StoryCache's complete SwiftUI models when a SwiftUI layout uses them.
+        if isLegacyTable {
+            reloadTable()
             return
         }
 
@@ -656,64 +889,25 @@ extension FeedDetailViewController {
 //            findingStory = nil
 //        }
         
-        if isLegacyTable {
-            reloadTable()
-        }
-        
 //        if pageFinished, dashboardAwaitingFinish, dashboardIndex >= 0 {
 //            dashboardAwaitingFinish = false
 //            appDelegate.feedsViewController.loadDashboard()
 //        }
     }
     
-#if targetEnvironment(macCatalyst)
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard GesturePreferences.storyLongPressShowsMenu || isMac else { return nil }
         let location = storyLocation(for: indexPath)
-        
-        guard location < storiesCollection.storyLocationsCount else {
-            return nil
-        }
-        
-        let storyIndex = storiesCollection.index(fromLocation: location)
-        let story = Story(index: storyIndex)
-        
-        appDelegate.activeStory = story.dictionary
-        
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
-            let read = UIAction(title: story.isRead ? "Mark as unread" : "Mark as read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
-                self.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
-                self.reload()
-            }
-            
-            let newer = UIAction(title: "Mark newer stories read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
-                self.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
-                self.reload()
-            }
-            
-            let older = UIAction(title: "Mark older stories read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
-                self.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
-                self.reload()
-            }
-            
-            let saved = UIAction(title: story.isSaved ? "Unsave this story" : "Save this story", image: Utilities.imageNamed("saved-stories", sized: 14)) { action in
-                self.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
-                self.reload()
-            }
-            
-            let send = UIAction(title: "Send this story to…", image: Utilities.imageNamed("email", sized: 14)) { action in
-                self.appDelegate.showSend(to: self, sender: self.view)
-            }
-            
-            let train = UIAction(title: "Train this story", image: Utilities.imageNamed("train", sized:    14)) { action in
-                self.appDelegate.openTrainStory(self.view)
-            }
-            
-            let submenu = UIMenu(title: "", options: .displayInline, children: [saved, send, train])
-            
-            return UIMenu(title: "", children: [read, newer, older, submenu])
-        }
+        guard location >= 0, location < storiesCollection.storyLocationsCount,
+              let cell = tableView.cellForRow(at: indexPath) else { return nil }
+        let index = storiesCollection.index(fromLocation: location)
+        guard index >= 0, index < storiesCollection.activeFeedStories.count,
+              let dictionary = storiesCollection.activeFeedStories[index] as? [String: Any] else { return nil }
+        let story = Story(index: index, dictionary: dictionary)
+        let groups = RowActionMenus.story(story, controller: self, source: cell)
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in RowActionMenus.menu(groups) }
     }
-#endif
+
 }
 
 extension FeedDetailViewController: FeedDetailInteraction {

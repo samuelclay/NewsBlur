@@ -94,8 +94,13 @@ struct AddSiteView: View {
     @ObservedObject var viewModel: AddSiteViewModel
     @StateObject private var themeObserver = AskAIThemeObserver()
     var onDismiss: () -> Void
+    var onEditingChanged: ((Bool) -> Void)?
+    var onDiscover: ((DiscoverTab) -> Void)?
 
-    @FocusState private var isURLFieldFocused: Bool
+    private enum InputField: Hashable {
+        case url, folder
+    }
+    @FocusState private var focusedField: InputField?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -130,16 +135,74 @@ struct AddSiteView: View {
                 autocompleteList
             }
 
+            if viewModel.searchText.isEmpty, let onDiscover {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Discover more to read").font(.subheadline.weight(.semibold))
+                            .foregroundColor(AddSiteColors.textSecondary)
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 8)], spacing: 8) {
+                            ForEach(DiscoverTab.allCases.filter { $0 != .search }) { tab in
+                                Button { onDiscover(tab) } label: {
+                                    VStack(spacing: 6) {
+                                        discoveryIcon(for: tab)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 24, height: 24)
+                                        Text(tab.label)
+                                            .font(.system(size: 12, weight: .medium))
+                                            .multilineTextAlignment(.center)
+                                    }
+                                    .padding(.horizontal, 8)
+                                    .frame(maxWidth: .infinity, minHeight: 76)
+                                    .background(AddSiteColors.cardBackground)
+                                    .cornerRadius(8)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(AddSiteColors.border, lineWidth: 1)
+                                    )
+                                    .contentShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                                .buttonStyle(.plain)
+                                .foregroundColor(AddSiteColors.textPrimary)
+                                .accessibilityIdentifier("add-site-discover-\(tab.rawValue)")
+                            }
+                        }
+                    }
+                    .padding(12)
+                }
+                .accessibilityIdentifier("add-site-discovery-shortcuts")
+            }
             Spacer(minLength: 0)
         }
+
         .background(AddSiteColors.background)
         .id(themeObserver.themeVersion)
-        .onAppear {
-            isURLFieldFocused = true
+        .onChange(of: focusedField) { field in
+            onEditingChanged?(field != nil)
         }
         .onChange(of: viewModel.searchText) { _ in
             viewModel.onSearchTextChanged()
         }
+    }
+
+    private func discoveryIcon(for tab: DiscoverTab) -> Image {
+        let icon: (name: String, set: String)
+        switch tab {
+        case .search: icon = ("search", "lucide")
+        case .webFeed: icon = ("globe", "lucide")
+        case .popular: icon = ("fire", "heroicons-solid")
+        case .youtube: icon = ("youtube", "lucide")
+        case .reddit: icon = ("reddit-logo-fill", "phosphor-fill")
+        case .newsletters: icon = ("mail", "lucide")
+        case .podcasts: icon = ("podcast", "lucide")
+        case .googleNews: icon = ("newspaper", "lucide")
+        }
+        // AddSiteView.swift uses the same bundled icons as reader_add_feed.js, tinted for the active theme.
+        if let image = CustomIconRenderer.presetIcon(icon.name, iconSet: icon.set,
+                                                    size: CGSize(width: 24, height: 24), color: nil) {
+            return Image(uiImage: image).renderingMode(.template)
+        }
+        return Image(systemName: tab.sfSymbol)
     }
 
     // MARK: - Header
@@ -202,7 +265,7 @@ struct AddSiteView: View {
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .keyboardType(.URL)
-                    .focused($isURLFieldFocused)
+                    .focused($focusedField, equals: .url)
                     .submitLabel(viewModel.searchText.contains(".") ? .done : .search)
                     .onSubmit {
                         if viewModel.searchText.contains(".") {
@@ -227,22 +290,6 @@ struct AddSiteView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(AddSiteColors.border, lineWidth: 1)
             )
-
-            Button(action: { viewModel.addSite() }) {
-                Text("Add site")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(
-                        viewModel.searchText.isEmpty || viewModel.isAdding
-                            ? Color.gray.opacity(0.5)
-                            : AddSiteColors.addButtonBackground
-                    )
-                    .cornerRadius(8)
-            }
-            .accessibilityIdentifier("add-site-submit-button")
-            .disabled(viewModel.searchText.isEmpty || viewModel.isAdding)
         }
     }
 
@@ -281,7 +328,7 @@ struct AddSiteView: View {
                     Spacer()
                 }
                 .padding(.horizontal, 10)
-                .padding(.vertical, 8)
+                .frame(minHeight: 44)
                 .background(AddSiteColors.textFieldBackground)
                 .cornerRadius(8)
                 .overlay(
@@ -290,6 +337,25 @@ struct AddSiteView: View {
                 )
             }
             .accessibilityIdentifier("add-site-folder-menu")
+            .accessibilityValue(viewModel.displayFolder)
+
+            Spacer().frame(width: 8)
+
+            Button(action: { viewModel.addSite() }) {
+                Text("Add site")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .frame(minHeight: 44)
+                    .background(
+                        viewModel.searchText.isEmpty || viewModel.isAdding
+                            ? Color.gray.opacity(0.5)
+                            : AddSiteColors.addButtonBackground
+                    )
+                    .cornerRadius(8)
+            }
+            .accessibilityIdentifier("add-site-submit-button")
+            .disabled(viewModel.searchText.isEmpty || viewModel.isAdding)
 
             Spacer().frame(width: 8)
 
@@ -301,7 +367,7 @@ struct AddSiteView: View {
                 Image(systemName: viewModel.showAddFolder ? "folder.badge.minus" : "folder.badge.plus")
                     .font(.system(size: 14))
                     .foregroundColor(viewModel.showAddFolder ? AddSiteColors.accent : AddSiteColors.textSecondary)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 44, height: 44)
                     .background(AddSiteColors.textFieldBackground)
                     .cornerRadius(8)
                     .overlay(
@@ -326,6 +392,7 @@ struct AddSiteView: View {
             TextField("New folder name", text: $viewModel.newFolderName)
                 .font(.system(size: 14))
                 .foregroundColor(AddSiteColors.textPrimary)
+                .focused($focusedField, equals: .folder)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)

@@ -22,7 +22,7 @@
 
 @implementation FontSettingsViewController
 
-#define kMenuOptionHeight 38
+#define kMenuOptionHeight 48
 
 - (BOOL)isAskAIEnabled {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -33,14 +33,46 @@
     return [userPreferences boolForKey:@"show_ask_ai"];
 }
 
-- (NSInteger)adjustedRow:(NSInteger)row {
-    // If Ask AI is disabled, rows 5+ need to be shifted down by 1
-    // Row 5 is Ask AI, so rows >= 5 when Ask AI is hidden become the previous row's content
-    if (![self isAskAIEnabled] && row >= 5) {
-        return row + 1;
-    }
-    return row;
+- (BOOL)isGoToFeedEnabled {
+    BOOL isRiver = self.appDelegate.storiesCollection.isRiverView ||
+                   self.appDelegate.storiesCollection.isSocialRiverView;
+    NSString *feedId = [NSString stringWithFormat:@"%@", self.appDelegate.activeStory[@"story_feed_id"]];
+    return isRiver && [[self.appDelegate getFeed:feedId] isKindOfClass:NSDictionary.class];
 }
+
+// FontSettingsViewController.m groups actions independently of optional rows and phone-only controls.
+- (NSArray<NSArray<NSNumber *> *> *)menuGroups {
+    NSMutableArray *training = [NSMutableArray arrayWithObject:@3];
+    if ([self isAskAIEnabled]) [training addObject:@5];
+    if ([self isGoToFeedEnabled]) [training addObject:@6];
+    NSInteger last = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone ? 13 : 12;
+    NSMutableArray *appearance = [NSMutableArray array];
+    for (NSInteger row = 7; row <= last; row++) [appearance addObject:@(row)];
+    return @[@[@1, @0], @[@2, @4], training, appearance];
+}
+
+- (NSInteger)actionAtIndexPath:(NSIndexPath *)indexPath {
+    return [self menuGroups][indexPath.section][indexPath.row].integerValue;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { return self.menuGroups.count; }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return section == 0 ? 0 : 12;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (section == 0) return nil;
+    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 12)];
+    header.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(14, 5.5, MAX(0, header.bounds.size.width - 28), 1 / MAX(1, self.traitCollection.displayScale))];
+    line.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    line.backgroundColor = MenuTableViewCell.menuSeparatorColor;
+    [header addSubview:line];
+    return header;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section { return 0; }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -55,8 +87,10 @@
     
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    self.menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.menuTableView.sectionHeaderTopPadding = 0;
+    self.menuTableView.contentInset = UIEdgeInsetsMake(8, 0, 8, 0);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -161,7 +195,9 @@
     
     // -[NewsBlurAppDelegate navigationController:willShowViewController:animated:] hides this too late, so this gets mis-measured otherwise
     self.navigationController.navigationBarHidden = YES;
-    self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
+    CGSize available = self.view.window.bounds.size;
+    if (CGSizeEqualToSize(available, CGSizeZero)) available = UIScreen.mainScreen.bounds.size;
+    self.navigationController.preferredContentSize = CGSizeMake(MIN(300, available.width - 32), MIN(self.menuTableView.contentSize.height + 16, available.height - 100));
     
     self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
 }
@@ -307,19 +343,17 @@
     [userPreferences synchronize];
     [[ThemeManager themeManager] updateTheme];
 
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    self.menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.menuTableView.sectionHeaderTopPadding = 0;
+    self.menuTableView.contentInset = UIEdgeInsetsMake(8, 0, 8, 0);
     [self.menuTableView reloadData];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSInteger baseCount = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 13 : 12;
-    if (![self isAskAIEnabled]) {
-        baseCount -= 1;
-    }
-    return baseCount;
+    return self.menuGroups[section].count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -327,19 +361,19 @@
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     NSUInteger iPadOffset = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 0 : 1;
-    NSInteger adjustedRow = [self adjustedRow:indexPath.row];
+    NSInteger adjustedRow = [self actionAtIndexPath:indexPath];
 
-    if (adjustedRow == 7) {
+    if (adjustedRow == 8) {
         return [self makeFontSizeTableCell];
-    } else if (adjustedRow == 8) {
+    } else if (adjustedRow == 9) {
         return [self makeLineSpacingTableCell];
-    } else if (adjustedRow == 9 && iPadOffset == 0) {
+    } else if (adjustedRow == 10 && iPadOffset == 0) {
         return [self makeFullScreenTableCell];
-    } else if (adjustedRow == 10 - iPadOffset) {
-        return [self makeAutoscrollTableCell];
     } else if (adjustedRow == 11 - iPadOffset) {
-        return [self makeScrollOrientationTableCell];
+        return [self makeAutoscrollTableCell];
     } else if (adjustedRow == 12 - iPadOffset) {
+        return [self makeScrollOrientationTableCell];
+    } else if (adjustedRow == 13 - iPadOffset) {
         return [self makeThemeTableCell];
     }
 
@@ -383,7 +417,7 @@
         cell.imageView.image = [Utilities templateImageNamed:@"dialog-trainer" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x689ED7);
     } else if (adjustedRow == 4) {
-        cell.textLabel.text = @"Share this story";
+        cell.textLabel.text = @"Share on NewsBlur…";
         cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x94968E);
     } else if (adjustedRow == 5) {
@@ -393,6 +427,10 @@
         }
         cell.imageView.tintColor = UIColorFromRGB(0x709E5D);
     } else if (adjustedRow == 6) {
+        cell.textLabel.text = @"Go to feed";
+        cell.imageView.image = [[UIImage systemImageNamed:@"newspaper"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        cell.imageView.tintColor = UIColorFromRGB(0x95968F);
+    } else if (adjustedRow == 7) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
             fontStyle = @"GothamNarrow-Book";
@@ -414,20 +452,24 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return kMenuOptionHeight;
+    NSInteger action = [self actionAtIndexPath:indexPath];
+    if (action >= 8) return kMenuOptionHeight;
+    NSArray *titles = @[@"Unsave this story", @"Mark as unread", @"Send to…", @"Train this story",
+                        @"Share on NewsBlur…", @"Ask AI", @"Go to feed", @"Font…"];
+    return MAX(kMenuOptionHeight, [MenuTableViewCell heightForTitle:titles[action] width:tableView.bounds.size.width]);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSInteger adjustedRow = [self adjustedRow:indexPath.row];
-    if (adjustedRow >= 7) {
+    NSInteger adjustedRow = [self actionAtIndexPath:indexPath];
+    if (adjustedRow >= 8) {
         return nil;
     }
     return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSInteger adjustedRow = [self adjustedRow:indexPath.row];
-    if (adjustedRow != 6 && adjustedRow != 3) {
+    NSInteger adjustedRow = [self actionAtIndexPath:indexPath];
+    if (adjustedRow != 7 && adjustedRow != 3) {
         [self dismissViewControllerAnimated:adjustedRow != 4 && adjustedRow != 5 completion:nil];
     }
 
@@ -448,7 +490,49 @@
     } else if (adjustedRow == 5) {
         [self.appDelegate openAskAIDialog:self.appDelegate.activeStory];
     } else if (adjustedRow == 6) {
+        [self goToFeed];
+    } else if (adjustedRow == 7) {
         [self showFontList];
+    }
+}
+
+- (void)goToFeed {
+    NewsBlurAppDelegate *appDelegate = self.appDelegate;
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    // FontSettingsViewController.m captures social source metadata before switching to a regular feed preview.
+    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    NSString *targetFolder = nil;
+
+    for (NSString *folderName in appDelegate.dictFoldersArray) {
+        NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
+        for (id fId in feeds) {
+            if ([[NSString stringWithFormat:@"%@", fId] isEqualToString:feedIdStr]) {
+                targetFolder = folderName;
+                break;
+            }
+        }
+        if (targetFolder) break;
+    }
+
+    if (targetFolder || [feed isKindOfClass:NSDictionary.class]) {
+        // Clear story state so isStoryShown returns NO,
+        // preventing showColumn:Secondary from pushing storyPagesVC
+        appDelegate.activeStory = nil;
+        appDelegate.storyPagesViewController.currentPage.activeStoryId = nil;
+        appDelegate.storyPagesViewController.currentPage.view.hidden = YES;
+        // Reset river view so it loads as a single feed, not a folder
+        appDelegate.storiesCollection.isRiverView = NO;
+        appDelegate.storiesCollection.isSocialRiverView = NO;
+        appDelegate.storiesCollection.isSocialView = NO;
+
+        if (targetFolder) {
+            [appDelegate.feedsNavigationController popToRootViewControllerAnimated:NO];
+            [appDelegate loadFolder:targetFolder feedID:feedIdStr];
+        } else {
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:nil isSocial:NO
+                                     withUser:feed showFindingStory:NO];
+        }
     }
 }
 
@@ -490,7 +574,7 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.fontSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.fontSizeSegment setTitle:@"XS" forSegmentAtIndex:0];
@@ -510,6 +594,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
     
+    self.fontSizeSegment.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [cell.contentView addSubview:self.fontSizeSegment];
     
     return cell;
@@ -520,7 +605,7 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.lineSpacingSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xs"] forSegmentAtIndex:0];
@@ -534,6 +619,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.lineSpacingSegment];
     
+    self.lineSpacingSegment.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [cell.contentView addSubview:self.lineSpacingSegment];
     
     return cell;
@@ -544,7 +630,7 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.fullscreenSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.fullscreenSegment setTitle:@"Full Screen" forSegmentAtIndex:0];
@@ -558,6 +644,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.fullscreenSegment];
     
+    self.fullscreenSegment.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [cell.contentView addSubview:self.fullscreenSegment];
     
     return cell;
@@ -568,7 +655,7 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.autoscrollSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.autoscrollSegment setTitle:@"Manual scroll" forSegmentAtIndex:0];
@@ -582,6 +669,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.autoscrollSegment];
     
+    self.autoscrollSegment.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [cell.contentView addSubview:self.autoscrollSegment];
     
     return cell;
@@ -592,20 +680,21 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.scrollOrientationSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.scrollOrientationSegment setTitle:@"⏩ Horizontal" forSegmentAtIndex:0];
-    [self.scrollOrientationSegment setTitle:@"⏬ Vertical" forSegmentAtIndex:1];
+    UIImageSymbolConfiguration *scrollIconConfig = [UIImageSymbolConfiguration configurationWithPointSize:14 weight:UIImageSymbolWeightMedium];
+    [self.scrollOrientationSegment setImage:[[UIImage systemImageNamed:@"arrow.left.and.right" withConfiguration:scrollIconConfig] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forSegmentAtIndex:0];
+    [self.scrollOrientationSegment setImage:[[UIImage systemImageNamed:@"arrow.up.and.down" withConfiguration:scrollIconConfig] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forSegmentAtIndex:1];
 #if !TARGET_OS_MACCATALYST
     self.scrollOrientationSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
-    [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
     [[ThemeManager themeManager] updateSegmentedControl:self.scrollOrientationSegment];
     
+    self.scrollOrientationSegment.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [cell.contentView addSubview:self.scrollOrientationSegment];
     
     return cell;
@@ -616,7 +705,7 @@
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
-    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
 
     UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:NO];
     UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:NO];
@@ -641,6 +730,7 @@
     // Show white pill for all selections (Auto and color themes)
     self.themeSegment.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xdce6f0, 0xFAF5ED, 0xbbbbbb, 0x888890);
 
+    self.themeSegment.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [cell.contentView addSubview:self.themeSegment];
 
     return cell;
