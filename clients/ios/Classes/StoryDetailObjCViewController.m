@@ -55,6 +55,12 @@
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic) BOOL hasScrolledAwayFromTop;
 @property (nonatomic) BOOL hasLiveScrollFraction;
+@property (nonatomic, weak) UIScrollView *readerIndicatorScrollView;
+@property (nonatomic) BOOL readerIndicatorWasAutomatic;
+@property (nonatomic) UIEdgeInsets readerIndicatorPreviousInsets;
+@property (nonatomic) UIEdgeInsets readerIndicatorAppliedInsets;
+@property (nonatomic) UIEdgeInsets readerIndicatorPreviousHorizontalInsets;
+@property (nonatomic) UIEdgeInsets readerIndicatorAppliedHorizontalInsets;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -68,6 +74,7 @@
 - (void)refreshClusterStories;
 - (void)invalidateStoryLoad;
 - (BOOL)isCurrentStoryLoad:(NSUInteger)generation;
+- (void)updateReaderScrollIndicatorInsets:(BOOL)independentHeader;
 
 @end
 
@@ -1077,6 +1084,7 @@
 
     // StoryDetailObjCViewController.m keeps the pinned article feed header opaque above scrolling article content.
     self.feedTitleGradient.backgroundColor = pinsFeedHeader ? UIColorFromRGB(NEWSBLUR_WHITE_COLOR) : nil;
+    [self updateReaderScrollIndicatorInsets:pinsFeedHeader];
 
     if (pinsFeedHeader) {
         CGFloat scale = self.webView.window.screen.scale ?: UIScreen.mainScreen.scale;
@@ -1150,6 +1158,55 @@
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha {
     // Default to maintaining visual position - the main method handles scroll detection
     [self updateContentInsetForNavigationBarAlpha:alpha maintainVisualPosition:YES];
+}
+
+- (void)updateReaderScrollIndicatorInsets:(BOOL)independentHeader {
+    UIScrollView *scroll = self.webView.scrollView;
+    UIScrollView *previousScroll = self.readerIndicatorScrollView;
+    if (previousScroll && (!independentHeader || previousScroll != scroll)) {
+        // StoryDetailObjCViewController.m restores only its own manual geometry; a newer legacy layout may already have supplied its insets.
+        if (UIEdgeInsetsEqualToEdgeInsets(previousScroll.verticalScrollIndicatorInsets, self.readerIndicatorAppliedInsets)) {
+            previousScroll.verticalScrollIndicatorInsets = self.readerIndicatorPreviousInsets;
+        }
+        if (UIEdgeInsetsEqualToEdgeInsets(previousScroll.horizontalScrollIndicatorInsets, self.readerIndicatorAppliedHorizontalInsets)) {
+            previousScroll.horizontalScrollIndicatorInsets = self.readerIndicatorPreviousHorizontalInsets;
+        }
+        if (!previousScroll.automaticallyAdjustsScrollIndicatorInsets) {
+            previousScroll.automaticallyAdjustsScrollIndicatorInsets = self.readerIndicatorWasAutomatic;
+        }
+        self.readerIndicatorScrollView = nil;
+    }
+    if (!independentHeader || !scroll) return;
+
+    if (!self.readerIndicatorScrollView) {
+        self.readerIndicatorScrollView = scroll;
+        self.readerIndicatorWasAutomatic = scroll.automaticallyAdjustsScrollIndicatorInsets;
+        self.readerIndicatorPreviousInsets = scroll.verticalScrollIndicatorInsets;
+        self.readerIndicatorPreviousHorizontalInsets = scroll.horizontalScrollIndicatorInsets;
+    }
+
+    // StoryDetailObjCViewController.m uses the pager's window protection for every cached page, excluding the other column's navigation header.
+    UIView *viewport = appDelegate.storyPagesViewController.scrollView ?: self.webView;
+    UIWindow *window = viewport.window;
+    CGFloat protectedBottom = scroll.safeAreaInsets.bottom;
+    if (window) {
+        CGRect viewportFrame = [viewport convertRect:viewport.bounds toView:window];
+        protectedBottom = MAX(0, CGRectGetMaxY(viewportFrame) - (CGRectGetMaxY(window.bounds) - window.safeAreaInsets.bottom));
+    }
+    CGFloat headerInset = MAX(0, CGRectGetHeight(self.feedTitleGradient.bounds) - 1);
+    UIEdgeInsets insets = UIEdgeInsetsMake(MAX(0, scroll.contentInset.top) + headerInset,
+                                          0, MAX(scroll.contentInset.bottom, protectedBottom), 0);
+    UIEdgeInsets horizontalInsets = self.readerIndicatorPreviousHorizontalInsets;
+    horizontalInsets.bottom = MAX(horizontalInsets.bottom, insets.bottom);
+    self.readerIndicatorAppliedInsets = insets;
+    self.readerIndicatorAppliedHorizontalInsets = horizontalInsets;
+    if (scroll.automaticallyAdjustsScrollIndicatorInsets) scroll.automaticallyAdjustsScrollIndicatorInsets = NO;
+    if (!UIEdgeInsetsEqualToEdgeInsets(scroll.verticalScrollIndicatorInsets, insets)) {
+        scroll.verticalScrollIndicatorInsets = insets;
+    }
+    if (!UIEdgeInsetsEqualToEdgeInsets(scroll.horizontalScrollIndicatorInsets, horizontalInsets)) {
+        scroll.horizontalScrollIndicatorInsets = horizontalInsets;
+    }
 }
 
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition {
