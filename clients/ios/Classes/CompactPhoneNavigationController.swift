@@ -244,18 +244,29 @@ final class DetailNavigationController: UINavigationController {
             item.titleView = centeredTitlePlaceholder
         }
         guard let leadingItem = feedsTitleItem else { return }
-        let otherItems = (item.leftBarButtonItems ?? []).filter { $0 !== leadingItem }
+        let settingsItem = detail.feedDetailViewController?.settingsBarButton
+        var otherItems = (item.leftBarButtonItems ?? []).filter { $0 !== leadingItem }
+        if let settingsItem, otherItems.contains(where: { $0 === settingsItem }) {
+            otherItems.removeAll { $0 === settingsItem }
+            otherItems.append(settingsItem)
+        }
         let availableWidth = navigationBar.bounds.width - navigationBar.safeAreaInsets.left - navigationBar.safeAreaInsets.right
         var columnWidth = availableWidth
+        var columnCenter = navigationBar.safeAreaInsets.left + availableWidth / 2
         if let storiesView = detail.feedDetailViewController?.viewIfLoaded,
            storiesView.window === view.window, !storiesView.isHidden, storiesView.bounds.width > 0 {
-            columnWidth = min(columnWidth, storiesView.convert(storiesView.bounds, to: navigationBar).width)
+            let columnFrame = storiesView.convert(storiesView.bounds, to: navigationBar)
+            columnWidth = min(columnWidth, columnFrame.width)
+            columnCenter = columnFrame.midX
         }
-        let otherItemsWidth = otherItems.reduce(CGFloat.zero) { width, button in
+        // CompactPhoneNavigationController.swift reserves horizontal space for custom title actions while native actions occupy Duo's side rail.
+        let horizontalItems = Utilities.usesSystemVerticalBar(traitCollection)
+            ? otherItems.filter { $0.customView != nil } : otherItems
+        let otherItemsWidth = horizontalItems.reduce(CGFloat.zero) { width, button in
             width + max(44, button.customView?.intrinsicContentSize.width ?? 44) + 8
         }
         feedsTitleView?.update(plainTitle: item.title ?? detail.title, navigationBar: navigationBar,
-                               maximumWidth: max(44, columnWidth - 32 - otherItemsWidth))
+                               maximumWidth: max(44, columnWidth - 32 - otherItemsWidth), columnCenter: columnCenter)
         let desiredItems = [leadingItem] + otherItems
         if item.leftBarButtonItems != desiredItems {
             item.setLeftBarButtonItems(desiredItems, animated: false)
@@ -280,7 +291,7 @@ final class DetailNavigationController: UINavigationController {
     }
 }
 
-/// CompactPhoneNavigationController.swift keeps Feeds beside the existing title in the native leading item.
+/// CompactPhoneNavigationController.swift keeps Feeds leading and centers the existing title inside its story column.
 @MainActor private final class ExpandedFeedsNavigationTitleView: UIView {
     private let sourceTitle: UIView?
     private let originalSourceFrame: CGRect?
@@ -289,6 +300,8 @@ final class DetailNavigationController: UINavigationController {
     private let spacing: CGFloat = 12
     private var maximumWidth: CGFloat = 0
     private var lastPreferredSize: CGSize = .zero
+    private weak var titleCoordinateView: UIView?
+    private var columnCenter: CGFloat = 0
 
     init(sourceTitle: UIView?, showFeeds: @escaping () -> Void) {
         self.sourceTitle = sourceTitle
@@ -321,7 +334,7 @@ final class DetailNavigationController: UINavigationController {
 
     override var intrinsicContentSize: CGSize {
         let width = buttonWidth + spacing + contentSize.width
-        return CGSize(width: maximumWidth > 0 ? min(width, maximumWidth) : width, height: 44)
+        return CGSize(width: maximumWidth > 0 ? maximumWidth : width, height: 44)
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -329,20 +342,26 @@ final class DetailNavigationController: UINavigationController {
         return CGSize(width: size.width > 0 ? min(size.width, preferred.width) : preferred.width, height: preferred.height)
     }
 
-    func update(plainTitle: String?, navigationBar: UINavigationBar, maximumWidth: CGFloat) {
+    func update(plainTitle: String?, navigationBar: UINavigationBar, maximumWidth: CGFloat, columnCenter: CGFloat) {
         if plainTitleLabel.text != plainTitle { plainTitleLabel.text = plainTitle }
         let attributes = navigationBar.titleTextAttributes ?? navigationBar.standardAppearance.titleTextAttributes
         plainTitleLabel.font = attributes[.font] as? UIFont ?? .systemFont(ofSize: 17, weight: .semibold)
         plainTitleLabel.textColor = attributes[.foregroundColor] as? UIColor ?? .label
         tintColor = navigationBar.tintColor
         self.maximumWidth = maximumWidth
+        titleCoordinateView = navigationBar
+        if self.columnCenter != columnCenter {
+            self.columnCenter = columnCenter
+            setNeedsLayout()
+        }
         let preferred = intrinsicContentSize
         if lastPreferredSize != preferred {
             lastPreferredSize = preferred
             invalidateIntrinsicContentSize()
             if bounds.isEmpty { frame.size = preferred }
-            setNeedsLayout()
         }
+        // CompactPhoneNavigationController.swift also relays live source text/font changes when the full-column item's width stays constant.
+        setNeedsLayout()
     }
 
     override func layoutSubviews() {
@@ -350,8 +369,12 @@ final class DetailNavigationController: UINavigationController {
         let width = min(bounds.width, buttonWidth)
         feedsButton.frame = CGRect(x: 0, y: (bounds.height - 44) / 2, width: width, height: 44)
         let size = contentSize
-        content.frame = CGRect(x: width + spacing, y: (bounds.height - size.height) / 2,
-                               width: max(0, bounds.width - width - spacing), height: size.height)
+        let center = titleCoordinateView.map { convert(CGPoint(x: columnCenter, y: 0), from: $0).x } ?? bounds.midX
+        // CompactPhoneNavigationController.swift truncates symmetrically around the actual column center, leaving both native actions usable.
+        let halfSpace = max(0, min(center - width - spacing, bounds.width - center))
+        let titleWidth = min(size.width, halfSpace * 2)
+        content.frame = CGRect(x: center - titleWidth / 2, y: (bounds.height - size.height) / 2,
+                               width: titleWidth, height: size.height)
     }
 
     func releaseSourceTitle() -> UIView? {
