@@ -81,10 +81,45 @@ class ClusterReadRepositoryTest {
         backend.stories["2:child"] = ClusterReadRepository.State("2", 0, false)
         backend.parents["1:parent"] = arrayOf(child("2:child", 0))
         backend.overrides["2:child"] = false
-        repository.applyBulkRead(listOf("2:child"))
+        repository.applyBulkRead(listOf("2:child"), 100)
         assertEquals(true, backend.overrides["2:child"])
         assertTrue(backend.parents.getValue("1:parent")[0].read)
         assertTrue(backend.countChanges.isEmpty())
+    }
+
+    @Test fun bulkReadFollowupReplayPreservesLaterManualUnreadAcrossStoredAndEmbeddedCopies() {
+        backend.stories["2:child"] = ClusterReadRepository.State("2", 0, false)
+        backend.parents["1:parent"] = arrayOf(child("2:child", 0))
+        repository.applyBulkRead(listOf("2:child"), 100)
+        repository.apply(listOf("2:child"), false, false, 200)
+
+        repository.applyBulkRead(listOf("2:child"), 100)
+        repository.apply(listOf("2:child"), false, false, 200)
+
+        assertEquals(false, backend.overrides["2:child"])
+        assertFalse(backend.stories.getValue("2:child").read)
+        assertFalse(backend.parents.getValue("1:parent")[0].read)
+        assertTrue(backend.countChanges.isEmpty())
+    }
+
+    @Test fun delayedReadReplayDoesNotMakeANewerUnreadActionLookStale() {
+        backend.stories["2:child"] = ClusterReadRepository.State("2", 0, false)
+        repository.apply(listOf("2:child"), true, false, 100)
+        repository.apply(listOf("2:child"), true, false, 100)
+        repository.apply(listOf("2:child"), false, false, 200)
+
+        assertEquals(false, backend.overrides["2:child"])
+        assertFalse(backend.stories.getValue("2:child").read)
+        assertEquals(200L, backend.changedAt["2:child"])
+    }
+
+    @Test fun olderSameStateReplayCannotLowerALaterReceiptTimestamp() {
+        repository.apply(listOf("2:child"), true, false, 200)
+        repository.applyBulkRead(listOf("2:child"), 100)
+        repository.apply(listOf("2:child"), false, false, 150)
+
+        assertEquals(true, backend.overrides["2:child"])
+        assertEquals(200L, backend.changedAt["2:child"])
     }
 
     @Test fun olderReadResponseCannotOverwriteNewerUnreadButStillAppliesOtherExpandedChildren() {
@@ -138,7 +173,10 @@ class ClusterReadRepositoryTest {
         override fun localReadChangedAt(hash: String) = changedAt[hash]
         override fun pendingReadStateHashes() = pending
         override fun parentsReferencing(hashes: Set<String>) = parents.filterValues { children -> children.any { it.storyHash in hashes } }
-        override fun setLocalReadState(hash: String, read: Boolean) { overrides[hash] = read }
+        override fun setLocalReadState(hash: String, read: Boolean, changedAt: Long) {
+            overrides[hash] = read
+            this.changedAt[hash] = changedAt
+        }
         override fun setStoredReadState(hash: String, read: Boolean) { stories[hash]?.let { stories[hash] = it.copy(read = read) } }
         override fun setParentClusters(hash: String, children: Array<Story.ClusterStory>) { parents[hash] = children }
         override fun adjustCounts(state: ClusterReadRepository.State, delta: Int) { countChanges.add("${state.feedId}:${state.score}:$delta") }

@@ -13,7 +13,7 @@ class ClusterReadRepository(private val backend: Backend) {
         fun localReadChangedAt(hash: String): Long?
         fun pendingReadStateHashes(): Set<String> = emptySet()
         fun parentsReferencing(hashes: Set<String>): Map<String, Array<Story.ClusterStory>>
-        fun setLocalReadState(hash: String, read: Boolean)
+        fun setLocalReadState(hash: String, read: Boolean, changedAt: Long)
         fun setStoredReadState(hash: String, read: Boolean)
         fun setParentClusters(hash: String, children: Array<Story.ClusterStory>)
         fun adjustCounts(state: State, delta: Int)
@@ -25,8 +25,8 @@ class ClusterReadRepository(private val backend: Backend) {
         apply(accepted, read, false)
     }
 
-    fun applyBulkRead(hashes: Collection<String>) {
-        apply(hashes, true, false)
+    fun applyBulkRead(hashes: Collection<String>, actionTime: Long) {
+        apply(hashes, true, false, actionTime)
     }
 
     fun apply(hashes: Collection<String>, read: Boolean, adjustCounts: Boolean, actionTime: Long? = null): Set<FeedSet> {
@@ -48,7 +48,9 @@ class ClusterReadRepository(private val backend: Backend) {
             if (adjustCounts && state != null && previousRead != null && previousRead != read && state.score >= 0) {
                 backend.adjustCounts(state, if (read) -1 else 1)
             }
-            backend.setLocalReadState(hash, read)
+            // ReadingAction.kt replays the original intent; replay time must not supersede later actions.
+            val changedAt = maxOf(actionTime ?: System.currentTimeMillis(), backend.localReadChangedAt(hash) ?: Long.MIN_VALUE)
+            backend.setLocalReadState(hash, read, changedAt)
             backend.setStoredReadState(hash, read)
         }
         for ((parentHash, children) in parents) {

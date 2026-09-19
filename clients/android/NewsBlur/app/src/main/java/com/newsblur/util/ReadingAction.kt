@@ -451,7 +451,7 @@ fun ReadingAction.doLocal(
         }
 
         is ReadingAction.MarkFeedRead -> {
-            dbHelper.markStoriesRead(feedSet, olderThan, newerThan)
+            dbHelper.markStoriesRead(feedSet, olderThan, newerThan, time)
             dbHelper.updateLocalFeedCounts(feedSet)
             plus(UPDATE_METADATA)
             plus(UPDATE_STORY)
