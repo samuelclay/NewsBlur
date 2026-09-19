@@ -55,6 +55,26 @@ import WebKit
             }, "The native scroll view must render its vertical indicator")
         }
 
+        func layoutIndicatorPair() {
+            window.layoutIfNeeded()
+            unobstructedScroll.layoutIfNeeded()
+            scroll.layoutIfNeeded()
+        }
+
+        // FeedToolbarLayoutTests.swift completes native indicator creation before comparing policies.
+        // The first native layout can use a temporary minimum even with manually supplied correct insets.
+        scroll.flashScrollIndicators()
+        unobstructedScroll.flashScrollIndicators()
+        layoutIndicatorPair()
+        _ = try nativeVerticalIndicator(in: scroll)
+        _ = try nativeVerticalIndicator(in: unobstructedScroll)
+        let renderFormat = UIGraphicsImageRendererFormat()
+        renderFormat.scale = 1
+        _ = UIGraphicsImageRenderer(bounds: window.bounds, format: renderFormat).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        layoutIndicatorPair()
+
         for pose in [(vertical: true, compact: true), (vertical: true, compact: false),
                      (vertical: false, compact: false)] {
             detail.isCompact = pose.compact
@@ -69,19 +89,26 @@ import WebKit
                     // FeedToolbarLayoutTests.swift compares with native geometry for this exact inset; screen-corner clearance is not a fixed zero-inset floor.
                     unobstructedScroll.verticalScrollIndicatorInsets = UIEdgeInsets(top: protectedTop + headerHeight - 1,
                                                                                     left: 0, bottom: 34, right: 0)
+                    unobstructedScroll.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 34, right: 0)
                     unobstructedScroll.contentOffset = CGPoint(x: 0, y: -protectedTop)
+                    header.frame.size.height = headerHeight
+                    scroll.automaticallyAdjustsScrollIndicatorInsets = true
+                    scroll.verticalScrollIndicatorInsets = UIEdgeInsets(top: headerHeight - 1, left: 0, bottom: 0, right: 0)
+                    scroll.horizontalScrollIndicatorInsets = .zero
+                    scroll.contentOffset = CGPoint(x: 0, y: -protectedTop)
+
+                    page.updateFeedTitleGradientPosition()
+
+                    // FeedToolbarLayoutTests.swift establishes both policies before sampling either native indicator.
                     unobstructedScroll.flashScrollIndicators()
-                    unobstructedScroll.layoutIfNeeded()
+                    scroll.flashScrollIndicators()
+                    layoutIndicatorPair()
                     let unobstructedIndicator = try nativeVerticalIndicator(in: unobstructedScroll)
+                    let indicator = try nativeVerticalIndicator(in: scroll)
                     let unobstructedTop = web.convert(unobstructedIndicator.bounds, from: unobstructedIndicator).minY
+                    let topFrame = web.convert(indicator.bounds, from: indicator)
                     XCTAssertLessThan(unobstructedTop, protectedTop + headerHeight + 2 + 58,
                                       "The native control must leave enough indicator travel to detect the unrelated 58pt story-list header")
-                    header.frame.size.height = headerHeight
-                    scroll.verticalScrollIndicatorInsets = UIEdgeInsets(top: headerHeight - 1, left: 0, bottom: 0, right: 0)
-                    scroll.contentOffset = CGPoint(x: 0, y: -protectedTop)
-                    page.updateFeedTitleGradientPosition()
-                    scroll.flashScrollIndicators()
-                    scroll.layoutIfNeeded()
 
                     XCTAssertFalse(scroll.automaticallyAdjustsScrollIndicatorInsets,
                                    "The independent Duo article must not inherit the story-list navigation bar's 58pt obstruction")
@@ -92,10 +119,8 @@ import WebKit
                                    "The shared automatic-adjustment policy must also preserve horizontal indicator protection")
                     XCTAssertEqual(scroll.verticalScrollIndicatorInsets.right, 0, accuracy: 0.5,
                                    "The pager already excludes the native side toolbar")
-                    let indicator = try nativeVerticalIndicator(in: scroll)
-                    let topFrame = web.convert(indicator.bounds, from: indicator)
                     XCTAssertEqual(topFrame.minY, unobstructedTop, accuracy: 1,
-                                   "The native scrollbar must begin beside its own article header, not below the other column's title bar: \(pose)")
+                                   "The native scrollbar must begin beside its own article header, not below the other column's title bar: \(pose), protection=\(protectedTop), header=\(headerHeight)")
 
                     scroll.contentOffset.y = scroll.contentSize.height - scroll.bounds.height
                     scroll.flashScrollIndicators()
