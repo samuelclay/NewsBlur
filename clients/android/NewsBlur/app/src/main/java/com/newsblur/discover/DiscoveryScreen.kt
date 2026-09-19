@@ -1,7 +1,5 @@
 package com.newsblur.discover
 
-import android.widget.ImageView
-import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -35,8 +34,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.ViewList
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -68,19 +65,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.newsblur.R
 import com.newsblur.design.ReaderSheetPalette
-import com.newsblur.util.AppConstants
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.UIUtils
 
 @Composable
 fun DiscoveryScreen(
@@ -111,7 +107,11 @@ fun DiscoveryScreen(
                     overflow = TextOverflow.Ellipsis,
                 )
                 IconButton(onClick = model::toggleGrid) {
-                    Icon(if (state.grid) Icons.Rounded.ViewList else Icons.Rounded.GridView, if (state.grid) "Show list" else "Show grid")
+                    Icon(
+                        painterResource(if (state.grid) R.drawable.ic_discover_view_list else R.drawable.ic_discover_view_grid),
+                        stringResource(if (state.grid) R.string.discover_show_list else R.string.discover_show_grid),
+                        Modifier.size(24.dp),
+                    )
                 }
                 IconButton(onClick = onQuickAdd) { Icon(Icons.Rounded.Add, "Quick add site or folder") }
             }
@@ -157,28 +157,6 @@ fun DiscoveryScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        DiscoveryChoice(
-                            "Add to",
-                            if (state.folder == AppConstants.ROOT_FOLDER) "Top Level" else state.folder,
-                            state.folders.map {
-                                it.flatName() to
-                                    (
-                                        "    ".repeat(it.depth()) +
-                                            if (it.name ==
-                                                AppConstants.ROOT_FOLDER
-                                            ) {
-                                                "Top Level"
-                                            } else {
-                                                it.name
-                                            }
-                                    )
-                            },
-                            colors,
-                            !state.busy,
-                            model::chooseFolder,
-                        )
-                    }
                     when (state.tab) {
                         DiscoveryTab.WEB -> item { WebFeedForm(state, model, colors) }
                         DiscoveryTab.GOOGLE -> item { GoogleNewsForm(state, model, colors) }
@@ -228,14 +206,16 @@ fun DiscoveryScreen(
                                         style = MaterialTheme.typography.titleLarge,
                                     )
                                     if (state.tab == DiscoveryTab.SEARCH && DiscoveryViewModel.isAddress(state.page.query.trim())) {
-                                        TextButton(enabled = !state.busy, onClick = {
-                                            model.add(DiscoveryFeed(state.page.query.trim(), state.page.query.trim()))
-                                        }) { Text("Add this URL", color = colors.siteLink) }
+                                        DiscoveryAddRow(state, model, colors) {
+                                            TextButton(modifier = Modifier.semantics { contentDescription = "Add this URL" }, enabled = !state.busy, onClick = {
+                                                model.add(DiscoveryFeed(state.page.query.trim(), state.page.query.trim()))
+                                            }) { Text("Add", color = colors.siteLink) }
+                                        }
                                     }
                                 }
                             }
                             items(state.page.feeds, key = { it.url }) { feed ->
-                                DiscoveryCard(
+                                DiscoveryFeedCard(
                                     feed,
                                     feed.url in state.added,
                                     !state.busy,
@@ -245,6 +225,9 @@ fun DiscoveryScreen(
                                     thumbnailLoader,
                                     { model.add(feed) },
                                     { model.preview(feed) },
+                                    state,
+                                    model::chooseFolder,
+                                    { story -> model.preview(feed, story) },
                                 )
                             }
                             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -277,155 +260,19 @@ fun DiscoveryScreen(
 }
 
 @Composable
-private fun DiscoveryCard(
-    feed: DiscoveryFeed,
-    added: Boolean,
-    enabled: Boolean,
-    grid: Boolean,
+private fun DiscoveryAddRow(
+    state: DiscoveryState,
+    model: DiscoveryViewModel,
     colors: ReaderSheetPalette.Colors,
-    loader: ImageLoader,
-    thumbnailLoader: ImageLoader,
-    onAdd: () -> Unit,
-    onPreview: () -> Unit,
+    action: @Composable RowScope.() -> Unit,
 ) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .clip(
-                RoundedCornerShape(12.dp),
-            ).background(colors.cardBackground)
-            .border(1.dp, colors.border, RoundedCornerShape(12.dp))
-            .padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(9.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            AndroidView(modifier = Modifier.size(36.dp).clip(RoundedCornerShape(6.dp)), factory = {
-                ImageView(it).apply {
-                    scaleType =
-                        ImageView.ScaleType.FIT_CENTER
-                }
-            }, update = { view ->
-                val url =
-                    feed.image.ifBlank {
-                        if (feed.id.isNotBlank()) {
-                            "${com.newsblur.network.APIConstants.buildUrl(
-                                com.newsblur.network.APIConstants.PATH_FEED_FAVICON_URL,
-                            )}${feed.id}"
-                        } else {
-                            ""
-                        }
-                    }
-                if (view.tag !=
-                    url
-                ) {
-                    view.tag = url
-                    view.setImageResource(R.drawable.ic_world)
-                    if (url.isNotBlank()) loader.displayImage(url, view)
-                }
-            })
-            Column(Modifier.weight(1f)) {
-                Text(feed.title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                Text(
-                    feed.link,
-                    color = colors.siteLink,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-        if (feed.subscribers >
-            0
-        ) {
-            Text(
-                "${java.text.NumberFormat.getIntegerInstance().format(feed.subscribers)} subscribers",
-                color = colors.textSecondary,
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-        if (!grid) {
-            feed.stories.take(3).forEach { story ->
-                HorizontalDivider(color = colors.border)
-                DiscoveryStoryRow(story, colors, thumbnailLoader)
-            }
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            TextButton(onClick = onPreview, enabled = enabled) { Text(if (added) "Open" else "Try", color = colors.siteLink) }
-            Button(
-                onClick = onAdd,
-                enabled = enabled && !added,
-                colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
-            ) {
-                Text(if (added) "Added" else "Add")
-            }
-        }
-    }
-}
-
-@Composable
-private fun DiscoveryStoryRow(
-    story: DiscoveryStory,
-    colors: ReaderSheetPalette.Colors,
-    thumbnailLoader: ImageLoader,
-) {
-    val title = remember(story.title) { UIUtils.fromHtml(story.title).toString().trim() }
-    val authors = remember(story.authors) { UIUtils.fromHtml(story.authors).toString().trim() }
-    val excerpt = remember(story.excerpt) { UIUtils.fromHtml(story.excerpt).toString().trim() }
-    val date = story.timestamp?.let {
-        DateUtils.getRelativeTimeSpanString(it * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
-    }
-    val secondaryText = colors.textPrimary.copy(alpha = 0.85f)
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 5.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.Top,
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                title,
-                color = colors.textPrimary,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (authors.isNotBlank() || date != null) {
-                Text(
-                    listOfNotNull(authors.takeIf(String::isNotBlank), date).joinToString(" · "),
-                    color = secondaryText,
-                    style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            if (excerpt.isNotBlank()) {
-                Text(
-                    excerpt,
-                    color = secondaryText,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-        if (story.imageUrl.isNotBlank()) {
-            AndroidView(
-                modifier = Modifier.size(76.dp).clip(RoundedCornerShape(8.dp)),
-                factory = { context ->
-                    ImageView(context).apply {
-                        scaleType = ImageView.ScaleType.CENTER_CROP
-                        importantForAccessibility = android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
-                    }
-                },
-                update = { view ->
-                    if (view.tag != story.imageUrl) {
-                        view.tag = story.imageUrl
-                        view.setImageDrawable(null)
-                        thumbnailLoader.displayImage(story.imageUrl, view, UIUtils.dp2px(view.context, 76), false)
-                    }
-                },
-            )
-        }
+        DiscoveryFolderPicker(state, colors, model::chooseFolder, Modifier.weight(1f))
+        action()
     }
 }
 
@@ -544,11 +391,14 @@ private fun WebFeedForm(
         if (web.message.isNotBlank()) Text(web.message, color = colors.textSecondary)
         web.error?.let { Text(it, color = colors.stale) }
         if (web.detectedFeed.isNotBlank()) {
-            Button(
-                onClick = { model.add(DiscoveryFeed(web.detectedFeed, web.detectedFeed)) },
-                enabled =
-                    !state.busy && web.detectedFeed !in state.added,
-            ) { Text(if (web.detectedFeed in state.added) "Added" else "Add RSS feed") }
+            DiscoveryAddRow(state, model, colors) {
+                Button(
+                    onClick = { model.add(DiscoveryFeed(web.detectedFeed, web.detectedFeed)) },
+                    modifier = Modifier.semantics { contentDescription = "Add RSS feed" },
+                    enabled = !state.busy && web.detectedFeed !in state.added,
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
+                ) { Text(if (web.detectedFeed in state.added) "Added" else "Add") }
+            }
         }
         web.variants.forEachIndexed { index, variant ->
             Column(
@@ -595,20 +445,15 @@ private fun WebFeedForm(
                 Checkbox(web.markUnread, { checked -> model.webEdit { it.copy(markUnread = checked) } }, enabled = !state.busy)
                 Text("Mark updated stories unread", Modifier.weight(1f))
             }
-            Button(
-                onClick = model::subscribeWeb,
-                enabled = !state.busy && "webfeed:${web.analyzedUrl}" !in state.added,
-                colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
-            ) {
-                Text(
-                    if ("webfeed:${web.analyzedUrl}" in
-                        state.added
-                    ) {
-                        "Added"
-                    } else {
-                        "Create web feed"
-                    },
-                )
+            DiscoveryAddRow(state, model, colors) {
+                Button(
+                    onClick = model::subscribeWeb,
+                    modifier = Modifier.semantics { contentDescription = "Create web feed" },
+                    enabled = !state.busy && "webfeed:${web.analyzedUrl}" !in state.added,
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
+                ) {
+                    Text(if ("webfeed:${web.analyzedUrl}" in state.added) "Added" else "Subscribe")
+                }
             }
         }
     }
@@ -673,12 +518,15 @@ private fun GoogleNewsForm(
                 language = it,
             )
         }
-        Button(
-            onClick = model::addNews,
-            enabled = !state.busy && (state.newsQuery.isNotBlank() || state.newsTopic.isNotBlank()),
-            colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
-        ) {
-            Text("Add Google News feed")
+        DiscoveryAddRow(state, model, colors) {
+            Button(
+                onClick = model::addNews,
+                modifier = Modifier.semantics { contentDescription = "Add Google News feed" },
+                enabled = !state.busy && (state.newsQuery.isNotBlank() || state.newsTopic.isNotBlank()),
+                colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
+            ) {
+                Text("Subscribe")
+            }
         }
     }
 }

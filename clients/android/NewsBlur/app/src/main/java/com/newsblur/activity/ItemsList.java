@@ -104,6 +104,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Inject @com.newsblur.di.IconLoader
     com.newsblur.util.ImageLoader relatedIconLoader;
 
+    @Inject @com.newsblur.di.ThumbnailLoader
+    com.newsblur.util.ImageLoader relatedThumbnailLoader;
+
     @Inject
     com.newsblur.util.TryFeedStore relatedTryFeedStore;
 
@@ -475,6 +478,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             setStorySearchRefreshInFlight(false);
             cancelPendingFetchingBanner();
             showStoryStatusBanner(getString(R.string.sync_status_offline), StoryStatusBannerStyle.OFFLINE);
+            return;
+        }
+
+        if (syncServiceState.getTryFeedRefreshStatus(fs) == com.newsblur.service.TryFeedRefreshStatus.FETCHING) {
+            showStoryStatusBanner(getString(R.string.try_feed_instafetching), StoryStatusBannerStyle.FETCHING);
             return;
         }
 
@@ -942,7 +950,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (!shouldShowDiscoverAction()) return;
         if (storyToolbarAtBottom) {
             dismissItemListMenuPopup();
-            itemListMenuPopup = RelatedSitesPopover.show(this, binding.itemlistDiscoverPill, fs, relatedIconLoader, relatedTryFeedStore);
+            itemListMenuPopup = RelatedSitesPopover.show(this, binding.itemlistDiscoverPill, fs, relatedIconLoader, relatedThumbnailLoader, relatedTryFeedStore);
             return;
         }
 

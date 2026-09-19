@@ -26,6 +26,7 @@ import com.newsblur.R;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
 import com.newsblur.delegate.MainContextMenuDelegateImpl;
+import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.fragment.FeedSelectorFragment;
 import com.newsblur.fragment.FeedsShortcutFragment;
 import com.newsblur.fragment.FolderListFragment;
@@ -492,7 +493,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickAddButton() {
-        startActivity(new Intent(this, DiscoverSitesActivity.class));
+        if (getSupportFragmentManager().findFragmentByTag("add_site") == null) {
+            AddFeedFragment.newInstance().show(getSupportFragmentManager(), "add_site");
+        }
     }
 
     private void onClickUserButton() {

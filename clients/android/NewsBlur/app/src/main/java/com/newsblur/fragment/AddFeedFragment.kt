@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.newsblur.activity.AddFeedExternal
+import com.newsblur.activity.DiscoverSitesActivity
 import com.newsblur.activity.FeedSearchActivity
 import com.newsblur.activity.Main
 import com.newsblur.addsite.AddSiteSheet
@@ -26,6 +27,7 @@ import com.newsblur.design.toVariant
 import com.newsblur.di.IconLoader
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
+import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.NewsBlurBottomSheet
@@ -113,6 +115,15 @@ class AddFeedFragment : BottomSheetDialogFragment() {
                         onChooseFolder = viewModel::chooseFolder,
                         onToggleFolder = viewModel::toggleNewFolder,
                         onSubmit = viewModel::submit,
+                        onDiscover = { tab ->
+                            val host = requireActivity()
+                            if (host is DiscoverSitesActivity) {
+                                host.showDiscovery(tab, state.parent)
+                            } else {
+                                startActivity(DiscoverSitesActivity.intent(host, tab, state.parent))
+                            }
+                            dismiss()
+                        },
                     )
                 }
             }
@@ -136,11 +147,13 @@ class AddFeedFragment : BottomSheetDialogFragment() {
             feedUri: String = "",
             feedName: String = "",
             clearTryFeedOnSuccess: Boolean = false,
+            parent: String = AppConstants.ROOT_FOLDER,
         ) = AddFeedFragment().apply {
             arguments =
                 Bundle().apply {
                     putString("feed_url", feedUri)
                     putString("feed_name", feedName)
+                    putString("parent", parent)
                     putBoolean(CLEAR_TRY_FEED_ON_SUCCESS, clearTryFeedOnSuccess)
                 }
         }

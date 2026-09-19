@@ -6,6 +6,7 @@ import com.newsblur.MainDispatcherRule
 import com.newsblur.domain.Feed
 import com.newsblur.network.FeedApi
 import com.newsblur.network.domain.AddFeedResponse
+import com.newsblur.preference.DiscoveryPreferencesFixture
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -29,22 +30,30 @@ class Test_Discovery {
     @get:Rule val main = MainDispatcherRule()
     private val api = mockk<DiscoveryApi>()
     private val feeds = mockk<FeedApi>()
+    private val viewPreferences = DiscoveryPreferencesFixture().preference
 
     private fun json(value: String) = JsonParser.parseString(value).asJsonObject
 
     private fun model(saved: SavedStateHandle = SavedStateHandle()) =
-        DiscoveryViewModel(api, feeds, saved).apply {
+        DiscoveryViewModel(api, feeds, saved, viewPreferences).apply {
             workerDispatcher =
                 main.dispatcher
         }
 
     private fun result(url: String) = json("""{"feeds":[{"feed_url":"$url","title":"Test"}]}""")
 
+    @Test fun test_discovery_defaults_to_list_without_a_saved_choice() {
+        assertFalse(DiscoveryState().grid)
+        assertFalse(model().state.value.grid)
+    }
+
     @Test fun test_story_preview_retains_rich_content_instead_of_only_title() {
         val feed = DiscoveryFeed.parse(json("""{
             "feed_url":"https://example.com/rss",
             "stories":[{
                 "story_title":"A story headline",
+                "story_hash":"42:second-story",
+                "story_permalink":"https://example.com/second-story",
                 "story_authors":"Ada",
                 "story_timestamp":"1789444800",
                 "story_content":"<p>A useful preview.</p>",
@@ -55,6 +64,8 @@ class Test_Discovery {
         // Test_Discovery.kt: discovery must retain the API fields required by styled story rows.
         val story = feed.stories.single()
         assertEquals("A story headline", story.title)
+        assertEquals("42:second-story", story.hash)
+        assertEquals("https://example.com/second-story", story.permalink)
         assertEquals("Ada", story.authors)
         assertEquals(1789444800L, story.timestamp)
         assertEquals("A useful preview.", story.excerpt)
@@ -252,7 +263,7 @@ class Test_Discovery {
             assertEquals(DiscoveryTab.PODCASTS, restored.state.value.tab)
             assertEquals("science", restored.state.value.page.query)
             assertEquals("Science", restored.state.value.folder)
-            assertFalse(restored.state.value.grid)
+            assertTrue(restored.state.value.grid)
         }
 
     @Test fun test_newsletter_url_conversion() =
@@ -309,6 +320,76 @@ class Test_Discovery {
             )
             coVerify(exactly = 0) { feeds.addFeed(any(), any()) }
         }
+
+    @Test fun test_story_preview_selects_immediately_and_retains_exact_target_on_return_and_recreation() = runTest {
+        val pending = CompletableDeferred<com.google.gson.JsonObject>()
+        coEvery { api.request("/discover/link_popular_feed", any(), false) } coAnswers { pending.await() }
+        val saved = SavedStateHandle()
+        val model = model(saved)
+        val feed = DiscoveryFeed("https://example", "Example")
+        model.preview(feed, DiscoveryStory("Second story", hash = "42:second"))
+        assertEquals("42:second", model.state.value.selectedPreviewStoryHash)
+        assertTrue(model.state.value.busy)
+        model.preview(feed, DiscoveryStory("First story", hash = "42:first"))
+        assertEquals("42:second", model.state.value.selectedPreviewStoryHash)
+        runCurrent()
+        pending.complete(json("""{"feed_id":42}"""))
+        advanceUntilIdle()
+        assertEquals("42", model.state.value.preview?.feedId)
+        assertEquals("42:second", model.state.value.previewStoryHash)
+        model.previewOpened()
+        assertNull(model.state.value.preview)
+        assertNull(model.state.value.previewStoryHash)
+        assertEquals("42:second", model.state.value.selectedPreviewStoryHash)
+        assertEquals("42:second", model(saved).state.value.selectedPreviewStoryHash)
+        coVerify(exactly = 0) { feeds.addFeed(any(), any()) }
+    }
+
+    @Test fun test_failed_preview_restores_previous_highlight_and_try_opens_only_the_feed() = runTest {
+        val saved = SavedStateHandle(mapOf("selectedPreviewStoryHash" to "42:previous"))
+        coEvery { api.request("/discover/link_popular_feed", any(), false) } throws java.io.IOException("Offline")
+        val model = model(saved)
+        model.preview(DiscoveryFeed("https://unlinked", "Unlinked"), DiscoveryStory("Second", hash = "42:second"))
+        advanceUntilIdle()
+        assertEquals("42:previous", model.state.value.selectedPreviewStoryHash)
+        assertEquals("Offline", model.state.value.error)
+        assertNull(model.state.value.preview)
+
+        model.preview(DiscoveryFeed("https://example", "Example", id = "42"))
+        advanceUntilIdle()
+        assertEquals("42", model.state.value.preview?.feedId)
+        assertNull(model.state.value.previewStoryHash)
+        assertNull(model.state.value.selectedPreviewStoryHash)
+    }
+
+    @Test fun test_story_without_hash_cannot_open_an_unrelated_story() = runTest {
+        val model = model()
+        model.preview(DiscoveryFeed("https://example", "Example", id = "42"), DiscoveryStory("Missing hash"))
+        advanceUntilIdle()
+        assertNull(model.state.value.preview)
+        assertNull(model.state.value.selectedPreviewStoryHash)
+        assertFalse(model.state.value.busy)
+    }
+
+    @Test fun test_folder_choice_is_shared_across_all_sources_and_keeps_full_path() = runTest {
+        coEvery { api.request(any(), any(), any()) } returns result("https://example")
+        coEvery { feeds.addFeed(any(), "Reading ▸ Science") } returns AddFeedResponse().apply {
+            code = 1
+            feed = Feed().apply { feedId = "42" }
+        }
+        val saved = SavedStateHandle()
+        val model = model(saved)
+        model.chooseFolder("Reading ▸ Science")
+        DiscoveryTab.entries.forEach { tab ->
+            model.selectTab(tab)
+            advanceUntilIdle()
+            assertEquals("Reading ▸ Science", model.state.value.folder)
+        }
+        model.add(DiscoveryFeed("https://example", "Example"))
+        advanceUntilIdle()
+        coVerify { feeds.addFeed("https://example", "Reading ▸ Science") }
+        assertEquals("Reading ▸ Science", model(saved).state.value.folder)
+    }
 
     @Test fun test_google_news_query_and_language() =
         runTest {
