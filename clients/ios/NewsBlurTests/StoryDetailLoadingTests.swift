@@ -173,13 +173,24 @@ import XCTest
         fixture.page.perform(NSSelectorFromString("clearWebView"))
         let bootstrap = try XCTUnwrap(fixture.web.loads.last?.navigation)
         fixture.page.drawStory()
-        await delay(0.6)
+        // StoryDetailLoadingTests.swift arms the real deadline, then reuses the page in the same main-actor turn.
+        fixture.page.perform(NSSelectorFromString("loadStory"))
+        let firstGeneration = try XCTUnwrap(fixture.page.value(forKey: "storyLoadGeneration") as? UInt)
+        XCTAssertEqual(fixture.page.value(forKey: "fontPreparationWaitGeneration") as? UInt, firstGeneration)
+        fixture.page.holdsStoryLoading = true
+        defer { fixture.page.holdsStoryLoading = false }
         fixture.page.activeStory = story("second", body: "Latest waiting article")
         fixture.page.drawStory()
-        await delay(0.55)
+        XCTAssertNotEqual(fixture.page.value(forKey: "storyLoadGeneration") as? UInt, firstGeneration)
+        XCTAssertTrue((fixture.page.value(forKey: "fullStoryHTML") as? String)?.contains("Latest waiting article") == true)
+        // StoryDetailLoadingTests.swift holds only the newer load request so its own valid deadline cannot race this stale-deadline check.
+        await delay(1.1)
 
         XCTAssertEqual(fixture.page.value(forKey: "failedWebViewFontPreparation") as? Bool, false)
         XCTAssertEqual(fixture.web.loads.count, 1)
+        // StoryDetailLoadingTests.swift compares the fixture's opaque NSObject token without casting its runtime class to WKNavigation.
+        XCTAssertTrue(fixture.page.value(forKey: "fontWarmupNavigation") as AnyObject? === bootstrap)
+        fixture.page.holdsStoryLoading = false
         fixture.page.webView(fixture.web, didFinish: bootstrap)
         XCTAssertTrue(fixture.web.loads.last?.html.contains("Latest waiting article") == true)
         XCTAssertEqual(fixture.web.loads.count, 2)
@@ -2978,6 +2989,7 @@ private final class NextButtonReadingStories: StoriesCollection {
     var allowsAppearanceCallbacks = true
     var recordsPosition = false
     var positionStorageRequests = 0
+    var holdsStoryLoading = false
 
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
@@ -2994,6 +3006,13 @@ private final class NextButtonReadingStories: StoriesCollection {
         if webView is RealStoryLoadWebView { super.changeWebViewWidth() }
     }
     override func checkTryFeedStory() {}
+    @objc(loadStory) func loadFixtureStory() {
+        guard !holdsStoryLoading else { return }
+        let selector = NSSelectorFromString("loadStory")
+        typealias Call = @convention(c) (AnyObject, Selector) -> Void
+        let implementation = class_getMethodImplementation(StoryDetailObjCViewController.self, selector)!
+        unsafeBitCast(implementation, to: Call.self)(self, selector)
+    }
     @objc(storeScrollPosition:) func ignorePositionStorage(_ queue: Bool) {
         guard recordsPosition else { return }
         positionStorageRequests += 1
