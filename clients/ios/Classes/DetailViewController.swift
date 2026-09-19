@@ -325,6 +325,11 @@ class DetailViewController: BaseViewController {
 
     /// Whether the reader uses a single navigation stack, including a closed regular-width-capable phone.
     @objc var isPhoneOrCompact: Bool {
+        // DetailViewController.swift preserves conventional landscape-phone navigation while Duo's native side bar identifies an in-progress fold handoff.
+        if isPhone, traitCollection.verticalSizeClass == .compact,
+           !Utilities.usesSystemVerticalBar(traitCollection) {
+            return true
+        }
         // DetailViewController.swift trusts split callbacks while UIKit is still updating the child traits.
         if hasResolvedSplitLayout { return isCompact }
         let horizontalSizeClass = splitViewController?.traitCollection.horizontalSizeClass

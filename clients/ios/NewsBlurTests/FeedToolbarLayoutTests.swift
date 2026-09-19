@@ -43,6 +43,24 @@ import WebKit
             app.detailViewController = nil
         }
 
+        func nativeVerticalIndicator() throws -> UIView {
+            try XCTUnwrap(scroll.subviews.first {
+                $0.bounds.width > 0 && $0.bounds.width <= 8 && $0.bounds.height > 20 &&
+                $0.frame.maxX >= scroll.bounds.maxX - 12
+            }, "The native scroll view must render its vertical indicator")
+        }
+        // FeedToolbarLayoutTests.swift measures the host screen's corner clearance separately from NewsBlur's header inset.
+        scroll.simulatedSafeAreaInsets = .zero
+        scroll.automaticallyAdjustsScrollIndicatorInsets = false
+        scroll.verticalScrollIndicatorInsets = .zero
+        scroll.flashScrollIndicators()
+        scroll.layoutIfNeeded()
+        let unobstructedIndicator = try nativeVerticalIndicator()
+        let nativeMinimumTop = web.convert(unobstructedIndicator.bounds, from: unobstructedIndicator).minY
+        XCTAssertLessThan(nativeMinimumTop, 58 + 10 + 2,
+                          "The host must leave enough indicator travel to detect the unrelated 58pt story-list header")
+        scroll.automaticallyAdjustsScrollIndicatorInsets = true
+
         for pose in [(vertical: true, compact: true), (vertical: true, compact: false),
                      (vertical: false, compact: false)] {
             detail.isCompact = pose.compact
@@ -68,12 +86,9 @@ import WebKit
                                    "The shared automatic-adjustment policy must also preserve horizontal indicator protection")
                     XCTAssertEqual(scroll.verticalScrollIndicatorInsets.right, 0, accuracy: 0.5,
                                    "The pager already excludes the native side toolbar")
-                    let indicator = try XCTUnwrap(scroll.subviews.first {
-                        $0.bounds.width > 0 && $0.bounds.width <= 8 && $0.bounds.height > 20 &&
-                        $0.frame.maxX >= scroll.bounds.maxX - 12
-                    }, "The native scroll view must render its vertical indicator")
+                    let indicator = try nativeVerticalIndicator()
                     let topFrame = web.convert(indicator.bounds, from: indicator)
-                    XCTAssertEqual(topFrame.minY, protectedTop + headerHeight + 2, accuracy: 1,
+                    XCTAssertEqual(topFrame.minY, max(nativeMinimumTop, protectedTop + headerHeight + 2), accuracy: 1,
                                    "The native scrollbar must begin beside its own article header, not below the other column's title bar: \(pose)")
 
                     scroll.contentOffset.y = scroll.contentSize.height - scroll.bounds.height

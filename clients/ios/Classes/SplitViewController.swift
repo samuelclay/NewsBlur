@@ -10,6 +10,35 @@ import UIKit
 
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
+    private var ownsCompactPhoneWidth = false
+    private var previousPhoneWidthOverride: UIUserInterfaceSizeClass?
+    private var isUpdatingPhoneWidthPolicy = false
+
+    func updatePhoneWidthPolicy(for traits: UITraitCollection) {
+        guard !isUpdatingPhoneWidthPolicy else { return }
+        isUpdatingPhoneWidthPolicy = true
+        defer { isUpdatingPhoneWidthPolicy = false }
+
+        let needsCompactWidth = traits.userInterfaceIdiom == .phone && traits.verticalSizeClass == .compact &&
+            !Utilities.usesSystemVerticalBar(traits)
+        if needsCompactWidth {
+            guard !ownsCompactPhoneWidth else { return }
+            previousPhoneWidthOverride = traitOverrides.contains(UITraitHorizontalSizeClass.self)
+                ? traitOverrides.horizontalSizeClass : nil
+            ownsCompactPhoneWidth = true
+            // SplitViewController.swift keeps conventional landscape phones in UIKit's real collapsed navigation, not a squeezed expanded reader.
+            traitOverrides.horizontalSizeClass = .compact
+        } else if ownsCompactPhoneWidth {
+            ownsCompactPhoneWidth = false
+            if let previousPhoneWidthOverride {
+                traitOverrides.horizontalSizeClass = previousPhoneWidthOverride
+            } else {
+                traitOverrides.remove(UITraitHorizontalSizeClass.self)
+            }
+            previousPhoneWidthOverride = nil
+        }
+    }
+
     @objc var isFeedsListHidden: Bool {
         // SplitViewController.swift distinguishes a primary overlay from a triple split's supplementary column.
         if style == .tripleColumn {
@@ -47,6 +76,12 @@ class SplitViewController: UISplitViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        registerForTraitChanges([UITraitUserInterfaceIdiom.self, UITraitVerticalSizeClass.self,
+                                UITraitHorizontalSizeClass.self]) { (controller: SplitViewController, _) in
+            controller.updatePhoneWidthPolicy(for: controller.traitCollection)
+        }
+        updatePhoneWidthPolicy(for: traitCollection)
+
         headerView.translatesAutoresizingMaskIntoConstraints = false
 
         updateTheme()
@@ -78,6 +113,12 @@ class SplitViewController: UISplitViewController {
         // before the system's NSSplitView (on Catalyst) can intercept it.
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handleFeedsDividerPan(_:)))
         feedsDividerView.addGestureRecognizer(pan)
+    }
+
+    override func viewWillLayoutSubviews() {
+        // SplitViewController.swift also observes native side-bar capability changes when a fold keeps the same size classes.
+        updatePhoneWidthPolicy(for: traitCollection)
+        super.viewWillLayoutSubviews()
     }
 
     override func viewDidLayoutSubviews() {
