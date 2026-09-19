@@ -70,13 +70,7 @@ class Discovery:
         )
 
     @classmethod
-    def eligible_stories(cls, user_id, hashes, include_content=True):
-        fields = ["story_hash", "story_feed_id", "story_permalink"]
-        if include_content:
-            fields.extend(
-                ["story_title", "story_tags", "story_content", "story_content_z", "original_text_z"]
-            )
-        stories = {s.story_hash: s for s in MStory.objects(story_hash__in=hashes).only(*fields)}
+    def followed_feeds(cls, user_id):
         subscriptions = list(UserSubscription.objects.filter(user_id=user_id).select_related("feed"))
         followed_ids = {s.feed_id for s in subscriptions}
         followed_sources = {
@@ -85,6 +79,17 @@ class Discovery:
             for url in (sub.feed.feed_address, sub.feed.feed_link)
             if (identity := cls.url_identity(url))
         }
+        return followed_ids, followed_sources
+
+    @classmethod
+    def eligible_stories(cls, user_id, hashes, include_content=True, followed=None):
+        fields = ["story_hash", "story_feed_id", "story_permalink"]
+        if include_content:
+            fields.extend(
+                ["story_title", "story_tags", "story_content", "story_content_z", "original_text_z"]
+            )
+        stories = {s.story_hash: s for s in MStory.objects(story_hash__in=hashes).only(*fields)}
+        followed_ids, followed_sources = followed if followed is not None else cls.followed_feeds(user_id)
         feeds = Feed.objects.in_bulk({s.story_feed_id for s in stories.values()})
         seen_urls = set()
         eligible = []
@@ -221,8 +226,10 @@ class Discovery:
 
     @classmethod
     def page(cls, user_id, page=1, limit=12, read_filter="unread", snapshot=None, cursor=None):
+        followed = None
         if page == 1:
-            stories = cls.eligible_stories(user_id, cls.candidate_hashes())
+            followed = cls.followed_feeds(user_id)
+            stories = cls.eligible_stories(user_id, cls.candidate_hashes(), followed=followed)
             if read_filter == "unread":
                 reader = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
                 pipe = reader.pipeline()
@@ -250,11 +257,15 @@ class Discovery:
             offset = int(cursor)
         # discovery.py: Recheck access and subscriptions without reordering an in-progress session.
         # The cursor advances across filtered entries so an empty middle slice cannot end the stream.
+        if followed is None:
+            followed = cls.followed_feeds(user_id)
         selected = []
         next_cursor = offset
+        batch_size = max(12, limit)
         while len(selected) < limit and next_cursor < len(hashes):
-            batch = hashes[next_cursor : next_cursor + limit - len(selected)]
-            eligible = cls.eligible_stories(user_id, batch, include_content=False)
-            selected.extend(s.story_hash for s in eligible)
-            next_cursor += len(batch)
+            batch = hashes[next_cursor : next_cursor + batch_size]
+            eligible = cls.eligible_stories(user_id, batch, include_content=False, followed=followed)
+            chosen = [s.story_hash for s in eligible[: limit - len(selected)]]
+            selected.extend(chosen)
+            next_cursor += batch.index(chosen[-1]) + 1 if len(selected) == limit else len(batch)
         return selected, snapshot, next_cursor

@@ -273,6 +273,50 @@ class Test_StoryRecommendationFeedback(TestCase):
             query.return_value.only.call_args.args, ("story_hash", "story_feed_id", "story_permalink")
         )
 
+    def test_discovery_refill_batches_a_long_filtered_tail(self):
+        from types import SimpleNamespace
+
+        from django.core.cache import cache
+
+        hashes = ["1:%06x" % i for i in range(60)]
+        snapshot = "a" * 32
+        cache.set("discovery:snapshot:%s:%s" % (self.user.pk, snapshot), hashes, 60)
+        allowed = set(hashes[12:23] + hashes[59:])
+
+        def eligible(user_id, candidates, **kwargs):
+            return [SimpleNamespace(story_hash=h) for h in candidates if h in allowed]
+
+        with patch.object(Discovery, "eligible_stories", side_effect=eligible) as recheck, patch.object(
+            Discovery, "followed_feeds", wraps=Discovery.followed_feeds
+        ) as subscriptions:
+            result = Discovery.page(self.user.pk, page=2, limit=12, snapshot=snapshot, cursor=12)
+        self.assertEqual(result[0], hashes[12:23] + hashes[59:])
+        self.assertEqual(result[2], 60)
+        self.assertEqual(recheck.call_count, 4)
+        self.assertTrue(all(len(call.args[1]) == 12 for call in recheck.call_args_list))
+        subscriptions.assert_called_once_with(self.user.pk)
+
+    def test_discovery_refill_preserves_unconsumed_batch_entries(self):
+        from types import SimpleNamespace
+
+        from django.core.cache import cache
+
+        hashes = ["1:%06x" % i for i in range(36)]
+        snapshot = "b" * 32
+        cache.set("discovery:snapshot:%s:%s" % (self.user.pk, snapshot), hashes, 60)
+        allowed = set(hashes[10:])
+
+        def eligible(user_id, candidates, **kwargs):
+            return [SimpleNamespace(story_hash=h) for h in candidates if h in allowed]
+
+        with patch.object(Discovery, "eligible_stories", side_effect=eligible):
+            first = Discovery.page(self.user.pk, page=2, limit=12, snapshot=snapshot, cursor=0)
+            second = Discovery.page(self.user.pk, page=3, limit=12, snapshot=snapshot, cursor=first[2])
+        self.assertEqual(first[0], hashes[10:22])
+        self.assertEqual(first[2], 22)
+        self.assertEqual(second[0], hashes[22:34])
+        self.assertEqual(second[2], 34)
+
     def test_discovery_dwell_uses_bounded_point_reads_and_ignores_brief_views(self):
         from unittest.mock import MagicMock
 
