@@ -292,14 +292,15 @@ def status(request):
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
 
-    status_data = r.get(f"webfeed:status:{request_id}")
+    # Read only this account's analysis written by apps/webfeed/tasks.py.
+    status_data = r.get(f"webfeed:status:{request.user.pk}:{request_id}")
     if not status_data:
         return {"code": -1, "status": "unknown"}
 
     status_obj = json.decode(status_data)
 
     if status_obj.get("type") == "complete":
-        results = r.get(f"webfeed:results:{request_id}")
+        results = r.get(f"webfeed:results:{request.user.pk}:{request_id}")
         if results:
             status_obj["variants_data"] = json.decode(results)
 
