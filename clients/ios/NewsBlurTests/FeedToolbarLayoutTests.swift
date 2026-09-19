@@ -70,7 +70,7 @@ import UIKit
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let window = LandscapeReaderWindow(windowScene: scene)
         let pages = LandscapeReaderPages()
-        pages.appDelegate = NewsBlurAppDelegate.shared()
+        pages.appDelegate = LandscapeReaderAppDelegate()
         pages.toolbarScrollHandler = StoryToolbarScrollHandler()
         window.rootViewController = pages
         window.isHidden = false
@@ -733,6 +733,11 @@ import UIKit
 
 @MainActor private final class LandscapeReaderWindow: UIWindow {
     override var safeAreaInsets: UIEdgeInsets { .zero }
+}
+
+@MainActor private final class LandscapeReaderAppDelegate: NewsBlurAppDelegate {
+    // FeedToolbarLayoutTests.swift exercises the compact landscape toolbar regardless of the test host's idiom.
+    override var isCompactWidth: Bool { true }
 }
 
 @MainActor private final class LandscapeReaderPages: StoryPagesViewController {
