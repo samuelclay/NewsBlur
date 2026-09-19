@@ -138,7 +138,10 @@ import Combine
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // DiscoverSitesViewController.swift restores its native header before the retained list is laid out.
+        navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.setToolbarHidden(true, animated: animated)
+        navigationController?.view.layoutIfNeeded()
         updateBackgroundColor()
         if let viewModel { viewModel.onTabSelected(viewModel.activeTab) }
     }
