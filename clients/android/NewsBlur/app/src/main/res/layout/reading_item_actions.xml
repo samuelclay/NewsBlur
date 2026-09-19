@@ -15,16 +15,6 @@
         android:paddingEnd="12dp"
         android:visibility="gone">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/mark_read_story_button"
-            style="?storyButtons"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:layout_marginBottom="8dp"
-            android:maxLines="1"
-            android:text="@string/story_mark_read_state"
-            android:visibility="gone" />
-
         <LinearLayout
             android:id="@+id/story_action_buttons_row"
             android:layout_width="match_parent"

@@ -1,16 +1,14 @@
 package com.newsblur.viewModel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.domain.DiscoverFeedPayload
 import com.newsblur.domain.Feed
 import com.newsblur.network.FeedApi
 import com.newsblur.network.domain.DiscoverFeedsResponse
+import com.newsblur.preference.DiscoveryViewPreferences
 import com.newsblur.util.DiscoverFeedSanitizer
-import com.newsblur.util.PrefConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,11 +20,9 @@ import javax.inject.Inject
 class DiscoverFeedsViewModel
     @Inject
     constructor(
-        @ApplicationContext context: Context,
+        private val viewPreferences: DiscoveryViewPreferences,
         private val feedApi: FeedApi,
     ) : ViewModel() {
-        private val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
-
         private val _uiState = MutableStateFlow(DiscoverFeedsUiState(viewMode = loadStoredViewMode()))
         val uiState = _uiState.asStateFlow()
 
@@ -36,6 +32,14 @@ class DiscoverFeedsViewModel
         private var currentPage = 0
         private var hasMorePages = true
         private val shownFeedIds = LinkedHashSet<String>()
+
+        init {
+            viewModelScope.launch {
+                viewPreferences.gridChanges.collect { grid ->
+                    _uiState.update { it.copy(viewMode = if (grid) DiscoverFeedViewMode.GRID else DiscoverFeedViewMode.LIST) }
+                }
+            }
+        }
 
         fun load(feed: Feed) {
             if (similarFeedId == feed.feedId && similarFeedIds == null && (_uiState.value.feeds.isNotEmpty() || _uiState.value.isLoadingInitial)) {
@@ -80,7 +84,7 @@ class DiscoverFeedsViewModel
         }
 
         fun setViewMode(viewMode: DiscoverFeedViewMode) {
-            prefs.edit().putString(PREF_DISCOVER_VIEW_MODE, viewMode.prefValue).apply()
+            viewPreferences.setGrid(viewMode == DiscoverFeedViewMode.GRID)
             _uiState.update { it.copy(viewMode = viewMode) }
         }
 
@@ -185,14 +189,11 @@ class DiscoverFeedsViewModel
                 .let { DiscoverFeedSanitizer.filterSourceDuplicates(sourceFeed, it) }
                 .filter { shownFeedIds.add(it.feed.feedId) }
 
-        private fun loadStoredViewMode(): DiscoverFeedViewMode {
-            val storedValue = prefs.getString(PREF_DISCOVER_VIEW_MODE, DiscoverFeedViewMode.GRID.prefValue)
-            return DiscoverFeedViewMode.fromPrefValue(storedValue)
-        }
+        private fun loadStoredViewMode(): DiscoverFeedViewMode =
+            if (viewPreferences.isGrid()) DiscoverFeedViewMode.GRID else DiscoverFeedViewMode.LIST
 
         companion object {
             private const val MAX_PAGE = 10
-            private const val PREF_DISCOVER_VIEW_MODE = "discover_feeds_view_mode"
         }
     }
 

@@ -41,6 +41,7 @@ public class APIConstants {
     public static final String PATH_TRENDING_STORIES = "/reader/trending_stories";
 	public static final String PATH_SHARED_RIVER_STORIES = "/social/river_stories";
 	public static final String PATH_FEED_STORIES = "/reader/feed";
+    public static final String PATH_REFRESH_FEED = "/reader/refresh_feed";
 	public static final String PATH_FEED_UNREAD_COUNT = "/reader/feed_unread_count";
 	public static final String PATH_SOCIALFEED_STORIES = "/social/stories";
 	public static final String PATH_SIGNUP = "/api/signup";

@@ -48,7 +48,7 @@
         android:layout_toRightOf="@id/comment_by" />
 
     <com.newsblur.view.FlowLayout
-        xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
+        xmlns:newsblur="http://schemas.android.com/apk/res-auto"
         android:id="@+id/reading_social_shareimages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

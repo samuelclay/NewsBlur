@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.newsblur.BuildConfig
+import com.newsblur.activity.InitActivity
 import com.newsblur.R
 
 /**
@@ -63,7 +65,7 @@ object AppIconManager {
     const val LIGHT_APPEARANCE = "Light"
     const val DARK_APPEARANCE = "Dark"
 
-    val flavors: List<AppIconFlavor> =
+    private val productionFlavors: List<AppIconFlavor> =
         listOf(
             flavor(
                 id = "sunrise-gold",
@@ -187,6 +189,25 @@ object AppIconManager {
             ),
         )
 
+    // AppIconManager.kt keeps the iOS development icon selectable only in NB Alpha.
+    val flavors: List<AppIconFlavor> =
+        if (BuildConfig.BUILD_TYPE == "alpha") {
+            listOf(
+                flavor(
+                    id = "alpha",
+                    title = "NB Alpha",
+                    aliasSuffix = ".activity.LauncherAlpha",
+                    launcherIconRes = R.mipmap.app_icon_alpha,
+                    lightPreviewRes = R.drawable.app_icon_alpha,
+                    darkPreviewRes = R.drawable.app_icon_alpha,
+                    lightTint = 0x117EBB,
+                    darkTint = 0x117EBB,
+                ),
+            ) + productionFlavors
+        } else {
+            productionFlavors
+        }
+
     val defaultFlavor: AppIconFlavor = flavors[0]
 
     fun flavorById(id: String?): AppIconFlavor = flavors.firstOrNull { it.id == id } ?: defaultFlavor
@@ -218,7 +239,7 @@ object AppIconManager {
                 }
             }
         }
-        // Nothing is explicitly enabled, so the manifest default (Sunrise Gold, auto) is live.
+        // AndroidManifest.xml supplies the variant's default auto alias until one is explicitly enabled.
         return AppIconSelection(defaultFlavor, AppIconAppearanceMode.AUTO)
     }
 
@@ -257,7 +278,7 @@ object AppIconManager {
     ): ComponentName =
         ComponentName(
             context.packageName,
-            context.packageName + flavor.aliasSuffix + mode.componentSuffix,
+            InitActivity::class.java.packageName.removeSuffix(".activity") + flavor.aliasSuffix + mode.componentSuffix,
         )
 
     private fun flavor(
