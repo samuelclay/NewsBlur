@@ -31,7 +31,6 @@
 #import "PremiumManager.h"
 #import "MenuViewController.h"
 #import "NewsBlur-Swift.h"
-#import <WebKit/WebKit.h>
 
 static const CGFloat kPhoneTableViewRowHeight = 8.0f;
 static const CGFloat kTableViewRowHeight = 8.0f;
@@ -2099,13 +2098,9 @@ static BOOL NBBoolPreferenceValue(id value) {
                 success = success && imagesRemoved;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (databaseCleared) [self.appDelegate.activeCachedImages removeAllObjects];
-                    // FeedsObjCViewController.m deletes only WebKit caches, preserving cookies and signed-in websites.
-                    NSSet *cacheTypes = [NSSet setWithObjects:WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache, nil];
-                    [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:cacheTypes modifiedSince:[NSDate distantPast] completionHandler:^{
-                        self.appDelegate.clearingOfflineCache = NO;
-                        NSString *message = success ? @"Cleared all stories and images!" : @"Could not completely clear the cache. Please try again.";
-                        [[NSUserDefaults standardUserDefaults] setObject:message forKey:key];
-                    }];
+                    self.appDelegate.clearingOfflineCache = NO;
+                    NSString *message = success ? @"Cleared all stories and images!" : @"Could not completely clear the cache. Please try again.";
+                    [[NSUserDefaults standardUserDefaults] setObject:message forKey:key];
                 });
             };
             if (success) {
