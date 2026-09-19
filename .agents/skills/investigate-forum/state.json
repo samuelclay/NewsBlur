@@ -156,6 +156,20 @@
       "note": "Source IP 172.237.159.95 (Akamai/Linode) is explicitly dropped by ufw on hwww (rule #1, ufw-user-input DROP). /etc/ufw/user.rules mtime 2026-07-09 12:24:22 EDT is the only timestamp; origin of the ban not recoverable. Adjacent commit b983bb005 (2026-07-10) added 'ruby' to the API UA list in utils/ip_rate_tracker.py. haproxy has no source-IP rules; app-level AttackDetector bans are 24h redis TTLs, so the ufw rule is the only block. Live sample 2026-09-18 16:04Z: 11 dropped packets in 30s. Prometheus (retained back to July) shows no spike on 2026-07-09 in reader endpoints, login views, or total Django requests.",
       "reply": null,
       "question": "Forum #13839 (EnzoReaderRSS): Ruby-based reader syncing 20 NewsBlur accounts from one Linode IP 172.237.159.95 gets TCP open timeouts on POST /api/login. Confirmed hwww has 'ufw deny from 172.237.159.95' as rule #1, inserted around 2026-07-09 12:24 EDT (user.rules mtime); no record of why (auth.log rotated, journal starts Jul 22, no shell history, no Claude session). Next day commit b983bb005 'Classify Ruby clients as API traffic'. Prometheus shows no spike on Jul 9. IP now sends ~22 dropped packets/min, 1.56M dropped total. Nothing else blocks it. Options: (a) unblock now with 'sudo ufw delete deny from 172.237.159.95' on hwww and reply with rate expectations; (b) keep the block and ask them for their polling pattern first; (c) you remember the reason and will handle it."
+    },
+    "13840": {
+      "title": "iPhone Cache Not Deleted",
+      "url": "https://forum.newsblur.com/t/iphone-cache-not-deleted/13840",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-09-19T19:00:36Z",
+      "last_posted_at": "2026-09-19T18:29:31.824Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2079",
+      "branch": "ios-add-discover-sites",
+      "worktree": ".worktree/ios-add-discover-sites",
+      "note": "Reproduced iOS cleanup defects with isolated NB Alpha database tests: low unread counts skip pruning, cached_text is missed, VACUUM runs before deletion. User chose unread priority with recent read stories in remaining quota and maximum manual compaction. Fix added to existing branch at explicit user request. Reply assumes merge and inclusion in the next iOS release; not yet released or posted. Validation and current-head CI/review results are recorded in PR #2079.",
+      "reply": "There is a Delete offline stories button under Preferences → Offline Stories, but I found bugs in both that button and automatic cleanup. Cached article text was being left behind, and deleting stories wasn't shrinking the database file.\n\nI've fixed those for the next iOS update. Manual deletion will clear the cached stories, text, and images and reclaim the disk space. Automatic cleanup will respect your Stories to store limit, prioritizing unread stories and keeping recent read stories only in the remaining space. Your subscriptions and pending read or saved story changes are preserved.",
+      "question": null
     }
   }
 }

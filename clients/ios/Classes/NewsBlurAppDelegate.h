@@ -290,6 +290,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
 @property (nonatomic) NSOperationQueue *offlineQueue;
+@property (atomic) BOOL clearingOfflineCache;
 @property (nonatomic) NSOperationQueue *offlineCleaningQueue;
 @property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
@@ -597,6 +598,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)removeAllCachedStoryImages;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;
+- (void)deleteAllCachedImagesWithCompletion:(void (^ _Nonnull)(BOOL success))completion NS_SWIFT_NAME(deleteAllCachedImages(completion:));
 
 @end
 
