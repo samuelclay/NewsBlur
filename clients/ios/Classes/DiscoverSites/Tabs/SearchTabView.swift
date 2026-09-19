@@ -49,13 +49,7 @@ struct SearchTabView: View {
                         error: viewModel.searchState.trendingErrorMessage,
                         isSearching: false, retry: viewModel.loadTrendingFeeds)
                 } else {
-                    feedGrid(viewModel.searchState.results.map { result in
-                        DiscoverPopularFeed(feedId: result.id, feedDict: [
-                            "feed_title": result.label, "feed_address": result.value,
-                            "feed_link": result.value, "num_subscribers": result.numSubscribers,
-                            "favicon": result.favicon ?? ""
-                        ])
-                    })
+                    feedGrid(viewModel.searchState.results.map { DiscoverPopularFeed(autocompleteResult: $0) })
                     DiscoverResultsStatusView(isLoading: viewModel.searchState.isSearching,
                         isEmpty: viewModel.searchState.results.isEmpty && !isURL,
                         error: viewModel.searchState.errorMessage,

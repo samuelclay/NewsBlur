@@ -1,5 +1,6 @@
 import XCTest
 import UIKit
+import SwiftUI
 
 @testable import NewsBlur
 
@@ -66,7 +67,7 @@ final class Test_DiscoverStoryPreview: XCTestCase {
             "story_hash": "42:example", "story_title": "Example", "story_content": "<p>Actual article text.</p>"
         ]]
         let popular = DiscoverPopularFeed(feedId: "42", feedDict: [:], storiesArray: stories)
-        let trending = DiscoverFeed(feedId: "42", feedDict: [:], storiesArray: stories)
+        let trending = DiscoverPopularFeed(feedId: "42", feedDict: [:], storiesArray: stories)
         XCTAssertEqual(popular.stories.first?.excerpt, "Actual article text.")
         XCTAssertEqual(trending.stories.first?.excerpt, "Actual article text.")
     }
@@ -1339,5 +1340,155 @@ final class DiscoverSitesViewModelTests: XCTestCase {
         }
         XCTAssertEqual(DiscoverSitesViewModel.parsePopularFeedEntry(fixtures[1])?.numSubscribers, 42)
         XCTAssertNil(DiscoverSitesViewModel.parsePopularFeedEntry(["title": "No subscribable URL"]))
+    }
+}
+
+@MainActor
+final class Test_DiscoverSearchAccessibility: XCTestCase {
+    func test_searchFieldRemainsUsableAtNarrowWidthWithLargestText() throws {
+        for width: CGFloat in [320, 375] {
+            try assertUsableSearch(size: .accessibility5, width: width)
+        }
+    }
+
+    func test_searchFieldRemainsUsableAtNarrowWidthWithStandardText() throws {
+        try assertUsableSearch(size: .large)
+    }
+
+    private func assertUsableSearch(size: DynamicTypeSize, width: CGFloat = 375) throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first(where: { $0.isKeyWindow })
+        let window = UIWindow(windowScene: scene)
+        let root = UIViewController()
+        let host = UIHostingController(rootView: DiscoverSearchBarView(
+            placeholder: "Search sites", text: .constant("NewsBlur"), viewMode: .constant(.grid))
+            .environment(\.dynamicTypeSize, size)
+            .frame(width: width, alignment: .topLeading))
+        window.rootViewController = root
+        window.makeKeyAndVisible()
+        root.addChild(host)
+        root.view.addSubview(host.view)
+        host.view.frame = CGRect(x: 0, y: 60, width: width, height: 400)
+        host.didMove(toParent: root)
+        defer {
+            window.isHidden = true
+            previousKeyWindow?.makeKeyAndVisible()
+        }
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            root.view.layoutIfNeeded()
+            return !self.textFields(in: host.view).isEmpty && host.view.window != nil
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+        let screenshot = UIGraphicsImageRenderer(bounds: host.view.bounds).image { _ in
+            host.view.drawHierarchy(in: host.view.bounds, afterScreenUpdates: true)
+        }
+        let attachment = XCTAttachment(image: screenshot)
+        attachment.name = "discovery-search-\(Int(width))-\(size)"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        let field = try XCTUnwrap(textFields(in: host.view).first)
+        XCTAssertGreaterThanOrEqual(field.bounds.width, 120,
+                                    "The search field must retain enough width to enter and edit a query")
+    }
+
+    private func textFields(in view: UIView) -> [UITextField] {
+        (view as? UITextField).map { [$0] } ?? view.subviews.flatMap { textFields(in: $0) }
+    }
+}
+
+@MainActor
+final class Test_DiscoverFeedFreshness: XCTestCase {
+    private let now = ISO8601DateFormatter().date(from: "2026-09-19T12:00:00Z")!
+    private let utc = TimeZone(secondsFromGMT: 0)!
+    private let locale = Locale(identifier: "en_US")
+
+    func test_activeLabelsMatchWebAtElapsedDayBoundaries() throws {
+        let cases: [(Double, String)] = [
+            (0, "Updated today"), (0.999, "Updated today"),
+            (1, "Updated 1 day ago"), (1.999, "Updated 1 day ago"), (6.999, "Updated 6 days ago"),
+            (7, "Updated 1 week ago"), (13.999, "Updated 1 week ago"),
+            (14, "Updated 2 weeks ago"), (29.999, "Updated 4 weeks ago"),
+            (30, "Updated 1 month ago"), (59.999, "Updated 1 month ago"),
+            (60, "Updated 2 months ago"), (364.999, "Updated 12 months ago")
+        ]
+        for (days, label) in cases {
+            let date = now.addingTimeInterval(-days * 86400)
+            let value = try XCTUnwrap(freshness(ISO8601DateFormatter().string(from: date)))
+            XCTAssertEqual(value.status, .active, "Elapsed days: \(days)")
+            XCTAssertEqual(value.label, label, "Elapsed days: \(days)")
+        }
+    }
+
+    func test_exactYearBoundaryUsesTheLocalizedLastStoryDate() throws {
+        let lastStory = now.addingTimeInterval(-365 * 86400)
+        let value = try XCTUnwrap(freshness(ISO8601DateFormatter().string(from: lastStory)))
+        XCTAssertEqual(value.status, .stale)
+        XCTAssertEqual(value.label, "Stale — last story Sep 19, 2025")
+
+        let british = try XCTUnwrap(DiscoverFeedFreshness(lastStoryDate: "2025-04-19T12:00:00Z", now: now,
+            locale: Locale(identifier: "en_GB"), timeZone: utc))
+        XCTAssertEqual(british.label, "Stale — last story 19 Apr 2025")
+    }
+
+    func test_missingInvalidAndFutureDatesMatchWebSemantics() throws {
+        let missingValues: [Any?] = [nil, NSNull(), "", 0, false]
+        for missing in missingValues {
+            XCTAssertEqual(freshness(missing)?.status, .noStories)
+            XCTAssertEqual(freshness(missing)?.label, "No stories yet")
+            XCTAssertNil(DiscoverFeedFreshness(lastStoryDate: missing, now: now, showEmpty: false))
+        }
+        for invalid in ["not a date", " ", "2026-13-01T12:00:00Z", "2026-09-18T12:00:00Z invalid"] {
+            XCTAssertNil(freshness(invalid))
+        }
+        let future = try XCTUnwrap(freshness("2030-01-01T00:00:00Z"))
+        XCTAssertEqual(future.status, .active)
+        XCTAssertEqual(future.label, "Updated today")
+    }
+
+    func test_timestampOffsetsFractionalSecondsAndNaiveLocalDatesMatchWeb() throws {
+        for value in ["2026-09-18T12:00:00Z", "2026-09-18T08:00:00-04:00",
+                      "2026-09-18T12:00:00.000000+00:00", "2026-09-18 12:00:00"] {
+            XCTAssertEqual(freshness(value)?.label, "Updated 1 day ago")
+        }
+        let japan = TimeZone(secondsFromGMT: 9 * 3600)!
+        let localDate = DiscoverFeedFreshness(lastStoryDate: "2026-09-18T21:00:00", now: now,
+                                            locale: locale, timeZone: japan)
+        XCTAssertEqual(localDate?.label, "Updated 1 day ago")
+        let dateOnly = DiscoverFeedFreshness(lastStoryDate: "2026-09-19", now: now.addingTimeInterval(4 * 3600),
+                                           locale: locale, timeZone: japan)
+        XCTAssertEqual(dateOnly?.label, "Updated today", "JavaScript interprets ISO date-only values in UTC")
+        XCTAssertEqual(freshness(now.addingTimeInterval(-23 * 3600).timeIntervalSince1970 * 1000)?.label,
+                       "Updated today", "The web counts elapsed 24-hour periods, not calendar days")
+    }
+
+    func test_catalogParsingPrefersLinkedDateAndFallsBackToTheOuterDate() throws {
+        let linkedDates: [Any] = [NSNull(), "", "2026-09-18T12:00:00Z", "invalid"]
+        for linkedDate in linkedDates {
+            let feed = try XCTUnwrap(DiscoverSitesViewModel.parsePopularFeedEntry([
+                "last_story_date": "2025-09-19T12:00:00Z",
+                "feed": ["id": 1, "feed_address": "https://example.com/rss", "last_story_date": linkedDate]
+            ]))
+            let value = feed.freshness(now: now, locale: locale, timeZone: utc)
+            if linkedDate as? String == "invalid" { XCTAssertNil(value) }
+            else if linkedDate as? String == "2026-09-18T12:00:00Z" { XCTAssertEqual(value?.label, "Updated 1 day ago") }
+            else { XCTAssertEqual(value?.status, .stale) }
+        }
+    }
+
+    func test_searchCardConversionPreservesFreshnessAndExistingFields() {
+        let result = AutocompleteResult(dict: [
+            "label": "Example", "value": "https://example.com/rss", "num_subscribers": 12,
+            "favicon": "base64-icon", "last_story_date": "2026-09-18T12:00:00Z"
+        ])
+        let feed = DiscoverPopularFeed(autocompleteResult: result)
+        XCTAssertEqual(feed.feedTitle, "Example")
+        XCTAssertEqual(feed.feedAddress, result.value)
+        XCTAssertEqual(feed.numSubscribers, 12)
+        XCTAssertEqual(feed.faviconData, "base64-icon")
+        XCTAssertEqual(feed.freshness(now: now, locale: locale, timeZone: utc)?.label, "Updated 1 day ago")
+    }
+
+    private func freshness(_ date: Any?) -> DiscoverFeedFreshness? {
+        DiscoverFeedFreshness(lastStoryDate: date, now: now, locale: locale, timeZone: utc)
     }
 }

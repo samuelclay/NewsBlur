@@ -35,15 +35,7 @@ struct DiscoverFeedCardView: View {
                 }
                 Spacer(minLength: 0)
             }
-            HStack(spacing: 12) {
-                Label(subscriberLabel, systemImage: "person.2")
-                if feed.averageStoriesPerMonth > 0 {
-                    Text(verbatim: "\(feed.averageStoriesPerMonth.formatted()) \(feed.averageStoriesPerMonth == 1 ? "story" : "stories")/month")
-                }
-            }
-            .font(.caption)
-            .foregroundColor(DiscoverColors.textSecondary)
-            .lineLimit(2)
+            statisticsView
 
             if let description = feed.rawFeedDict["description"] as? String, !description.isEmpty {
                 Text(description)
@@ -105,6 +97,64 @@ struct DiscoverFeedCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(DiscoverColors.border.opacity(0.6), lineWidth: 1))
+    }
+
+    // MARK: - Statistics
+
+    private var statisticsView: some View {
+        Group {
+            if let freshness = feed.freshness() {
+                if #available(iOS 16.0, *) {
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 12) {
+                            countsView
+                            freshnessView(freshness)
+                        }
+                        .fixedSize(horizontal: true, vertical: false)
+                        stackedStatistics(freshness)
+                    }
+                } else {
+                    stackedStatistics(freshness)
+                }
+            } else {
+                countsView
+            }
+        }
+        .font(.caption)
+        .foregroundColor(DiscoverColors.textSecondary)
+    }
+
+    private var countsView: some View {
+        HStack(spacing: 12) {
+            Label(subscriberLabel, systemImage: "person.2")
+                .accessibilityIdentifier("discover-subscribers-\(feed.id)")
+            if feed.averageStoriesPerMonth > 0 {
+                Text(verbatim: "\(feed.averageStoriesPerMonth.formatted()) \(feed.averageStoriesPerMonth == 1 ? "story" : "stories")/month")
+                    .accessibilityIdentifier("discover-story-count-\(feed.id)")
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func stackedStatistics(_ freshness: DiscoverFeedFreshness) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            countsView
+            freshnessView(freshness)
+        }
+    }
+
+    private func freshnessView(_ freshness: DiscoverFeedFreshness) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(DiscoverColors.freshnessDot(freshness.status))
+                .frame(width: 6, height: 6)
+                .accessibilityHidden(true)
+            Text(freshness.label)
+                .foregroundColor(DiscoverColors.freshnessText(freshness.status))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("discover-freshness-\(feed.id)")
     }
 
     // MARK: - Favicon

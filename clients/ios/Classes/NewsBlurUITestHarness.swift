@@ -96,6 +96,23 @@ final class NewsBlurUITestHarness {
         guard isEnabled, !didScheduleScenario else { return }
 
         UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
+        DiscoverFeedsViewController.viewModelFactory = { feedId, feedIds in
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
+            let session = URLSession(configuration: configuration)
+            if let feedIds {
+                return DiscoverFeedsViewModel(feedIds: feedIds, session: session,
+                                              baseURL: ReaderUITestFixtures.baseURL.absoluteString)
+            }
+            return DiscoverFeedsViewModel(feedId: feedId ?? ReaderUITestFixtures.swiftFeedId,
+                                          session: session, baseURL: ReaderUITestFixtures.baseURL.absoluteString)
+        }
+        DiscoverFeedsViewController.cardActionsFactory = {
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
+            return DiscoverSitesViewModel(appEnvironment: AddSiteUITestEnvironment(),
+                                          session: URLSession(configuration: configuration))
+        }
 
         switch requestedScreen {
         case "discover-sites":
@@ -184,8 +201,9 @@ final class NewsBlurUITestHarness {
 
     private static func configureDiscoverSites(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
         guard remainingRetries > 0 else { return }
+        // DetailViewController.swift hosts Discovery even when the iPad feed sidebar is hidden.
         guard let navigation = appDelegate.feedsNavigationController,
-              navigation.viewIfLoaded?.window != nil else {
+              navigation.viewIfLoaded?.window != nil || appDelegate.detailViewController.viewIfLoaded?.window != nil else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 configureDiscoverSites(on: appDelegate, remainingRetries: remainingRetries - 1)
             }
@@ -198,6 +216,14 @@ final class NewsBlurUITestHarness {
             return
         }
         loadFixtureFeedList(on: appDelegate)
+        guard didFinishReaderFeedLoad else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                configureDiscoverSites(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+        // FeedsViewController.swift schedules startup navigation after publishing the feed list.
+        appDelegate.feedsViewController.loadWorkItem?.cancel()
         appDelegate.openDiscoverSitesView()
     }
 
@@ -1248,6 +1274,14 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
 
     private func responsePayload(url: URL) throws -> [String: Any] {
         let params = parameters(url: url)
+        if url.path.hasPrefix("/discover/similar/") {
+            if (Int(params["page"] ?? "1") ?? 1) > 1 { return ["discover_feeds": [:]] }
+            var related = feed("Related Journal", slug: "folder-required")
+            related["last_story_date"] = "2000-01-02T00:00:00Z"
+            return ["discover_feeds": ["fixture-related": [
+                "feed": related, "stories": related["stories"] ?? []
+            ]]]
+        }
         switch url.path {
         case "/discover/trending":
             return ["trending_feeds": ["fixture-trending": ["feed": feed("The Daily Perspective", slug: "daily"),

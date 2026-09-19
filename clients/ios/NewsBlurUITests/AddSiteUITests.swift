@@ -512,6 +512,31 @@ final class DiscoverSitesUITests: XCTestCase {
         capture("discover-added-to-swift")
     }
 
+    func test_searchAndViewModeRemainUsableAtLargestAccessibilityTextSize() {
+        XCUIDevice.shared.orientation = .portrait
+        launch(arguments: ["-UIPreferredContentSizeCategoryName",
+                           UIContentSizeCategory.accessibilityExtraExtraExtraLarge.rawValue])
+        let search = app.textFields["discover-search-field"]
+        XCTAssertTrue(search.waitForExistence(timeout: 10))
+        XCTAssertGreaterThan(search.frame.height, 40, "The fixture must apply the largest accessibility text size")
+        XCTAssertGreaterThanOrEqual(search.frame.width, 120)
+        for mode in ["grid", "list"] {
+            let button = app.buttons["discover-view-mode-\(mode)"]
+            XCTAssertTrue(button.isHittable)
+            XCTAssertGreaterThanOrEqual(button.frame.minX, app.frame.minX)
+            XCTAssertLessThanOrEqual(button.frame.maxX, app.frame.maxX)
+        }
+        capture("discover-largest-text-search-and-view-modes")
+        enter("Science", in: search, submit: true)
+        XCTAssertEqual(search.value as? String, "Science")
+        let list = app.buttons["discover-view-mode-list"]
+        list.tap()
+        XCTAssertTrue(list.isSelected)
+        let grid = app.buttons["discover-view-mode-grid"]
+        grid.tap()
+        XCTAssertTrue(grid.isSelected)
+    }
+
     func test_urlFailureKeepsDialogOpenAndExplainsRecovery() {
         launch()
         enter("https://ui-test.newsblur.example/missing.xml", in: app.textFields["discover-search-field"])
@@ -740,6 +765,56 @@ final class DiscoverSitesUITests: XCTestCase {
 #endif
     }
 
+    func test_liveClayPadRelatedSitesShowsSharedFeedCards() throws {
+#if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed Alpha app on ClayPad")
+#else
+        try requireLiveClayPad()
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        openLiveDiscovery()
+        app.buttons["discover-tab-popular"].tap()
+        let preview = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "discover-try-feed-"))
+            .firstMatch
+        XCTAssertTrue(preview.waitForExistence(timeout: 20))
+        preview.tap()
+        let related = app.buttons["Related Sites"].firstMatch
+        XCTAssertTrue(related.waitForExistence(timeout: 20))
+        related.tap()
+        let close = app.buttons["Close Related Sites"].firstMatch
+        XCTAssertTrue(close.waitForExistence(timeout: 10))
+        let loaded = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            !app.staticTexts["Finding related sites..."].exists
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 30), .completed)
+        capture("claypad-related-sites-feed-cards")
+        let list = app.buttons["discover-view-mode-list"]
+        XCTAssertTrue(list.exists)
+        list.tap()
+        let excerpt = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "discover-story-excerpt-"))
+            .firstMatch
+        XCTAssertTrue(excerpt.waitForExistence(timeout: 15))
+        let folder = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "discover-folder-picker-"))
+            .firstMatch
+        XCTAssertTrue(folder.exists)
+        assertFolderPickerIsBesideAdd(folder)
+        assertFreshnessSharesStatisticsRow(feedID: String(folder.identifier.dropFirst("discover-folder-picker-".count)))
+        capture("claypad-related-sites-shared-story-previews")
+        let storyPreview = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "discover-story-"))
+            .firstMatch
+        let storyID = String(storyPreview.identifier.dropFirst("discover-story-".count))
+        let storyTitle = app.staticTexts["discover-story-title-\(storyID)"].label
+        storyPreview.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 10))
+        let selectedStory = app.tables["story-titles-list"].cells["story-row-\(storyID)"]
+        XCTAssertTrue(selectedStory.waitForExistence(timeout: 20))
+        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: selectedStory)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 15), .completed)
+        assertArticleIsVisible(title: storyTitle)
+        capture("claypad-related-sites-exact-story-reader")
+#endif
+    }
+
     func test_inlineFolderPickersShareSelectionAcrossSources() {
         XCUIDevice.shared.orientation = .landscapeLeft
         launch()
@@ -760,6 +835,58 @@ final class DiscoverSitesUITests: XCTestCase {
             assertFolderPickerIsBesideAdd(localPicker)
         }
         capture("claypad-discover-inline-shared-folder-picker")
+    }
+
+    private func openFixtureRelatedSites() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        app.launchArguments = ["-newsblur-ui-testing", "-newsblur-ui-test-screen", "reader-feed-swift",
+                               "-ApplePersistenceIgnoreState", "YES"]
+        app.launch()
+        let related = app.buttons["Related Sites"].firstMatch
+        XCTAssertTrue(related.waitForExistence(timeout: 15))
+        related.tap()
+        XCTAssertTrue(app.buttons["Close Related Sites"].waitForExistence(timeout: 10))
+        app.buttons["discover-view-mode-list"].tap()
+        XCTAssertTrue(app.staticTexts["Related Journal"].waitForExistence(timeout: 10))
+    }
+
+    func test_relatedSitesUsesSharedCardsAndAddsToChosenFolder() {
+        openFixtureRelatedSites()
+        let excerpt = app.staticTexts["discover-story-excerpt-ui-story-swift-2"]
+        XCTAssertTrue(excerpt.exists)
+        XCTAssertTrue(excerpt.label.contains("the actual story & its context"))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Stale")).firstMatch.exists)
+        let folder = app.buttons["discover-folder-picker-fixture-related"]
+        assertFolderPickerIsBesideAdd(folder)
+        capture("related-sites-shared-card-excerpts-staleness-actions")
+        folder.tap()
+        app.buttons.matching(NSPredicate(format: "label ENDSWITH %@", "Swift")).firstMatch.tap()
+        app.buttons["discover-add-feed-fixture-related"].tap()
+        XCTAssertTrue(app.staticTexts["Site added"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Close Related Sites"].exists)
+        XCTAssertTrue(app.staticTexts["Subscribed"].exists)
+    }
+
+    func test_relatedStoryPreviewOpensExactStoryAndClosesPicker() {
+        openFixtureRelatedSites()
+        app.buttons["discover-story-ui-story-swift-2"].tap()
+        XCTAssertTrue(app.buttons["Close Related Sites"].waitForNonExistence(timeout: 10))
+        let story = app.tables["story-titles-list"].cells["story-row-ui-story-swift-2"]
+        XCTAssertTrue(story.waitForExistence(timeout: 15))
+        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: story)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed)
+        assertArticleIsVisible(title: "Swift Fixture Story Two")
+        capture("related-sites-exact-story-in-reader")
+    }
+
+    private func assertFreshnessSharesStatisticsRow(feedID: String) {
+        let subscribers = app.descendants(matching: .any)["discover-subscribers-\(feedID)"].firstMatch
+        let stories = app.descendants(matching: .any)["discover-story-count-\(feedID)"].firstMatch
+        let freshness = app.descendants(matching: .any)["discover-freshness-\(feedID)"].firstMatch
+        XCTAssertTrue(freshness.exists)
+        XCTAssertEqual(subscribers.frame.minY, freshness.frame.minY, accuracy: 3)
+        XCTAssertEqual(stories.frame.minY, freshness.frame.minY, accuracy: 3)
+        XCTAssertGreaterThan(freshness.frame.minX, stories.frame.maxX)
     }
 
     private func assertFolderPickerIsBesideAdd(_ picker: XCUIElement) {
