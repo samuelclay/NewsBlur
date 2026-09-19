@@ -2845,7 +2845,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     if (!self.isOnline) {
         self.firstPageLoad.pending = NO;
-        if (page == 1 && self.firstPageLoad.displayedSnapshot) self.pageFetching = NO;
+        if (page == 1 && self.firstPageLoad.displayedSnapshot) {
+            self.pageFetching = NO;
+            [self testForTryFeed];
+        }
         else if (page == 1 && self.firstPageLoad.defersSnapshotUntilOffline) {
             self.pageFetching = NO;
             [self loadCachedFirstPage:self.firstPageLoad fallbackToOffline:YES];
@@ -2895,6 +2898,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         // FeedDetailObjCViewController.m keeps account-scoped provisional rows available if refresh fails.
         if (feedPage == 1 && firstPageLoad.defersSnapshotUntilOffline) [self loadCachedFirstPage:firstPageLoad fallbackToOffline:YES];
         else if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
+        else [self testForTryFeed];
         [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
@@ -3036,7 +3040,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     if (!self.isOnline) {
         self.firstPageLoad.pending = NO;
         [self hideFetchingBanner];
-        if (page == 1 && self.firstPageLoad.displayedSnapshot) self.pageFetching = NO;
+        if (page == 1 && self.firstPageLoad.displayedSnapshot) {
+            self.pageFetching = NO;
+            [self testForTryFeed];
+        }
         else if (page == 1 && self.firstPageLoad.defersSnapshotUntilOffline) {
             self.pageFetching = NO;
             [self loadCachedFirstPage:self.firstPageLoad fallbackToOffline:YES];
@@ -3084,6 +3091,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         // FeedDetailObjCViewController.m keeps account-scoped provisional rows available if refresh fails.
         if (feedPage == 1 && firstPageLoad.defersSnapshotUntilOffline) [self loadCachedFirstPage:firstPageLoad fallbackToOffline:YES];
         else if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
+        else [self testForTryFeed];
         [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];

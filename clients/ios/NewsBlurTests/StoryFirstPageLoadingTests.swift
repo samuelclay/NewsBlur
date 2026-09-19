@@ -406,6 +406,103 @@ import XCTest
         XCTAssertEqual(openedHashes, ["first-page-100"])
     }
 
+    func test_failedWarmRefreshAutomaticallyOpensCachedFirstStoryForFeedsAndRivers() async throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "feed_opening")
+        defaults.set("story", forKey: "feed_opening")
+        defer {
+            if let previous { defaults.set(previous, forKey: "feed_opening") }
+            else { defaults.removeObject(forKey: "feed_opening") }
+        }
+        for river in [false, true] {
+            let fixture = makeFixture()
+            fixture.app.storyPresented = {}
+            fixture.app.riverFeeds = [1]
+            func open() {
+                if river { fixture.openRiver() } else { fixture.open() }
+            }
+            open()
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            fixture.app.reply(to: 0, with: response())
+            await settle()
+
+            var openedHashes: [String] = []
+            fixture.app.storyPresented = { openedHashes.append(fixture.app.activeStory?["story_hash"] as? String ?? "missing") }
+            open()
+            await settle()
+            XCTAssertFalse(fixture.hashes.isEmpty)
+            fixture.controller.testForTryFeed()
+            XCTAssertNil(fixture.app.activeStory)
+            XCTAssertTrue(openedHashes.isEmpty, "Cached articles must wait for the refresh while online")
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+
+            // StoryFirstPageLoadingTests.swift delivers failure after the initial appearance selection attempt.
+            fixture.app.fail(to: fixture.app.requests.count - 1)
+            await settle()
+
+            XCTAssertFalse(fixture.controller.isOnline)
+            XCTAssertEqual(openedHashes, ["first-page-0"], "The cached first story should open when the refresh fails for river=\(river)")
+        }
+    }
+
+    func test_warmOfflineFallbackOpensOnceAndPreservesManualSelection() async throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "feed_opening")
+        defaults.set("story", forKey: "feed_opening")
+        defer {
+            if let previous { defaults.set(previous, forKey: "feed_opening") }
+            else { defaults.removeObject(forKey: "feed_opening") }
+        }
+        for river in [false, true] {
+            for alreadyOffline in [false, true] {
+                for manuallySelected in [false, true] {
+                    let fixture = makeFixture()
+                    fixture.app.storyPresented = {}
+                    fixture.app.riverFeeds = [1]
+                    func open() {
+                        if river { fixture.openRiver() } else { fixture.open() }
+                    }
+                    open()
+                    fixture.app.releaseReadFlush()
+                    fixture.app.releaseSavedFlush()
+                    await settle()
+                    fixture.app.reply(to: 0, with: response())
+                    await settle()
+
+                    var openedHashes: [String] = []
+                    fixture.app.storyPresented = { openedHashes.append(fixture.app.activeStory?["story_hash"] as? String ?? "missing") }
+                    open()
+                    await settle()
+                    XCTAssertFalse(fixture.hashes.isEmpty)
+                    fixture.controller.testForTryFeed()
+                    XCTAssertTrue(openedHashes.isEmpty)
+                    if manuallySelected {
+                        fixture.app.activeStory = fixture.stories.activeFeedStories[3] as? [AnyHashable: Any]
+                    }
+                    if alreadyOffline { fixture.controller.isOnline = false }
+                    fixture.app.releaseReadFlush()
+                    fixture.app.releaseSavedFlush()
+                    await settle()
+                    if !alreadyOffline {
+                        fixture.app.fail(to: fixture.app.requests.count - 1)
+                        await settle()
+                    }
+
+                    let context = "river=\(river), alreadyOffline=\(alreadyOffline), manuallySelected=\(manuallySelected)"
+                    XCTAssertEqual(openedHashes, manuallySelected ? [] : ["first-page-0"], context)
+                    XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String,
+                                   manuallySelected ? "first-page-3" : "first-page-0", context)
+                    fixture.controller.testForTryFeed()
+                    XCTAssertEqual(openedHashes, manuallySelected ? [] : ["first-page-0"], "Appearance must not reopen a selected story: \(context)")
+                }
+            }
+        }
+    }
+
     func test_switchingAwayThenBackStillUsesWarmFirstPage() async throws {
         let fixture = makeFixture()
         try await prime(fixture)
