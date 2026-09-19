@@ -4,6 +4,29 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_AuthenticationReset: XCTestCase {
+    func test_closedAuthenticationFixtureReleasesItsReaderAndWebView() async throws {
+        weak var releasedApp: AuthenticationAppDelegate?
+        weak var releasedReader: AuthenticationPagesController?
+        weak var releasedArticle: StoryDetailViewController?
+        weak var releasedWebView: WKWebView?
+        try autoreleasepool {
+            let fixture = AuthenticationFixture(compact: false)
+            try fixture.configure()
+            releasedApp = fixture.app
+            releasedReader = fixture.pages
+            releasedArticle = fixture.pages.currentPage
+            releasedWebView = fixture.pages.currentPage.webView
+            XCTAssertNotNil(releasedWebView)
+            fixture.close()
+        }
+        // AuthenticationResetTests.swift drains queued layout work before checking the fixture's ownership teardown.
+        await settle()
+        XCTAssertNil(releasedApp, "Closing the fixture must break its app/controller ownership cycles")
+        XCTAssertNil(releasedReader, "Closed authentication fixtures must not retain their reader")
+        XCTAssertNil(releasedArticle, "Closed authentication fixtures must release their article controllers")
+        XCTAssertNil(releasedWebView, "Each fixture's nonpersistent WebKit store must be released after the test")
+    }
+
     func test_showLoginClearsMountedDiscoveryBeforeAnotherAccountSignsIn() async throws {
         try await assertDiscoveryCleared(showLogin: true, preview: false)
     }
@@ -180,6 +203,40 @@ import WebKit
         XCTAssertEqual(fixture.app.getRequests.count, 1)
     }
 
+    func test_headerRelayoutWhileAuthenticatedSubscriptionsArePendingKeepsIdentityCleared() async throws {
+        let fixture = try await makeFixture(compact: true)
+        defer { fixture.close() }
+        fixture.feeds.userAvatarButton = UIButton(type: .system)
+        fixture.feeds.userInfoView.addSubview(fixture.feeds.userAvatarButton)
+        fixture.login.checkPassword()
+        try fixture.app.completePOST(["code": 1])
+        XCTAssertNil(fixture.app.activeUsername)
+        XCTAssertEqual(fixture.app.getRequests.count, 1)
+
+        // AuthenticationResetTests.swift reproduces header reconstruction after the authentication pop or a rotation, before subscriptions return.
+        for orientation in [UIInterfaceOrientation.portrait, .landscapeLeft] {
+            fixture.feeds.layoutHeaderCounts(orientation)
+            fixture.feeds.refreshHeaderCounts()
+            assertClearedBrowsing(fixture)
+            XCTAssertNil(fixture.feeds.userLabel.accessibilityLabel,
+                         "An unconfirmed identity must not become a Logged in as (null) accessibility label")
+            XCTAssertTrue(fixture.feeds.userAvatarButton.isHidden,
+                          "Header reconstruction must not expose the pending account avatar")
+        }
+
+        try XCTUnwrap(fixture.app.getRequests.last).success(nil,
+            feedResponse(username: "authenticated-relayout-fixture", feedID: "2"))
+        await settle()
+        XCTAssertEqual(fixture.feeds.userLabel.text, "authenticated-relayout-fixture")
+        XCTAssertEqual(fixture.feeds.userLabel.accessibilityLabel, "Logged in as authenticated-relayout-fixture")
+        XCTAssertFalse(fixture.feeds.userLabel.isHidden)
+        XCTAssertFalse(fixture.feeds.neutralCount.isHidden)
+        XCTAssertFalse(fixture.feeds.positiveCount.isHidden)
+        XCTAssertFalse(fixture.feeds.userAvatarButton.isHidden)
+        XCTAssertNil(fixture.app.activeStory)
+        XCTAssertTrue((fixture.stories.activeFeedStories ?? []).isEmpty)
+    }
+
     func test_priorAccountUnreadRefreshCannotReplaceCurrentAccountCounts() async throws {
         for feedID: String? in [nil, "1"] {
             let fixture = try await makeFixture(compact: false)
@@ -335,18 +392,18 @@ import WebKit
         XCTAssertFalse(fixture.app.inFindingStoryMode, file: file, line: line)
         XCTAssertNil(fixture.app.pendingFolder, file: file, line: line)
         XCTAssertNil(fixture.app.pendingDailyBriefingStoryHash, file: file, line: line)
-        for label in [fixture.feeds.userLabel, fixture.feeds.neutralCount, fixture.feeds.positiveCount].compactMap({ $0 }) {
+        for (index, label) in [fixture.feeds.userLabel, fixture.feeds.neutralCount, fixture.feeds.positiveCount].compactMap({ $0 }).enumerated() {
             XCTAssertTrue((label.text ?? "").isEmpty, "Remove earlier header identity and counts", file: file, line: line)
-            XCTAssertTrue(label.isHidden, file: file, line: line)
+            XCTAssertTrue(label.isHidden, "Cleared header label \(["username", "unread count", "focus count"][index]) must stay hidden", file: file, line: line)
         }
         XCTAssertTrue(fixture.feeds.yellowIcon.isHidden, file: file, line: line)
         XCTAssertTrue(fixture.feeds.greenIcon.isHidden, file: file, line: line)
         XCTAssertFalse(fixture.titles.pageFetching, file: file, line: line)
-        for page in [fixture.pages.currentPage, fixture.pages.nextPage, fixture.pages.previousPage].compactMap({ $0 }) {
+        for (index, page) in [fixture.pages.currentPage, fixture.pages.nextPage, fixture.pages.previousPage].compactMap({ $0 }).enumerated() {
             XCTAssertNil(page.activeStory, file: file, line: line)
             XCTAssertNil(page.activeStoryId, file: file, line: line)
             XCTAssertFalse(page.hasStory, file: file, line: line)
-            XCTAssertTrue(page.webView.isHidden, file: file, line: line)
+            XCTAssertTrue(page.webView.isHidden, "Cleared reader page \(index) must stay hidden", file: file, line: line)
         }
         let visibleRows = fixture.titles.value(forKey: "visibleStoryRows") as? [[String: Any]] ?? []
         XCTAssertTrue(visibleRows.isEmpty, "Rendered title rows must be invalidated too", file: file, line: line)
@@ -580,8 +637,8 @@ import WebKit
         let generation = (feeds.value(forKey: "feedListAccountGeneration") as? NSNumber)?.uintValue ?? 0
         feeds.setValue(NSNumber(value: generation &+ 1), forKey: "feedListAccountGeneration")
         login.beforeDismissal = nil
-        feeds.loadWorkItem?.cancel()
-        feeds.reloadWorkItem?.cancel()
+        feeds.cancelPendingFeedListWorkForAccountChange()
+        NSObject.cancelPreviousPerformRequests(withTarget: feeds)
         titles.resetPendingReloadsForFeedChange()
         NSObject.cancelPreviousPerformRequests(withTarget: titles)
         for page in [pages.currentPage, pages.nextPage, pages.previousPage].compactMap({ $0 }) {
@@ -589,8 +646,15 @@ import WebKit
         }
         window.isHidden = true
         window.rootViewController = nil
+        feeds.cancelFixtureAvatarRequests()
         app.getRequests.removeAll()
         app.postRequests.removeAll()
+        // AuthenticationResetTests.swift breaks fixture ownership cycles after disappearance, keeping each controller's app valid during teardown.
+        navigation.setViewControllers([], animated: false)
+        app.detailViewController = nil
+        app.feedsViewController = nil
+        app.feedsNavigationController = nil
+        app.storiesCollection = nil
         UserDefaults.standard.setPersistentDomain(preferences, forName: preferenceDomain)
         UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.setPersistentDomain(sharedPreferences, forName: "group.com.newsblur.NewsBlur-Group")
     }
@@ -639,8 +703,23 @@ private final class AuthenticationAppDelegate: NewsBlurAppDelegate {
 
 @MainActor private final class AuthenticationFeedsController: FeedsViewController {
     nonisolated let refreshPublication = AuthenticationRefreshPublication()
+    private var fixtureAvatarImageViews: [UIImageView] = []
     var tableReloads = 0
     var requestFailures = 0
+    override func layoutHeaderCounts(_ orientation: UIInterfaceOrientation) {
+        super.layoutHeaderCounts(orientation)
+        // AuthenticationResetTests.swift retains each request owner because real header layout replaces the image view.
+        if let imageView = avatarImageView, fixtureAvatarImageViews.last !== imageView {
+            fixtureAvatarImageViews.append(imageView)
+        }
+    }
+    func cancelFixtureAvatarRequests() {
+        // AuthenticationResetTests.swift cancels only its own AFNetworking requests, whose handlers retain the synthetic app.
+        for imageView in fixtureAvatarImageViews {
+            imageView.perform(NSSelectorFromString("cancelImageDownloadTask"))
+        }
+        fixtureAvatarImageViews.removeAll()
+    }
     override func reloadFeedTitlesTable() { tableReloads += 1; super.reloadFeedTitlesTable() }
     @objc(dispatchFeedRefreshPublication:) nonisolated func scheduleRefreshPublication(_ block: @escaping () -> Void) {
         refreshPublication.schedule(block)
