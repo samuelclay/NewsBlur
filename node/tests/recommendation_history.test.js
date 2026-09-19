@@ -86,3 +86,15 @@ test('closing history ignores pending results, and an expired pagination cursor 
     requests[1].callback({}); requests[1].error();
     assert.equal(writes.length, 0);
 });
+
+test('dialog letters never reach reader keypress shortcuts, while native activation and Escape/Tab remain intact', () => {
+    const { view } = history_setup();
+    assert.equal(view.events.keypress, 'stop_event');
+    const event = { key: 'v', which: 118, stopPropagation() { this.stopped = true; },
+        preventDefault() { throw Error('Native button activation should remain available'); } };
+    view[view.events.keypress](event);
+    assert.equal(event.stopped, true);
+    for (const key of ['Escape', 'Tab']) {
+        view.stop_event({ key, stopPropagation() { assert.fail('Modal keyboard handling was swallowed'); } });
+    }
+});

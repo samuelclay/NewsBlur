@@ -37,7 +37,8 @@ NEWSBLUR.Views.RecommendationFeedbackSummary = Backbone.View.extend({
         'click': 'open_history',
         'mousedown': 'stop_event',
         'dblclick': 'stop_event',
-        'keydown': 'stop_event'
+        'keydown': 'stop_event',
+        'keypress': 'stop_event'
     },
 
     initialize: function () {
@@ -85,7 +86,8 @@ NEWSBLUR.Views.RecommendationFeedbackHistory = Backbone.View.extend({
         'click .NB-feedback-load-more': 'load_more',
         'click .NB-feedback-history-retry': 'retry',
         'click .NB-feedback-history-close': 'close',
-        'keydown': 'stop_event'
+        'keydown': 'stop_event',
+        'keypress': 'stop_event'
     },
 
     initialize: function () {

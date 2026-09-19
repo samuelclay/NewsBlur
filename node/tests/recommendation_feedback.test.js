@@ -117,6 +117,7 @@ test('controls only operate in authenticated Discovery article views', () => {
 
 test('keyboard and pointer events cannot bubble into reader shortcuts or mark-read', () => {
     const { view } = setup();
+    assert.equal(view.events['keypress .NB-recommendation-feedback'], 'stop_recommendation_feedback_event');
     const key = event();
     view.stop_recommendation_feedback_event(key);
     assert.equal(key.stopped, true);

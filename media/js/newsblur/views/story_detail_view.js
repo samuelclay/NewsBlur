@@ -15,6 +15,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-recommendation-feedback": "stop_recommendation_feedback_event",
         "mousedown .NB-recommendation-feedback": "stop_recommendation_feedback_event",
         "keydown .NB-recommendation-feedback": "stop_recommendation_feedback_event",
+        "keypress .NB-recommendation-feedback": "stop_recommendation_feedback_event",
         "click .NB-feed-story-content a": "click_link_in_story",
         "click .NB-feed-story-share-container a": "click_link_in_story",
         "click .NB-feed-story-comments a": "click_link_in_story",
