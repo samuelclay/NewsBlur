@@ -32,6 +32,7 @@ measure of recommendation quality.
   one-hour snapshot so feedback does not move stories during the current read.
   Access and subscriptions are rechecked on each page. A continuation cursor
   advances past newly ineligible stories without ending the stream early.
+  These rechecks load only metadata in page-sized batches, without article text.
 - Accounts without examples receive a deterministic ordering from the candidate
   lists, with source diversity. An empty candidate pool produces an empty state.
 

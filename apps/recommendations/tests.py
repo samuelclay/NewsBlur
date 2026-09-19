@@ -250,6 +250,29 @@ class Test_StoryRecommendationFeedback(TestCase):
             with self.subTest(cursor=invalid_cursor), self.assertRaises(ValueError):
                 Discovery.page(self.user.pk, page=2, snapshot=first[1], cursor=invalid_cursor)
 
+    def test_discovery_pagination_only_rechecks_one_page_of_metadata(self):
+        stories = [self.make_discovery_story("bounded-%s" % i, "Article") for i in range(30)]
+        with patch.object(
+            Discovery, "candidate_hashes", return_value=[s.story_hash for s in stories]
+        ), patch.object(Discovery, "reading_examples", return_value=[]):
+            first = Discovery.page(self.user.pk, limit=12, read_filter="all")
+        with patch.object(Discovery, "eligible_stories", wraps=Discovery.eligible_stories) as eligible:
+            second = Discovery.page(self.user.pk, page=2, limit=12, snapshot=first[1], cursor=first[2])
+        self.assertEqual(second[0], [s.story_hash for s in stories[12:24]])
+        self.assertEqual(eligible.call_count, 1)
+        self.assertEqual(len(eligible.call_args.args[1]), 12)
+        self.assertFalse(eligible.call_args.kwargs["include_content"])
+
+    def test_discovery_eligibility_recheck_omits_article_content(self):
+        story = self.make_discovery_story("metadata-only", "Article")
+        with patch("apps.recommendations.discovery.MStory.objects") as query:
+            query.return_value.only.return_value = [story]
+            eligible = Discovery.eligible_stories(self.user.pk, [story.story_hash], include_content=False)
+        self.assertEqual([s.story_hash for s in eligible], [story.story_hash])
+        self.assertEqual(
+            query.return_value.only.call_args.args, ("story_hash", "story_feed_id", "story_permalink")
+        )
+
     def test_discovery_dwell_uses_bounded_point_reads_and_ignores_brief_views(self):
         from unittest.mock import MagicMock
 

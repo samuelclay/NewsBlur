@@ -70,20 +70,13 @@ class Discovery:
         )
 
     @classmethod
-    def eligible_stories(cls, user_id, hashes):
-        stories = {
-            s.story_hash: s
-            for s in MStory.objects(story_hash__in=hashes).only(
-                "story_hash",
-                "story_feed_id",
-                "story_permalink",
-                "story_title",
-                "story_tags",
-                "story_content",
-                "story_content_z",
-                "original_text_z",
+    def eligible_stories(cls, user_id, hashes, include_content=True):
+        fields = ["story_hash", "story_feed_id", "story_permalink"]
+        if include_content:
+            fields.extend(
+                ["story_title", "story_tags", "story_content", "story_content_z", "original_text_z"]
             )
-        }
+        stories = {s.story_hash: s for s in MStory.objects(story_hash__in=hashes).only(*fields)}
         subscriptions = list(UserSubscription.objects.filter(user_id=user_id).select_related("feed"))
         followed_ids = {s.feed_id for s in subscriptions}
         followed_sources = {
@@ -257,6 +250,11 @@ class Discovery:
             offset = int(cursor)
         # discovery.py: Recheck access and subscriptions without reordering an in-progress session.
         # The cursor advances across filtered entries so an empty middle slice cannot end the stream.
-        eligible = cls.eligible_stories(user_id, hashes[offset:])[:limit]
-        next_cursor = hashes.index(eligible[-1].story_hash, offset) + 1 if eligible else len(hashes)
-        return [s.story_hash for s in eligible], snapshot, next_cursor
+        selected = []
+        next_cursor = offset
+        while len(selected) < limit and next_cursor < len(hashes):
+            batch = hashes[next_cursor : next_cursor + limit - len(selected)]
+            eligible = cls.eligible_stories(user_id, batch, include_content=False)
+            selected.extend(s.story_hash for s in eligible)
+            next_cursor += len(batch)
+        return selected, snapshot, next_cursor
