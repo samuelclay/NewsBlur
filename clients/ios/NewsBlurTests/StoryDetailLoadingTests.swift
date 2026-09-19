@@ -2142,22 +2142,25 @@ import XCTest
         sendReady(to: fixture.page, token: try tokenFromHTML(XCTUnwrap(fixture.web.loads.last).html), mainFrame: true)
         fixture.web.scrollView.contentInset = .zero
         fixture.web.scrollView.contentOffset = .zero
-        await fulfillment(of: [database.started], timeout: 2)
+        XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, true)
+        // StoryDetailLoadingTests.swift must capture the low-priority database read before releasing it; a timed-out wait must not consume an empty fixture.
+        let queryStarted = await XCTWaiter.fulfillment(of: [database.started], timeout: 15)
+        XCTAssertEqual(queryStarted, .completed, "The saved-position query must be held before the page disappears")
+        guard queryStarted == .completed else { return }
 
         fixture.page.viewWillDisappear(false)
         await delay(0.05)
         XCTAssertTrue(app.positions.isEmpty)
 
-        database.release()
-        for _ in 0..<200 where fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == true {
-            await delay(0.01)
-        }
+        let restored = expectation(description: "The held saved-position result reaches its main-queue restoration callback")
+        database.release { restored.fulfill() }
+        await fulfillment(of: [restored], timeout: 15)
         XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false)
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, fixture.web.scrollView.contentSize.height / 2)
         let stored = expectation(description: "Restored progress reaches the asynchronous position writer")
         app.observeNextPosition { _ in stored.fulfill() }
         fixture.page.viewWillDisappear(false)
-        await fulfillment(of: [stored], timeout: 2)
+        await fulfillment(of: [stored], timeout: 15)
         XCTAssertEqual(app.positions, [500])
     }
 

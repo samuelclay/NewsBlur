@@ -415,16 +415,19 @@ import XCTest
             let table = try XCTUnwrap(fixture.table as? FirstPageLoadingTable)
             table.rowReloads = 0
             let recorder = NextTitleRevealRecorder(table: table)
-            recorder.start()
+            let ready = expectation(description: "The title table has stable native presentation frames")
             let finished = expectation(description: "UIKit completes the Next title reveal")
             fixture.controller.scrollAnimationFinished = { finished.fulfill() }
             // StoryFirstPageLoadingTests.swift exercises the real list callbacks, in the
             // same order as StoryPagesObjCViewController.m's Next/page-swipe completion.
-            fixture.app.activeStory = fixture.stories.activeFeedStories[3] as? [AnyHashable: Any]
-            fixture.controller.changeActiveFeedDetailRow()
-            fixture.app.recentlyReadStories["first-page-3"] = true
-            fixture.controller.redrawUnreadStory()
-            await fulfillment(of: [finished], timeout: 5)
+            recorder.start {
+                ready.fulfill()
+                fixture.app.activeStory = fixture.stories.activeFeedStories[3] as? [AnyHashable: Any]
+                fixture.controller.changeActiveFeedDetailRow()
+                fixture.app.recentlyReadStories["first-page-3"] = true
+                fixture.controller.redrawUnreadStory()
+            }
+            await fulfillment(of: [ready, finished], timeout: 5)
             fixture.controller.scrollAnimationFinished = nil
             recorder.stop()
             let samples = recorder.offsets
@@ -2101,18 +2104,39 @@ private final class FirstPageLoadingStories: StoriesCollection {
     let table: UITableView
     var offsets: [CGFloat] = []
     private var link: CADisplayLink?
+    private var whenReady: (() -> Void)?
+    private var stableFrames = 0
     init(table: UITableView) { self.table = table }
-    func start() {
-        offsets = [table.contentOffset.y]
+    func start(whenReady: @escaping () -> Void) {
+        offsets = []
+        stableFrames = 0
+        self.whenReady = whenReady
         let link = CADisplayLink(target: self, selector: #selector(sample))
         link.add(to: .main, forMode: .common)
         self.link = link
     }
-    @objc private func sample() { offsets.append(table.layer.presentation()?.bounds.origin.y ?? table.contentOffset.y) }
+    @objc private func sample() {
+        guard let presentation = table.layer.presentation(), table.window?.layer.presentation() != nil else {
+            stableFrames = 0
+            return
+        }
+        if let whenReady {
+            // StoryFirstPageLoadingTests.swift begins the reveal only after the new window and table commit stable presentation frames.
+            guard presentation.bounds == table.layer.bounds else { stableFrames = 0; return }
+            stableFrames += 1
+            guard stableFrames >= 2 else { return }
+            self.whenReady = nil
+            offsets = [presentation.bounds.origin.y]
+            whenReady()
+            return
+        }
+        offsets.append(presentation.bounds.origin.y)
+    }
     func stop() {
         offsets.append(table.contentOffset.y)
         link?.invalidate()
         link = nil
+        whenReady = nil
     }
 }
 
