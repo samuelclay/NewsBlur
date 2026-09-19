@@ -296,6 +296,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     cachedStoryImages.memoryCache.costLimit = 20 * 1024 * 1024; // 20 MB
+    cachedStoryImages.diskCache.byteLimit = 64 * 1024 * 1024;
+    cachedStoryImages.diskCache.ageLimit = 30 * 24 * 60 * 60;
     cachedUserAvatars = [[PINCache alloc] initWithName:@"NBUserAvatars"];
     cachedUserAvatars.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
@@ -6195,45 +6197,59 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)cancelOfflineQueue {
-    if (offlineQueue) {
-        [offlineQueue cancelAllOperations];
-    }
-    if (offlineCleaningQueue) {
-        [offlineCleaningQueue cancelAllOperations];
+    @synchronized (self) {
+        if (offlineQueue) {
+            [offlineQueue cancelAllOperations];
+        }
+        if (offlineCleaningQueue) {
+            [offlineCleaningQueue cancelAllOperations];
+        }
     }
 }
 
 - (void)startOfflineQueue {
-    if (!offlineQueue) {
-        offlineQueue = [NSOperationQueue new];
+    @synchronized (self) {
+        if (self.clearingOfflineCache) return;
+        if (!offlineQueue) {
+            offlineQueue = [NSOperationQueue new];
+        }
+        offlineQueue.name = @"Offline Queue";
+    //    NSLog(@"Operation queue: %lu", (unsigned long)offlineQueue.operationCount);
+        [offlineQueue cancelAllOperations];
+        [offlineQueue setMaxConcurrentOperationCount:1];
+        OfflineSyncUnreads *operationSyncUnreads = [[OfflineSyncUnreads alloc] init];
+
+        [offlineQueue addOperation:operationSyncUnreads];
     }
-    offlineQueue.name = @"Offline Queue";
-//    NSLog(@"Operation queue: %lu", (unsigned long)offlineQueue.operationCount);
-    [offlineQueue cancelAllOperations];
-    [offlineQueue setMaxConcurrentOperationCount:1];
-    OfflineSyncUnreads *operationSyncUnreads = [[OfflineSyncUnreads alloc] init];
-    
-    [offlineQueue addOperation:operationSyncUnreads];
 }
 
 - (void)startOfflineFetchStories {
-    OfflineFetchStories *operationFetchStories = [[OfflineFetchStories alloc] init];
-    
-    [offlineQueue addOperation:operationFetchStories];
-    
-//    NSLog(@"Done start offline fetch stories");
+    @synchronized (self) {
+        if (self.clearingOfflineCache) return;
+        OfflineFetchStories *operationFetchStories = [[OfflineFetchStories alloc] init];
+
+        [offlineQueue addOperation:operationFetchStories];
+
+    //    NSLog(@"Done start offline fetch stories");
+    }
 }
 
 - (void)startOfflineFetchText {
-    OfflineFetchText *operationFetchText = [[OfflineFetchText alloc] init];
-    
-    [offlineQueue addOperation:operationFetchText];
+    @synchronized (self) {
+        if (self.clearingOfflineCache) return;
+        OfflineFetchText *operationFetchText = [[OfflineFetchText alloc] init];
+
+        [offlineQueue addOperation:operationFetchText];
+    }
 }
 
 - (void)startOfflineFetchImages {
-    OfflineFetchImages *operationFetchImages = [[OfflineFetchImages alloc] init];
-    
-    [offlineQueue addOperation:operationFetchImages];
+    @synchronized (self) {
+        if (self.clearingOfflineCache) return;
+        OfflineFetchImages *operationFetchImages = [[OfflineFetchImages alloc] init];
+
+        [offlineQueue addOperation:operationFetchImages];
+    }
 }
 
 - (BOOL)isReachableForOffline {
@@ -6843,7 +6859,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)removeAllCachedStoryImages {
-    [self.feedDetailViewController resetStoryImageSources];
+    if ([NSThread isMainThread]) {
+        [self.feedDetailViewController resetStoryImageSources];
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{ [self.feedDetailViewController resetStoryImageSources]; });
+    }
     PINCache *cache = self.cachedStoryImages;
     @synchronized (cache) {
         self.storyImageCacheGeneration++;
@@ -6855,65 +6875,35 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)cleanImageCache {
-    OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
-    if (!offlineCleaningQueue) {
-        offlineCleaningQueue = [NSOperationQueue new];
+    @synchronized (self) {
+        if (self.clearingOfflineCache) return;
+        OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
+        if (!offlineCleaningQueue) {
+            offlineCleaningQueue = [NSOperationQueue new];
+        }
+        [offlineCleaningQueue addOperation:operationCleanImages];
     }
-    [offlineCleaningQueue addOperation:operationCleanImages];
+}
+
+- (void)deleteAllCachedImagesWithCompletion:(void (^)(BOOL))completion {
+    [self deleteAllCachedImages];
+    [PINDiskCache emptyTrashWithCompletion:completion];
 }
 
 - (void)deleteAllCachedImages {
-    NSUInteger memorySize = 1024 * 1024 * 64;
-#if TARGET_OS_MACCATALYST
-        NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:memorySize diskCapacity:memorySize directoryURL:nil];
-        [NSURLCache setSharedURLCache:sharedCache];
-#else
-        NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:memorySize diskCapacity:memorySize diskPath:nil];
-        [NSURLCache setSharedURLCache:sharedCache];
-#endif
-    NSLog(@"cap: %ld", (unsigned long)[[NSURLCache sharedURLCache] diskCapacity]);
-    
-    NSInteger sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];
-    float sizeInMB = sizeInteger / (1024.0f * 1024.0f);
-    NSLog(@"size: %ld,  %f", (long)sizeInteger, sizeInMB);
-    
+    // NewsBlurAppDelegate.m clears the existing URL cache instead of replacing its configured capacities.
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    
-    sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];
-    sizeInMB = sizeInteger / (1024.0f * 1024.0f);
-    NSLog(@"size: %ld,  %f", (long)sizeInteger, sizeInMB);
-    
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    
-    sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];
-    sizeInMB = sizeInteger / (1024.0f * 1024.0f);
-    NSLog(@"size: %ld,  %f", (long)sizeInteger, sizeInMB);
-    
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
-
     [[PINCache sharedCache] removeAllObjects];
     [self removeAllCachedStoryImages];
-    
-    NSFileManager *fileManager = [[NSFileManager alloc] init];
-    NSError *error = nil;
-    NSString *cacheDirectory = [self.documentsURL.path stringByAppendingPathComponent:@"story_images"];
-    NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:cacheDirectory error:&error];
-    int removed = 0;
-    
-    if (error == nil) {
-        for (NSString *path in directoryContents) {
-            NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:path];
-            BOOL removeSuccess = [fileManager removeItemAtPath:fullPath error:&error];
-            removed++;
-            if (!removeSuccess) {
-                continue;
-            }
-        }
+    [self.feedIconRenderer cancelPreparation];
+    NSCache *missing = self.missingFavicons;
+    @synchronized (missing) {
+        self.faviconCacheGeneration++;
+        [missing removeAllObjects];
+        [self.cachedFavicons removeAllObjects];
+        [self.feedIconRenderer removeAllImages];
     }
-    
-    NSLog(@"Deleted %d images.", removed);
-    
-    
+    [self.cachedUserAvatars removeAllObjects];
 }
 @end
 

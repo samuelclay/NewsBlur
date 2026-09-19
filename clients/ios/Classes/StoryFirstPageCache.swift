@@ -67,6 +67,7 @@ import UIKit
     private let snapshots = NSCache<NSString, StoryFirstPageSnapshot>()
     private var journals: [String: Journal] = [:]
     private var lastRevision: UInt64 = 0
+    private var snapshotFloorRevision: UInt64 = 0
     private var lastMutationRequest: StoryFirstPageRequest?
     private let sessionID = UUID().uuidString
     private var observers: [NSObjectProtocol] = []
@@ -150,6 +151,28 @@ import UIKit
         }
     }
 
+    @objc func clearSnapshots() -> Bool {
+        lock.lock()
+        lastRevision = max(lastRevision + 1, UInt64(max(0, now().timeIntervalSince1970) * 1_000_000))
+        snapshotFloorRevision = lastRevision
+        snapshots.removeAllObjects()
+        lock.unlock()
+        return queue.sync {
+            snapshots.removeAllObjects()
+            do {
+                guard FileManager.default.fileExists(atPath: directory.path) else { return true }
+                // StoryFirstPageCache.swift keeps mutation journals and session state while reclaiming every article snapshot.
+                for file in try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) where file.pathExtension == "json" {
+                    try FileManager.default.removeItem(at: file)
+                }
+                return true
+            } catch {
+                NSLog("StoryFirstPageCache.swift could not clear snapshots: %@", error.localizedDescription)
+                return false
+            }
+        }
+    }
+
     @objc(lookupRequest:completion:)
     func lookup(_ request: StoryFirstPageRequest, completion: @escaping (StoryFirstPageSnapshot?) -> Void) {
         lock.lock()
@@ -191,7 +214,7 @@ import UIKit
         lock.lock()
         let journal = journalForRequest(request)
         let epoch = journal.epoch
-        let superseded = revision < journal.floorRevision
+        let superseded = revision < max(journal.floorRevision, snapshotFloorRevision)
         lock.unlock()
         // StoryFirstPageCache.swift must not let a request begun before bulk Mark Read replace a newer snapshot when it finally completes.
         guard !superseded else { return }
@@ -345,7 +368,7 @@ import UIKit
         let age = now().timeIntervalSince1970 - snapshot.createdAt
         lock.lock()
         let journal = journals[snapshot.request.scopeKey]
-        let covered = journal?.loaded == true && journal?.persistenceReady == true && journal?.epoch == snapshot.journalEpoch && snapshot.revision >= (journal?.floorRevision ?? UInt64.max)
+        let covered = journal?.loaded == true && journal?.persistenceReady == true && journal?.epoch == snapshot.journalEpoch && snapshot.revision >= max(journal?.floorRevision ?? UInt64.max, snapshotFloorRevision)
         lock.unlock()
         return age >= 0 && age <= Self.snapshotTTL && covered
     }

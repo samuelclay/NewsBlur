@@ -3312,6 +3312,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             return;
         }
         [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            if (self.appDelegate.clearingOfflineCache) return;
             for (NSDictionary *story in confirmedNewStories) {
                 [db executeUpdate:@"INSERT into stories"
                  "(story_feed_id, story_hash, story_timestamp, story_json) VALUES "
