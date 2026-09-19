@@ -227,7 +227,7 @@ class Discovery:
         return result
 
     @classmethod
-    def page(cls, user_id, page=1, limit=12, read_filter="unread", snapshot=None):
+    def page(cls, user_id, page=1, limit=12, read_filter="unread", snapshot=None, cursor=None):
         if page == 1:
             stories = cls.eligible_stories(user_id, cls.candidate_hashes())
             if read_filter == "unread":
@@ -251,6 +251,12 @@ class Discovery:
             if hashes is None:
                 raise ValueError("Refresh Discovery to load more stories.")
         offset = (page - 1) * limit
+        if page > 1 and cursor is not None:
+            if not re.fullmatch(r"[0-9]{1,4}", str(cursor)) or int(cursor) > len(hashes):
+                raise ValueError("Refresh Discovery to load more stories.")
+            offset = int(cursor)
         # discovery.py: Recheck access and subscriptions without reordering an in-progress session.
-        eligible = cls.eligible_stories(user_id, hashes[offset : offset + limit])
-        return [s.story_hash for s in eligible], snapshot
+        # The cursor advances across filtered entries so an empty middle slice cannot end the stream.
+        eligible = cls.eligible_stories(user_id, hashes[offset:])[:limit]
+        next_cursor = hashes.index(eligible[-1].story_hash, offset) + 1 if eligible else len(hashes)
+        return [s.story_hash for s in eligible], snapshot, next_cursor

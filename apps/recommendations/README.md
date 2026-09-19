@@ -30,7 +30,8 @@ measure of recommendation quality.
 - The reading profile is cached for five minutes. A fresh stream load reads
   current votes and ranks candidates again. Pagination uses a user-owned,
   one-hour snapshot so feedback does not move stories during the current read.
-  Access and subscriptions are rechecked on each page.
+  Access and subscriptions are rechecked on each page. A continuation cursor
+  advances past newly ineligible stories without ending the stream early.
 - Accounts without examples receive a deterministic ordering from the candidate
   lists, with source diversity. An empty candidate pool produces an empty state.
 
@@ -45,7 +46,8 @@ initial implementation. Automatic Focus skipping is also outside this change.
 
 - `GET /reader/trending_stories?trending_type=discovery` returns the existing
   reader story format, `recommendation_feedback` on each story, and a
-  `discovery_snapshot`. Subsequent pages must pass that snapshot. Discovery
+  `discovery_snapshot` plus `discovery_next_cursor`. Subsequent pages pass that
+  snapshot and the returned cursor as `discovery_cursor`. Discovery
   requires authentication and supplies the CSRF cookie used by feedback.
 - `POST /recommendations/story_feedback` accepts `story_hash`, `value` (`-1`,
   `0`, or `1`), and `surface=discovery`. It requires authentication and a CSRF
@@ -72,5 +74,5 @@ Focused checks:
 
 ```sh
 docker exec -t newsblur_web_jev-discover python manage.py test apps.recommendations --settings=newsblur_web.test_settings --noinput -v 1
-node --test node/tests/recommendation_feedback.test.js node/tests/story_selection_utils.test.js node/tests/story_pane_resize.test.js node/tests/story_title_narrow_layout.test.js
+node --test node/tests/recommendation_feedback.test.js node/tests/discovery_pagination.test.js node/tests/story_selection_utils.test.js node/tests/story_pane_resize.test.js node/tests/story_title_narrow_layout.test.js
 ```

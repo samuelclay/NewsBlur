@@ -102,7 +102,7 @@ class Test_StoryRecommendationFeedback(TestCase):
         client.force_login(self.user)
         payload = dict(story_hash=self.story.story_hash, value=1, surface="discovery")
         self.assertEqual(client.post(self.url, payload).status_code, 403)
-        with patch.object(Discovery, "page", return_value=([], "snapshot")):
+        with patch.object(Discovery, "page", return_value=([], "snapshot", 0)):
             response = client.get(reverse("load-trending-stories"), {"trending_type": "discovery"})
         payload["csrfmiddlewaretoken"] = response.cookies["csrftoken"].value
         self.assertEqual(client.post(self.url, payload).json()["code"], 1)
@@ -202,12 +202,12 @@ class Test_StoryRecommendationFeedback(TestCase):
         with patch.object(
             Discovery, "candidate_hashes", return_value=[first.story_hash, second.story_hash]
         ), patch.object(Discovery, "reading_examples", return_value=[]):
-            hashes, snapshot = Discovery.page(self.user.pk, limit=1, read_filter="all")
+            hashes, snapshot, _ = Discovery.page(self.user.pk, limit=1, read_filter="all")
             self.assertEqual(hashes, [first.story_hash])
             MRecommendationFeedback.record(self.user.pk, second, 1, "discovery")
-            hashes, _ = Discovery.page(self.user.pk, page=2, limit=1, snapshot=snapshot)
+            hashes, _, _ = Discovery.page(self.user.pk, page=2, limit=1, snapshot=snapshot)
             self.assertEqual(hashes, [second.story_hash])
-            fresh, _ = Discovery.page(self.user.pk, limit=1, read_filter="all")
+            fresh, _, _ = Discovery.page(self.user.pk, limit=1, read_filter="all")
             self.assertEqual(fresh, [second.story_hash])
             with self.assertRaises(ValueError):
                 Discovery.page(self.other_user.pk, page=2, limit=1, snapshot=snapshot)
@@ -218,17 +218,37 @@ class Test_StoryRecommendationFeedback(TestCase):
 
     def test_discovery_response_restores_feedback_and_rejects_anonymous_requests(self):
         self.vote(-1, surface="discovery")
-        with patch.object(Discovery, "page", return_value=([self.story.story_hash], "snapshot")):
+        with patch.object(Discovery, "page", return_value=([self.story.story_hash], "snapshot", 1)):
             response = self.client.get(
                 reverse("load-trending-stories"), {"trending_type": "discovery"}
             ).json()
         self.assertEqual(response["stories"][0]["recommendation_feedback"], -1)
         self.assertEqual(response["discovery_snapshot"], "snapshot")
+        self.assertEqual(response["discovery_next_cursor"], 1)
         self.client.logout()
         self.assertEqual(
             self.client.get(reverse("load-trending-stories"), {"trending_type": "discovery"}).json()["code"],
             -1,
         )
+
+    def test_discovery_continues_past_newly_ineligible_pages(self):
+        stories = [self.make_discovery_story("continuation-%s" % i, "Article") for i in range(5)]
+        with patch.object(
+            Discovery, "candidate_hashes", return_value=[s.story_hash for s in stories]
+        ), patch.object(Discovery, "reading_examples", return_value=[]):
+            first = Discovery.page(self.user.pk, limit=1, read_filter="all")
+        for story in stories[1:3]:
+            UserSubscription.objects.create(user=self.user, feed_id=story.story_feed_id)
+        second = Discovery.page(self.user.pk, page=2, limit=1, snapshot=first[1])
+        self.assertEqual(second[0], [stories[3].story_hash])
+        third = Discovery.page(self.user.pk, page=3, limit=1, snapshot=first[1], cursor=second[2])
+        self.assertEqual(third[0], [stories[4].story_hash])
+        self.assertEqual(
+            Discovery.page(self.user.pk, page=4, limit=1, snapshot=first[1], cursor=third[2])[0], []
+        )
+        for invalid_cursor in ("-1", "bad", "99999", "6"):
+            with self.subTest(cursor=invalid_cursor), self.assertRaises(ValueError):
+                Discovery.page(self.user.pk, page=2, snapshot=first[1], cursor=invalid_cursor)
 
     def test_discovery_dwell_uses_bounded_point_reads_and_ignores_brief_views(self):
         from unittest.mock import MagicMock

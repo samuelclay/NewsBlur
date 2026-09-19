@@ -1164,13 +1164,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     fetch_trending_stories: function (feed_id, page, options, callback, error_callback, first_load) {
         var self = this;
-        if (first_load) this.discovery_snapshot = null;
+        if (first_load) {
+            this.discovery_snapshot = null;
+            this.discovery_cursor = 0;
+        }
         var user_id = NEWSBLUR.Globals.user_id;
 
         var pre_callback = function (data) {
             if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id) return;
             if (options.trending_type === 'discovery') {
                 self.discovery_snapshot = data.discovery_snapshot;
+                self.discovery_cursor = data.discovery_next_cursor;
                 _.each(data.feeds, function (feed) { feed.temp = true; });
             }
             self.load_feed_precallback(data, feed_id, callback, first_load);
@@ -1181,6 +1185,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/trending_stories', {
             trending_type: options.trending_type,
             discovery_snapshot: this.discovery_snapshot,
+            discovery_cursor: this.discovery_cursor,
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter')

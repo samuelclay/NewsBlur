@@ -333,10 +333,6 @@ NEWSBLUR.utils = {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'trending:discovery' }, "Discovery");
-            if (selected_folder_title == "trending:discovery") $option.attr('selected', true);
-            $options.append($option);
-
             var $option = $.make('option', { value: 'trending:good_reads' }, "Good Reads");
             $options.append($option);
             if (selected_folder_title == "trending:good_reads") {

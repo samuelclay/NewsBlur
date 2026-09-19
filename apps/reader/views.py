@@ -5817,18 +5817,20 @@ def load_trending_stories(request):
     user_id = user.pk if user.is_authenticated else None
 
     discovery_snapshot = None
+    discovery_next_cursor = None
     if trending_type == "discovery":
         from apps.recommendations.discovery import Discovery
 
         if not request.user.is_authenticated:
             return dict(code=-1, message="Sign in to read your Discovery stream.")
         try:
-            story_hashes, discovery_snapshot = Discovery.page(
+            story_hashes, discovery_snapshot, discovery_next_cursor = Discovery.page(
                 user_id,
                 page=page,
                 limit=limit,
                 read_filter=read_filter,
                 snapshot=request.GET.get("discovery_snapshot"),
+                cursor=request.GET.get("discovery_cursor"),
             )
         except ValueError as exc:
             return dict(code=-1, message=str(exc))
@@ -6042,6 +6044,7 @@ def load_trending_stories(request):
     return {
         "stories": stories,
         "discovery_snapshot": discovery_snapshot,
+        "discovery_next_cursor": discovery_next_cursor,
         "user_profiles": user_profiles,
         "feeds": unsub_feeds,
         "classifiers": classifiers,
