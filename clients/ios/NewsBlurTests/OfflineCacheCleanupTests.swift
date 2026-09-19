@@ -130,6 +130,55 @@ import UIKit
         XCTAssertEqual(fixture.count("cached_images"), 2)
     }
 
+    func test_automaticCleanupPreservesReadingPositionsWithoutCachedStories() throws {
+        let fixture = try OfflineCleanupFixture()
+        defer { fixture.close() }
+        fixture.seed(count: 8)
+        fixture.database.inDatabase { db in
+            XCTAssertTrue(db!.executeUpdate("INSERT INTO story_scrolls (story_hash, scroll) VALUES ('42:uncached', 0.75)", withArgumentsIn: []))
+        }
+
+        try sync(fixture, limit: 3, hashes: [])
+
+        XCTAssertEqual(fixture.count("stories"), 3)
+        XCTAssertEqual(fixture.count("story_scrolls"), 1, "Reading positions also belong to articles viewed without offline downloads")
+    }
+
+    func test_failedImageWriteStopsDownloadPassWithoutMarkingImageCached() throws {
+        let fixture = try OfflineCleanupFixture()
+        defer { fixture.close() }
+        fixture.seed(count: 1)
+        fixture.database.inDatabase { db in
+            XCTAssertTrue(db!.executeUpdate("UPDATE cached_images SET image_cached = NULL", withArgumentsIn: []))
+        }
+        // OfflineCacheCleanupTests.swift uses a file in place of the directory to reproduce an unwritable destination.
+        let directory = fixture.directory.appendingPathComponent("story_images")
+        try FileManager.default.removeItem(at: directory)
+        try Data([1]).write(to: directory)
+        fixture.app.remainingUncachedImagesCount = 1
+        let operationType = try XCTUnwrap(NSClassFromString("OfflineFetchImages") as? Operation.Type)
+        let operation = operationType.init()
+        operation.setValue(fixture.app, forKey: "appDelegate")
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 2, height: 2)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 2, height: 2))
+        }
+        let selector = NSSelectorFromString("storeCachedImage:withImage:storyHash:storyTimestamp:")
+        typealias StoreImage = @convention(c) (AnyObject, Selector, NSString, UIImage, NSString, Int) -> Void
+        let storeImage = unsafeBitCast(operation.method(for: selector), to: StoreImage.self)
+
+        storeImage(operation, selector, "https://example.com/0.jpg", image, "42:0", 1_800_000_000)
+
+        XCTAssertTrue(operation.isCancelled, "An unwritable cache must stop the pass instead of redownloading the same image")
+        XCTAssertEqual(fixture.app.remainingUncachedImagesCount, 1, "A failed write must not advance the download progress")
+        fixture.database.inDatabase { db in
+            let rows = db!.executeQuery("SELECT image_cached FROM cached_images", withArgumentsIn: [])!
+            XCTAssertTrue(rows.next())
+            XCTAssertTrue(rows.columnIsNull("image_cached"))
+            rows.close()
+        }
+    }
+
     func test_oldestUnreadOrderStillRetainsMostRecentReadStoriesInSpareSpace() throws {
         let fixture = try OfflineCleanupFixture()
         defer { fixture.close() }
