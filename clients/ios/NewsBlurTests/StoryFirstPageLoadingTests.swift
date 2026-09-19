@@ -7,6 +7,342 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryFirstPageLoading: XCTestCase {
+    func test_discoveryExactStorySelectionLoadsRowsWhileReaderMessageWasVisible() async throws {
+        let fixture = makeFixture()
+        let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+        defer { presentation.close() }
+        fixture.controller.usesProductionDeferredReload = true
+        fixture.app.isTryFeedView = true
+        fixture.app.tryFeedFeedId = "1"
+        fixture.app.tryFeedStoryId = "first-page-1"
+        fixture.app.inFindingStoryMode = true
+        fixture.app.findingStoryStartDate = Date()
+        fixture.stories.readFilterOverride = "all"
+        fixture.stories.notificationStoryHash = "first-page-1"
+        let selected = expectation(description: "Exact selection opens after replacing the empty reader message")
+        fixture.app.storyPresented = { selected.fulfill() }
+        fixture.open()
+        fixture.controller.finishedAnimatingIn = true
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.controller.messageView.isHidden = false
+        fixture.controller.messageLabel.text = "Select a feed to read"
+        fixture.controller.reloadImmediately()
+        XCTAssertEqual(fixture.table.numberOfSections, 0)
+
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: makeStories(0..<4)))
+        await settle()
+        XCTAssertTrue(fixture.controller.messageView.isHidden)
+        XCTAssertEqual(fixture.table.numberOfSections, 1, "The exact selection must reload after hiding the prior reader message")
+        guard fixture.table.numberOfSections == 1 else { return }
+        XCTAssertGreaterThan(fixture.table.numberOfRows(inSection: 0), 1)
+        await fulfillment(of: [selected], timeout: 4)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-1")
+        let targetLocation = try XCTUnwrap(fixture.hashes.firstIndex(of: "first-page-1"))
+        XCTAssertEqual(fixture.table.indexPathForSelectedRow, fixture.controller.indexPath(forStoryLocation: targetLocation))
+    }
+
+    func test_discoveryExactStorySelectionWaitsForTableSectionsBeforeSelecting() async throws {
+        let fixture = makeFixture()
+        let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+        defer { presentation.close() }
+        let table = try XCTUnwrap(fixture.table as? FirstPageLoadingTable)
+        fixture.app.isTryFeedView = true
+        fixture.app.tryFeedFeedId = "1"
+        fixture.app.tryFeedStoryId = "first-page-1"
+        fixture.app.inFindingStoryMode = true
+        fixture.app.findingStoryStartDate = Date()
+        fixture.stories.readFilterOverride = "all"
+        fixture.stories.notificationStoryHash = "first-page-1"
+        let selected = expectation(description: "The requested story opens after the title table appears")
+        fixture.app.storyPresented = { selected.fulfill() }
+        fixture.open()
+        fixture.controller.finishedAnimatingIn = false
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: makeStories(0..<4)))
+        await settle()
+
+        // StoryFirstPageLoadingTests.swift reproduces the reader transition before its native table has sections.
+        table.forcesUnavailableSections = true
+        XCTAssertEqual(table.numberOfSections, 0)
+        table.recordsUnavailableSectionQueries = true
+        fixture.controller.setValue(true, forKey: "isFadingTable")
+        defer { fixture.controller.setValue(false, forKey: "isFadingTable") }
+        fixture.controller.finishedAnimatingIn = true
+        fixture.controller.testForTryFeed()
+        await settle()
+        XCTAssertEqual(table.unavailableSectionQueries, 0, "Initial selection must wait for a valid table section: \(table.unavailableSectionQueryStacks)")
+
+        let retry = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            ((fixture.controller.value(forKey: "deferredLoadStoryCount") as? NSNumber)?.intValue ?? 0) >= 2
+        }, object: nil)
+        await fulfillment(of: [retry], timeout: 4)
+        XCTAssertEqual(table.unavailableSectionQueries, 0, "Deferred selection must also check the section before querying its rows: \(table.unavailableSectionQueryStacks)")
+        XCTAssertNil(fixture.app.activeStory)
+
+        table.forcesUnavailableSections = false
+        fixture.controller.setValue(false, forKey: "isFadingTable")
+        fixture.controller.reloadImmediately()
+        table.layoutIfNeeded()
+        await fulfillment(of: [selected], timeout: 5)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-1")
+        let targetLocation = try XCTUnwrap(fixture.hashes.firstIndex(of: "first-page-1"))
+        XCTAssertEqual(table.indexPathForSelectedRow, fixture.controller.indexPath(forStoryLocation: targetLocation))
+    }
+
+    func test_discoveryExactStoryLookupOpensTargetAfterEmptyOrDuplicateTitleFirstPage() async throws {
+        for emptyFirstPage in [true, false] {
+            let fixture = makeFixture()
+            let presentation = try FirstPageNotificationPresentation(fixture: fixture)
+            defer { presentation.close() }
+            fixture.stories.order = "oldest"
+            fixture.app.isTryFeedView = true
+            fixture.app.tryFeedFeedId = "1"
+            fixture.app.tryFeedStoryId = "first-page-17"
+            fixture.app.inFindingStoryMode = true
+            fixture.app.findingStoryStartDate = Date()
+            fixture.app.tryFeedStoryTitle = nil
+            fixture.stories.readFilterOverride = "all"
+            fixture.stories.notificationStoryHash = "first-page-17"
+            let selected = expectation(description: "The exact Discover story opens")
+            fixture.app.storyPresented = { selected.fulfill() }
+            fixture.open()
+            fixture.controller.finishedAnimatingIn = true
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            let exact = try exactNotificationRequest("first-page-17", in: fixture)
+            var duplicate = makeStories(0..<1)[0]
+            duplicate["story_title"] = "A repeated daily title"
+            var firstPage = response(stories: emptyFirstPage ? [] : [duplicate])
+            if emptyFirstPage {
+                firstPage["not_yet_fetched"] = true
+                firstPage["fetched_once"] = false
+            }
+            fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: firstPage)
+            await settle()
+            fixture.controller.pageFinished = true
+            fixture.controller.testForTryFeed()
+            XCTAssertNil(fixture.app.activeStory, "A different story with the same title cannot satisfy an exact tap")
+            var target = makeStories(17..<18)[0]
+            target["story_title"] = "A repeated daily title"
+            target["read_status"] = 1
+            fixture.app.reply(to: exact, with: response(stories: [target]))
+            await fulfillment(of: [selected], timeout: 4)
+            XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "first-page-17")
+            let path = try XCTUnwrap(fixture.table.indexPathForSelectedRow)
+            let targetLocation = try XCTUnwrap(fixture.hashes.firstIndex(of: "first-page-17"))
+            XCTAssertEqual(path, fixture.controller.indexPath(forStoryLocation: targetLocation))
+        }
+    }
+
+    func test_emptyTryFeedAutomaticallyInstafetchesWithVisibleProgress() async throws {
+        let fixture = makeFixture()
+        fixture.app.dictSocialProfile = ["id": "social:1", "user_id": 1, "username": "preview-test"]
+        await startEmptyTryFeed(fixture)
+        XCTAssertEqual(fixture.app.requests.count, 2, "An empty preview must force a feed refresh")
+        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertTrue(fixture.controller.pageFetching)
+        guard fixture.app.requests.count == 2 else { return }
+        XCTAssertEqual(URLComponents(string: fixture.app.requests[1].url)?.path, "/reader/refresh_feed/1")
+        fixture.app.reply(to: 1, with: response(stories: makeStories(20..<24)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (20..<24).map { "first-page-\($0)" })
+        XCTAssertFalse(fixture.controller.pageFetching)
+        XCTAssertNil(fixture.controller.fetchingTitle)
+    }
+
+    func test_emptyTryFeedRefreshStopsWithAClearEmptyMessageAndDoesNotRepeat() async throws {
+        let fixture = makeFixture()
+        await startEmptyTryFeed(fixture)
+        XCTAssertEqual(fixture.app.requests.count, 2)
+        guard fixture.app.requests.count == 2 else { return }
+        var empty = response(stories: [])
+        empty["fetched_once"] = true
+        fixture.app.reply(to: 1, with: empty)
+        await settle()
+        XCTAssertFalse(fixture.controller.pageFetching)
+        XCTAssertNil(fixture.controller.fetchingTitle)
+        XCTAssertFalse(fixture.controller.messageView.isHidden)
+        XCTAssertEqual(fixture.controller.messageLabel.text, "No stories are available from this site yet.")
+        fixture.app.reply(to: 0, with: empty)
+        await settle()
+        XCTAssertEqual(fixture.app.requests.count, 2, "An empty response must not cause repeated forced refreshes")
+    }
+
+    func test_emptyTryFeedRefreshFailureStopsWithARetryMessage() async throws {
+        let fixture = makeFixture()
+        await startEmptyTryFeed(fixture)
+        XCTAssertEqual(fixture.app.requests.count, 2)
+        guard fixture.app.requests.count == 2 else { return }
+        fixture.app.fail(to: 1)
+        await settle()
+        XCTAssertFalse(fixture.controller.pageFetching)
+        XCTAssertNil(fixture.controller.fetchingTitle)
+        XCTAssertFalse(fixture.controller.messageView.isHidden)
+        XCTAssertEqual(fixture.controller.messageLabel.text, "Unable to fetch stories. Pull to refresh to try again.")
+    }
+
+    func test_emptyTryFeedRefreshDiscardsLateResponsesAfterContextChanges() async throws {
+        for change in ["feed", "account", "host", "generation"] {
+            let fixture = makeFixture()
+            await startEmptyTryFeed(fixture)
+            XCTAssertEqual(fixture.app.requests.count, 2)
+            guard fixture.app.requests.count == 2 else { continue }
+            switch change {
+            case "feed": fixture.stories.activeFeed = ["id": 2, "feed_title": "Another feed"]
+            case "account": fixture.app.activeUsername = "another-account"
+            case "host": fixture.app.testURL = "https://another.example.test"
+            default: fixture.controller.resetFeedDetail()
+            }
+            fixture.app.reply(to: 1, with: response(stories: makeStories(20..<24)))
+            await settle()
+            XCTAssertTrue(fixture.hashes.isEmpty, "A late preview refresh cannot publish into changed \(change) state")
+        }
+    }
+
+    func test_automaticInstafetchDoesNotRunForNormalFeedsOrPopulatedPreviews() async throws {
+        for preview in [false, true] {
+            let fixture = makeFixture()
+            fixture.app.isTryFeedView = preview
+            fixture.app.tryFeedFeedId = preview ? "1" : nil
+            fixture.open()
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            fixture.app.reply(to: 0, with: response(stories: preview ? makeStories(0..<4) : []))
+            await settle()
+            XCTAssertEqual(fixture.app.requests.count, 1)
+            XCTAssertNil(fixture.controller.fetchingTitle)
+        }
+    }
+
+    func test_emptyTryFeedPollsPendingFetchUntilStoriesArrive() async throws {
+        let fixture = makeFixture()
+        fixture.controller.testRefreshPollInterval = 0.01
+        await startEmptyTryFeed(fixture)
+        guard fixture.app.requests.count == 2 else { return XCTFail("Missing forced refresh") }
+        var pending = response(stories: [])
+        pending["fetched_once"] = false
+        fixture.app.reply(to: 1, with: pending)
+        await settle()
+        XCTAssertEqual(fixture.app.requests.count, 3)
+        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        guard fixture.app.requests.count == 3 else { return }
+        XCTAssertEqual(URLComponents(string: fixture.app.requests[2].url)?.path, "/reader/feed/1")
+        XCTAssertEqual(fixture.app.requests[2].parameters?["insta_fetch"] as? Bool, true)
+        XCTAssertEqual(fixture.app.requests[2].parameters?["read_filter"] as? String, "all")
+        fixture.app.reply(to: 2, with: response(stories: makeStories(20..<24)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (20..<24).map { "first-page-\($0)" })
+        XCTAssertFalse(fixture.controller.pageFetching)
+        XCTAssertNil(fixture.controller.fetchingTitle)
+    }
+
+    func test_emptyTryFeedTimeoutDiscardsLateStoriesAndAllowsManualRetry() async throws {
+        let fixture = makeFixture()
+        fixture.controller.testRefreshTimeout = 0.05
+        await startEmptyTryFeed(fixture)
+        XCTAssertFalse(fixture.controller.pageFetching)
+        XCTAssertNil(fixture.controller.fetchingTitle)
+        XCTAssertEqual(fixture.controller.messageLabel.text, "Unable to fetch stories. Pull to refresh to try again.")
+        fixture.app.reply(to: 1, with: response(stories: makeStories(20..<24)))
+        await settle()
+        XCTAssertTrue(fixture.hashes.isEmpty)
+
+        fixture.controller.testRefreshTimeout = 60
+        fixture.controller.instafetchFeed()
+        XCTAssertEqual(fixture.app.requests.count, 3)
+        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertTrue(fixture.controller.pageFetching)
+        fixture.app.reply(to: 2, with: response(stories: makeStories(30..<34)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (30..<34).map { "first-page-\($0)" })
+    }
+
+    func test_manualEmptyTryFeedRefreshSupersedesInitialResponse() async throws {
+        let fixture = makeFixture()
+        fixture.app.isTryFeedView = true
+        fixture.app.tryFeedFeedId = "1"
+        fixture.open()
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.controller.instafetchFeed()
+        XCTAssertEqual(fixture.app.requests.count, 2)
+        fixture.app.reply(to: 0, with: response(stories: makeStories(0..<4)))
+        await settle()
+        XCTAssertTrue(fixture.hashes.isEmpty)
+        XCTAssertTrue(fixture.controller.pageFetching)
+        fixture.app.reply(to: 1, with: response(stories: makeStories(20..<24)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (20..<24).map { "first-page-\($0)" })
+        XCTAssertNil(fixture.controller.value(forKey: "firstPageLoad"), "Try previews bypass the normal first-page cache")
+        fixture.controller.fetchNextPage(nil)
+        guard let next = fixture.app.requests.indices.last else { return XCTFail("Missing next-page request") }
+        XCTAssertEqual(URLComponents(string: fixture.app.requests[next].url)?.queryItems?.first(where: { $0.name == "page" })?.value, "2")
+        fixture.app.reply(to: next, with: response(stories: makeStories(24..<28)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, (20..<28).map { "first-page-\($0)" })
+    }
+
+    func test_cancellingEmptyTryFeedRefreshEndsPullToRefresh() async throws {
+        let fixture = makeFixture()
+        await startEmptyTryFeed(fixture)
+        fixture.controller.refreshControl = UIRefreshControl()
+        fixture.controller.refreshControl.beginRefreshing()
+        fixture.controller.instafetchFeed()
+        XCTAssertEqual(fixture.app.requests.count, 2, "Pulling during the active fetch must not duplicate it")
+        fixture.controller.resetFeedDetail()
+        XCTAssertFalse(fixture.controller.refreshControl.isRefreshing)
+        XCTAssertFalse(fixture.controller.isAutomaticallyRefreshingTryFeed)
+    }
+
+    func test_emptySearchWithinTryFeedDoesNotRefreshUnfilteredStories() async throws {
+        let fixture = makeFixture()
+        fixture.app.isTryFeedView = true
+        fixture.app.tryFeedFeedId = "1"
+        fixture.open()
+        fixture.stories.inSearch = true
+        fixture.stories.searchQuery = "does not match any story"
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: 0, with: response(stories: []))
+        await settle()
+        XCTAssertEqual(fixture.app.requests.count, 1)
+        XCTAssertTrue(fixture.hashes.isEmpty)
+        XCTAssertNil(fixture.controller.fetchingTitle)
+    }
+
+    func test_emptyTryFeedRefreshPreservesReadFilterAndOrder() async throws {
+        let fixture = makeFixture()
+        fixture.stories.readFilter = "unread"
+        fixture.stories.order = "oldest"
+        await startEmptyTryFeed(fixture)
+        guard fixture.app.requests.count == 2 else { return XCTFail("Missing forced refresh") }
+        XCTAssertEqual(fixture.app.requests[1].parameters?["read_filter"] as? String, "unread")
+        XCTAssertEqual(fixture.app.requests[1].parameters?["order"] as? String, "oldest")
+        fixture.stories.readFilter = "all"
+        fixture.app.reply(to: 1, with: response(stories: makeStories(20..<24)))
+        await settle()
+        XCTAssertTrue(fixture.hashes.isEmpty, "A response for the previous filter cannot populate a changed view")
+    }
+
+    func test_emptyTryFeedRefreshIgnoresStaleFindingFlagButSkipsTargetStoryLookup() async throws {
+        for hasTarget in [false, true] {
+            let fixture = makeFixture()
+            fixture.app.inFindingStoryMode = true
+            fixture.app.tryFeedStoryId = hasTarget ? "target-story" : nil
+            await startEmptyTryFeed(fixture)
+            XCTAssertEqual(fixture.app.requests.count, hasTarget ? 1 : 2)
+            XCTAssertEqual(fixture.controller.isAutomaticallyRefreshingTryFeed, !hasTarget)
+        }
+    }
+
     func test_focusedRiverContinuesPagingWithoutAScrollWhenFirstPageDoesNotFillTheList() async throws {
         let fixture = makeFixture()
         fixture.app.selectedIntelligence = 1
@@ -1533,6 +1869,20 @@ import XCTest
         await fulfillment(of: [drained], timeout: 30)
     }
 
+    private func startEmptyTryFeed(_ fixture: FirstPageFixture) async {
+        fixture.app.isTryFeedView = true
+        fixture.app.tryFeedFeedId = "1"
+        fixture.open()
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        var empty = response(stories: [])
+        empty["not_yet_fetched"] = true
+        empty["fetched_once"] = false
+        fixture.app.reply(to: 0, with: empty)
+        await settle()
+    }
+
     private func makeFixture() -> FirstPageFixture {
         let app = FirstPageLoadingAppDelegate()
         app.activeUsername = "first-page-test-" + UUID().uuidString
@@ -1564,6 +1914,7 @@ import XCTest
         controller.view = UIView(frame: table.frame)
         controller.view.addSubview(table)
         controller.messageView = UIView()
+        controller.messageLabel = UILabel()
         controller.messageView.isHidden = true
         controller.setValue(NSCache<NSString, NSString>(), forKey: "storyPreviewTextCache")
         controller.setValue(NSCache<NSString, NSNumber>(), forKey: "storyHeightCache")
@@ -1669,6 +2020,12 @@ private final class FirstPageLoadingStories: StoriesCollection {
 }
 
 @MainActor private final class FirstPageLoadingController: FeedDetailViewController {
+    var usesProductionDeferredReload = false
+    var fetchingTitle: String?
+    var testRefreshPollInterval: TimeInterval = 2
+    var testRefreshTimeout: TimeInterval = 60
+    override var tryFeedRefreshPollInterval: TimeInterval { testRefreshPollInterval }
+    override var tryFeedRefreshTimeout: TimeInterval { testRefreshTimeout }
     var testRowHeight: CGFloat = 80
     var markedHashes: [String] = []
     var holdCache = false
@@ -1699,12 +2056,15 @@ private final class FirstPageLoadingStories: StoriesCollection {
     override func viewDidAppear(_ animated: Bool) {}
     override func viewWillDisappear(_ animated: Bool) {}
     override func viewDidDisappear(_ animated: Bool) {}
-    override func reload() { reloadTable() }
+    override func reload() {
+        if usesProductionDeferredReload { super.reload() }
+        else { reloadTable() }
+    }
     override func loadingFeed() {}
     override func updateStoryTitlesHeaderPillState() {}
     override func loadFaviconsFromActiveFeed() {}
-    override func showFetchingBanner(_ title: String!, isOffline: Bool) {}
-    override func hideFetchingBanner() {}
+    override func showFetchingBanner(_ title: String!, isOffline: Bool) { fetchingTitle = title }
+    override func hideFetchingBanner() { fetchingTitle = nil }
     override func markStoryReadIfNeeded(_ story: [AnyHashable: Any]!, isScrolling: Bool) -> Bool {
         if isScrolling, let hash = story["story_hash"] as? String { markedHashes.append(hash) }
         return false
@@ -1718,6 +2078,19 @@ private final class FirstPageLoadingStories: StoriesCollection {
 
 @MainActor private final class FirstPageLoadingTable: UITableView {
     var rowReloads = 0
+    var forcesUnavailableSections = false
+    var recordsUnavailableSectionQueries = false
+    var unavailableSectionQueries = 0
+    var unavailableSectionQueryStacks: [[String]] = []
+    override var numberOfSections: Int { forcesUnavailableSections ? 0 : super.numberOfSections }
+    override func numberOfRows(inSection section: Int) -> Int {
+        if recordsUnavailableSectionQueries, section >= numberOfSections {
+            unavailableSectionQueries += 1
+            unavailableSectionQueryStacks.append(Thread.callStackSymbols)
+            return 0
+        }
+        return super.numberOfRows(inSection: section)
+    }
     override func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
         rowReloads += 1
         super.reloadRows(at: indexPaths, with: animation)
@@ -1778,6 +2151,7 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
 
     struct CapturedRequest {
         let url: String
+        let parameters: [String: Any]?
         let task: URLSessionDataTask?
         let success: (URLSessionDataTask?, Any?) -> Void
         let failure: (URLSessionDataTask?, NSError?) -> Void
@@ -1845,6 +2219,7 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     private static let installInterceptors: Void = {
         for (original, replacement) in [
             ("GETreturningTask:parameters:success:failure:", "nb_test_GET:parameters:success:failure:"),
+            ("GET:parameters:success:failure:", "nb_test_GETWithoutTask:parameters:success:failure:"),
             ("flushQueuedReadStories:withCallback:", "nb_test_readFlush:callback:"),
             ("flushQueuedSavedStories:withCallback:", "nb_test_savedFlush:callback:")
         ] {
@@ -1865,8 +2240,13 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
            let requestURL = components.url {
             task = URLSession.shared.dataTask(with: requestURL)
         }
-        requests.append(CapturedRequest(url: url, task: task, success: success, failure: failure))
+        requests.append(CapturedRequest(url: url, parameters: parameters as? [String: Any], task: task, success: success, failure: failure))
         return task
+    }
+    @objc(nb_test_GETWithoutTask:parameters:success:failure:)
+    func captureGETWithoutTask(_ url: String, parameters: Any?, success: @escaping (URLSessionDataTask?, Any?) -> Void,
+                              failure: @escaping (URLSessionDataTask?, NSError?) -> Void) {
+        _ = captureGET(url, parameters: parameters, success: success, failure: failure)
     }
     @objc(nb_test_readFlush:callback:)
     func holdReadFlush(_ force: Bool, callback: @escaping () -> Void) { readFlushes.append(callback) }

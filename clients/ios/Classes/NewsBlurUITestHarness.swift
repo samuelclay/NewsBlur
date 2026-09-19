@@ -529,7 +529,8 @@ private enum ReaderUITestFixtures {
         let response: [String: Any] = [
             "user": username,
             "share_ext_token": "ui-test-token",
-            "social_profile": NSNull(),
+            // NewsBlurUITestHarness.swift mirrors the canonical profile returned by /reader/feeds for sharing menus.
+            "social_profile": ["id": "social:1", "user_id": 1, "username": username, "shared_stories_count": 0],
             "social_services": [:],
             "user_profile": [
                 "is_premium": 1,
@@ -631,6 +632,19 @@ private enum ReaderUITestFixtures {
             payload = trendingStoriesResponse(for: url)
         } else if url.path.hasPrefix("/reader/river_stories") {
             payload = riverStoriesResponse(for: url)
+        } else if url.path == "/reader/refresh_feed/\(swiftFeedId)",
+                  ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-empty-try-feed") {
+            // NewsBlurUITestHarness.swift keeps the fetch banner observable before returning fetched stories.
+            Thread.sleep(forTimeInterval: 6)
+            var fetched = feedStoriesResponse(feedID: swiftFeedId, stories: swiftStoriesPageOne)
+            fetched["fetched_once"] = true
+            payload = fetched
+        } else if ["/reader/feed/\(swiftFeedId)", "/reader/feed/\(swiftFeedId)/"].contains(url.path),
+                  ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-empty-try-feed") {
+            var empty = feedStoriesResponse(feedID: swiftFeedId, stories: [])
+            empty["fetched_once"] = false
+            empty["not_yet_fetched"] = true
+            payload = empty
         } else if url.path.hasPrefix("/reader/feed/") {
             let requestedFeedID = feedID(from: url)
             if bulkReadEnabled, requestedFeedID == swiftFeedId {
@@ -668,6 +682,13 @@ private enum ReaderUITestFixtures {
     }
 
     private static func riverStoriesResponse(for url: URL) -> [String: Any] {
+        let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        let requestedHashes = Set(queryItems.filter { $0.name == "h" }.compactMap(\.value))
+        if !requestedHashes.isEmpty {
+            let allStories = swiftStoriesPageOne + swiftStoriesPageTwo + techStoriesPageOne + cultureStoriesPageOne
+            let stories = allStories.filter { requestedHashes.contains($0["story_hash"] as? String ?? "") }
+            return feedStoriesResponse(feedID: "river", stories: stories)
+        }
         if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-focused-pagination") {
             let page = pageNumber(from: url)
             // NewsBlurUITestHarness.swift leaves one Focus match per page to exercise paging without scrolling.
@@ -1215,7 +1236,14 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
     private func feed(_ name: String, slug: String) -> [String: Any] {
         ["feed_title": name, "feed_address": "https://ui-test.newsblur.example/\(slug).xml",
          "feed_link": "https://ui-test.newsblur.example/\(slug)", "num_subscribers": 1240,
-         "average_stories_per_month": 18, "description": "Independent reporting, useful ideas, and thoughtful stories."]
+         "average_stories_per_month": 18, "description": "Independent reporting, useful ideas, and thoughtful stories.",
+         "stories": [
+            ["story_hash": "ui-story-swift-1", "story_title": "Swift Fixture Story One",
+             "story_authors": "First Author", "story_content": "<p>The first preview includes useful article text.</p>"],
+            ["story_hash": "ui-story-swift-2", "story_title": "Swift Fixture Story Two",
+             "story_authors": "Second Author",
+             "story_content": "<p>Second preview excerpt includes <strong>the actual story</strong> &amp; its context.</p><p>Another paragraph supplies enough text to fill two lines in the preview without showing HTML markup or taking over the page.</p>"]
+         ]]
     }
 
     private func responsePayload(url: URL) throws -> [String: Any] {

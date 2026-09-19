@@ -12,35 +12,19 @@ import SwiftUI
 struct DiscoverSitesView: View {
     @ObservedObject var viewModel: DiscoverSitesViewModel
     @StateObject private var themeObserver = AskAIThemeObserver()
-    var onTryFeed: ((DiscoverPopularFeed) -> Void)?
-    var onAddFeed: ((DiscoverPopularFeed) -> Void)?
+    let pager: DiscoverSourcesPagerController
 
     var body: some View {
+        let _ = themeObserver.themeVersion
         VStack(spacing: 0) {
             DiscoverTabBarView(activeTab: $viewModel.activeTab)
 
-            HStack {
-                Image(systemName: "folder")
-                Text("Add to")
-                Menu {
-                    Button("Top Level") { viewModel.selectedFolder = "" }
-                    ForEach(viewModel.folders, id: \.self) { folder in
-                        Button(viewModel.folderDisplayName(folder)) { viewModel.selectedFolder = folder }
-                    }
-                } label: {
-                    HStack {
-                        Text(viewModel.displayFolder).lineLimit(1)
-                        Image(systemName: "chevron.down").font(.caption)
-                    }
-                }
-                .accessibilityIdentifier("discover-folder-picker")
-                Spacer(minLength: 0)
-                if viewModel.isAdding || viewModel.isPreparingPreview { ProgressView() }
+            if viewModel.isAdding || viewModel.isPreparingPreview {
+                ProgressView(viewModel.isAdding ? "Adding site…" : "Opening site…")
+                    .font(.subheadline)
+                    .foregroundColor(DiscoverColors.textPrimary)
+                    .frame(maxWidth: .infinity, minHeight: 44)
             }
-            .font(.subheadline)
-            .foregroundColor(DiscoverColors.textPrimary)
-            .padding(.horizontal, 16)
-            .frame(minHeight: 44)
 
             if viewModel.addedSuccess {
                 HStack {
@@ -58,34 +42,62 @@ struct DiscoverSitesView: View {
                 Text(message).font(.subheadline).foregroundColor(DiscoverColors.errorText)
                     .padding(.horizontal, 16).padding(.vertical, 8)
             }
-            tabContent
-
+            DiscoverSourcesPager(controller: pager, selectedTab: viewModel.activeTab)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .environmentObject(viewModel)
         .background(DiscoverColors.background)
-        .id(themeObserver.themeVersion)
         .onChange(of: viewModel.activeTab) { newTab in
             viewModel.onTabSelected(newTab)
         }
     }
+}
+
+@available(iOS 15.0, *)
+private struct DiscoverSourcesPager: UIViewControllerRepresentable {
+    let controller: DiscoverSourcesPagerController
+    let selectedTab: DiscoverTab
+
+    func makeUIViewController(context: Context) -> DiscoverSourcesPagerController { controller }
+
+    func updateUIViewController(_ controller: DiscoverSourcesPagerController, context: Context) {
+        controller.select(selectedTab, animated: true)
+    }
+}
+
+@available(iOS 15.0, *)
+struct DiscoverSourcePageView: View {
+    let tab: DiscoverTab
+    @ObservedObject var viewModel: DiscoverSitesViewModel
+    @StateObject private var themeObserver = AskAIThemeObserver()
+    var onTryFeed: ((DiscoverPopularFeed) -> Void)?
+    var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
+    var onAddFeed: ((DiscoverPopularFeed) -> Void)?
+
+    var body: some View {
+        let _ = themeObserver.themeVersion
+        tabContent
+            .environmentObject(viewModel)
+            .background(DiscoverColors.background)
+    }
 
     @ViewBuilder
     private var tabContent: some View {
-        switch viewModel.activeTab {
+        switch tab {
         case .search:
-            SearchTabView(viewModel: viewModel, onTryFeed: onTryFeed, onAddFeed: onAddFeed)
+            SearchTabView(viewModel: viewModel, onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
         case .webFeed:
             WebFeedTabView(viewModel: viewModel)
         case .popular:
-            PopularTabView(viewModel: viewModel, onTryFeed: onTryFeed, onAddFeed: onAddFeed)
+            PopularTabView(viewModel: viewModel, onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
         case .youtube:
-            YouTubeTabView(viewModel: viewModel, onTryFeed: onTryFeed, onAddFeed: onAddFeed)
+            YouTubeTabView(viewModel: viewModel, onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
         case .reddit:
-            RedditTabView(viewModel: viewModel, onTryFeed: onTryFeed, onAddFeed: onAddFeed)
+            RedditTabView(viewModel: viewModel, onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
         case .newsletters:
-            NewslettersTabView(viewModel: viewModel, onTryFeed: onTryFeed, onAddFeed: onAddFeed)
+            NewslettersTabView(viewModel: viewModel, onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
         case .podcasts:
-            PodcastsTabView(viewModel: viewModel, onTryFeed: onTryFeed, onAddFeed: onAddFeed)
+            PodcastsTabView(viewModel: viewModel, onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
         case .googleNews:
             GoogleNewsTabView(viewModel: viewModel)
         }

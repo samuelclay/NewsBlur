@@ -40,6 +40,7 @@ struct DiscoverFeed: Identifiable {
 struct DiscoverStory: Identifiable {
     let id: String
     let title: String
+    let excerpt: String
     let authors: String
     let date: Date?
     let permalink: String
@@ -48,7 +49,8 @@ struct DiscoverStory: Identifiable {
     init?(dict: [String: Any]) {
         guard let hash = dict["story_hash"] as? String else { return nil }
         self.id = hash
-        self.title = dict["story_title"] as? String ?? ""
+        self.title = Self.previewText(from: dict["story_title"] as? String ?? "")
+        self.excerpt = Self.previewText(from: dict["story_content"] as? String ?? "")
         self.authors = dict["story_authors"] as? String ?? ""
         self.permalink = dict["story_permalink"] as? String ?? ""
 
@@ -67,6 +69,22 @@ struct DiscoverStory: Identifiable {
         } else {
             self.imageUrls = []
         }
+    }
+
+    private static func previewText(from html: String) -> String {
+        guard !html.isEmpty else { return "" }
+
+        // DiscoverFeedsModels.swift bounds preview parsing and reuses NSString+HTML's non-rendering scanner.
+        let visibleHTML = String(html.prefix(12_000))
+            .replacingOccurrences(of: "(?is)<(script|style)\\b[^>]*>.*?(?:</\\1\\s*>|\\z)",
+                                  with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "(?i)<(?:br|hr)\\b[^>]*>",
+                                  with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "<(?=\\s|\\d)", with: "&lt;", options: .regularExpression)
+        let plainText = (visibleHTML as NSString).convertingHTMLToPlainText() ?? ""
+        let normalized = plainText.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return String(normalized.prefix(500))
     }
 }
 

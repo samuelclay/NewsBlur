@@ -277,35 +277,36 @@ struct GoogleNewsTabView: View {
                     )
             }
 
-            // Subscribe button
-            Button(action: {
-                viewModel.subscribeSelectedGoogleNews()
-            }) {
-                HStack {
-                    if viewModel.googleNewsState.isSubscribing {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(0.8)
-                    }
+            HStack(spacing: 8) {
+                DiscoverFolderPicker(viewModel: viewModel, identifier: "discover-folder-picker-google-news")
+                Button(action: {
+                    viewModel.subscribeSelectedGoogleNews()
+                }) {
+                    HStack {
+                        if viewModel.googleNewsState.isSubscribing {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        }
 
-                    Text(
-                        viewModel.googleNewsState.isSubscribing
-                            ? "Subscribing..." : "Subscribe to Google News Feed"
+                        Text(viewModel.googleNewsState.isSubscribing ? "Subscribing..." : "Subscribe")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(minHeight: 44)
+                    .background(
+                        subscribeDisabled
+                            ? DiscoverColors.accent.opacity(0.5)
+                            : DiscoverColors.accent
                     )
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(
-                    subscribeDisabled
-                        ? DiscoverColors.accent.opacity(0.5)
-                        : DiscoverColors.accent
-                )
-                .cornerRadius(10)
+                .buttonStyle(PlainButtonStyle())
+                .disabled(subscribeDisabled)
+                .accessibilityLabel("Subscribe to Google News Feed")
+                .accessibilityIdentifier("discover-subscribe-google-news")
             }
-            .buttonStyle(PlainButtonStyle())
-            .disabled(subscribeDisabled)
         }
     }
 

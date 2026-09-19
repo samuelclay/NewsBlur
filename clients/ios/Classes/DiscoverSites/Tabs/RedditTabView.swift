@@ -12,6 +12,7 @@ import SwiftUI
 struct RedditTabView: View {
     @ObservedObject var viewModel: DiscoverSitesViewModel
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
+    var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
 
     var body: some View {
@@ -98,6 +99,7 @@ struct RedditTabView: View {
                     feed: feed,
                     showStories: viewModel.feedViewMode == .list,
                     onTryFeed: onTryFeed,
+                    onOpenStory: onOpenStory,
                     onAddFeed: onAddFeed
                 )
                 .onAppear {

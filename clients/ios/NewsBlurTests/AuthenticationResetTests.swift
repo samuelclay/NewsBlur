@@ -724,3 +724,363 @@ private final class AuthenticationRefreshPublication: @unchecked Sendable {
         callbacks.forEach { $0() }
     }
 }
+
+@MainActor final class Test_DiscoverStoryPreviewRouting: XCTestCase {
+    func test_storyTapRoutesExactHashAndRetainsSelectionForReturn() async throws {
+        let (controller, model, app, detail) = makeFixture()
+        let feed = makeFeed()
+        let story = try XCTUnwrap(feed.stories.last)
+        await controller.openPreview(feed, story: story)
+        XCTAssertEqual(app.previewFeedID, "12")
+        XCTAssertEqual(app.previewStoryID, "12:second")
+        XCTAssertNil(app.tryFeedStoryTitle, "Exact story taps must not fall back to another story with the same title")
+        XCTAssertEqual(app.storiesCollection.notificationStoryHash, "12:second")
+        XCTAssertTrue(app.inFindingStoryMode)
+        XCTAssertNotNil(app.findingStoryStartDate)
+        XCTAssertEqual(app.storiesCollection.readFilterOverride, "all")
+        XCTAssertTrue(detail.canReturnToDiscoverSites)
+        XCTAssertEqual(model.selectedPreviewStoryID, story.id)
+        detail.returnToDiscoverSites()
+        XCTAssertEqual(model.selectedPreviewStoryID, story.id)
+    }
+
+    func test_tryFeedClearsPreviousStorySelectionAndLookup() async {
+        let (controller, model, app, _) = makeFixture()
+        model.selectedPreviewStoryID = "12:previous"
+        app.inFindingStoryMode = true
+        app.tryFeedStoryId = "12:previous"
+        app.tryFeedStoryTitle = "Previous story"
+        await controller.openPreview(makeFeed(), story: nil)
+        XCTAssertEqual(app.previewFeedID, "12")
+        XCTAssertNil(app.previewStoryID)
+        XCTAssertNil(model.selectedPreviewStoryID)
+        XCTAssertFalse(app.inFindingStoryMode)
+        XCTAssertNil(app.findingStoryStartDate)
+        XCTAssertNil(app.tryFeedStoryTitle)
+    }
+
+    func test_resolvedStoryCannotOpenAfterAccountChangeOrDiscoveryDismissal() async throws {
+        for changesAccount in [false, true] {
+            let (controller, model, app, detail) = makeFixture()
+            let feed = makeFeed()
+            let story = try XCTUnwrap(feed.stories.last)
+            model.holdsResolution = true
+            let opening = Task { await controller.openPreview(feed, story: story) }
+            await Task.yield()
+            XCTAssertEqual(model.selectedPreviewStoryID, story.id)
+            XCTAssertNotNil(model.pendingResolution)
+            if changesAccount { controller.resetForAccountChange() }
+            else { detail.visible = false }
+            model.pendingResolution?.resume(returning: feed)
+            model.pendingResolution = nil
+            await opening.value
+            XCTAssertNil(app.previewFeedID)
+            if changesAccount { XCTAssertNil(model.selectedPreviewStoryID) }
+        }
+    }
+
+    func test_failedStoryResolutionRestoresPreviousSelection() async throws {
+        let (controller, model, app, _) = makeFixture()
+        model.selectedPreviewStoryID = "12:previous"
+        model.failsResolution = true
+        let feed = makeFeed()
+        await controller.openPreview(feed, story: try XCTUnwrap(feed.stories.last))
+        XCTAssertEqual(model.selectedPreviewStoryID, "12:previous")
+        XCTAssertNil(app.previewFeedID)
+    }
+
+    private func makeFeed() -> DiscoverPopularFeed {
+        DiscoverPopularFeed(feedId: "12", feedDict: ["feed_title": "Story previews", "feed_address": "https://example.invalid/feed"],
+                            storiesArray: [["story_hash": "12:first", "story_title": "First story"],
+                                           ["story_hash": "12:second", "story_title": "Second story"]])
+    }
+
+    private func makeFixture() -> (DiscoverSitesViewController, StoryPreviewRoutingModel, StoryPreviewRoutingApp, StoryPreviewRoutingDetail) {
+        let model = StoryPreviewRoutingModel()
+        model.searchState.isTrendingLoaded = true
+        let app = StoryPreviewRoutingApp()
+        app.storiesCollection = StoriesCollection()
+        let detail = StoryPreviewRoutingDetail()
+        app.detailViewController = detail
+        detail.appDelegate = app
+        DiscoverSitesViewController.viewModelFactory = { model }
+        defer { DiscoverSitesViewController.viewModelFactory = nil }
+        let controller = DiscoverSitesViewController()
+        controller.appDelegate = app
+        controller.loadViewIfNeeded()
+        return (controller, model, app, detail)
+    }
+}
+
+@MainActor private final class StoryPreviewRoutingModel: DiscoverSitesViewModel {
+    var holdsResolution = false
+    var failsResolution = false
+    var pendingResolution: CheckedContinuation<DiscoverPopularFeed?, Never>?
+    override func resolvePreviewFeed(_ feed: DiscoverPopularFeed) async -> DiscoverPopularFeed? {
+        if holdsResolution {
+            return await withCheckedContinuation { pendingResolution = $0 }
+        }
+        return failsResolution ? nil : feed
+    }
+}
+
+@MainActor private final class StoryPreviewRoutingApp: NewsBlurAppDelegate {
+    var previewFeedID: String?
+    var previewStoryID: String?
+    override func loadTryFeedDetailView(_ feedId: String!, withStory contentId: String!, isSocial social: Bool,
+                                       withUser user: [AnyHashable: Any]!, showFindingStory showHUD: Bool) {
+        previewFeedID = feedId
+        previewStoryID = contentId
+        tryFeedStoryId = contentId
+        // AuthenticationResetTests.swift mirrors the reset performed by NewsBlurAppDelegate.m's reader entry point.
+        tryFeedStoryTitle = nil
+    }
+}
+
+@MainActor private final class StoryPreviewRoutingDetail: DetailViewController {
+    var visible = true
+    var previewActive = false
+    override var isDiscoverSitesVisible: Bool { visible }
+    override var canReturnToDiscoverSites: Bool { previewActive }
+    override func beginDiscoverPreview() { visible = false; previewActive = true }
+    override func returnToDiscoverSites() { visible = true; previewActive = false }
+}
+
+@MainActor final class Test_DiscoverSourceNavigation: XCTestCase {
+    override func tearDown() {
+        DiscoverSitesViewController.viewModelFactory = nil
+        super.tearDown()
+    }
+
+    func test_pagePanCoversContentAndUsesAnInteractivePagedContainer() throws {
+        let (controller, _) = makeDiscovery()
+        let gesture = try sourceGesture(in: controller)
+        XCTAssertTrue(gesture.view === controller.view)
+        XCTAssertEqual(gesture.maximumNumberOfTouches, 1)
+        XCTAssertFalse(gesture.delaysTouchesBegan)
+        XCTAssertFalse(gesture.delaysTouchesEnded)
+        XCTAssertTrue(gesture.cancelsTouchesInView, "A recognized swipe must not also tap Add or Try")
+        let pager = try XCTUnwrap(controller.sourcePager)
+        XCTAssertTrue(pager.scrollView.isPagingEnabled)
+        XCTAssertEqual(pager.scrollView.contentSize.width, pager.view.bounds.width * 8, accuracy: 1)
+        XCTAssertFalse(pager.scrollView.panGestureRecognizer.isEnabled, "The ancestor pan handles page content without applying the drag twice")
+    }
+
+    func test_pagerVisitsEverySourceInOrderAndStopsAtBothEnds() throws {
+        let (controller, model) = makeDiscovery()
+        let sources: [DiscoverTab] = [.search, .webFeed, .popular, .youtube, .reddit, .newsletters, .podcasts, .googleNews]
+        try swipe(controller, x: 600, y: 0)
+        XCTAssertEqual(model.activeTab, .search)
+        for source in sources.dropFirst() {
+            try swipe(controller, x: -600, y: 8)
+            XCTAssertEqual(model.activeTab, source)
+        }
+        try swipe(controller, x: -600, y: 0)
+        XCTAssertEqual(model.activeTab, .googleNews)
+        for source in sources.dropLast().reversed() {
+            try swipe(controller, x: 600, y: -8)
+            XCTAssertEqual(model.activeTab, source)
+        }
+    }
+
+    func test_dragMovesAdjacentPagesBeforeReleaseAndCancellationReturnsToStart() throws {
+        let (controller, model) = makeDiscovery()
+        let pager = try XCTUnwrap(controller.sourcePager)
+        try pan(controller, x: 0, y: 0, state: .began)
+        try pan(controller, x: -400, y: 8, state: .changed)
+        XCTAssertEqual(pager.scrollView.contentOffset.x, 400, accuracy: 1)
+        XCTAssertEqual(model.activeTab, .search, "Dragging must not commit the next source before settling")
+        let search = try XCTUnwrap(pager.children.first { $0.view.accessibilityIdentifier == "discover-page-search" })
+        let web = try XCTUnwrap(pager.children.first { $0.view.accessibilityIdentifier == "discover-page-webFeed" })
+        XCTAssertEqual(search.view.convert(search.view.bounds, to: pager.view).minX, -400, accuracy: 1)
+        XCTAssertEqual(web.view.convert(web.view.bounds, to: pager.view).minX, 600, accuracy: 1)
+        pager.view.frame.size.height -= 200
+        pager.view.setNeedsLayout()
+        pager.view.layoutIfNeeded()
+        XCTAssertEqual(pager.scrollView.contentOffset.x, 400, accuracy: 1, "Keyboard dismissal must preserve horizontal drag progress")
+        try pan(controller, x: -450, y: 8, state: .changed)
+        XCTAssertEqual(pager.scrollView.contentOffset.x, 450, accuracy: 1)
+        try pan(controller, x: -400, y: 8, state: .cancelled)
+        XCTAssertEqual(pager.scrollView.contentOffset.x, 0, accuracy: 1)
+        XCTAssertEqual(model.activeTab, .search)
+    }
+
+    func test_shortDragSpringsBackAndTabSelectionRetainsPreviouslyVisitedPages() throws {
+        let (controller, model) = makeDiscovery()
+        let pager = try XCTUnwrap(controller.sourcePager)
+        let search = try XCTUnwrap(pager.children.first { $0.view.accessibilityIdentifier == "discover-page-search" })
+        model.searchState.query = "retained search"
+        try swipe(controller, x: -100, y: 0)
+        XCTAssertEqual(pager.scrollView.contentOffset.x, 0, accuracy: 1)
+        XCTAssertEqual(model.activeTab, .search)
+        for tab in [DiscoverTab.googleNews, .popular, .search] {
+            model.activeTab = tab
+            pager.select(tab, animated: false)
+        }
+        XCTAssertTrue(pager.children.contains { $0 === search })
+        XCTAssertEqual(model.searchState.query, "retained search")
+        XCTAssertEqual(pager.scrollView.contentOffset.x, 0, accuracy: 1)
+    }
+
+    func test_horizontalSwipesCanRecognizeAlongsideContentScrolling() throws {
+        let (controller, _) = makeDiscovery()
+        let gesture = try sourceGesture(in: controller)
+        let delegate = try XCTUnwrap(gesture.delegate)
+        let verticalPan = DiscoverySourceTestPan()
+        verticalPan.testVelocity = CGPoint(x: 20, y: 200)
+        XCTAssertEqual(delegate.gestureRecognizerShouldBegin?(verticalPan), false)
+        let horizontalPan = DiscoverySourceTestPan()
+        horizontalPan.testVelocity = CGPoint(x: -200, y: 20)
+        XCTAssertEqual(delegate.gestureRecognizerShouldBegin?(horizontalPan), true)
+        let scroll = UIScrollView()
+        XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldRecognizeSimultaneouslyWith: scroll.panGestureRecognizer), true)
+        XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldRecognizeSimultaneouslyWith: UIScreenEdgePanGestureRecognizer()), false)
+    }
+
+    func test_horizontalTagRowsOwnTouchesAtBothEndsAndAfterDraggingOutsideTheRow() throws {
+        let (controller, _) = makeDiscovery()
+        let gesture = try sourceGesture(in: controller)
+        let delegate = try XCTUnwrap(gesture.delegate)
+        let row = UIScrollView(frame: CGRect(x: 0, y: 100, width: 700, height: 44))
+        row.contentSize = CGSize(width: 2100, height: 44)
+        let pill = UIButton(frame: CGRect(x: 0, y: 0, width: 120, height: 44))
+        row.addSubview(pill)
+        controller.sourcePager?.scrollView.addSubview(row)
+        let touch = DiscoverySourceTestTouch(initialView: pill)
+
+        for x in [CGFloat(0), 700, 1400] {
+            row.contentOffset.x = x
+            XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldReceive: touch), false,
+                           "Tag rows keep their horizontal gestures regardless of scroll position")
+        }
+        // AuthenticationResetTests.swift keeps the original touched view while moving the finger outside the row.
+        touch.currentLocation = CGPoint(x: 950, y: 700)
+        XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldReceive: touch), false)
+    }
+
+    func test_verticalContentAndTheOuterPagerStillAllowPageDragging() throws {
+        let (controller, _) = makeDiscovery()
+        let gesture = try sourceGesture(in: controller)
+        let delegate = try XCTUnwrap(gesture.delegate)
+        let pager = try XCTUnwrap(controller.sourcePager)
+        let content = UIScrollView(frame: CGRect(x: 0, y: 0, width: 1000, height: 650))
+        content.contentSize = CGSize(width: 1000, height: 2000)
+        let card = UIView(frame: CGRect(x: 16, y: 16, width: 300, height: 150))
+        content.addSubview(card)
+        pager.scrollView.addSubview(content)
+        XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldReceive: DiscoverySourceTestTouch(initialView: card)), true)
+        XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldReceive: DiscoverySourceTestTouch(initialView: pager.scrollView)), true)
+
+        content.contentSize.width = 3000
+        content.isScrollEnabled = false
+        XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldReceive: DiscoverySourceTestTouch(initialView: card)), true,
+                       "A disabled descendant scroll view must not reserve source-page gestures")
+    }
+
+    func test_shortHorizontallyBouncingRowsKeepTheirOwnGestures() throws {
+        let (controller, _) = makeDiscovery()
+        let gesture = try sourceGesture(in: controller)
+        let delegate = try XCTUnwrap(gesture.delegate)
+        let row = UIScrollView(frame: CGRect(x: 0, y: 0, width: 700, height: 44))
+        row.contentSize = CGSize(width: 500, height: 44)
+        row.alwaysBounceHorizontal = true
+        controller.view.addSubview(row)
+        XCTAssertEqual(delegate.gestureRecognizer?(gesture, shouldReceive: DiscoverySourceTestTouch(initialView: row)), false)
+    }
+
+    func test_discoveryUIKitBackgroundTracksEveryTheme() throws {
+        let defaults = UserDefaults.standard
+        let keys = ["theme_style", "theme_light", "theme_dark"]
+        let saved = keys.map { defaults.object(forKey: $0) }
+        defer {
+            for (key, value) in zip(keys, saved) {
+                if let value { defaults.set(value, forKey: key) }
+                else { defaults.removeObject(forKey: key) }
+            }
+        }
+        let (controller, _) = makeDiscovery()
+        for (theme, hex) in [(ThemeStyleLight, 0xEAECE6), (ThemeStyleSepia, 0xF3E2CB), (ThemeStyleMedium, 0x3D3D3D), (ThemeStyleDark, 0x1A1A1A)] {
+            defaults.set(theme, forKey: "theme_style")
+            defaults.set(theme, forKey: "theme_light")
+            defaults.set(theme, forKey: "theme_dark")
+            controller.updateTheme()
+            let color = try XCTUnwrap(controller.view.backgroundColor)
+            var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+            XCTAssertTrue(color.getRed(&red, green: &green, blue: &blue, alpha: &alpha))
+            XCTAssertEqual(red, CGFloat((hex >> 16) & 0xff) / 255, accuracy: 0.001)
+            XCTAssertEqual(green, CGFloat((hex >> 8) & 0xff) / 255, accuracy: 0.001)
+            XCTAssertEqual(blue, CGFloat(hex & 0xff) / 255, accuracy: 0.001)
+        }
+    }
+
+    private func makeDiscovery() -> (DiscoverSitesViewController, DiscoverSitesViewModel) {
+        let model = DiscoverSitesViewModel()
+        // AuthenticationResetTests.swift keeps source switching independent of network loading.
+        model.searchState.isTrendingLoaded = true
+        model.popularState.isCategoriesLoaded = true
+        model.youtubeState.isCategoriesLoaded = true
+        model.redditState.isCategoriesLoaded = true
+        model.newslettersState.isCategoriesLoaded = true
+        model.podcastsState.isCategoriesLoaded = true
+        model.googleNewsState.isDataLoaded = true
+        DiscoverSitesViewController.viewModelFactory = { model }
+        let controller = DiscoverSitesViewController()
+        controller.loadViewIfNeeded()
+        controller.view.frame = CGRect(x: 0, y: 0, width: 1000, height: 800)
+        controller.sourcePager?.loadViewIfNeeded()
+        controller.sourcePager?.view.frame = CGRect(x: 0, y: 0, width: 1000, height: 650)
+        controller.sourcePager?.view.layoutIfNeeded()
+        return (controller, model)
+    }
+
+    private func sourceGesture(in controller: DiscoverSitesViewController) throws -> UIPanGestureRecognizer {
+        try XCTUnwrap(controller.view.gestureRecognizers?.first { $0.name == "discover-source-swipe" } as? UIPanGestureRecognizer)
+    }
+
+    private func swipe(_ controller: DiscoverSitesViewController, x: CGFloat, y: CGFloat,
+                       state: UIGestureRecognizer.State = .ended) throws {
+        try pan(controller, x: 0, y: 0, state: .began)
+        try pan(controller, x: x, y: y, state: .changed)
+        try pan(controller, x: x, y: y, state: state)
+    }
+
+    private func pan(_ controller: DiscoverSitesViewController, x: CGFloat, y: CGFloat,
+                     state: UIGestureRecognizer.State) throws {
+        _ = try sourceGesture(in: controller)
+        let selector = NSSelectorFromString("handleSourceSwipe:")
+        XCTAssertTrue(controller.responds(to: selector))
+        guard controller.responds(to: selector) else { return }
+        let gesture = DiscoverySourceTestPan()
+        gesture.testTranslation = CGPoint(x: x, y: y)
+        gesture.testState = state
+        let animationsEnabled = UIView.areAnimationsEnabled
+        UIView.setAnimationsEnabled(false)
+        defer { UIView.setAnimationsEnabled(animationsEnabled) }
+        controller.perform(selector, with: gesture)
+    }
+}
+
+@MainActor private final class DiscoverySourceTestPan: UIPanGestureRecognizer {
+    var testTranslation = CGPoint.zero
+    var testVelocity = CGPoint.zero
+    var testState = UIGestureRecognizer.State.possible
+    override var state: UIGestureRecognizer.State {
+        get { testState }
+        set { testState = newValue }
+    }
+    override func translation(in view: UIView?) -> CGPoint { testTranslation }
+    override func velocity(in view: UIView?) -> CGPoint { testVelocity }
+}
+
+@MainActor private final class DiscoverySourceTestTouch: UITouch {
+    private let initialView: UIView
+    var currentLocation = CGPoint.zero
+
+    init(initialView: UIView) {
+        self.initialView = initialView
+        super.init()
+    }
+
+    override var view: UIView? { initialView }
+    override func location(in view: UIView?) -> CGPoint { currentLocation }
+}

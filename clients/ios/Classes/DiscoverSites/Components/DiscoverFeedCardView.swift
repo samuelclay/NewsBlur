@@ -14,6 +14,7 @@ struct DiscoverFeedCardView: View {
     let feed: DiscoverPopularFeed
     var showStories: Bool = false
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
+    var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
 
     var body: some View {
@@ -54,25 +55,35 @@ struct DiscoverFeedCardView: View {
             if showStories && !feed.stories.isEmpty {
                 Divider()
                 ForEach(feed.stories.prefix(3)) { story in
-                    storyRow(story)
+                    Button { onOpenStory?(feed, story) } label: {
+                        storyRow(story)
+                    }
+                    .buttonStyle(DiscoverStoryButtonStyle(isSelected: discovery.selectedPreviewStoryID == story.id))
+                    .disabled(discovery.isPreparingPreview)
+                    .accessibilityIdentifier("discover-story-\(story.id)")
+                    .accessibilityAddTraits(discovery.selectedPreviewStoryID == story.id ? .isSelected : [])
                 }
             }
 
             Divider()
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 Button(action: { onTryFeed?(feed) }) {
                     Label("Try", systemImage: "doc.text.magnifyingglass")
                         .frame(minWidth: 62, minHeight: 44)
                 }
+                .fixedSize(horizontal: true, vertical: false)
                 .accessibilityLabel("Try \(feed.feedTitle)")
+                .accessibilityIdentifier("discover-try-feed-\(feed.id)")
                 .disabled(discovery.isPreparingPreview)
                 .foregroundColor(DiscoverColors.tryButtonText)
-                Spacer(minLength: 0)
                 if isSubscribed {
+                    Spacer(minLength: 0)
                     Label("Subscribed", systemImage: "checkmark.circle.fill")
                         .foregroundColor(DiscoverColors.accent)
                         .frame(minHeight: 44)
                 } else {
+                    DiscoverFolderPicker(viewModel: discovery,
+                                         identifier: "discover-folder-picker-\(feed.id)")
                     Button(action: { onAddFeed?(feed) }) {
                         Label("Add", systemImage: "plus")
                             .padding(.horizontal, 16)
@@ -80,7 +91,9 @@ struct DiscoverFeedCardView: View {
                             .foregroundColor(.white)
                             .background(DiscoverColors.accent, in: RoundedRectangle(cornerRadius: 10))
                     }
+                    .fixedSize(horizontal: true, vertical: false)
                     .accessibilityLabel("Add \(feed.feedTitle)")
+                    .accessibilityIdentifier("discover-add-feed-\(feed.id)")
                     .disabled(discovery.isAdding)
                 }
             }
@@ -147,6 +160,15 @@ struct DiscoverFeedCardView: View {
                     .font(.system(size: 13))
                     .foregroundColor(DiscoverColors.textPrimary)
                     .lineLimit(2)
+                    .accessibilityIdentifier("discover-story-title-\(story.id)")
+
+                if !story.excerpt.isEmpty {
+                    Text(story.excerpt)
+                        .font(.system(size: 12))
+                        .foregroundColor(DiscoverColors.textSecondary)
+                        .lineLimit(2)
+                        .accessibilityIdentifier("discover-story-excerpt-\(story.id)")
+                }
 
                 HStack(spacing: 4) {
                     if !story.authors.isEmpty {
@@ -188,7 +210,10 @@ struct DiscoverFeedCardView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
         .padding(.vertical, 6)
+        .padding(.horizontal, 8)
+        .contentShape(Rectangle())
     }
 
     private func relativeDate(_ date: Date) -> String {
@@ -206,5 +231,58 @@ struct DiscoverFeedCardView: View {
 
         guard let appDelegate = NewsBlurAppDelegate.shared() else { return false }
         return appDelegate.dictFeeds?.object(forKey: feed.id) != nil
+    }
+}
+
+@available(iOS 15.0, *)
+private struct DiscoverStoryButtonStyle: ButtonStyle {
+    let isSelected: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(DiscoverColors.accent.opacity(configuration.isPressed ? 0.24 : isSelected ? 0.14 : 0),
+                        in: RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8)
+                .stroke(DiscoverColors.accent.opacity(configuration.isPressed || isSelected ? 0.5 : 0), lineWidth: 1))
+    }
+}
+
+@available(iOS 15.0, *)
+struct DiscoverFolderPicker: View {
+    @ObservedObject var viewModel: DiscoverSitesViewModel
+    let identifier: String
+
+    var body: some View {
+        Menu {
+            Button { viewModel.selectedFolder = "" } label: {
+                Label("Top Level", systemImage: viewModel.selectedFolder.isEmpty ? "checkmark" : "folder")
+            }
+            ForEach(viewModel.folders, id: \.self) { folder in
+                Button { viewModel.selectedFolder = folder } label: {
+                    Label(viewModel.folderDisplayName(folder),
+                          systemImage: viewModel.selectedFolder == folder ? "checkmark" : "folder")
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Text(viewModel.selectedFolder.isEmpty ? "Top Level" : viewModel.displayFolder)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.down")
+                    .font(.caption2)
+            }
+            .foregroundColor(DiscoverColors.textPrimary)
+            .padding(.horizontal, 10)
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 44)
+            .background(DiscoverColors.textFieldBackground, in: RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(DiscoverColors.border, lineWidth: 1))
+        }
+        .frame(minWidth: 0, maxWidth: .infinity)
+        .buttonStyle(.plain)
+        .accessibilityLabel("Add to folder")
+        .accessibilityValue(viewModel.displayFolder)
+        .accessibilityIdentifier(identifier)
     }
 }
