@@ -24,7 +24,6 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.newsblur.R
 import com.newsblur.util.FileCache
 import kotlinx.coroutines.CancellationException
@@ -145,8 +144,9 @@ class StoryImageViewer(
             window?.let {
                 it.setLayout(-1, -1)
                 WindowCompat.getInsetsController(it, root).apply {
-                    systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                    hide(WindowInsetsCompat.Type.systemBars())
+                    isAppearanceLightStatusBars = false
+                    isAppearanceLightNavigationBars = false
+                    show(WindowInsetsCompat.Type.systemBars())
                 }
             }
             root.post {
