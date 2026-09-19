@@ -18,6 +18,18 @@ import org.junit.Test
 
 class ReadingActionClusterReadTest {
     @Test
+    fun bulkReadKeepsOriginalTimeForInitialApplyAndFollowupReplay() {
+        val db = mockk<BlurDatabaseHelper>(relaxed = true)
+        val action = ReadingAction.MarkFeedRead(FeedSet.singleFeed("2"), olderThan = 500, time = 100)
+        val restored = ReadingAction.fromJson(ReadingAction.toJson(action))
+
+        action.doLocal(db, mockk(relaxed = true), false)
+        restored.doLocal(db, mockk(relaxed = true), true)
+
+        verify(exactly = 2) { db.markStoriesRead(action.feedSet, 500, null, 100) }
+    }
+
+    @Test
     fun queuedSuccessAppliesAuthoritativeChildrenAndRetainsThemForFollowupReplay() = runTest {
         val db = mockk<BlurDatabaseHelper>(relaxed = true)
         val api = mockk<StoryApi>()

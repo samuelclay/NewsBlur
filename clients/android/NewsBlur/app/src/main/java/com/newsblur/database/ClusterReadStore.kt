@@ -15,12 +15,12 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
     fun apply(hashes: Collection<String>, read: Boolean, adjustCounts: Boolean, actionTime: Long? = null): Set<FeedSet> =
         ClusterReadRepository(this).apply(hashes, read, adjustCounts, actionTime)
 
-    fun applyBulkRead(selection: String?) {
+    fun applyBulkRead(selection: String?, actionTime: Long) {
         val hashes = mutableListOf<String>()
         db.query(DatabaseConstants.STORY_TABLE, arrayOf("story_hash"), selection, null, null, null, null).use {
             while (it.moveToNext()) hashes.add(it.getString(0))
         }
-        ClusterReadRepository(this).applyBulkRead(hashes)
+        ClusterReadRepository(this).applyBulkRead(hashes, actionTime)
     }
 
     fun normalizeStory(story: Story, readStatusAuthoritative: Boolean) {
@@ -159,11 +159,11 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
         return parents
     }
 
-    override fun setLocalReadState(hash: String, read: Boolean) {
+    override fun setLocalReadState(hash: String, read: Boolean, changedAt: Long) {
         db.insertWithOnConflict(READ_STATE, null, ContentValues().apply {
             put("story_hash", hash)
             put("read", read)
-            put("updated_at", System.currentTimeMillis())
+            put("updated_at", changedAt)
         }, SQLiteDatabase.CONFLICT_REPLACE)
     }
 
