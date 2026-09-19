@@ -65,6 +65,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $('.NB-feeds-header-river-well-read .NB-feeds-header-icon').attr('src', $.favicon('trending:well_read'));
         $('.NB-feeds-header-river-long-reads .NB-feeds-header-icon').attr('src', $.favicon('trending:long_reads'));
         $('.NB-feeds-header-river-good-reads .NB-feeds-header-icon').attr('src', $.favicon('trending:good_reads'));
+        $('.NB-feeds-header-river-discovery .NB-feeds-header-icon').attr('src', $.favicon('trending:discovery'));
     },
 
     make_feeds: function (options) {
@@ -257,6 +258,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                 'opacity': 0
             });
         }
+
+        $('.NB-feeds-header-river-discovery-container').toggle(
+            !!NEWSBLUR.Globals.is_authenticated && !!NEWSBLUR.assets.preference('show_discovery'));
 
         if (NEWSBLUR.assets.preference('show_good_reads')) {
             $('.NB-feeds-header-river-good-reads-container').css({

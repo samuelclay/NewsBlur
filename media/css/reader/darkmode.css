@@ -40,6 +40,14 @@ body.NB-dark {
     color: #c0c0c0;
 }
 
+.NB-dark .NB-recommendation-feedback {
+    --feedback-text: #bdc7b8;
+    --feedback-border: #67735f;
+    --feedback-selected: #2d3c2a;
+    --feedback-accent: #b4d29e;
+    --feedback-error: #f39e92;
+}
+
 .NB-dark .NB-static-alert {
     color: #c0c0c0;
 }

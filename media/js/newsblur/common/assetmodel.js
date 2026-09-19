@@ -1164,8 +1164,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     fetch_trending_stories: function (feed_id, page, options, callback, error_callback, first_load) {
         var self = this;
+        if (first_load) this.discovery_snapshot = null;
+        var user_id = NEWSBLUR.Globals.user_id;
 
         var pre_callback = function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id) return;
+            if (options.trending_type === 'discovery') {
+                self.discovery_snapshot = data.discovery_snapshot;
+                _.each(data.feeds, function (feed) { feed.temp = true; });
+            }
             self.load_feed_precallback(data, feed_id, callback, first_load);
         };
 
@@ -1173,6 +1180,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         this.make_request('/reader/trending_stories', {
             trending_type: options.trending_type,
+            discovery_snapshot: this.discovery_snapshot,
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter')
@@ -1544,6 +1552,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return user;
     },
 
+    save_recommendation_feedback: function (story_hash, value, callback, error_callback) {
+        if (!NEWSBLUR.Globals.is_authenticated) {
+            error_callback();
+            return;
+        }
+        this.make_request('/recommendations/story_feedback', {
+            story_hash: story_hash,
+            value: value,
+            csrfmiddlewaretoken: $.cookie('csrftoken'),
+            surface: 'discovery'
+        }, callback, error_callback, { retry: false });
+    },
+
     save_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);
@@ -1836,13 +1857,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (NEWSBLUR.reader.flags['feed_list_showing_starred'] &&
             setting == 'read_filter') return "starred";
         if (feed_id == "river:global" && setting == "order") return "newest";
+        if (feed_id == "trending:discovery" && setting == "order") return "recommended";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
             var s = setting.substr(0, 1);
             var feed = NEWSBLUR.Preferences.view_settings[feed_id + ''];
             var default_setting = NEWSBLUR.Preferences['default_' + setting];
             if (setting == 'layout') default_setting = NEWSBLUR.Preferences['story_layout'];
-            if (setting == 'read_filter' && _.string.contains(feed_id, 'river:')) {
+            if (setting == 'read_filter' && (_.string.contains(feed_id, 'river:') || feed_id == 'trending:discovery')) {
                 default_setting = 'unread';
             }
             var view_setting = feed && feed[s] || default_setting;

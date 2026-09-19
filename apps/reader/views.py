@@ -49,6 +49,7 @@ from django.urls import reverse
 from django.utils import feedgenerator
 from django.utils.encoding import smart_str
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 from mongoengine.queryset import NotUniqueError, OperationError
 
 from apps.analyzer.models import (
@@ -100,7 +101,7 @@ from apps.reader.models import (
     UserSubscription,
     UserSubscriptionFolders,
 )
-from apps.recommendations.models import RecommendedFeed
+from apps.recommendations.models import MRecommendationFeedback, RecommendedFeed
 from apps.rss_feeds.models import MFeedIcon, MSavedSearch, MStarredStoryCounts
 from apps.search.models import MUserSearch, SearchStory
 from apps.statistics.models import MAnalyticsLoader, MStatistics
@@ -5788,13 +5789,14 @@ def trending_feeds(request):
     return {"trending_feeds": result}
 
 
+@ensure_csrf_cookie
 @json.json_view
 def load_trending_stories(request):
     """
     Load stories from the permanent trending lists.
 
     GET Parameters:
-        trending_type: "well_read", "long_reads", or "good_reads"
+        trending_type: "well_read", "long_reads", "good_reads", or "discovery"
         page: Page number (default 1)
         limit: Stories per page (default 12)
         order: "newest" or "oldest" (default "newest")
@@ -5802,10 +5804,10 @@ def load_trending_stories(request):
     """
     user = get_user(request)
     trending_type = request.GET.get("trending_type", "well_read")
-    if trending_type not in ("well_read", "long_reads", "good_reads"):
+    if trending_type not in ("well_read", "long_reads", "good_reads", "discovery"):
         trending_type = "well_read"
-    page = max(int(request.GET.get("page", 1)), 1)
-    limit = min(int(request.GET.get("limit", 12)), 100)
+    page = max(int_or_default(request.GET.get("page", 1), 1), 1)
+    limit = max(1, min(int_or_default(request.GET.get("limit", 12), 12), 100))
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
     offset = (page - 1) * limit
@@ -5814,7 +5816,23 @@ def load_trending_stories(request):
 
     user_id = user.pk if user.is_authenticated else None
 
-    if trending_type == "good_reads":
+    discovery_snapshot = None
+    if trending_type == "discovery":
+        from apps.recommendations.discovery import Discovery
+
+        if not request.user.is_authenticated:
+            return dict(code=-1, message="Sign in to read your Discovery stream.")
+        try:
+            story_hashes, discovery_snapshot = Discovery.page(
+                user_id,
+                page=page,
+                limit=limit,
+                read_filter=read_filter,
+                snapshot=request.GET.get("discovery_snapshot"),
+            )
+        except ValueError as exc:
+            return dict(code=-1, message=str(exc))
+    elif trending_type == "good_reads":
         story_hashes = RTrendingStory.get_good_read_story_hashes(
             offset=offset, limit=limit, order=order, read_filter=read_filter, user_id=user_id
         )
@@ -5833,6 +5851,11 @@ def load_trending_stories(request):
     # Sort stories to match the order from the sorted set
     story_hash_order = {h: i for i, h in enumerate(story_hashes)}
     stories.sort(key=lambda s: story_hash_order.get(s["story_hash"], 999))
+
+    if trending_type == "discovery" and user_id:
+        feedback = MRecommendationFeedback.for_stories(user_id, story_hashes)
+        for story in stories:
+            story["recommendation_feedback"] = feedback.get(story["story_hash"], 0)
 
     # Look up read state from Redis
     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -6011,12 +6034,14 @@ def load_trending_stories(request):
         "well_read": "widely-read",
         "long_reads": "long reads",
         "good_reads": "good reads",
+        "discovery": "discovery",
     }
     type_label = type_labels[trending_type]
     logging.user(request, "~FCLoading ~SB%s~SN %s stories (p. %s)" % (len(stories), type_label, page))
 
     return {
         "stories": stories,
+        "discovery_snapshot": discovery_snapshot,
         "user_profiles": user_profiles,
         "feeds": unsub_feeds,
         "classifiers": classifiers,

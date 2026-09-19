@@ -179,12 +179,15 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         } else if (unread_view_score >= 0 && counts['ng']) {
             hidden_stories = counts['ng'];
         }
-        if (NEWSBLUR.reader.flags.search) {
+        var is_discovery = NEWSBLUR.reader.active_feed === 'trending:discovery';
+        if (NEWSBLUR.reader.flags.search || is_discovery) {
             hidden_stories = false;
         }
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
-            'No stories to read',
+            is_discovery ? 'No new discoveries right now' : 'No stories to read',
             $.make('div', { className: 'NB-world' }),
+            (is_discovery && $.make('div', { className: 'NB-story-list-empty-subtitle' },
+                'Keep reading and check back for stories from new sites.')),
             (hidden_stories && $.make('div', { className: 'NB-story-list-empty-subtitle' }, [
                 'There ',
                 Inflector.pluralize('is', hidden_stories),

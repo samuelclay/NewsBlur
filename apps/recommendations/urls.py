@@ -3,6 +3,7 @@ from django.conf.urls import *
 from apps.recommendations import views
 
 urlpatterns = [
+    url(r"^story_feedback/?$", views.save_story_feedback, name="save-story-feedback"),
     url(r"^load_recommended_feed", views.load_recommended_feed, name="load-recommended-feed"),
     url(r"^save_recommended_feed", views.save_recommended_feed, name="save-recommended-feed"),
     url(r"^approve_feed", views.approve_feed, name="approve-recommended-feed"),

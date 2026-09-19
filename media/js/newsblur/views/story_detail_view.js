@@ -10,6 +10,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     events: {
         "click": "mark_read",
+        "click .NB-recommendation-feedback-vote": "save_recommendation_feedback",
+        "click .NB-recommendation-feedback-undo": "undo_recommendation_feedback",
+        "click .NB-recommendation-feedback-retry": "retry_recommendation_feedback",
+        "click .NB-recommendation-feedback": "stop_recommendation_feedback_event",
+        "mousedown .NB-recommendation-feedback": "stop_recommendation_feedback_event",
+        "keydown .NB-recommendation-feedback": "stop_recommendation_feedback_event",
         "click .NB-feed-story-content a": "click_link_in_story",
         "click .NB-feed-story-share-container a": "click_link_in_story",
         "click .NB-feed-story-comments a": "click_link_in_story",
@@ -73,6 +79,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:shared', this.render_comments, this);
         this.model.bind('change:comments', this.render_comments, this);
         this.model.bind('change:story_content', this.render_story_content, this);
+        this.listenTo(this.model, 'change:recommendation_feedback change:recommendation_feedback_state',
+            this.render_recommendation_feedback);
         if (this.collection) {
             this.collection.bind('render:intelligence', this.render_intelligence, this);
         }
@@ -140,6 +148,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_comments();
         this.render_cluster_stories();
         this.render_briefing_admin_badge();
+        this.render_recommendation_feedback();
         this.attach_handlers();
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
         // }
@@ -285,6 +294,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             options: this.options,
             truncatable: this.is_truncatable(),
             inline_story_title: this.options.inline_story_title,
+            show_recommendation_feedback: this.show_recommendation_feedback(),
             show_sideoption_email: NEWSBLUR.assets.preference("show_sideoption_email"),
             show_sideoption_train: NEWSBLUR.assets.preference("show_sideoption_train"),
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
@@ -442,6 +452,20 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     template: _.template('\
         <%= story_header %>\
+        <% if (show_recommendation_feedback) { %>\
+            <div class="NB-recommendation-feedback" role="group" aria-label="Train recommendations">\
+                <div class="NB-recommendation-feedback-buttons">\
+                    <button type="button" class="NB-recommendation-feedback-vote" data-value="1" aria-pressed="false">More like this</button>\
+                    <button type="button" class="NB-recommendation-feedback-vote" data-value="-1" aria-pressed="false">Less like this</button>\
+                </div>\
+                <div class="NB-recommendation-feedback-help">Train future recommendations. Keep reading right here.</div>\
+                <div class="NB-recommendation-feedback-result">\
+                    <span class="NB-recommendation-feedback-status" role="status" aria-live="polite"></span>\
+                    <button type="button" class="NB-recommendation-feedback-undo" hidden>Undo</button>\
+                    <button type="button" class="NB-recommendation-feedback-retry" hidden>Retry</button>\
+                </div>\
+            </div>\
+        <% } %>\
         <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
@@ -792,7 +816,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_classes: function () {
         var changes = this.model.changedAttributes();
         var onlySelected = changes && _.all(_.keys(changes), function (change) {
-            return _.contains(['selected', 'read', 'intelligence', 'visible'], change);
+            return _.contains(['selected', 'read', 'intelligence', 'visible',
+                'recommendation_feedback', 'recommendation_feedback_state'], change);
         });
 
         if (onlySelected) return;
@@ -1033,13 +1058,93 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // = Actions =
     // ===========
 
-    mark_read: function () {
+    mark_read: function (e) {
+        // story_detail_view.js: Feedback must not inherit the story's click-to-read behavior.
+        if (e && $(e.target).closest('.NB-recommendation-feedback').length) return;
         var delay = NEWSBLUR.assets.preference('read_story_delay');
         if (delay == -2) {
             this.model.mark_read({ skip_delay: true });
         } else {
             this.model.mark_read();
         }
+    },
+
+    show_recommendation_feedback: function () {
+        return NEWSBLUR.Globals.is_authenticated && !this.options.feed_floater &&
+            NEWSBLUR.reader.flags.trending_type === 'discovery' &&
+            NEWSBLUR.reader.flags.trending_view;
+    },
+
+    stop_recommendation_feedback_event: function (e) {
+        e.stopPropagation();
+    },
+
+    render_recommendation_feedback: function () {
+        var state = this.model.get('recommendation_feedback_state') || {};
+        var value = this.model.get('recommendation_feedback') || 0;
+        this.$('.NB-recommendation-feedback-vote').each(function () {
+            var selected = Number($(this).attr('data-value')) === value;
+            $(this).attr('aria-pressed', selected ? 'true' : 'false')
+                .toggleClass('NB-active', selected).prop('disabled', !!state.saving);
+        });
+        this.$('.NB-recommendation-feedback-status').text(state.message || '')
+            .toggleClass('NB-error', !!state.error);
+        this.$('.NB-recommendation-feedback-undo').prop('hidden', !state.can_undo || !!state.saving);
+        this.$('.NB-recommendation-feedback-retry').prop('hidden', !state.error || !!state.saving);
+    },
+
+    save_recommendation_feedback: function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var value = Number($(e.currentTarget).attr('data-value'));
+        if (value === this.model.get('recommendation_feedback')) value = 0;
+        this.submit_recommendation_feedback(value, false);
+    },
+
+    undo_recommendation_feedback: function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var state = this.model.get('recommendation_feedback_state') || {};
+        if (state.can_undo) this.submit_recommendation_feedback(state.undo_value, true);
+    },
+
+    retry_recommendation_feedback: function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var state = this.model.get('recommendation_feedback_state') || {};
+        if (state.error) this.submit_recommendation_feedback(state.retry_value, state.retry_undo);
+    },
+
+    submit_recommendation_feedback: function (value, undo) {
+        var model = this.model;
+        var state = model.get('recommendation_feedback_state') || {};
+        var previous_value = model.get('recommendation_feedback') || 0;
+        if (state.saving || !this.show_recommendation_feedback() ||
+            !_.contains([-1, 0, 1], value) || value === previous_value) return;
+
+        var user_id = NEWSBLUR.Globals.user_id;
+        model.set('recommendation_feedback_state', { saving: true, message: 'Saving preference…' });
+        NEWSBLUR.assets.save_recommendation_feedback(model.get('story_hash'), value, function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            model.set({
+                recommendation_feedback: data.value,
+                recommendation_feedback_state: {
+                    message: undo ? 'Preference restored.' : (data.value ? 'Preference saved.' : 'Preference cleared.'),
+                    can_undo: !undo,
+                    undo_value: previous_value
+                }
+            });
+        }, function () {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            model.set('recommendation_feedback_state', {
+                error: true,
+                message: 'Couldn’t save your preference.',
+                retry_value: value,
+                retry_undo: undo,
+                can_undo: state.can_undo,
+                undo_value: state.undo_value
+            });
+        });
     },
 
     preserve_classifier_color: function (classifier_type, value, score) {

@@ -51,6 +51,7 @@
                 $river_well_read_header: $('.NB-feeds-header-river-well-read'),
                 $river_long_reads_header: $('.NB-feeds-header-river-long-reads'),
                 $river_good_reads_header: $('.NB-feeds-header-river-good-reads'),
+                $river_discovery_header: $('.NB-feeds-header-river-discovery'),
                 $river_briefing_header: $('.NB-feeds-header-river-briefing'),
                 $river_briefing_admin_header: $('.NB-feeds-header-river-briefing-admin'),
                 $archive_header: $('.NB-feeds-header-archive'),
@@ -1601,6 +1602,7 @@
             this.$s.$river_well_read_header.removeClass('NB-selected');
             this.$s.$river_long_reads_header.removeClass('NB-selected');
             this.$s.$river_good_reads_header.removeClass('NB-selected');
+            this.$s.$river_discovery_header.removeClass('NB-selected');
             this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$river_briefing_admin_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
@@ -1608,7 +1610,7 @@
                 this.$s.$tryfeed_header.removeClass('NB-selected');
             }
             this.$s.$add_site_header.removeClass('NB-selected');
-            this.$s.$layout.removeClass('NB-view-river');
+            this.$s.$layout.removeClass('NB-view-river NB-view-discovery');
             this.$s.$layout.removeClass('NB-archive-active');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_story', this.$s.$taskbar).removeClass('NB-disabled');
@@ -3267,7 +3269,8 @@
             var folder_titles = {
                 'well_read': 'Widely Read Stories',
                 'long_reads': 'Long Reads',
-                'good_reads': 'Good Reads'
+                'good_reads': 'Good Reads',
+                'discovery': 'Discovery'
             };
             var folder_title = folder_titles[trending_type] || folder_titles['well_read'];
 
@@ -3282,7 +3285,9 @@
                 show_options: true
             });
 
-            if (trending_type == 'good_reads') {
+            if (trending_type == 'discovery') {
+                this.$s.$river_discovery_header.addClass('NB-selected');
+            } else if (trending_type == 'good_reads') {
                 this.$s.$river_good_reads_header.addClass('NB-selected');
             } else if (trending_type == 'long_reads') {
                 this.$s.$river_long_reads_header.addClass('NB-selected');
@@ -3296,6 +3301,7 @@
             this.flags.river_view = true;
             this.flags.trending_view = true;
             this.flags.trending_type = trending_type;
+            this.$s.$layout.toggleClass('NB-view-discovery', trending_type === 'discovery');
             if (options.story_id) {
                 this.flags['select_story_in_feed'] = options.story_id;
             }
@@ -4416,6 +4422,8 @@
                 feed_title = "Widely Read Stories";
             } else if (feed_id == 'trending:long_reads') {
                 feed_title = "Long Reads";
+            } else if (feed_id == 'trending:discovery') {
+                feed_title = "Discovery";
             } else if (feed_id == 'trending:good_reads') {
                 feed_title = "Good Reads";
             } else if (feed_id == 'river:blurblogs') {

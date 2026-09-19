@@ -17,6 +17,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             label: 'Long Reads',
             explanation: 'Features and essays that readers gave real time to.'
         },
+        'trending:discovery': {
+            label: 'Discovery',
+            explanation: 'Stories from sites you don’t follow, ordered using your reading time, saves, shares, and feedback. Train with More like this or Less like this without leaving the article.'
+        },
         'trending:good_reads': {
             label: 'Good Reads',
             explanation: 'Not the most read, but the best received, and tilted toward small sites over big ones.'
@@ -612,6 +616,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var filter = NEWSBLUR.reader.flags['classifier_filter'];
         if (filter && !this.collection.length) {
             this.show_classifier_filter_empty(filter);
+            return;
+        }
+        if (NEWSBLUR.reader.active_feed === 'trending:discovery' && !this.collection.length) {
+            this.$el.append($.make('div', { className: 'NB-end-line NB-discovery-empty' },
+                'No new discoveries right now. Keep reading and check back for more stories from new sites.'));
             return;
         }
         var $end_stories_line = $.make('div', { className: "NB-end-line" }, [
