@@ -59,6 +59,28 @@
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *storyTitlesEdgeRevealGesture;
 @property (nonatomic, strong) UIView *uiTestStoryStateProbeView;
 @property (nonatomic, strong) UIView *uiTestTraverseFadeProbeView;
+@property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalReaderToolbarItems;
+@property (nonatomic, strong) UIBarButtonItem *verticalTextButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalSendButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalProgressButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalPreviousButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalNextButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalSettingsButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalOriginalButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalMarkReadButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalAutoscrollButton;
+@property (nonatomic, weak) UIViewController *verticalToolbarOwner;
+@property (nonatomic, strong) UINavigationBarAppearance *horizontalReaderNavigationAppearance;
+@property (nonatomic) BOOL hasPreparedToolbarPresentation;
+@property (nonatomic) BOOL lastUsedVerticalToolbar;
+@property (nonatomic) BOOL lastUsedCustomToolbar;
+@property (nonatomic, weak) UIViewController *nativeHeaderScrollOwner;
+@property (nonatomic, weak) UIScrollView *nativeHeaderScrollView;
+@property (nonatomic, weak) UIScrollView *previousHeaderScrollView;
+@property (nonatomic, strong) NSObject *previousHeaderMinimization;
+@property (nonatomic, strong) NSObject *readerHeaderMinimization;
+@property (nonatomic, weak) UIScrollView *readerTopEdgeScrollView;
+@property (nonatomic) BOOL previousReaderTopEdgeHidden;
 
 - (void)resetTraverseFadeForStoryChange;
 - (void)completePendingStoryPresentationCallingCompletion:(BOOL)callCompletion;
@@ -123,6 +145,12 @@
 - (void)updateStoryTitleNavigationButtons {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     [self ensureTemporaryFullScreenButton];
+
+    if (self.usesVerticalReaderToolbar) {
+        // StoryPagesObjCViewController.m places reader actions in the system bar instead of custom navigation views.
+        self.appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = nil;
+        return;
+    }
 
     NSMutableArray *items = [NSMutableArray array];
     [items addObject:originalStoryButton];
@@ -204,6 +232,7 @@
 
     [self ensureCurrentPageViewIsFrontmost];
     [self.currentPage drawFeedGradient];
+    [self updateNativeReaderHeaderScrolling];
 }
 
 - (void)resetTraverseFadeForStoryChange {
@@ -618,6 +647,7 @@
     // Only show traverse controls when there's an active feed or folder
     BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
     self.traverseView.alpha = hasFeedOrFolder ? 1 : 0;
+    [self updateReaderToolbarPresentation];
     [self updateUITestTraverseFadeProbe];
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
@@ -663,10 +693,22 @@
 
 - (void)viewSafeAreaInsetsDidChange {
     [super viewSafeAreaInsetsDidChange];
+    [self updateReaderToolbarPresentation];
+    if ([self hasHiddenReaderAncestor]) return;
+    if (self.usesVerticalReaderToolbar) {
+        [self.currentPage updateContentInsetForNavigationBarAlpha:1 maintainVisualPosition:YES force:YES];
+        [self.nextPage updateContentInsetForNavigationBarAlpha:1 maintainVisualPosition:YES force:YES];
+        [self.previousPage updateContentInsetForNavigationBarAlpha:1 maintainVisualPosition:YES force:YES];
+    }
     [self alignScrollViewToCurrentPageIfNeeded];
 }
 
 - (void)viewDidLayoutSubviews {
+    [self updateReaderToolbarPresentation];
+    if ([self hasHiddenReaderAncestor]) {
+        [super viewDidLayoutSubviews];
+        return;
+    }
     if (self.storySelectionRedrawCover) {
         self.storySelectionRedrawCover.frame = [self.scrollView.superview convertRect:self.scrollView.bounds fromView:self.scrollView];
         self.storySelectionRedrawCover.subviews.firstObject.frame = self.storySelectionRedrawCover.bounds;
@@ -687,6 +729,7 @@
         // Update viewport width on all pages to match the new layout size.
         // Deferred so web view subviews complete their layout pass first.
         dispatch_async(dispatch_get_main_queue(), ^{
+            if ([self hasHiddenReaderAncestor]) return;
             [self->appDelegate adjustStoryDetailWebView];
         });
     }
@@ -700,6 +743,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    [self updateNativeReaderHeaderScrolling];
     if (self.pendingPresentationOpenedEarly && self.view.window == nil) [self cancelPendingStoryPresentationForNavigation];
     
     if (!appDelegate.detailViewController.storyTitlesInGridView) {
@@ -750,7 +794,21 @@
 }
 
 - (BOOL)becomeFirstResponder {
-    // delegate to current page
+    // StoryPagesObjCViewController.m restores reader shortcuts only while the reader owns keyboard focus.
+    UIWindow *window = self.viewIfLoaded.window;
+    if (!window || self.view.hidden || self.view.alpha <= 0.01) return NO;
+    for (UIViewController *controller = self; controller; controller = controller.parentViewController) {
+        if (controller.presentedViewController) return NO;
+    }
+    if (window.rootViewController.presentedViewController) return NO;
+
+    NSMutableArray<UIView *> *views = [NSMutableArray arrayWithObject:window];
+    while (views.count > 0) {
+        UIView *view = views.lastObject;
+        [views removeLastObject];
+        if (view.isFirstResponder && [view conformsToProtocol:@protocol(UITextInput)]) return NO;
+        [views addObjectsFromArray:view.subviews];
+    }
     return [currentPage becomeFirstResponder];
 }
 
@@ -776,6 +834,7 @@
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    if ([self hasHiddenReaderAncestor]) return;
 //    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
@@ -842,7 +901,7 @@
 }
 
 - (BOOL)allowFullscreen {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
+    if (!self.isPhoneOrCompact || self.usesVerticalReaderToolbar || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
         return NO;
     }
 
@@ -853,7 +912,236 @@
 }
 
 - (BOOL)useCustomToolbar {
-    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+    return self.isPhoneOrCompact && !self.usesVerticalReaderToolbar && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+}
+
+- (BOOL)usesVerticalReaderToolbar {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        UITraitCollection *traits = self.viewIfLoaded.window ? self.traitCollection :
+            (self.navigationController.traitCollection ?: appDelegate.feedsNavigationController.traitCollection ?: self.traitCollection);
+        return traits.verticalBarEdge != UIVerticalBarEdgeUnspecified;
+    }
+#endif
+    return NO;
+}
+
+- (UIBarButtonItem *)readerBarButtonWithTitle:(NSString *)title symbol:(NSString *)symbol identifier:(NSString *)identifier action:(SEL)action {
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:symbol]
+                                                          style:UIBarButtonItemStylePlain target:self action:action];
+    item.title = title;
+    item.accessibilityLabel = title;
+    item.accessibilityIdentifier = identifier;
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        item.axisBehavior = UIBarButtonItemAxisBehaviorVerticalPreferred;
+        item.sharesBackground = NO;
+    }
+#endif
+    return item;
+}
+
+- (void)prepareVerticalReaderToolbar {
+    if (self.verticalReaderToolbarItems) return;
+    self.verticalTextButton = [self readerBarButtonWithTitle:@"Text view" symbol:@"doc.text" identifier:@"reader-text" action:@selector(toggleTextView:)];
+    self.verticalSendButton = [self readerBarButtonWithTitle:@"Share story" symbol:@"square.and.arrow.up" identifier:@"reader-share" action:@selector(openSendToDialog:)];
+    self.verticalProgressButton = [self readerBarButtonWithTitle:@"Reading progress" symbol:@"chart.pie" identifier:@"reader-progress" action:@selector(tapProgressBar:)];
+    self.verticalPreviousButton = [self readerBarButtonWithTitle:@"Previous story" symbol:@"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
+    self.verticalNextButton = [self readerBarButtonWithTitle:@"Next unread story" symbol:@"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
+    self.verticalOriginalButton = [self readerBarButtonWithTitle:@"Show original story" symbol:@"safari" identifier:@"reader-original" action:@selector(showOriginalSubview:)];
+    self.verticalSettingsButton = [self readerBarButtonWithTitle:@"Story settings" symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
+    self.verticalMarkReadButton = [self readerBarButtonWithTitle:@"Mark all as read" symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
+    self.verticalAutoscrollButton = [self readerBarButtonWithTitle:@"Autoscroll" symbol:@"arrow.down.circle" identifier:@"reader-autoscroll" action:nil];
+    self.verticalReaderToolbarItems = @[self.verticalTextButton, self.verticalSendButton, self.verticalProgressButton,
+        self.verticalPreviousButton, self.verticalNextButton, self.verticalOriginalButton, self.verticalSettingsButton,
+        self.verticalMarkReadButton, self.verticalAutoscrollButton];
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        self.verticalNextButton.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+        self.verticalSettingsButton.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+    }
+#endif
+    [self setNextPreviousButtons];
+    [self setTextButton];
+    [self updateAutoscrollButtons];
+    [self applyToolbarButtonTint];
+}
+
+- (void)updateReaderToolbarPresentation {
+    [self updateReaderScrollEdgeEffects];
+    if (!self.storyToolbar) return;
+    BOOL vertical = self.usesVerticalReaderToolbar;
+    BOOL custom = self.useCustomToolbar;
+    UINavigationController *navigation = self.navigationController;
+    UIViewController *owner = self.isPhoneOrCompact ? self : appDelegate.detailViewController;
+    BOOL readerHidden = [self hasHiddenReaderAncestor];
+    BOOL ownsNavigationChrome = navigation.topViewController == owner && !readerHidden && !appDelegate.detailViewController.isDiscoverSitesVisible;
+    if (!ownsNavigationChrome && self.verticalToolbarOwner.toolbarItems == self.verticalReaderToolbarItems && self.verticalReaderToolbarItems) {
+        self.verticalToolbarOwner.toolbarItems = nil;
+        if (self.verticalToolbarOwner == navigation.topViewController) [navigation setToolbarHidden:YES animated:NO];
+        self.verticalToolbarOwner = nil;
+    }
+    BOOL changed = !self.hasPreparedToolbarPresentation || vertical != self.lastUsedVerticalToolbar || custom != self.lastUsedCustomToolbar;
+    self.hasPreparedToolbarPresentation = YES;
+    self.lastUsedVerticalToolbar = vertical;
+    self.lastUsedCustomToolbar = custom;
+
+    if (vertical) {
+        [self prepareVerticalReaderToolbar];
+        self.storyToolbar.hidden = YES;
+        self.traverseView.hidden = YES;
+        self.autoscrollView.hidden = YES;
+        if (self.toolbarItems != self.verticalReaderToolbarItems) self.toolbarItems = self.verticalReaderToolbarItems;
+        if (self.verticalToolbarOwner != owner && self.verticalToolbarOwner.toolbarItems == self.verticalReaderToolbarItems) {
+            self.verticalToolbarOwner.toolbarItems = nil;
+        }
+        if (ownsNavigationChrome) {
+            // StoryPagesObjCViewController.m must leave a newer screen's bars alone during retained-reader layout callbacks.
+            self.verticalToolbarOwner = owner;
+            if (owner.toolbarItems != self.verticalReaderToolbarItems) owner.toolbarItems = self.verticalReaderToolbarItems;
+            if (navigation.toolbarHidden) [navigation setToolbarHidden:NO animated:NO];
+            if (navigation.navigationBarHidden) [navigation setNavigationBarHidden:NO animated:NO];
+            if (self.isPhoneOrCompact && (changed || self.nativeHeaderScrollOwner != owner)) {
+                navigation.navigationBar.alpha = 1;
+                navigation.navigationBar.userInteractionEnabled = YES;
+            }
+        }
+        self.isNavigationBarFaded = NO;
+        self.navigationBarFadeAlpha = 1;
+        self.verticalMarkReadButton.hidden = appDelegate.detailViewController.storyTitlesOnLeft;
+    } else if (changed) {
+        if (self.verticalToolbarOwner.toolbarItems == self.verticalReaderToolbarItems) self.verticalToolbarOwner.toolbarItems = nil;
+        self.verticalToolbarOwner = nil;
+        self.toolbarItems = nil;
+        self.traverseView.hidden = NO;
+        self.autoscrollView.hidden = NO;
+        self.storyToolbar.hidden = !custom;
+        self.storyToolbar.transform = CGAffineTransformIdentity;
+        [self.toolbarScrollHandler reset];
+        if (ownsNavigationChrome) {
+            [self.navigationController setToolbarHidden:YES animated:NO];
+            [self.navigationController setNavigationBarHidden:custom animated:NO];
+        }
+    }
+
+    // StoryPagesObjCViewController.m rechecks after native bar changes: UIKit can synchronously switch to tiled Feeds and hide the reader during those calls.
+    for (NSLayoutConstraint *constraint in self.view.constraints) {
+        if ([self hasHiddenReaderAncestor]) break;
+        if (constraint.firstItem != self.scrollView || constraint.secondItem != self.view) continue;
+        if (constraint.firstAttribute == NSLayoutAttributeLeading) constraint.constant = vertical ? self.view.safeAreaInsets.left : 0;
+        if (constraint.firstAttribute == NSLayoutAttributeTrailing) constraint.constant = vertical ? -self.view.safeAreaInsets.right : 0;
+    }
+    BOOL needsAppearanceUpdate = changed;
+    BOOL transparentHeader = vertical || (self.isPhone && !self.isPhoneOrCompact);
+    if (ownsNavigationChrome && transparentHeader && !needsAppearanceUpdate) {
+        // StoryPagesObjCViewController.m repairs a sibling's shared-bar theme without rebuilding transparent appearances on every layout.
+        UINavigationBar *bar = navigation.navigationBar;
+        needsAppearanceUpdate = bar.backgroundColor && CGColorGetAlpha(bar.backgroundColor.CGColor) > 0;
+        NSArray<UINavigationBarAppearance *> *appearances = @[bar.standardAppearance,
+            bar.scrollEdgeAppearance ?: bar.standardAppearance, bar.compactAppearance ?: bar.standardAppearance];
+        for (UINavigationBarAppearance *appearance in appearances) {
+            if (appearance.backgroundEffect || appearance.backgroundImage || appearance.shadowImage ||
+                (appearance.backgroundColor && CGColorGetAlpha(appearance.backgroundColor.CGColor) > 0) ||
+                (appearance.shadowColor && CGColorGetAlpha(appearance.shadowColor.CGColor) > 0)) {
+                needsAppearanceUpdate = YES;
+                break;
+            }
+        }
+    }
+    if (ownsNavigationChrome && needsAppearanceUpdate) [self updateReaderNavigationBarAppearance];
+    [self updateNativeReaderHeaderScrolling];
+    if (changed) {
+        [self updateReaderBackgroundColor];
+        [self updateStoryTitleNavigationButtons];
+        [self updateStatusBarState];
+        [self updatePopGestureForScrollOrientation];
+        [self.currentPage updateContentInsetForNavigationBarAlpha:1 maintainVisualPosition:YES force:YES];
+        [self.nextPage updateContentInsetForNavigationBarAlpha:1 maintainVisualPosition:YES force:YES];
+        [self.previousPage updateContentInsetForNavigationBarAlpha:1 maintainVisualPosition:YES force:YES];
+    }
+}
+
+- (void)updateReaderScrollEdgeEffects {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
+    if (@available(iOS 26.0, *)) {
+        BOOL independentArticleHeader = self.isPhone && !self.isPhoneOrCompact;
+        UIScrollView *pager = self.scrollView;
+        if (self.readerTopEdgeScrollView &&
+            (!independentArticleHeader || self.readerTopEdgeScrollView != pager)) {
+            self.readerTopEdgeScrollView.topEdgeEffect.hidden = self.previousReaderTopEdgeHidden;
+            self.readerTopEdgeScrollView = nil;
+        }
+        if (independentArticleHeader && pager) {
+            if (!self.readerTopEdgeScrollView) {
+                self.readerTopEdgeScrollView = pager;
+                self.previousReaderTopEdgeHidden = pager.topEdgeEffect.hidden;
+            }
+            // StoryPagesObjCViewController.m prevents the story-title navigation bar's edge blur from covering the independent article column.
+            pager.topEdgeEffect.hidden = YES;
+        }
+    }
+#endif
+}
+
+- (BOOL)hasHiddenReaderAncestor {
+    DetailViewController *detail = appDelegate.detailViewController;
+    // StoryPagesObjCViewController.m preserves the existing viewport as soon as the resolved layout excludes the reader, before Detail's next layout marks its host hidden.
+    if (detail && self.parentViewController == detail && detail.showsStoryTitlesBesideTiledFeeds) return YES;
+    for (UIView *view = self.viewIfLoaded; view; view = view.superview) {
+        if (view.hidden || view.alpha <= 0.01) return YES;
+    }
+    return NO;
+}
+
+- (void)restoreNativeReaderHeaderScrolling {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270000
+    if (@available(iOS 27.0, *)) {
+        UIViewController *owner = self.nativeHeaderScrollOwner;
+        if ([owner contentScrollViewForEdge:NSDirectionalRectEdgeTop] == self.nativeHeaderScrollView) {
+            [owner setContentScrollView:self.previousHeaderScrollView forEdge:NSDirectionalRectEdgeTop];
+        }
+        if (owner.navigationItem.navigationBarMinimization == self.readerHeaderMinimization) {
+            owner.navigationItem.navigationBarMinimization = (UIBarMinimization *)self.previousHeaderMinimization;
+        }
+    }
+#endif
+    self.nativeHeaderScrollOwner = nil;
+    self.nativeHeaderScrollView = nil;
+    self.previousHeaderScrollView = nil;
+    self.previousHeaderMinimization = nil;
+    self.readerHeaderMinimization = nil;
+}
+
+- (void)updateNativeReaderHeaderScrolling {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270000
+    if (@available(iOS 27.0, *)) {
+        UIViewController *owner = self.isPhoneOrCompact ? self : appDelegate.detailViewController;
+        UINavigationController *navigation = self.navigationController;
+        UIScrollView *article = self.currentPage.webView.scrollView;
+        BOOL active = self.isPhoneOrCompact && self.isPhone && !self.useCustomToolbar && self.viewIfLoaded.window &&
+            ![self hasHiddenReaderAncestor] && navigation.topViewController == owner &&
+            !appDelegate.detailViewController.isDiscoverSitesVisible && article;
+        if (!active || self.nativeHeaderScrollOwner != owner) [self restoreNativeReaderHeaderScrolling];
+        if (!active) return;
+
+        if (!self.nativeHeaderScrollOwner) {
+            self.nativeHeaderScrollOwner = owner;
+            self.previousHeaderScrollView = [owner contentScrollViewForEdge:NSDirectionalRectEdgeTop];
+            self.previousHeaderMinimization = [owner.navigationItem.navigationBarMinimization copy];
+            UIBarMinimization *configuration = [owner.navigationItem.navigationBarMinimization copy];
+            configuration.minimizationBehavior = UIBarMinimizationBehaviorOnScrollDown;
+            configuration.safeAreaAdjustment = UIBarMinimizationSafeAreaAdjustmentEnabled;
+            configuration.restorationBehavior = UIBarMinimizationRestorationBehaviorAutomatic;
+            owner.navigationItem.navigationBarMinimization = configuration;
+            self.readerHeaderMinimization = owner.navigationItem.navigationBarMinimization;
+        }
+        // StoryPagesObjCViewController.m routes native header minimization to the selected article without hiding the independent side toolbar.
+        if (self.nativeHeaderScrollView != article || [owner contentScrollViewForEdge:NSDirectionalRectEdgeTop] != article) {
+            [owner setContentScrollView:article forEdge:NSDirectionalRectEdgeTop];
+            self.nativeHeaderScrollView = article;
+        }
+    }
+#endif
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
@@ -861,6 +1149,7 @@
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
+    if (self.usesVerticalReaderToolbar) return;
 //    #warning temporarily disabled hiding menubar
 //    return;
     
@@ -940,7 +1229,14 @@
         return;
     }
 
-    CGFloat clampedAlpha = MAX(0.0, MIN(1.0, alpha));
+    if (self.isPhone && !self.isPhoneOrCompact) {
+        // StoryPagesObjCViewController.m leaves the expanded story-title header entirely under its own scroll view's control.
+        _navigationBarFadeAlpha = 1;
+        self.isNavigationBarFaded = NO;
+        return;
+    }
+
+    CGFloat clampedAlpha = self.usesVerticalReaderToolbar ? 1 : MAX(0.0, MIN(1.0, alpha));
     if (self.isUpdatingNavigationBarFade) {
         return;
     }
@@ -1151,7 +1447,17 @@
 }
 
 - (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha {
-    if (!appDelegate.isCompactWidth && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+    if (self.usesVerticalReaderToolbar) {
+        // StoryPagesObjCViewController.m excludes side-navigation spacing while retaining actual window protection.
+        UIWindow *window = self.view.window;
+        if (window) {
+            CGFloat protectedTop = CGRectGetMinY(window.bounds) + window.safeAreaInsets.top;
+            CGFloat readerTop = CGRectGetMinY([self.view convertRect:self.view.bounds toView:window]);
+            return MAX(0, protectedTop - readerTop);
+        }
+        return self.view.safeAreaInsets.top;
+    }
+    if (!self.isPhoneOrCompact) {
         return 0;
     }
 
@@ -1282,8 +1588,15 @@
 }
 
 - (void)resetPages {
+    // StoryPagesObjCViewController.m retires the outgoing feed's gesture before reset layout can deliver more offset callbacks.
+    self.isDraggingScrollview = NO;
+    self.scrollingToPage = -1;
     [self cancelPendingStoryPresentation];
     appDelegate.detailViewController.navigationItem.titleView = nil;
+
+    currentPage.webView.scrollView.scrollEnabled = YES;
+    nextPage.webView.scrollView.scrollEnabled = YES;
+    previousPage.webView.scrollView.scrollEnabled = YES;
 
     currentPage.activeStory = nil;
     nextPage.activeStory = nil;
@@ -1366,31 +1679,37 @@
 }
 
 - (void)reorientPages {
-    NSInteger currentIndex = currentPage.pageIndex;
-    [self resizeScrollView]; // Will change currentIndex, so preserve
-    
-    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
-    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
-    [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
-    
-    // Scroll back to preserved index
-    CGRect frame = self.scrollView.bounds;
-    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
-    
-    if (self.isHorizontal) {
-        frame.origin.x = [self pageOffsetForIndex:currentIndex
-                                       pageAmount:frame.size.width
-                                        axisInset:axisInset];
-        frame.origin.y = 0;
-    } else {
-        frame.origin.x = 0;
-        frame.origin.y = [self pageOffsetForIndex:currentIndex
-                                       pageAmount:frame.size.height
-                                        axisInset:axisInset];
+    if ([self hasHiddenReaderAncestor]) return;
+    BOOL wasRepositioning = self.isRepositioningFirstPage;
+    self.isRepositioningFirstPage = YES;
+    @try {
+        // StoryPagesObjCViewController.m keeps resize/clamping callbacks from treating an old offset at the new width as a story selection.
+        NSInteger currentIndex = currentPage.pageIndex;
+        [self resizeScrollView];
+
+        [self applyNewIndex:currentIndex-1 pageController:previousPage supressRedraw:YES];
+        [self applyNewIndex:currentIndex+1 pageController:nextPage supressRedraw:YES];
+        [self applyNewIndex:currentIndex pageController:currentPage supressRedraw:YES];
+
+        CGRect frame = self.scrollView.bounds;
+        CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+
+        if (self.isHorizontal) {
+            frame.origin.x = [self pageOffsetForIndex:currentIndex
+                                           pageAmount:frame.size.width
+                                            axisInset:axisInset];
+            frame.origin.y = 0;
+        } else {
+            frame.origin.x = 0;
+            frame.origin.y = [self pageOffsetForIndex:currentIndex
+                                           pageAmount:frame.size.height
+                                            axisInset:axisInset];
+        }
+
+        [self.scrollView scrollRectToVisible:frame animated:NO];
+    } @finally {
+        self.isRepositioningFirstPage = wasRepositioning;
     }
-    
-    [self.scrollView scrollRectToVisible:frame animated:NO];
-//    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
     
@@ -1416,6 +1735,7 @@
 }
 
 - (void)resizeScrollView {
+    if ([self hasHiddenReaderAncestor]) return;
     NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) storyCount = MAX(storyCount, currentPage.pageIndex + 2);
 	if (storyCount == 0) {
@@ -1434,7 +1754,8 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
+    if (appDelegate.detailViewController) return appDelegate.detailViewController.isPhoneOrCompact;
+    return self.isPhone || appDelegate.isCompactWidth;
 }
 
 - (void)updateAutoscrollButtons {
@@ -1450,6 +1771,20 @@
     
     [self.autoscrollSlowerButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_slower.png"]]  forState:UIControlStateNormal];
     [self.autoscrollFasterButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_faster.png"]]  forState:UIControlStateNormal];
+    if (self.verticalAutoscrollButton) {
+        self.verticalAutoscrollButton.hidden = !self.autoscrollAvailable;
+        __weak typeof(self) weakSelf = self;
+        UIAction *pause = [UIAction actionWithTitle:self.autoscrollActive ? @"Pause" : @"Resume"
+                                             image:[UIImage systemImageNamed:self.autoscrollActive ? @"pause" : @"play"]
+                                        identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollPauseResume:nil]; }];
+        UIAction *slower = [UIAction actionWithTitle:@"Slower" image:[UIImage systemImageNamed:@"tortoise"]
+                                         identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollSlower:nil]; }];
+        UIAction *faster = [UIAction actionWithTitle:@"Faster" image:[UIImage systemImageNamed:@"hare"]
+                                         identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollFaster:nil]; }];
+        UIAction *stop = [UIAction actionWithTitle:@"Stop autoscroll" image:[UIImage systemImageNamed:@"stop"]
+                                       identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollDisable:nil]; }];
+        self.verticalAutoscrollButton.menu = [UIMenu menuWithTitle:@"Autoscroll" children:@[pause, slower, faster, stop]];
+    }
 }
 
 - (void)updateTraverseBackground {
@@ -1457,22 +1792,30 @@
     self.bottomSize.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
 }
 
-- (void)updateTheme {
-    [super updateTheme];
-
-    [self applyToolbarButtonTint];
-    
+- (void)updateReaderNavigationBarAppearance {
+    UINavigationController *navigation = self.navigationController;
+    UIViewController *owner = self.isPhoneOrCompact ? self : appDelegate.detailViewController;
+    if (!navigation || navigation.topViewController != owner || [self hasHiddenReaderAncestor] || appDelegate.detailViewController.isDiscoverSitesVisible) return;
+    BOOL vertical = self.usesVerticalReaderToolbar;
+    BOOL transparentHeader = vertical || (self.isPhone && !self.isPhoneOrCompact);
     UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
-    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
-    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
-    self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
-    self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
+    navigation.navigationBar.tintColor = toolbarButtonTint;
+    navigation.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    navigation.navigationBar.backgroundColor = transparentHeader ? UIColor.clearColor : [UINavigationBar appearance].backgroundColor;
+    navigation.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     if (@available(iOS 13.0, *)) {
-        UINavigationBarAppearance *appearance = self.navigationController.navigationBar.standardAppearance;
+        UINavigationBarAppearance *horizontalAppearance = self.horizontalReaderNavigationAppearance ?: navigation.navigationBar.standardAppearance;
+        UINavigationBarAppearance *appearance = [horizontalAppearance copy];
         if (!appearance) {
             appearance = [[UINavigationBarAppearance alloc] init];
         }
-        appearance.backgroundColor = self.navigationController.navigationBar.barTintColor;
+        if (transparentHeader) {
+            // StoryPagesObjCViewController.m leaves the article column unobscured while the independent title column draws its own background.
+            if (!self.horizontalReaderNavigationAppearance) self.horizontalReaderNavigationAppearance = [appearance copy];
+            [appearance configureWithTransparentBackground];
+        } else {
+            appearance.backgroundColor = navigation.navigationBar.barTintColor;
+        }
 
         UIBarButtonItemAppearance *buttonAppearance = [[UIBarButtonItemAppearance alloc] init];
         NSDictionary *textAttributes = @{NSForegroundColorAttributeName: toolbarButtonTint};
@@ -1484,11 +1827,27 @@
         appearance.doneButtonAppearance = buttonAppearance;
         appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
         
-        self.navigationController.navigationBar.standardAppearance = appearance;
-        self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
-        self.navigationController.navigationBar.compactAppearance = appearance;
+        if (!transparentHeader) self.horizontalReaderNavigationAppearance = [appearance copy];
+        navigation.navigationBar.standardAppearance = appearance;
+        navigation.navigationBar.scrollEdgeAppearance = appearance;
+        navigation.navigationBar.compactAppearance = appearance;
+        if (@available(iOS 15.0, *)) navigation.navigationBar.compactScrollEdgeAppearance = appearance;
     }
-    self.view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
+}
+
+- (void)updateReaderBackgroundColor {
+    // StoryPagesObjCViewController.m extends the app header theme under native side controls without painting a horizontal bar.
+    self.view.backgroundColor = self.usesVerticalReaderToolbar ?
+        UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222) :
+        UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
+}
+
+- (void)updateTheme {
+    [super updateTheme];
+
+    [self applyToolbarButtonTint];
+    [self updateReaderNavigationBarAppearance];
+    [self updateReaderBackgroundColor];
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
@@ -1508,6 +1867,7 @@
     markReadBarButton.tintColor = toolbarButtonTint;
     self.temporaryFullScreenButton.tintColor = toolbarButtonTint;
     self.subscribeButton.tintColor = toolbarButtonTint;
+    for (UIBarButtonItem *item in self.verticalReaderToolbarItems) item.tintColor = toolbarButtonTint;
     UIButton *settingsButton = (UIButton *)fontSettingsButton.customView;
     if ([settingsButton isKindOfClass:[UIButton class]]) {
         settingsButton.tintColor = toolbarButtonTint;
@@ -2012,7 +2372,7 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-    if (self.storySelectionTransitionHost) return;
+    if (self.isRepositioningFirstPage || self.storySelectionTransitionHost) return;
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
@@ -2513,6 +2873,7 @@
     [self.scrollView setContentOffset:position animated:NO];
     self.isRepositioningFirstPage = repositioning;
     [self ensureCurrentPageViewIsFrontmost];
+    [self updateNativeReaderHeaderScrolling];
 }
 
 - (void)changePage:(NSInteger)pageIndex {
@@ -2775,7 +3136,7 @@
     }
     
     if (!appDelegate.storiesCollection.inSearch) {
-        [currentPage becomeFirstResponder];
+        [self becomeFirstResponder];
     }
 }
 
@@ -2835,7 +3196,7 @@
 #pragma mark Actions
 
 - (IBAction)markAllRead:(id)sender {
-    [appDelegate.feedDetailViewController doOpenMarkReadMenu:markReadBarButton];
+    [appDelegate.feedDetailViewController doOpenMarkReadMenu:self.usesVerticalReaderToolbar ? self.verticalMarkReadButton : markReadBarButton];
 }
 
 - (void)setNextPreviousButtons {
@@ -2845,6 +3206,7 @@
         (readStoryCount == 1 &&
          [[appDelegate.readStories lastObject] isEqual:[appDelegate.activeStory objectForKey:@"story_hash"]]));
     [self.traverseBar updatePreviousEnabled:prevEnabled];
+    self.verticalPreviousButton.enabled = prevEnabled;
 
     // Next/Done button state
     buttonNext.enabled = YES;
@@ -2853,12 +3215,17 @@
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
     BOOL hasMoreUnread = (nextIndex == -1 && unreadCount > 0 && !pageFinished) || nextIndex != -1;
     [self.traverseBar updateNextShowDone:!hasMoreUnread];
+    self.verticalNextButton.title = hasMoreUnread ? @"Next unread story" : @"Done";
+    self.verticalNextButton.accessibilityLabel = self.verticalNextButton.title;
+    self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? @"chevron.down" : @"checkmark"];
 
     // Progress indicator
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
     [self.traverseBar updateProgress:progress];
+    self.verticalProgressButton.title = [NSString stringWithFormat:@"%ld unread %@", (long)unreadCount, unreadCount == 1 ? @"story" : @"stories"];
+    self.verticalProgressButton.accessibilityLabel = self.verticalProgressButton.title;
 }
 
 - (void)updateUITestStoryStateProbe {
@@ -2897,6 +3264,13 @@
 
     fontSettingsButton.enabled = enabled;
     originalStoryButton.enabled = enabled;
+    self.verticalTextButton.enabled = enabled;
+    self.verticalTextButton.selected = storyViewController.inTextView;
+    self.verticalTextButton.title = storyViewController.inTextView ? @"Story view" : @"Text view";
+    self.verticalTextButton.accessibilityLabel = self.verticalTextButton.title;
+    self.verticalSendButton.enabled = enabled;
+    self.verticalSettingsButton.enabled = enabled;
+    self.verticalOriginalButton.enabled = enabled;
 
 #if TARGET_OS_MACCATALYST
     if (@available(macCatalyst 16.0, *)) {
@@ -2913,7 +3287,7 @@
 
 - (void)openStoryTrainerFromKeyboard:(id)sender {
     // don't have a tap target for the popover, but the settings button at least doesn't move
-    [appDelegate openTrainStory:self.fontSettingsButton];
+    [appDelegate openTrainStory:self.usesVerticalReaderToolbar ? self.verticalSettingsButton : self.fontSettingsButton];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
@@ -2971,7 +3345,7 @@
         url = [NSURL URLWithDataRepresentation:[permalink dataUsingEncoding:NSUTF8StringEncoding] relativeToURL:nil];
     }
     
-    [appDelegate showOriginalStory:url sender:originalStoryButton];
+    [appDelegate showOriginalStory:url sender:self.usesVerticalReaderToolbar ? self.verticalOriginalButton : originalStoryButton];
 }
 
 - (IBAction)tapProgressBar:(id)sender {
@@ -3025,6 +3399,14 @@
     [self.currentPage scrollPageUp:sender];
 }
 
+- (void)scrolltoComment {
+    [self.currentPage scrolltoComment];
+}
+
+- (void)openShareDialog {
+    [self.currentPage openShareDialog];
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     if (action == @selector(toggleTextView:) ||
         action == @selector(scrollPageDown:) ||
@@ -3065,7 +3447,8 @@
         UIView *btn = self.storyToolbar.settingsButton;
         [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:btn sourceRect:btn.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
     } else {
-        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+        UIBarButtonItem *anchor = self.usesVerticalReaderToolbar ? self.verticalSettingsButton : self.fontSettingsButton;
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:anchor];
     }
 #endif
 }
@@ -3150,8 +3533,11 @@
     UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
     BOOL swipeEnabled = [[[NSUserDefaults standardUserDefaults] stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];
-    self.fullScreenPopGesture.enabled = swipeEnabled && !self.isHorizontal;
-    navController.interactivePopGestureRecognizer.enabled = swipeEnabled && self.isHorizontal;
+    self.fullScreenPopGesture.enabled = self.isPhoneOrCompact && swipeEnabled && !self.isHorizontal;
+    UIViewController *owner = self.isPhoneOrCompact ? self : appDelegate.detailViewController;
+    // StoryPagesObjCViewController.m must not apply a retained reader's preference to another screen's Back gesture.
+    if (navController.topViewController != owner || appDelegate.detailViewController.isDiscoverSitesVisible) return;
+    navController.interactivePopGestureRecognizer.enabled = self.isPhoneOrCompact && swipeEnabled && self.isHorizontal;
 }
 
 - (void)updateStoriesTheme {
@@ -3259,6 +3645,10 @@
 }
 
 - (void)showAutoscrollBriefly:(BOOL)briefly {
+    if (self.usesVerticalReaderToolbar) {
+        [self updateAutoscrollButtons];
+        return;
+    }
     if (!self.autoscrollAvailable || self.currentPage.webView.scrollView.contentSize.height - 200 <= self.currentPage.view.frame.size.height) {
         [self hideAutoscrollWithAnimation];
         return;

@@ -11,7 +11,11 @@ import UIKit
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
     @objc var isFeedsListHidden: Bool {
-        return [.oneOverSecondary, .secondaryOnly].contains(displayMode)
+        // SplitViewController.swift distinguishes a primary overlay from a triple split's supplementary column.
+        if style == .tripleColumn {
+            return [.secondaryOnly, .oneBesideSecondary, .oneOverSecondary].contains(displayMode)
+        }
+        return displayMode == .secondaryOnly
     }
 
     /// Draggable divider between the feeds list and detail columns.
@@ -79,6 +83,9 @@ class SplitViewController: UISplitViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        // SplitViewController.swift reconciles embedded panes after UIKit resolves the actual fold-dependent display mode.
+        let detailNavigation = viewController(for: .secondary) as? UINavigationController
+        (detailNavigation?.viewControllers.first as? DetailViewController)?.updateResolvedFeedSidebarLayout()
         updateFeedsDividerPosition()
     }
 

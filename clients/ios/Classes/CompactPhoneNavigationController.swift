@@ -1,5 +1,366 @@
 import UIKit
 
+/// CompactPhoneNavigationController.swift shares measured Duo title geometry with DetailViewController's expanded navigation.
+@MainActor final class VerticalNavigationTitleLayout {
+    private weak var navigation: UINavigationController?
+    private weak var controller: UIViewController?
+    private var originalTopInset: CGFloat = 0
+    private var appliedTopInset: CGFloat = 0
+    private var titleOffset: CGFloat = 0
+    private var originalTitleFrame: CGRect?
+    private var appliedTitleFrame: CGRect?
+
+    func update(navigation: UINavigationController?, controller: UIViewController?, enabled: Bool,
+                titleContent: UIView? = nil) {
+        guard enabled, let navigation, let controller,
+              navigation.topViewController === controller,
+              Utilities.usesSystemVerticalBar(navigation.traitCollection),
+              !navigation.isNavigationBarHidden,
+              let window = navigation.viewIfLoaded?.window,
+              let barParent = navigation.navigationBar.superview,
+              abs(navigation.view.convert(navigation.view.bounds, to: window).minY - window.bounds.minY) < 1 else {
+            restore()
+            return
+        }
+        if self.controller !== controller || self.navigation !== navigation {
+            restore()
+            self.navigation = navigation
+            self.controller = controller
+            originalTopInset = controller.additionalSafeAreaInsets.top
+            appliedTopInset = originalTopInset
+        }
+
+        // CompactPhoneNavigationController.swift removes the obsolete horizontal status-band offset when status and actions occupy Duo's side rail.
+        let bar = navigation.navigationBar
+        let protectedTop = window.bounds.minY + window.safeAreaInsets.top
+        let titleTop = barParent.convert(CGPoint(x: 0, y: protectedTop), from: window).y
+        let redundantOffset = bar.frame.minY - titleTop
+        if redundantOffset > 0.5 { titleOffset = redundantOffset }
+        if abs(bar.frame.minY - titleTop) > 0.5 {
+            var frame = bar.frame
+            originalTitleFrame = frame
+            frame.origin.y = titleTop
+            bar.frame = frame
+            appliedTitleFrame = frame
+        }
+
+        let titleIsMinimized = titleContent.map { content in
+            guard content.window === window, content.isDescendant(of: bar),
+                  content.bounds.width > 0, content.bounds.height > 0 else { return false }
+            // CompactPhoneNavigationController.swift ignores startup fades; only a title translated above the protected edge has minimized.
+            return content.convert(content.bounds, to: window).maxY <= protectedTop + 0.5
+        } ?? false
+        // CompactPhoneNavigationController.swift observes our own title view: UIKit retains the outer 58pt bar after its title has minimized.
+        let titleBottom = titleIsMinimized
+            ? controller.view.convert(CGPoint(x: window.bounds.minX, y: protectedTop), from: window).y
+            : bar.convert(bar.bounds, to: controller.view).maxY
+        let requiredSafeTop = max(0, titleBottom - controller.view.bounds.minY) + originalTopInset
+        var inset = controller.additionalSafeAreaInsets
+        if titleIsMinimized, titleOffset < 0.5 {
+            // CompactPhoneNavigationController.swift handles an owner first appearing minimized, without mistaking an uncommitted full-title inset for a status gap.
+            let residual = controller.view.safeAreaInsets.top - requiredSafeTop + originalTopInset - inset.top
+            if residual > 0.5, residual < bar.bounds.height - 0.5 {
+                titleOffset = residual
+            }
+        }
+        // CompactPhoneNavigationController.swift bounds compensation to the measured gap so repeated safe-area callbacks cannot accumulate it.
+        let correctedTop = min(originalTopInset,
+                               max(originalTopInset - titleOffset,
+                                   inset.top + requiredSafeTop - controller.view.safeAreaInsets.top))
+        if abs(inset.top - correctedTop) > 0.5 {
+            inset.top = correctedTop
+            controller.additionalSafeAreaInsets = inset
+        }
+        appliedTopInset = inset.top
+    }
+
+    func restore() {
+        if let controller, abs(controller.additionalSafeAreaInsets.top - appliedTopInset) < 0.5 {
+            var inset = controller.additionalSafeAreaInsets
+            inset.top = originalTopInset
+            controller.additionalSafeAreaInsets = inset
+        }
+        if let bar = navigation?.navigationBar, let original = originalTitleFrame,
+           let applied = appliedTitleFrame, bar.frame == applied {
+            bar.frame = original
+        }
+        controller = nil
+        navigation = nil
+        titleOffset = 0
+        originalTitleFrame = nil
+        appliedTitleFrame = nil
+    }
+}
+
+/// CompactPhoneNavigationController.swift applies the expanded Duo correction after UIKit finishes laying out its managed title bar.
+@objc(DetailNavigationController)
+final class DetailNavigationController: UINavigationController {
+    private let verticalTitleLayout = VerticalNavigationTitleLayout()
+    private weak var feedsTitleOwner: DetailViewController?
+    private var feedsTitleView: ExpandedFeedsNavigationTitleView?
+    private var feedsTitleItem: UIBarButtonItem?
+    private let centeredTitlePlaceholder = UIView(frame: CGRect(x: 0, y: 0, width: 1, height: 1))
+    private weak var titleHeaderScrollOwner: DetailViewController?
+    private weak var titleHeaderScrollView: UIScrollView?
+    private var previousTitleHeaderScrollView: UIScrollView?
+    private var restoreTitleHeaderMinimization: (() -> Void)?
+    private var isUpdatingTitleHeaderScrolling = false
+    private var isTitleHeaderUpdateScheduled = false
+    private var isLeavingTitleHeader = false
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let detail = topViewController as? DetailViewController
+        updateFeedsTitle(for: detail)
+        verticalTitleLayout.update(navigation: self, controller: detail,
+                                   enabled: detail.map { !$0.isPhoneOrCompact && !$0.isDiscoverSitesVisible } ?? false,
+                                   titleContent: feedsTitleView)
+        scheduleTitleHeaderScrollingUpdate()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        isLeavingTitleHeader = false
+        scheduleTitleHeaderScrollingUpdate()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        verticalTitleLayout.restore()
+        restoreFeedsTitle()
+        isLeavingTitleHeader = true
+        scheduleTitleHeaderScrollingUpdate()
+    }
+
+    private func scheduleTitleHeaderScrollingUpdate() {
+        guard !isUpdatingTitleHeaderScrolling, !isTitleHeaderUpdateScheduled else { return }
+        isTitleHeaderUpdateScheduled = true
+        // CompactPhoneNavigationController.swift must not make UIKit observe or detach a table from inside its enclosing layout transaction.
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.isTitleHeaderUpdateScheduled = false
+            self.updateTitleHeaderScrolling()
+        }
+    }
+
+    private func updateTitleHeaderScrolling() {
+        guard !isUpdatingTitleHeaderScrolling else { return }
+        isUpdatingTitleHeaderScrolling = true
+        defer { isUpdatingTitleHeaderScrolling = false }
+        // CompactPhoneNavigationController.swift resolves the current owner here so a queued update cannot attach a replaced list or Discover's old table.
+        guard #available(iOS 27.0, *), !isLeavingTitleHeader,
+              let detail = topViewController as? DetailViewController, detail.isPhone, !detail.isPhoneOrCompact,
+              !detail.isDiscoverSitesVisible, !isNavigationBarHidden,
+              let table = detail.feedDetailViewController?.storyTitlesTable,
+              table.window != nil, table.window === view.window, table.isDescendant(of: detail.view),
+              isVisibleTitleHeaderTable(table, in: detail.view) else {
+            restoreTitleHeaderScrolling()
+            return
+        }
+        guard isCommittedTitleHeaderTable(table), table.numberOfSections > 0 else { return }
+        if let oldTable = titleHeaderScrollView as? UITableView,
+           !isCommittedTitleHeaderTable(oldTable) { return }
+        if titleHeaderScrollOwner !== detail {
+            guard restoreTitleHeaderScrolling() else { return }
+            titleHeaderScrollOwner = detail
+            previousTitleHeaderScrollView = detail.contentScrollView(for: .top)
+            restoreTitleHeaderMinimization = Utilities.beginNavigationBarMinimization(detail.navigationItem)
+        }
+        if titleHeaderScrollView !== table || detail.contentScrollView(for: .top) !== table {
+            // CompactPhoneNavigationController.swift gives the leading header exclusively to its own story list, never the article column.
+            titleHeaderScrollView = table
+            detail.setContentScrollView(table, for: .top)
+        }
+    }
+
+    private func isVisibleTitleHeaderTable(_ table: UITableView, in container: UIView) -> Bool {
+        guard table.bounds.width > 0, table.bounds.height > 0 else { return false }
+        var ancestor: UIView? = table
+        while let view = ancestor {
+            if view.isHidden || view.alpha < 0.01 { return false }
+            if view === container { return true }
+            ancestor = view.superview
+        }
+        return false
+    }
+
+    private func isCommittedTitleHeaderTable(_ table: UITableView) -> Bool {
+        guard !table.hasUncommittedUpdates else { return false }
+        let sectionCount = table.numberOfSections
+        let dataSourceSections = table.dataSource.map { $0.numberOfSections?(in: table) ?? 1 } ?? 0
+        guard sectionCount == dataSourceSections else { return false }
+        var rowCounts: [Int] = []
+        for section in 0..<sectionCount {
+            let rows = table.numberOfRows(inSection: section)
+            guard rows == table.dataSource?.tableView(table, numberOfRowsInSection: section) else { return false }
+            rowCounts.append(rows)
+        }
+        // CompactPhoneNavigationController.swift rejects the startup state where old visible cells survive a reload to zero sections.
+        return table.visibleCells.allSatisfy { cell in
+            guard let path = table.indexPath(for: cell), path.section < rowCounts.count else { return false }
+            return path.row < rowCounts[path.section]
+        }
+    }
+
+    @discardableResult private func restoreTitleHeaderScrolling() -> Bool {
+        if let owner = titleHeaderScrollOwner, owner.contentScrollView(for: .top) === titleHeaderScrollView {
+            if let table = titleHeaderScrollView as? UITableView, !isCommittedTitleHeaderTable(table) { return false }
+            if let table = previousTitleHeaderScrollView as? UITableView, !isCommittedTitleHeaderTable(table) { return false }
+            owner.setContentScrollView(previousTitleHeaderScrollView, for: .top)
+        }
+        restoreTitleHeaderMinimization?()
+        titleHeaderScrollOwner = nil
+        titleHeaderScrollView = nil
+        previousTitleHeaderScrollView = nil
+        restoreTitleHeaderMinimization = nil
+        return true
+    }
+
+    private func updateFeedsTitle(for detail: DetailViewController?) {
+        guard let detail, detail.isPhone, !detail.isPhoneOrCompact,
+              !detail.isDiscoverSitesVisible, !isNavigationBarHidden else {
+            restoreFeedsTitle()
+            return
+        }
+        let item = detail.navigationItem
+        if feedsTitleOwner !== detail || item.titleView !== centeredTitlePlaceholder {
+            restoreFeedsTitle()
+            let source = item.titleView
+            // CompactPhoneNavigationController.swift lets UIKit release its old title before that same view becomes a child of the replacement.
+            item.titleView = nil
+            let title = ExpandedFeedsNavigationTitleView(sourceTitle: source) { [weak detail] in
+                detail?.show(column: .primary, animated: true)
+            }
+            feedsTitleOwner = detail
+            feedsTitleView = title
+            let leadingItem = UIBarButtonItem(customView: title)
+            Utilities.keepBarButtonInHorizontalBar(leadingItem)
+            if #available(iOS 26.0, *) {
+                leadingItem.hidesSharedBackground = true
+                leadingItem.sharesBackground = false
+            }
+            feedsTitleItem = leadingItem
+            // CompactPhoneNavigationController.swift leaves the shared center empty because this title belongs to the leading story column.
+            item.titleView = centeredTitlePlaceholder
+        }
+        guard let leadingItem = feedsTitleItem else { return }
+        let otherItems = (item.leftBarButtonItems ?? []).filter { $0 !== leadingItem }
+        let availableWidth = navigationBar.bounds.width - navigationBar.safeAreaInsets.left - navigationBar.safeAreaInsets.right
+        var columnWidth = availableWidth
+        if let storiesView = detail.feedDetailViewController?.viewIfLoaded,
+           storiesView.window === view.window, !storiesView.isHidden, storiesView.bounds.width > 0 {
+            columnWidth = min(columnWidth, storiesView.convert(storiesView.bounds, to: navigationBar).width)
+        }
+        let otherItemsWidth = otherItems.reduce(CGFloat.zero) { width, button in
+            width + max(44, button.customView?.intrinsicContentSize.width ?? 44) + 8
+        }
+        feedsTitleView?.update(plainTitle: item.title ?? detail.title, navigationBar: navigationBar,
+                               maximumWidth: max(44, columnWidth - 32 - otherItemsWidth))
+        let desiredItems = [leadingItem] + otherItems
+        if item.leftBarButtonItems != desiredItems {
+            item.setLeftBarButtonItems(desiredItems, animated: false)
+        }
+    }
+
+    private func restoreFeedsTitle() {
+        if let item = feedsTitleOwner?.navigationItem, let title = feedsTitleView {
+            if let leadingItem = feedsTitleItem {
+                let remaining = (item.leftBarButtonItems ?? []).filter { $0 !== leadingItem }
+                item.setLeftBarButtonItems(remaining, animated: false)
+            }
+            let source = title.releaseSourceTitle()
+            if item.titleView === centeredTitlePlaceholder {
+                // CompactPhoneNavigationController.swift restores the live source, leaving a newer owner's replacement title untouched.
+                item.titleView = source
+            }
+        }
+        feedsTitleOwner = nil
+        feedsTitleView = nil
+        feedsTitleItem = nil
+    }
+}
+
+/// CompactPhoneNavigationController.swift keeps Feeds beside the existing title in the native leading item.
+@MainActor private final class ExpandedFeedsNavigationTitleView: UIView {
+    private let sourceTitle: UIView?
+    private let originalSourceFrame: CGRect?
+    private let plainTitleLabel = UILabel()
+    private let feedsButton = UIButton(type: .system)
+    private let spacing: CGFloat = 12
+    private var maximumWidth: CGFloat = 0
+    private var lastPreferredSize: CGSize = .zero
+
+    init(sourceTitle: UIView?, showFeeds: @escaping () -> Void) {
+        self.sourceTitle = sourceTitle
+        originalSourceFrame = sourceTitle?.frame
+        super.init(frame: .zero)
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = "Feeds"
+        configuration.image = UIImage(systemName: "chevron.backward")
+        configuration.imagePadding = 6
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
+        feedsButton.configuration = configuration
+        feedsButton.accessibilityIdentifier = "expanded-feeds-back"
+        feedsButton.accessibilityLabel = "Feeds"
+        feedsButton.addAction(UIAction { _ in showFeeds() }, for: .touchUpInside)
+        addSubview(feedsButton)
+        plainTitleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
+        plainTitleLabel.lineBreakMode = .byTruncatingTail
+        addSubview(sourceTitle ?? plainTitleLabel)
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    private var content: UIView { sourceTitle ?? plainTitleLabel }
+    private var buttonWidth: CGFloat { max(44, feedsButton.intrinsicContentSize.width) }
+    private var contentSize: CGSize {
+        let intrinsic = content.intrinsicContentSize
+        return CGSize(width: max(0, intrinsic.width >= 0 ? intrinsic.width : (originalSourceFrame?.width ?? 0)),
+                      height: min(44, max(0, intrinsic.height >= 0 ? intrinsic.height : (originalSourceFrame?.height ?? 0))))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let width = buttonWidth + spacing + contentSize.width
+        return CGSize(width: maximumWidth > 0 ? min(width, maximumWidth) : width, height: 44)
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let preferred = intrinsicContentSize
+        return CGSize(width: size.width > 0 ? min(size.width, preferred.width) : preferred.width, height: preferred.height)
+    }
+
+    func update(plainTitle: String?, navigationBar: UINavigationBar, maximumWidth: CGFloat) {
+        if plainTitleLabel.text != plainTitle { plainTitleLabel.text = plainTitle }
+        let attributes = navigationBar.titleTextAttributes ?? navigationBar.standardAppearance.titleTextAttributes
+        plainTitleLabel.font = attributes[.font] as? UIFont ?? .systemFont(ofSize: 17, weight: .semibold)
+        plainTitleLabel.textColor = attributes[.foregroundColor] as? UIColor ?? .label
+        tintColor = navigationBar.tintColor
+        self.maximumWidth = maximumWidth
+        let preferred = intrinsicContentSize
+        if lastPreferredSize != preferred {
+            lastPreferredSize = preferred
+            invalidateIntrinsicContentSize()
+            if bounds.isEmpty { frame.size = preferred }
+            setNeedsLayout()
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let width = min(bounds.width, buttonWidth)
+        feedsButton.frame = CGRect(x: 0, y: (bounds.height - 44) / 2, width: width, height: 44)
+        let size = contentSize
+        content.frame = CGRect(x: width + spacing, y: (bounds.height - size.height) / 2,
+                               width: max(0, bounds.width - width - spacing), height: size.height)
+    }
+
+    func releaseSourceTitle() -> UIView? {
+        sourceTitle?.removeFromSuperview()
+        if let originalSourceFrame { sourceTitle?.frame = originalSourceFrame }
+        return sourceTitle
+    }
+}
+
 /// CompactPhoneNavigationController.swift provides a native, standalone landscape phone header.
 @objc(CompactPhoneNavigationController)
 final class CompactPhoneNavigationController: UINavigationController, UINavigationBarDelegate, UIGestureRecognizerDelegate {
@@ -16,9 +377,19 @@ final class CompactPhoneNavigationController: UINavigationController, UINavigati
     private var mirroredTitle: String?
     private var mirroredBackTitle: String?
     private var isUpdatingHeader = false
+    private var ownsVerticalNavigationBackground = false
+    private var originalNavigationBackground: UIColor?
+    private var appliedVerticalNavigationBackground: UIColor?
+    private var clearsVerticalBarBackground = false
+    private var originalVerticalBarBackground: UIColor?
+    private let verticalTitleLayout = VerticalNavigationTitleLayout()
 
     private var usesCompactHeader: Bool {
-        UIDevice.current.userInterfaceIdiom == .phone && traitCollection.verticalSizeClass == .compact &&
+        if Utilities.usesSystemVerticalBar(traitCollection) {
+            // CompactPhoneNavigationController.swift leaves Duo's navigation and safe-area placement to the managed side bar.
+            return false
+        }
+        return UIDevice.current.userInterfaceIdiom == .phone && traitCollection.verticalSizeClass == .compact &&
             (topViewController is FeedsObjCViewController || topViewController is FeedDetailObjCViewController)
     }
 
@@ -42,6 +413,49 @@ final class CompactPhoneNavigationController: UINavigationController, UINavigati
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateCompactHeader()
+        verticalTitleLayout.update(navigation: self, controller: topViewController,
+                                   enabled: traitCollection.horizontalSizeClass == .compact &&
+                                    topViewController is FeedDetailObjCViewController)
+        updateVerticalNavigationBackground()
+    }
+
+    private func updateVerticalNavigationBackground() {
+        let needsBackground = Utilities.usesSystemVerticalBar(traitCollection) && !isNavigationBarHidden &&
+            (topViewController is FeedDetailObjCViewController || topViewController is DiscoverSitesViewController)
+        guard needsBackground,
+              let color = navigationBar.barTintColor ?? navigationBar.standardAppearance.backgroundColor ?? navigationBar.backgroundColor else {
+            if clearsVerticalBarBackground {
+                // CompactPhoneNavigationController.swift restores its fill only for ordinary owners; the reader manages its own transparent bar.
+                if navigationBar.backgroundColor == .clear, !(topViewController is StoryPagesObjCViewController) {
+                    navigationBar.backgroundColor = originalVerticalBarBackground
+                }
+                clearsVerticalBarBackground = false
+                originalVerticalBarBackground = nil
+            }
+            if ownsVerticalNavigationBackground {
+                // CompactPhoneNavigationController.swift restores only its own fill, preserving a new owner's explicit background.
+                if view.backgroundColor == appliedVerticalNavigationBackground {
+                    view.backgroundColor = originalNavigationBackground
+                }
+                ownsVerticalNavigationBackground = false
+                originalNavigationBackground = nil
+                appliedVerticalNavigationBackground = nil
+            }
+            return
+        }
+        if !ownsVerticalNavigationBackground {
+            originalNavigationBackground = view.backgroundColor
+            ownsVerticalNavigationBackground = true
+        }
+        // CompactPhoneNavigationController.swift fills the exposed space above Duo's native title bar using its current theme.
+        if view.backgroundColor != color { view.backgroundColor = color }
+        appliedVerticalNavigationBackground = color
+        if !clearsVerticalBarBackground || navigationBar.backgroundColor != .clear {
+            originalVerticalBarBackground = navigationBar.backgroundColor
+            clearsVerticalBarBackground = true
+        }
+        // CompactPhoneNavigationController.swift lets UIKit scroll its title/background away without leaving a fixed opaque UIView over the stories.
+        if navigationBar.backgroundColor != .clear { navigationBar.backgroundColor = .clear }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

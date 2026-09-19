@@ -39,6 +39,7 @@ Environment:
     IOS_SIM_UDID     - Simulator UDID (alternative to --udid flag)
     IOS_BUNDLE_ID    - App bundle identifier (defaults to NewsBlur)
     IOS_APP_PATH     - Path to the built .app for install
+    IOS_SIM_DISPLAY  - Optional simulator screen ID/name for screenshots (Duo has two displays)
     IOS_LAUNCH_ARGUMENTS - Optional shell-quoted launch arguments (for UI test fixtures)
     IOS_USE_XCTRACE  - Also record an Instruments trace when set to 1
     IOS_SAMPLE_SECONDS - Maximum CPU profile duration (defaults to 600)
@@ -258,7 +259,12 @@ def stop_captures():
 def do_screenshot(path):
     """Take screenshot and save to path."""
     print(f"  Screenshot: {path}")
-    run_cmd(f"xcrun simctl io {UDID} screenshot {path}")
+    # run_ios.py lets Duo captures select the active inner or outer display explicitly.
+    command = ["xcrun", "simctl", "io", UDID, "screenshot"]
+    display = os.environ.get("IOS_SIM_DISPLAY")
+    if display:
+        command.append(f"--display={display}")
+    subprocess.run(command + [path], check=True)
 
 
 def do_launch():

@@ -52,9 +52,17 @@ import Foundation
     private var serverPingTimeout: TimeInterval = 120.0
 
     private var eventHandlers: [String: [(Any) -> Void]] = [:]
+    private let serverURLProvider: () -> String?
 
-    private var baseURL: String {
-        if let appURL = NewsBlurAppDelegate.shared()?.url,
+    init(serverURLProvider: @escaping () -> String? = { NewsBlurAppDelegate.shared()?.url }) {
+        self.serverURLProvider = serverURLProvider
+        super.init()
+    }
+
+    private(set) var baseURL = "wss://www.newsblur.com/v3/socket.io/"
+
+    private static func socketBaseURL(serverURL: String?) -> String {
+        if let appURL = serverURL,
            !appURL.isEmpty {
             let wsURL = appURL
                 .replacingOccurrences(of: "https://", with: "wss://")
@@ -78,7 +86,18 @@ import Foundation
             self.username = username
             self.feeds = feeds
             self.isConnecting = true
-            self.connectWebSocket()
+            self.connectionGeneration += 1
+            let generation = self.connectionGeneration
+            // NewsBlurSocketClient.swift reads UIApplication-backed configuration on main without blocking either queue.
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                let endpoint = Self.socketBaseURL(serverURL: self.serverURLProvider())
+                self.queue.async { [weak self] in
+                    guard let self, self.isConnecting, self.connectionGeneration == generation else { return }
+                    self.baseURL = endpoint
+                    self.connectWebSocket()
+                }
+            }
         }
     }
 
@@ -87,6 +106,7 @@ import Foundation
         queue.async { [weak self] in
             guard let self = self else { return }
             NSLog("NewsBlurSocketClient: Disconnecting")
+            self.connectionGeneration += 1
             self.cancelReconnectTimer()
             self.tearDownConnection()
             self.isConnected = false
@@ -131,7 +151,7 @@ import Foundation
         sid = nil
     }
 
-    private func connectWebSocket() {
+    func connectWebSocket() {
         // Must be called on self.queue
         // Tear down any existing connection first
         tearDownConnection()

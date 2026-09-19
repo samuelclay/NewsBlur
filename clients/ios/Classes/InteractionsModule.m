@@ -36,6 +36,8 @@
         self.interactionsTable = [[UITableView alloc] init];
         self.interactionsTable.dataSource = self;
         self.interactionsTable.delegate = self;
+        self.interactionsTable.rowHeight = UITableViewAutomaticDimension;
+        self.interactionsTable.estimatedRowHeight = MINIMUM_INTERACTION_HEIGHT_IPAD;
         self.interactionsTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.interactionsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
         [self addSubview:self.interactionsTable];
@@ -178,15 +180,10 @@
         return minimumHeight;
     }
 
-    InteractionCell *interactionCell;
-    if (!appDelegate.isPhone) {
-        interactionCell = [[InteractionCell alloc] init];
-    } else {
-        interactionCell = [[SmallInteractionCell alloc] init];
+    if ([InteractionCell shouldCollapseInteraction:appDelegate.userInteractionsArray[indexPath.row]]) {
+        return 1;
     }
-    int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width - 20];
-
-    return height;
+    return UITableViewAutomaticDimension;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -201,6 +198,14 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row < appDelegate.userInteractionsArray.count &&
+        [InteractionCell shouldCollapseInteraction:appDelegate.userInteractionsArray[indexPath.row]]) {
+        // InteractionsModule.m preserves missing-author rows without applying normal multiline constraints to one point.
+        UITableViewCell *collapsedCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+        collapsedCell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+        collapsedCell.userInteractionEnabled = NO;
+        return collapsedCell;
+    }
     InteractionCell *cell = [tableView
                              dequeueReusableCellWithIdentifier:@"InteractionCell"];
     if (cell == nil) {
@@ -226,8 +231,7 @@
         cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
 
         // update the cell information
-        [cell setInteraction:interaction withWidth: self.frame.size.width - 20];
-        [cell layoutSubviews];
+        [cell setInteraction:interaction];
     }
 
     return cell;
