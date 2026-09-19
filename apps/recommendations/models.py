@@ -9,10 +9,99 @@ import mongoengine as mongo
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed
 from utils import json_functions as json
+from utils.story_functions import strip_tags
+
+
+class MRecommendationFeedback(mongo.Document):
+    user_id = mongo.IntField(required=True)
+    story_hash = mongo.StringField(required=True)
+    value = mongo.IntField(required=True, choices=(-1, 0, 1))
+    surface = mongo.StringField(required=True, choices=("good_reads", "discovery"))
+    story_feed_id = mongo.IntField(required=True)
+    story_title = mongo.StringField()
+    story_permalink = mongo.StringField()
+    story_author = mongo.StringField()
+    story_tags = mongo.ListField(mongo.StringField())
+    story_excerpt = mongo.StringField()
+    created_date = mongo.DateTimeField()
+    updated_date = mongo.DateTimeField()
+
+    meta = {
+        "collection": "recommendation_feedback",
+        "indexes": [
+            {"fields": ["user_id", "story_hash"], "unique": True},
+            ("user_id", "-updated_date"),
+        ],
+        "allow_inheritance": False,
+    }
+
+    @classmethod
+    def record(cls, user_id, story, value, surface):
+        if value not in (-1, 0, 1) or surface not in ("good_reads", "discovery"):
+            raise ValueError("Invalid recommendation feedback")
+
+        now = datetime.datetime.utcnow()
+        # recommendations/models.py: Preserve training context when the RSS story is later trimmed.
+        snapshot = dict(
+            story_feed_id=story.story_feed_id,
+            story_title=story.story_title or "",
+            story_permalink=story.story_permalink or "",
+            story_author=story.story_author_name or "",
+            story_tags=story.story_tags or [],
+            story_excerpt=strip_tags(story.original_text_str or "")[:6000],
+        )
+        feedback = cls.objects(user_id=user_id, story_hash=story.story_hash).modify(
+            upsert=True,
+            new=True,
+            set__value=value,
+            set__surface=surface,
+            set__updated_date=now,
+            set_on_insert__created_date=now,
+            **{"set__%s" % field: content for field, content in snapshot.items()},
+        )
+        return feedback.value
+
+    @classmethod
+    def for_stories(cls, user_id, story_hashes):
+        if not user_id or not story_hashes:
+            return {}
+        return {
+            feedback.story_hash: feedback.value
+            for feedback in cls.objects(user_id=user_id, story_hash__in=story_hashes).only(
+                "story_hash", "value"
+            )
+        }
+
+
+class MDiscoveryPreview(mongo.Document):
+    """models.py: Persist the weekly allowance independently of evictable ranking caches."""
+
+    user_id = mongo.IntField(required=True)
+    week_start = mongo.DateTimeField(required=True)
+    story_hashes = mongo.ListField(mongo.StringField(), max_length=3)
+    generation = mongo.StringField(required=True)
+    expires_date = mongo.DateTimeField(required=True)
+
+    meta = {
+        "collection": "discovery_preview",
+        "indexes": [
+            {"fields": ["user_id", "week_start"], "unique": True},
+            {"fields": ["expires_date"], "expireAfterSeconds": 0},
+        ],
+        "allow_inheritance": False,
+    }
+
+
+@receiver(post_delete, sender=User)
+def delete_recommendation_feedback(sender, instance, **kwargs):
+    MRecommendationFeedback.objects(user_id=instance.pk).delete()
+    MDiscoveryPreview.objects(user_id=instance.pk).delete()
 
 
 class RecommendedFeed(models.Model):

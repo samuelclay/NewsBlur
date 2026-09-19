@@ -5162,6 +5162,11 @@ body {
     background-color: #f9f9f7;
 }
 
+/* reader.css: Keep keyboard focus from scrolling the outer three-panel story frame. */
+.NB-view-discovery #story_pane {
+    overflow: clip !important;
+}
+
 .NB-feed-story-header-feed {
     background: #404040 url('/media/embed/reader/feed_view_feed_background.png') repeat-x 0 0;
     background-image: -webkit-gradient(linear,
@@ -41483,6 +41488,15 @@ span.NB-briefing-inline-favicon {
 }
 
 /* reader.css: Trending story feeds are revealed by feed_list_view.js */
+.NB-discovery-empty {
+    padding: 28px 20px;
+    color: #72766e;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.NB-feeds-header-river-discovery-container,
 .NB-feeds-header-river-well-read-container,
 .NB-feeds-header-river-long-reads-container,
 .NB-feeds-header-river-good-reads-container {
