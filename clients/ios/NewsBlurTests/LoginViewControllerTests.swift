@@ -72,9 +72,10 @@ final class DetailViewControllerTests: XCTestCase {
             let stories = StoriesCollection()
             stories.activeFeed = ["id": 1, "feed_title": "Preview Feed"]
             app.storiesCollection = stories
-            let detail = DetailViewController()
+            let detail = DiscoveryTransitionPadDetailController()
             detail.appDelegate = app
             detail.isCompact = true
+            XCTAssertTrue(detail.isPhoneOrCompact)
             app.detailViewController = detail
             let feeds = FeedsViewController()
             let discovery = DiscoveryTransitionTestController()
@@ -100,10 +101,12 @@ final class DetailViewControllerTests: XCTestCase {
 
             detail.expandToTwoColumns()
 
+            XCTAssertFalse(detail.isPhoneOrCompact)
             XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), [ObjectIdentifier(feeds)])
             XCTAssertEqual(detail.canReturnToDiscoverSites, includesDiscovery)
             XCTAssertFalse(detail.isDiscoverSitesVisible)
             detail.collapseToSingleColumn()
+            XCTAssertTrue(detail.isPhoneOrCompact)
             detail.restoreCompactNavigationAfterSplitCollapse(showFeed: true, showStory: false)
             XCTAssertEqual(navigation.viewControllers.map(ObjectIdentifier.init), (prefix + [reader]).map(ObjectIdentifier.init))
             navigation.popViewController(animated: false)
@@ -262,6 +265,11 @@ final class DetailViewControllerTests: XCTestCase {
 
         XCTAssertLessThanOrEqual(feedDetailViewController.storyTitlesTable.numberOfRows(inSection: 0), 1)
     }
+}
+
+@MainActor private final class DiscoveryTransitionPadDetailController: DetailViewController {
+    // LoginViewControllerTests.swift exercises iPad expansion even when the test host is an iPhone.
+    override var isPhone: Bool { false }
 }
 
 @available(iOS 15.0, *)
