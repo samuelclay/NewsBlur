@@ -151,6 +151,36 @@ final class Test_DiscoverPanePresentation: XCTestCase {
                       "The sidebar must return to the same discovery page and its scroll position")
     }
 
+    func test_previewSidebarRowKeepsTheReaderAndRetainedDiscoveryPage() throws {
+        for startsInDiscovery in [false, true] {
+            let app = DiscoverySidebarSelectionTestApp()
+            let (_, detail, feeds, _) = fixture(app: app, feeds: DiscoverySidebarSelectionTestFeeds())
+            app.dictFeeds = ["100": ["id": 100, "feed_title": "Preview site"]]
+            app.dictFolders = ["discover_sites": ["100"]]
+            app.tryFeedFeedId = "100"
+            app.isTryFeedView = true
+            app.openDiscoverSitesView()
+            let discovery = try XCTUnwrap(descendants(of: detail).first { $0 is DiscoverSitesViewController })
+            detail.beginDiscoverPreview()
+            if startsInDiscovery { detail.returnToDiscoverSites() }
+            app.storiesCollection.activeFeed = ["id": 100, "feed_title": "Preview site"]
+            app.storiesCollection.activeFeedStories = [["story_hash": "100:selected", "story_title": "Selected story"]]
+            app.activeStory = ["story_hash": "100:selected", "story_title": "Selected story"]
+
+            let row = IndexPath(row: 0, section: 1)
+            feeds.tableView(UITableView(), didSelectRowAt: row)
+
+            XCTAssertTrue(detail.canReturnToDiscoverSites, "Tapping the preview row must preserve its Discover return path")
+            XCTAssertFalse(detail.isDiscoverSitesVisible)
+            XCTAssertEqual(feeds.currentRowAtIndexPath, row)
+            XCTAssertEqual(app.storiesCollection.activeFeedStories?.count, 1, "Returning to an existing preview must retain its loaded titles")
+            XCTAssertEqual(app.activeStory?["story_hash"] as? String, "100:selected")
+            XCTAssertEqual(app.ordinaryFeedSelections, 0, "A preview row must not restart ordinary feed navigation")
+            detail.returnToDiscoverSites()
+            XCTAssertTrue(descendants(of: detail).contains { $0 === discovery })
+        }
+    }
+
     func test_openingDiscoveryAfterCompactBackStartsANewPage() throws {
         let (app, detail, feeds, navigation) = fixture()
         detail.compactLayout = true
@@ -165,6 +195,22 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         XCTAssertTrue(navigation.viewControllers.first === feeds)
         XCTAssertTrue(navigation.topViewController is DiscoverSitesViewController)
         XCTAssertFalse(navigation.topViewController === previousDiscovery)
+    }
+
+    func test_subscriptionRowForThePreviewedFeedStillLeavesDiscovery() {
+        let app = DiscoverySidebarSelectionTestApp()
+        let (_, detail, feeds, _) = fixture(app: app, feeds: DiscoverySidebarSelectionTestFeeds())
+        app.dictFeeds = ["100": ["id": 100, "feed_title": "Subscribed site"]]
+        app.dictFolders = ["discover_sites": ["100"], "everything": ["100"]]
+        app.tryFeedFeedId = "100"
+        app.openDiscoverSitesView()
+        detail.beginDiscoverPreview()
+
+        feeds.tableView(UITableView(), didSelectRowAt: IndexPath(row: 0, section: 2))
+
+        XCTAssertFalse(detail.canReturnToDiscoverSites)
+        XCTAssertFalse(detail.isDiscoverSitesVisible)
+        XCTAssertEqual(app.ordinaryFeedSelections, 1)
     }
 
     func test_discoveryPreviewRestoresHiddenThreeColumnTitlesAtTheExistingWidth() throws {
@@ -434,10 +480,9 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         XCTAssertTrue(detail.isDiscoverSitesVisible)
     }
 
-    private func fixture() -> (NewsBlurAppDelegate, DiscoveryPaneTestDetail, FeedsViewController, UINavigationController) {
-        let app = NewsBlurAppDelegate()
+    private func fixture(app: NewsBlurAppDelegate = NewsBlurAppDelegate(),
+                         feeds: FeedsViewController = FeedsViewController()) -> (NewsBlurAppDelegate, DiscoveryPaneTestDetail, FeedsViewController, UINavigationController) {
         let detail = DiscoveryPaneTestDetail()
-        let feeds = FeedsViewController()
         let navigation = UINavigationController(rootViewController: feeds)
         app.detailViewController = detail
         app.feedsViewController = feeds
@@ -453,6 +498,17 @@ final class Test_DiscoverPanePresentation: XCTestCase {
     private func descendants(of controller: UIViewController) -> [UIViewController] {
         controller.children.flatMap { [$0] + descendants(of: $0) }
     }
+}
+
+@MainActor private final class DiscoverySidebarSelectionTestApp: NewsBlurAppDelegate {
+    var ordinaryFeedSelections = 0
+    override func loadFolder(_ folder: String!, feedID: String!) {
+        ordinaryFeedSelections += 1
+    }
+}
+
+@MainActor private final class DiscoverySidebarSelectionTestFeeds: FeedsViewController {
+    override func clearDashboard() {}
 }
 
 @MainActor private final class DiscoveryPaneTestDetail: DetailViewController {

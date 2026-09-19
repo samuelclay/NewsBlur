@@ -2386,6 +2386,27 @@ static BOOL NBBoolPreferenceValue(id value) {
     if (appDelegate.hasNoSites) {
         return;
     }
+    NSString *previewFolder = appDelegate.dictFoldersArray[indexPath.section];
+    if (!appDelegate.detailViewController.isPhoneOrCompact &&
+        [previewFolder isEqualToString:@"discover_sites"] &&
+        (appDelegate.detailViewController.canReturnToDiscoverSites || appDelegate.detailViewController.isDiscoverSitesVisible)) {
+        NSString *previewFeedId = [NSString stringWithFormat:@"%@", appDelegate.dictFolders[previewFolder][indexPath.row]];
+        NSString *activeFeedId = [NSString stringWithFormat:@"%@", appDelegate.storiesCollection.activeFeed[@"id"]];
+        if ([previewFeedId isEqualToString:appDelegate.tryFeedFeedId] && [previewFeedId isEqualToString:activeFeedId]) {
+            // FeedsObjCViewController.m resumes the retained preview without resetting its titles, selected story, or Discover page.
+            [appDelegate.detailViewController beginDiscoverPreview];
+            [self clearSelectedHeader];
+            if (self.currentRowAtIndexPath && ![self.currentRowAtIndexPath isEqual:indexPath]) {
+                [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
+            }
+            self.currentRowAtIndexPath = indexPath;
+            self.currentSection = -1;
+            self.lastRowAtIndexPath = indexPath;
+            self.lastSection = -1;
+            [[tableView cellForRowAtIndexPath:indexPath] setNeedsDisplay];
+            return;
+        }
+    }
     [appDelegate.detailViewController dismissDiscoverSites];
     
     [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
