@@ -1,0 +1,14 @@
+PASS: list mode selected
+PASS: grid mode selected
+PASS: grid mode selected
+PASS: Add + Discover remembers Grid after closing and reopening
+PASS: grid mode selected
+PASS: Grid survives process restart
+PASS: grid mode selected
+PASS: list mode selected
+PASS: list mode selected
+PASS: Related Sites shares the preference and remembers List on reopening
+PASS: list mode selected
+PASS: Related Sites selection updates Add + Discover
+PASS: list mode selected
+PASS: List survives process restart

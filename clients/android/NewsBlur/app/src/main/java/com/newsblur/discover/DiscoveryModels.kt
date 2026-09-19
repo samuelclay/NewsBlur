@@ -78,6 +78,8 @@ data class DiscoveryFeed(
 
 data class DiscoveryStory(
     val title: String,
+    val hash: String = "",
+    val permalink: String = "",
     val authors: String = "",
     val timestamp: Long? = null,
     val excerpt: String = "",
@@ -106,6 +108,8 @@ data class DiscoveryStory(
             ).firstNotNullOfOrNull { imageAddress(it).takeIf(String::isNotEmpty) }.orEmpty()
             return DiscoveryStory(
                 title = title,
+                hash = json.string("story_hash"),
+                permalink = json.string("story_permalink"),
                 authors = json.string("story_authors").ifBlank { json.string("authors") },
                 timestamp = json.string("story_timestamp").toLongOrNull()?.takeIf { it > 0 && it <= Long.MAX_VALUE / 1000 }
                     ?: DiscoverFeedFreshnessFormatter.parseApiDateMillis(json.string("story_date"))?.div(1000)?.takeIf { it > 0 },

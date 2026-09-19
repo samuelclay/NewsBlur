@@ -3,28 +3,34 @@ package com.newsblur.activity
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.view.Gravity
 import android.view.View
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.createLifecycleAwareWindowRecomposer
+import androidx.compose.ui.platform.findViewTreeCompositionContext
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.newsblur.design.NewsBlurTheme
+import com.newsblur.design.toVariant
+import com.newsblur.discover.DiscoveryViewModel
+import com.newsblur.discover.RelatedDiscoveryContent
 import com.newsblur.R
-import com.newsblur.domain.DiscoverFeedPayload
-import com.newsblur.fragment.AddFeedFragment
+import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.util.AnchoredPopover
-import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedSet
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.TryFeedStore
 import com.newsblur.util.UIUtils
-import com.newsblur.util.discoverThemePalette
-import com.newsblur.view.FloatingToolbarSurface
-import com.newsblur.viewModel.DiscoverFeedViewMode
 import com.newsblur.viewModel.DiscoverFeedsViewModel
 import kotlinx.coroutines.launch
 
@@ -35,111 +41,77 @@ object RelatedSitesPopover {
         anchor: View,
         feedSet: FeedSet,
         loader: ImageLoader,
+        thumbnailLoader: ImageLoader,
         tryStore: TryFeedStore,
     ): PopupWindow {
-        val palette = discoverThemePalette(activity, activity.prefsRepo)
+        val theme = activity.prefsRepo.getResolvedTheme(activity)
+        val sheetColors = ReaderSheetPalette.colors(theme)
+        fun dp(value: Int) = UIUtils.dp2px(activity, value)
         val model = ViewModelProvider(activity)[DiscoverFeedsViewModel::class.java]
+        val actions = ViewModelProvider(activity)[DiscoveryViewModel::class.java]
         val root =
             LinearLayout(activity).apply {
                 orientation = LinearLayout.VERTICAL
-                background = FloatingToolbarSurface.background(activity, activity.prefsRepo.getResolvedTheme(activity))
+                background = GradientDrawable().apply {
+                    cornerRadius = dp(18).toFloat()
+                    setColor(sheetColors.background.toArgb())
+                    setStroke(dp(1), sheetColors.border.toArgb())
+                }
                 clipToOutline = true
             }
         val header =
             LinearLayout(activity).apply {
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(UIUtils.dp2px(activity, 16), 0, UIUtils.dp2px(activity, 8), 0)
+                setPadding(dp(16), dp(4), dp(8), dp(4))
             }
         header.addView(
             TextView(activity).apply {
                 text = activity.getString(R.string.discover_related_sites_title)
                 textSize = 17f
                 gravity = Gravity.CENTER_VERTICAL
-                setTextColor(palette.textPrimaryColor)
+                setTextColor(sheetColors.textPrimary.toArgb())
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             },
-            LinearLayout.LayoutParams(0, UIUtils.dp2px(activity, 48), 1f),
+            LinearLayout.LayoutParams(0, dp(48), 1f),
         )
         val toggle =
-            MaterialButton(activity).apply {
-                textSize = 12f
-                minWidth = 0
-                minimumWidth = 0
-                setTextColor(palette.textPrimaryColor)
-                backgroundTintList =
-                    ColorStateList.valueOf(Color.TRANSPARENT)
+            ImageButton(activity).apply {
+                setPadding(dp(12), dp(12), dp(12), dp(12))
+                imageTintList = ColorStateList.valueOf(sheetColors.textPrimary.toArgb())
+                background = RippleDrawable(
+                    ColorStateList.valueOf(ReaderSheetPalette.menuRowHighlightArgb(theme)),
+                    null,
+                    GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        setColor(Color.WHITE)
+                    },
+                )
             }
-        header.addView(toggle)
+        header.addView(toggle, LinearLayout.LayoutParams(dp(48), dp(48)))
         root.addView(header)
-        val status =
-            TextView(activity).apply {
-                setTextColor(palette.textSecondaryColor)
-                setPadding(UIUtils.dp2px(activity, 8), UIUtils.dp2px(activity, 8), UIUtils.dp2px(activity, 8), UIUtils.dp2px(activity, 8))
-            }
-        root.addView(status)
-        val recycler = RecyclerView(activity).apply { layoutManager = LinearLayoutManager(activity) }
-        root.addView(recycler, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
-        val popup = PopupWindow(root, UIUtils.dp2px(activity, 360), UIUtils.dp2px(activity, 520), true)
-        val adapter =
-            DiscoverFeedAdapter(
-                activity.layoutInflater,
-                loader,
-                palette,
-                (activity as NbActivity).dbHelper.allFeeds,
-                object : DiscoverFeedAdapter.Listener {
-                    override fun onTryFeed(payload: DiscoverFeedPayload) {
-                        popup.dismiss()
-                        val existing = (activity as NbActivity).dbHelper.getFeed(payload.feed.feedId)
-                        if (existing != null) {
-                            FeedItemsList.startActivity(
-                                activity,
-                                FeedSet.singleFeed(existing.feedId),
-                                existing,
-                                AppConstants.ROOT_FOLDER,
-                                null,
-                                null,
-                            )
-                        } else {
-                            tryStore.set(payload.feed)
-                            FeedItemsList.startTryFeedActivity(activity, payload.feed)
-                        }
-                    }
-
-                    override fun onAddFeed(payload: DiscoverFeedPayload) {
-                        popup.dismiss()
-                        AddFeedFragment
-                            .newInstance(payload.feed.address.ifBlank { payload.feed.feedLink }, payload.feed.title)
-                            .show(activity.supportFragmentManager, "add_related_site")
-                    }
-                },
-            )
-        recycler.adapter = adapter
-        recycler.addOnScrollListener(
-            object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    view: RecyclerView,
-                    dx: Int,
-                    dy: Int,
-                ) {
-                    if (dy > 0 &&
-                        (view.layoutManager as LinearLayoutManager).findLastVisibleItemPosition() >= adapter.itemCount - 3
-                    ) {
-                        model.loadNextPage()
-                    }
+        root.addView(View(activity).apply {
+            setBackgroundColor(sheetColors.border.toArgb())
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)).apply {
+            setMargins(dp(14), 0, dp(14), dp(4))
+        })
+        // RelatedSitesPopover.kt supplies a parent explicitly: PopupDecorView has no lifecycle owner.
+        val hostComposition = anchor.findViewTreeCompositionContext()
+        val popupRecomposer = if (hostComposition == null) root.createLifecycleAwareWindowRecomposer(lifecycle = activity.lifecycle) else null
+        val content = ComposeView(activity).apply {
+            setViewTreeLifecycleOwner(activity)
+            setViewTreeSavedStateRegistryOwner(activity)
+            setParentCompositionContext(hostComposition ?: popupRecomposer)
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool)
+            setContent {
+                NewsBlurTheme(variant = activity.prefsRepo.getSelectedTheme().toVariant(), dynamic = false) {
+                    RelatedDiscoveryContent(activity, model, actions, loader, thumbnailLoader, tryStore)
                 }
-            },
-        )
-        toggle.setOnClickListener {
-            model.setViewMode(
-                if (model.uiState.value.viewMode ==
-                    DiscoverFeedViewMode.GRID
-                ) {
-                    DiscoverFeedViewMode.LIST
-                } else {
-                    DiscoverFeedViewMode.GRID
-                },
-            )
+            }
         }
+        root.addView(content, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+        val popup = PopupWindow(root, dp(360), dp(520), true)
+        toggle.setOnClickListener { actions.toggleGrid() }
         if (feedSet.isSingleNormal) {
             val feed = (activity as NbActivity).dbHelper.getFeed(feedSet.singleFeed)
             if (feed != null) model.load(feed) else model.load(feedSet.singleFeed)
@@ -148,33 +120,28 @@ object RelatedSitesPopover {
         }
         val job =
             activity.lifecycleScope.launch {
-                model.uiState.collect { state ->
-                    adapter.submit(state.feeds, state.viewMode, palette, (activity as NbActivity).dbHelper.allFeeds)
-                    toggle.setText(
-                        if (state.viewMode ==
-                            DiscoverFeedViewMode.GRID
-                        ) {
-                            R.string.discover_view_mode_list
-                        } else {
-                            R.string.discover_view_mode_grid
-                        },
-                    )
-                    status.visibility = if (state.feeds.isEmpty()) View.VISIBLE else View.GONE
-                    status.text =
-                        if (state.isLoadingInitial) {
-                            activity.getString(R.string.loading)
-                        } else {
-                            state.errorMessage
-                                ?: activity.getString(R.string.discover_no_related_sites)
-                        }
+                actions.state.collect { state ->
+                    toggle.setImageResource(if (state.grid) R.drawable.ic_discover_view_list else R.drawable.ic_discover_view_grid)
+                    toggle.contentDescription = activity.getString(if (state.grid) R.string.discover_show_list else R.string.discover_show_grid)
                 }
             }
-        popup.setOnDismissListener { job.cancel() }
+        popup.setOnDismissListener {
+            job.cancel()
+            content.disposeComposition()
+            popupRecomposer?.cancel()
+        }
         popup.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         popup.isOutsideTouchable = true
-        popup.elevation = UIUtils.dp2px(activity, 10).toFloat()
+        popup.elevation = dp(12).toFloat()
         popup.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
-        AnchoredPopover.show(anchor, popup, popup.width, popup.height)
+        try {
+            AnchoredPopover.show(anchor, popup, popup.width, popup.height)
+        } catch (error: RuntimeException) {
+            job.cancel()
+            content.disposeComposition()
+            popupRecomposer?.cancel()
+            throw error
+        }
         return popup
     }
 }

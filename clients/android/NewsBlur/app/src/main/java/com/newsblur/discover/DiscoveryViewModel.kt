@@ -8,6 +8,7 @@ import com.newsblur.domain.Folder
 import com.newsblur.domain.FolderHierarchy
 import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderPath
+import com.newsblur.preference.DiscoveryViewPreferences
 import com.newsblur.util.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -31,7 +32,7 @@ import javax.inject.Inject
 data class DiscoveryState(
     val tab: DiscoveryTab = DiscoveryTab.SEARCH,
     val pages: Map<DiscoveryTab, DiscoveryPage> = emptyMap(),
-    val grid: Boolean = true,
+    val grid: Boolean = false,
     val folder: String = AppConstants.ROOT_FOLDER,
     val folders: List<Folder> = emptyList(),
     val added: Set<String> = emptySet(),
@@ -40,6 +41,8 @@ data class DiscoveryState(
     val notice: String? = null,
     val revision: Int = 0,
     val preview: Feed? = null,
+    val previewStoryHash: String? = null,
+    val selectedPreviewStoryHash: String? = null,
     val web: WebDiscoveryState = WebDiscoveryState(),
     val newsQuery: String = "",
     val newsTopic: String = "",
@@ -56,14 +59,17 @@ class DiscoveryViewModel
         private val api: DiscoveryApi,
         private val feedApi: FeedApi,
         private val saved: SavedStateHandle,
+        private val viewPreferences: DiscoveryViewPreferences,
     ) : ViewModel() {
         internal var workerDispatcher: CoroutineDispatcher = Dispatchers.IO
+        private val ownerAccount = viewPreferences.folderSelection().account
         private val mutable =
             MutableStateFlow(
                 DiscoveryState(
-                    tab = DiscoveryTab.entries.firstOrNull { it.name == saved.get<String>("tab") } ?: DiscoveryTab.SEARCH,
-                    grid = saved["grid"] ?: true,
-                    folder = saved["folder"] ?: AppConstants.ROOT_FOLDER,
+                    tab = DiscoveryTab.entries.firstOrNull { it.name == saved.get<String>(TAB) } ?: DiscoveryTab.SEARCH,
+                    grid = viewPreferences.isGrid(),
+                    folder = viewPreferences.folderSelection().folder,
+                    selectedPreviewStoryHash = saved["selectedPreviewStoryHash"],
                     newsQuery = saved["newsQuery"] ?: "",
                     newsTopic = saved["newsTopic"] ?: "",
                     newsCategory = saved["newsCategory"] ?: "",
@@ -78,6 +84,23 @@ class DiscoveryViewModel
         private var webJob: Job? = null
         private var webGeneration = 0
 
+        init {
+            viewModelScope.launch {
+                viewPreferences.gridChanges.collect { grid -> mutable.update { it.copy(grid = grid) } }
+            }
+            viewModelScope.launch {
+                viewPreferences.folderChanges.collect { selection ->
+                    mutable.update {
+                        if (selection.account == ownerAccount) {
+                            it.copy(folder = selection.folder)
+                        } else {
+                            it.copy(folder = AppConstants.ROOT_FOLDER, folders = emptyList(), added = emptySet())
+                        }
+                    }
+                }
+            }
+        }
+
         private fun page(
             tab: DiscoveryTab,
             change: (DiscoveryPage) -> DiscoveryPage,
@@ -90,7 +113,7 @@ class DiscoveryViewModel
         }
 
         fun selectTab(tab: DiscoveryTab) {
-            saved["tab"] = tab.name
+            saved[TAB] = tab.name
             mutable.update { it.copy(tab = tab, error = null, notice = null) }
             if (tab != DiscoveryTab.WEB && tab != DiscoveryTab.GOOGLE && !state.value.page.loaded && !state.value.page.loading) load(tab)
         }
@@ -99,18 +122,30 @@ class DiscoveryViewModel
             folders: List<Folder>,
             subscribed: Set<String>,
         ) {
+            if (viewPreferences.folderSelection().account != ownerAccount) return
             FolderPath.setFolders(folders)
             mutable.update { it.copy(folders = FolderHierarchy(folders).ordered, added = it.added + subscribed) }
+            val selected = viewPreferences.folderSelection().folder
+            if (selected != AppConstants.ROOT_FOLDER && folders.none { it.flatName() == selected }) {
+                chooseFolder(AppConstants.ROOT_FOLDER)
+            }
         }
 
         fun chooseFolder(folder: String) {
-            saved["folder"] = folder
-            mutable.update { it.copy(folder = folder) }
+            if (viewPreferences.folderSelection().account != ownerAccount) return
+            viewPreferences.setFolder(folder)
+            mutable.update { it.copy(folder = viewPreferences.folderSelection().folder) }
+        }
+
+        // DiscoverSitesActivity.kt calls this only for an explicit fresh launch or compact-sheet context.
+        fun seedFolder(folder: String) {
+            if (folder.isNotBlank() && folder != AppConstants.ROOT_FOLDER) chooseFolder(folder)
         }
 
         fun toggleGrid() {
-            saved["grid"] = !state.value.grid
-            mutable.update { it.copy(grid = !it.grid) }
+            val grid = !viewPreferences.isGrid()
+            viewPreferences.setGrid(grid)
+            mutable.update { it.copy(grid = grid) }
         }
 
         fun queryChanged(query: String) {
@@ -284,7 +319,8 @@ class DiscoveryViewModel
             }
 
         private suspend fun addUrl(url: String) {
-            val response = withContext(workerDispatcher) { feedApi.addFeed(url, state.value.folder) }
+            val folder = selectedFolder()
+            val response = withContext(workerDispatcher) { feedApi.addFeed(url, folder) }
             if (response == null ||
                 response.isError ||
                 response.feed?.feedId.isNullOrBlank()
@@ -296,19 +332,40 @@ class DiscoveryViewModel
             added(url)
         }
 
+        private fun selectedFolder(): String {
+            val selection = viewPreferences.folderSelection()
+            if (selection.account != ownerAccount) throw IOException("Your account changed. Reopen discovery to add a site.")
+            return selection.folder
+        }
+
         private fun added(url: String) {
             mutable.update { it.copy(added = it.added + url, notice = "Site added", revision = it.revision + 1) }
         }
 
-        fun preview(feed: DiscoveryFeed) =
+        fun preview(feed: DiscoveryFeed, story: DiscoveryStory? = null) {
+            if (state.value.busy || state.value.preview != null || (story != null && story.hash.isBlank())) return
+            val previousSelection = state.value.selectedPreviewStoryHash
+            val hash = story?.hash
+            selectPreviewStory(hash)
             action {
-                val id = feed.id.ifBlank { request("/discover/link_popular_feed", mapOf("feed_url" to feed.url)).string("feed_id") }
-                if ((id.toLongOrNull() ?: 0) <= 0) throw IOException("Couldn’t prepare this feed for preview.")
-                mutable.update { it.copy(preview = feed.asFeed(id)) }
+                try {
+                    val id = feed.id.ifBlank { request("/discover/link_popular_feed", mapOf("feed_url" to feed.url)).string("feed_id") }
+                    if ((id.toLongOrNull() ?: 0) <= 0) throw IOException("Couldn’t prepare this feed for preview.")
+                    mutable.update { it.copy(preview = feed.asFeed(id), previewStoryHash = hash) }
+                } catch (error: Exception) {
+                    selectPreviewStory(previousSelection)
+                    throw error
+                }
             }
+        }
+
+        private fun selectPreviewStory(hash: String?) {
+            saved["selectedPreviewStoryHash"] = hash
+            mutable.update { it.copy(selectedPreviewStoryHash = hash) }
+        }
 
         fun previewOpened() {
-            mutable.update { it.copy(preview = null) }
+            mutable.update { it.copy(preview = null, previewStoryHash = null) }
         }
 
         private fun action(block: suspend () -> Unit) {
@@ -453,7 +510,7 @@ class DiscoveryViewModel
             action {
                 val web = state.value.web
                 val variant = web.variants.getOrNull(web.selected) ?: return@action
-                val folder = state.value.folder
+                val folder = selectedFolder()
                 // DiscoveryViewModel.kt: webfeed/subscribe only accepts a leaf folder, so reject ambiguous destinations.
                 val leaf = FolderPath.leaf(folder)
                 if (state.value.folders.count { it.name.equals(leaf, ignoreCase = true) } >
@@ -488,6 +545,9 @@ class DiscoveryViewModel
         }
 
         companion object {
+            const val TAB = "tab"
+            const val FOLDER = "folder"
+
             internal fun isAddress(query: String) = query.contains("://") || (!query.contains(' ') && query.contains('.'))
         }
     }
