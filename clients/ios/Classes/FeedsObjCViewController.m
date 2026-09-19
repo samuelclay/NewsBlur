@@ -2409,6 +2409,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     [appDelegate.detailViewController dismissDiscoverSites];
     
+    [self.appDelegate.feedDetailViewController beginExplicitFeedSelection];
     [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
     [appDelegate.storiesCollection reset];
     
@@ -2847,6 +2848,7 @@ heightForHeaderInSection:(NSInteger)section {
     } else if ([folder isEqualToString:@"discover_sites"]) {
         [appDelegate openDiscoverSitesView];
     } else {
+        [self.appDelegate.feedDetailViewController beginExplicitFeedSelection];
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
     }
 

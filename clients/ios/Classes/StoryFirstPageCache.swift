@@ -652,6 +652,7 @@ import UIKit
     var pending = true
     var authoritativeReceived = false
     var displayedSnapshot = false
+    var defersSnapshotUntilOffline = false
 
     init(request: StoryFirstPageRequest, revision: UInt64, generation: UInt) {
         self.request = request
