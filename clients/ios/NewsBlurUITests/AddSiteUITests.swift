@@ -680,14 +680,9 @@ final class DiscoverSitesUITests: XCTestCase {
         let beforeY = previewTitle.frame.minY
         capture("claypad-discovery-before-story-tap")
         previewTitle.tap()
-        let selectedStory = app.tables["story-titles-list"].cells["story-row-ui-story-swift-2"]
-        XCTAssertTrue(selectedStory.waitForExistence(timeout: 15))
-        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: selectedStory)
-        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
-                       "The tapped story, not the first story, must be selected in the reader")
-        assertArticleIsVisible(title: "Swift Fixture Story Two")
+        assertExactPreviewStoryIsVisible(title: "Swift Fixture Story Two", hash: "ui-story-swift-2")
         capture("claypad-discovery-tapped-story-selected")
-        app.buttons["discover-preview-back"].tap()
+        returnToDiscoveryFromPreview(storyHash: "ui-story-swift-2")
         XCTAssertTrue(previewTitle.waitForExistence(timeout: 10))
         XCTAssertEqual(previewTitle.frame.minY, beforeY, accuracy: 3)
         XCTAssertTrue(app.buttons["discover-story-ui-story-swift-2"].isSelected)
@@ -702,13 +697,9 @@ final class DiscoverSitesUITests: XCTestCase {
         let preview = discoveryStoryPreview("ui-story-swift-2")
         XCTAssertTrue(preview.waitForExistence(timeout: 10))
         preview.tap()
-        let story = app.tables["story-titles-list"].cells["story-row-ui-story-swift-2"]
-        XCTAssertTrue(story.waitForExistence(timeout: 15))
-        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: story)
-        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed)
-        assertArticleIsVisible(title: "Swift Fixture Story Two")
+        assertExactPreviewStoryIsVisible(title: "Swift Fixture Story Two", hash: "ui-story-swift-2")
         capture("claypad-discovery-exact-story-from-empty-feed")
-        app.buttons["discover-preview-back"].tap()
+        returnToDiscoveryFromPreview(storyHash: "ui-story-swift-2")
         XCTAssertTrue(preview.waitForExistence(timeout: 10))
         XCTAssertTrue(preview.isSelected)
     }
@@ -723,6 +714,65 @@ final class DiscoverSitesUITests: XCTestCase {
         XCTAssertTrue(link.waitForExistence(timeout: 20), "The tapped story's article must render")
         let visible = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: link)
         XCTAssertEqual(XCTWaiter.wait(for: [visible], timeout: 10), .completed)
+    }
+
+    private func assertExactPreviewStoryIsVisible(title: String, hash: String) {
+        assertArticleIsVisible(title: title)
+        // AddSiteUITests.swift expects the landscape iPad fixture to retain its three panes;
+        // the iPhone reader uses a navigation stack and deliberately fades title selection.
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            XCTAssertFalse(app.buttons["discover-preview-back"].exists)
+            _ = storyReaderBackButton()
+        } else {
+            let story = app.tables["story-titles-list"].cells["story-row-\(hash)"]
+            XCTAssertTrue(story.waitForExistence(timeout: 15))
+            XCTAssertTrue(isOnscreen(story) && story.isHittable, "The exact title must remain visible beside the article")
+            let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: story)
+            XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
+                           "The tapped story, not the first story, must be selected in the iPad reader")
+        }
+    }
+
+    private func storyReaderBackButton() -> XCUIElement {
+        let back = app.buttons["story-reader-back"]
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "The compact article toolbar must provide Back navigation")
+        XCTAssertEqual(back.label, "Back to story titles")
+        XCTAssertTrue(back.isHittable)
+        return back
+    }
+
+    private func nativeTitleListBackButton() -> XCUIElement {
+        // AddSiteUITests.swift follows UIKit's explicit Back identity even when it moves
+        // into a system toolbar; the title navigation bar may contain only Settings.
+        let systemBack = app.buttons["BackButton"]
+        if systemBack.waitForExistence(timeout: 3) {
+            XCTAssertTrue(systemBack.isHittable)
+            return systemBack
+        }
+        let back = app.navigationBars.buttons.matching(
+            NSPredicate(format: "label IN %@", ["Back", "Add + Discover Sites"])).firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "The compact title list must provide native Back navigation")
+        XCTAssertTrue(back.isHittable)
+        return back
+    }
+
+    private func returnToDiscoveryFromPreview(storyHash: String) {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            storyReaderBackButton().tap()
+            let story = app.tables["story-titles-list"].cells["story-row-\(storyHash)"]
+            XCTAssertTrue(story.waitForExistence(timeout: 10))
+            let titlesVisible = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: story)
+            XCTAssertEqual(XCTWaiter.wait(for: [titlesVisible], timeout: 10), .completed,
+                           "The article toolbar Back must return to its story titles")
+            nativeTitleListBackButton().tap()
+        } else {
+            let back = app.buttons["discover-preview-back"]
+            XCTAssertTrue(back.waitForExistence(timeout: 10), "The iPad preview must retain its Discover return button")
+            back.tap()
+        }
+        let popular = app.buttons["discover-tab-popular"]
+        XCTAssertTrue(popular.waitForExistence(timeout: 10))
+        XCTAssertTrue(popular.isSelected, "Returning from the reader must restore the same Discover source")
     }
 
     func test_liveClayPadListStoryPreviewOpensTheTappedStory() throws {
@@ -871,11 +921,7 @@ final class DiscoverSitesUITests: XCTestCase {
         openFixtureRelatedSites()
         app.buttons["discover-story-ui-story-swift-2"].tap()
         XCTAssertTrue(app.buttons["Close Related Sites"].waitForNonExistence(timeout: 10))
-        let story = app.tables["story-titles-list"].cells["story-row-ui-story-swift-2"]
-        XCTAssertTrue(story.waitForExistence(timeout: 15))
-        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: story)
-        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed)
-        assertArticleIsVisible(title: "Swift Fixture Story Two")
+        assertExactPreviewStoryIsVisible(title: "Swift Fixture Story Two", hash: "ui-story-swift-2")
         capture("related-sites-exact-story-in-reader")
     }
 
