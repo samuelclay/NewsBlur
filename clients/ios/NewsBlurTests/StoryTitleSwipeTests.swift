@@ -491,7 +491,7 @@ import ObjectiveC.runtime
     }
 
     func test_classicSuppressesBothFullScreenBackGesturesAndKeepsEdgeBack() throws {
-        let controller = FeedDetailObjCViewController()
+        let controller = CompactSwipeTestController()
         controller.view = UIView()
         let navigation = UINavigationController()
         navigation.viewControllers = [UIViewController(), controller]
@@ -620,6 +620,11 @@ import ObjectiveC.runtime
 
 private final class CachedSwipeTestController: FeedDetailObjCViewController {
     override func reload() {}
+}
+
+private final class CompactSwipeTestController: FeedDetailObjCViewController {
+    // StoryTitleSwipeTests.swift exercises compact navigation gestures on either test-host idiom.
+    @objc(isPhoneOrCompact) func usesCompactLayout() -> Bool { true }
 }
 
 @MainActor private final class DisabledSwipeTestPan: UIPanGestureRecognizer {

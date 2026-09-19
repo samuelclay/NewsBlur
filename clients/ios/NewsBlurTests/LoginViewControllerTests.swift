@@ -344,6 +344,9 @@ final class StoryPagesViewControllerTests: XCTestCase {
 
     func test_resetPagesClearsStalePageStories() {
         let appDelegate = NewsBlurAppDelegate()
+        // LoginViewControllerTests.swift supplies the collection queried by the real iPad pager's layout setup.
+        appDelegate.storiesCollection = StoriesCollection()
+        appDelegate.storiesCollection.appDelegate = appDelegate
         let detailController = DetailViewController()
         let controller = StoryPagesViewController()
 

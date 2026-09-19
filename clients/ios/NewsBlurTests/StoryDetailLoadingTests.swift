@@ -810,7 +810,8 @@ import XCTest
             await drainMainQueue()
             let selected = try XCTUnwrap(fixture.pages.value(forKey: "pendingPresentationPage") as? StoryLoadPage)
             let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
-            sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
+            let selectedToken = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+            sendReady(to: selected, token: selectedToken, mainFrame: true)
             for _ in 0..<50 where fixture.pages.value(forKey: "storySelectionTransitionHost") == nil { await delay(0.01) }
             XCTAssertNotNil(fixture.pages.value(forKey: "storySelectionTransitionHost"), interruption)
             XCTAssertEqual(fixture.pages.pageChanges, [])
@@ -825,7 +826,7 @@ import XCTest
                 let latest = try XCTUnwrap(fixture.pages.value(forKey: "pendingPresentationPage") as? StoryLoadPage)
                 let latestWeb = try XCTUnwrap(latest.webView as? RecordedStoryLoadWebView)
                 sendReady(to: latest, token: try tokenFromHTML(XCTUnwrap(latestWeb.loads.last).html), mainFrame: true)
-                for _ in 0..<100 where fixture.pages.pageChanges.isEmpty { await delay(0.01) }
+                await waitForState("The reselected article completes its presentation") { !fixture.pages.pageChanges.isEmpty }
                 XCTAssertEqual(fixture.pages.pageChanges, [2])
                 XCTAssertEqual(fixture.pages.currentPage.activeStoryId, "item-9")
             case "cancel":
@@ -840,11 +841,17 @@ import XCTest
                 XCTAssertEqual(fixture.pages.currentPage.view.bounds.width, 500)
                 XCTAssertEqual(fixture.pages.pageChanges, [1])
             case "redraw", "redraw-reselect", "redraw-cancel":
+                let previousLoadCount = web.loads.count
                 selected.activeStory["story_content"] = "Full text replaced this same story while its page was moving"
                 selected.drawStory()
-                await delay(0.35)
+                // StoryDetailLoadingTests.swift waits for the animator to submit the replacement document before sending that document's readiness token.
+                await waitForState("The \(interruption) replacement reaches its covered paint gate") {
+                    web.loads.count > previousLoadCount && selected.hasStory &&
+                        fixture.pages.value(forKey: "storySelectionRedrawCover") != nil
+                }
                 XCTAssertEqual(fixture.app.presentations, 0, "A same-hash replacement must paint before completing the selection")
                 let replacement = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+                XCTAssertNotEqual(replacement, selectedToken)
                 if interruption == "redraw-cancel" {
                     fixture.pages.cancelPendingStoryPresentation()
                     sendReady(to: selected, token: replacement, mainFrame: true)
@@ -860,19 +867,21 @@ import XCTest
                     await drainMainQueue()
                     XCTAssertEqual(fixture.app.presentations, 0)
                     sendReady(to: latest, token: try tokenFromHTML(XCTUnwrap(latestWeb.loads.last).html), mainFrame: true)
-                    for _ in 0..<100 where fixture.pages.pageChanges.isEmpty { await delay(0.01) }
+                    await waitForState("The newer article completes after a deferred redraw") { !fixture.pages.pageChanges.isEmpty }
                     XCTAssertEqual(fixture.pages.pageChanges, [2])
                     XCTAssertEqual(fixture.pages.currentPage.activeStoryId, "item-9")
                     XCTAssertEqual(fixture.pages.unreadyAtNavigation, [false])
                 } else {
                     sendReady(to: selected, token: replacement, mainFrame: true)
-                    for _ in 0..<100 where fixture.pages.pageChanges.isEmpty { await delay(0.01) }
+                    await waitForState("The replacement article completes after its readiness signal") { !fixture.pages.pageChanges.isEmpty }
                     XCTAssertEqual(fixture.pages.pageChanges, [1])
                     XCTAssertEqual(fixture.pages.unreadyAtNavigation, [false])
                 }
             default:
                 feed.fetchRequestId += 1
-                await delay(0.35)
+                await waitForState("The obsolete feed selection releases its pending completion") {
+                    fixture.pages.value(forKey: "pendingPresentationCompletion") == nil
+                }
                 XCTAssertTrue(fixture.pages.currentPage === fixture.original)
                 XCTAssertEqual(fixture.app.presentations, 0)
             }
@@ -1038,16 +1047,25 @@ import XCTest
         table.rowReloads = 0
         feed.events.removeAll()
         feed.eventTimes.removeAll()
+        let titlesFinished = expectation(description: "The native title reveal animation completes")
+        feed.titleScrollDidFinish = { titlesFinished.fulfill() }
         let nextTappedAt = CACurrentMediaTime()
         // StoryDetailLoadingTests.swift drives the same UIButton action and real pager/list/read callbacks as the landscape app.
         next.sendActions(for: .touchUpInside)
         // StoryDetailLoadingTests.swift leaves both animations untouched while sampling; drawHierarchy(afterScreenUpdates:true) can complete UIKit animations.
-        await delay(1.0)
+        await fulfillment(of: [titlesFinished], timeout: 15)
+        await waitForState("The completed title and article positions reach their displayed frames") {
+            guard let titleOffset = titles.offsets.last, let articlePosition = motion.positions.last else { return false }
+            let finalArticlePosition = articlePages[0].view.convert(CGPoint.zero, to: window).x
+            return abs(titleOffset - table.contentOffset.y) < 0.5 &&
+                abs(articlePosition - finalArticlePosition) < 0.5 && pages.currentPage.pageIndex == 3
+        }
         titles.stop()
         motion.stop()
         XCTAssertEqual(Array(feed.events.prefix(3)), ["select", "read:next-button-3", "redraw"])
         XCTAssertEqual(pages.currentPage.activeStoryId, "next-button-3")
         XCTAssertEqual(table.indexPathForSelectedRow, target)
+        XCTAssertTrue(table.bounds.contains(table.rectForRow(at: target)), "The completed reveal must show the entire fourth title")
         XCTAssertEqual(collection.syncedHashes, ["next-button-3"])
         XCTAssertFalse(collection.isStoryUnread(collection.activeFeedStories[3] as? [AnyHashable: Any]))
         XCTAssertTrue(collection.isStoryUnread(collection.activeFeedStories[4] as? [AnyHashable: Any]))
@@ -1066,11 +1084,7 @@ import XCTest
             let travel = abs((values.last ?? 0) - (values.first ?? 0))
             for index in 1..<values.count {
                 let elapsed = times[index] - times[index - 1]
-                // StoryDetailLoadingTests.swift can see the old presentation tree on the first callback after a stalled main thread.
-                // Include that missed display interval only for its immediate catch-up frame; uninterrupted frames keep the same velocity bound.
-                let previousInterval = index > 1 ? times[index - 1] - times[index - 2] : 0
-                let catchUpInterval = previousInterval > 0.05 ? previousInterval : 0
-                let maximumStep = max(60, travel * CGFloat(elapsed + catchUpInterval) * 8.5 + 2)
+                let maximumStep = max(60, travel * CGFloat(elapsed) * 8.5 + 2)
                 XCTAssertLessThanOrEqual(abs(values[index] - values[index - 1]), maximumStep,
                                          "\(name) jumped in \(elapsed)s: \(values[index - 1]) → \(values[index])")
             }
@@ -1102,6 +1116,7 @@ import XCTest
 
     func test_readerEntranceDoesNotWaitForArticleReadiness() async throws {
         let fixture = makePresentationFixture()
+        fixture.app.compactWidthOverride = true
         fixture.app.feedsNavigationController = UINavigationController(rootViewController: UIViewController())
         fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
         fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
@@ -1122,6 +1137,7 @@ import XCTest
             if let previousTrackingHash { tracker.startTracking(storyHash: previousTrackingHash) }
         }
         let fixture = makePresentationFixture()
+        fixture.app.compactWidthOverride = true
         fixture.app.feedsNavigationController = UINavigationController(rootViewController: UIViewController())
         fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
         fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
@@ -1152,6 +1168,7 @@ import XCTest
 
     func test_backDuringEarlyEntranceRejectsLateReadiness() async throws {
         let fixture = makePresentationFixture()
+        fixture.app.compactWidthOverride = true
         fixture.app.feedsNavigationController = UINavigationController(rootViewController: UIViewController())
         fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
         fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
@@ -1187,6 +1204,7 @@ import XCTest
 
     func test_earlyEntranceSurvivesLayoutWithoutReloadingItsDocument() async throws {
         let fixture = makePresentationFixture()
+        fixture.app.compactWidthOverride = true
         fixture.app.feedsNavigationController = UINavigationController(rootViewController: UIViewController())
         fixture.pages.runsActualPageChanges = true
         fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
@@ -1209,6 +1227,7 @@ import XCTest
 
     func test_changedFeedDuringEarlyEntranceCannotRevealTheOldStory() async throws {
         let fixture = makePresentationFixture()
+        fixture.app.compactWidthOverride = true
         fixture.app.feedsNavigationController = UINavigationController(rootViewController: UIViewController())
         let feed = FeedDetailViewController()
         fixture.app.testFeed = feed
@@ -2810,6 +2829,7 @@ private final class NextButtonReadingStories: StoriesCollection {
 @MainActor private final class NextButtonReadingFeed: FeedDetailViewController {
     var events: [String] = []
     var eventTimes: [CFTimeInterval] = []
+    var titleScrollDidFinish: (() -> Void)?
     override var isLegacyTable: Bool { true }
     override func viewDidLoad() {}
     override func viewWillAppear(_ animated: Bool) {}
@@ -2833,6 +2853,12 @@ private final class NextButtonReadingStories: StoriesCollection {
         events.append("redraw")
         eventTimes.append(CACurrentMediaTime())
         super.redrawUnreadStory()
+    }
+    @objc(scrollViewDidEndScrollingAnimation:) func storyTitlesDidFinishScrolling(_ scroll: UIScrollView) {
+        guard scroll === storyTitlesTable else { return }
+        let completion = titleScrollDidFinish
+        titleScrollDidFinish = nil
+        completion?()
     }
     @objc(updateBottomNextFeedControlForScroll:) func omitUnrelatedPullToNextFeedChrome(_ scroll: UIScrollView) {}
 }
@@ -2860,20 +2886,20 @@ private final class NextButtonReadingStories: StoriesCollection {
         self.target = target
     }
     func start() {
-        sample()
-        let link = CADisplayLink(target: self, selector: #selector(sample))
+        let link = CADisplayLink(target: self, selector: #selector(sample(_:)))
         link.add(to: .main, forMode: .common)
         displayLink = link
     }
     func stop() { displayLink?.invalidate(); displayLink = nil }
-    @objc private func sample() {
-        let now = CACurrentMediaTime()
-        offsets.append(table.layer.presentation()?.bounds.origin.y ?? table.contentOffset.y)
-        sampleTimes.append(now)
-        if let cell = table.cellForRow(at: target)?.layer.presentation(), let root = window.layer.presentation() {
+    @objc private func sample(_ link: CADisplayLink) {
+        guard let presentation = table.layer.presentation(), let root = window.layer.presentation() else { return }
+        // StoryDetailLoadingTests.swift pairs presentation geometry with the displayed frame's timestamp, not a delayed main-thread callback's arrival time.
+        offsets.append(presentation.bounds.origin.y)
+        sampleTimes.append(link.timestamp)
+        if let cell = table.cellForRow(at: target)?.layer.presentation() {
             // StoryDetailLoadingTests.swift measures the actual cell through all animated ancestors, not only UITableView's model offset.
             cellPositions.append(cell.convert(CGPoint.zero, to: root).y)
-            cellSampleTimes.append(now)
+            cellSampleTimes.append(link.timestamp)
         }
     }
 }

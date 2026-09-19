@@ -55,6 +55,14 @@ import XCTest
                 for page in children { page.webView = nil }
                 app.testPages = nil
             }
+            // StoryPreloadFailureTests.swift selects a cached neighbor from an existing reader, not an empty iPad pane's early entrance.
+            children[0].pageIndex = 0
+            children[0].activeStory = stories[0]
+            children[0].drawStory()
+            await drainMainQueue()
+            children[0].perform(NSSelectorFromString("webViewNotifyLoaded"))
+            XCTAssertTrue(children[0].hasStory)
+            XCTAssertFalse(children[0].webView.isHidden)
             let selected = children[1]
             let web = try XCTUnwrap(selected.webView as? PreloadFailureWebView)
             selected.pageIndex = 1
