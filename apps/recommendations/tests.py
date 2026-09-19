@@ -77,6 +77,79 @@ class Test_StoryRecommendationFeedback(TestCase):
         save_classifier.assert_not_called()
         self.assertFalse(UserSubscription.objects.filter(user=self.user, feed=self.feed).exists())
 
+    def test_history_counts_current_choices_and_excludes_other_accounts_and_cleared_votes(self):
+        url = reverse("story-feedback-history")
+        self.vote(1)
+        MRecommendationFeedback.record(self.other_user.pk, self.story, -1, "discovery")
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        MRecommendationFeedback.objects(user_id=self.user.pk).update(set__updated_date=yesterday)
+        data = self.client.get(url).json()
+        self.assertEqual((data["summary"]["more"], data["summary"]["less"]), (1, 0))
+        self.assertEqual(sum(day["more"] for day in data["summary"]["days"]), 1)
+        self.assertEqual(data["stories"][0]["story_title"], self.story.story_title)
+        self.assertEqual(data["feeds"][str(self.feed.pk)]["feed_title"], self.feed.feed_title)
+        self.assertNotIn("story_excerpt", data["stories"][0])
+        self.vote(-1)
+        data = self.client.get(url, {"value": -1}).json()
+        self.assertEqual((data["summary"]["more"], data["summary"]["less"]), (0, 1))
+        self.assertEqual(sum(day["more"] for day in data["summary"]["days"]), 0)
+        self.assertEqual(data["summary"]["days"][-1]["less"], 1)
+        self.vote(0)
+        data = self.client.get(url, {"value": -1}).json()
+        self.assertEqual(data["stories"], [])
+        self.assertEqual(data["summary"]["less"], 0)
+
+    def test_history_can_switch_and_clear_expired_stories_but_cannot_edit_another_users_vote(self):
+        self.vote(1)
+        self.story.delete()
+        self.assertEqual(self.vote(-1).json()["value"], -1)
+        self.assertEqual(self.vote(0).json()["value"], 0)
+        self.assertEqual(
+            MRecommendationFeedback.objects.get(user_id=self.user.pk).story_title, self.story.story_title
+        )
+        self.client.force_login(self.other_user)
+        self.assertEqual(self.vote(1).json()["code"], -1)
+
+    def test_history_pagination_has_stable_ties_and_is_account_and_choice_scoped(self):
+        url = reverse("story-feedback-history")
+        now = datetime.datetime.utcnow()
+        for i in range(23):
+            MRecommendationFeedback(
+                user_id=self.user.pk,
+                story_hash="1:%06x" % i,
+                value=1,
+                surface="discovery",
+                story_feed_id=self.feed.pk,
+                story_title="Story %s" % i,
+                created_date=now,
+                updated_date=now,
+            ).save()
+        first = self.client.get(url).json()
+        self.assertEqual(len(first["stories"]), 20)
+        self.assertEqual(first["summary"]["more"], 23)
+        second = self.client.get(url, {"cursor": first["next_cursor"]}).json()
+        self.assertEqual(len(second["stories"]), 3)
+        self.assertIsNone(second["next_cursor"])
+        self.assertEqual(len({row["story_hash"] for row in first["stories"] + second["stories"]}), 23)
+        for query in [{"cursor": "invalid"}, {"cursor": first["next_cursor"], "value": -1}, {"value": 0}]:
+            self.assertEqual(self.client.get(url, query).json()["code"], -1)
+        self.client.force_login(self.other_user)
+        self.assertEqual(self.client.get(url, {"cursor": first["next_cursor"]}).json()["code"], -1)
+        self.assertEqual(self.client.get(url).json()["stories"], [])
+
+    def test_history_summary_includes_old_preferences_but_chart_only_last_30_days(self):
+        self.vote(1)
+        old = datetime.datetime.utcnow() - datetime.timedelta(days=40)
+        MRecommendationFeedback.objects(user_id=self.user.pk).update(set__updated_date=old)
+        data = self.client.get(reverse("story-feedback-history"), {"summary": 1}).json()
+        self.assertEqual(data["summary"]["more"], 1)
+        self.assertEqual(len(data["summary"]["days"]), 30)
+        self.assertEqual(sum(day["more"] for day in data["summary"]["days"]), 0)
+        self.assertNotIn("stories", data)
+        self.assertEqual(self.client.post(reverse("story-feedback-history")).status_code, 405)
+        self.client.logout()
+        self.assertEqual(self.client.get(reverse("story-feedback-history")).status_code, 403)
+
     def test_invalid_requests_and_missing_stories_do_not_create_feedback(self):
         for data in [
             {"value": "2"},

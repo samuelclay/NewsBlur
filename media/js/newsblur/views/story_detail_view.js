@@ -11,7 +11,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     events: {
         "click": "mark_read",
         "click .NB-recommendation-feedback-vote": "save_recommendation_feedback",
-        "click .NB-recommendation-feedback-undo": "undo_recommendation_feedback",
         "click .NB-recommendation-feedback-retry": "retry_recommendation_feedback",
         "click .NB-recommendation-feedback": "stop_recommendation_feedback_event",
         "mousedown .NB-recommendation-feedback": "stop_recommendation_feedback_event",
@@ -264,6 +263,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var params = this.get_render_params();
         this.$('.NB-feed-story-header-feed').remove();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));
+        this.render_recommendation_feedback();
         this.generate_gradients();
     },
 
@@ -439,6 +439,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         </div>\
                     <% } %>\
                 </div>\
+                <% if (show_recommendation_feedback) { %>\
+                    <div class="NB-recommendation-feedback" role="group" aria-label="Train recommendations">\
+                        <button type="button" class="NB-recommendation-feedback-vote" data-value="1" aria-pressed="false"><span class="NB-feedback-symbol" aria-hidden="true">✦</span><span class="NB-feedback-label">More like this</span></button>\
+                        <button type="button" class="NB-recommendation-feedback-vote" data-value="-1" aria-pressed="false"><span class="NB-feedback-symbol" aria-hidden="true">−</span><span class="NB-feedback-label">Less like this</span></button>\
+                        <span class="NB-feedback-sparkles" aria-hidden="true"><i>✦</i><i>·</i><i>✧</i><i>·</i><i>✦</i></span>\
+                        <button type="button" class="NB-recommendation-feedback-retry" hidden>Couldn’t save · Retry</button>\
+                        <span class="NB-recommendation-feedback-status" role="status" aria-live="polite"></span>\
+                    </div>\
+                <% } %>\
                 <% if (story.get("starred_date")) { %>\
                     <div class="NB-feed-story-starred-date">\
                         <span class="NB-icon"></span>\
@@ -452,20 +461,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     template: _.template('\
         <%= story_header %>\
-        <% if (show_recommendation_feedback) { %>\
-            <div class="NB-recommendation-feedback" role="group" aria-label="Train recommendations">\
-                <div class="NB-recommendation-feedback-buttons">\
-                    <button type="button" class="NB-recommendation-feedback-vote" data-value="1" aria-pressed="false">More like this</button>\
-                    <button type="button" class="NB-recommendation-feedback-vote" data-value="-1" aria-pressed="false">Less like this</button>\
-                </div>\
-                <div class="NB-recommendation-feedback-help">Train future recommendations. Keep reading right here.</div>\
-                <div class="NB-recommendation-feedback-result">\
-                    <span class="NB-recommendation-feedback-status" role="status" aria-live="polite"></span>\
-                    <button type="button" class="NB-recommendation-feedback-undo" hidden>Undo</button>\
-                    <button type="button" class="NB-recommendation-feedback-retry" hidden>Retry</button>\
-                </div>\
-            </div>\
-        <% } %>\
         <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
@@ -1082,14 +1077,27 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     render_recommendation_feedback: function () {
         var state = this.model.get('recommendation_feedback_state') || {};
         var value = this.model.get('recommendation_feedback') || 0;
+        var confirmed = !!value && !state.editing && !state.saving && !state.error;
+        this.$('.NB-recommendation-feedback')
+            .toggleClass('NB-feedback-confirmed', confirmed)
+            .toggleClass('NB-feedback-more', value === 1)
+            .toggleClass('NB-feedback-less', value === -1)
+            .toggleClass('NB-feedback-celebrate', confirmed && !!state.celebrate)
+            .attr('aria-busy', state.saving ? 'true' : 'false');
         this.$('.NB-recommendation-feedback-vote').each(function () {
-            var selected = Number($(this).attr('data-value')) === value;
+            var vote = Number($(this).attr('data-value'));
+            var selected = vote === value;
             $(this).attr('aria-pressed', selected ? 'true' : 'false')
+                .attr('tabindex', (confirmed && !selected) || state.error ? '-1' : '0')
+                .attr('aria-hidden', (confirmed && !selected) || state.error ? 'true' : 'false')
+                .attr('title', confirmed && selected ? 'Click to change your preference' :
+                    (selected ? 'Click again to clear this preference' : 'Train future recommendations'))
                 .toggleClass('NB-active', selected).prop('disabled', !!state.saving);
+            $(this).find('.NB-feedback-label').text(confirmed && selected ?
+                (vote === 1 ? 'We’ll show you more' : 'We’ll show you less') :
+                (vote === 1 ? 'More like this' : 'Less like this'));
         });
-        this.$('.NB-recommendation-feedback-status').text(state.message || '')
-            .toggleClass('NB-error', !!state.error);
-        this.$('.NB-recommendation-feedback-undo').prop('hidden', !state.can_undo || !!state.saving);
+        this.$('.NB-recommendation-feedback-status').text(state.message || '');
         this.$('.NB-recommendation-feedback-retry').prop('hidden', !state.error || !!state.saving);
     },
 
@@ -1097,25 +1105,24 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         e.preventDefault();
         e.stopImmediatePropagation();
         var value = Number($(e.currentTarget).attr('data-value'));
-        if (value === this.model.get('recommendation_feedback')) value = 0;
-        this.submit_recommendation_feedback(value, false);
-    },
-
-    undo_recommendation_feedback: function (e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
         var state = this.model.get('recommendation_feedback_state') || {};
-        if (state.can_undo) this.submit_recommendation_feedback(state.undo_value, true);
+        if (state.saving) return;
+        if (value === this.model.get('recommendation_feedback') && !state.editing) {
+            this.model.set('recommendation_feedback_state', { editing: true });
+            return;
+        }
+        if (value === this.model.get('recommendation_feedback')) value = 0;
+        this.submit_recommendation_feedback(value);
     },
 
     retry_recommendation_feedback: function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
         var state = this.model.get('recommendation_feedback_state') || {};
-        if (state.error) this.submit_recommendation_feedback(state.retry_value, state.retry_undo);
+        if (state.error) this.submit_recommendation_feedback(state.retry_value);
     },
 
-    submit_recommendation_feedback: function (value, undo) {
+    submit_recommendation_feedback: function (value) {
         var model = this.model;
         var state = model.get('recommendation_feedback_state') || {};
         var previous_value = model.get('recommendation_feedback') || 0;
@@ -1129,9 +1136,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             model.set({
                 recommendation_feedback: data.value,
                 recommendation_feedback_state: {
-                    message: undo ? 'Preference restored.' : (data.value ? 'Preference saved.' : 'Preference cleared.'),
-                    can_undo: !undo,
-                    undo_value: previous_value
+                    message: data.value === 1 ? 'We’ll show you more. Click to change your preference.' :
+                        (data.value === -1 ? 'We’ll show you less. Click to change your preference.' : 'Preference cleared.'),
+                    celebrate: !!data.value
                 }
             });
         }, function () {
@@ -1139,10 +1146,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             model.set('recommendation_feedback_state', {
                 error: true,
                 message: 'Couldn’t save your preference.',
-                retry_value: value,
-                retry_undo: undo,
-                can_undo: state.can_undo,
-                undo_value: state.undo_value
+                retry_value: value
             });
         });
     },

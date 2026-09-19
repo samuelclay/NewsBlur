@@ -31,6 +31,13 @@ def save_story_feedback(request):
     ):
         return dict(code=-1, message="Invalid recommendation feedback.")
 
+    # recommendations/views.py: Readers can revise their own saved preference after story expiry.
+    existing = MRecommendationFeedback.objects(user_id=request.user.pk, story_hash=story_hash).modify(
+        new=True, set__value=int(value), set__updated_date=datetime.datetime.utcnow()
+    )
+    if existing:
+        return dict(code=1, story_hash=story_hash, value=existing.value)
+
     story = MStory.objects(story_hash=story_hash).first()
     if not story:
         return dict(code=-1, message="This story is no longer available.")

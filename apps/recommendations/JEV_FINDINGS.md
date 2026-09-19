@@ -92,6 +92,13 @@ personal-interest prediction needs more validation.
 Start with a separate, reversible Discovery stream using text similarity,
 reading duration, saves/shares, and explicit More/Less feedback. Votes affect
 future rankings while keeping the current article and read state in place.
+Each article retains its source title, favicon, and ordinary reader header.
+Two compact header buttons expand into a confirmation after saving. Clicking
+the confirmation reopens the choices; selecting the current choice clears it.
+A stream-header sparkline opens a dialog with More/Less lists, all-time active
+counts, and a 30-day UTC chart grouped by the last change to each active choice.
+Readers can switch or clear any choice, including for stories that have expired.
+Cleared choices do not contribute to the counts, chart, or recommendation ranker.
 Use that feedback to evaluate later semantic features or a learned ranker.
 The initial web path makes no Jev calls and needs no OpenRouter credential.
 
@@ -103,6 +110,6 @@ implemented. No online recommendation-quality test or automatic-skipping
 validation has been completed.
 
 Private experiment artifacts and the cost ledger remain under
-`/srv/secrets-newsblur/jev-discover/`. The helper reads its key from
+the gitignored `.jev-discover/` directory in this worktree. The helper reads its key from
 `/srv/secrets-newsblur/keys/openrouter-jev.env`. No additional model calls were
 made while preparing this PR.

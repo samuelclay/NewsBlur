@@ -4,9 +4,18 @@ The web reader exposes a separate Discovery stream at `/folder/discovery`. It
 uses the normal story reading behavior. Inline **More like this** and **Less
 like this** buttons train future recommendations without opening the article,
 changing its read state, subscribing to its feed, or creating intelligence
-classifier rules. A selected button clears its vote when clicked again. Undo
-restores the preceding preference; failed requests keep the confirmed state and
-offer Retry.
+classifier rules. The buttons sit in the normal article header alongside its
+date and author, with the actual source title and favicon above. A saved choice
+expands to fill the button pair, with a brief star flourish that respects reduced
+motion. Click the confirmation to edit, then the selected choice again to clear
+it. Failed requests keep the confirmed preference and offer Retry.
+
+The stream header shows More/Less counts and a sparkline. Clicking it opens a
+dialog with paginated lists of current choices, controls to switch or clear each
+one, and a 30-day UTC timeline grouped by each choice's last update. Counts cover
+all active choices, including older ones. Cleared choices disappear from the
+lists, counts, and chart. Saved article snapshots remain editable after RSS
+story expiry. Changes also update any currently displayed article controls.
 
 ## Ranking and data
 
@@ -56,6 +65,11 @@ initial implementation. Automatic Focus skipping is also outside this change.
   `0`, or `1`), and `surface=discovery`. It requires authentication and a CSRF
   token, and returns the persisted value. The legacy `good_reads` surface is
   accepted by storage, but feedback controls appear only in Discovery.
+- `GET /recommendations/feedback_history` returns the signed-in reader's active
+  choices, source metadata, counts, and timeline. Use `value=1` or `value=-1`
+  for either list and `next_cursor` as `cursor` for the next 20 results. Cursors
+  are signed, expire after one hour, and are scoped to both account and choice.
+  `summary=1` returns only counts and timeline for the stream header.
 
 ## Development
 
@@ -69,13 +83,14 @@ synthetic examples, not a copy of the production account's recommendations.
 The optional offline experiment helper reads its OpenRouter key from
 `/srv/secrets-newsblur/keys/openrouter-jev.env` (mode `0600`). Private research
 inputs, responses, and the existing $10 budget ledger live under
-`/srv/secrets-newsblur/jev-discover/` (directory mode `0700`). They are outside
-Git. The Discovery web path does not need that key. No staging or production
+the gitignored `.jev-discover/` directory in this worktree (mode `0700`). The key
+is also configured in the private secrets repo's `settings/common_settings.py`
+for the staging secrets sync. The Discovery web path does not need that key. No staging or production
 deployment has been performed for this change.
 
 Focused checks:
 
 ```sh
 docker exec -t newsblur_web_jev-discover python manage.py test apps.recommendations --settings=newsblur_web.test_settings --noinput -v 1
-node --test node/tests/recommendation_feedback.test.js node/tests/discovery_pagination.test.js node/tests/story_selection_utils.test.js node/tests/story_pane_resize.test.js node/tests/story_title_narrow_layout.test.js
+node --test node/tests/recommendation_feedback.test.js node/tests/recommendation_history.test.js node/tests/discovery_pagination.test.js node/tests/story_selection_utils.test.js node/tests/story_pane_resize.test.js node/tests/story_title_narrow_layout.test.js
 ```

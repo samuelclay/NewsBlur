@@ -36,7 +36,7 @@ function event(value) {
 }
 function finish(call) { call[2]({ code: 1, value: call[1] }); }
 
-test('feedback saves without changing read state, then Undo clears it', () => {
+test('feedback saves without changing read state, then confirmation opens editing without a request', () => {
     const { view, calls, attrs } = setup();
     const click = event(1);
     view.save_recommendation_feedback(click);
@@ -47,23 +47,25 @@ test('feedback saves without changing read state, then Undo clears it', () => {
     finish(calls[0]);
     assert.equal(attrs.recommendation_feedback, 1);
     assert.equal(attrs.read_status, 0);
-    view.undo_recommendation_feedback(event());
-    assert.equal(calls[1][1], 0);
-    finish(calls[1]);
-    assert.equal(attrs.recommendation_feedback, 0);
-    assert.equal(attrs.recommendation_feedback_state.can_undo, false);
+    assert.equal(attrs.recommendation_feedback_state.celebrate, true);
+    view.save_recommendation_feedback(event(1));
+    assert.equal(calls.length, 1);
+    assert.equal(attrs.recommendation_feedback, 1);
+    assert.equal(attrs.recommendation_feedback_state.editing, true);
 });
 
-test('switching a persisted preference and Undo restores the previous vote', () => {
+test('an expanded persisted preference can be opened and switched to the opposite choice', () => {
     const { view, calls, attrs } = setup(1);
+    view.save_recommendation_feedback(event(1));
+    assert.equal(calls.length, 0);
     view.save_recommendation_feedback(event(-1)); finish(calls[0]);
     assert.equal(attrs.recommendation_feedback, -1);
-    view.undo_recommendation_feedback(event()); finish(calls[1]);
-    assert.equal(attrs.recommendation_feedback, 1);
+    assert.equal(attrs.recommendation_feedback_state.editing, undefined);
 });
 
-test('clicking the selected vote clears it', () => {
+test('clicking the selected vote in edit mode clears it', () => {
     const { view, calls, attrs } = setup(-1);
+    view.save_recommendation_feedback(event(-1));
     view.save_recommendation_feedback(event(-1)); finish(calls[0]);
     assert.equal(attrs.recommendation_feedback, 0);
 });
@@ -84,14 +86,13 @@ test('failed saves preserve selection and Retry resubmits the requested vote', (
     assert.equal(attrs.recommendation_feedback, -1);
 });
 
-test('a failed Undo can be retried without losing the old preference', () => {
+test('a failed clear can be retried without losing the old preference', () => {
     const { view, calls, attrs } = setup(1);
-    view.save_recommendation_feedback(event(-1)); finish(calls[0]);
-    view.undo_recommendation_feedback(event()); calls[1][3]();
-    assert.equal(attrs.recommendation_feedback, -1);
-    view.retry_recommendation_feedback(event()); finish(calls[2]);
+    view.save_recommendation_feedback(event(1));
+    view.save_recommendation_feedback(event(1)); calls[0][3]();
     assert.equal(attrs.recommendation_feedback, 1);
-    assert.equal(attrs.recommendation_feedback_state.can_undo, false);
+    view.retry_recommendation_feedback(event()); finish(calls[1]);
+    assert.equal(attrs.recommendation_feedback, 0);
 });
 
 test('account switches ignore late save callbacks', () => {

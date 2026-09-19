@@ -1558,6 +1558,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     save_recommendation_feedback: function (story_hash, value, callback, error_callback) {
+        var self = this;
+        var user_id = NEWSBLUR.Globals.user_id;
         if (!NEWSBLUR.Globals.is_authenticated) {
             error_callback();
             return;
@@ -1567,7 +1569,24 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             value: value,
             csrfmiddlewaretoken: $.cookie('csrftoken'),
             surface: 'discovery'
-        }, callback, error_callback, { retry: false });
+        }, function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            var story = self.stories.get_by_story_hash(story_hash);
+            if (story) story.set({ recommendation_feedback: data.value, recommendation_feedback_state: {} });
+            callback(data);
+            self.trigger('recommendation:updated');
+        }, function () {
+            if (NEWSBLUR.Globals.user_id === user_id) error_callback();
+        }, { retry: false });
+    },
+
+    load_recommendation_feedback: function (params, callback, error_callback) {
+        var user_id = NEWSBLUR.Globals.user_id;
+        this.make_request('/recommendations/feedback_history', params, function (data) {
+            if (NEWSBLUR.Globals.user_id === user_id) callback(data);
+        }, function () {
+            if (NEWSBLUR.Globals.user_id === user_id) error_callback();
+        }, { request_type: 'GET', retry: false });
     },
 
     save_classifier: function (data, callback) {
