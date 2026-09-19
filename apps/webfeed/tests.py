@@ -3,8 +3,8 @@ import hashlib
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
-from django.test import TestCase, override_settings
-from django.test.client import Client
+from django.test import SimpleTestCase, TestCase, override_settings
+from django.test.client import Client, RequestFactory
 from django.urls import reverse
 
 from apps.webfeed.models import MWebFeedConfig, is_degenerate_container_xpath
@@ -902,3 +902,86 @@ class Test_WebFeedStatus(TestCase):
     def test_requires_authentication(self):
         self.client.logout()
         self.assertEqual(self.client.get("/webfeed/status", {"request_id": self.request_id}).status_code, 403)
+
+
+class Test_WebFeedAnalysisOwnership(SimpleTestCase):
+    """apps/webfeed/tasks.py and views.py must isolate identical request IDs by account."""
+
+    def setUp(self):
+        self.owner = User(pk=101, username="webfeed_analysis_owner")
+        self.other = User(pk=102, username="webfeed_analysis_other")
+        self.request_id = "shared-analysis-request"
+        self.values = {}
+        self.redis = MagicMock()
+        self.redis.get.side_effect = self.values.get
+        self.redis.set.side_effect = lambda key, value, **kwargs: self.values.__setitem__(key, value)
+        self.redis_patch = patch("apps.webfeed.tasks.redis.Redis", return_value=self.redis)
+        self.redis_patch.start()
+        self.addCleanup(self.redis_patch.stop)
+
+    def analyze(self, user, url):
+        from apps.webfeed.tasks import AnalyzeWebFeedPage
+
+        provider = MagicMock()
+        provider.is_configured.return_value = True
+        provider.stream_response.return_value = [
+            json.encode(
+                [
+                    {
+                        "label": "Stories",
+                        "story_container": "//article",
+                        "title": ".//h2/text()",
+                        "link": ".//a/@href",
+                    }
+                ]
+            )
+        ]
+        provider.get_last_usage.return_value = (10, 5)
+        html = f'<html><title>{url}</title><article><h2>{user.username}</h2><a href="/story">Read</a></article></html>'
+        with patch("apps.webfeed.tasks.User.objects.get", return_value=user), patch(
+            "apps.webfeed.tasks.fetch_page_html", return_value=html
+        ), patch("apps.ask_ai.providers.get_briefing_provider", return_value=(provider, "test-model")), patch(
+            "apps.webfeed.tasks.LLMCostTracker"
+        ), patch(
+            "apps.webfeed.tasks.logging.user"
+        ), patch(
+            "apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result"
+        ):
+            self.assertEqual(AnalyzeWebFeedPage(user.pk, url, self.request_id)["code"], 1)
+
+    def status(self, user):
+        from apps.webfeed.views import status
+
+        request = RequestFactory().get("/webfeed/status", {"request_id": self.request_id})
+        request.user = user
+        return json.decode(status(request).content)
+
+    def test_other_account_cannot_read_completed_analysis(self):
+        self.analyze(self.owner, "https://owner.example.com/")
+        self.assertEqual(self.status(self.owner)["variants_data"]["page_title"], "https://owner.example.com/")
+        other_status = self.status(self.other)
+        self.assertEqual(other_status["code"], -1)
+        self.assertEqual(other_status.get("status"), "unknown")
+
+    def test_same_request_id_does_not_overwrite_other_accounts_results(self):
+        self.analyze(self.owner, "https://owner.example.com/")
+        self.analyze(self.other, "https://other.example.com/")
+        for user, url in [
+            (self.owner, "https://owner.example.com/"),
+            (self.other, "https://other.example.com/"),
+        ]:
+            status = self.status(user)
+            self.assertEqual(status["url"], url)
+            self.assertEqual(status["variants_data"]["page_title"], url)
+            self.assertEqual(
+                status["variants_data"]["variants"][0]["preview_stories"][0]["title"], user.username
+            )
+
+    def test_legacy_unowned_results_are_not_exposed(self):
+        self.values[f"webfeed:status:{self.request_id}"] = json.encode(
+            {"type": "complete", "url": "https://owner.example.com/"}
+        )
+        self.values[f"webfeed:results:{self.request_id}"] = json.encode({"page_title": "Other account"})
+        other_status = self.status(self.other)
+        self.assertEqual(other_status["code"], -1)
+        self.assertEqual(other_status.get("status"), "unknown")
