@@ -90,6 +90,97 @@ struct DiscoverPopularFeed: Identifiable {
         self.rawFeedDict = canonical
         self.stories = storiesArray.compactMap { DiscoverStory(dict: $0) }
     }
+
+    init(autocompleteResult result: AutocompleteResult) {
+        self.init(feedId: result.id, feedDict: [
+            "feed_title": result.label, "feed_address": result.value, "feed_link": result.value,
+            "num_subscribers": result.numSubscribers, "favicon": result.favicon ?? "",
+            "last_story_date": result.lastStoryDate ?? ""
+        ])
+    }
+
+    func freshness(now: Date = Date(), locale: Locale = .current, timeZone: TimeZone = .current) -> DiscoverFeedFreshness? {
+        DiscoverFeedFreshness(lastStoryDate: rawFeedDict["last_story_date"], now: now, locale: locale, timeZone: timeZone)
+    }
+}
+
+struct DiscoverFeedFreshness: Equatable {
+    enum Status {
+        case active
+        case stale
+        case noStories
+    }
+
+    let status: Status
+    let label: String
+
+    init?(lastStoryDate: Any?, now: Date = Date(), showEmpty: Bool = true,
+          locale: Locale = .current, timeZone: TimeZone = .current) {
+        let missing = lastStoryDate == nil || lastStoryDate is NSNull ||
+            (lastStoryDate as? String) == "" || (lastStoryDate as? NSNumber)?.doubleValue == 0
+        if missing {
+            guard showEmpty else { return nil }
+            status = .noStories
+            label = "No stories yet"
+            return
+        }
+        guard let date = Self.parseDate(lastStoryDate, timeZone: timeZone) else { return nil }
+        // DiscoverSitesModels.swift matches add_site_view.js elapsed-day thresholds, including future dates.
+        let days = floor(now.timeIntervalSince(date) / 86400)
+        if days < 365 {
+            status = .active
+            if days < 1 { label = "Updated today" }
+            else if days < 7 {
+                let count = Int(days)
+                label = "Updated \(count) \(count == 1 ? "day" : "days") ago"
+            } else if days < 30 {
+                let count = Int(days / 7)
+                label = "Updated \(count) \(count == 1 ? "week" : "weeks") ago"
+            } else {
+                let count = Int(days / 30)
+                label = "Updated \(count) \(count == 1 ? "month" : "months") ago"
+            }
+        } else {
+            status = .stale
+            let formatter = DateFormatter()
+            formatter.locale = locale
+            formatter.timeZone = timeZone
+            formatter.setLocalizedDateFormatFromTemplate("yMMMd")
+            label = "Stale — last story \(formatter.string(from: date))"
+        }
+    }
+
+    private static func parseDate(_ value: Any?, timeZone: TimeZone) -> Date? {
+        if let number = value as? NSNumber {
+            let milliseconds = number.doubleValue
+            guard milliseconds.isFinite, abs(milliseconds) <= 8_640_000_000_000_000 else { return nil }
+            return Date(timeIntervalSince1970: milliseconds / 1000)
+        }
+        guard let string = value as? String else { return nil }
+        // DiscoverSitesModels.swift rejects trailing junk that ISO8601DateFormatter otherwise ignores.
+        let timestampPattern = #"\A\d{4}-\d{2}-\d{2}(?:[Tt ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[Zz]|[+-]\d{2}:?\d{2})?)?\z"#
+        guard string.range(of: timestampPattern, options: .regularExpression) != nil else { return nil }
+        let normalized = string.uppercased().replacingOccurrences(of: " ", with: "T")
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = iso.date(from: normalized) { return date }
+        iso.formatOptions = [.withInternetDateTime]
+        if let date = iso.date(from: normalized) { return date }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = timeZone
+        formatter.isLenient = false
+        // DiscoverSitesModels.swift treats unzoned timestamps as local time, as JavaScript Date does.
+        for format in ["yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd'T'HH:mm:ss"] {
+            formatter.dateFormat = format
+            if let date = formatter.date(from: normalized) { return date }
+        }
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: string)
+    }
 }
 
 struct DiscoverCategory: Identifiable, Equatable {

@@ -40,6 +40,23 @@ struct DiscoverColors {
 
     static let accent = Color(red: 0.26, green: 0.46, blue: 0.18)
 
+    static func freshnessDot(_ status: DiscoverFeedFreshness.Status) -> Color {
+        switch status {
+        case .active: return colorFromHex(0x4CAF50)
+        case .stale: return colorFromHex(0xF9A825)
+        case .noStories: return colorFromHex(0x90A4AE)
+        }
+    }
+
+    static func freshnessText(_ status: DiscoverFeedFreshness.Status) -> Color {
+        // DiscoverColors.swift follows reader.css and darkmode.css freshness labels in every iOS theme.
+        switch status {
+        case .active: return themedColor(light: 0x4CAF50, sepia: 0x4CAF50, medium: 0x66BB6A, dark: 0x66BB6A)
+        case .stale: return themedColor(light: 0xB8860B, sepia: 0xB8860B, medium: 0xFFB74D, dark: 0xFFB74D)
+        case .noStories: return themedColor(light: 0x90A4AE, sepia: 0x90A4AE, medium: 0x78909C, dark: 0x78909C)
+        }
+    }
+
     static var tryButtonBackground: Color {
         themedColor(light: 0xF0F1ED, sepia: 0xF0E8DC, medium: 0x555555, dark: 0x3A3A3A)
     }

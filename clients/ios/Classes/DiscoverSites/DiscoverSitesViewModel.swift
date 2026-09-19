@@ -869,6 +869,7 @@ class DiscoverSitesViewModel: ObservableObject {
         feedDict["feed_title"] = firstString(["feed_title", "title", "name"]) ?? address
         feedDict["feed_link"] = firstString(["feed_link", "link", "itunes_url"]) ?? address
         feedDict["favicon_url"] = firstString(["favicon_url", "thumbnail_url", "thumbnail", "icon", "artwork"])
+        feedDict["last_story_date"] = firstString(["last_story_date"])
         feedDict["num_subscribers"] = feedDict["num_subscribers"] as? Int ?? entry["subscriber_count"] as? Int ?? entry["subscribers"] as? Int ?? 0
         // DiscoverSitesViewModel.swift: source IDs and PopularFeed IDs are not NewsBlur Feed IDs.
         let linked = entry["feed"] as? [String: Any]

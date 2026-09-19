@@ -12,34 +12,39 @@ import SwiftUI
 @available(iOS 15.0, *)
 @MainActor
 class DiscoverFeedsViewModel: ObservableObject {
-    @Published var feeds: [DiscoverFeed] = []
+    @Published var feeds: [DiscoverPopularFeed] = []
     @Published var isLoading = false
     @Published var hasMorePages = true
     @Published var error: String?
-    @Published var viewMode: DiscoverFeedsViewMode = .list
+    @Published var viewMode: DiscoverSitesFeedViewMode = .list
 
     private let feedId: String?
     private let feedIds: [String]?
-    private let appDelegate = NewsBlurAppDelegate.shared()!
+    private let session: URLSession
+    private let baseURL: String
     private var currentPage = 1
     private let maxPage = 10
 
-    init(feedId: String) {
+    init(feedId: String, session: URLSession = .shared, baseURL: String? = nil) {
         self.feedId = feedId
         self.feedIds = nil
+        self.session = session
+        self.baseURL = baseURL ?? NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com"
 
         if let savedMode = UserDefaults.standard.string(forKey: "discoverFeedsViewMode"),
-           let mode = DiscoverFeedsViewMode(rawValue: savedMode) {
+           let mode = DiscoverSitesFeedViewMode(rawValue: savedMode) {
             self.viewMode = mode
         }
     }
 
-    init(feedIds: [String]) {
+    init(feedIds: [String], session: URLSession = .shared, baseURL: String? = nil) {
         self.feedId = nil
         self.feedIds = feedIds
+        self.session = session
+        self.baseURL = baseURL ?? NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com"
 
         if let savedMode = UserDefaults.standard.string(forKey: "discoverFeedsViewMode"),
-           let mode = DiscoverFeedsViewMode(rawValue: savedMode) {
+           let mode = DiscoverSitesFeedViewMode(rawValue: savedMode) {
             self.viewMode = mode
         }
     }
@@ -54,7 +59,7 @@ class DiscoverFeedsViewModel: ObservableObject {
         loadPage(currentPage + 1)
     }
 
-    func setViewMode(_ mode: DiscoverFeedsViewMode) {
+    func setViewMode(_ mode: DiscoverSitesFeedViewMode) {
         viewMode = mode
         UserDefaults.standard.set(mode.rawValue, forKey: "discoverFeedsViewMode")
     }
@@ -67,8 +72,6 @@ class DiscoverFeedsViewModel: ObservableObject {
 
         isLoading = true
         error = nil
-
-        let baseURL = appDelegate.url ?? "https://www.newsblur.com"
 
         var request: URLRequest
         if let feedIds = feedIds {
@@ -104,7 +107,7 @@ class DiscoverFeedsViewModel: ObservableObject {
             }
         }
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        session.dataTask(with: request) { [weak self] data, response, error in
             Task { @MainActor in
                 guard let self = self else { return }
 
@@ -139,12 +142,12 @@ class DiscoverFeedsViewModel: ObservableObject {
                         return
                     }
 
-                    var newFeeds: [DiscoverFeed] = []
+                    var newFeeds: [DiscoverPopularFeed] = []
                     for (feedId, feedData) in discoverFeeds {
                         guard let feedInfo = feedData as? [String: Any],
                               let feedDict = feedInfo["feed"] as? [String: Any] else { continue }
                         let storiesArray = feedInfo["stories"] as? [[String: Any]] ?? []
-                        let feed = DiscoverFeed(feedId: feedId, feedDict: feedDict, storiesArray: storiesArray)
+                        let feed = DiscoverPopularFeed(feedId: feedId, feedDict: feedDict, storiesArray: storiesArray)
                         newFeeds.append(feed)
                     }
 

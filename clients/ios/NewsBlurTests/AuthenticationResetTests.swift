@@ -846,6 +846,68 @@ private final class AuthenticationRefreshPublication: @unchecked Sendable {
     override func returnToDiscoverSites() { visible = true; previewActive = false }
 }
 
+@MainActor final class Test_RelatedStoryPreviewRouting: XCTestCase {
+    func test_relatedPreviewInitializesLookupBeforeTheReaderPreparesItsFirstPage() async throws {
+        for (opensStory, hasPriorNotification) in [(true, false), (true, true), (false, true)] {
+            let app = RelatedPreviewRoutingApp()
+            app.storiesCollection = StoriesCollection()
+            app.inFindingStoryMode = hasPriorNotification
+            if hasPriorNotification {
+                app.setValue(["feedId": "77", "storyHash": "77:previous"], forKey: "pendingNotificationStory")
+            }
+            let model = StoryPreviewRoutingModel()
+            DiscoverFeedsViewController.cardActionsFactory = { model }
+            DiscoverFeedsViewController.viewModelFactory = { _, _ in RelatedPreviewListingModel(feedId: "12") }
+            let controller = RelatedPreviewRoutingController(feedId: "12")
+            controller.appDelegate = app
+            let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+            let previousWindow = scene.windows.first(where: \.isKeyWindow)
+            let window = UIWindow(windowScene: scene)
+            window.rootViewController = controller
+            window.makeKeyAndVisible()
+            defer {
+                window.isHidden = true
+                previousWindow?.makeKey()
+                DiscoverFeedsViewController.cardActionsFactory = nil
+                DiscoverFeedsViewController.viewModelFactory = nil
+            }
+            let feed = DiscoverPopularFeed(feedId: "12", feedDict: ["feed_title": "Related site"],
+                                           storiesArray: [["story_hash": "12:second", "story_title": "Second story"]])
+            let firstStory = try XCTUnwrap(feed.stories.first)
+            let story = opensStory ? firstStory : nil
+
+            await controller.openPreview(feed, story: story)
+
+            XCTAssertEqual(app.findingAtReaderEntry, opensStory,
+                           "The reader must choose its first-page loading path with the final finding-story state")
+            XCTAssertEqual(app.findingAfterReaderCleanup, opensStory,
+                           "Cleanup of a previous notification must not invalidate the new lookup")
+            XCTAssertEqual(app.storiesCollection.notificationStoryHash, story?.id)
+            XCTAssertEqual(app.storiesCollection.readFilterOverride, opensStory ? "all" : nil)
+        }
+    }
+}
+
+@MainActor private final class RelatedPreviewRoutingApp: NewsBlurAppDelegate {
+    var findingAtReaderEntry: Bool?
+    var findingAfterReaderCleanup: Bool?
+    override func loadTryFeedDetailView(_ feedId: String!, withStory contentId: String!, isSocial social: Bool,
+                                       withUser user: [AnyHashable: Any]!, showFindingStory showHUD: Bool) {
+        findingAtReaderEntry = inFindingStoryMode
+        // AuthenticationResetTests.swift preserves the production cleanup that precedes preparing the reader's first page.
+        cleanUpTryFeed()
+        findingAfterReaderCleanup = inFindingStoryMode
+    }
+}
+
+@MainActor private final class RelatedPreviewListingModel: DiscoverFeedsViewModel {
+    override func loadInitialPage() {}
+}
+
+@MainActor private final class RelatedPreviewRoutingController: DiscoverFeedsViewController {
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) { completion?() }
+}
+
 @MainActor final class Test_DiscoverSourceNavigation: XCTestCase {
     override func tearDown() {
         DiscoverSitesViewController.viewModelFactory = nil
