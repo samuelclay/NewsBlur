@@ -25,6 +25,7 @@ struct SearchTabView: View {
 
                 if isURL {
                     HStack(spacing: 8) {
+                        Spacer(minLength: 0)
                         DiscoverFolderPicker(viewModel: viewModel, identifier: "discover-folder-picker-url")
                         Button {
                             viewModel.addFeed(url: query)

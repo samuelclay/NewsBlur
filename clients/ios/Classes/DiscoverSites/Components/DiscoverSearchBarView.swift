@@ -56,18 +56,42 @@ struct DiscoverSearchBarView: View {
                     .stroke(DiscoverColors.border, lineWidth: 1)
             )
 
-            if let viewMode = viewMode {
-                Picker("View Mode", selection: viewMode) {
-                    Image(systemName: "square.grid.2x2")
-                        .tag(DiscoverSitesFeedViewMode.grid)
-                    Image(systemName: "list.bullet")
-                        .tag(DiscoverSitesFeedViewMode.list)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 80)
-                .accessibilityIdentifier("discover-view-mode")
+            if let viewMode {
+                DiscoverViewModePicker(viewMode: viewMode)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+@available(iOS 15.0, *)
+struct DiscoverViewModePicker: View {
+    @Binding var viewMode: DiscoverSitesFeedViewMode
+
+    var body: some View {
+        HStack(spacing: 2) {
+            modeButton(.grid, title: "Grid", icon: "square.grid.2x2")
+            modeButton(.list, title: "List", icon: "list.bullet")
+        }
+        .padding(3)
+        .background(DiscoverColors.border.opacity(0.35), in: Capsule())
+        .fixedSize(horizontal: true, vertical: false)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("View mode")
+    }
+
+    private func modeButton(_ mode: DiscoverSitesFeedViewMode, title: String, icon: String) -> some View {
+        Button { viewMode = mode } label: {
+            Label(title, systemImage: icon)
+                .labelStyle(.titleAndIcon)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 12)
+                .frame(minHeight: 44)
+                .foregroundColor(viewMode == mode ? DiscoverColors.textPrimary : DiscoverColors.textSecondary)
+                .background(viewMode == mode ? DiscoverColors.cardBackground : Color.clear, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("discover-view-mode-\(mode == .grid ? "grid" : "list")")
+        .accessibilityAddTraits(viewMode == mode ? .isSelected : [])
     }
 }

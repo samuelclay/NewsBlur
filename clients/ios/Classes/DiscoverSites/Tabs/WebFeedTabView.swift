@@ -68,6 +68,7 @@ struct WebFeedTabView: View {
                             .font(.headline)
                         Text("Add it directly to your selected folder.").font(.subheadline)
                         HStack(spacing: 8) {
+                            Spacer(minLength: 0)
                             DiscoverFolderPicker(viewModel: viewModel,
                                                  identifier: "discover-folder-picker-webfeed-detected")
                             Button("Add feed") { viewModel.addFeed(url: feedURL) }
@@ -418,6 +419,7 @@ struct WebFeedTabView: View {
 
     private var subscribeSection: some View {
         HStack(spacing: 8) {
+            Spacer(minLength: 0)
             DiscoverFolderPicker(viewModel: viewModel, identifier: "discover-folder-picker-webfeed")
             Button(action: {
                 viewModel.subscribeWebFeed()
