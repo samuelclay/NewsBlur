@@ -82,6 +82,7 @@ struct DiscoverFeedCardView: View {
                         .foregroundColor(DiscoverColors.accent)
                         .frame(minHeight: 44)
                 } else {
+                    Spacer(minLength: 16)
                     DiscoverFolderPicker(viewModel: discovery,
                                          identifier: "discover-folder-picker-\(feed.id)")
                     Button(action: { onAddFeed?(feed) }) {
@@ -269,17 +270,15 @@ struct DiscoverFolderPicker: View {
                     .font(.subheadline)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.down")
                     .font(.caption2)
             }
             .foregroundColor(DiscoverColors.textPrimary)
             .padding(.horizontal, 10)
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 44)
+            .frame(minHeight: 44)
             .background(DiscoverColors.textFieldBackground, in: RoundedRectangle(cornerRadius: 8))
             .overlay(RoundedRectangle(cornerRadius: 8).stroke(DiscoverColors.border, lineWidth: 1))
         }
-        .frame(minWidth: 0, maxWidth: .infinity)
         .buttonStyle(.plain)
         .accessibilityLabel("Add to folder")
         .accessibilityValue(viewModel.displayFolder)

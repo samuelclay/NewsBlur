@@ -20,15 +20,7 @@ struct PopularTabView: View {
             LazyVStack(spacing: 0) {
                 HStack {
                     Spacer()
-                    Picker("View Mode", selection: $viewModel.feedViewMode) {
-                        Image(systemName: "square.grid.2x2")
-                            .tag(DiscoverSitesFeedViewMode.grid)
-                        Image(systemName: "list.bullet")
-                            .tag(DiscoverSitesFeedViewMode.list)
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 80)
-                    .accessibilityIdentifier("discover-view-mode")
+                    DiscoverViewModePicker(viewMode: $viewModel.feedViewMode)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)

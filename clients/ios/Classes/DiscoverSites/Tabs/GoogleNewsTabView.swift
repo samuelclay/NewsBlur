@@ -278,6 +278,7 @@ struct GoogleNewsTabView: View {
             }
 
             HStack(spacing: 8) {
+                Spacer(minLength: 0)
                 DiscoverFolderPicker(viewModel: viewModel, identifier: "discover-folder-picker-google-news")
                 Button(action: {
                     viewModel.subscribeSelectedGoogleNews()

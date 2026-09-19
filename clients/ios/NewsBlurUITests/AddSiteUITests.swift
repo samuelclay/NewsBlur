@@ -302,15 +302,23 @@ final class DiscoverSitesUITests: XCTestCase {
         app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
         app.launch()
         openLiveDiscovery()
-        app.buttons["discover-tab-reddit"].tap()
+        app.buttons["discover-tab-popular"].tap()
         for orientation in [UIDeviceOrientation.landscapeLeft, .portrait] {
             XCUIDevice.shared.orientation = orientation
+            let list = app.buttons["discover-view-mode-list"]
+            XCTAssertTrue(list.waitForExistence(timeout: 15))
+            XCTAssertEqual(list.label, "List")
+            XCTAssertEqual(app.buttons["discover-view-mode-grid"].label, "Grid")
+            list.tap()
             let picker = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "discover-folder-picker-"))
                 .firstMatch
             XCTAssertTrue(picker.waitForExistence(timeout: 20))
             assertFolderPickerIsBesideAdd(picker)
             XCTAssertFalse(app.staticTexts["Add to folder"].exists)
             capture(orientation == .portrait ? "claypad-inline-folder-portrait" : "claypad-inline-folder-landscape")
+            app.buttons["discover-view-mode-grid"].tap()
+            assertFolderPickerIsBesideAdd(picker)
+            capture(orientation == .portrait ? "claypad-compact-folder-grid-portrait" : "claypad-compact-folder-grid-landscape")
         }
         XCUIDevice.shared.orientation = .landscapeLeft
 #endif
@@ -628,7 +636,7 @@ final class DiscoverSitesUITests: XCTestCase {
         XCUIDevice.shared.orientation = .landscapeLeft
         launch()
         selectTab("popular")
-        app.segmentedControls["discover-view-mode"].buttons.element(boundBy: 1).tap()
+        app.buttons["discover-view-mode-list"].tap()
         let preview = discoveryStoryPreview("ui-story-swift-2")
         XCTAssertTrue(preview.waitForExistence(timeout: 10))
         capture("claypad-discovery-list-excerpts")
@@ -641,7 +649,7 @@ final class DiscoverSitesUITests: XCTestCase {
         XCUIDevice.shared.orientation = .landscapeLeft
         launch()
         selectTab("popular")
-        app.segmentedControls["discover-view-mode"].buttons.element(boundBy: 1).tap()
+        app.buttons["discover-view-mode-list"].tap()
         let previewTitle = discoveryStoryPreview("ui-story-swift-2")
         XCTAssertTrue(previewTitle.waitForExistence(timeout: 10))
         let beforeY = previewTitle.frame.minY
@@ -665,7 +673,7 @@ final class DiscoverSitesUITests: XCTestCase {
         XCUIDevice.shared.orientation = .landscapeLeft
         launch(arguments: ["-newsblur-ui-test-empty-try-feed"])
         selectTab("popular")
-        app.segmentedControls["discover-view-mode"].buttons.element(boundBy: 1).tap()
+        app.buttons["discover-view-mode-list"].tap()
         let preview = discoveryStoryPreview("ui-story-swift-2")
         XCTAssertTrue(preview.waitForExistence(timeout: 10))
         preview.tap()
@@ -701,9 +709,9 @@ final class DiscoverSitesUITests: XCTestCase {
         app.launch()
         openLiveDiscovery()
         app.buttons["discover-tab-popular"].tap()
-        let mode = app.segmentedControls["discover-view-mode"]
+        let mode = app.buttons["discover-view-mode-list"]
         XCTAssertTrue(mode.waitForExistence(timeout: 15))
-        mode.buttons.element(boundBy: 1).tap()
+        mode.tap()
         let previews = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "discover-story-"))
         XCTAssertTrue(previews.firstMatch.waitForExistence(timeout: 30))
         var visible: [XCUIElement] = []
@@ -762,7 +770,14 @@ final class DiscoverSitesUITests: XCTestCase {
         let tryButton = app.buttons["Try \(title)"]
         XCTAssertTrue(tryButton.exists)
         XCTAssertEqual(tryButton.frame.midY, picker.frame.midY, accuracy: 3)
-        XCTAssertLessThanOrEqual(tryButton.frame.maxX, picker.frame.minX)
+        XCTAssertGreaterThanOrEqual(picker.frame.minX - tryButton.frame.maxX, 16,
+                                   "The folder picker should be grouped with Add, with a clear gap after Try")
+        let folderTitle = (picker.value as? String) ?? "Top Level"
+        let titleWidth = (folderTitle as NSString).size(withAttributes: [
+            .font: UIFont.preferredFont(forTextStyle: .subheadline)
+        ]).width
+        XCTAssertLessThanOrEqual(picker.frame.width, titleWidth + 48,
+                                 "The folder picker should fit its title instead of filling the row")
     }
 
     private func assertFolderPicker(_ picker: XCUIElement, isBeside addButton: XCUIElement) {
@@ -770,6 +785,7 @@ final class DiscoverSitesUITests: XCTestCase {
         XCTAssertTrue(addButton.exists)
         XCTAssertEqual(picker.frame.midY, addButton.frame.midY, accuracy: 3)
         XCTAssertLessThanOrEqual(picker.frame.maxX, addButton.frame.minX)
+        XCTAssertLessThanOrEqual(addButton.frame.minX - picker.frame.maxX, 12)
         XCTAssertGreaterThanOrEqual(picker.frame.height, 44)
     }
 
