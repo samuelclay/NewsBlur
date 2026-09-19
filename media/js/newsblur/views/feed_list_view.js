@@ -70,10 +70,12 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
     make_feeds: function (options) {
         options = options || {};
-        if (this.discovery_feedback) this.discovery_feedback.remove();
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.discovery_feedback = new NEWSBLUR.Views.RecommendationFeedbackSummary({ sidebar: true });
-            $('.NB-discovery-feedback-slot').empty().append(this.discovery_feedback.el);
+        if (!this.options.feed_chooser && !this.options.organizer) {
+            if (this.discovery_feedback) this.discovery_feedback.remove();
+            if (NEWSBLUR.Globals.is_authenticated) {
+                this.discovery_feedback = new NEWSBLUR.Views.RecommendationFeedbackSummary({ sidebar: true });
+                $('.NB-discovery-feedback-slot').empty().append(this.discovery_feedback.el);
+            }
         }
         var self = this;
         var folders = options.folders || NEWSBLUR.assets.folders;

@@ -54,8 +54,8 @@ NEWSBLUR.recommendation_feedback_chart = function (days, width, height, neutral)
     return svg;
 };
 
-NEWSBLUR.discovery_preview_active = function () {
-    return NEWSBLUR.reader.active_feed === 'trending:discovery' &&
+NEWSBLUR.discovery_preview_active = function (collection) {
+    return collection === NEWSBLUR.assets.stories && NEWSBLUR.reader.active_feed === 'trending:discovery' &&
         NEWSBLUR.assets.discovery_preview && NEWSBLUR.assets.discovery_preview.limited;
 };
 

@@ -77,17 +77,45 @@ test('weekly preview ends pagination, reveals new picks once, and ignores a supe
 });
 
 test('changing reader layout preserves the weekly preview boundary in both story views', () => {
-    const NEWSBLUR = { Views: {}, assets: { discovery_cursor: null }, discovery_preview_active: () => true };
+    const main_stories = { no_more_stories: true };
+    const NEWSBLUR = { Views: {}, reader: { active_feed: 'trending:discovery' },
+        assets: { discovery_cursor: null, discovery_preview: { limited: true }, stories: main_stories } };
     const context = vm.createContext({ NEWSBLUR, _: underscore, Backbone: { View: { extend: methods => methods } } });
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/recommendation_feedback_view.js'), 'utf8'), context);
     for (const [file, name] of [['story_titles_view.js', 'StoryTitlesView'], ['story_list_view.js', 'StoryListView']]) {
         vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/', file), 'utf8'), context);
         const view = Object.create(NEWSBLUR.Views[name]);
-        Object.assign(view, { stories: [], collection: { no_more_stories: true }, $el: { empty() {} }, clear_explainer() {} });
+        Object.assign(view, { stories: [], collection: main_stories, $el: { empty() {} }, clear_explainer() {} });
         view.clear();
         assert.equal(view.collection.no_more_stories, true, name + ' dropped the preview end marker');
-        NEWSBLUR.discovery_preview_active = () => false;
+        view.collection = { no_more_stories: true };
         view.clear();
-        assert.equal(view.collection.no_more_stories, false);
-        NEWSBLUR.discovery_preview_active = () => true;
+        assert.equal(view.collection.no_more_stories, false, name + ' exhausted an independent related-story collection');
+        assert.equal(NEWSBLUR.discovery_preview_active(view.collection), false);
     }
+});
+
+test('organizer and feed chooser rebuilds leave the main sidebar summary and its listener alone', () => {
+    let created = 0, removed = 0, replaced = 0;
+    const NEWSBLUR = { Globals: { is_authenticated: true }, Views: {
+        RecommendationFeedbackSummary: function () { created++; this.remove = () => { removed++; }; }
+    } };
+    const continue_feed_render = new Error('Continue ordinary feed rendering');
+    NEWSBLUR.assets = {};
+    Object.defineProperty(NEWSBLUR.assets, 'folders', { get() { throw continue_feed_render; } });
+    const rebuild = view => assert.throws(() => view.make_feeds(), error => error === continue_feed_render);
+    const context = vm.createContext({ NEWSBLUR, _: underscore,
+        $: () => ({ empty() { replaced++; return this; }, append() {} }),
+        Backbone: { View: { extend: methods => methods } } });
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/feed_list_view.js'), 'utf8'), context);
+    for (const options of [{feed_chooser:true}, {organizer:true}, {feed_chooser:true,organizer:true}]) {
+        const dialog = Object.assign(Object.create(NEWSBLUR.Views.FeedList), {options});
+        for (let i=0; i<3; i++) rebuild(dialog);
+    }
+    assert.equal(created, 0);
+    assert.equal(replaced, 0);
+    const main = Object.assign(Object.create(NEWSBLUR.Views.FeedList), { options: {} });
+    rebuild(main); rebuild(main);
+    assert.equal(created, 2);
+    assert.equal(removed, 1);
 });
