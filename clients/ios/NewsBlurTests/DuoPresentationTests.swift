@@ -105,6 +105,7 @@ import WebKit
         app.storiesCollection = collection
         app.activeStory = ["story_hash": "collapse:article"]
         let detail = DuoCollapseCompletionDetail()
+        detail.traitOverrides.verticalSizeClass = .regular
         detail.appDelegate = app
         detail.isCompact = false
         app.detailViewController = detail
@@ -192,6 +193,7 @@ import WebKit
         app.storiesCollection = collection
         app.activeStory = ["story_hash": "layout-only:story"]
         let detail = DuoReparentDetail()
+        detail.traitOverrides.verticalSizeClass = .regular
         detail.appDelegate = app
         app.detailViewController = detail
         detail.loadViewIfNeeded()
@@ -218,6 +220,7 @@ import WebKit
         app.storiesCollection = collection
         app.activeStory = ["story_hash": "layout-only:story"]
         let detail = DuoReparentDetail()
+        detail.traitOverrides.verticalSizeClass = .regular
         detail.appDelegate = app
         detail.isCompact = true
         app.detailViewController = detail
@@ -263,6 +266,7 @@ import WebKit
         app.storiesCollection = collection
         app.activeStory = ["story_hash": "layout-only:story"]
         let detail = DuoReparentDetail()
+        detail.traitOverrides.verticalSizeClass = .regular
         detail.appDelegate = app
         app.detailViewController = detail
         detail.isCompact = false
@@ -2143,6 +2147,7 @@ import WebKit
         let current = try XCTUnwrap(pages.currentPage)
         let nextHash = try XCTUnwrap(stories.getStoryAtLocation(current.pageIndex + 1)?["story_hash"] as? String)
         XCTAssertNotEqual(nextHash, firstHash)
+        print("DUO_JOURNEY_NEXT name=\(name) currentIndex=\(current.pageIndex) currentHash=\(current.activeStoryId ?? "nil") expected=\(nextHash) nextIndex=\(pages.nextPage?.pageIndex ?? -1) nextHash=\(pages.nextPage?.activeStoryId ?? "nil") pager=\(String(describing: pages.scrollView?.bounds)) offset=\(String(describing: pages.scrollView?.contentOffset))")
         pages.changeToNextPage(nil)
         try await auditJourneyArticle(app, hash: nextHash, named: "\(name)-next", river: river, scroll: false)
         pages.changeToPreviousPage(nil)
@@ -2287,23 +2292,35 @@ import WebKit
             }
         }
         let scroller = web.scrollView
+        var scrollEvidence: [String] = []
+        func recordScrollGeometry(_ position: String, phase: String, requested: CGFloat) {
+            let minimum = -scroller.adjustedContentInset.top
+            let maximum = max(minimum, scroller.contentSize.height - scroller.bounds.height + scroller.adjustedContentInset.bottom)
+            let state = "\(name)-\(position) phase=\(phase) requested=\(requested) actual=\(scroller.contentOffset) content=\(scroller.contentSize) bounds=\(scroller.bounds) inset=\(scroller.contentInset) adjusted=\(scroller.adjustedContentInset) legalRange=\(minimum)...\(maximum) web=\(web.bounds) loading=\(web.isLoading) generation=\(String(describing: page.value(forKey: "storyLoadGeneration")))"
+            scrollEvidence.append(state)
+            print("DUO_JOURNEY_SCROLL \(state)")
+        }
         let top = -scroller.adjustedContentInset.top
+        recordScrollGeometry("top", phase: "before", requested: top)
         scroller.setContentOffset(CGPoint(x: 0, y: top), animated: false)
         try await settle(pages)
+        recordScrollGeometry("top", phase: "settled", requested: top)
         try assertHeaderDuringProgrammaticScroll("top")
         capture(window, named: "journey-\(name)-top", controller: pages)
         if scroll {
             let bottom = max(top, scroller.contentSize.height - scroller.bounds.height + scroller.adjustedContentInset.bottom)
             if bottom - top > 100 { journeyScrolledStories.insert(hash) }
             for (position, offset) in [("middle", min(top + 300, bottom)), ("bottom", bottom), ("return-top", top)] {
+                recordScrollGeometry(position, phase: "before", requested: offset)
                 scroller.setContentOffset(CGPoint(x: 0, y: offset), animated: false)
                 try await settle(pages)
+                recordScrollGeometry(position, phase: "settled", requested: offset)
                 XCTAssertEqual(scroller.contentOffset.y, offset, accuracy: 2, "\(name)-\(position): article scroll must settle at the requested position")
                 try assertHeaderDuringProgrammaticScroll(position)
                 capture(window, named: "journey-\(name)-\(position)", controller: pages)
             }
         }
-        let evidence = "\(name) hash=\(hash) feed=\(String(describing: page.activeStory?["story_feed_id"])) reader=\(readerFrame) web=\(webFrame) document=\(document)"
+        let evidence = "\(name) hash=\(hash) feed=\(String(describing: page.activeStory?["story_feed_id"])) reader=\(readerFrame) web=\(webFrame) document=\(document)\n" + scrollEvidence.joined(separator: "\n")
         let attachment = XCTAttachment(string: evidence)
         attachment.name = "journey-\(name)-document"
         attachment.lifetime = .keepAlways
@@ -2409,6 +2426,27 @@ import WebKit
             }
             try await Task.sleep(nanoseconds: 50_000_000)
         }
+        func pageState(_ page: StoryDetailViewController?) -> String {
+            guard let page else { return "nil" }
+            let web = page.webView
+            return "index=\(page.pageIndex) id=\(page.activeStoryId ?? "nil") modelHash=\(String(describing: page.activeStory?["story_hash"])) generation=\(String(describing: page.value(forKey: "storyLoadGeneration"))) hasStory=\(page.hasStory) ready=\(page.readyForPresentation) hidden=\(String(describing: web?.isHidden)) alpha=\(String(describing: web?.alpha)) loading=\(String(describing: web?.isLoading)) bounds=\(String(describing: web?.bounds))"
+        }
+        let documentScript = """
+        JSON.stringify({readyState:document.readyState,
+          title:document.querySelector('.NB-story-permalink')?.textContent || '',
+          bodyLength:(document.querySelector('#NB-story')?.innerText || '').length,
+          generation:document.querySelector('meta[name="newsblur-story-load"]')?.content || '',
+          fonts:document.fonts.status,
+          viewport:[innerWidth,innerHeight], document:[document.documentElement.clientWidth,document.documentElement.scrollHeight],
+          scroll:[scrollX,scrollY]})
+        """
+        let document = try? await pages.currentPage?.webView?.evaluateJavaScript(documentScript)
+        let readiness = "expected=\(selectedHash) appHash=\(String(describing: app.activeStory?["story_hash"])) selectedRow=\(String(describing: app.feedDetailViewController?.storyTitlesTable?.indexPathForSelectedRow))\ncurrent={\(pageState(pages.currentPage))}\nprevious={\(pageState(pages.previousPage))}\nnext={\(pageState(pages.nextPage))}\npager=\(String(describing: pages.scrollView?.bounds)) offset=\(String(describing: pages.scrollView?.contentOffset)) insets=\(String(describing: pages.scrollView?.adjustedContentInset)) dragging=\(pages.isDraggingScrollview) scrollingTo=\(pages.scrollingToPage) pending=\(String(describing: pages.value(forKey: "pendingPresentationHash"))) transition=\(pages.value(forKey: "storySelectionTransitionHost") != nil) redraw=\(pages.value(forKey: "storySelectionRedrawCover") != nil)\ndocument=\(String(describing: document))"
+        let attachment = XCTAttachment(string: readiness)
+        attachment.name = "reader-readiness-timeout-state"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        print("DUO_READER_READINESS_TIMEOUT \(readiness)")
         try await waitUntil("The selected story must visibly render current article text before reader dialogs", timeout: 0) { false }
     }
 

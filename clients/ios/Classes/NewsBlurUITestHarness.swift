@@ -32,6 +32,7 @@ final class NewsBlurUITestHarness {
     private static var didPrepareLaunchEnvironment = false
     private static var didScheduleScenario = false
     private static var didLoadFeedFixture = false
+    private static var didRequestFixtureFeedSidebar = false
     private static var didIsolateReaderStorage = false
     private static var didFinishReaderFeedLoad = false
     private static var readerFeedLoadObserver: NSObjectProtocol?
@@ -133,7 +134,7 @@ final class NewsBlurUITestHarness {
                 return DiscoverSitesViewModel(appEnvironment: AddSiteUITestEnvironment(),
                                               session: URLSession(configuration: configuration))
             }
-            configureAddSite(on: appDelegate, remainingRetries: 20)
+            configureAddSite(on: appDelegate, remainingRetries: 100)
         case "preferences":
             didScheduleScenario = true
             configurePreferences(on: appDelegate, remainingRetries: 20)
@@ -171,6 +172,16 @@ final class NewsBlurUITestHarness {
         guard valueIndex < arguments.endIndex else { return nil }
 
         return arguments[valueIndex]
+    }
+
+    private static func prepareFixtureFeedSidebar(on appDelegate: NewsBlurAppDelegate) {
+        guard !didRequestFixtureFeedSidebar,
+              let navigation = appDelegate.feedsNavigationController,
+              navigation.viewIfLoaded?.window == nil,
+              appDelegate.detailViewController.viewIfLoaded?.window != nil else { return }
+        // NewsBlurUITestHarness.swift must reveal the iPad primary before awaiting its window or presenting Add Site from it.
+        didRequestFixtureFeedSidebar = true
+        appDelegate.showFeedsList(animated: false)
     }
 
     private static func presentAddSite(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
@@ -229,6 +240,7 @@ final class NewsBlurUITestHarness {
 
     private static func configureAddSite(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
         guard remainingRetries > 0 else { return }
+        prepareFixtureFeedSidebar(on: appDelegate)
         guard let feedsNavigationController = appDelegate.feedsNavigationController else { return }
         guard feedsNavigationController.viewIfLoaded?.window != nil else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -245,6 +257,14 @@ final class NewsBlurUITestHarness {
         }
 
         loadFixtureFeedList(on: appDelegate)
+        guard didFinishReaderFeedLoad else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                configureAddSite(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+        // NewsBlurUITestHarness.swift presents only after the fixture account and its folder choices are installed.
+        appDelegate.feedsViewController.loadWorkItem?.cancel()
         presentAddSite(on: appDelegate, remainingRetries: remainingRetries)
     }
 
@@ -283,6 +303,7 @@ final class NewsBlurUITestHarness {
         remainingRetries: Int
     ) {
         precondition(remainingRetries > 0, "NewsBlurUITestHarness.swift timed out waiting for the fixture feed list")
+        prepareFixtureFeedSidebar(on: appDelegate)
         guard let feedsNavigationController = appDelegate.feedsNavigationController else { return }
         guard feedsNavigationController.viewIfLoaded?.window != nil else {
             retryConfiguringReader(on: appDelegate, scenario: scenario, remainingRetries: remainingRetries)

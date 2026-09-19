@@ -1094,6 +1094,8 @@
 		CA8D6B709B589FA0FBBE99EC /* WhitneySSm-Semibold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */; };
 		D1E2F3A40516273849A00011 /* AddSiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00002 /* AddSiteUITests.swift */; };
 		F519D0A10516273849A00011 /* DuoLiveUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F519D0A10516273849A00002 /* DuoLiveUITests.swift */; };
+		F519D0A10516273849A00013 /* AddSiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00002 /* AddSiteUITests.swift */; };
+		F519D0A10516273849A00015 /* ReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00016 /* ReaderUITests.swift */; };
 		D1E2F3A40516273849A00012 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0007 /* XCTest.framework */; };
 		F519D0A10516273849A00012 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0007 /* XCTest.framework */; };
 		D1E2F3A40516273849A00013 /* NewsBlurUITestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00003 /* NewsBlurUITestHarness.swift */; };
@@ -6120,6 +6122,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F519D0A10516273849A00011 /* DuoLiveUITests.swift in Sources */,
+				F519D0A10516273849A00013 /* AddSiteUITests.swift in Sources */,
+				F519D0A10516273849A00015 /* ReaderUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

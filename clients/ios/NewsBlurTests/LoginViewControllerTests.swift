@@ -489,6 +489,69 @@ final class AddSiteSheetViewControllerTests: XCTestCase {
 @available(iOS 15.0, *)
 @MainActor
 final class DetailViewControllerTests: XCTestCase {
+    func test_compactHeightPhoneOwnsAndRestoresOnlyItsSplitWidthOverride() {
+        let landscapePhone = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceIdiom: .phone),
+            UITraitCollection(horizontalSizeClass: .regular), UITraitCollection(verticalSizeClass: .compact)])
+        let expandedPhoneWithHorizontalChrome = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceIdiom: .phone),
+            UITraitCollection(horizontalSizeClass: .regular), UITraitCollection(verticalSizeClass: .regular)])
+        XCTAssertFalse(Utilities.usesSystemVerticalBar(expandedPhoneWithHorizontalChrome))
+        for existingOverride in [false, true] {
+            let split = SplitViewController(style: .doubleColumn)
+            if existingOverride { split.traitOverrides.horizontalSizeClass = .regular }
+            for _ in 0..<10 {
+                split.updatePhoneWidthPolicy(for: landscapePhone)
+                XCTAssertTrue(split.traitOverrides.contains(UITraitHorizontalSizeClass.self))
+                XCTAssertEqual(split.traitOverrides.horizontalSizeClass, .compact)
+            }
+
+            split.updatePhoneWidthPolicy(for: expandedPhoneWithHorizontalChrome)
+
+            XCTAssertEqual(split.traitOverrides.contains(UITraitHorizontalSizeClass.self), existingOverride,
+                           "Leaving conventional phone landscape must release only the policy's own override")
+            if existingOverride { XCTAssertEqual(split.traitOverrides.horizontalSizeClass, .regular) }
+        }
+    }
+
+    func test_regularHeightPhoneAndAllPadSizesKeepNativeSplitTraits() {
+        for idiom in [UIUserInterfaceIdiom.phone, .pad] {
+            for vertical in [UIUserInterfaceSizeClass.compact, .regular] {
+                if idiom == .phone && vertical == .compact { continue }
+                let traits = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceIdiom: idiom),
+                    UITraitCollection(horizontalSizeClass: .regular), UITraitCollection(verticalSizeClass: vertical)])
+                let split = SplitViewController(style: .doubleColumn)
+
+                split.updatePhoneWidthPolicy(for: traits)
+
+                XCTAssertFalse(split.traitOverrides.contains(UITraitHorizontalSizeClass.self),
+                               "Duo's regular-height inner display and iPad windows must keep native split sizing")
+            }
+        }
+    }
+
+    func test_conventionalLandscapePhoneKeepsCompactReaderNavigation() {
+        let defaults = UserDefaults.standard
+        let original = defaults.object(forKey: "split_behavior")
+        defer { defaults.set(original, forKey: "split_behavior") }
+        let detail = ConventionalLandscapePhoneDetailController()
+        let stories = FeedDetailViewController()
+        let pages = StoryPagesViewController()
+        detail.feedDetailViewController = stories
+        detail.storyPagesViewController = pages
+        // LoginViewControllerTests.swift models a conventional large phone's landscape traits, not Duo's regular-height inner display.
+        detail.isCompact = false
+
+        XCTAssertEqual(detail.traitCollection.horizontalSizeClass, .regular)
+        XCTAssertEqual(detail.traitCollection.verticalSizeClass, .compact)
+        XCTAssertFalse(Utilities.usesSystemVerticalBar(detail.traitCollection), "This fixture must not inherit Duo's native side-bar capability from its test host")
+        XCTAssertTrue(detail.isPhoneOrCompact, "A conventional landscape phone must keep its single reader navigation stack")
+        XCTAssertTrue(detail.feedDetailNavigationItem === stories.navigationItem)
+        XCTAssertTrue(detail.storiesNavigationItem === pages.navigationItem)
+        for preference in ["auto", "tile", "displace", "overlay"] {
+            defaults.set(preference, forKey: "split_behavior")
+            XCTAssertEqual(detail.behaviorString, preference, "Duo's expanded two-column policy must not replace conventional phone preferences")
+        }
+    }
+
     func test_phoneBrowserRoutesStatisticsAndOriginalStoriesThroughTheResolvedLayout() {
         for compact in [false, true] {
             for statistics in [false, true] {
@@ -1411,7 +1474,30 @@ final class DetailViewControllerTests: XCTestCase {
     override var isPhone: Bool { false }
 }
 
-@MainActor private final class DiscoveryTransitionPhoneDetailController: DetailViewController {
+@MainActor private final class ConventionalLandscapePhoneDetailController: DetailViewController {
+    override var isPhone: Bool { true }
+    override var traitCollection: UITraitCollection {
+        // LoginViewControllerTests.swift supplies ordinary phone traits without inheriting the Duo simulator's native vertical-bar trait.
+        UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceIdiom: .phone),
+                                      UITraitCollection(horizontalSizeClass: .regular),
+                                      UITraitCollection(verticalSizeClass: .compact)])
+    }
+}
+
+@MainActor private class DuoRegularHeightDetailController: DetailViewController {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        // LoginViewControllerTests.swift keeps synthetic Duo inner-display fixtures independent of the test device's orientation.
+        traitOverrides.verticalSizeClass = .regular
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        traitOverrides.verticalSizeClass = .regular
+    }
+}
+
+@MainActor private final class DiscoveryTransitionPhoneDetailController: DuoRegularHeightDetailController {
     override var isPhone: Bool { true }
 }
 
@@ -1439,7 +1525,7 @@ final class DetailViewControllerTests: XCTestCase {
     }
 }
 
-@MainActor private final class DuoExpansionDetailController: DetailViewController {
+@MainActor private final class DuoExpansionDetailController: DuoRegularHeightDetailController {
     var simulatesPhone = true
     var simulatesDiscovery: Bool?
     weak var simulatedSplitViewController: UISplitViewController?
@@ -2248,7 +2334,7 @@ final class StoryPagesViewControllerTests: XCTestCase {
     override func openShareDialog() { shareCommands += 1 }
 }
 
-@MainActor private final class DuoEmbeddedReaderDetail: DetailViewController {
+@MainActor private final class DuoEmbeddedReaderDetail: DuoRegularHeightDetailController {
     override var isPhone: Bool { true }
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 900, height: 678)) }
     override func viewDidLoad() {}
