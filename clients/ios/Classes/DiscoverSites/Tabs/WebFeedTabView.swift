@@ -47,7 +47,9 @@ struct WebFeedTabView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 16) {
+            // WebFeedTabView.swift lays out its finite form eagerly to keep keyboard scrolling
+            // from repeatedly invalidating lazy section placement as results enter the viewport.
+            VStack(spacing: 16) {
                 urlInputSection
 
                 if viewModel.webFeedState.variants.isEmpty && !viewModel.webFeedState.isAnalyzing && viewModel.webFeedState.detectedFeedURL == nil {
