@@ -437,9 +437,11 @@ class Test_Feed(TransactionTestCase):
                 "password": "pbkdf2_sha256$180000$fpQMtncRvf8S$n3XmosswKzC3ERp8IBfP+rup9S2g4Zk/MNLKiy9DQ4k="
             },
         )
-        self.client.login(username="conesus", password="test")
+        self.assertTrue(self.client.login(username="conesus", password="test"))
         management.call_command("loaddata", "brokelyn.json", verbosity=0)
         self.assertEquals(Feed.objects.get(pk=BROKELYN_FEED_ID).pk, BROKELYN_FEED_ID)
+        # apps/reader/views.py requires a subscription to read this single-subscriber fixture.
+        UserSubscription.objects.get_or_create(user=user, feed_id=BROKELYN_FEED_ID, defaults={"active": True})
         management.call_command("refresh_feed", force=1, feed=BROKELYN_FEED_ID, daemonize=False)
 
         management.call_command("loaddata", "brokelyn.json", verbosity=0, skip_checks=False)
@@ -447,6 +449,7 @@ class Test_Feed(TransactionTestCase):
 
         url = reverse("load-single-feed", kwargs=dict(feed_id=BROKELYN_FEED_ID))
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
         # pprint([c['story_title'] for c in json.decode(response.content)])
         feed = json.decode(response.content)
