@@ -1055,6 +1055,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         appDelegate.detailViewController.storiesNavigationItem.leftBarButtonItems = storiesItems;
     }
     [appDelegate.detailViewController addDiscoverPreviewBackButton];
+    // FeedDetailObjCViewController.m reconciles the independently owned Duo heading after updating the shared navigation item.
+    UINavigationController *detailNavigation = appDelegate.detailViewController.navigationController;
+    if ([detailNavigation isKindOfClass:DetailNavigationController.class]) {
+        [(DetailNavigationController *)detailNavigation updateFeedsTitleAfterSidebarUpdate];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {

@@ -1745,6 +1745,12 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
                     // DuoPresentationTests.swift records rendered ancestors even when the clipping wait fails before its success attachment.
                     let button = self.allViews(in: bar).first { $0.accessibilityIdentifier == "expanded-feeds-back" }
                     var frames: [String] = []
+                    let navigation = detail.navigationController
+                    frames.append("navigation=\(String(describing: navigation.map { type(of: $0) })) hidden=\(navigation?.isNavigationBarHidden ?? false) ownsTop=\(navigation?.topViewController === detail) ownsBar=\(bar.topItem === detail.navigationItem) title=\(String(describing: detail.navigationItem.titleView))")
+                    for (index, item) in (detail.navigationItem.leftBarButtonItems ?? []).enumerated() {
+                        let custom = item.customView
+                        frames.append("leftItem[\(index)] label=\(item.accessibilityLabel ?? "") width=\(item.width) custom=\(String(describing: custom)) intrinsic=\(custom?.intrinsicContentSize ?? .zero) mounted=\(custom?.isDescendant(of: bar) ?? false)")
+                    }
                     var ancestor = button
                     while let view = ancestor {
                         let layer = view.layer

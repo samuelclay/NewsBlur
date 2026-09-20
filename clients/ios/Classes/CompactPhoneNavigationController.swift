@@ -222,6 +222,12 @@ final class DetailNavigationController: UINavigationController {
         return true
     }
 
+    @objc func updateFeedsTitleAfterSidebarUpdate() {
+        guard let detail = feedsTitleOwner, topViewController === detail else { return }
+        // CompactPhoneNavigationController.swift keeps its existing leading heading attached when a later child refresh replaces the shared Sidebar/Settings items.
+        updateFeedsTitle(for: detail)
+    }
+
     private func updateFeedsTitle(for detail: DetailViewController?) {
         if let detail, detail.isDuoFullscreenReader {
             restoreFeedsTitle()
@@ -263,7 +269,9 @@ final class DetailNavigationController: UINavigationController {
             otherItems.append(settingsItem)
         }
         let availableWidth = navigationBar.bounds.width - navigationBar.safeAreaInsets.left - navigationBar.safeAreaInsets.right
-        var columnWidth = availableWidth
+        // CompactPhoneNavigationController.swift includes UIKit's additional bar margins when the tiled story column occupies the entire horizontal bar.
+        let barContentWidth = navigationBar.layoutMarginsGuide.layoutFrame.width
+        var columnWidth = min(availableWidth, barContentWidth > 0 ? barContentWidth : availableWidth)
         var columnCenter = navigationBar.safeAreaInsets.left + availableWidth / 2
         if let storiesView = detail.feedDetailViewController?.viewIfLoaded,
            storiesView.window === view.window, !storiesView.isHidden, storiesView.bounds.width > 0 {
