@@ -489,6 +489,118 @@ final class AddSiteSheetViewControllerTests: XCTestCase {
 @available(iOS 15.0, *)
 @MainActor
 final class DetailViewControllerTests: XCTestCase {
+    func test_expandedPhoneFullscreenKeepsReaderWhileNavigatingTitlesAndFeeds() {
+        let defaults = UserDefaults.standard
+        let previousBehavior = defaults.object(forKey: "split_behavior")
+        defaults.set("auto", forKey: "split_behavior")
+        defer { defaults.set(previousBehavior, forKey: "split_behavior") }
+        let app = NewsBlurAppDelegate()
+        let detail = DuoExpansionDetailController()
+        let split = DuoSidebarSplitController(style: .doubleColumn)
+        let titles = DuoFullscreenStories()
+        let feeds = DuoFullscreenFeeds()
+        let pages = DuoFullscreenPages()
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.appDelegate = app
+        app.storiesCollection.activeFeed = ["id": "fullscreen-fixture", "feed_title": "Fixture"]
+        let previousLayout = defaults.object(forKey: "fullscreen-fixture:story_titles_position")
+        defaults.set("titles_on_left", forKey: "fullscreen-fixture:story_titles_position")
+        defer { defaults.set(previousLayout, forKey: "fullscreen-fixture:story_titles_position") }
+        app.activeStory = ["story_hash": "fullscreen-fixture:story"]
+        app.detailViewController = detail
+        app.splitViewController = split
+        app.feedsViewController = feeds
+        app.feedsNavigationController = UINavigationController(rootViewController: feeds)
+        detail.appDelegate = app
+        detail.isCompact = false
+        detail.simulatedSplitViewController = split
+        detail.feedDetailViewController = titles
+        detail.storyPagesViewController = pages
+        titles.appDelegate = app
+        feeds.appDelegate = app
+        pages.appDelegate = app
+        detail.loadViewIfNeeded()
+        let titleHost = UIView()
+        let divider = UIView()
+        let readerHost = UIView()
+        for child in [titleHost, divider, readerHost] {
+            child.translatesAutoresizingMaskIntoConstraints = false
+            detail.view.addSubview(child)
+        }
+        detail.leftContainerView = titleHost
+        detail.verticalDividerView = divider
+        detail.topContainerView = readerHost
+        let leading = divider.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor, constant: detail.verticalDividerPosition)
+        detail.verticalDividerViewLeadingConstraint = leading
+        NSLayoutConstraint.activate([leading, titleHost.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor),
+            titleHost.trailingAnchor.constraint(equalTo: divider.leadingAnchor), divider.widthAnchor.constraint(equalToConstant: 5),
+            readerHost.leadingAnchor.constraint(equalTo: divider.trailingAnchor, constant: -4),
+            readerHost.trailingAnchor.constraint(equalTo: detail.view.trailingAnchor)] + [titleHost, divider, readerHost].flatMap {
+                [$0.topAnchor.constraint(equalTo: detail.view.topAnchor), $0.bottomAnchor.constraint(equalTo: detail.view.bottomAnchor)]
+            })
+        detail.addChild(titles)
+        titleHost.addSubview(titles.view)
+        titles.didMove(toParent: detail)
+        detail.addChild(pages)
+        readerHost.addSubview(pages.view)
+        pages.didMove(toParent: detail)
+        let article = UIScrollView(frame: readerHost.bounds)
+        article.contentSize.height = 2000
+        article.contentOffset.y = 500
+        pages.view.addSubview(article)
+        defer {
+            app.detailViewController = nil
+            app.feedsViewController = nil
+            app.feedsNavigationController.setViewControllers([], animated: false)
+            app.feedsNavigationController = nil
+        }
+
+        let originalSplitBehavior = split.preferredSplitBehavior
+        detail.toggleTemporaryFullScreen(nil)
+        XCTAssertTrue(detail.isDuoFullscreenReader)
+        XCTAssertTrue(titleHost.isHidden)
+        XCTAssertTrue(pages.parent === detail)
+        detail.toggleStoryTitles(nil)
+        XCTAssertTrue(app.feedsNavigationController.topViewController === titles)
+        XCTAssertTrue(app.feedDetailViewController === titles)
+        XCTAssertEqual(detail.fullscreenSidebarPresentation, .storyTitles)
+        XCTAssertEqual(split.preferredSplitBehavior, .overlay)
+        detail.show(column: .primary, animated: false)
+        XCTAssertTrue(app.feedsNavigationController.topViewController === feeds)
+        XCTAssertEqual(detail.fullscreenSidebarPresentation, .feeds)
+        let incomingLayoutKey = "fullscreen-other:story_titles_position"
+        let previousIncomingLayout = defaults.object(forKey: incomingLayoutKey)
+        defaults.set("titles_in_grid", forKey: incomingLayoutKey)
+        defer { defaults.set(previousIncomingLayout, forKey: incomingLayoutKey) }
+        app.storiesCollection.activeFeed = ["id": "fullscreen-other", "feed_title": "Other source"]
+        XCTAssertTrue(detail.isDuoFullscreenReader, "A source's stored layout must not silently exit requested full screen")
+        XCTAssertEqual(detail.layout, .left, "The native titles overlay remains the effective fullscreen source layout")
+        XCTAssertEqual(defaults.string(forKey: incomingLayoutKey), "titles_in_grid", "Fullscreen must not rewrite source preferences")
+        detail.resetTemporaryFullScreenIfNeeded()
+        detail.dismissFullscreenSidebarOverlayAfterFeedSelection()
+        XCTAssertTrue(detail.isDuoFullscreenReader, "Choosing a source must retain Duo full screen")
+        XCTAssertTrue(app.feedsNavigationController.topViewController === titles)
+        detail.dismissFullscreenSidebarOverlayAfterStorySelection()
+        XCTAssertEqual(detail.fullscreenSidebarPresentation, .fullscreen)
+        XCTAssertEqual(split.hiddenColumns.last, .primary)
+        XCTAssertTrue(pages.parent === detail)
+        XCTAssertEqual(article.contentOffset.y, 500)
+        XCTAssertEqual(app.activeStory?["story_hash"] as? String, "fullscreen-fixture:story")
+        app.storiesCollection.activeFeed = ["id": "fullscreen-fixture", "feed_title": "Fixture"]
+        detail.toggleTemporaryFullScreen(nil)
+        XCTAssertFalse(detail.isDuoFullscreenReader)
+        XCTAssertTrue(titles.parent === detail)
+        XCTAssertTrue(titles.view.superview === titleHost)
+        XCTAssertFalse(titleHost.isHidden)
+        XCTAssertEqual(leading.constant, detail.verticalDividerPosition)
+        XCTAssertEqual(split.preferredSplitBehavior, originalSplitBehavior)
+        detail.simulatesPhone = false
+        XCTAssertFalse(detail.canToggleDuoFullscreenReader, "iPad retains its existing temporary fullscreen implementation")
+        detail.simulatesPhone = true
+        detail.isCompact = true
+        XCTAssertFalse(detail.canToggleDuoFullscreenReader, "Compact phones keep their existing navigation")
+    }
+
     func test_compactHeightPhoneOwnsAndRestoresOnlyItsSplitWidthOverride() {
         let landscapePhone = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceIdiom: .phone),
             UITraitCollection(horizontalSizeClass: .regular), UITraitCollection(verticalSizeClass: .compact)])
@@ -1517,6 +1629,35 @@ final class DetailViewControllerTests: XCTestCase {
     override func updateSidebarButton(for displayMode: UISplitViewController.DisplayMode) { sidebarUpdated?() }
 }
 
+@MainActor private final class DuoFullscreenStories: FeedDetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 600)) }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+    override func updateSidebarButton(for displayMode: UISplitViewController.DisplayMode) {}
+}
+
+@MainActor private final class DuoFullscreenFeeds: FeedsViewController {
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
+    override func viewDidLayoutSubviews() {}
+}
+
+@MainActor private final class DuoFullscreenPages: StoryPagesViewController {
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    override func viewDidLayoutSubviews() {}
+    override func updateStoryTitleNavigationButtons() {}
+}
+
 @MainActor private final class DuoSidebarLayoutView: UIView {
     var didLayout: (() -> Void)?
     override func layoutSubviews() {
@@ -2085,6 +2226,91 @@ final class StoryPagesViewControllerTests: XCTestCase {
         XCTAssertEqual(nextPage.drawFeedGradientCallCount, 1)
     }
 
+    func test_fullscreenSourceBrowseRetainsTheMountedArticleUntilSelectionOrAccountReset() {
+        let app = DuoInterruptedPagerApp()
+        let detail = DuoSourceBrowsingDetail()
+        detail.appDelegate = app
+        detail.isCompact = false
+        app.detailViewController = detail
+        app.storiesCollection = DuoRetainedActionStories()
+        app.storiesCollection.appDelegate = app
+        app.storiesCollection.activeFeed = ["id": "replacement"]
+        let feed = DuoInterruptedPagerFeed()
+        feed.appDelegate = app
+        app.fixtureFeed = feed
+        let pages = DuoInterruptedPagerPages()
+        pages.appDelegate = app
+        app.fixturePages = pages
+        detail.storyPagesViewController = pages
+        detail.loadViewIfNeeded()
+        pages.loadViewIfNeeded()
+        detail.addChild(pages)
+        detail.view.addSubview(pages.view)
+        pages.didMove(toParent: detail)
+        let articlePages = (0..<3).map { index -> DuoInterruptedPagerPage in
+            let page = DuoInterruptedPagerPage()
+            page.appDelegate = app
+            pages.addChild(page)
+            pages.scrollView.addSubview(page.view)
+            page.didMove(toParent: pages)
+            page.pageIndex = index
+            return page
+        }
+        pages.currentPage = articlePages[0]
+        pages.nextPage = articlePages[1]
+        pages.previousPage = articlePages[2]
+        let current = articlePages[0]
+        current.pageIndex = 2
+        current.activeStory = ["story_hash": "outgoing:2"]
+        current.activeStoryId = "outgoing:2"
+        current.hasStory = true
+        let articleScroll = UIScrollView(frame: current.view.bounds)
+        articleScroll.contentSize.height = 2000
+        articleScroll.contentOffset.y = 500
+        current.view.addSubview(articleScroll)
+        pages.scrollView.contentSize.width = 440 * 3
+        pages.scrollView.contentOffset.x = 440 * 2
+        app.activeStory = nil
+        defer {
+            pages.removeFromParent()
+            app.fixturePages = nil
+            app.fixtureFeed = nil
+            app.detailViewController = nil
+            detail.storyPagesViewController = nil
+        }
+
+        pages.resetPages()
+        pages.hidePages()
+        pages.refreshPages()
+        pages.reorientPages()
+        XCTAssertTrue(pages.currentPage === current)
+        XCTAssertTrue(current.hasStory)
+        XCTAssertEqual(current.activeStoryId, "outgoing:2")
+        XCTAssertEqual(current.clearStoryCount, 0)
+        XCTAssertFalse(current.view.isHidden)
+        XCTAssertEqual(articleScroll.contentOffset.y, 500)
+        XCTAssertFalse(pages.scrollView.isScrollEnabled, "The outgoing article cannot page through the replacement collection")
+        XCTAssertEqual(app.activeStory?["story_hash"] as? String, "outgoing:2", "Reader actions continue to target the displayed article")
+        pages.toggleStorySaved(nil)
+        XCTAssertEqual((app.storiesCollection as? DuoRetainedActionStories)?.savedHashes, ["outgoing:2"])
+        app.storiesCollection.activeFeedStories = [["story_hash": "incoming:0"], ["story_hash": "incoming:1"]]
+        app.storiesCollection.storyLocationsCount = 2
+        app.storiesCollection.activeFeedStoryLocations = NSMutableArray(array: [0, 1])
+        pages.recordsPageChanges = true
+        pages.perform(NSSelectorFromString("changeToNextPage:"), with: nil)
+        pages.perform(NSSelectorFromString("changeToPreviousPage:"), with: nil)
+        XCTAssertEqual(pages.recordedPageChanges, [0, 1], "Explicit traversal enters the new source at its appropriate boundary")
+
+        // LoginViewControllerTests.swift models the authentication reset withdrawing fullscreen ownership before clearing pages.
+        detail.browsingSources = false
+        pages.resetPages()
+        pages.hidePages()
+        XCTAssertFalse(current.hasStory)
+        XCTAssertNil(current.activeStoryId)
+        XCTAssertGreaterThan(current.clearStoryCount, 0)
+        XCTAssertTrue(pages.scrollView.isScrollEnabled)
+    }
+
     func test_feedResetIgnoresOutgoingPagerOffsetsAndCompletion() {
         let app = DuoInterruptedPagerApp()
         let detail = DuoExpansionDetailController()
@@ -2221,7 +2447,18 @@ final class StoryPagesViewControllerTests: XCTestCase {
     }
 }
 
+@MainActor private final class DuoRetainedActionStories: StoriesCollection {
+    var savedHashes: [String] = []
+    override func toggleStorySaved() { savedHashes.append(appDelegate.activeStory?["story_hash"] as? String ?? "missing") }
+}
+
 @MainActor private final class DuoInterruptedPagerPages: StoryPagesViewController {
+    var recordsPageChanges = false
+    var recordedPageChanges: [Int] = []
+    override func changePage(_ pageIndex: Int, animated: Bool) {
+        if recordsPageChanges { recordedPageChanges.append(pageIndex) }
+        else { super.changePage(pageIndex, animated: animated) }
+    }
     override var isHorizontal: Bool { true }
     override func loadView() {
         view = UIView(frame: CGRect(x: 0, y: 0, width: 440, height: 640))
@@ -2237,10 +2474,21 @@ final class StoryPagesViewControllerTests: XCTestCase {
     override func setTextButton() {}
 }
 
+@MainActor private final class DuoSourceBrowsingDetail: DuoRegularHeightDetailController {
+    var browsingSources = true
+    override var isPhone: Bool { true }
+    override var isBrowsingDuoFullscreenSources: Bool { browsingSources }
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 951, height: 669)) }
+    override func viewDidLoad() {}
+    override func viewDidLayoutSubviews() {}
+}
+
 @MainActor private final class DuoInterruptedPagerPage: StoryDetailViewController {
+    var clearStoryCount = 0
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 440, height: 640)) }
     override func viewDidLoad() {}
     override func clearStory() {
+        clearStoryCount += 1
         activeStoryId = activeStory?["story_hash"] as? String
         hasStory = false
     }

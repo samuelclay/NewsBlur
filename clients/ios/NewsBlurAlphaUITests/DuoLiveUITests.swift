@@ -142,6 +142,115 @@ final class Test_DuoLiveUI: XCTestCase {
         capture("duo-live-expanded-native-back-returned-to-feeds")
     }
 
+    func test_fullscreenReaderKeepsTitlesAndFeedsInAnOverlay() throws {
+        try requireVisibleFeeds()
+        let feeds = app.tables["feeds-list"]
+        let folder = feeds.children(matching: .other).children(matching: .button)
+            .matching(identifier: "folder-header-everything").element
+        for _ in 0..<10 {
+            if folder.exists && feeds.frame.contains(folder.frame) { break }
+            feeds.swipeDown()
+        }
+        XCTAssertTrue(folder.exists && feeds.frame.contains(folder.frame))
+        shouldReturnToFeeds = true
+        folder.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let list = app.tables["story-titles-list"]
+        XCTAssertTrue(list.waitForExistence(timeout: 15))
+        let row = list.cells.matching(NSPredicate(format: "identifier BEGINSWITH 'story-row-'"))
+            .allElementsBoundByIndex.first { list.frame.contains($0.frame) && $0.frame.height > 20 }
+        let selected = try XCTUnwrap(row)
+        selected.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let hash = String(selected.identifier.dropFirst("story-row-".count))
+        let probe = app.staticTexts["story-current-story"].firstMatch
+        try waitForLiveReader(probe, expectedHash: hash)
+        let outgoingTitle = probe.label
+        let web = try XCTUnwrap(app.webViews.allElementsBoundByIndex.first { $0.isHittable })
+        let splitWidth = web.frame.width
+        capture("duo-fullscreen-before-toggle")
+        let fullscreen = app.buttons["reader-fullscreen"]
+        XCTAssertTrue(waitUntilHittable(fullscreen), "Open Duo needs a full-screen reader toggle in place of reading progress")
+        XCTAssertFalse(app.buttons["reader-progress"].exists && app.buttons["reader-progress"].isHittable)
+        fullscreen.tap()
+        let expanded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            web.frame.width > splitWidth + 100 && (!list.exists || !list.isHittable)
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [expanded], timeout: 10), .completed)
+        let fullWidth = web.frame.width
+        XCTAssertEqual(probe.value as? String, hash)
+        capture("duo-fullscreen-reader")
+        let sidebar = try XCTUnwrap(app.buttons.matching(identifier: "Sidebar")
+            .allElementsBoundByIndex.first { $0.isHittable })
+        sidebar.tap()
+        XCTAssertTrue(waitUntilHittable(list))
+        XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1,
+                       "Showing titles must overlay the full-width article")
+        let back = app.buttons["expanded-feeds-back"]
+        XCTAssertTrue(waitUntilHittable(back), "The titles overlay needs a Feeds back button")
+        XCTAssertLessThanOrEqual(back.frame.midY, app.frame.minY + 35,
+                                 "The overlay title must not reserve an obsolete horizontal status band")
+        capture("duo-fullscreen-titles-overlay")
+        let originalOverlayWidth = list.frame.width
+        let resizeHandle = app.descendants(matching: .any)["feeds-sidebar-resize-handle"].firstMatch
+        XCTAssertTrue(waitUntilHittable(resizeHandle), "The native titles overlay needs a working resize handle")
+        // DuoLiveUITests.swift drags the rendered native handle, then checks the actual list edge instead of the handle alone.
+        func resizeOverlay(_ content: XCUIElement, to width: CGFloat) {
+            let start = resizeHandle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            start.press(forDuration: 0.1,
+                        thenDragTo: start.withOffset(CGVector(dx: width - content.frame.width, dy: 0)),
+                        withVelocity: .slow, thenHoldForDuration: 0)
+            let resized = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                abs(content.frame.width - width) < 3 && abs(resizeHandle.frame.midX - content.frame.maxX) < 3
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [resized], timeout: 5), .completed,
+                           "Dragging must resize the visible list and keep its handle at the list edge")
+            XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1)
+        }
+        let resizedOverlayWidth = originalOverlayWidth + 60
+        resizeOverlay(list, to: resizedOverlayWidth)
+        capture("duo-fullscreen-resized-titles-overlay")
+        back.tap()
+        try requireVisibleFeeds()
+        XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1)
+        XCTAssertEqual(feeds.frame.width, resizedOverlayWidth, accuracy: 3,
+                       "Feeds and story titles must share the selected overlay width")
+        capture("duo-fullscreen-feeds-overlay")
+        let source = try XCTUnwrap(feeds.cells.matching(NSPredicate(format: "identifier MATCHES 'feed-row-[0-9]+'"))
+            .allElementsBoundByIndex.first {
+                feeds.frame.contains($0.frame) && $0.frame.height > 20 &&
+                    !hash.hasPrefix(String($0.identifier.dropFirst("feed-row-".count)) + ":")
+            })
+        let sourceID = String(source.identifier.dropFirst("feed-row-".count))
+        source.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(waitUntilHittable(list))
+        let sourceRows = list.cells.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-\(sourceID):"))
+        let sourceLoaded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            sourceRows.allElementsBoundByIndex.contains { list.frame.contains($0.frame) && $0.frame.height > 20 }
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [sourceLoaded], timeout: 20), .completed)
+        XCTAssertTrue(web.staticTexts.matching(NSPredicate(format: "label == %@", outgoingTitle)).firstMatch.exists,
+                      "Browsing another feed must retain the rendered article behind the overlay")
+        XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1)
+        XCTAssertEqual(list.frame.width, resizedOverlayWidth, accuracy: 3)
+        resizeOverlay(list, to: originalOverlayWidth)
+        let nextRow = try XCTUnwrap(sourceRows
+            .allElementsBoundByIndex.first { list.frame.contains($0.frame) && $0.frame.height > 20 })
+        let nextHash = String(nextRow.identifier.dropFirst("story-row-".count))
+        nextRow.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        try waitForLiveReader(probe, expectedHash: nextHash)
+        XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1)
+        XCTAssertFalse(list.exists && list.isHittable)
+        capture("duo-fullscreen-selected-from-overlay")
+        XCTAssertTrue(waitUntilHittable(fullscreen))
+        fullscreen.tap()
+        XCTAssertTrue(waitUntilHittable(list))
+        XCTAssertEqual(web.frame.width, splitWidth, accuracy: 1)
+        capture("duo-fullscreen-returned-to-two-columns")
+        XCTAssertTrue(waitUntilHittable(back))
+        back.tap()
+        try requireVisibleFeeds()
+        shouldReturnToFeeds = false
+    }
+
     func test_openReadingWithStoryTapsScrollingAndNextPrevious() throws {
         try requireVisibleFeeds()
         let folder = app.tables["feeds-list"].children(matching: .other)

@@ -592,6 +592,49 @@ import UIKit
                        "Leaving the managed native title must restore the prior outer fill")
     }
 
+    func test_fullscreenTitlesOverlayRemovesOnlyTheOwningDuosRedundantStatusBand() throws {
+        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo bars") }
+        let app = NewsBlurAppDelegate()
+        let detail = HeaderDuoFullscreenTitleOwner()
+        detail.appDelegate = app
+        app.detailViewController = detail
+        let titles = HeaderDuoFullscreenTitleStories()
+        titles.appDelegate = app
+        let measured = HeaderDuoMeasuredSafeAreaView(frame: CGRect(x: 0, y: 58, width: 322, height: 611))
+        measured.owner = titles
+        measured.nativeSafeTop = 24
+        titles.view = measured
+        let navigation = HeaderDuoHorizontalBarNavigation(rootViewController: titles)
+        let host = try HeaderDuoTestWindow(controller: navigation)
+        defer {
+            host.close()
+            app.detailViewController = nil
+        }
+        guard Utilities.usesSystemVerticalBar(host.window.traitCollection), host.window.safeAreaInsets.top == 0 else {
+            throw XCTSkip("Requires a Duo window whose status is in the side rail")
+        }
+        // StoryTitlesHeaderBarLayoutTests.swift reproduces live148b: horizontal primary traits, bar y24/h58, title root y58 and safeTop24.
+        navigation.reportsHorizontalBarTraits = true
+        XCTAssertFalse(Utilities.usesSystemVerticalBar(navigation.traitCollection))
+        titles.view.frame = CGRect(x: 0, y: 58, width: 322, height: 611)
+        navigation.navigationBar.frame = CGRect(x: 0, y: 24, width: 322, height: 58)
+        let layout = VerticalNavigationTitleLayout()
+        defer { layout.restore() }
+        for _ in 0..<3 { layout.update(navigation: navigation, controller: titles, enabled: true) }
+        XCTAssertEqual(navigation.navigationBar.frame.minY, 0, accuracy: 0.5)
+        XCTAssertEqual(titles.additionalSafeAreaInsets.top, -24, accuracy: 0.5)
+        XCTAssertEqual(measured.safeAreaInsets.top, 0, accuracy: 0.5,
+                       "The overlay starts below its 58pt title; it must not reserve another horizontal status band")
+        XCTAssertEqual(titles.view.convert(CGPoint(x: 0, y: measured.safeAreaInsets.top), to: host.window).y, 58, accuracy: 0.5)
+
+        detail.fullscreen = false
+        layout.update(navigation: navigation, controller: titles, enabled: true)
+        XCTAssertEqual(navigation.navigationBar.frame.minY, 24, accuracy: 0.5,
+                       "Unrelated horizontal navigation must retain its system positioning")
+        XCTAssertEqual(titles.additionalSafeAreaInsets.top, 0, accuracy: 0.5)
+        XCTAssertEqual(measured.safeAreaInsets.top, 24, accuracy: 0.5)
+    }
+
     func test_verticalTitleStatusCompensationSurvivesNativeMinimization() throws {
         guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo bars") }
         let controller = UIViewController()
@@ -1738,6 +1781,29 @@ import UIKit
 @MainActor private final class HeaderDuoUpdatingTable: UITableView {
     var simulatesUncommittedUpdates = false
     override var hasUncommittedUpdates: Bool { simulatesUncommittedUpdates || super.hasUncommittedUpdates }
+}
+
+@MainActor private final class HeaderDuoFullscreenTitleOwner: DetailViewController {
+    var fullscreen = true
+    override var isDuoFullscreenReader: Bool { fullscreen }
+}
+
+@MainActor private final class HeaderDuoFullscreenTitleStories: FeedDetailViewController {
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+}
+
+@MainActor private final class HeaderDuoHorizontalBarNavigation: UINavigationController {
+    var reportsHorizontalBarTraits = false
+    override var traitCollection: UITraitCollection {
+        reportsHorizontalBarTraits ? UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceIdiom: .phone),
+            UITraitCollection(horizontalSizeClass: .compact), UITraitCollection(verticalSizeClass: .regular)]) : super.traitCollection
+    }
 }
 
 @MainActor private final class HeaderDuoMeasuredSafeAreaView: UIView {
