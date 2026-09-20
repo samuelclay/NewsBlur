@@ -1155,6 +1155,180 @@ import UIKit
         }
     }
 
+    func test_expandedDuoFeedsHeadingSurvivesLateSidebarUpdates() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The expanded Duo heading is not used on Catalyst")
+        #else
+        let app = NewsBlurAppDelegate()
+        app.storiesCollection = StoriesCollection()
+        app.splitViewController = HeaderDuoFeedReturnSplit(style: .doubleColumn)
+        let detail = HeaderDuoSharedTitleDetail()
+        detail.appDelegate = app
+        detail.isCompact = false
+        app.detailViewController = detail
+        let stories = HeaderDuoStories()
+        stories.fixtureApp = app
+        stories.appDelegate = app
+        let settingsButton = UIButton(type: .system)
+        settingsButton.setImage(UIImage(systemName: "gearshape"), for: .normal)
+        stories.settingsBarButton = UIBarButtonItem(customView: settingsButton)
+        detail.feedDetailViewController = stories
+        detail.loadViewIfNeeded()
+        detail.addChild(stories)
+        stories.view.translatesAutoresizingMaskIntoConstraints = false
+        detail.view.addSubview(stories.view)
+        NSLayoutConstraint.activate([
+            stories.view.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor),
+            stories.view.topAnchor.constraint(equalTo: detail.view.topAnchor),
+            stories.view.bottomAnchor.constraint(equalTo: detail.view.bottomAnchor),
+            stories.view.widthAnchor.constraint(equalTo: detail.view.widthAnchor, multiplier: 0.5)
+        ])
+        stories.didMove(toParent: detail)
+        let sourceTitle = UILabel()
+        sourceTitle.text = "SamMobile"
+        sourceTitle.sizeToFit()
+        detail.navigationItem.titleView = sourceTitle
+        stories.updateSidebarButton(for: .secondaryOnly)
+        let navigation = DetailNavigationController(rootViewController: detail)
+        let host = try HeaderDuoTestWindow(controller: navigation)
+        defer {
+            host.close()
+            stories.willMove(toParent: nil)
+            stories.view.removeFromSuperview()
+            stories.removeFromParent()
+            detail.feedDetailViewController = nil
+            app.detailViewController = nil
+            app.splitViewController = nil
+        }
+        func descendants(_ view: UIView) -> [UIView] {
+            [view] + view.subviews.flatMap(descendants)
+        }
+        navigation.view.setNeedsLayout()
+        host.window.layoutIfNeeded()
+        navigation.navigationBar.layoutIfNeeded()
+        let heading = try XCTUnwrap(detail.navigationItem.leftBarButtonItems?.first { item in
+            item.customView.map { descendants($0).contains { $0.accessibilityIdentifier == "expanded-feeds-back" } } ?? false
+        })
+        let title = try XCTUnwrap(heading.customView)
+        let button = try XCTUnwrap(descendants(title).first { $0.accessibilityIdentifier == "expanded-feeds-back" })
+        // StoryTitlesHeaderBarLayoutTests.swift waits for UIKit to mount the initial native item before exercising the late child-only refresh.
+        let renderDeadline = Date().addingTimeInterval(2)
+        while !button.isDescendant(of: navigation.navigationBar) && Date() < renderDeadline {
+            navigation.view.setNeedsLayout()
+            host.window.layoutIfNeeded()
+            navigation.navigationBar.layoutIfNeeded()
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertTrue(sourceTitle.isDescendant(of: title))
+        let initiallyMounted = button.isDescendant(of: navigation.navigationBar)
+        XCTAssertTrue(initiallyMounted, "The regression must begin with an actually rendered native Feeds button")
+        guard initiallyMounted else { return }
+
+        // StoryTitlesHeaderBarLayoutTests.swift runs the child refresh after its parent's layout, as resolved tiling and feed completion do.
+        for mode: UISplitViewController.DisplayMode in [.oneBesideSecondary, .secondaryOnly, .oneOverSecondary, .oneBesideSecondary] {
+            stories.updateSidebarButton(for: mode)
+            XCTAssertTrue(detail.navigationItem.leftBarButtonItems?.contains { $0 === heading } == true,
+                          "A late \(mode) Sidebar refresh must preserve the native Feeds/source heading")
+            XCTAssertTrue(detail.navigationItem.leftBarButtonItems?.contains { $0 === stories.settingsBarButton } == true)
+            navigation.navigationBar.layoutIfNeeded()
+            XCTAssertTrue(button.isDescendant(of: navigation.navigationBar),
+                          "Feeds must remain rendered without requiring a new parent navigation layout")
+            XCTAssertTrue(sourceTitle.isDescendant(of: title), "Keep the same live source title when updating Sidebar")
+        }
+        #endif
+    }
+
+    func test_expandedDuoHeadingRendersInsideTiledSecondarySafeArea() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The expanded Duo heading is not used on Catalyst")
+        #else
+        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo native bars") }
+        let app = NewsBlurAppDelegate()
+        app.storiesCollection = StoriesCollection()
+        app.splitViewController = HeaderDuoFeedReturnSplit(style: .doubleColumn)
+        let detail = HeaderDuoSharedTitleDetail()
+        detail.appDelegate = app
+        detail.isCompact = false
+        app.detailViewController = detail
+        let stories = HeaderDuoStories()
+        stories.fixtureApp = app
+        stories.appDelegate = app
+        let settingsButton = UIButton(type: .system)
+        settingsButton.setImage(Utilities.imageNamed("settings", sized: 30), for: .normal)
+        stories.settingsBarButton = UIBarButtonItem(customView: settingsButton)
+        detail.feedDetailViewController = stories
+        detail.loadViewIfNeeded()
+        detail.addChild(stories)
+        stories.view.translatesAutoresizingMaskIntoConstraints = false
+        detail.view.addSubview(stories.view)
+        NSLayoutConstraint.activate([
+            stories.view.leadingAnchor.constraint(equalTo: detail.view.safeAreaLayoutGuide.leadingAnchor),
+            stories.view.trailingAnchor.constraint(equalTo: detail.view.safeAreaLayoutGuide.trailingAnchor),
+            stories.view.topAnchor.constraint(equalTo: detail.view.safeAreaLayoutGuide.topAnchor),
+            stories.view.bottomAnchor.constraint(equalTo: detail.view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        stories.didMove(toParent: detail)
+        let sourceTitle = UILabel()
+        sourceTitle.text = "SamMobile"
+        sourceTitle.sizeToFit()
+        detail.navigationItem.titleView = sourceTitle
+        stories.updateSidebarButton(for: .oneBesideSecondary)
+        let navigation = DetailNavigationController(rootViewController: detail)
+        let host = try HeaderDuoTestWindow(controller: navigation)
+        defer {
+            host.close()
+            stories.willMove(toParent: nil)
+            stories.view.removeFromSuperview()
+            stories.removeFromParent()
+            detail.feedDetailViewController = nil
+            app.detailViewController = nil
+            app.splitViewController = nil
+        }
+        guard Utilities.usesSystemVerticalBar(navigation.traitCollection), navigation.view.bounds.width > 800 else {
+            throw XCTSkip("Requires the expanded Duo's native vertical bar")
+        }
+        let bar = navigation.navigationBar
+        // StoryTitlesHeaderBarLayoutTests.swift reproduces the 527pt safe secondary measured beside partial Duo's native primary column.
+        let availableWidth: CGFloat = 527
+        navigation.additionalSafeAreaInsets.left = bar.bounds.width - bar.safeAreaInsets.right - availableWidth
+        func descendants(_ view: UIView) -> [UIView] {
+            [view] + view.subviews.flatMap(descendants)
+        }
+        var button: UIView?
+        let deadline = Date().addingTimeInterval(2)
+        repeat {
+            navigation.view.setNeedsLayout()
+            host.window.layoutIfNeeded()
+            bar.layoutIfNeeded()
+            button = detail.navigationItem.leftBarButtonItems?.compactMap(\.customView)
+                .flatMap(descendants).first { $0.accessibilityIdentifier == "expanded-feeds-back" }
+            if button?.isDescendant(of: bar) == true && settingsButton.isDescendant(of: bar) { break }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        } while Date() < deadline
+        XCTAssertEqual(bar.bounds.width - bar.safeAreaInsets.left - bar.safeAreaInsets.right, availableWidth, accuracy: 1,
+                       "The fixture must constrain the native bar, not merely resize its story view")
+        XCTAssertEqual(stories.view.bounds.width, availableWidth, accuracy: 1)
+        let feeds = try XCTUnwrap(button, "The native leading item must still own its Feeds action")
+        XCTAssertTrue(feeds.isDescendant(of: bar), "Feeds must not overflow out of the tiled story heading")
+        XCTAssertTrue(settingsButton.isDescendant(of: bar), "Settings must remain beside the tiled source title")
+        guard feeds.isDescendant(of: bar), settingsButton.isDescendant(of: bar) else { return }
+        let column = stories.view.convert(stories.view.bounds, to: host.window)
+        let feedsFrame = feeds.convert(feeds.bounds, to: host.window)
+        let settingsFrame = settingsButton.convert(settingsButton.bounds, to: host.window)
+        let sourceFrame = sourceTitle.convert(sourceTitle.bounds, to: host.window)
+        XCTAssertGreaterThanOrEqual(feedsFrame.width, 44)
+        XCTAssertGreaterThanOrEqual(feedsFrame.minX, column.minX)
+        XCTAssertLessThanOrEqual(feedsFrame.minX, column.minX + 32)
+        XCTAssertGreaterThanOrEqual(settingsFrame.maxX, column.maxX - 32)
+        XCTAssertLessThanOrEqual(settingsFrame.maxX, column.maxX)
+        XCTAssertEqual(sourceFrame.midX, column.midX, accuracy: 1)
+        XCTAssertFalse(feedsFrame.intersects(sourceFrame))
+        XCTAssertFalse(settingsFrame.intersects(sourceFrame))
+        XCTAssertTrue(host.window.hitTest(CGPoint(x: feedsFrame.midX, y: feedsFrame.midY), with: nil)?.isDescendant(of: feeds) == true)
+        XCTAssertTrue(host.window.hitTest(CGPoint(x: settingsFrame.midX, y: settingsFrame.midY), with: nil)?.isDescendant(of: settingsButton) == true)
+        #endif
+    }
+
     func test_expandedDuoFeedsTitleTracksPlainTitleAndRestoresDiscoverOwnership() throws {
         guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo bars") }
         let app = NewsBlurAppDelegate()
