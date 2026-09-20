@@ -1083,8 +1083,9 @@ final class DetailViewControllerTests: XCTestCase {
         defaults.set("story", forKey: keys[2])
         defer { for (key, value) in zip(keys, previous) { defaults.set(value, forKey: key) } }
 
-        for preparationBeforeReveal in [true, false] {
+        for (compactWindow, preparationBeforeReveal) in [(false, true), (false, false), (true, true), (true, false)] {
             let app = DuoAutomaticStoryApp()
+            app.simulatesCompactWindow = compactWindow
             let collection = StoriesCollection()
             collection.appDelegate = app
             collection.activeFeed = ["id": "automatic-sidebar"]
@@ -1113,20 +1114,32 @@ final class DetailViewControllerTests: XCTestCase {
             pages.appDelegate = app
             detail.storyPagesViewController = pages
             defer {
+                NSObject.cancelPreviousPerformRequests(withTarget: app)
+                pages.didPrepare = nil
                 pages.preparedCompletion = nil
                 app.detailViewController = nil
                 collection.appDelegate = nil
             }
 
+            func prepareAutomaticStory() throws {
+                let prepared = XCTestExpectation(description: "The automatic first-story path reaches reader preparation")
+                pages.didPrepare = { prepared.fulfill() }
+                defer { pages.didPrepare = nil }
+                stories.testForTryFeed()
+                // LoginViewControllerTests.swift covers the real next-run-loop dispatch when the window is compact during a split handoff.
+                let result = XCTWaiter.wait(for: [prepared], timeout: 3)
+                _ = try XCTUnwrap(result == .completed ? pages.preparedCompletion : nil,
+                                  "Automatic preparation must finish before releasing document readiness (compact window: \(compactWindow))")
+            }
+
             // LoginViewControllerTests.swift lets the real automatic-first-story callback prepare before or after a newer Feeds tap.
             if preparationBeforeReveal {
-                stories.testForTryFeed()
-                XCTAssertNotNil(pages.preparedCompletion)
+                try prepareAutomaticStory()
             }
             detail.show(column: .primary, animated: false)
             split.simulatedDisplayMode = .oneOverSecondary
             detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
-            if !preparationBeforeReveal { stories.testForTryFeed() }
+            if !preparationBeforeReveal { try prepareAutomaticStory() }
             pages.finishPreparation()
             XCTAssertEqual(pages.appliedPageIndices, [0],
                            "The first article must still load behind the feed overlay")
@@ -2116,12 +2129,15 @@ final class DetailViewControllerTests: XCTestCase {
 }
 
 @MainActor private final class DuoAutomaticStoryApp: NewsBlurAppDelegate {
+    var simulatesCompactWindow = false
+    override var isCompactWidth: Bool { simulatesCompactWindow }
     var readerPresentations = 0
     override func showDetailViewController(_ vc: UIViewController, sender: Any?) { readerPresentations += 1 }
 }
 
 @MainActor private final class DuoAutomaticStoryPages: StoryPagesViewController {
     var preparedCompletion: ((Int) -> Void)?
+    var didPrepare: (() -> Void)?
     var appliedPageIndices: [Int] = []
     override var isHorizontal: Bool { true }
     override func loadView() {
@@ -2146,6 +2162,7 @@ final class DetailViewControllerTests: XCTestCase {
                               completion: ((Int) -> Void)!) {
         // LoginViewControllerTests.swift holds only document readiness; changePage and its native secondary-column request remain production code.
         preparedCompletion = completion
+        didPrepare?()
     }
     func finishPreparation() {
         let completion = preparedCompletion

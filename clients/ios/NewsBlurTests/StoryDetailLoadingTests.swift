@@ -1891,9 +1891,10 @@ import XCTest
         for _ in 0..<100 where fixture.app.presentations == 0 { await delay(0.02) }
         XCTAssertEqual(fixture.app.presentations, 1)
         XCTAssertTrue(navigation.topViewController === fixture.pages)
+        // StoryDetailLoadingTests.swift starts the paint-readiness wait after document loading begins, excluding cold CI GPU startup while the image response remains held.
+        await fulfillment(of: [heldImage], timeout: 15)
         for _ in 0..<200 where !page.readyForPresentation { await delay(0.025) }
         XCTAssertTrue(page.readyForPresentation)
-        await fulfillment(of: [heldImage], timeout: 15)
         XCTAssertGreaterThan(resource.pendingCount, 0)
         XCTAssertTrue(fixture.pages.currentPage === page)
         XCTAssertEqual(fixture.pages.unreadyAtNavigation, [true])
