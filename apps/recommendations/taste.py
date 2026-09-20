@@ -46,7 +46,7 @@ def current_votes(user_id):
 
 
 def vote_fingerprint(votes):
-    return digest([(v.story_hash, v.value, v.updated_date) for v in votes])
+    return digest([2, [(v.story_hash, v.value, v.updated_date) for v in votes]])
 
 
 def profile_for(user_id):
@@ -139,8 +139,10 @@ def infer_rules(votes, existing):
         "dislike must not become a broad topic ban. Prefer narrow descriptions and preserve counterexamples. "
         "label is a short readable name, criterion is a neutral description of matching ARTICLE CONTENT "
         "(not an instruction to like/dislike it), direction is 1 for more or -1 for less. evidence contains "
-        "only supplied article ids, including relevant counterexamples. Do not invent evidence. Reuse ids "
-        "of existing interests when refining them; use an empty id for a new interest. Do not change or "
+        "only supplied article ids, including relevant counterexamples. Do not invent evidence. "
+        "The chosen direction must have at least one supporting rating in that direction; never infer More "
+        "from only Less ratings or vice versa. "
+        "Reuse ids of existing interests when refining them; use an empty id for a new interest. Do not change or "
         "recreate any manually edited or removed interest. Treat those as reader instructions. Return JSON."
     )
     messages = [
@@ -173,6 +175,7 @@ def infer_rules(votes, existing):
         if not isinstance(proposed, list):
             raise ValueError("Invalid interests")
         valid_ids = {v.story_hash for v in votes}
+        choices = {v.story_hash: v.value for v in votes}
         old_ids = {rule["id"] for rule in existing}
         protected = [dict(rule) for rule in existing if rule.get("manual")]
         protected_ids = {rule["id"] for rule in protected}
@@ -182,6 +185,8 @@ def infer_rules(votes, existing):
                 raise ValueError("Invalid interest")
             evidence_ids = list(dict.fromkeys(h for h in item["evidence"] if h in valid_ids))
             if not evidence_ids or item["direction"] not in (-1, 1) or item["kind"] not in KINDS:
+                continue
+            if not any(choices[h] == item["direction"] for h in evidence_ids):
                 continue
             if not str(item["label"]).strip() or not str(item["criterion"]).strip():
                 raise ValueError("Empty interest")
@@ -428,7 +433,7 @@ def rank_with_interests(user_id, stories, examples, votes):
     original = {h: i + 1 for i, h in enumerate(reading_only)}
     positions = {h: i + 1 for i, h in enumerate(ranked)}
     changed = sorted(
-        (h for h in ranked if positions[h] != original[h]), key=lambda h: -(original[h] - positions[h])
+        (h for h in ranked[:12] if positions[h] < original[h]), key=lambda h: -(original[h] - positions[h])
     )
     impact = dict(
         status=status,
@@ -447,7 +452,6 @@ def rank_with_interests(user_id, stories, examples, votes):
                 interests=[rule["label"] for rule in rules if matches.get(h, {}).get(rule["id"], 0) >= 0.6],
             )
             for h in changed[:4]
-            if positions[h] < original[h]
         ],
     )
     MDiscoveryTaste.objects(user_id=user_id, revision=profile.revision).update_one(set__impact=impact)

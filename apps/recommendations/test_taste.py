@@ -132,7 +132,7 @@ class Test_DiscoveryTaste(TestCase):
             [
                 dict(self.rule, label="Overwrite me"),
                 dict(self.rule, id="removed"),
-                dict(self.rule, id="new", evidence=["1:000003", "other:private"]),
+                dict(self.rule, id="new", direction=-1, evidence=["1:000003", "other:private"]),
             ]
         )
         rules = taste.infer_rules(self.votes, [edited, removed])
@@ -143,6 +143,8 @@ class Test_DiscoveryTaste(TestCase):
     @patch("apps.recommendations.taste.model_request")
     def test_inference_rejects_malformed_or_invented_evidence(self, request):
         request.return_value = self.model_response([dict(self.rule, evidence=["not-my-story"])])
+        self.assertEqual(taste.infer_rules(self.votes, []), [])
+        request.return_value = self.model_response([dict(self.rule, evidence=["1:000003"], direction=1)])
         self.assertEqual(taste.infer_rules(self.votes, []), [])
         for proposed in ["invalid", [dict(self.rule, criterion="")], [None]]:
             request.return_value = self.model_response(proposed)
@@ -280,6 +282,9 @@ class Test_DiscoveryTaste(TestCase):
         more = taste.rank_with_interests(self.user.pk, stories, [], self.votes)
         self.assertLess(more.index(baseline[13]), 12)
         self.assertEqual(taste.profile_for(self.user.pk).impact["changed_top12"], 1)
+        self.assertTrue(
+            all(story["after"] <= 12 for story in taste.profile_for(self.user.pk).impact["stories"])
+        )
         self.edit()
         less = taste.rank_with_interests(self.user.pk, stories, [], self.votes)
         self.assertGreater(less.index(baseline[13]), 13)
