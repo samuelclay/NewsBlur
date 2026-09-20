@@ -1095,7 +1095,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
         
         if ([appOpening isEqualToString:@"feeds"] && !self.isPhoneOrCompact) {
-            self.messageLabel.text = @"Select a feed to read";
+            self.messageLabel.text = @"Select a feed or folder";
             self.messageView.hidden = NO;
         }
     }

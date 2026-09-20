@@ -370,7 +370,7 @@ final class Test_FeedDetailEmptyState: XCTestCase {
             XCTAssertEqual(stories.numberOfSections(in: stories.storyTitlesTable), compact ? 1 : 0)
             XCTAssertEqual(stories.tableView(stories.storyTitlesTable, numberOfRowsInSection: 0), compact ? 1 : 0)
             if !compact {
-                XCTAssertEqual(stories.messageLabel.text, "Select a feed to read")
+                XCTAssertEqual(stories.messageLabel.text, "Select a feed or folder")
             }
             XCTAssertFalse(stories.pageFetching, "There is no selected feed or pending request in this state")
         }

@@ -383,7 +383,7 @@ import WebKit
         XCTAssertFalse(fixture.stories.inSearch, file: file, line: line)
         XCTAssertNil(fixture.stories.searchQuery, file: file, line: line)
         XCTAssertFalse(fixture.titles.messageView.isHidden, "The unselected title pane uses its normal empty state", file: file, line: line)
-        XCTAssertEqual(fixture.titles.messageLabel.text, "Select a feed to read", file: file, line: line)
+        XCTAssertEqual(fixture.titles.messageLabel.text, "Select a feed or folder", file: file, line: line)
         XCTAssertEqual(fixture.titles.storyTitlesTable.numberOfSections, 0, "Do not display the finished-feed mark-all footer without a selected feed", file: file, line: line)
         XCTAssertTrue((fixture.app.dictFeeds?.count ?? 0) == 0, "Old subscriptions must disappear while loading", file: file, line: line)
         XCTAssertNil(fixture.app.tryFeedFeedId, file: file, line: line)
