@@ -1038,6 +1038,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self.detailViewController updateDuoFullscreenSplitBehavior];
         return;
     }
+    if (self.detailViewController.preservesExpandedFeedsReveal) {
+        // NewsBlurAppDelegate.m refreshes source content without superseding the user's newer Feeds navigation.
+        if (refresh) [self.storyPagesViewController refreshPages];
+        return;
+    }
     if (self.detailViewController.isDiscoverSitesVisible && !self.detailViewController.isPhoneOrCompact) {
         self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
         self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
@@ -3166,7 +3171,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if (!strongSelf) return;
         [strongSelf.storyPagesViewController changePage:location animated:[params[@"animated"] boolValue]];
         [strongSelf.storyPagesViewController animateIntoPlace:YES];
-        [strongSelf showDetailViewController:strongSelf.detailViewController sender:strongSelf];
+        // NewsBlurAppDelegate.m keeps the loaded article behind an explicitly reopened Duo feed sidebar.
+        if (!strongSelf.detailViewController.preservesExpandedFeedsReveal) {
+            [strongSelf showDetailViewController:strongSelf.detailViewController sender:strongSelf];
+        }
         [strongSelf.detailViewController collapseFeedListIfNeededForStory];
     }];
 }
