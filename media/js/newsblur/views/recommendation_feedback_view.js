@@ -132,6 +132,7 @@ NEWSBLUR.Views.RecommendationFeedbackSummary = Backbone.View.extend({
         NEWSBLUR.assets.load_recommendation_feedback({ summary: 1 }, function (data) {
             if (self.removed || request_number !== self.request_number) return;
             self.render_summary(data.summary);
+            if (self.options.sidebar) NEWSBLUR.assets.ensure_discovery_taste(data.summary.more + ':' + data.summary.less);
         }, function () {
             if (!self.removed && request_number === self.request_number) {
                 self.$el.attr({ title: 'Preferences unavailable. Click to retry in history.',
@@ -152,6 +153,231 @@ NEWSBLUR.Views.RecommendationFeedbackSummary = Backbone.View.extend({
     }
 });
 
+NEWSBLUR.Views.DiscoveryTaste = Backbone.View.extend({
+    events: {
+        'click .NB-taste-refresh': 'learn',
+        'click .NB-taste-preview': 'preview',
+        'click .NB-taste-save': 'save',
+        'click .NB-taste-remove': 'remove_interest',
+        'click .NB-taste-restore': 'restore_interest',
+        'click .NB-taste-add': 'add',
+        'click .NB-taste-evidence-vote': 'vote',
+        'click .NB-taste-cancel': 'cancel_edit',
+        'input .NB-taste-form': 'mark_dirty',
+        'change .NB-taste-form': 'mark_dirty'
+    },
+
+    initialize: function () {
+        this.active = true;
+        this.listenTo(NEWSBLUR.assets, 'recommendation:taste', this.receive);
+        this.listenTo(NEWSBLUR.assets, 'recommendation:taste-learning', function () { this.status('Learning from your latest ratings…'); });
+        this.listenTo(NEWSBLUR.assets, 'recommendation:taste-error', function (message) { this.status(message); });
+    },
+
+    load: function () {
+        var self = this;
+        if (!this.profile) this.$el.text('Loading your interests…');
+        NEWSBLUR.assets.discovery_taste_request('taste_profile', {}, function (data) {
+            if (!self.active) return;
+            if (data.profile.stale && data.profile.can_learn && !data.profile.learning) self.learn();
+        });
+    },
+
+    receive: function (profile) {
+        if (!this.active) return;
+        // recommendation_feedback_view.js: Keep an unfinished form intact when background learning completes.
+        if (this.dirty && !this.busy) {
+            this.pending_profile = profile;
+            this.status('Your interests have updated. Save or cancel your edit to continue.');
+            return;
+        }
+        this.profile = profile;
+        this.render();
+    },
+
+    status: function (text) {
+        this.$('.NB-taste-status').text(text);
+    },
+
+    render: function () {
+        var self = this, profile = this.profile;
+        this.$el.empty();
+        this.$el.append($('<p class="NB-taste-summary">').text(profile.summary ||
+            'Rate a few stories and Discovery will start connecting the dots. You can also add an interest yourself.'));
+        this.$el.append($('<p class="NB-taste-context">').text(profile.rating_count + ' rated stories · ' +
+            'Inferred interests apply automatically. Editing one makes it yours to control.'));
+        var $actions = $('<div class="NB-taste-actions">').append(
+            $('<button type="button" class="NB-taste-refresh">').text('Update from ratings').prop('disabled', !profile.can_learn),
+            $('<button type="button" class="NB-taste-preview">').text('See what changes'));
+        this.$el.append($actions, $('<div class="NB-taste-status" role="status" aria-live="polite">'));
+        if (profile.learning) this.status('Learning from your latest ratings…');
+        else if (profile.stale && profile.can_learn) this.status('New ratings are ready to learn from.');
+        else if (NEWSBLUR.assets.discovery_taste_error) this.status(NEWSBLUR.assets.discovery_taste_error);
+        _.each(profile.rules, function (rule) { if (!rule.removed) self.$el.append(self.rule_row(rule)); });
+        this.$el.append($('<button type="button" class="NB-taste-add">').text('Add an interest'));
+        var removed = _.filter(profile.rules, function (rule) { return rule.removed; });
+        if (removed.length) {
+            var $removed = $('<details class="NB-taste-removed">').append($('<summary>').text('Removed interests (' + removed.length + ')'));
+            _.each(removed, function (rule) {
+                $removed.append($('<div class="NB-taste-removed-row">').attr('data-interest-id', rule.id)
+                    .append($('<span>').text(rule.label), $('<button type="button" class="NB-taste-restore">').text('Restore')));
+            });
+            this.$el.append($removed);
+        }
+        var impact = profile.impact;
+        if (impact && impact.candidate_count !== undefined) {
+            var $impact = $('<section class="NB-taste-impact">').append($('<h3>').text('What your feedback changes'));
+            $impact.append($('<p>').text(impact.changed_top12 + ' of ' + impact.pick_count + ' top picks changed compared with reading history alone.'));
+            $impact.append($('<p class="NB-taste-context">').text('Snapshot of ' + impact.candidate_count + ' candidates · ' +
+                (impact.status === 'interests' ? 'Interest matching applied to ' + impact.assessed_count + ' shortlisted stories.' :
+                    (impact.status === 'fallback' ? 'Interest matching is unavailable; story ratings and reading history are still active.' : 'Using story ratings and reading history.')) +
+                ' Checked ' + new Date(impact.updated_date).toLocaleString() + '.'));
+            _.each(impact.stories, function (story) {
+                $impact.append($('<div class="NB-taste-impact-story">').append(
+                    $('<span>').text(story.title), $('<strong>').text('#' + story.before + ' → #' + story.after)));
+                if (story.interests.length) $impact.append($('<p class="NB-taste-context">').text('Matches: ' + story.interests.join(', ')));
+            });
+            this.$el.append($impact);
+        }
+        this.$el.append($('<p class="NB-taste-context">').text('Changes affect your next Discovery refresh. They do not hide stories in your subscribed feeds or replace this week’s preview.'));
+        $.modal.resize();
+    },
+
+    select: function (name, value, choices) {
+        var $select = $('<select>').attr('name', name);
+        _.each(choices, function (choice) { $select.append($('<option>').attr('value', choice[0]).text(choice[1])); });
+        return $select.val(String(value));
+    },
+
+    rule_row: function (rule) {
+        var $row = $('<details class="NB-taste-rule">').attr('data-interest-id', rule.id);
+        var $summary = $('<summary>').append($('<span class="NB-taste-direction">').attr('data-direction', rule.direction)
+            .text(rule.direction === 1 ? 'More' : (rule.direction === -1 ? 'Less' : 'Paused')),
+            $('<span class="NB-taste-label">').text(rule.label || 'New interest'),
+            $('<span class="NB-taste-origin">').text((rule.manual ? 'Set by you' :
+                (rule.tentative ? 'Inferred · tentative' : 'Inferred')) + (rule.active === false ? ' · not applied' : '')));
+        $row.append($summary, $('<p class="NB-taste-rule-description">').text(rule.criterion));
+        var $form = $('<div class="NB-taste-form">').append(
+            $('<label>').text('Interest').append($('<input name="label" maxlength="100">').val(rule.label)),
+            $('<label>').text('What should match').append($('<textarea name="criterion" maxlength="500" rows="2">').val(rule.criterion)),
+            $('<div class="NB-taste-fields">').append(
+                $('<label>').text('Type').append(this.select('kind', rule.kind, [['topic','Topic'],['angle','Angle'],['format','Format']])),
+                $('<label>').text('Preference').append(this.select('direction', rule.direction, [[1,'More like this'],[-1,'Less like this'],[0,'Pause']])),
+                $('<label>').text('Strength').append(this.select('strength', rule.strength, [[1,'Normal'],[2,'Stronger'],[3,'Strongest']]))),
+            $('<div class="NB-taste-actions">').append($('<button type="button" class="NB-taste-save">').text('Save interest'),
+                $('<button type="button" class="NB-taste-cancel">').text('Cancel edit'),
+                $('<button type="button" class="NB-taste-remove">').text('Remove')));
+        $row.append($form);
+        if (rule.stories && rule.stories.length) {
+            $row.append($('<h4>').text('Based on ' + rule.more + ' More and ' + rule.less + ' Less ratings'));
+            _.each(rule.stories, function (story) {
+                var $evidence = $('<div class="NB-taste-evidence">').attr('data-story-hash', story.story_hash)
+                    .append($('<span>').text(story.title));
+                var $votes = $('<div class="NB-taste-actions">');
+                _.each([[1,'More'],[-1,'Less'],[0,'Clear']], function (choice) {
+                    $votes.append($('<button type="button" class="NB-taste-evidence-vote">').attr('data-value', choice[0])
+                        .attr('aria-pressed', story.value === choice[0] ? 'true' : 'false').prop('disabled', story.value === choice[0]).text(choice[1]));
+                });
+                $row.append($evidence.append($votes));
+            });
+        } else {
+            $row.append($('<p class="NB-taste-context">').text(rule.manual ? 'An interest you set directly.' : 'No current ratings support this interest.'));
+        }
+        return $row;
+    },
+
+    learn: function () {
+        if (this.busy) return;
+        if (this.dirty) { this.status('Save or cancel your edit before updating interests.'); return; }
+        this.request('learn_taste', {}, 'Learning from your ratings…');
+    },
+
+    preview: function () {
+        if (this.busy) return;
+        if (this.dirty) { this.status('Save or cancel your edit before comparing recommendations.'); return; }
+        this.request('preview_taste', {}, 'Comparing recommendations with and without your feedback…');
+    },
+
+    request: function (action, params, message) {
+        var self = this;
+        this.busy = true;
+        this.$('button').prop('disabled', true);
+        this.status(message);
+        NEWSBLUR.assets.discovery_taste_request(action, params, function (data) {
+            if (!self.active) return;
+            self.busy = false;
+            self.dirty = false;
+            self.pending_profile = null;
+            self.profile = data.profile;
+            self.render();
+            self.status(data.profile.learning ? 'Learning from your ratings…' :
+                (action === 'edit_taste' ? 'Saved. This will shape your next Discovery refresh.' : 'Up to date.'));
+        }, function () {
+            if (!self.active) return;
+            self.busy = false;
+            self.$('button').prop('disabled', false);
+        });
+    },
+
+    save: function (e) {
+        if (this.busy) return;
+        var $row = $(e.currentTarget).closest('.NB-taste-rule');
+        var params = { revision: this.profile.revision, id: $row.attr('data-interest-id'), action: $row.attr('data-new') ? 'add' : 'save' };
+        _.each(['label','criterion','kind','direction','strength'], function (name) { params[name] = $row.find('[name="' + name + '"]').val(); });
+        $(e.currentTarget).blur();
+        this.request('edit_taste', params, 'Saving your interest…');
+    },
+
+    remove_interest: function (e) {
+        if (this.busy) return;
+        var $row = $(e.currentTarget).closest('.NB-taste-rule');
+        if ($row.attr('data-new')) { this.cancel_edit(); return; }
+        this.request('edit_taste', { revision: this.profile.revision, id: $row.attr('data-interest-id'), action: 'remove' }, 'Removing interest…');
+    },
+
+    restore_interest: function (e) {
+        if (this.busy) return;
+        this.request('edit_taste', { revision: this.profile.revision, id: $(e.currentTarget).closest('[data-interest-id]').attr('data-interest-id'), action: 'restore' }, 'Restoring interest…');
+    },
+
+    add: function () {
+        if (this.$('[data-new]').length) return;
+        var $row = this.rule_row({ id:'', label:'', criterion:'', kind:'topic', direction:1, strength:1, manual:true });
+        $row.attr('data-new', 'true').prop('open', true);
+        this.$('.NB-taste-add').before($row);
+        this.dirty = true;
+        $row.find('input').focus();
+        $.modal.resize();
+    },
+
+    mark_dirty: function () { this.dirty = true; },
+
+    cancel_edit: function () {
+        this.dirty = false;
+        this.receive(this.pending_profile || this.profile);
+        this.pending_profile = null;
+    },
+
+    vote: function (e) {
+        if (this.busy) return;
+        var self = this, $button = $(e.currentTarget);
+        this.busy = true;
+        this.status('Updating story rating…');
+        NEWSBLUR.assets.save_recommendation_feedback($button.closest('[data-story-hash]').attr('data-story-hash'), Number($button.attr('data-value')), function () {
+            self.busy = false;
+            if (self.active) self.load();
+        }, function () {
+            self.busy = false;
+            if (self.active) self.status('Couldn’t save the rating. Please try again.');
+        });
+    },
+
+    remove: function () {
+        this.active = false;
+        return Backbone.View.prototype.remove.call(this);
+    }
+});
+
 NEWSBLUR.Views.RecommendationFeedbackHistory = Backbone.View.extend({
     className: 'NB-modal NB-feedback-history',
     attributes: { role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'NB-feedback-history-title' },
@@ -166,21 +392,24 @@ NEWSBLUR.Views.RecommendationFeedbackHistory = Backbone.View.extend({
     },
 
     initialize: function () {
-        this.choice = 1;
+        this.choice = 0;
         this.request_number = 0;
         this.active = true;
         this.$el.html('<h2 class="NB-modal-title" id="NB-feedback-history-title">Your Discovery preferences</h2>' +
-            '<p class="NB-feedback-history-intro">The stories shaping your recommendations. Change or clear a choice at any time.</p>' +
+            '<p class="NB-feedback-history-intro">What Discovery is learning, and the stories behind it. Your edits always take precedence.</p>' +
             '<div class="NB-feedback-tabs" role="group" aria-label="Preference lists">' +
-            '<button type="button" class="NB-feedback-tab" data-value="1" aria-pressed="true">More like this <b>0</b></button>' +
+            '<button type="button" class="NB-feedback-tab" data-value="0" aria-pressed="true">Your interests</button>' +
+            '<button type="button" class="NB-feedback-tab" data-value="1" aria-pressed="false">More like this <b>0</b></button>' +
             '<button type="button" class="NB-feedback-tab" data-value="-1" aria-pressed="false">Less like this <b>0</b></button></div>' +
             '<div class="NB-feedback-history-chart"></div>' +
             '<div class="NB-feedback-chart-caption"><span>Current choices by last update · 30 days (UTC)</span><span class="NB-feedback-chart-dates"></span></div>' +
             '<div class="NB-feedback-history-status" role="status" aria-live="polite"></div>' +
+            '<div class="NB-discovery-taste"></div>' +
             '<div class="NB-feedback-history-stories"></div>' +
             '<button type="button" class="NB-feedback-load-more" hidden>Show more stories</button>' +
             '<button type="button" class="NB-feedback-history-retry" hidden>Couldn’t load preferences · Retry</button>' +
             '<div class="NB-modal-submit"><button type="button" class="NB-modal-submit-button NB-modal-submit-green NB-feedback-history-close">Done</button></div>');
+        this.taste_view = new NEWSBLUR.Views.DiscoveryTaste({ el: this.$('.NB-discovery-taste') });
     },
 
     open: function () {
@@ -191,6 +420,7 @@ NEWSBLUR.Views.RecommendationFeedbackHistory = Backbone.View.extend({
             overlayClose: true,
             onClose: function () {
                 self.active = false;
+                self.taste_view.remove();
                 self.remove();
                 $.modal.close();
                 if (self.options.anchor && document.contains(self.options.anchor)) self.options.anchor.focus();
@@ -214,11 +444,26 @@ NEWSBLUR.Views.RecommendationFeedbackHistory = Backbone.View.extend({
         this.$('.NB-feedback-tab').attr('aria-pressed', 'false');
         $(e.currentTarget).attr('aria-pressed', 'true');
         this.$('.NB-feedback-history-status').text('');
+        this.$('.NB-discovery-taste').prop('hidden', this.choice !== 0);
+        this.$('.NB-feedback-history-stories').prop('hidden', this.choice === 0);
         this.load(false);
     },
 
     load: function (append) {
         var self = this, request_number = ++this.request_number;
+        if (this.choice === 0) {
+            this.loading = false;
+            this.$('.NB-feedback-history-stories, .NB-feedback-load-more, .NB-feedback-history-retry').prop('hidden', true);
+            NEWSBLUR.assets.load_recommendation_feedback({ summary: 1 }, function (data) {
+                if (!self.active || request_number !== self.request_number) return;
+                self.$('.NB-feedback-tab[data-value="1"] b').text(data.summary.more);
+                self.$('.NB-feedback-tab[data-value="-1"] b').text(data.summary.less);
+                self.$('.NB-feedback-history-chart').empty().append(NEWSBLUR.recommendation_feedback_chart(data.summary.days, 600, 78));
+                self.$('.NB-feedback-chart-dates').text(data.summary.days[0].date.slice(5) + ' – ' + data.summary.days[29].date.slice(5));
+            }, function () {});
+            this.taste_view.load();
+            return;
+        }
         this.loading = true;
         this.retry_append = append;
         this.$('.NB-feedback-history-stories').attr('aria-busy', 'true');

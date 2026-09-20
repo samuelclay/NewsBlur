@@ -99,8 +99,13 @@ A stream-header sparkline opens a dialog with More/Less lists, all-time active
 counts, and a 30-day UTC chart grouped by the last change to each active choice.
 Readers can switch or clear any choice, including for stories that have expired.
 Cleared choices do not contribute to the counts, chart, or recommendation ranker.
-Use that feedback to evaluate later semantic features or a learned ranker.
-The initial web path makes no Jev calls and needs no OpenRouter credential.
+The initial web path made no Jev calls. The follow-up adds an editable interest
+overview: Haiku organizes explicit feedback into content descriptions, and Jev
+matches shortlisted candidates against them. Readers can inspect the evidence,
+edit or remove every interest, and compare the resulting ranking with reading
+history alone. See [implementation details](README.md#editable-interests).
+This is a distinct use of Jev from the original personal-interest prediction
+experiment; its recommendation quality still needs independent evaluation.
 
 Important limits remain: the candidate pool inherits the coverage of the
 existing trending lists, so small feeds and image-led posts may be missed;
@@ -111,5 +116,6 @@ validation has been completed.
 
 Private experiment artifacts and the cost ledger remain under
 the gitignored `.jev-discover/` directory in this worktree. The helper reads its key from
-`/srv/secrets-newsblur/keys/openrouter-jev.env`. No additional model calls were
-made while preparing this PR.
+`/srv/secrets-newsblur/keys/openrouter-jev.env`. The working interest overview
+uses a separate atomic MongoDB reservation ledger capped at $9.85, keeping its
+calls plus the earlier $0.107517 experiment within the authorized $10.

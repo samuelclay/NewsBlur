@@ -59,6 +59,57 @@ function history_setup() {
     return { view, requests, writes };
 }
 
+test('interest requests include CSRF and ignore responses after switching accounts', () => {
+    const { NEWSBLUR, model, requests, events } = asset_setup();
+    model.discovery_taste_request('edit_taste', { revision: 3 }, () => assert.fail('Cross-account response'));
+    assert.equal(requests[0].data.csrfmiddlewaretoken, 'csrf-token');
+    assert.equal(requests[0].options.request_type, 'POST');
+    NEWSBLUR.Globals.user_id = 2;
+    requests[0].callback({ profile: { revision: 4 } });
+    requests[0].error({ message: 'Another account’s error' });
+    assert.equal(model.discovery_taste, undefined);
+    assert.deepEqual(events, []);
+});
+
+test('an older profile response cannot overwrite a saved interest', () => {
+    const { model, requests } = asset_setup();
+    model.discovery_taste_request('taste_profile', {});
+    model.discovery_taste = { revision: 5, rules: ['manual edit'] };
+    requests[0].callback({ profile: { revision: 4, rules: [] } });
+    assert.deepEqual(model.discovery_taste.rules, ['manual edit']);
+});
+
+test('background inference is deduplicated and only runs for changed, sufficient ratings', () => {
+    const { model, requests } = asset_setup();
+    model.ensure_discovery_taste('8:9');
+    model.ensure_discovery_taste('8:9');
+    assert.equal(requests.length, 1);
+    requests[0].callback({ profile: { revision: 0, stale: true, can_learn: true } });
+    assert.equal(requests[1].url, '/recommendations/learn_taste');
+    requests[1].callback({ profile: { revision: 1, stale: false } });
+    model.ensure_discovery_taste('8:9');
+    assert.equal(requests.length, 2);
+    model.ensure_discovery_taste('9:9');
+    requests[2].callback({ profile: { revision: 1, stale: false, can_learn: true } });
+    assert.equal(requests.length, 3);
+    assert.equal(model.discovery_taste_pending, false);
+});
+
+test('background learning keeps dirty forms intact until the reader cancels', () => {
+    const NEWSBLUR = { Views: {} };
+    const context = vm.createContext({ NEWSBLUR, _: underscore, Backbone: { View: { extend: methods => methods } } });
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/recommendation_feedback_view.js'), 'utf8'), context);
+    const view = Object.create(NEWSBLUR.Views.DiscoveryTaste);
+    let rendered = 0;
+    Object.assign(view, { active: true, dirty: true, profile: { revision: 1 }, status() {}, render() { rendered++; } });
+    view.receive({ revision: 2 });
+    assert.equal(rendered, 0);
+    assert.equal(view.profile.revision, 1);
+    view.cancel_edit();
+    assert.equal(view.profile.revision, 2);
+    assert.equal(rendered, 1);
+});
+
 test('switching More to Less ignores the old list response and its error', () => {
     const { view, requests, writes } = history_setup();
     view.load(false);

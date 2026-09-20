@@ -11,11 +11,11 @@ expands to fill the button pair, with a brief star flourish that respects reduce
 motion. Click the confirmation to edit, then the selected choice again to clear
 it. Failed requests keep the confirmed preference and offer Retry.
 
-Discovery's sidebar count area and stream header show green/red number badges
+Discovery's sidebar count area and stream header show the standard red/green count badges
 and a two-sided sparkline. At 0:0, a muted constellation replaces the counts.
 The compact chart starts just before its first recent choice so a few votes
 remain legible; the history dialog keeps the full 30-day window. Clicking either opens a
-dialog with paginated lists of current choices, controls to switch or clear each
+dialog with an editable interest overview, paginated lists of current choices, controls to switch or clear each
 one, and a 30-day UTC timeline grouped by each choice's last update. Counts cover
 all active choices, including older ones. Cleared choices disappear from the
 lists, counts, and chart. Saved article snapshots remain editable after RSS
@@ -41,11 +41,11 @@ opens the upgrade dialog with personalized Discovery highlighted in Archive.
 
 ## Ranking and data
 
-`discovery.py` implements a bounded text-similarity baseline, with no external
-model calls. The earlier offline Jev experiment remains separate from this
-reader implementation; see [Jev findings](JEV_FINDINGS.md) for measured costs,
-ranking results, and limitations. This baseline is experimental, not a validated
-measure of recommendation quality.
+`discovery.py` implements a bounded text-similarity baseline. `taste.py` adds
+editable interests and Jev matching to a shortlist. The earlier offline
+experiment remains separate; see [Jev findings](JEV_FINDINGS.md) for measured
+costs, ranking results, and limitations. Neither implementation establishes
+recommendation quality without evaluation on independent reading outcomes.
 
 - Candidates come from up to 120 stories each in Good Reads, Long Reads, and
   Widely Read. Discovery excludes followed feeds and matching feed aliases,
@@ -73,8 +73,47 @@ measure of recommendation quality.
 in MongoDB, along with timestamps, surface, and durable article context. Repeated
 votes replace that preference. Account deletion removes its feedback. No SQL
 migration is introduced. Feedback is not an exposure log or an immutable event
-history; those evaluation capabilities and a live Jev ranker are outside this
-initial implementation. Automatic Focus skipping is also outside this change.
+history; those evaluation capabilities are outside this implementation.
+Automatic Focus skipping is also outside this change.
+
+## Editable interests
+
+The preference dialog opens on **Your interests**. After three explicit ratings,
+`anthropic/claude-haiku-4.5` organizes up to 80 recent ratings into at most eight
+topic, angle, or format descriptions, with references to supporting and
+contradicting stories. Inferences apply automatically and are labeled as such;
+sparse or mixed evidence is marked tentative. The summary is derived from the
+active descriptions so edits cannot leave a stale generated narrative.
+
+Readers can edit the label and matching description, switch More/Less, pause,
+adjust strength, add an interest, remove it, or restore it. Manual preferences
+and removed interests survive regeneration. Revision checks prevent a delayed
+generation or another browser from overwriting edits. Clearing or reversing all
+supporting ratings immediately withdraws an inferred interest's influence.
+
+On a fresh Discovery load, `typesafe/jev-1.13` classifies the first 36 baseline
+candidates against active descriptions through OpenRouter Decisions. Typed
+match values adjust the baseline's rank position; a manual interest receives
+twice the weight of an inferred one, multiplied by the chosen strength (1–3).
+Source diversity is reapplied. Direction and strength changes reuse cached
+matches; changed text or criteria require new matches. Cache entries are owned
+by the reader and expire after 24 hours. These values measure content matches,
+not certainty about what a person will enjoy.
+
+**See what changes** compares the same eligible unread candidates against
+reading history alone, showing top-pick replacements and promoted examples.
+It changes neither read state nor the fixed weekly preview. The comparison is
+timestamped and discarded after edits or rating changes. Subscribed feeds and
+their intelligence classifiers remain independent.
+
+Model failures preserve the baseline and are labeled in the comparison. Failed
+learning preserves saved interests, with a 60-second retry cooldown. OpenRouter
+calls use price ceilings and an atomic MongoDB budget reservation before every
+request. The `taste-v1` ledger defaults to a **$9.85 lifetime cap**, reserving
+space for the earlier $0.107517 experiment within the authorized $10 total.
+Known billed costs release unused reservations; uncertain charges retain them.
+`DISCOVERY_MODEL_BUDGET_USD` can explicitly configure a different deployment
+budget. This is a bounded staging experiment, not a production spending policy.
 
 ## API
 
@@ -95,6 +134,15 @@ initial implementation. Automatic Focus skipping is also outside this change.
   for either list and `next_cursor` as `cursor` for the next 20 results. Cursors
   are signed, expire after one hour, and are scoped to both account and choice.
   `summary=1` returns only counts and timeline for the stream header.
+- `GET /recommendations/taste_profile` returns the authenticated reader's
+  interests, evidence, revision, learning state, and latest ranking comparison.
+- `POST /recommendations/learn_taste` learns only when ratings changed and at
+  least three are available. A per-reader lease avoids duplicate generation.
+- `POST /recommendations/edit_taste` accepts `revision`, `action`
+  (`add`, `save`, `remove`, `restore`), and an interest `id`. Add/save also take
+  `label`, `criterion`, `kind`, `direction` (-1/0/1), and `strength` (1–3).
+- `POST /recommendations/preview_taste` computes the ranking comparison without
+  consuming a preview or creating a reading snapshot. All mutations require CSRF.
 
 ## Development
 
@@ -110,7 +158,8 @@ The optional offline experiment helper reads its OpenRouter key from
 inputs, responses, and the existing $10 budget ledger live under
 the gitignored `.jev-discover/` directory in this worktree (mode `0700`). The key
 is also configured in the private secrets repo's `settings/common_settings.py`
-for the staging secrets sync. The Discovery web path does not need that key.
+for the staging secrets sync. Interest generation and matching use
+`settings.OPENROUTER_API_KEY`; the baseline remains available without it.
 Staging deployment evidence and the exact deployed commit are recorded in PR #2140.
 
 Focused checks:

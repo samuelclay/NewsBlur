@@ -224,6 +224,7 @@
 .NB-feedback-tabs { display: flex; gap: 12px; }
 .NB-feedback-tab { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border: 1px solid var(--feedback-border); border-radius: 8px; background: transparent; color: var(--feedback-text); }
 .NB-feedback-tab b { font-size: 22px; font-weight: 600; }
+.NB-feedback-tab[data-value="0"][aria-pressed="true"] { background: var(--feedback-selected); border-color: var(--feedback-accent); color: var(--feedback-accent); }
 .NB-feedback-tab[data-value="1"] { color: var(--feedback-accent); }
 .NB-feedback-tab[data-value="-1"] { color: var(--feedback-less); }
 .NB-feedback-tab[data-value="1"][aria-pressed="true"] { background: var(--feedback-selected); border-color: var(--feedback-accent); }
@@ -248,6 +249,45 @@
 .NB-feedback-history-empty { padding: 20px 0; line-height: 1.6; }
 .NB-feedback-history .NB-modal-submit { margin: 20px 0 0; padding: 0; }
 .NB-feedback-history [hidden], .NB-recommendation-feedback [hidden] { display: none; }
+
+/* recommendation_feedback.css: Interests share the history dialog's palette in every reader theme. */
+.NB-discovery-taste { max-height: min(520px, 53vh); overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 4px 0; }
+.NB-taste-summary { font-size: 16px; line-height: 1.65; margin: 4px 0 12px; }
+.NB-taste-context { font-size: 11px; line-height: 1.6; opacity: .78; margin: 8px 0 12px; }
+.NB-taste-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
+.NB-discovery-taste button { padding: 6px 10px; border: 1px solid var(--feedback-border); border-radius: 5px; background: transparent; color: inherit; }
+.NB-discovery-taste button:hover { background: var(--feedback-selected); }
+.NB-discovery-taste button:disabled { opacity: .5; }
+.NB-taste-status { min-height: 20px; font-size: 12px; line-height: 1.5; margin: 4px 0 12px; color: var(--feedback-accent); }
+.NB-taste-rule { border: 1px solid var(--feedback-border); border-radius: 8px; margin: 10px 0; padding: 0 14px; background: var(--feedback-background); }
+.NB-taste-rule > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 0; cursor: pointer; list-style: none; }
+.NB-taste-rule > summary::after { content: '+'; margin-left: auto; font-size: 17px; }
+.NB-taste-rule[open] > summary::after { content: '−'; }
+.NB-taste-direction { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 3px 6px; border-radius: 4px; background: var(--feedback-selected); color: var(--feedback-accent); }
+.NB-taste-direction[data-direction="-1"] { background: var(--feedback-less-selected); color: var(--feedback-less); }
+.NB-taste-direction[data-direction="0"] { color: var(--feedback-text); background: transparent; border: 1px solid var(--feedback-border); }
+.NB-taste-label { font-size: 14px; font-weight: 600; }
+.NB-taste-origin { font-size: 10px; opacity: .7; }
+.NB-taste-rule-description { line-height: 1.6; margin: 0 0 14px; }
+.NB-taste-form { border-top: 1px solid var(--feedback-border); padding-top: 12px; }
+.NB-taste-form label { display: block; font-size: 11px; font-weight: 600; margin: 0 0 10px; }
+.NB-taste-form input, .NB-taste-form textarea, .NB-taste-form select { display: block; box-sizing: border-box; width: 100%; margin-top: 5px; padding: 7px; border: 1px solid var(--feedback-border); border-radius: 4px; background: var(--feedback-background); color: var(--feedback-text); font: inherit; font-size: 12px; }
+.NB-taste-form textarea { resize: vertical; min-height: 60px; }
+.NB-taste-fields { display: flex; flex-wrap: wrap; gap: 12px; }
+.NB-taste-fields label { flex: 1; min-width: 110px; }
+.NB-taste-actions .NB-taste-save { background: var(--feedback-selected); color: var(--feedback-accent); }
+.NB-taste-actions .NB-taste-remove { margin-left: auto; border-color: transparent; }
+.NB-taste-rule h4 { margin: 18px 0 8px; font-size: 11px; font-weight: 600; }
+.NB-taste-evidence { border-top: 1px solid var(--feedback-border); padding: 10px 0 2px; line-height: 1.5; }
+.NB-taste-evidence-vote[data-value="1"][aria-pressed="true"] { color: var(--feedback-accent); background: var(--feedback-selected); opacity: 1; }
+.NB-taste-evidence-vote[data-value="-1"][aria-pressed="true"] { color: var(--feedback-less); background: var(--feedback-less-selected); opacity: 1; }
+.NB-taste-removed { margin: 18px 0; }
+.NB-taste-removed summary { cursor: pointer; }
+.NB-taste-removed-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.NB-taste-impact { margin-top: 20px; padding: 16px; border-radius: 8px; border: 1px solid var(--feedback-border); }
+.NB-taste-impact h3 { font-size: 15px; margin: 0 0 10px; }
+.NB-taste-impact-story { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--feedback-border); padding-top: 10px; margin-top: 10px; line-height: 1.5; }
+.NB-taste-impact-story strong { white-space: nowrap; color: var(--feedback-accent); }
 
 @media (prefers-reduced-motion: reduce) {
     .NB-recommendation-feedback-vote { transition: none; }

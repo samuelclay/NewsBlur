@@ -209,21 +209,25 @@ class Discovery:
             score = similarity + 0.02 / (1 + index / 12.0)
             scored.append((score, index, story))
         scored.sort(key=lambda entry: (-entry[0], entry[1]))
+        return cls.diversify([entry[2] for entry in scored])
+
+    @staticmethod
+    def diversify(stories):
         # discovery.py: Interleave sources so one prolific site cannot fill the stream.
         result = []
-        while scored:
+        while stories:
             counts_by_feed = Counter()
             deferred = []
-            for entry in scored:
-                feed_id = entry[2].story_feed_id
+            for story in stories:
+                feed_id = story.story_feed_id
                 if counts_by_feed[feed_id] >= 2:
-                    deferred.append(entry)
+                    deferred.append(story)
                     continue
-                result.append(entry[2].story_hash)
+                result.append(story.story_hash)
                 counts_by_feed[feed_id] += 1
                 if sum(counts_by_feed.values()) == 12:
                     counts_by_feed.clear()
-            scored = deferred
+            stories = deferred
         return result
 
     @classmethod
@@ -274,23 +278,29 @@ class Discovery:
         )
 
     @classmethod
+    def unread_stories(cls, user_id, stories):
+        reader = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        pipe = reader.pipeline()
+        for story in stories:
+            pipe.sismember("RS:%s" % user_id, story.story_hash)
+        return [story for story, is_read in zip(stories, pipe.execute()) if not is_read]
+
+    @classmethod
     def page(cls, user_id, page=1, limit=12, read_filter="unread", snapshot=None, cursor=None):
         followed = None
         if page == 1:
             followed = cls.followed_feeds(user_id)
             stories = cls.eligible_stories(user_id, cls.candidate_hashes(), followed=followed)
             if read_filter == "unread":
-                reader = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-                pipe = reader.pipeline()
-                for story in stories:
-                    pipe.sismember("RS:%s" % user_id, story.story_hash)
-                stories = [s for s, is_read in zip(stories, pipe.execute()) if not is_read]
+                stories = cls.unread_stories(user_id, stories)
             votes = list(
                 MRecommendationFeedback.objects(user_id=user_id, value__ne=0)
                 .order_by("-updated_date")
                 .limit(200)
             )
-            hashes = cls.rank(stories, cls.reading_examples(user_id), votes)
+            from apps.recommendations.taste import rank_with_interests
+
+            hashes = rank_with_interests(user_id, stories, cls.reading_examples(user_id), votes)
             snapshot = uuid.uuid4().hex
             cache.set("discovery:snapshot:%s:%s" % (user_id, snapshot), hashes, cls.SNAPSHOT_TTL)
         else:

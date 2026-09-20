@@ -1610,6 +1610,52 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, { request_type: 'GET', retry: false });
     },
 
+    discovery_taste_request: function (action, params, callback, error_callback) {
+        var self = this, user_id = NEWSBLUR.Globals.user_id;
+        params = _.extend({}, params);
+        if (action !== 'taste_profile') params.csrfmiddlewaretoken = $.cookie('csrftoken');
+        this.make_request('/recommendations/' + action, params, function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            if (self.discovery_taste && self.discovery_taste.revision > data.profile.revision) {
+                data.profile = self.discovery_taste;
+            }
+            self.discovery_taste = data.profile;
+            self.discovery_taste_error = null;
+            self.trigger('recommendation:taste', data.profile);
+            if (callback) callback(data);
+        }, function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            self.discovery_taste_error = data && data.message || 'Couldn’t update your interests. Please try again.';
+            self.trigger('recommendation:taste-error', self.discovery_taste_error);
+            if (error_callback) error_callback(data);
+        }, { request_type: action === 'taste_profile' ? 'GET' : 'POST', retry: false });
+    },
+
+    ensure_discovery_taste: function (signature) {
+        var self = this, user_id = NEWSBLUR.Globals.user_id;
+        if (this.discovery_taste_user !== user_id) {
+            this.discovery_taste_user = user_id;
+            this.discovery_taste = null;
+            this.discovery_taste_error = null;
+            this.discovery_taste_pending = false;
+            this.discovery_taste_checked = 0;
+        }
+        if (this.discovery_taste_pending || (this.discovery_taste_signature === signature &&
+            Date.now() - this.discovery_taste_checked < 30000)) return;
+        this.discovery_taste_signature = signature;
+        this.discovery_taste_checked = Date.now();
+        this.discovery_taste_pending = true;
+        var done = function () { if (NEWSBLUR.Globals.user_id === user_id) self.discovery_taste_pending = false; };
+        this.discovery_taste_request('taste_profile', {}, function (data) {
+            if (data.profile.stale && data.profile.can_learn && !data.profile.learning) {
+                self.trigger('recommendation:taste-learning');
+                self.discovery_taste_request('learn_taste', {}, done, done);
+            } else {
+                done();
+            }
+        }, done);
+    },
+
     save_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);

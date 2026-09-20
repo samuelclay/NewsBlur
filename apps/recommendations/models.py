@@ -98,10 +98,30 @@ class MDiscoveryPreview(mongo.Document):
     }
 
 
+class MDiscoveryTaste(mongo.Document):
+    user_id = mongo.IntField(required=True, unique=True)
+    revision = mongo.IntField(default=0)
+    fingerprint = mongo.StringField(default="")
+    rules = mongo.ListField(mongo.DictField())
+    updated_date = mongo.DateTimeField()
+    refresh_token = mongo.StringField(default="")
+    refresh_until = mongo.DateTimeField(default=datetime.datetime.min)
+    impact = mongo.DictField()
+    meta = {"collection": "discovery_taste", "allow_inheritance": False}
+
+
+class MDiscoveryModelBudget(mongo.Document):
+    name = mongo.StringField(primary_key=True)
+    committed = mongo.FloatField(default=0)
+    calls = mongo.IntField(default=0)
+    meta = {"collection": "discovery_model_budget", "allow_inheritance": False}
+
+
 @receiver(post_delete, sender=User)
 def delete_recommendation_feedback(sender, instance, **kwargs):
     MRecommendationFeedback.objects(user_id=instance.pk).delete()
     MDiscoveryPreview.objects(user_id=instance.pk).delete()
+    MDiscoveryTaste.objects(user_id=instance.pk).delete()
 
 
 class RecommendedFeed(models.Model):
