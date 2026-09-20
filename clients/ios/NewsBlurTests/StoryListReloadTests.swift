@@ -355,3 +355,184 @@ import XCTest
         super.reloadRows(at: indexPaths, with: animation)
     }
 }
+
+@MainActor final class Test_TrainerContext: XCTestCase {
+    func test_storyTrainerRetainsArticleAAfterBrowsingFeedB() throws {
+        try withRetainedArticleAndBrowsedFeed { trainer, listCache, collection in
+            trainer.isStoryTrainer = true
+            trainer.isFeedLoaded = true
+
+            for _ in 0..<2 {
+                trainer.reload()
+
+                XCTAssertEqual(trainer.storyCache.selected?.hash, "930001:article-a")
+                XCTAssertEqual(trainer.storyCache.selected?.author, "Author Alpha")
+                XCTAssertEqual(trainer.trainerView.titleWords, ["Retained", "Article", "Alpha"])
+                XCTAssertEqual(trainer.trainerView.authors.map(\.name), ["Author Alpha"],
+                               "The retained article must still offer its author when the browsed feed owns the current classifier response")
+                XCTAssertEqual(trainer.trainerView.authors.first?.score, .like,
+                               "Browsing another feed must not erase the retained article's existing classifier score")
+                XCTAssertEqual(trainer.trainerView.titles.map(\.name), ["Retained"])
+                XCTAssertEqual(trainer.trainerView.titles.first?.score, .dislike)
+                XCTAssertEqual(trainer.trainerView.feed?.id, "930001",
+                               "TrainerView passes this feed identifier to every new classifier action")
+                XCTAssertEqual(trainer.storyCache.currentFeed?.id, "930001")
+                XCTAssertFalse(trainer.storyCache === listCache,
+                               "Training the retained article must not replace the browsed story-list context")
+                XCTAssertEqual(listCache.currentFeed?.id, "930002")
+                XCTAssertNil(listCache.selected)
+                XCTAssertEqual(listCache.all.map(\.hash), ["930002:article-b"])
+                XCTAssertEqual(collection.activeFeed?["id"] as? Int, 930002)
+                XCTAssertEqual((collection.activeClassifiers["930002"] as? NSDictionary)?["authors"] as? [String: Int],
+                               ["Author Beta": 0], "Restoring A's scores must not replace B's classifiers")
+                XCTAssertEqual((collection.activePopularAuthors.first as? [Any])?.first as? String, "Author Beta")
+            }
+        }
+    }
+
+    func test_retainedStoryTrainerReloadUsesUpdatedScoresAndLeavesBrowsedFeedUntouched() throws {
+        try withRetainedArticleAndBrowsedFeed { trainer, listCache, collection in
+            trainer.isStoryTrainer = true
+            trainer.reload()
+
+            // StoryListReloadTests.swift mirrors the local classifier update without submitting a rule to the account.
+            collection.activeClassifiers["930001"] = ["authors": ["Author Alpha": -1], "titles": ["Retained": 1]]
+            trainer.reload()
+
+            XCTAssertEqual(trainer.trainerView.authors.first?.score, .dislike)
+            XCTAssertEqual(trainer.trainerView.titles.first?.score, .like)
+            XCTAssertEqual(trainer.trainerView.feed?.id, "930001")
+            XCTAssertEqual(listCache.currentFeed?.id, "930002")
+            XCTAssertEqual((collection.activeClassifiers["930002"] as? NSDictionary)?["authors"] as? [String: Int],
+                           ["Author Beta": 0])
+        }
+    }
+
+    func test_retainedStoryTrainerDoesNotReuseScoresAfterAccountReset() throws {
+        try withRetainedArticleAndBrowsedFeed { trainer, _, collection in
+            trainer.isStoryTrainer = true
+            trainer.reload()
+            XCTAssertEqual(trainer.trainerView.authors.first?.score, .like)
+
+            trainer.resetForAccountChange()
+            XCTAssertNil(trainer.storyCache.selected)
+            collection.activeClassifiers.removeObject(forKey: "930001")
+            trainer.reload()
+
+            XCTAssertNil(collection.activeClassifiers["930001"],
+                         "A new session must not inherit classifier scores captured before authentication")
+            XCTAssertTrue(trainer.trainerView.authors.isEmpty)
+        }
+    }
+
+    func test_storyTrainerFollowsNewArticleSelectionAfterBrowsingFeedB() throws {
+        try withRetainedArticleAndBrowsedFeed { trainer, listCache, collection in
+            let app = try XCTUnwrap(NewsBlurAppDelegate.shared)
+            app.activeStory = try XCTUnwrap(collection.activeFeedStories.first as? AnyDictionary)
+            listCache.reload()
+            trainer.isStoryTrainer = true
+            trainer.reload()
+
+            XCTAssertEqual(trainer.storyCache.selected?.hash, "930002:article-b")
+            XCTAssertEqual(trainer.trainerView.feed?.id, "930002")
+            XCTAssertEqual(trainer.trainerView.authors.map(\.name), ["Author Beta"])
+            XCTAssertEqual(trainer.trainerView.authors.first?.score, Feed.Score.none)
+            XCTAssertNil(collection.activeClassifiers["930001"])
+            XCTAssertEqual(listCache.selected?.hash, "930002:article-b")
+        }
+    }
+
+    func test_feedTrainerUsesBrowsedFeedBWhileArticleAIsRetained() throws {
+        try withRetainedArticleAndBrowsedFeed { trainer, listCache, _ in
+            trainer.isStoryTrainer = false
+            trainer.isFeedLoaded = true
+            trainer.reload()
+
+            XCTAssertEqual(trainer.trainerView.feed?.id, "930002")
+            XCTAssertEqual(trainer.trainerView.authors.map(\.name), ["Author Beta"])
+            XCTAssertTrue(trainer.trainerView.titleWords.isEmpty)
+            XCTAssertNil(trainer.storyCache.selected)
+            XCTAssertEqual(listCache.currentFeed?.id, "930002")
+            XCTAssertEqual(NewsBlurAppDelegate.shared.activeStory?["story_hash"] as? String, "930001:article-a")
+        }
+    }
+
+    private func withRetainedArticleAndBrowsedFeed(
+        _ body: (TrainerViewController, StoryCache, StoriesCollection) throws -> Void
+    ) throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared)
+        let storiesController = try XCTUnwrap(app.feedDetailViewController)
+        let originalCollection = app.storiesCollection
+        let originalStory = app.activeStory
+        let originalFeeds = app.dictFeeds
+        let originalActiveFeeds = app.dictActiveFeeds
+        let originalCache = storiesController.storyCache
+        let originalCachedFeeds = StoryCache.feeds
+        let originalCachedFolder = StoryCache.folder
+        let collection = StoriesCollection()
+        collection.appDelegate = app
+        let listCache = StoryCache()
+        let trainer = TrainerViewController()
+        trainer.appDelegate = app
+        defer {
+            // StoryListReloadTests.swift breaks the hosting view's interaction cycle before restoring the live account's untouched model objects.
+            trainer.hostingController.rootView = TrainerView(interaction: DetachedTrainerContextInteraction(), cache: listCache)
+            trainer.hostingController.view.removeFromSuperview()
+            trainer.appDelegate = nil
+            app.storiesCollection = originalCollection
+            app.activeStory = originalStory
+            app.dictFeeds = originalFeeds
+            app.dictActiveFeeds = originalActiveFeeds
+            storiesController.storyCache = originalCache
+            StoryCache.feeds = originalCachedFeeds
+            StoryCache.folder = originalCachedFolder
+            collection.appDelegate = nil
+        }
+
+        let feedA: [AnyHashable: Any] = ["id": 930001, "feed_title": "Feed Alpha"]
+        let feedB: [AnyHashable: Any] = ["id": 930002, "feed_title": "Feed Beta"]
+        let storyA = makeStory(feedID: 930001, suffix: "a", title: "Retained Article Alpha", author: "Author Alpha")
+        let storyB = makeStory(feedID: 930002, suffix: "b", title: "Browsed Article Beta", author: "Author Beta")
+        app.dictFeeds = ["930001": feedA, "930002": feedB]
+        app.dictActiveFeeds = app.dictFeeds
+        app.storiesCollection = collection
+        storiesController.storyCache = listCache
+        collection.activeFeed = feedA
+        collection.activeFeedStories = [storyA]
+        collection.activeFeedStoryLocations = [0]
+        collection.activeFeedStoryLocationIds = ["930001:article-a"]
+        collection.storyCount = 1
+        collection.storyLocationsCount = 1
+        collection.activeClassifiers = ["930001": ["authors": ["Author Alpha": 1], "titles": ["Retained": -1]]]
+        collection.activePopularAuthors = [["Author Alpha", 1]]
+        collection.activePopularTags = []
+        app.activeStory = storyA
+        listCache.reload()
+        XCTAssertEqual(listCache.selected?.hash, "930001:article-a", "Begin with article A selected in feed A")
+        trainer.captureRetainedStoryContext()
+
+        // StoryListReloadTests.swift mirrors the completed feed-B response while fullscreen browsing retains the mounted article-A action context.
+        collection.activeFeed = feedB
+        collection.activeFeedStories = [storyB]
+        collection.activeFeedStoryLocationIds = ["930002:article-b"]
+        collection.activeClassifiers = ["930002": ["authors": ["Author Beta": 0]]]
+        collection.activePopularAuthors = [["Author Beta", 1]]
+        listCache.reload()
+        XCTAssertEqual(app.activeStory?["story_hash"] as? String, "930001:article-a")
+        XCTAssertEqual(listCache.currentFeed?.id, "930002")
+        XCTAssertNil(listCache.selected, "A is retained by the reader and is not a story-list selection in B")
+        try body(trainer, listCache, collection)
+    }
+
+    private func makeStory(feedID: Int, suffix: String, title: String, author: String) -> [AnyHashable: Any] {
+        ["story_hash": "\(feedID):article-\(suffix)", "story_feed_id": feedID,
+         "story_title": title, "story_authors": author, "story_content": "<p>Readable fixture article.</p>",
+         "story_timestamp": 1_800_000_000, "read_status": 1,
+         "story_permalink": "https://example.invalid/\(suffix)", "story_tags": [],
+         "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0]]
+    }
+}
+
+@MainActor private final class DetachedTrainerContextInteraction: TrainerInteraction {
+    var isStoryTrainer = false
+}

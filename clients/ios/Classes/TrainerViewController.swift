@@ -12,6 +12,17 @@ import SwiftUI
     @objc var isStoryTrainer = false
     
     @objc var isFeedLoaded = false
+
+    private struct RetainedStoryContext {
+        let storyHash: String
+        let feedID: String
+        let account: String?
+        let host: String?
+        let classifiers: AnyDictionary
+    }
+
+    private var retainedStoryContext: RetainedStoryContext?
+    private var retainedStoryCache: StoryCache?
     
     lazy var hostingController = makeHostingController()
     
@@ -20,7 +31,45 @@ import SwiftUI
     }
     
     var storyCache: StoryCache {
-        return appDelegate.feedDetailViewController.storyCache
+        guard isStoryTrainer else { return appDelegate.feedDetailViewController.storyCache }
+        if let retainedStoryCache { return retainedStoryCache }
+        let cache = StoryCache()
+        retainedStoryCache = cache
+        return cache
+    }
+
+    @objc func captureRetainedStoryContext() {
+        guard let story = appDelegate.activeStory,
+              let hash = story["story_hash"] as? String,
+              let rawFeedID = story["story_feed_id"],
+              let feedID = appDelegate.feedIdWithoutSearchQuery("\(rawFeedID)") else {
+            retainedStoryContext = nil
+            return
+        }
+
+        if let context = retainedStoryContext,
+           context.storyHash != hash || context.feedID != feedID ||
+            context.account != appDelegate.activeUsername || context.host != appDelegate.url {
+            retainedStoryContext = nil
+        }
+        guard let classifiers = appDelegate.storiesCollection.activeClassifiers[feedID] as? AnyDictionary else { return }
+        // TrainerViewController.swift captures only the article retained when fullscreen source browsing begins.
+        retainedStoryContext = RetainedStoryContext(storyHash: hash, feedID: feedID,
+                                                    account: appDelegate.activeUsername, host: appDelegate.url,
+                                                    classifiers: NSDictionary(dictionary: classifiers, copyItems: true) as! AnyDictionary)
+    }
+
+    @objc func resetForAccountChange() {
+        retainedStoryContext = nil
+        retainedStoryCache?.reloadForTraining(story: nil)
+    }
+
+    private func restoreRetainedStoryClassifiers() {
+        captureRetainedStoryContext()
+        guard let context = retainedStoryContext,
+              appDelegate.storiesCollection.activeClassifiers[context.feedID] == nil else { return }
+        // NewsBlurAppDelegate.m's classifier actions read and update this feed-keyed map; preserve every browsed-feed entry.
+        appDelegate.storiesCollection.activeClassifiers[context.feedID] = context.classifiers
     }
     
     private func makeHostingController() -> UIHostingController<TrainerView> {
@@ -51,16 +100,19 @@ import SwiftUI
     }
     
     @objc func reload() {
+        if isStoryTrainer {
+            restoreRetainedStoryClassifiers()
+            storyCache.reloadForTraining(story: appDelegate.activeStory as? AnyDictionary)
+        } else {
+            storyCache.reload()
+        }
         let freshView = TrainerView(interaction: self, cache: storyCache)
         hostingController.rootView = freshView
-        storyCache.reload()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        let freshView = TrainerView(interaction: self, cache: storyCache)
-        hostingController.rootView = freshView
-        storyCache.reload()
+        reload()
     }
 }
 
