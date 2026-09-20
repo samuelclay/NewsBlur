@@ -90,6 +90,136 @@ import UIKit
         XCTAssertEqual(marks, 0)
     }
 
+    func test_unselectedExpandedPhoneHasNoStoryToolbarOrReservedSpace() throws {
+#if targetEnvironment(macCatalyst)
+        throw XCTSkip("Expanded iPhone Duo layout is not used by Catalyst")
+#else
+        for position in ["bottom", "top"] {
+            try assertStoryToolbarSelectionStates(phone: true, compact: false,
+                                                  position: position, selections: [nil])
+        }
+#endif
+    }
+
+    func test_emptySelectedSourcesRestoreExpandedPhoneStoryToolbar() throws {
+#if targetEnvironment(macCatalyst)
+        throw XCTSkip("Expanded iPhone Duo layout is not used by Catalyst")
+#else
+        for position in ["bottom", "top"] {
+            try assertStoryToolbarSelectionStates(phone: true, compact: false, position: position,
+                                                  selections: [nil, "feed", nil, "everything", nil, "daily_briefing", nil])
+        }
+#endif
+    }
+
+    func test_unselectedCompactPhoneAndPadRetainStoryToolbar() throws {
+        for (phone, compact) in [(true, true), (false, false), (false, true)] {
+            try assertStoryToolbarSelectionStates(phone: phone, compact: compact,
+                                                  position: "bottom", selections: [nil, "feed", nil])
+        }
+    }
+
+    func test_unselectedSourceStaysHiddenAcrossSearchAndBarChangesThenRestoresSearch() throws {
+        let host = try HeaderDuoTestWindow()
+        defer { host.close() }
+        let header = StoryTitlesHeaderBar()
+        header.setup(in: host.controller.view)
+        let field = UITextField()
+        header.addSearchField(field)
+        field.text = "Preserved search"
+        UIView.performWithoutAnimation { header.setSearchActive(true) }
+        header.setSourceControlsHidden(true)
+
+        for vertical in [false, true, false] {
+            UIView.performWithoutAnimation {
+                header.setUsesSystemVerticalBar(vertical)
+                header.setSearchActive(true)
+                host.window.layoutIfNeeded()
+            }
+            XCTAssertTrue(header.headerContainer.isHidden)
+            XCTAssertEqual(header.headerContainer.bounds.height, 0, accuracy: 0.5)
+            XCTAssertTrue(header.isSearchActive)
+            XCTAssertEqual(field.text, "Preserved search")
+        }
+
+        header.setSourceControlsHidden(false)
+        host.window.layoutIfNeeded()
+        XCTAssertFalse(header.headerContainer.isHidden)
+        XCTAssertFalse(header.searchContainer.isHidden)
+        XCTAssertEqual(header.headerContainer.bounds.height, (header.usesFloatingBottomBar ? 52 : 36) + 36,
+                       accuracy: 0.5)
+        XCTAssertEqual(field.text, "Preserved search")
+    }
+
+    private func assertStoryToolbarSelectionStates(phone: Bool, compact: Bool, position: String,
+                                                  selections: [String?], file: StaticString = #filePath,
+                                                  line: UInt = #line) throws {
+        UserDefaults.standard.set(position, forKey: "story_toolbar_position")
+        let app = NewsBlurAppDelegate()
+        let detail = HeaderDuoTiledSidebarDetail()
+        detail.simulatesPhone = phone
+        detail.simulatesCollapsedTitles = false
+        detail.isCompact = compact
+        detail.appDelegate = app
+        app.detailViewController = detail
+        let collection = StoriesCollection()
+        app.storiesCollection = collection
+        let stories = HeaderUnselectedSourceStories()
+        stories.appDelegate = app
+        stories.storiesCollection = collection
+        detail.feedDetailViewController = stories
+        stories.loadViewIfNeeded()
+        let host = try HeaderDuoTestWindow(controller: stories)
+        let header = StoryTitlesHeaderBar()
+        stories.storyTitlesHeaderBar = header
+        header.setup(in: stories.view)
+        let content = UIView()
+        content.translatesAutoresizingMaskIntoConstraints = false
+        stories.view.addSubview(content)
+        NSLayoutConstraint.activate([
+            content.topAnchor.constraint(equalTo: header.contentTopAnchor),
+            content.bottomAnchor.constraint(equalTo: header.contentBottomAnchor),
+            content.leadingAnchor.constraint(equalTo: stories.view.leadingAnchor),
+            content.trailingAnchor.constraint(equalTo: stories.view.trailingAnchor)
+        ])
+        defer {
+            host.close()
+            host.window.rootViewController = nil
+            header.headerContainer.removeFromSuperview()
+            detail.feedDetailViewController = nil
+            app.detailViewController = nil
+            app.storiesCollection = nil
+            stories.appDelegate = nil
+            stories.storiesCollection = nil
+        }
+
+        for selection in selections {
+            collection.activeFeed = selection == "feed" ? ["id": 1, "feed_title": "Empty selected feed"] : nil
+            collection.activeFolder = selection == "feed" ? nil : selection
+            collection.isRiverView = selection != nil && selection != "feed"
+            collection.isDailyBriefing = selection == "daily_briefing"
+
+            // StoryTitlesHeaderBarLayoutTests.swift exercises the real layout entry point without loading account data or a reader.
+            stories.perform(Selector(("configureAdaptiveStoryToolbar")))
+            stories.view.setNeedsLayout()
+            stories.view.layoutIfNeeded()
+
+            let hidden = phone && !compact && selection == nil
+            let context = "phone=\(phone) compact=\(compact) position=\(position) selection=\(selection ?? "none")"
+            XCTAssertFalse(header.usesSystemVerticalBar, "An embedded source pane keeps horizontal controls", file: file, line: line)
+            XCTAssertEqual(header.headerContainer.isHidden, hidden, context, file: file, line: line)
+            XCTAssertEqual(header.headerContainer.bounds.height, hidden ? 0 : (header.usesFloatingBottomBar ? 52 : 36),
+                           accuracy: 0.5, context, file: file, line: line)
+            if hidden {
+                XCTAssertEqual(content.frame.minY, stories.view.bounds.minY, accuracy: 0.5, context, file: file, line: line)
+                XCTAssertEqual(content.frame.maxY, stories.view.safeAreaLayoutGuide.layoutFrame.maxY,
+                               accuracy: 0.5, context, file: file, line: line)
+            }
+            XCTAssertEqual(collection.activeFeedStories?.count ?? 0, 0,
+                           "Toolbar visibility must depend on source selection, not whether stories have arrived", file: file, line: line)
+        }
+    }
+
     func test_expandedPhoneOptionsExposeRegularLayoutsAndFourGridColumns() throws {
         let app = NewsBlurAppDelegate()
         let detail = HeaderDuoRegularDetail()
@@ -1250,6 +1380,9 @@ import UIKit
         detail.appDelegate = app
         detail.isCompact = false
         app.detailViewController = detail
+        let collection = StoriesCollection()
+        collection.activeFeed = ["id": 1, "feed_title": "Synthetic embedded feed"]
+        app.storiesCollection = collection
         let container = UIViewController()
         let readerItem = UIBarButtonItem(title: "Reader action", style: .plain, target: nil, action: nil)
         container.toolbarItems = [readerItem]
@@ -1258,6 +1391,7 @@ import UIKit
         defer { host.close() }
         let stories = HeaderDuoStories()
         stories.appDelegate = app
+        stories.storiesCollection = collection
         detail.feedDetailViewController = stories
         container.addChild(stories)
         stories.view.frame = container.view.bounds
@@ -1759,6 +1893,18 @@ import UIKit
     override func viewDidLoad() {}
     override func viewWillAppear(_ animated: Bool) {}
     override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+}
+
+@MainActor private final class HeaderUnselectedSourceStories: FeedDetailViewController {
+    override var isPhone: Bool { appDelegate?.detailViewController?.isPhone ?? false }
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 475, height: 669)) }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
     override func viewWillLayoutSubviews() {}
     override func viewDidLayoutSubviews() {}
 }
