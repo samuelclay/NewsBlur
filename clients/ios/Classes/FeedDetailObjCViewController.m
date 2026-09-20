@@ -1209,7 +1209,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self configureAdaptiveStoryToolbar];
     [self restorePendingNotificationViewport];
     // FeedDetailObjCViewController.m leaves room to scroll the final row above the experimental glass bar.
-    if (self.storyTitlesHeaderBar.usesSystemVerticalBar ? self.storyTitlesHeaderBar.isSearchActive : self.storyTitlesHeaderBar.usesFloatingBottomBar) {
+    if (!self.storyTitlesHeaderBar.headerContainer.hidden &&
+        (self.storyTitlesHeaderBar.usesSystemVerticalBar ? self.storyTitlesHeaderBar.isSearchActive : self.storyTitlesHeaderBar.usesFloatingBottomBar)) {
         CGRect bar = [self.storyTitlesHeaderBar.headerContainer convertRect:self.storyTitlesHeaderBar.headerContainer.bounds toView:self.storyTitlesTable];
         CGFloat bottom = MAX(0, CGRectGetMaxY(self.storyTitlesTable.bounds) - CGRectGetMinY(bar));
         UIEdgeInsets inset = self.storyTitlesTable.contentInset;
@@ -1238,7 +1239,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)configureAdaptiveStoryToolbar {
-    BOOL vertical = [self usesVerticalStoryToolbar];
+    // FeedDetailObjCViewController.m leaves the expanded Duo placeholder free of actions until a source is selected.
+    BOOL unselectedSource = self.isPhone && !self.isMac && !self.isPhoneOrCompact &&
+        storiesCollection.activeFeed == nil && storiesCollection.activeFolder == nil;
+    [self.storyTitlesHeaderBar setSourceControlsHidden:unselectedSource];
+    BOOL vertical = !unselectedSource && [self usesVerticalStoryToolbar];
     [self.storyTitlesHeaderBar setUsesSystemVerticalBar:vertical];
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
     if (@available(iOS 27.1, *)) {

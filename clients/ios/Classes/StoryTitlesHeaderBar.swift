@@ -42,6 +42,7 @@ class StoryTitlesHeaderBar: NSObject {
     // StoryTitlesHeaderBar.swift defaults to the bottom on iPhone and iPad.
     private(set) var usesFloatingBottomBar = StoryTitlesHeaderBar.prefersBottomBar
     private var systemVerticalBar = false
+    private var sourceIsUnselected = false
     var usesSystemVerticalBar: Bool { systemVerticalBar }
     private static var prefersBottomBar: Bool {
         #if targetEnvironment(macCatalyst)
@@ -66,6 +67,18 @@ class StoryTitlesHeaderBar: NSObject {
     private var minimumPillWidths: [NSLayoutConstraint] = []
     private var optionsMinimumWidthConstraint: NSLayoutConstraint?
 
+    func setSourceControlsHidden(_ hidden: Bool) {
+        guard sourceIsUnselected != hidden else { return }
+        sourceIsUnselected = hidden
+        headerContainer.isHidden = hidden || (usesSystemVerticalBar && !isSearchActive)
+        guard let parent = headerContainer.superview else { return }
+        // StoryTitlesHeaderBar.swift gives the empty-selection placeholder the whole column without losing search state.
+        NSLayoutConstraint.deactivate(positionConstraints)
+        configurePosition(in: parent)
+        headerHeightConstraint?.constant = headerHeight
+        parent.setNeedsLayout()
+    }
+
     func setUsesSystemVerticalBar(_ enabled: Bool) {
         guard systemVerticalBar != enabled else { return }
         systemVerticalBar = enabled
@@ -76,13 +89,14 @@ class StoryTitlesHeaderBar: NSObject {
         buildLayout(in: headerContainer)
         configurePosition(in: parent)
         headerHeightConstraint?.constant = headerHeight
-        headerContainer.isHidden = enabled && !isSearchActive
+        headerContainer.isHidden = sourceIsUnselected || (enabled && !isSearchActive)
         parent.setNeedsLayout()
         relayoutPills()
     }
 
     private var headerHeight: CGFloat {
-        (usesSystemVerticalBar ? 0 : (usesFloatingBottomBar ? 52 : 36)) + (isSearchActive ? 36 : 0)
+        guard !sourceIsUnselected else { return 0 }
+        return (usesSystemVerticalBar ? 0 : (usesFloatingBottomBar ? 52 : 36)) + (isSearchActive ? 36 : 0)
     }
 
     @objc private func toolbarPreferenceChanged() {
@@ -106,6 +120,15 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     private func configurePosition(in parent: UIView) {
+        if sourceIsUnselected {
+            positionConstraints = [
+                headerContainer.topAnchor.constraint(equalTo: parent.topAnchor),
+                contentTopGuide.topAnchor.constraint(equalTo: parent.topAnchor),
+                contentBottomGuide.topAnchor.constraint(equalTo: parent.safeAreaLayoutGuide.bottomAnchor)
+            ]
+            NSLayoutConstraint.activate(positionConstraints)
+            return
+        }
         if usesSystemVerticalBar {
             positionConstraints = [
                 headerContainer.bottomAnchor.constraint(equalTo: parent.keyboardLayoutGuide.topAnchor),
@@ -386,7 +409,7 @@ class StoryTitlesHeaderBar: NSObject {
         buildLayout(in: headerContainer)
         updateTheme()
 
-        let heightConstraint = headerContainer.heightAnchor.constraint(equalToConstant: usesFloatingBottomBar ? 52 : 36)
+        let heightConstraint = headerContainer.heightAnchor.constraint(equalToConstant: headerHeight)
         headerHeightConstraint = heightConstraint
 
         NSLayoutConstraint.activate([
@@ -1084,12 +1107,12 @@ class StoryTitlesHeaderBar: NSObject {
     func setSearchActive(_ active: Bool) {
         let changed = isSearchActive != active
         isSearchActive = active
+        headerContainer.isHidden = sourceIsUnselected || (usesSystemVerticalBar && !active)
 
         let height = headerHeight
         if usesSystemVerticalBar, let parent = headerContainer.superview {
             NSLayoutConstraint.deactivate(positionConstraints)
             configurePosition(in: parent)
-            headerContainer.isHidden = !active
             headerHeightConstraint?.constant = height
         }
 
