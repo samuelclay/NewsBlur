@@ -2,6 +2,8 @@
 
 import datetime
 import json
+import threading
+import time
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
@@ -247,6 +249,27 @@ class Test_DiscoveryTaste(TestCase):
                 taste.story_matches(self.user.pk, self.stories()[:1], [self.rule])
         self.assertEqual(request.call_count, 2)
 
+    def test_slow_provider_returns_fallback_without_waiting_for_workers(self):
+        release = threading.Event()
+
+        def slow_request(*args):
+            release.wait(2)
+            raise taste.TasteUnavailable("Slow provider")
+
+        stories = self.stories()
+        baseline = [story.story_hash for story in stories]
+        try:
+            with patch.object(taste, "MATCH_DEADLINE", 0.03), patch.object(
+                taste, "model_request", side_effect=slow_request
+            ), patch.object(Discovery, "rank", return_value=baseline):
+                started = time.monotonic()
+                ranked = taste.rank_with_interests(self.user.pk, stories, [], self.votes)
+                self.assertLess(time.monotonic() - started, 0.5)
+                self.assertEqual(ranked, baseline)
+                self.assertEqual(taste.profile_for(self.user.pk).impact["status"], "fallback")
+        finally:
+            release.set()
+
     @patch.object(Discovery, "rank")
     @patch("apps.recommendations.taste.story_matches")
     def test_editing_direction_changes_real_order_and_impact(self, matches, rank):
@@ -281,6 +304,8 @@ class Test_DiscoveryTaste(TestCase):
     def test_comparison_filters_read_stories_without_consuming_weekly_preview(
         self, rank, examples, unread, eligible, hashes
     ):
+        self.user.profile.is_archive = True
+        self.user.profile.save()
         eligible.return_value = self.stories()
         unread.return_value = self.stories()[2:]
         with patch.object(Discovery, "page") as page:
@@ -291,8 +316,22 @@ class Test_DiscoveryTaste(TestCase):
 
     def test_changed_votes_hide_obsolete_ranking_explanations(self):
         self.profile.impact = dict(fingerprint=self.profile.fingerprint, changed_top12=2)
-        self.assertTrue(taste.serialize_profile(self.profile, taste.current_votes(self.user.pk))["impact"])
+        self.assertTrue(
+            taste.serialize_profile(self.profile, taste.current_votes(self.user.pk), True)["impact"]
+        )
         self.votes[0].update(set__value=0)
         self.assertEqual(
-            taste.serialize_profile(self.profile, taste.current_votes(self.user.pk))["impact"], {}
+            taste.serialize_profile(self.profile, taste.current_votes(self.user.pk), True)["impact"], {}
         )
+
+    @patch("apps.recommendations.taste.rank_with_interests")
+    def test_weekly_accounts_cannot_preview_or_retrieve_extra_candidates(self, rank):
+        self.profile.impact = dict(
+            fingerprint=self.profile.fingerprint, stories=[dict(title="Extra candidate")]
+        )
+        self.profile.save()
+        self.assertEqual(self.client.post(reverse("discovery-preview-taste")).json()["code"], -1)
+        data = self.client.get(reverse("discovery-taste-profile")).json()["profile"]
+        self.assertFalse(data["can_compare"])
+        self.assertEqual(data["impact"], {})
+        rank.assert_not_called()

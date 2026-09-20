@@ -188,7 +188,7 @@ NEWSBLUR.Views.DiscoveryTaste = Backbone.View.extend({
         // recommendation_feedback_view.js: Keep an unfinished form intact when background learning completes.
         if (this.dirty && !this.busy) {
             this.pending_profile = profile;
-            this.status('Your interests have updated. Save or cancel your edit to continue.');
+            this.status('Your interests have updated. Your draft is kept; save to apply your edit.');
             return;
         }
         this.profile = profile;
@@ -208,7 +208,8 @@ NEWSBLUR.Views.DiscoveryTaste = Backbone.View.extend({
             'Inferred interests apply automatically. Editing one makes it yours to control.'));
         var $actions = $('<div class="NB-taste-actions">').append(
             $('<button type="button" class="NB-taste-refresh">').text('Update from ratings').prop('disabled', !profile.can_learn),
-            $('<button type="button" class="NB-taste-preview">').text('See what changes'));
+            $('<button type="button" class="NB-taste-preview">').text('See what changes')
+                .prop('disabled', !profile.can_compare).attr('title', profile.can_compare ? 'Compare your next recommendations' : 'Included with Premium Archive'));
         this.$el.append($actions, $('<div class="NB-taste-status" role="status" aria-live="polite">'));
         if (profile.learning) this.status('Learning from your latest ratings…');
         else if (profile.stale && profile.can_learn) this.status('New ratings are ready to learn from.');
@@ -312,17 +313,22 @@ NEWSBLUR.Views.DiscoveryTaste = Backbone.View.extend({
             self.render();
             self.status(data.profile.learning ? 'Learning from your ratings…' :
                 (action === 'edit_taste' ? 'Saved. This will shape your next Discovery refresh.' : 'Up to date.'));
-        }, function () {
+        }, function (data) {
             if (!self.active) return;
             self.busy = false;
+            if (data && data.profile) self.pending_profile = data.profile;
             self.$('button').prop('disabled', false);
+            self.$('.NB-taste-preview').prop('disabled', !self.profile.can_compare);
         });
     },
 
     save: function (e) {
         if (this.busy) return;
         var $row = $(e.currentTarget).closest('.NB-taste-rule');
-        var params = { revision: this.profile.revision, id: $row.attr('data-interest-id'), action: $row.attr('data-new') ? 'add' : 'save' };
+        var latest = this.pending_profile || this.profile;
+        var id = $row.attr('data-interest-id');
+        var exists = _.find(latest.rules, function (rule) { return rule.id === id; });
+        var params = { revision: latest.revision, id: id, action: $row.attr('data-new') || !exists ? 'add' : 'save' };
         _.each(['label','criterion','kind','direction','strength'], function (name) { params[name] = $row.find('[name="' + name + '"]').val(); });
         $(e.currentTarget).blur();
         this.request('edit_taste', params, 'Saving your interest…');

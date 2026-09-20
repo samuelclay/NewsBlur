@@ -110,6 +110,29 @@ test('background learning keeps dirty forms intact until the reader cancels', ()
     assert.equal(rendered, 1);
 });
 
+test('saving a preserved draft uses the newer revision after background learning', () => {
+    const NEWSBLUR = { Views: {} };
+    const values = { label: 'My edited label', criterion: 'My edited criterion', kind: 'angle', direction: '-1', strength: '2' };
+    const row = { attr: name => name === 'data-interest-id' ? 'ai' : null,
+        find: selector => ({ val: () => values[selector.match(/name="(\w+)"/)[1]] }) };
+    const $ = () => ({ closest: () => row, blur() {} });
+    const context = vm.createContext({ NEWSBLUR, _: underscore, $, Backbone: { View: { extend: methods => methods } } });
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/recommendation_feedback_view.js'), 'utf8'), context);
+    const view = Object.create(NEWSBLUR.Views.DiscoveryTaste);
+    let sent;
+    Object.assign(view, { active: true, dirty: true, profile: { revision: 1, rules: [{ id: 'ai' }] },
+        status() {}, request: (action, params) => { sent = params; } });
+    view.receive({ revision: 2, rules: [{ id: 'ai', label: 'Generated label' }] });
+    view.save({ currentTarget: {} });
+    assert.equal(sent.revision, 2);
+    assert.equal(sent.label, 'My edited label');
+    assert.equal(sent.action, 'save');
+    view.receive({ revision: 3, rules: [] });
+    view.save({ currentTarget: {} });
+    assert.equal(sent.action, 'add');
+    assert.equal(sent.revision, 3);
+});
+
 test('switching More to Less ignores the old list response and its error', () => {
     const { view, requests, writes } = history_setup();
     view.load(false);

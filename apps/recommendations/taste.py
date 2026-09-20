@@ -6,6 +6,8 @@ import json
 import math
 import uuid
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
+from concurrent.futures import as_completed
 
 import requests
 from django.conf import settings
@@ -25,6 +27,7 @@ PROFILE_MODEL = "anthropic/claude-haiku-4.5"
 MATCH_MODEL = "typesafe/jev-1.13"
 MAX_RULES = 8
 SHORTLIST = 36
+MATCH_DEADLINE = 12
 KINDS = ("topic", "angle", "format")
 
 
@@ -75,7 +78,7 @@ def model_request(endpoint, payload, reserve):
             "https://openrouter.ai/api/" + endpoint,
             headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
             json=payload,
-            timeout=(5, 12 if endpoint == "alpha/decisions" else 40),
+            timeout=(2, 4) if endpoint == "alpha/decisions" else (3, 20),
         )
         response.raise_for_status()
         data = response.json()
@@ -262,7 +265,7 @@ def active_rule(rule, votes):
     )
 
 
-def serialize_profile(profile, votes):
+def serialize_profile(profile, votes, can_compare=False):
     lookup = {vote.story_hash: vote for vote in votes}
     rules = []
     for stored in profile.rules:
@@ -294,9 +297,20 @@ def serialize_profile(profile, votes):
         less=sum(v.value == -1 for v in votes),
         stale=profile.fingerprint != vote_fingerprint(votes),
         can_learn=len(votes) >= 3,
+        can_compare=can_compare,
         learning=profile.refresh_until > datetime.datetime.utcnow(),
         updated_date=profile.updated_date.isoformat() + "Z" if profile.updated_date else None,
-        impact=profile.impact if profile.impact.get("fingerprint") == vote_fingerprint(votes) else {},
+        impact=profile.impact
+        if can_compare and profile.impact.get("fingerprint") == vote_fingerprint(votes)
+        else {},
+    )
+
+
+def reader_profile(user, profile=None):
+    return serialize_profile(
+        profile or profile_for(user.pk),
+        current_votes(user.pk),
+        user.profile.is_archive or user.profile.is_pro,
     )
 
 
@@ -357,9 +371,19 @@ def story_matches(user_id, stories, rules):
 
     batches = [missing[i : i + 4] for i in range(0, len(missing), 4)]
     if batches:
-        with ThreadPoolExecutor(max_workers=3) as workers:
-            for result in workers.map(classify, batches):
-                answers.update(result)
+        workers = ThreadPoolExecutor(max_workers=3)
+        futures = [workers.submit(classify, batch) for batch in batches]
+        try:
+            for future in as_completed(futures, timeout=MATCH_DEADLINE):
+                answers.update(future.result())
+        except FuturesTimeoutError as exc:
+            raise TasteUnavailable(
+                "Story matching took too long. Reading-history ranking is active."
+            ) from exc
+        finally:
+            # taste.py: Do not wait for queued requests past HAProxy's 30-second request budget.
+            # In-flight calls retain their reservations and finish under their own short timeout.
+            workers.shutdown(wait=False, cancel_futures=True)
     return answers
 
 
@@ -435,9 +459,7 @@ def rank_with_interests(user_id, stories, examples, votes):
 @ensure_csrf_cookie
 @json_functions.json_view
 def taste_profile(request):
-    return dict(
-        code=1, profile=serialize_profile(profile_for(request.user.pk), current_votes(request.user.pk))
-    )
+    return dict(code=1, profile=reader_profile(request.user))
 
 
 @ajax_login_required
@@ -447,7 +469,7 @@ def taste_profile(request):
 def learn_taste(request):
     try:
         profile = refresh_profile(request.user.pk)
-        return dict(code=1, profile=serialize_profile(profile, current_votes(request.user.pk)))
+        return dict(code=1, profile=reader_profile(request.user, profile))
     except TasteUnavailable as exc:
         return dict(code=-1, message=str(exc))
 
@@ -501,9 +523,11 @@ def edit_taste(request):
         )
         if result is None:
             return dict(
-                code=-1, message="Your interests changed in another window. Reload them and try again."
+                code=-1,
+                message="Your interests changed. Your draft is kept; save again to apply it.",
+                profile=reader_profile(request.user),
             )
-        return dict(code=1, profile=serialize_profile(result, current_votes(request.user.pk)))
+        return dict(code=1, profile=reader_profile(request.user, result))
     except (TypeError, ValueError):
         return dict(code=-1, message="Enter an interest, its description, and a valid preference.")
 
@@ -515,6 +539,11 @@ def edit_taste(request):
 def preview_taste(request):
     from apps.recommendations.discovery import Discovery
 
+    if not (request.user.profile.is_archive or request.user.profile.is_pro):
+        return dict(
+            code=-1,
+            message="Ranking comparisons are included with Premium Archive. Your interests still shape your weekly picks.",
+        )
     # taste.py: Preview ranking without changing read state, pagination snapshots or the weekly allowance.
     stories = Discovery.unread_stories(
         request.user.pk, Discovery.eligible_stories(request.user.pk, Discovery.candidate_hashes())
@@ -522,6 +551,4 @@ def preview_taste(request):
     rank_with_interests(
         request.user.pk, stories, Discovery.reading_examples(request.user.pk), current_votes(request.user.pk)
     )
-    return dict(
-        code=1, profile=serialize_profile(profile_for(request.user.pk), current_votes(request.user.pk))
-    )
+    return dict(code=1, profile=reader_profile(request.user))

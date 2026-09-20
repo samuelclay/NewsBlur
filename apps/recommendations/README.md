@@ -102,7 +102,9 @@ not certainty about what a person will enjoy.
 
 **See what changes** compares the same eligible unread candidates against
 reading history alone, showing top-pick replacements and promoted examples.
-It changes neither read state nor the fixed weekly preview. The comparison is
+The comparison requires Archive or Pro, so it cannot reveal extra candidates
+beyond a non-Archive reader's three weekly picks. It changes neither read state
+nor the fixed weekly preview. The comparison is
 timestamped and discarded after edits or rating changes. Subscribed feeds and
 their intelligence classifiers remain independent.
 
