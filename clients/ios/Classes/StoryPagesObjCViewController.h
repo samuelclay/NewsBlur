@@ -94,6 +94,7 @@
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic, readonly) BOOL useCustomToolbar;
 @property (nonatomic, readonly) BOOL usesVerticalReaderToolbar;
+@property (nonatomic, readonly) UIBarButtonItem *settingsPresentationBarButton;
 @property (nonatomic, readonly) BOOL retainsDuoSourceArticle;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
