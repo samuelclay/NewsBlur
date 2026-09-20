@@ -689,7 +689,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         title = nil
         navigationItem.titleView = nil
         // FeedDetailObjCViewController.m uses this same state before any feed is selected.
-        messageLabel.text = "Select a feed to read"
+        messageLabel.text = "Select a feed or folder"
         messageView.isHidden = false
         reloadImmediately()
     }

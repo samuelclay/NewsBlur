@@ -27,7 +27,7 @@ import XCTest
         fixture.app.releaseSavedFlush()
         await settle()
         fixture.controller.messageView.isHidden = false
-        fixture.controller.messageLabel.text = "Select a feed to read"
+        fixture.controller.messageLabel.text = "Select a feed or folder"
         fixture.controller.reloadImmediately()
         XCTAssertEqual(fixture.table.numberOfSections, 0)
 
