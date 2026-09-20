@@ -91,6 +91,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) UIPanGestureRecognizer *feedListSwipeGesture;
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *feedListEdgeSwipeGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *fullScreenPopGesture;
+@property (nonatomic, strong) NSMapTable<UIGestureRecognizer *, NSNumber *> *suppressedSplitGestures;
 @property (nonatomic, weak) UIGestureRecognizer *suppressedContentPopGesture;
 @property (nonatomic) BOOL contentPopWasEnabled;
 @property (nonatomic) CGFloat feedListRevealWidth;
@@ -1364,9 +1365,36 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 }
 
+- (void)updateDuoFullscreenSidebarGestures {
+    // FeedDetailObjCViewController.m updates the retained overlay's gesture policy even while its native primary is offscreen.
+    if (self.isViewLoaded) [self setupStoryTitlesSwipeGestures];
+}
+
+- (void)suppressNativeSplitGesture:(UIGestureRecognizer *)gesture {
+    if (!self.suppressedSplitGestures) {
+        self.suppressedSplitGestures = [NSMapTable weakToStrongObjectsMapTable];
+    }
+    if (![self.suppressedSplitGestures objectForKey:gesture]) {
+        [self.suppressedSplitGestures setObject:@(gesture.enabled) forKey:gesture];
+    }
+    gesture.enabled = NO;
+}
+
 - (void)setupStoryTitlesSwipeGestures {
     if (self.storyTitlesTable) {
         self.storyTitlesTable.alwaysBounceHorizontal = NO;
+    }
+
+    if (appDelegate.detailViewController.isDuoFullscreenReader) {
+        // FeedDetailObjCViewController.m gives UIKit the complete interactive reveal, including reversal and cancellation, only for Duo fullscreen.
+        appDelegate.splitViewController.presentsWithGesture = YES;
+        for (UIGestureRecognizer *gesture in self.suppressedSplitGestures.keyEnumerator) {
+            gesture.enabled = [[self.suppressedSplitGestures objectForKey:gesture] boolValue];
+        }
+        [self.suppressedSplitGestures removeAllObjects];
+        self.feedListSwipeGesture.enabled = NO;
+        self.feedListEdgeSwipeGesture.enabled = NO;
+        return;
     }
 
     if (self.isPhoneOrCompact) {
@@ -1379,10 +1407,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
 
-    if (appDelegate.splitViewController &&
-        [appDelegate.splitViewController respondsToSelector:@selector(setPresentsWithGesture:)]) {
-        appDelegate.splitViewController.presentsWithGesture = NO;
-    }
+    self.feedListEdgeSwipeGesture.enabled = YES;
     
     if (appDelegate.splitViewController) {
         UIView *splitView = appDelegate.splitViewController.view;
@@ -1392,7 +1417,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                 [className containsString:@"Split"] ||
                 [className containsString:@"Sidebar"] ||
                 [className containsString:@"Reveal"]) {
-                gesture.enabled = NO;
+                [self suppressNativeSplitGesture:gesture];
             }
         }
         UIView *splitSuperview = splitView.superview;
@@ -1403,10 +1428,16 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                     [className containsString:@"Split"] ||
                     [className containsString:@"Sidebar"] ||
                     [className containsString:@"Reveal"]) {
-                    gesture.enabled = NO;
+                    [self suppressNativeSplitGesture:gesture];
                 }
             }
         }
+    }
+
+    // FeedDetailObjCViewController.m records each original recognizer state before UIKit responds to presentsWithGesture changing.
+    if (appDelegate.splitViewController &&
+        [appDelegate.splitViewController respondsToSelector:@selector(setPresentsWithGesture:)]) {
+        appDelegate.splitViewController.presentsWithGesture = NO;
     }
 
     self.feedListSwipeGesture.enabled = StoryTitleSwipePreference.usesFullScreenBack;
@@ -1573,7 +1604,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                             [className containsString:@"Split"] ||
                             [className containsString:@"Sidebar"] ||
                             [className containsString:@"Reveal"]) {
-                            gesture.enabled = NO;
+                            [self suppressNativeSplitGesture:gesture];
                         }
                     }
                 }

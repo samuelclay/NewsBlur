@@ -119,6 +119,14 @@ class DetailViewController: BaseViewController {
         appDelegate.trainerViewController?.resetForAccountChange()
         duoFullscreenRequested = false
         duoPreviousSplitBehavior = nil
+        if let previous = duoPreviousPresentsWithGesture {
+            appDelegate.splitViewController?.presentsWithGesture = previous
+        }
+        duoPreviousPresentsWithGesture = nil
+        if let previous = duoPreviousDisplayModeButtonVisibility {
+            appDelegate.splitViewController?.displayModeButtonVisibility = previous
+        }
+        duoPreviousDisplayModeButtonVisibility = nil
         // DetailViewController.swift owns Discovery even while its preview reader is visible.
         if #available(iOS 15.0, *), let controller = retainedDiscoveryController as? DiscoverSitesViewController {
             controller.resetForAccountChange()
@@ -573,6 +581,8 @@ class DetailViewController: BaseViewController {
     private var duoFullscreenRequested = false
     private var isUpdatingDuoFullscreenSidebar = false
     private var duoPreviousSplitBehavior: UISplitViewController.SplitBehavior?
+    private var duoPreviousPresentsWithGesture: Bool?
+    private var duoPreviousDisplayModeButtonVisibility: UISplitViewController.DisplayModeButtonVisibility?
 
     private var supportsDuoFullscreenLayout: Bool {
         isPhone && !isPhoneOrCompact && appDelegate.splitViewController?.style == .doubleColumn && !isDiscoverSitesVisible
@@ -594,8 +604,12 @@ class DetailViewController: BaseViewController {
 
     @objc func updateDuoFullscreenSplitBehavior() {
         guard isDuoFullscreenReader, let split = appDelegate.splitViewController else { return }
-        split.preferredDisplayMode = fullscreenSidebarPresentationState == .fullscreen ? .secondaryOnly : .oneOverSecondary
-        split.preferredSplitBehavior = .overlay
+        let mode: UISplitViewController.DisplayMode = fullscreenSidebarPresentationState == .fullscreen ? .secondaryOnly : .oneOverSecondary
+        if split.preferredDisplayMode != mode { split.preferredDisplayMode = mode }
+        if split.preferredSplitBehavior != .overlay { split.preferredSplitBehavior = .overlay }
+        // DetailViewController.swift already provides Sidebar in the native reader rail; enabling gestures must not add another button over the article.
+        split.displayModeButtonVisibility = .never
+        feedDetailViewController?.updateDuoFullscreenSidebarGestures()
     }
 
     private func mountDuoFullscreenTitles() {
@@ -630,7 +644,9 @@ class DetailViewController: BaseViewController {
         setStoryTitlesCollapsed(true, animated: false)
         updateDuoFullscreenSplitBehavior()
         let change = {
-            if presentation == .fullscreen { split.hide(.primary) }
+            if presentation == .fullscreen {
+                split.hide(.primary)
+            }
             else { split.show(.primary) }
         }
         if animated { change() } else { UIView.performWithoutAnimation(change) }
@@ -641,7 +657,21 @@ class DetailViewController: BaseViewController {
     }
 
     private func toggleDuoFullscreenReader() {
-        if !duoFullscreenRequested { duoPreviousSplitBehavior = appDelegate.splitViewController?.preferredSplitBehavior }
+        // DetailViewController.swift animates the existing reader host rather than replacing its loaded document during the column change.
+        view.layoutIfNeeded()
+        UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0 : 0.25,
+                       delay: 0, options: [.beginFromCurrentState, .allowUserInteraction, .curveEaseInOut]) {
+            self.applyDuoFullscreenReaderToggle()
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    private func applyDuoFullscreenReaderToggle() {
+        if !duoFullscreenRequested {
+            duoPreviousSplitBehavior = appDelegate.splitViewController?.preferredSplitBehavior
+            duoPreviousPresentsWithGesture = appDelegate.splitViewController?.presentsWithGesture
+            duoPreviousDisplayModeButtonVisibility = appDelegate.splitViewController?.displayModeButtonVisibility
+        }
         duoFullscreenRequested.toggle()
         if isDuoFullscreenReader {
             fullscreenSidebarPresentationState = .fullscreen
@@ -662,6 +692,15 @@ class DetailViewController: BaseViewController {
                 checkViewControllers()
             }
             navigationItem.titleView = appDelegate.makeFeedTitle(appDelegate.storiesCollection.activeFeed)
+            feedDetailViewController?.updateDuoFullscreenSidebarGestures()
+            if let previous = duoPreviousPresentsWithGesture {
+                appDelegate.splitViewController?.presentsWithGesture = previous
+            }
+            duoPreviousPresentsWithGesture = nil
+            if let previous = duoPreviousDisplayModeButtonVisibility {
+                appDelegate.splitViewController?.displayModeButtonVisibility = previous
+            }
+            duoPreviousDisplayModeButtonVisibility = nil
             feedDetailViewController?.updateSidebarButton(for: appDelegate.splitViewController.displayMode)
             storyPagesViewController?.updateStoryTitleNavigationButtons()
             storyPagesViewController?.viewIfLoaded?.setNeedsLayout()
@@ -1413,6 +1452,7 @@ class DetailViewController: BaseViewController {
                 fullscreenSidebarPresentationState = displayMode == .secondaryOnly ? .fullscreen :
                     (appDelegate.feedsNavigationController.topViewController === feedDetailViewController ? .storyTitles : .feeds)
             }
+            if displayMode == .secondaryOnly { prepareDuoTitlesAfterSidebarDismissal() }
             feedDetailViewController?.updateSidebarButton(for: displayMode)
             storyPagesViewController?.updateStoryTitleNavigationButtons()
             return
@@ -1445,6 +1485,28 @@ class DetailViewController: BaseViewController {
         fullscreenSidebarOverlayFeedDetailController?.updateSidebarButton(for: displayMode)
         appDelegate.feedDetailViewController.updateSidebarButton(for: displayMode)
         storyPagesViewController?.updateStoryTitleNavigationButtons()
+    }
+
+    private func prepareDuoTitlesAfterSidebarDismissal() {
+        guard let split = appDelegate.splitViewController else { return }
+        // DetailViewController.swift prepares the next native edge reveal only after the primary has actually disappeared.
+        let prepareTitles = { [weak self, weak split] in
+            guard let self, let split,
+                  self.appDelegate.splitViewController === split,
+                  self.isDuoFullscreenReader, !self.isUpdatingDuoFullscreenSidebar,
+                  self.fullscreenSidebarPresentationState == .fullscreen,
+                  split.displayMode == .secondaryOnly,
+                  self.appDelegate.feedsNavigationController.topViewController === self.appDelegate.feedsViewController else { return }
+            self.mountDuoFullscreenTitles()
+        }
+        if let coordinator = split.transitionCoordinator {
+            coordinator.animate(alongsideTransition: nil) { context in
+                guard !context.isCancelled else { return }
+                prepareTitles()
+            }
+        } else {
+            DispatchQueue.main.async(execute: prepareTitles)
+        }
     }
 
     @objc(applyFullscreenSidebarPresentation:sender:)

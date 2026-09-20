@@ -5,14 +5,18 @@ import WebKit
 @testable import NewsBlur
 
 // DuoPresentationTests.swift sends the divider's real action deterministic positions while UIKit owns the mounted column layout.
-private final class DuoSidebarResizePan: UIPanGestureRecognizer {
+private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer {
     var simulatedState: UIGestureRecognizer.State = .possible
     var simulatedLocation = CGPoint.zero
+    var simulatedTranslation = CGPoint.zero
+    var simulatedTouchDownLocation: CGPoint?
     override var state: UIGestureRecognizer.State {
         get { simulatedState }
         set { simulatedState = newValue }
     }
     override func location(in view: UIView?) -> CGPoint { simulatedLocation }
+    override func translation(in view: UIView?) -> CGPoint { simulatedTranslation }
+    override func touchDownLocation(in view: UIView) -> CGPoint? { simulatedTouchDownLocation }
 }
 
 @MainActor final class Test_DuoReaderReparenting: XCTestCase {
@@ -1612,12 +1616,22 @@ private final class DuoSidebarResizePan: UIPanGestureRecognizer {
                        "The draggable separator must track the actual feed-list edge")
         let destination = before.width + 80
         let pan = DuoSidebarResizePan()
-        pan.simulatedLocation = CGPoint(x: before.maxX, y: before.midY)
+        // DuoPresentationTests.swift reproduces UIKit resetting translation after the first 10pt of real touch movement.
+        pan.simulatedTouchDownLocation = CGPoint(x: before.maxX, y: before.midY)
+        pan.simulatedLocation = CGPoint(x: before.maxX + 10, y: before.midY)
+        pan.simulatedTranslation = .zero
         pan.simulatedState = .began
         split.perform(NSSelectorFromString("handleFeedsDividerPan:"), with: pan)
-        pan.simulatedLocation.x = before.minX + destination
+        pan.simulatedLocation.x = before.maxX + 60
+        pan.simulatedTranslation.x = 50
         pan.simulatedState = .changed
         split.perform(NSSelectorFromString("handleFeedsDividerPan:"), with: pan)
+        try await waitUntil("Dragging must include movement before recognition") {
+            abs(primary.bounds.width - (before.width + 60)) < 2
+        }
+        // DuoPresentationTests.swift delivers the last 20pt only in .ended, as a lifted finger can finish between changed events.
+        pan.simulatedLocation.x = before.minX + destination
+        pan.simulatedTranslation.x = 70
         pan.simulatedState = .ended
         split.perform(NSSelectorFromString("handleFeedsDividerPan:"), with: pan)
         try await waitUntil("Dragging must resize the primary content, not just its handle") {

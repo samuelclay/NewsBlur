@@ -489,6 +489,135 @@ final class AddSiteSheetViewControllerTests: XCTestCase {
 @available(iOS 15.0, *)
 @MainActor
 final class DetailViewControllerTests: XCTestCase {
+    func test_duoFullscreenNativeDismissalPreparesTitlesForTheNextEdgeReveal() async throws {
+        let fixture = try DuoFullscreenTransitionFixture()
+        defer { fixture.close() }
+        fixture.detail.toggleTemporaryFullScreen(nil)
+        fixture.detail.showDuoFullscreenFeeds(nil)
+        // LoginViewControllerTests.swift waits for the real animated navigation pop before modelling split callbacks.
+        let feedsSettled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            fixture.app.feedsNavigationController.topViewController === fixture.feeds &&
+                fixture.app.feedsNavigationController.transitionCoordinator == nil
+        }, object: nil)
+        await fulfillment(of: [feedsSettled], timeout: 2)
+        fixture.split.simulatedDisplayMode = .oneOverSecondary
+        fixture.detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
+        XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.feeds)
+
+        // LoginViewControllerTests.swift models a cancelled native hide: willChange proposes secondaryOnly, then UIKit resolves the original overlay.
+        fixture.detail.syncFullscreenSidebarPresentation(for: .secondaryOnly)
+        fixture.detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
+        let cancelledLayout = expectation(description: "Cancelled sidebar transition layout committed")
+        DispatchQueue.main.async {
+            fixture.window.layoutIfNeeded()
+            cancelledLayout.fulfill()
+        }
+        await fulfillment(of: [cancelledLayout], timeout: 2)
+        XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.feeds,
+                      "Cancelling dismissal must leave the visible Feeds overlay intact")
+        XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .feeds)
+
+        // LoginViewControllerTests.swift uses the existing synthetic split's resolved-mode control after the public hide, without replacing any reader content.
+        fixture.split.hide(.primary)
+        fixture.split.simulatedDisplayMode = .secondaryOnly
+        fixture.detail.syncFullscreenSidebarPresentation(for: .secondaryOnly)
+        let completedLayout = expectation(description: "Hidden sidebar transition layout committed")
+        DispatchQueue.main.async {
+            fixture.window.layoutIfNeeded()
+            completedLayout.fulfill()
+        }
+        await fulfillment(of: [completedLayout], timeout: 2)
+        XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.titles,
+                      "After native dismissal the next edge gesture must reveal actual story titles, not the previously browsed Feeds screen")
+        fixture.split.show(.primary)
+        fixture.split.simulatedDisplayMode = .oneOverSecondary
+        fixture.detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
+        XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .storyTitles)
+        XCTAssertTrue(fixture.pages.parent === fixture.detail)
+        XCTAssertEqual(fixture.article.contentOffset.y, 500, accuracy: 0.5)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "fullscreen-transition:story")
+    }
+
+    func test_duoFullscreenToggleAnimatesThePresentedReaderInBothDirections() async throws {
+        let fixture = try DuoFullscreenTransitionFixture()
+        defer { fixture.close() }
+        let originalWidth = fixture.readerHost.bounds.width
+        XCTAssertGreaterThan(originalWidth, 200)
+        XCTAssertGreaterThan(fixture.detail.view.bounds.width - originalWidth, 100)
+        for entering in [true, false] {
+            let startWidth = fixture.readerHost.bounds.width
+            let recorder = DuoFullscreenWidthRecorder(view: fixture.readerHost)
+            let firstFrame = expectation(description: "Reader has a committed presentation frame")
+            recorder.didRecordFirstFrame = { firstFrame.fulfill() }
+            recorder.start()
+            await fulfillment(of: [firstFrame], timeout: 2)
+            fixture.detail.toggleTemporaryFullScreen(nil)
+            let settled = expectation(description: "Fullscreen reader transition settled")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) { settled.fulfill() }
+            await fulfillment(of: [settled], timeout: 2)
+            recorder.stop()
+            let endWidth = fixture.readerHost.bounds.width
+            XCTAssertEqual(fixture.detail.isDuoFullscreenReader, entering)
+            XCTAssertEqual(endWidth, entering ? fixture.detail.view.bounds.width - 1 : originalWidth, accuracy: 1)
+            let intermediateWidths = recorder.widths.filter {
+                $0 > min(startWidth, endWidth) + 2 && $0 < max(startWidth, endWidth) - 2
+            }
+            XCTAssertGreaterThanOrEqual(intermediateWidths.count, 2,
+                "The visible reader must resize through intermediate widths when toggling \(entering ? "on" : "off"); sampled \(recorder.widths)")
+            XCTAssertTrue(fixture.pages.parent === fixture.detail)
+            XCTAssertEqual(fixture.article.contentOffset.y, 500, accuracy: 0.5)
+        }
+    }
+
+    func test_duoFullscreenOwnsNativeInteractiveRevealInsteadOfTheOneShotReaderEdge() throws {
+        let fixture = try DuoFullscreenTransitionFixture()
+        defer { fixture.close() }
+        let nativeEdge = UIScreenEdgePanGestureRecognizer()
+        let previouslyDisabledEdge = UIScreenEdgePanGestureRecognizer()
+        previouslyDisabledEdge.isEnabled = false
+        fixture.split.view.addGestureRecognizer(nativeEdge)
+        fixture.split.view.addGestureRecognizer(previouslyDisabledEdge)
+        fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+        XCTAssertFalse(fixture.split.presentsWithGesture, "The existing embedded-list gesture policy is the baseline")
+        XCTAssertFalse(nativeEdge.isEnabled)
+        let previousButtonVisibility = fixture.split.displayModeButtonVisibility
+        let edge = DuoFullscreenLeadingEdgeGesture()
+        fixture.pages.view.addGestureRecognizer(edge)
+        fixture.pages.setValue(edge, forKey: "storyTitlesEdgeRevealGesture")
+        edge.delegate = fixture.pages
+        fixture.detail.toggleTemporaryFullScreen(nil)
+        XCTAssertTrue(fixture.split.presentsWithGesture,
+                      "The fullscreen reader must let UIKit track and cancel a primary-overlay edge drag")
+        XCTAssertEqual(fixture.split.preferredDisplayMode, .secondaryOnly,
+                       "The fullscreen reader keeps the primary hidden until it is explicitly revealed")
+        XCTAssertEqual(fixture.split.hiddenColumns.last, .primary,
+                       "Explicit visibility operations keep the overlay hidden until Sidebar or an edge gesture reveals it")
+        XCTAssertEqual(fixture.split.displayModeButtonVisibility, .never,
+                       "The reader's existing native side-rail Sidebar must not gain another button over the article")
+        XCTAssertTrue(nativeEdge.isEnabled, "Restore recognizers suppressed by the preceding embedded list")
+        XCTAssertFalse(previouslyDisabledEdge.isEnabled, "Do not enable a recognizer the list never owned")
+        fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+        XCTAssertTrue(fixture.split.presentsWithGesture,
+                      "Mounting or refreshing the titles overlay must not disable its native interactive reveal")
+        let acceptsOneShotEdge = edge.isEnabled && (edge.delegate?.gestureRecognizerShouldBegin?(edge) ?? true)
+        XCTAssertFalse(acceptsOneShotEdge,
+                       "The reader's began-only edge handler must yield to UIKit's interactive sidebar gesture")
+        XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.titles,
+                      "The native primary being revealed must already contain the actual story titles")
+        fixture.detail.toggleTemporaryFullScreen(nil)
+        XCTAssertFalse(fixture.split.presentsWithGesture,
+                       "Leaving Duo fullscreen restores the preceding embedded-list gesture policy")
+        XCTAssertEqual(fixture.split.displayModeButtonVisibility, previousButtonVisibility)
+        XCTAssertFalse(nativeEdge.isEnabled)
+        XCTAssertFalse(previouslyDisabledEdge.isEnabled)
+        fixture.split.displayModeButtonVisibility = .always
+        fixture.detail.toggleTemporaryFullScreen(nil)
+        XCTAssertEqual(fixture.split.displayModeButtonVisibility, .never)
+        fixture.detail.resetDiscoveryForAccountChange()
+        XCTAssertEqual(fixture.split.displayModeButtonVisibility, .always,
+                       "An account reset must restore the captured policy, not assume UIKit's default")
+    }
+
     func test_expandedPhoneFullscreenKeepsReaderWhileNavigatingTitlesAndFeeds() {
         let defaults = UserDefaults.standard
         let previousBehavior = defaults.object(forKey: "split_behavior")
@@ -1615,9 +1744,11 @@ final class DetailViewControllerTests: XCTestCase {
 
 @MainActor private final class DuoSidebarSplitController: SplitViewController {
     var simulatedDisplayMode: UISplitViewController.DisplayMode = .secondaryOnly
+    var simulatedSplitBehavior: UISplitViewController.SplitBehavior?
     var shownColumns: [UISplitViewController.Column] = []
     var hiddenColumns: [UISplitViewController.Column] = []
     override var displayMode: UISplitViewController.DisplayMode { simulatedDisplayMode }
+    override var splitBehavior: UISplitViewController.SplitBehavior { simulatedSplitBehavior ?? super.splitBehavior }
     // LoginViewControllerTests.swift checks native column operations without requiring a live fold transition.
     override func show(_ column: UISplitViewController.Column) { shownColumns.append(column) }
     override func hide(_ column: UISplitViewController.Column) { hiddenColumns.append(column) }
@@ -1654,8 +1785,132 @@ final class DetailViewControllerTests: XCTestCase {
 @MainActor private final class DuoFullscreenPages: StoryPagesViewController {
     override func loadView() { view = UIView() }
     override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
     override func viewDidLayoutSubviews() {}
+    override func viewSafeAreaInsetsDidChange() {}
     override func updateStoryTitleNavigationButtons() {}
+}
+
+@MainActor private final class DuoFullscreenTransitionFixture {
+    let app = NewsBlurAppDelegate()
+    let detail = DuoExpansionDetailController()
+    let split = DuoSidebarSplitController(style: .doubleColumn)
+    let titles = DuoFullscreenStories()
+    let feeds = DuoFullscreenFeeds()
+    let pages = DuoFullscreenPages()
+    let readerHost = UIView()
+    let article = UIScrollView()
+    let window: UIWindow
+    private weak var previousKeyWindow: UIWindow?
+    private let preferenceKeys = ["split_behavior", "fullscreen-transition:story_titles_position",
+                                  "story_titles_vertical_divider_landscape", "story_titles_vertical_divider_portrait"]
+    private var previousPreferences: [String: Any] = [:]
+
+    init() throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        guard scene.coordinateSpace.bounds.width > 700 else {
+            throw XCTSkip("Requires a window wide enough to display the expanded Duo's two reading columns")
+        }
+        window = UIWindow(windowScene: scene)
+        previousKeyWindow = scene.windows.first(where: \.isKeyWindow)
+        for key in preferenceKeys { previousPreferences[key] = UserDefaults.standard.object(forKey: key) }
+        UserDefaults.standard.set("auto", forKey: preferenceKeys[0])
+        UserDefaults.standard.set("titles_on_left", forKey: preferenceKeys[1])
+        for key in preferenceKeys.suffix(2) { UserDefaults.standard.set(400, forKey: key) }
+        split.simulatedSplitBehavior = .overlay
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.appDelegate = app
+        app.storiesCollection.activeFeed = ["id": "fullscreen-transition", "feed_title": "Fixture"]
+        app.activeStory = ["story_hash": "fullscreen-transition:story"]
+        app.detailViewController = detail
+        app.splitViewController = split
+        app.feedsViewController = feeds
+        app.feedsNavigationController = UINavigationController(rootViewController: feeds)
+        detail.appDelegate = app
+        detail.isCompact = false
+        detail.simulatedSplitViewController = split
+        detail.feedDetailViewController = titles
+        detail.storyPagesViewController = pages
+        titles.appDelegate = app
+        feeds.appDelegate = app
+        pages.appDelegate = app
+        let titleHost = UIView()
+        let divider = UIView()
+        for child in [titleHost, divider, readerHost] {
+            child.translatesAutoresizingMaskIntoConstraints = false
+            detail.view.addSubview(child)
+        }
+        detail.leftContainerView = titleHost
+        detail.verticalDividerView = divider
+        detail.topContainerView = readerHost
+        let leading = divider.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor, constant: detail.verticalDividerPosition)
+        detail.verticalDividerViewLeadingConstraint = leading
+        NSLayoutConstraint.activate([leading, titleHost.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor),
+            titleHost.trailingAnchor.constraint(equalTo: divider.leadingAnchor), divider.widthAnchor.constraint(equalToConstant: 5),
+            readerHost.leadingAnchor.constraint(equalTo: divider.trailingAnchor, constant: -4),
+            readerHost.trailingAnchor.constraint(equalTo: detail.view.trailingAnchor)] + [titleHost, divider, readerHost].flatMap {
+                [$0.topAnchor.constraint(equalTo: detail.view.topAnchor), $0.bottomAnchor.constraint(equalTo: detail.view.bottomAnchor)]
+            })
+        for (controller, host) in [(titles as UIViewController, titleHost), (pages as UIViewController, readerHost)] {
+            detail.addChild(controller)
+            controller.view.frame = host.bounds
+            controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            host.addSubview(controller.view)
+            controller.didMove(toParent: detail)
+        }
+        article.frame = pages.view.bounds
+        article.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        article.contentInsetAdjustmentBehavior = .never
+        article.contentSize.height = 2000
+        article.contentOffset.y = 500
+        pages.view.addSubview(article)
+        window.rootViewController = detail
+        window.makeKeyAndVisible()
+        window.layoutIfNeeded()
+    }
+
+    func close() {
+        window.isHidden = true
+        window.rootViewController = nil
+        previousKeyWindow?.makeKey()
+        app.detailViewController = nil
+        app.feedsViewController = nil
+        app.feedsNavigationController.setViewControllers([], animated: false)
+        app.feedsNavigationController = nil
+        detail.feedDetailViewController = nil
+        detail.storyPagesViewController = nil
+        for key in preferenceKeys { UserDefaults.standard.set(previousPreferences[key], forKey: key) }
+    }
+}
+
+@MainActor private final class DuoFullscreenWidthRecorder: NSObject {
+    private weak var observedView: UIView?
+    private var displayLink: CADisplayLink?
+    private(set) var widths: [CGFloat] = []
+    var didRecordFirstFrame: (() -> Void)?
+    init(view: UIView) { observedView = view }
+    func start() {
+        displayLink = CADisplayLink(target: self, selector: #selector(recordWidth))
+        displayLink?.add(to: .main, forMode: .common)
+    }
+    func stop() { displayLink?.invalidate(); displayLink = nil }
+    @objc private func recordWidth() {
+        // LoginViewControllerTests.swift samples visible Core Animation geometry, not the target constraint or an animation flag.
+        if let layer = observedView?.layer.presentation() {
+            widths.append(layer.bounds.width)
+            let firstFrame = didRecordFirstFrame
+            didRecordFirstFrame = nil
+            firstFrame?()
+        }
+    }
+}
+
+@MainActor private final class DuoFullscreenLeadingEdgeGesture: UIScreenEdgePanGestureRecognizer {
+    override func velocity(in view: UIView?) -> CGPoint { CGPoint(x: 180, y: 0) }
 }
 
 @MainActor private final class DuoSidebarLayoutView: UIView {
@@ -1796,25 +2051,108 @@ private final class DiscoveryTransitionTestController: DiscoverSitesViewControll
 @available(iOS 15.0, *)
 @MainActor
 final class StoryPagesViewControllerTests: XCTestCase {
-    private let defaults = UserDefaults.standard
-    private let horizontalPagingKey = "scroll_stories_horizontally"
-    private var savedHorizontalPagingValue: Any?
-
-    override func setUp() {
-        super.setUp()
-
-        savedHorizontalPagingValue = defaults.object(forKey: horizontalPagingKey)
-        defaults.set(true, forKey: horizontalPagingKey)
-    }
-
-    override func tearDown() {
-        defaults.removeObject(forKey: horizontalPagingKey)
-        if let savedHorizontalPagingValue {
-            defaults.set(savedHorizontalPagingValue, forKey: horizontalPagingKey)
+    func test_duoFullscreenReaderPansYieldOnlyToTheNativeLeadingAncestorEdge() {
+        let app = NewsBlurAppDelegate()
+        let detail = DuoFullscreenGradientDetail()
+        let split = DuoSidebarSplitController(style: .doubleColumn)
+        let pages = DuoFullscreenPages()
+        let pager = DuoNativeEdgeScrollView()
+        let ancestor = UIView()
+        app.detailViewController = detail
+        app.splitViewController = split
+        detail.appDelegate = app
+        detail.isCompact = false
+        pages.appDelegate = app
+        pages.scrollView = pager
+        let navigation = UINavigationController(rootViewController: pages)
+        split.view.addSubview(ancestor)
+        ancestor.addSubview(navigation.view)
+        // LoginViewControllerTests.swift explicitly mounts the retained navigation child because this offscreen fixture has no UIKit appearance pass.
+        navigation.view.addSubview(pages.view)
+        pages.view.addSubview(pager)
+        XCTAssertTrue(pages.view.isDescendant(of: split.view), "The reader must be mounted below the split's native gesture ancestor")
+        XCTAssertTrue(pages.navigationController === navigation)
+        if let navigationEdge = navigation.interactivePopGestureRecognizer as? UIScreenEdgePanGestureRecognizer {
+            navigationEdge.edges = .left
+            navigationEdge.isEnabled = true
         }
-
-        savedHorizontalPagingValue = nil
-        super.tearDown()
+        var ownedTaps: [DuoNativeEdgeTap] = []
+        var foreignTaps: [DuoNativeEdgeTap] = []
+        let articles = (0..<3).map { _ -> DuoGradientLayoutPage in
+            let article = DuoGradientLayoutPage()
+            article.loadViewIfNeeded()
+            article.webView = DuoNativeEdgeWebView()
+            for numberOfTaps in [1, 2] {
+                let tap = DuoNativeEdgeTap()
+                tap.numberOfTapsRequired = numberOfTaps
+                tap.delegate = article
+                article.webView.addGestureRecognizer(tap)
+                ownedTaps.append(tap)
+            }
+            let foreign = DuoNativeEdgeTap()
+            foreign.delegate = pages
+            article.webView.addGestureRecognizer(foreign)
+            let webKitTap = DuoNativeEdgeTap()
+            article.webView.scrollView.addGestureRecognizer(webKitTap)
+            foreignTaps += [foreign, webKitTap]
+            return article
+        }
+        pages.currentPage = articles[0]
+        pages.nextPage = articles[1]
+        pages.previousPage = articles[2]
+        let left = UIScreenEdgePanGestureRecognizer()
+        left.edges = .left
+        ancestor.addGestureRecognizer(left)
+        let right = UIScreenEdgePanGestureRecognizer()
+        right.edges = .right
+        ancestor.addGestureRecognizer(right)
+        let disabled = UIScreenEdgePanGestureRecognizer()
+        disabled.edges = .left
+        disabled.isEnabled = false
+        ancestor.addGestureRecognizer(disabled)
+        let custom = UIScreenEdgePanGestureRecognizer()
+        custom.edges = .left
+        pages.view.addGestureRecognizer(custom)
+        let pans = [pager.observedPan] + articles.map { ($0.webView as! DuoNativeEdgeWebView).observedScroll.observedPan }
+        defer {
+            app.detailViewController = nil
+            detail.appDelegate = nil
+        }
+        // LoginViewControllerTests.swift verifies the exact public dependency that fixed the real Duo edge drag in the runtime probe.
+        let update = NSSelectorFromString("updateDuoFullscreenNativeEdgePriority")
+        guard pages.responds(to: update) else { return XCTFail("Fullscreen reader pans must yield to the native leading ancestor edge") }
+        pages.perform(update)
+        XCTAssertTrue(pans.allSatisfy { $0.requiredFailures.isEmpty }, "Ordinary reading must not acquire native-sidebar dependencies")
+        XCTAssertTrue(ownedTaps.allSatisfy { $0.requiredFailures.isEmpty })
+        detail.requestsFullscreen = true
+        detail.simulatesPhone = false
+        pages.perform(update)
+        XCTAssertTrue(pans.allSatisfy { $0.requiredFailures.isEmpty }, "The existing iPad reader gesture policy must remain unchanged")
+        XCTAssertTrue(ownedTaps.allSatisfy { $0.requiredFailures.isEmpty })
+        detail.simulatesPhone = true
+        XCTAssertTrue(detail.isDuoFullscreenReader, "The positive control requires the expanded phone fullscreen policy")
+        pages.perform(update)
+        pages.perform(update)
+        for pan in pans {
+            let targets = pan.requiredFailures.map { gesture in
+                var contentPop = false
+                if #available(iOS 26.0, *) { contentPop = gesture === navigation.interactiveContentPopGestureRecognizer }
+                return "\(type(of: gesture)): nativeEdge=\(gesture === left), navPop=\(gesture === navigation.interactivePopGestureRecognizer), contentPop=\(contentPop)"
+            }
+            XCTAssertEqual(pan.requiredFailures.count, 1, "Each reader pan receives the dependency once: \(targets)")
+            XCTAssertTrue(pan.requiredFailures.first === left, "Right, disabled and local custom edges must be excluded")
+            XCTAssertFalse(pan.requiredFailures.contains { $0 === navigation.interactivePopGestureRecognizer },
+                           "Navigation Back keeps its existing priority policy")
+            if #available(iOS 26.0, *) {
+                XCTAssertFalse(pan.requiredFailures.contains { $0 === navigation.interactiveContentPopGestureRecognizer },
+                               "Navigation content-swipe Back keeps its existing priority policy")
+            }
+        }
+        for tap in ownedTaps {
+            XCTAssertEqual(tap.requiredFailures.count, 1, "Article taps must wait for the native edge to fail before opening an image")
+            XCTAssertTrue(tap.requiredFailures.first === left)
+        }
+        XCTAssertTrue(foreignTaps.allSatisfy { $0.requiredFailures.isEmpty }, "Foreign and internal WebKit recognizers retain their existing policy")
     }
 
     func test_readerKeyboardCommandsResolveAndForwardToTheCurrentArticle() throws {
@@ -2047,6 +2385,99 @@ final class StoryPagesViewControllerTests: XCTestCase {
             page.updateFeedTitleGradientPosition()
             XCTAssertEqual(gradient.backgroundColor?.cgColor.alpha ?? 0, 0,
                            "Legacy horizontal rendering must restore its original gradient appearance: \(legacy)")
+        }
+    }
+
+    func test_duoFullscreenFeedFaviconAlignsWithTheRenderedArticleTitleOnlyInFullscreen() async throws {
+        let app = NewsBlurAppDelegate()
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.isRiverView = true
+        let detail = DuoFullscreenGradientDetail()
+        detail.appDelegate = app
+        detail.isCompact = false
+        app.detailViewController = detail
+        let pages = DuoTrainerAnchorPages(nibName: nil, bundle: nil)
+        pages.appDelegate = app
+        pages.simulatedVerticalToolbar = true
+        detail.storyPagesViewController = pages
+        let page = DuoGradientLayoutPage(nibName: nil, bundle: nil)
+        page.appDelegate = app
+        page.loadViewIfNeeded()
+        pages.currentPage = page
+        let web = try XCTUnwrap(page.webView)
+        web.scrollView.contentInsetAdjustmentBehavior = .never
+        let gradient = try XCTUnwrap(app.makeFeedTitleGradient([
+            "id": "1", "feed_title": "Corner-safe feed", "favicon_fade": "808080",
+            "favicon_color": "505050", "favicon_border": "303030", "favicon_text_color": "white"
+        ], with: CGRect(x: 0, y: 0, width: 864, height: 25)))
+        page.feedTitleGradient = gradient
+        web.addSubview(gradient)
+        let favicon = try XCTUnwrap(gradient.subviews.compactMap { $0 as? UIImageView }.first)
+        let feedLabel = try XCTUnwrap(gradient.subviews.compactMap { $0 as? UILabel }.first)
+        let originalIconFrame = favicon.frame
+        let originalLabelX = feedLabel.frame.minX
+        let cssURL = try XCTUnwrap(Bundle.main.url(forResource: "storyDetailView", withExtension: "css"))
+        let css = try String(contentsOf: cssURL, encoding: .utf8)
+        let navigation = DuoViewportNavigationDelegate()
+        let loaded = expectation(description: "Bundled article header CSS loaded")
+        navigation.finished = { _ in loaded.fulfill() }
+        web.navigationDelegate = navigation
+        web.loadHTMLString("""
+            <html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>\(css)</style></head>
+            <body id="story_pane" class="NB-ipad-wide NB-medium NB-river"><div class="NB-header"><div class="NB-header-inner">
+            <div class="NB-story-title">Fullscreen article title</div></div></div><div style="height:2000px"></div></body></html>
+            """, baseURL: cssURL.deletingLastPathComponent())
+        await fulfillment(of: [loaded], timeout: 5)
+        navigation.finished = nil
+        defer {
+            web.stopLoading()
+            web.navigationDelegate = nil
+            pages.currentPage = nil
+            detail.storyPagesViewController = nil
+            app.detailViewController = nil
+        }
+
+        // LoginViewControllerTests.swift measures both production expanded-width CSS classes at the smallest/largest font settings.
+        for layout in [(cssClass: "NB-ipad-wide", width: CGFloat(864)), (cssClass: "NB-ipad-narrow", width: CGFloat(585))] {
+            page.view.frame.size.width = layout.width
+            web.frame.size.width = layout.width
+            gradient.frame.size.width = layout.width
+            for font in ["NB-xs", "NB-xl"] {
+                let titleLeft = try await web.evaluateJavaScript("""
+                    document.body.className='\(layout.cssClass) \(font) NB-river';
+                    document.querySelector('.NB-story-title').getBoundingClientRect().left;
+                    """) as? NSNumber
+                let renderedTitleLeft = CGFloat(try XCTUnwrap(titleLeft).doubleValue)
+                XCTAssertEqual(renderedTitleLeft, 30, accuracy: 0.5,
+                               "The expected alignment comes from the bundled article CSS")
+                detail.requestsFullscreen = true
+                for offset in [CGFloat(0), 120, -45] {
+                    web.scrollView.contentOffset.y = offset
+                    page.updateFeedTitleGradientPosition()
+                    XCTAssertEqual(favicon.convert(favicon.bounds, to: web).minX, renderedTitleLeft, accuracy: 0.5,
+                                   "Only full-screen reading must move the favicon clear of the rounded corner")
+                    XCTAssertEqual(feedLabel.frame.minX - favicon.frame.maxX, 8, accuracy: 0.5)
+                    XCTAssertEqual(gradient.frame.minX, 0, accuracy: 0.5)
+                    XCTAssertEqual(gradient.frame.width, web.bounds.width, accuracy: 0.5,
+                                   "Indenting the favicon must not inset the full-width gradient")
+                    XCTAssertEqual(gradient.frame.minY, max(0, -offset), accuracy: 0.5,
+                                   "The favicon inset must preserve pinned reading and top-pull behavior")
+                }
+                detail.requestsFullscreen = false
+                page.updateFeedTitleGradientPosition()
+                XCTAssertEqual(favicon.frame, originalIconFrame, "Returning to two panes restores the original favicon layout")
+                XCTAssertEqual(feedLabel.frame.minX, originalLabelX, accuracy: 0.5)
+            }
+        }
+
+        for legacy in [(phone: true, compact: true), (phone: false, compact: false)] {
+            detail.requestsFullscreen = true
+            detail.simulatesPhone = legacy.phone
+            detail.isCompact = legacy.compact
+            pages.simulatedVerticalToolbar = false
+            page.updateFeedTitleGradientPosition()
+            XCTAssertEqual(favicon.frame, originalIconFrame, "Compact phone and iPad keep their original favicon position")
+            XCTAssertEqual(feedLabel.frame.minX, originalLabelX, accuracy: 0.5)
         }
     }
 
@@ -2558,6 +2989,42 @@ final class StoryPagesViewControllerTests: XCTestCase {
         // LoginViewControllerTests.swift does not install StoryDetailObjCViewController.m's content-offset observer.
         webView = nil
     }
+}
+
+@MainActor private final class DuoNativeEdgePan: UIPanGestureRecognizer {
+    var requiredFailures: [UIGestureRecognizer] = []
+    override func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
+        requiredFailures.append(otherGestureRecognizer)
+        super.require(toFail: otherGestureRecognizer)
+    }
+}
+
+@MainActor private final class DuoNativeEdgeTap: UITapGestureRecognizer {
+    var requiredFailures: [UIGestureRecognizer] = []
+    override func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
+        requiredFailures.append(otherGestureRecognizer)
+        super.require(toFail: otherGestureRecognizer)
+    }
+}
+
+@MainActor private final class DuoNativeEdgeScrollView: UIScrollView {
+    let observedPan = DuoNativeEdgePan()
+    override var panGestureRecognizer: UIPanGestureRecognizer { observedPan }
+}
+
+@MainActor private final class DuoNativeEdgeWebView: WKWebView {
+    let observedScroll = DuoNativeEdgeScrollView()
+    override var scrollView: UIScrollView { observedScroll }
+}
+
+@MainActor private final class DuoFullscreenGradientDetail: DuoRegularHeightDetailController {
+    var requestsFullscreen = false
+    var simulatesPhone = true
+    override var isPhone: Bool { simulatesPhone }
+    override var isDuoFullscreenReader: Bool { requestsFullscreen && isPhone && !isPhoneOrCompact }
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    override func viewDidLayoutSubviews() {}
 }
 
 @MainActor private final class DuoReaderAppearancePages: StoryPagesViewController {
