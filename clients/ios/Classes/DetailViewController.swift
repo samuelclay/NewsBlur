@@ -116,6 +116,7 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func resetDiscoveryForAccountChange() {
+        appDelegate.trainerViewController?.resetForAccountChange()
         duoFullscreenRequested = false
         duoPreviousSplitBehavior = nil
         // DetailViewController.swift owns Discovery even while its preview reader is visible.
@@ -616,6 +617,9 @@ class DetailViewController: BaseViewController {
               let split = appDelegate.splitViewController else { return }
         isUpdatingDuoFullscreenSidebar = true
         defer { isUpdatingDuoFullscreenSidebar = false }
+        if presentation != .fullscreen {
+            appDelegate.trainerViewController?.captureRetainedStoryContext()
+        }
         fullscreenSidebarPresentationState = presentation
         restoreReaderBesideStoryTitles()
         if presentation == .storyTitles {
