@@ -59,6 +59,7 @@
 @property (nonatomic) CGSize lastScrollViewBoundsSize;
 @property (nonatomic, strong) UIBarButtonItem *temporaryFullScreenButton;
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *storyTitlesEdgeRevealGesture;
+@property (nonatomic, strong) NSMapTable<UIGestureRecognizer *, NSHashTable<UIGestureRecognizer *> *> *duoNativeEdgePriorities;
 @property (nonatomic, strong) UIView *uiTestStoryStateProbeView;
 @property (nonatomic, strong) UIView *uiTestTraverseFadeProbeView;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalReaderToolbarItems;
@@ -222,6 +223,48 @@
     [appDelegate.detailViewController revealStoryTitlesFromLeadingEdgeGesture:gestureRecognizer];
 }
 
+- (void)updateDuoFullscreenNativeEdgePriority {
+    if (!appDelegate.detailViewController.isDuoFullscreenReader || !self.isViewLoaded) return;
+    UIView *splitView = appDelegate.splitViewController.viewIfLoaded;
+    if (!splitView || ![self.view isDescendantOfView:splitView]) return;
+    UINavigationController *navigation = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    UIGestureRecognizer *contentPop = nil;
+    if (@available(iOS 26.0, *)) contentPop = navigation.interactiveContentPopGestureRecognizer;
+    if (!self.duoNativeEdgePriorities) self.duoNativeEdgePriorities = [NSMapTable weakToStrongObjectsMapTable];
+
+    NSMutableArray<UIGestureRecognizer *> *readerGestures = [NSMutableArray array];
+    if (self.scrollView.panGestureRecognizer) [readerGestures addObject:self.scrollView.panGestureRecognizer];
+    for (id candidate in @[(id)currentPage ?: NSNull.null, (id)nextPage ?: NSNull.null, (id)previousPage ?: NSNull.null]) {
+        if (![candidate isKindOfClass:StoryDetailViewController.class]) continue;
+        StoryDetailViewController *page = candidate;
+        if (page.webView.scrollView.panGestureRecognizer) [readerGestures addObject:page.webView.scrollView.panGestureRecognizer];
+        // StoryDetailObjCViewController.m owns these taps; a cancelled native edge must not also open the touched article image.
+        for (UIGestureRecognizer *tap in page.webView.gestureRecognizers) {
+            if ([tap isKindOfClass:UITapGestureRecognizer.class] && tap.delegate == page) [readerGestures addObject:tap];
+        }
+    }
+    // StoryPagesObjCViewController.m lets UIKit's native ancestor edge win before reader pans or article taps begin.
+    for (UIView *ancestor = self.view.superview; ancestor; ancestor = ancestor.superview) {
+        for (UIGestureRecognizer *gesture in ancestor.gestureRecognizers) {
+            if (![gesture isKindOfClass:UIScreenEdgePanGestureRecognizer.class] || !gesture.enabled ||
+                ((UIScreenEdgePanGestureRecognizer *)gesture).edges != UIRectEdgeLeft ||
+                gesture == navigation.interactivePopGestureRecognizer || gesture == contentPop) continue;
+            for (UIGestureRecognizer *readerGesture in readerGestures) {
+                NSHashTable *edges = [self.duoNativeEdgePriorities objectForKey:readerGesture];
+                if (!edges) {
+                    edges = [NSHashTable weakObjectsHashTable];
+                    [self.duoNativeEdgePriorities setObject:edges forKey:readerGesture];
+                }
+                if (![edges containsObject:gesture]) {
+                    [readerGesture requireGestureRecognizerToFail:gesture];
+                    [edges addObject:gesture];
+                }
+            }
+        }
+        if (ancestor == splitView) break;
+    }
+}
+
 - (void)ensureCurrentPageViewIsFrontmost {
     if (!self.currentPage || !self.scrollView) {
         return;
@@ -238,6 +281,7 @@
     }
 
     [self ensureCurrentPageViewIsFrontmost];
+    [self updateDuoFullscreenNativeEdgePriority];
     [self.currentPage drawFeedGradient];
     [self updateNativeReaderHeaderScrolling];
 }
@@ -994,11 +1038,12 @@
     self.verticalProgressButton.hidden = detail.canToggleDuoFullscreenReader;
     self.temporaryFullScreenButton.target = detail;
     self.temporaryFullScreenButton.accessibilityValue = detail.isDuoFullscreenReader ? @"On" : @"Off";
-    NSString *symbol = detail.isDuoFullscreenReader ? @"rectangle.split.2x1" : @"rectangle.expand.vertical";
+    NSString *symbol = detail.isDuoFullscreenReader ? @"rectangle.split.2x1" : @"arrow.left.and.right";
     self.temporaryFullScreenButton.image = [UIImage systemImageNamed:symbol];
 }
 
 - (void)updateReaderToolbarPresentation {
+    [self updateDuoFullscreenNativeEdgePriority];
     [self updateReaderScrollEdgeEffects];
     if (!self.storyToolbar) return;
     BOOL vertical = self.usesVerticalReaderToolbar;
@@ -1545,6 +1590,8 @@
 
     UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
     if (gestureRecognizer == self.storyTitlesEdgeRevealGesture) {
+        // StoryPagesObjCViewController.m lets UIKit track the native Duo primary overlay instead of committing a reveal at the first drag update.
+        if (appDelegate.detailViewController.isDuoFullscreenReader) return NO;
         UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
         CGPoint velocity = [pan velocityInView:self.view];
         BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
@@ -2960,6 +3007,7 @@
     [self.scrollView setContentOffset:position animated:NO];
     self.isRepositioningFirstPage = repositioning;
     [self ensureCurrentPageViewIsFrontmost];
+    [self updateDuoFullscreenNativeEdgePriority];
     [self updateNativeReaderHeaderScrolling];
 }
 

@@ -51,6 +51,7 @@
 @property (nonatomic) CFTimeInterval fontWarmupStarted;
 @property (nonatomic) NSUInteger fontPreparationWaitGeneration;
 @property (nonatomic, strong) NSString *lastWidthClassKey;
+@property (nonatomic) BOOL appliesDuoFullscreenFeedTitleInset;
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic) BOOL hasScrolledAwayFromTop;
@@ -1073,10 +1074,33 @@
     return contentInsetTop > 0 ? contentInsetTop : -1;
 }
 
+- (void)updateFeedTitleGradientContentLayout {
+    BOOL fullscreen = appDelegate.detailViewController.isDuoFullscreenReader;
+    if (!fullscreen && !self.appliesDuoFullscreenFeedTitleInset) return;
+
+    // StoryDetailObjCViewController.m aligns fullscreen's favicon with storyDetailView.css's 30pt NB-ipad-wide/narrow header padding.
+    CGFloat iconLeading = fullscreen ? 30 : 8;
+    for (UIView *content in self.feedTitleGradient.subviews) {
+        CGRect frame = content.frame;
+        if ([content isKindOfClass:UIImageView.class]) {
+            frame.origin.x = iconLeading;
+        } else if ([content isKindOfClass:UILabel.class]) {
+            frame.origin.x = iconLeading + 24;
+            frame.size.width = MAX(0, CGRectGetWidth(self.feedTitleGradient.bounds) - frame.origin.x);
+        } else {
+            continue;
+        }
+        if (!CGRectEqualToRect(content.frame, frame)) content.frame = frame;
+    }
+    self.appliesDuoFullscreenFeedTitleInset = fullscreen;
+}
+
 - (void)updateFeedTitleGradientPosition {
     if (!self.feedTitleGradient || self.feedTitleGradient.superview != self.webView) {
         return;
     }
+
+    [self updateFeedTitleGradientContentLayout];
 
     StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
     BOOL pinsFeedHeader = pagesVC.usesVerticalReaderToolbar ||

@@ -8,6 +8,31 @@
 
 import UIKit
 
+/// SplitViewController.swift records the original touch before UIPanGestureRecognizer consumes its recognition threshold.
+class FeedsSidebarResizePanGestureRecognizer: UIPanGestureRecognizer {
+    private weak var touchCoordinateView: UIView?
+    private var initialTouchLocation: CGPoint?
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        if initialTouchLocation == nil, let touch = touches.first, let coordinates = view?.superview {
+            touchCoordinateView = coordinates
+            initialTouchLocation = touch.location(in: coordinates)
+        }
+        super.touchesBegan(touches, with: event)
+    }
+
+    func touchDownLocation(in view: UIView) -> CGPoint? {
+        guard let coordinates = touchCoordinateView, let location = initialTouchLocation else { return nil }
+        return view.convert(location, from: coordinates)
+    }
+
+    override func reset() {
+        super.reset()
+        touchCoordinateView = nil
+        initialTouchLocation = nil
+    }
+}
+
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
     private var ownsCompactPhoneWidth = false
@@ -125,7 +150,7 @@ class SplitViewController: UISplitViewController {
 
         // Use a pan gesture on the divider view itself so it captures the drag
         // before the system's NSSplitView (on Catalyst) can intercept it.
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(handleFeedsDividerPan(_:)))
+        let pan = FeedsSidebarResizePanGestureRecognizer(target: self, action: #selector(handleFeedsDividerPan(_:)))
         feedsDividerView.addGestureRecognizer(pan)
     }
 
@@ -264,35 +289,22 @@ class SplitViewController: UISplitViewController {
         case .began:
             guard !feedsDividerView.isHidden, let primaryFrame = primaryColumnFrame else { return }
             isDraggingFeedsDivider = true
-            feedsDividerDragStart = gesture.location(in: view)
+            let location = gesture.location(in: view)
+            let translation = gesture.translation(in: view)
+            // SplitViewController.swift keeps touch-down in the stationary split view, rather than the moving divider.
+            feedsDividerDragStart = (gesture as? FeedsSidebarResizePanGestureRecognizer)?.touchDownLocation(in: view)
+                ?? CGPoint(x: location.x - translation.x, y: location.y - translation.y)
             feedsDividerInitialWidth = primaryFrame.width
             feedsDividerView.isHighlighted = true
+            applyFeedsDividerWidth(at: location)
 
         case .changed:
             guard isDraggingFeedsDivider else { return }
-            let point = gesture.location(in: view)
-            let direction: CGFloat = primaryColumnIsOnLeft ? 1 : -1
-            let requestedWidth = feedsDividerInitialWidth + (point.x - feedsDividerDragStart.x) * direction
-            let limits = duoPrimaryWidthLimits ?? (minimum: minimumPrimaryColumnWidth, maximum: maximumPrimaryColumnWidth)
-            let maximumWidth = min(limits.maximum, view.bounds.width - 200)
-            guard maximumWidth >= limits.minimum else { return }
-            let newWidth = min(max(requestedWidth, limits.minimum), maximumWidth)
-
-            UIView.performWithoutAnimation {
-                if isExpandedDuoSplit {
-                    UserDefaults.standard.set(Float(newWidth), forKey: Self.feedsWidthKey)
-                    updateDuoSidebarWidthPolicy()
-                } else {
-                    preferredPrimaryColumnWidth = newWidth
-                }
-                view.setNeedsLayout()
-                view.layoutIfNeeded()
-            }
-            updateFeedsDividerPosition()
-            persistRenderedPrimaryWidth()
+            applyFeedsDividerWidth(at: gesture.location(in: view))
 
         case .ended, .cancelled, .failed:
             guard isDraggingFeedsDivider else { return }
+            if gesture.state == .ended { applyFeedsDividerWidth(at: gesture.location(in: view)) }
             isDraggingFeedsDivider = false
             feedsDividerView.isHighlighted = false
             view.setNeedsLayout()
@@ -303,6 +315,28 @@ class SplitViewController: UISplitViewController {
         default:
             break
         }
+    }
+
+    private func applyFeedsDividerWidth(at point: CGPoint) {
+        let direction: CGFloat = primaryColumnIsOnLeft ? 1 : -1
+        let requestedWidth = feedsDividerInitialWidth + (point.x - feedsDividerDragStart.x) * direction
+        let limits = duoPrimaryWidthLimits ?? (minimum: minimumPrimaryColumnWidth, maximum: maximumPrimaryColumnWidth)
+        let maximumWidth = min(limits.maximum, view.bounds.width - 200)
+        guard maximumWidth >= limits.minimum else { return }
+        let newWidth = min(max(requestedWidth, limits.minimum), maximumWidth)
+
+        UIView.performWithoutAnimation {
+            if isExpandedDuoSplit {
+                UserDefaults.standard.set(Float(newWidth), forKey: Self.feedsWidthKey)
+                updateDuoSidebarWidthPolicy()
+            } else {
+                preferredPrimaryColumnWidth = newWidth
+            }
+            view.setNeedsLayout()
+            view.layoutIfNeeded()
+        }
+        updateFeedsDividerPosition()
+        persistRenderedPrimaryWidth()
     }
 
     private func persistRenderedPrimaryWidth() {
