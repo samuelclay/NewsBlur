@@ -29,9 +29,15 @@ final class Test_DuoLiveUI: XCTestCase {
         try recoverAuditModals()
         // DuoLiveUITests.swift can follow application tests that leave an unselected expanded reader; establish the feed-list starting screen through its real Sidebar action.
         let feeds = app.tables["feeds-list"]
-        if !feeds.exists || !feeds.isHittable,
-           let sidebar = app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable }) {
-            sidebar.tap()
+        if !feeds.exists || !feeds.isHittable {
+            let back = app.buttons["expanded-feeds-back"]
+            if back.exists && back.isHittable {
+                back.tap()
+            } else if let sidebar = app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable }) {
+                sidebar.tap()
+                // DuoLiveUITests.swift follows fullscreen's titles overlay through its own Feeds action.
+                if back.exists && back.isHittable { back.tap() }
+            }
         }
 #else
         throw XCTSkip("This audit requires the iPhone Duo simulator")
@@ -144,6 +150,18 @@ final class Test_DuoLiveUI: XCTestCase {
 
     func test_fullscreenReaderKeepsTitlesAndFeedsInAnOverlay() throws {
         try requireVisibleFeeds()
+        let initialFullscreen = app.buttons["reader-fullscreen"]
+        if initialFullscreen.exists && initialFullscreen.value as? String == "On" {
+            let sidebar = try XCTUnwrap(app.buttons.matching(identifier: "Sidebar")
+                .allElementsBoundByIndex.first { $0.isHittable })
+            sidebar.tap()
+            XCTAssertTrue(waitUntilHittable(initialFullscreen))
+            initialFullscreen.tap()
+            let back = app.buttons["expanded-feeds-back"]
+            XCTAssertTrue(waitUntilHittable(back))
+            back.tap()
+            try requireVisibleFeeds()
+        }
         let feeds = app.tables["feeds-list"]
         let folder = feeds.children(matching: .other).children(matching: .button)
             .matching(identifier: "folder-header-everything").element
@@ -151,7 +169,11 @@ final class Test_DuoLiveUI: XCTestCase {
             if folder.exists && feeds.frame.contains(folder.frame) { break }
             feeds.swipeDown()
         }
-        XCTAssertTrue(folder.exists && feeds.frame.contains(folder.frame))
+        let folderReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            folder.exists && feeds.frame.contains(folder.frame)
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [folderReady], timeout: 15), .completed,
+                       "The signed-in feed reload must settle before selecting All Site Stories")
         shouldReturnToFeeds = true
         folder.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let list = app.tables["story-titles-list"]
@@ -180,6 +202,27 @@ final class Test_DuoLiveUI: XCTestCase {
         capture("duo-fullscreen-reader")
         let sidebar = try XCTUnwrap(app.buttons.matching(identifier: "Sidebar")
             .allElementsBoundByIndex.first { $0.isHittable })
+        // DuoLiveUITests.swift anchors the edge drag to the visible reader because the application's coordinate space can belong to Duo's inactive outer display.
+        let edge = web.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+            .withOffset(CGVector(dx: 1, dy: 0))
+        // DuoLiveUITests.swift crosses the native completion threshold even when the remembered overlay width is large.
+        let revealDistance = fullWidth * 0.65
+        edge.press(forDuration: 0.05, thenDragTo: edge.withOffset(CGVector(dx: revealDistance, dy: 0)),
+                   withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertTrue(waitUntilHittable(list), "A leading-edge swipe must reveal story titles instead of paging to a different article")
+        XCTAssertEqual(probe.value as? String, hash)
+        XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1)
+        capture("duo-fullscreen-edge-reveal")
+        sidebar.tap()
+        XCTAssertTrue(list.waitForDisappearance(timeout: 5))
+        edge.press(forDuration: 0.05, thenDragTo: edge.withOffset(CGVector(dx: 35, dy: 0)),
+                   withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertFalse(list.exists && list.isHittable, "A short released edge swipe must cancel without committing the overlay")
+        XCTAssertEqual(probe.value as? String, hash)
+        capture("duo-fullscreen-edge-cancel")
+        XCTAssertFalse(app.otherElements["story-image-viewer"].exists,
+                       "Cancelling the native edge swipe over a photo must not open that photo")
+        XCTAssertTrue(waitUntilHittable(sidebar), "Cancelling the edge swipe must leave the reader rail interactive")
         sidebar.tap()
         XCTAssertTrue(waitUntilHittable(list))
         XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1,
@@ -202,7 +245,7 @@ final class Test_DuoLiveUI: XCTestCase {
                 abs(content.frame.width - width) < 3 && abs(resizeHandle.frame.midX - content.frame.maxX) < 3
             }, object: nil)
             XCTAssertEqual(XCTWaiter.wait(for: [resized], timeout: 5), .completed,
-                           "Dragging must resize the visible list and keep its handle at the list edge")
+                           "Dragging must resize the visible list to \(width); actual content \(content.frame), handle \(resizeHandle.frame)")
             XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1)
         }
         let resizedOverlayWidth = originalOverlayWidth + 60
@@ -214,6 +257,17 @@ final class Test_DuoLiveUI: XCTestCase {
         XCTAssertEqual(feeds.frame.width, resizedOverlayWidth, accuracy: 3,
                        "Feeds and story titles must share the selected overlay width")
         capture("duo-fullscreen-feeds-overlay")
+        // DuoLiveUITests.swift dismisses through UIKit's outside-tap surface and then uses a fresh edge gesture, without the explicit Sidebar button preparing titles.
+        web.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+        XCTAssertTrue(feeds.waitForDisappearance(timeout: 5))
+        edge.press(forDuration: 0.05, thenDragTo: edge.withOffset(CGVector(dx: revealDistance, dy: 0)),
+                   withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertTrue(waitUntilHittable(list), "A fresh edge reveal after dismissing Feeds must show story titles")
+        XCTAssertFalse(feeds.exists && feeds.isHittable)
+        XCTAssertEqual(web.frame.width, fullWidth, accuracy: 1)
+        XCTAssertEqual(probe.value as? String, hash)
+        back.tap()
+        try requireVisibleFeeds()
         let source = try XCTUnwrap(feeds.cells.matching(NSPredicate(format: "identifier MATCHES 'feed-row-[0-9]+'"))
             .allElementsBoundByIndex.first {
                 feeds.frame.contains($0.frame) && $0.frame.height > 20 &&
@@ -249,6 +303,66 @@ final class Test_DuoLiveUI: XCTestCase {
         back.tap()
         try requireVisibleFeeds()
         shouldReturnToFeeds = false
+    }
+
+    func test_fullscreenPhotoEdgeCancellationPreservesReader() throws {
+        try requireVisibleFeeds()
+        let search = app.textFields["Search feeds"]
+        let feeds = app.tables["feeds-list"]
+        for _ in 0..<12 {
+            if search.exists && search.isHittable { break }
+            feeds.swipeDown()
+        }
+        XCTAssertTrue(waitUntilHittable(search))
+        search.tap()
+        search.typeText("STREET ART UTOPIA\n")
+        let source = feeds.cells["feed-row-674970"]
+        XCTAssertTrue(waitUntilHittable(source), "The signed-in photo feed used in the cancellation reproduction must be available")
+        shouldReturnToFeeds = true
+        source.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let list = app.tables["story-titles-list"]
+        XCTAssertTrue(waitUntilHittable(list))
+        let rows = list.cells.matching(NSPredicate(format: "identifier BEGINSWITH 'story-row-674970:'"))
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            rows.allElementsBoundByIndex.contains { list.frame.contains($0.frame) && $0.frame.height > 20 }
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 20), .completed)
+        let row = try XCTUnwrap(rows.allElementsBoundByIndex.first { list.frame.contains($0.frame) && $0.frame.height > 20 })
+        let hash = String(row.identifier.dropFirst("story-row-".count))
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let probe = app.staticTexts["story-current-story"].firstMatch
+        try waitForLiveReader(probe, expectedHash: hash)
+        let fullscreen = app.buttons["reader-fullscreen"]
+        XCTAssertTrue(waitUntilHittable(fullscreen))
+        let wasFullscreen = fullscreen.value as? String == "On"
+        if !wasFullscreen { fullscreen.tap() }
+        let web = try XCTUnwrap(app.webViews.allElementsBoundByIndex.first { $0.isHittable })
+        func visiblePhoto() -> XCUIElement? {
+            web.images.allElementsBoundByIndex.first {
+                $0.frame.minX <= web.frame.minX + 2 && $0.frame.maxX >= web.frame.maxX - 2 &&
+                    $0.frame.intersection(web.frame).height > 100
+            }
+        }
+        let photoReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in visiblePhoto() != nil }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [photoReady], timeout: 20), .completed)
+        let photo = try XCTUnwrap(visiblePhoto())
+        let photoFrame = photo.frame.intersection(web.frame)
+        let edge = web.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: 1, dy: photoFrame.midY - web.frame.minY))
+        capture("duo-fullscreen-photo-before-cancel")
+        edge.press(forDuration: 0.05, thenDragTo: edge.withOffset(CGVector(dx: 35, dy: 0)),
+                   withVelocity: .slow, thenHoldForDuration: 0.3)
+        capture("duo-fullscreen-photo-after-cancel")
+        XCTAssertFalse(app.otherElements["story-image-viewer"].exists)
+        XCTAssertFalse(list.exists && list.isHittable)
+        XCTAssertEqual(probe.value as? String, hash)
+        // DuoLiveUITests.swift also proves the same photo remains normally tappable after cancelling the native sidebar gesture.
+        photo.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.otherElements["story-image-viewer"].waitForExistence(timeout: 5))
+        app.buttons["Close image"].tap()
+        XCTAssertTrue(app.otherElements["story-image-viewer"].waitForDisappearance(timeout: 5))
+        if !wasFullscreen { fullscreen.tap() }
+        try returnToFeedsFromStoryList()
     }
 
     func test_openReadingWithStoryTapsScrollingAndNextPrevious() throws {
@@ -847,6 +961,12 @@ final class Test_DuoLiveUI: XCTestCase {
 
     private func recoverAuditModals() throws {
         for _ in 0..<5 {
+            let imageClose = app.buttons["Close image"]
+            if app.otherElements["story-image-viewer"].exists && imageClose.isHittable {
+                imageClose.tap()
+                XCTAssertTrue(app.otherElements["story-image-viewer"].waitForDisappearance(timeout: 5))
+                continue
+            }
             if auditDailyBriefingSettingsOpen {
                 try dismissAuditDailyBriefingSettings()
                 continue
@@ -920,9 +1040,17 @@ final class Test_DuoLiveUI: XCTestCase {
             shouldReturnToFeeds = false
             return
         }
-        // DuoLiveUITests.swift returns through the expanded reader's visible Sidebar action when no compact Back stack exists.
+        let feedsBack = app.buttons["expanded-feeds-back"]
+        if feedsBack.exists && feedsBack.isHittable {
+            feedsBack.tap()
+            try requireVisibleFeeds()
+            shouldReturnToFeeds = false
+            return
+        }
+        // DuoLiveUITests.swift follows fullscreen's Sidebar to titles, then its explicit Feeds action.
         if let sidebar = app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable }) {
             sidebar.tap()
+            if feedsBack.exists && feedsBack.isHittable { feedsBack.tap() }
             try requireVisibleFeeds()
             shouldReturnToFeeds = false
             return
