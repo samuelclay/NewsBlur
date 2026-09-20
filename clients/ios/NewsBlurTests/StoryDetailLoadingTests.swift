@@ -679,6 +679,79 @@ import XCTest
         }
     }
 
+    func test_expandedPhoneSelectionHidesArticleEdgeEffectsUntilLiveViewsAreRestored() throws {
+        guard #available(iOS 26.0, *) else { throw XCTSkip("Native scroll edge effects require iOS26") }
+        for pose in [(phone: true, compact: false, cancel: false),
+                     (phone: true, compact: false, cancel: true),
+                     (phone: true, compact: true, cancel: true),
+                     (phone: false, compact: false, cancel: true)] {
+            let fixture = makePresentationFixture(width: 600)
+            fixture.pages.simulatedPhone = pose.phone
+            fixture.pages.regularPane = !pose.compact
+            fixture.app.compactWidthOverride = pose.compact
+            let outgoing = fixture.original
+            let incoming = try XCTUnwrap(fixture.pages.nextPage)
+            let intermediate = try XCTUnwrap(fixture.pages.previousPage)
+            incoming.activeStory = fixture.stories[9]
+            incoming.activeStoryId = "item-9"
+            incoming.hasStory = true
+            incoming.webView.isHidden = false
+            intermediate.activeStory = fixture.stories[3]
+            intermediate.activeStoryId = "item-3"
+            intermediate.hasStory = true
+            intermediate.webView.isHidden = false
+            intermediate.webView.frame = fixture.pages.scrollView.bounds
+            intermediate.setValue(true, forKey: "readyForPresentation")
+            fixture.pages.setValue(intermediate, forKey: "pendingIntermediatePage")
+            outgoing.webView.scrollView.topEdgeEffect.isHidden = false
+            incoming.webView.scrollView.topEdgeEffect.isHidden = true
+            intermediate.webView.scrollView.topEdgeEffect.isHidden = false
+            let outgoingWeb = outgoing.webView
+            let incomingWeb = incoming.webView
+            fixture.pages.perform(NSSelectorFromString("updateReaderScrollEdgeEffects"))
+            XCTAssertEqual(fixture.pages.scrollView.topEdgeEffect.isHidden, pose.phone && !pose.compact)
+
+            var observedTransition = false
+            fixture.pages.selectionTransitionStarted = { movingPages in
+                observedTransition = true
+                XCTAssertEqual(movingPages.count, 3, "The painted intermediate article needs the same temporary edge ownership")
+                for page in movingPages {
+                    XCTAssertFalse(page.view.isDescendant(of: fixture.pages.scrollView),
+                                   "The real selection animation must lift the live article out of the pager")
+                    let expectedHidden = pose.phone && !pose.compact ? true : page === incoming
+                    XCTAssertEqual(page.webView.scrollView.topEdgeEffect.isHidden, expectedHidden,
+                                   "A moving article must not acquire a translucent shared-header band: \(pose)")
+                }
+            }
+            // StoryDetailLoadingTests.swift invokes the real animation boundary to cover both native edge ownership and its normal/cancelled cleanup without network timing.
+            fixture.pages.observeSelectionTransition(incoming, location: 2)
+            XCTAssertTrue(observedTransition)
+            XCTAssertNotNil(fixture.pages.value(forKey: "storySelectionTransitionHost"))
+            if pose.cancel {
+                fixture.pages.cancelPendingStoryPresentation()
+            } else {
+                fixture.pages.perform(NSSelectorFromString("finishStorySelectionAnimation"))
+            }
+            XCTAssertNil(fixture.pages.value(forKey: "storySelectionTransitionHost"))
+            XCTAssertTrue(outgoing.view.isDescendant(of: fixture.pages.scrollView))
+            XCTAssertTrue(incoming.view.isDescendant(of: fixture.pages.scrollView))
+            XCTAssertTrue(intermediate.view.isDescendant(of: fixture.pages.scrollView))
+            XCTAssertFalse(outgoing.webView.scrollView.topEdgeEffect.isHidden,
+                           "The outgoing article must regain its original edge policy")
+            XCTAssertTrue(incoming.webView.scrollView.topEdgeEffect.isHidden,
+                          "An originally hidden edge must remain hidden after restoration")
+            XCTAssertFalse(intermediate.webView.scrollView.topEdgeEffect.isHidden)
+            XCTAssertTrue(outgoing.webView === outgoingWeb)
+            XCTAssertTrue(incoming.webView === incomingWeb)
+            // StoryDetailLoadingTests.swift immediately starts another selection to catch stale saved edge values across rapid taps.
+            fixture.pages.observeSelectionTransition(incoming, location: 2)
+            XCTAssertEqual(outgoing.webView.scrollView.topEdgeEffect.isHidden, pose.phone && !pose.compact)
+            fixture.pages.cancelPendingStoryPresentation()
+            XCTAssertFalse(outgoing.webView.scrollView.topEdgeEffect.isHidden)
+            XCTAssertTrue(incoming.webView.scrollView.topEdgeEffect.isHidden)
+        }
+    }
+
     func test_preparedTitlePaneSelectionDoesNotJumpBeforeItsAnimationBegins() async throws {
         let defaults = UserDefaults.standard
         let originalDirection = defaults.object(forKey: "scroll_stories_horizontally")
@@ -3037,6 +3110,8 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 
 @MainActor private final class StoryPresentationPages: StoryLoadToolbarPages {
     var regularPane = false
+    var simulatedPhone: Bool?
+    override var isPhone: Bool { simulatedPhone ?? super.isPhone }
     @objc(isPhoneOrCompact) func usesPhoneOrCompactLayout() -> Bool {
         !regularPane && (UIDevice.current.userInterfaceIdiom == .phone || appDelegate.isCompactWidth)
     }
