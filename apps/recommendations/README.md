@@ -4,8 +4,9 @@ The web reader exposes a separate Discovery stream at `/folder/discovery`. It
 uses the normal story reading behavior. Inline **More like this** and **Less
 like this** buttons train future recommendations without opening the article,
 changing its read state, subscribing to its feed, or creating intelligence
-classifier rules. The buttons sit in the normal article header alongside its
-date and author, with the actual source title and favicon above. A saved choice
+classifier rules. The buttons sit on their own row below the article's date and
+author, following the reader's story-position preference, with the actual source
+title and favicon above. A saved choice
 expands to fill the button pair, with a brief star flourish that respects reduced
 motion. Click the confirmation to edit, then the selected choice again to clear
 it. Failed requests keep the confirmed preference and offer Retry.
@@ -116,5 +117,5 @@ Focused checks:
 
 ```sh
 docker exec -t newsblur_web_jev-discover python manage.py test apps.recommendations --settings=newsblur_web.test_settings --noinput -v 1
-node --test node/tests/recommendation_feedback.test.js node/tests/recommendation_history.test.js node/tests/discovery_pagination.test.js node/tests/story_selection_utils.test.js node/tests/story_pane_resize.test.js node/tests/story_title_narrow_layout.test.js
+node --test node/tests/recommendation_feedback.test.js node/tests/recommendation_history.test.js node/tests/recommendation_layout.test.js node/tests/discovery_pagination.test.js node/tests/story_selection_utils.test.js node/tests/story_pane_resize.test.js node/tests/story_title_narrow_layout.test.js
 ```

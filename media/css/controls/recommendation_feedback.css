@@ -16,33 +16,29 @@
     font: 12px/1.4 -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.NB-feed-story-header-info:has(.NB-recommendation-feedback) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 16px;
-}
-
-.NB-feed-story-header-info:has(.NB-recommendation-feedback) .NB-feed-story-title-container,
-.NB-feed-story-header-info:has(.NB-recommendation-feedback) .NB-feed-story-starred-date {
-    flex-basis: 100%;
-}
-
-.NB-feed-story-header-info:has(.NB-recommendation-feedback) .NB-feed-story-date-line {
-    flex: 1 1 220px;
-}
-
 .NB-recommendation-feedback {
     position: relative;
     display: flex;
-    flex: 0 0 248px;
+    box-sizing: border-box;
+    width: 248px;
     height: 32px;
     max-width: 100%;
+    margin: 12px 0 0;
     overflow: hidden;
     border: 1px solid var(--feedback-border);
     border-radius: 7px;
     background: var(--feedback-background);
     isolation: isolate;
+}
+
+/* recommendation_feedback.css: Keep feedback on its own row and honor the story position preference. */
+.NB-pref-story-position-center .NB-recommendation-feedback {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.NB-pref-story-position-right .NB-recommendation-feedback {
+    margin-left: auto;
 }
 
 .NB-recommendation-feedback button,
