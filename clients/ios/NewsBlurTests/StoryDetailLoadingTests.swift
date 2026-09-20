@@ -680,6 +680,9 @@ import XCTest
     }
 
     func test_expandedPhoneSelectionHidesArticleEdgeEffectsUntilLiveViewsAreRestored() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Expanded-phone scroll edge ownership does not apply to Mac Catalyst")
+        #else
         guard #available(iOS 26.0, *) else { throw XCTSkip("Native scroll edge effects require iOS26") }
         for pose in [(phone: true, compact: false, cancel: false),
                      (phone: true, compact: false, cancel: true),
@@ -750,6 +753,7 @@ import XCTest
             XCTAssertFalse(outgoing.webView.scrollView.topEdgeEffect.isHidden)
             XCTAssertTrue(incoming.webView.scrollView.topEdgeEffect.isHidden)
         }
+        #endif
     }
 
     func test_preparedTitlePaneSelectionDoesNotJumpBeforeItsAnimationBegins() async throws {
