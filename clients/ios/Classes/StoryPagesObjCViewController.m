@@ -49,6 +49,7 @@
 @property (nonatomic, strong) UIView *storySelectionTransitionHost;
 @property (nonatomic, strong) UIViewPropertyAnimator *storySelectionAnimator;
 @property (nonatomic, strong) NSArray<StoryDetailViewController *> *storySelectionTransitionPages;
+@property (nonatomic, strong) NSMapTable<UIScrollView *, NSNumber *> *storySelectionTopEdgeStates;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, StoryDetailViewController *> *deferredSelectionRedraws;
 @property (nonatomic, strong) UIView *storySelectionRedrawCover;
 @property (nonatomic) BOOL refreshAfterStorySelection;
@@ -2592,6 +2593,14 @@
         [self.scrollView addSubview:page.view];
         [self applyNewIndex:page.pageIndex pageController:page supressRedraw:YES];
     }
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
+    if (@available(iOS 26.0, *)) {
+        for (UIScrollView *scrollView in self.storySelectionTopEdgeStates.keyEnumerator) {
+            scrollView.topEdgeEffect.hidden = [[self.storySelectionTopEdgeStates objectForKey:scrollView] boolValue];
+        }
+    }
+#endif
+    self.storySelectionTopEdgeStates = nil;
     [host removeFromSuperview];
 }
 
@@ -2917,6 +2926,21 @@
         self.isHorizontal ? viewport.height : viewport.height * ordered.count)];
     [host addSubview:track];
     [ordered enumerateObjectsUsingBlock:^(StoryDetailViewController *visiblePage, NSUInteger index, BOOL *stop) {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
+        if (@available(iOS 26.0, *)) {
+            if (self.isPhone && !self.isPhoneOrCompact) {
+                // StoryPagesObjCViewController.m lifts these live articles outside the pager's suppressed edge effect for the animation.
+                UIScrollView *articleScroll = visiblePage.webView.scrollView;
+                if (articleScroll) {
+                    if (!self.storySelectionTopEdgeStates) self.storySelectionTopEdgeStates = [NSMapTable weakToStrongObjectsMapTable];
+                    if (![self.storySelectionTopEdgeStates objectForKey:articleScroll]) {
+                        [self.storySelectionTopEdgeStates setObject:@(articleScroll.topEdgeEffect.hidden) forKey:articleScroll];
+                    }
+                    articleScroll.topEdgeEffect.hidden = YES;
+                }
+            }
+        }
+#endif
         [track addSubview:visiblePage.view];
         visiblePage.view.hidden = NO;
         visiblePage.view.frame = CGRectMake(self.isHorizontal ? index * amount : 0,
