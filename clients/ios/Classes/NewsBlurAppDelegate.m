@@ -1059,8 +1059,17 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                                                                                                              width:screenSize.width
                                                                                                             height:screenSize.height
                                                                                                              isMac:detailViewController.isMac];
-        self.splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
-        self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
+        if (self.detailViewController.isPhone && !self.detailViewController.isPhoneOrCompact &&
+            self.splitViewController.style == UISplitViewControllerStyleDoubleColumn &&
+            (self.storiesCollection.activeFeed != nil || self.storiesCollection.activeFolder != nil) &&
+            preferredBehavior == StorySplitPreferredBehaviorDisplace) {
+            // NewsBlurAppDelegate.m preserves DetailViewController.swift's native Duo overlay for selected sources, leaving the empty launch layout unchanged.
+            self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+        } else {
+            self.splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
+            self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
+        }
 
         if (preferredDisplayMode == StorySplitPreferredDisplayModeTwoBesideSecondary &&
             !self.splitViewController.isCollapsed) {

@@ -942,6 +942,139 @@ final class DetailViewControllerTests: XCTestCase {
                        "Showing an already appearing primary must not queue secondaryOnly and hide it after the show call")
     }
 
+    func test_expandedPhoneSourceRefreshKeepsOverlayBehaviorWhileDismissingFeeds() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The expanded-phone source transition uses the iOS split policy")
+        #else
+        let defaults = UserDefaults.standard
+        let keys = ["split_behavior", "source-refresh:story_titles_position", "folder:Source refresh:story_titles_position"]
+        let previous = keys.map { defaults.object(forKey: $0) }
+        defaults.set("auto", forKey: keys[0])
+        for key in keys.dropFirst() { defaults.set("titles_on_left", forKey: key) }
+        defer { for (key, value) in zip(keys, previous) { defaults.set(value, forKey: key) } }
+        let scenarios: [(phone: Bool, compact: Bool, style: UISplitViewController.Style)] = [
+            (true, false, .doubleColumn), (true, true, .doubleColumn),
+            (false, false, .doubleColumn), (false, false, .tripleColumn)
+        ]
+        for scenario in scenarios {
+            for folder in [false, true] {
+                let app = NewsBlurAppDelegate()
+                let collection = StoriesCollection()
+                collection.appDelegate = app
+                collection.activeFeed = folder ? nil : ["id": "source-refresh"]
+                collection.activeFolder = folder ? "Source refresh" : nil
+                collection.isRiverView = folder
+                app.storiesCollection = collection
+                let detail = DuoExpansionDetailController()
+                detail.appDelegate = app
+                detail.simulatesPhone = scenario.phone
+                detail.isCompact = scenario.compact
+                app.detailViewController = detail
+                let split = DuoSidebarSplitController(style: scenario.style)
+                split.view.frame = CGRect(x: 0, y: 0, width: 951, height: 669)
+                split.simulatedDisplayMode = .oneOverSecondary
+                split.simulatedSplitBehavior = .overlay
+                app.splitViewController = split
+                detail.simulatedSplitViewController = split
+                let stories = DuoSourceRefreshStories()
+                stories.appDelegate = app
+                stories.storiesCollection = collection
+                detail.feedDetailViewController = stories
+                detail.loadViewIfNeeded()
+                let titles = UIView()
+                let divider = UIView()
+                let bottomDivider = UIView()
+                for child in [titles, divider, bottomDivider] {
+                    child.translatesAutoresizingMaskIntoConstraints = false
+                    detail.view.addSubview(child)
+                }
+                let leading = divider.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor, constant: detail.verticalDividerPosition)
+                let bottom = bottomDivider.bottomAnchor.constraint(equalTo: detail.view.bottomAnchor, constant: -6)
+                NSLayoutConstraint.activate([leading, bottom])
+                detail.leftContainerView = titles
+                detail.verticalDividerView = divider
+                detail.verticalDividerViewLeadingConstraint = leading
+                detail.horizontalDividerViewBottomConstraint = bottom
+                detail.addChild(stories)
+                titles.addSubview(stories.view)
+                stories.didMove(toParent: detail)
+                defer {
+                    stories.appDelegate = nil
+                    detail.feedDetailViewController = nil
+                    detail.appDelegate = nil
+                    app.detailViewController = nil
+                    app.storiesCollection = nil
+                    collection.appDelegate = nil
+                }
+
+                if scenario.compact { app.updateSplitBehavior(false) }
+                else { detail.show(column: .primary, animated: false) }
+                // LoginViewControllerTests.swift preserves the existing auto policy's tiled layout at 951×669 outside expanded Duo.
+                let expected: UISplitViewController.SplitBehavior = scenario.phone && !scenario.compact ? .overlay : .tile
+                XCTAssertEqual(split.preferredSplitBehavior, expected)
+                split.requestedBehaviors.removeAll()
+                // LoginViewControllerTests.swift runs the real loadingFeed→updateLayout→updateSplitBehavior chain before and after native source dismissal.
+                for phase in ["loading", "completion"] {
+                    stories.loadingFeed()
+                    XCTAssertEqual(split.preferredSplitBehavior, expected,
+                                   "\(folder ? "Folder" : "Feed") \(phase) must preserve the native reveal policy: \(scenario)")
+                    XCTAssertTrue(split.requestedBehaviors.allSatisfy { $0 == expected },
+                                  "The visible source pane must not switch to displacement and reverse its movement: \(split.requestedBehaviors)")
+                    if phase == "loading", !scenario.compact {
+                        detail.show(column: .secondary, animated: true)
+                        detail.dismissFullscreenSidebarOverlayAfterFeedSelection()
+                        split.simulatedDisplayMode = .secondaryOnly
+                    }
+                }
+                XCTAssertEqual(defaults.string(forKey: "split_behavior"), "auto")
+            }
+        }
+        #endif
+    }
+
+    func test_expandedPhoneUnselectedLaunchKeepsInitialSplitBehavior() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The expanded-phone initial split uses the iOS layout policy")
+        #else
+        let defaults = UserDefaults.standard
+        let keys = ["split_behavior", "story_titles_position"]
+        let previous = keys.map { defaults.object(forKey: $0) }
+        defaults.set("auto", forKey: keys[0])
+        defaults.set("titles_on_left", forKey: keys[1])
+        defer { for (key, value) in zip(keys, previous) { defaults.set(value, forKey: key) } }
+        let app = NewsBlurAppDelegate()
+        let collection = StoriesCollection()
+        collection.appDelegate = app
+        app.storiesCollection = collection
+        let detail = DuoExpansionDetailController()
+        detail.appDelegate = app
+        detail.isCompact = false
+        app.detailViewController = detail
+        let split = DuoSidebarSplitController(style: .doubleColumn)
+        split.view.frame = CGRect(x: 0, y: 0, width: 951, height: 669)
+        split.simulatedDisplayMode = .oneBesideSecondary
+        app.splitViewController = split
+        detail.simulatedSplitViewController = split
+        defer {
+            detail.appDelegate = nil
+            app.detailViewController = nil
+            app.storiesCollection = nil
+            collection.appDelegate = nil
+        }
+        XCTAssertNil(collection.activeFeed)
+        XCTAssertNil(collection.activeFolder)
+        XCTAssertTrue(detail.storyTitlesOnLeft)
+        for _ in 0..<2 {
+            split.requestedBehaviors.removeAll()
+            app.updateSplitBehavior(false)
+            // LoginViewControllerTests.swift preserves the launch policy that lets UIKit show Feeds beside the unselected-source prompt.
+            XCTAssertEqual(split.preferredSplitBehavior, .displace,
+                           "The empty launch pane must not become a dimmed reader behind a feed overlay")
+            XCTAssertEqual(split.requestedBehaviors, [.displace])
+        }
+        #endif
+    }
+
     func test_showingFeedsCancelsPendingHiddenDisplayModesForTheCurrentSplitStyle() {
         let defaults = UserDefaults.standard
         let originalBehavior = defaults.object(forKey: "split_behavior")
@@ -1747,11 +1880,28 @@ final class DetailViewControllerTests: XCTestCase {
     var simulatedSplitBehavior: UISplitViewController.SplitBehavior?
     var shownColumns: [UISplitViewController.Column] = []
     var hiddenColumns: [UISplitViewController.Column] = []
+    var requestedBehaviors: [UISplitViewController.SplitBehavior] = []
+    override var preferredSplitBehavior: UISplitViewController.SplitBehavior {
+        get { super.preferredSplitBehavior }
+        set { requestedBehaviors.append(newValue); super.preferredSplitBehavior = newValue }
+    }
     override var displayMode: UISplitViewController.DisplayMode { simulatedDisplayMode }
     override var splitBehavior: UISplitViewController.SplitBehavior { simulatedSplitBehavior ?? super.splitBehavior }
     // LoginViewControllerTests.swift checks native column operations without requiring a live fold transition.
     override func show(_ column: UISplitViewController.Column) { shownColumns.append(column) }
     override func hide(_ column: UISplitViewController.Column) { hiddenColumns.append(column) }
+}
+
+@MainActor private final class DuoSourceRefreshStories: FeedDetailViewController {
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+    override func changedLayout() {}
+    override func reload() {}
+    override func updateSidebarButton(for displayMode: UISplitViewController.DisplayMode) {}
 }
 
 @MainActor private final class DuoSidebarLayoutStories: FeedDetailViewController {
