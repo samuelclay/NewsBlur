@@ -116,6 +116,7 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func resetDiscoveryForAccountChange() {
+        expandedFeedsReveal = nil
         appDelegate.trainerViewController?.resetForAccountChange()
         duoFullscreenRequested = false
         duoPreviousSplitBehavior = nil
@@ -576,6 +577,7 @@ class DetailViewController: BaseViewController {
     }
 
     private var fullscreenSidebarPresentationState = FullscreenSidebarPresentation.fullscreen
+    private var expandedFeedsReveal: (id: UUID, behavior: String)?
     private var fullscreenSidebarSupplementaryNavigationController: UINavigationController?
     private weak var fullscreenSidebarOverlayFeedDetailController: FeedDetailViewController?
     private var duoFullscreenRequested = false
@@ -593,6 +595,10 @@ class DetailViewController: BaseViewController {
     }
 
     @objc var isDuoFullscreenReader: Bool { duoFullscreenRequested && canToggleDuoFullscreenReader }
+    @objc var preservesExpandedFeedsReveal: Bool {
+        supportsDuoFullscreenLayout && !isDuoFullscreenReader && storyTitlesOnLeft && isFeedShown &&
+            expandedFeedsReveal?.behavior == behaviorString
+    }
     @objc var isBrowsingDuoFullscreenSources: Bool {
         isDuoFullscreenReader && fullscreenSidebarPresentationState != .fullscreen
     }
@@ -667,6 +673,7 @@ class DetailViewController: BaseViewController {
     }
 
     private func applyDuoFullscreenReaderToggle() {
+        expandedFeedsReveal = nil
         if !duoFullscreenRequested {
             duoPreviousSplitBehavior = appDelegate.splitViewController?.preferredSplitBehavior
             duoPreviousPresentsWithGesture = appDelegate.splitViewController?.presentsWithGesture
@@ -822,6 +829,7 @@ class DetailViewController: BaseViewController {
     
     /// Moves the feed detail and story pages (as appropriate) onto the feeds navigation stack. Called when collapsing to a compact size class.
     func collapseToSingleColumn() {
+        expandedFeedsReveal = nil
         let discoveryWasVisible = isDiscoverSitesVisible
         unmountDiscoveryPane()
         isCompact = true
@@ -1031,6 +1039,7 @@ class DetailViewController: BaseViewController {
     }
     
     @objc(showColumn:animated:) func show(column: UISplitViewController.Column, animated: Bool) {
+        if column == .secondary { expandedFeedsReveal = nil }
         if isDuoFullscreenReader {
             if column == .primary { applyDuoFullscreenSidebar(.feeds, animated: animated) }
             return
@@ -1063,6 +1072,9 @@ class DetailViewController: BaseViewController {
             }
             
             if column == .primary {
+                if supportsDuoFullscreenLayout && storyTitlesOnLeft && isFeedShown {
+                    expandedFeedsReveal = (UUID(), behaviorString)
+                }
                 rememberReaderWidthBeforeTiledFeeds()
                 // DetailViewController.swift must not queue secondaryOnly while explicitly revealing the primary column.
                 var preferredBehavior: UISplitViewController.SplitBehavior
@@ -1212,6 +1224,7 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func resetStoryTitlesRevealOverride() {
+        guard !preservesExpandedFeedsReveal else { return }
         let size = view.bounds.size.width > 0 ? view.bounds.size : UIScreen.main.bounds.size
         guard StorySplitBehaviorDecision.shouldResetTemporarySidebarReveal(
             for: behaviorString,
@@ -1383,6 +1396,7 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterStorySelection() {
+        expandedFeedsReveal = nil
         if isDuoFullscreenReader { applyDuoFullscreenSidebar(.fullscreen, animated: true); return }
         if showsStoryTitlesBesideTiledFeeds {
             revealsStoryTitlesAfterTiledFeeds = true
@@ -1424,6 +1438,7 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterFeedSelection() {
+        expandedFeedsReveal = nil
         if isDuoFullscreenReader { applyDuoFullscreenSidebar(.storyTitles, animated: true); return }
         let prefersNativeFullscreenSidebarOverlay = shouldPreferNativeFullscreenSidebarOverlay
         let nextPresentation = FullscreenSidebarPresentationDecision.presentationAfterFeedSelection(
@@ -1447,6 +1462,7 @@ class DetailViewController: BaseViewController {
 
     @objc(syncFullscreenSidebarPresentationForDisplayMode:)
     func syncFullscreenSidebarPresentation(for displayMode: UISplitViewController.DisplayMode) {
+        if displayMode == .secondaryOnly { clearExpandedFeedsRevealAfterDismissal() }
         if isDuoFullscreenReader {
             if !isUpdatingDuoFullscreenSidebar {
                 fullscreenSidebarPresentationState = displayMode == .secondaryOnly ? .fullscreen :
@@ -1506,6 +1522,24 @@ class DetailViewController: BaseViewController {
             }
         } else {
             DispatchQueue.main.async(execute: prepareTitles)
+        }
+    }
+
+    private func clearExpandedFeedsRevealAfterDismissal() {
+        guard let reveal = expandedFeedsReveal, let split = appDelegate.splitViewController else { return }
+        // DetailViewController.swift receives willChange callbacks, so an outgoing or cancelled hide must not revoke a newer Feeds tap.
+        let clearReveal = { [weak self, weak split] in
+            guard let self, let split, self.appDelegate.splitViewController === split,
+                  self.expandedFeedsReveal?.id == reveal.id,
+                  split.displayMode == .secondaryOnly else { return }
+            self.expandedFeedsReveal = nil
+        }
+        if let coordinator = split.transitionCoordinator {
+            coordinator.animate(alongsideTransition: nil) { context in
+                if !context.isCancelled { clearReveal() }
+            }
+        } else {
+            DispatchQueue.main.async(execute: clearReveal)
         }
     }
 
@@ -2023,6 +2057,7 @@ private extension DetailViewController {
     }
 
     func dismissFullscreenSidebarOverlayIfNeeded(animated: Bool) {
+        expandedFeedsReveal = nil
         if isDuoFullscreenReader { applyDuoFullscreenSidebar(.fullscreen, animated: animated); return }
         let shouldDismissNativeOverlay = shouldUseNativeFullscreenSidebarOverlay
             && splitViewController?.displayMode != .secondaryOnly

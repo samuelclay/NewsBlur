@@ -3104,7 +3104,10 @@
         appDelegate.storyPagesViewController.currentPage.view.hidden = NO;
         appDelegate.storyPagesViewController.currentPage.noStoryMessage.hidden = YES;
         
-        [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage" animated:animated];
+        // StoryPagesObjCViewController.m may finish automatic first-article loading after the user has returned to Feeds.
+        if (!appDelegate.detailViewController.preservesExpandedFeedsReveal) {
+            [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage" animated:animated];
+        }
     }
     
     // Ensure traverse bar is visible when a valid story page is loaded.
