@@ -1159,6 +1159,7 @@ import UIKit
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("The expanded Duo heading is not used on Catalyst")
         #else
+        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo native bars") }
         let app = NewsBlurAppDelegate()
         app.storiesCollection = StoriesCollection()
         app.splitViewController = HeaderDuoFeedReturnSplit(style: .doubleColumn)
@@ -1199,6 +1200,9 @@ import UIKit
             detail.feedDetailViewController = nil
             app.detailViewController = nil
             app.splitViewController = nil
+        }
+        guard Utilities.usesSystemVerticalBar(navigation.traitCollection), navigation.view.bounds.width > 800 else {
+            throw XCTSkip("Requires the expanded Duo's native vertical bar")
         }
         func descendants(_ view: UIView) -> [UIView] {
             [view] + view.subviews.flatMap(descendants)
