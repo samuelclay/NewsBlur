@@ -141,11 +141,11 @@
 }
 
 .NB-feedback-summary {
-    font: 12px/1.4 -apple-system, BlinkMacSystemFont, sans-serif;
+    font: inherit;
     display: inline-flex;
     vertical-align: middle;
     align-items: center;
-    gap: 4px;
+    gap: 0;
     height: 24px;
     padding: 0 8px;
     margin: -4px 0 -4px 12px;
@@ -160,20 +160,13 @@
     vertical-align: middle;
 }
 .NB-feedback-summary:hover { border-color: var(--feedback-border); background: var(--feedback-background); }
-.NB-feedback-summary svg { width: 72px; height: 22px; }
+.NB-feedback-summary svg { width: 72px; height: 22px; margin-right: 4px; }
 .NB-feedback-summary .NB-feedback-count {
-    display: inline-block;
-    min-width: 10px;
-    padding: 1px 4px;
-    border-radius: 3px;
-    color: #fff;
-    font: bold 10px/14px -apple-system, BlinkMacSystemFont, sans-serif;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
+    display: block;
 }
 .NB-discovery-feedback-slot { float: right; position: relative; z-index: 1; }
-.NB-feedback-summary.NB-feedback-summary-sidebar { height: 24px; margin: 0 2px 0 0; padding: 0 2px; gap: 3px; }
-.NB-feedback-summary-sidebar svg { width: 48px; }
+.NB-feedback-summary.NB-feedback-summary-sidebar { height: auto; margin: 0 2px 0 0; padding: 0; border: 0; align-items: flex-start; }
+.NB-feedback-summary-sidebar svg { width: 48px; margin-top: 6px; }
 .NB-feeds-header-river-discovery .NB-feeds-header-title { overflow: hidden; text-overflow: ellipsis; }
 .NB-feedback-constellation-line { fill: none; stroke: var(--feedback-text); opacity: .22; stroke-width: 1; }
 .NB-feedback-constellation-star { fill: var(--feedback-text); opacity: .65; }
@@ -267,6 +260,6 @@
 }
 
 @media (max-width: 1000px) {
-    .NB-feedback-summary { gap: 6px; margin-left: 6px; padding: 0 3px; }
+    .NB-feedback-summary { margin-left: 6px; padding: 0 3px; }
     .NB-feedback-summary svg { width: 40px; }
 }

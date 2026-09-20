@@ -117,3 +117,26 @@ test('equal More and Less activity is visible on opposite sides; an empty summar
     assert.ok(y('less') > 12);
     assert.equal(12 - y('more'), y('less') - 12);
 });
+
+test('Discovery summary badges use standard unread styling with hidden before focus', () => {
+    const NEWSBLUR = { Views: {} };
+    const $ = html => ({ html, text(value) { this.value = value; return this; } });
+    const context = vm.createContext({ NEWSBLUR, _: underscore, $, Backbone: { View: { extend: methods => methods } } });
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/views/recommendation_feedback_view.js'), 'utf8'), context);
+    NEWSBLUR.recommendation_feedback_chart = () => 'chart';
+    const children = [];
+    const element = { empty() { children.length = 0; return this; }, append(child) { children.push(child); return this; }, attr() {} };
+    NEWSBLUR.Views.RecommendationFeedbackSummary.render_summary.call({ $el: element }, { more: 43, less: 2, days: [] });
+    const badges = children.filter(child => child.html);
+    assert.equal(badges.length, 2);
+    for (const badge of badges) {
+        const classes = badge.html.match(/class="([^"]+)"/)[1].split(/\s+/);
+        assert.ok(classes.includes('unread_count'), 'Discovery must inherit the standard unread badge CSS');
+    }
+    assert.match(badges[0].html, /unread_count_negative/);
+    assert.equal(badges[0].value, 2);
+    assert.match(badges[1].html, /unread_count_positive/);
+    assert.equal(badges[1].value, 43);
+    NEWSBLUR.Views.RecommendationFeedbackSummary.render_summary.call({ $el: element }, { more: 0, less: 0, days: [] });
+    assert.deepEqual(children, ['chart']);
+});

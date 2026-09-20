@@ -118,8 +118,8 @@ NEWSBLUR.Views.RecommendationFeedbackSummary = Backbone.View.extend({
         this.$el.empty().append(NEWSBLUR.recommendation_feedback_chart(days, 72, 24,
             !summary.more && !summary.less));
         if (summary.more || summary.less) {
-            this.$el.append($('<span class="NB-feedback-count unread_count_positive">').text(summary.more));
-            this.$el.append($('<span class="NB-feedback-count unread_count_negative">').text(summary.less));
+            this.$el.append($('<span class="NB-feedback-count unread_count unread_count_negative">').text(summary.less));
+            this.$el.append($('<span class="NB-feedback-count unread_count unread_count_positive">').text(summary.more));
         }
         var label = 'Recommendation preferences: ' + summary.more + ' More, ' + summary.less + ' Less. Open history.';
         this.$el.attr({ 'aria-label': label, title: label });
