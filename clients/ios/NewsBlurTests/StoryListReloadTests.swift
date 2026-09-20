@@ -1,4 +1,5 @@
 import XCTest
+import SwiftUI
 
 @testable import NewsBlur
 
@@ -357,6 +358,92 @@ import XCTest
 }
 
 @MainActor final class Test_TrainerContext: XCTestCase {
+    func test_mountedStoryTrainerPreservesRetainedArticleAfterSwiftUIAppears() throws {
+        try withRetainedArticleAndBrowsedFeed { trainer, listCache, collection in
+            trainer.isStoryTrainer = true
+            trainer.reload()
+            XCTAssertEqual(trainer.storyCache.selected?.hash, "930001:article-a")
+
+            try withMountedTrainerView(trainer) {
+                XCTAssertEqual(trainer.storyCache.selected?.hash, "930001:article-a")
+                XCTAssertEqual(trainer.trainerView.feed?.id, "930001")
+                XCTAssertEqual(trainer.trainerView.titleWords, ["Retained", "Article", "Alpha"])
+                XCTAssertEqual(trainer.trainerView.authors.map(\.name), ["Author Alpha"])
+                XCTAssertEqual(trainer.trainerView.authors.first?.score, .like)
+                XCTAssertEqual(trainer.trainerView.titles.first?.score, .dislike)
+                XCTAssertEqual(listCache.currentFeed?.id, "930002")
+                XCTAssertNil(listCache.selected)
+                XCTAssertEqual(listCache.all.map(\.hash), ["930002:article-b"])
+                XCTAssertEqual((collection.activeClassifiers["930002"] as? NSDictionary)?["authors"] as? [String: Int],
+                               ["Author Beta": 0])
+
+                // StoryListReloadTests.swift verifies the view's explicit refresh path after its appearance callback, without submitting training.
+                collection.activeClassifiers["930001"] = ["authors": ["Author Alpha": -1], "titles": ["Retained": 1]]
+                trainer.trainerView.reload()
+                XCTAssertEqual(trainer.storyCache.selected?.hash, "930001:article-a")
+                XCTAssertEqual(trainer.trainerView.feed?.id, "930001")
+                XCTAssertEqual(trainer.trainerView.authors.first?.score, .dislike)
+                XCTAssertEqual(trainer.trainerView.titles.first?.score, .like)
+                XCTAssertEqual(listCache.currentFeed?.id, "930002")
+                XCTAssertNil(listCache.selected)
+                XCTAssertEqual((collection.activeClassifiers["930002"] as? NSDictionary)?["authors"] as? [String: Int],
+                               ["Author Beta": 0])
+            }
+        }
+    }
+
+    func test_mountedFeedTrainerUsesBrowsedFeedAfterSwiftUIAppears() throws {
+        try withRetainedArticleAndBrowsedFeed { trainer, listCache, _ in
+            trainer.isStoryTrainer = false
+            trainer.reload()
+
+            try withMountedTrainerView(trainer) {
+                XCTAssertEqual(trainer.trainerView.feed?.id, "930002")
+                XCTAssertEqual(trainer.trainerView.authors.map(\.name), ["Author Beta"])
+                XCTAssertTrue(trainer.trainerView.titleWords.isEmpty)
+                XCTAssertTrue(trainer.storyCache === listCache)
+                XCTAssertNil(listCache.selected)
+                trainer.trainerView.reload()
+                XCTAssertEqual(trainer.trainerView.feed?.id, "930002")
+                XCTAssertEqual(trainer.trainerView.authors.map(\.name), ["Author Beta"])
+                XCTAssertTrue(trainer.trainerView.titleWords.isEmpty)
+                XCTAssertNil(listCache.selected)
+            }
+        }
+    }
+
+    private func withMountedTrainerView(_ trainer: TrainerViewController, assertions: () -> Void) throws {
+        let appWindow = try XCTUnwrap(NewsBlurAppDelegate.shared.window)
+        let scene = try XCTUnwrap(appWindow.windowScene)
+        let previousKeyWindow = scene.windows.first(where: \.isKeyWindow)
+        let appeared = expectation(description: "The actual TrainerView must complete its SwiftUI onAppear callback")
+        var hasAppeared = false
+        let controller = UIHostingController(rootView: trainer.trainerView.onAppear {
+            guard !hasAppeared else { return }
+            hasAppeared = true
+            DispatchQueue.main.async { appeared.fulfill() }
+        })
+        let window = UIWindow(windowScene: scene)
+        window.frame = appWindow.bounds
+        window.rootViewController = controller
+        defer {
+            // StoryListReloadTests.swift removes the mounted SwiftUI tree before restoring the account fixture.
+            window.isHidden = true
+            window.rootViewController = nil
+            controller.view.removeFromSuperview()
+            previousKeyWindow?.makeKey()
+        }
+        window.makeKeyAndVisible()
+        window.layoutIfNeeded()
+        controller.view.layoutIfNeeded()
+        guard XCTWaiter.wait(for: [appeared], timeout: 5) == .completed else {
+            XCTFail("TrainerView did not appear in its window")
+            return
+        }
+        XCTAssertTrue(controller.view.window === window)
+        assertions()
+    }
+
     func test_storyTrainerRetainsArticleAAfterBrowsingFeedB() throws {
         try withRetainedArticleAndBrowsedFeed { trainer, listCache, collection in
             trainer.isStoryTrainer = true
@@ -535,4 +622,5 @@ import XCTest
 
 @MainActor private final class DetachedTrainerContextInteraction: TrainerInteraction {
     var isStoryTrainer = false
+    func reloadTrainerContext() {}
 }

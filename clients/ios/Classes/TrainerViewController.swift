@@ -99,13 +99,17 @@ import SwiftUI
 //        changedLayout()
     }
     
-    @objc func reload() {
+    func reloadTrainerContext() {
         if isStoryTrainer {
             restoreRetainedStoryClassifiers()
             storyCache.reloadForTraining(story: appDelegate.activeStory as? AnyDictionary)
         } else {
             storyCache.reload()
         }
+    }
+
+    @objc func reload() {
+        reloadTrainerContext()
         let freshView = TrainerView(interaction: self, cache: storyCache)
         hostingController.rootView = freshView
     }
