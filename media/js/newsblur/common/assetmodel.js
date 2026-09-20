@@ -1628,7 +1628,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.discovery_taste_error = data && data.message || 'Couldn’t update your interests. Please try again.';
             self.trigger('recommendation:taste-error', self.discovery_taste_error);
             if (error_callback) error_callback(data);
-        }, { request_type: action === 'taste_profile' ? 'GET' : 'POST', retry: false });
+        }, {
+            request_type: action === 'taste_profile' ? 'GET' : 'POST',
+            // assetmodel.js: Background learning must not hold up queued reading and feedback writes.
+            ajax_group: 'rapid', timeout: 27000, retry: false
+        });
     },
 
     ensure_discovery_taste: function (signature) {

@@ -64,6 +64,8 @@ test('interest requests include CSRF and ignore responses after switching accoun
     model.discovery_taste_request('edit_taste', { revision: 3 }, () => assert.fail('Cross-account response'));
     assert.equal(requests[0].data.csrfmiddlewaretoken, 'csrf-token');
     assert.equal(requests[0].options.request_type, 'POST');
+    assert.equal(requests[0].options.ajax_group, 'rapid');
+    assert.equal(requests[0].options.timeout, 27000);
     NEWSBLUR.Globals.user_id = 2;
     requests[0].callback({ profile: { revision: 4 } });
     requests[0].error({ message: 'Another account’s error' });
