@@ -3386,9 +3386,14 @@
     [appDelegate showSendTo:self sender:sender];
 }
 
+- (UIBarButtonItem *)settingsPresentationBarButton {
+    // StoryPagesObjCViewController.m keeps follow-up menus attached to the active native settings control.
+    return self.usesVerticalReaderToolbar ? self.verticalSettingsButton : self.fontSettingsButton;
+}
+
 - (void)openStoryTrainerFromKeyboard:(id)sender {
     // don't have a tap target for the popover, but the settings button at least doesn't move
-    [appDelegate openTrainStory:self.usesVerticalReaderToolbar ? self.verticalSettingsButton : self.fontSettingsButton];
+    [appDelegate openTrainStory:self.settingsPresentationBarButton];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
@@ -3548,8 +3553,7 @@
         UIView *btn = self.storyToolbar.settingsButton;
         [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:btn sourceRect:btn.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
     } else {
-        UIBarButtonItem *anchor = self.usesVerticalReaderToolbar ? self.verticalSettingsButton : self.fontSettingsButton;
-        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:anchor];
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.settingsPresentationBarButton];
     }
 #endif
 }

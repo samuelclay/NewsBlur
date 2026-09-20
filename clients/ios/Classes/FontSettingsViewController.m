@@ -482,9 +482,9 @@
         [self.appDelegate.feedDetailViewController reloadWithSizing];
         [self.appDelegate.storyPagesViewController refreshHeaders];
     } else if (adjustedRow == 2) {
-        [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.fontSettingsButton];
+        [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.settingsPresentationBarButton];
     } else if (adjustedRow == 3) {
-        [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
+        [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.settingsPresentationBarButton];
     } else if (adjustedRow == 4) {
         [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
     } else if (adjustedRow == 5) {
