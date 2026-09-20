@@ -4,6 +4,17 @@ import WebKit
 
 @testable import NewsBlur
 
+// DuoPresentationTests.swift sends the divider's real action deterministic positions while UIKit owns the mounted column layout.
+private final class DuoSidebarResizePan: UIPanGestureRecognizer {
+    var simulatedState: UIGestureRecognizer.State = .possible
+    var simulatedLocation = CGPoint.zero
+    override var state: UIGestureRecognizer.State {
+        get { simulatedState }
+        set { simulatedState = newValue }
+    }
+    override func location(in view: UIView?) -> CGPoint { simulatedLocation }
+}
+
 @MainActor final class Test_DuoReaderReparenting: XCTestCase {
     func test_completedCollapseRestoresReaderAfterUIKitPopsTheEarlyRestoredStack() async {
         let fixture = makeCollapseCompletionFixture()
@@ -1346,6 +1357,14 @@ import WebKit
     }
 
     func test_liveFoldPreservesLoadedScrolledStory() async throws {
+        try await runLiveFoldPreservingStory(fullscreen: false)
+    }
+
+    func test_liveFoldPreservesFullscreenReaderAndSidebarPreference() async throws {
+        try await runLiveFoldPreservingStory(fullscreen: true)
+    }
+
+    private func runLiveFoldPreservingStory(fullscreen: Bool) async throws {
         guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_DUO_FOLD_TESTS"] == "1" else {
             throw XCTSkip("Opt in with NEWSBLUR_LIVE_DUO_FOLD_TESTS=1 and drive the actual Device Hub fold when prompted")
         }
@@ -1399,6 +1418,17 @@ import WebKit
                 pages.value(forKey: "storySelectionRedrawCover") == nil
         }
         let web = try XCTUnwrap(pages.currentPage?.webView)
+        if fullscreen {
+            app.detailViewController.toggleTemporaryFullScreen(nil)
+            try await settle(pages)
+            XCTAssertTrue(app.detailViewController.isDuoFullscreenReader)
+            XCTAssertGreaterThan(web.bounds.width, 650, "Full-screen reading must fill the expanded reader before folding")
+        }
+        defer {
+            if fullscreen && app.detailViewController.isDuoFullscreenReader {
+                app.detailViewController.toggleTemporaryFullScreen(nil)
+            }
+        }
         let scroll = web.scrollView
         let top = -scroll.adjustedContentInset.top
         let bottom = scroll.contentSize.height - scroll.bounds.height + scroll.adjustedContentInset.bottom
@@ -1430,6 +1460,19 @@ import WebKit
         XCTAssertTrue(pages.currentPage === originalPage, "Reopening must retain the active article controller")
         XCTAssertEqual(pages.currentPage.value(forKey: "storyLoadGeneration") as? NSNumber, originalGeneration,
                        "Reopening must resize the loaded article instead of clearing and redrawing it")
+        if fullscreen {
+            XCTAssertTrue(app.detailViewController.isDuoFullscreenReader,
+                          "Reopening must restore the user's full-screen reading choice")
+            XCTAssertGreaterThan(web.bounds.width, 650)
+            let fullWidth = web.bounds.width
+            app.detailViewController.toggleStoryTitles(nil)
+            try await settle(pages)
+            XCTAssertTrue(isVisible(app.feedDetailViewController))
+            XCTAssertEqual(web.bounds.width, fullWidth, accuracy: 1,
+                           "The reopened reader must still show titles as an overlay")
+            app.detailViewController.toggleStoryTitles(nil)
+            try await settle(pages)
+        }
     }
 
     private func waitForLiveFoldLayout(_ app: NewsBlurAppDelegate) async {
@@ -1504,6 +1547,94 @@ import WebKit
         XCTAssertEqual((document?["width"] as? NSNumber)?.doubleValue ?? 0, Double(web.bounds.width), accuracy: 2, name)
         XCTAssertEqual(document?["generation"] as? String,
                        (page.value(forKey: "storyLoadGeneration") as? NSNumber)?.stringValue, name)
+    }
+
+    func test_nativeReaderPagingArrowsFollowOrientationAndShareTheirBackground() async throws {
+        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires native Duo bars") }
+        let app = try await prepareApp()
+        let pages = try await openReadableReader(app)
+        guard pages.usesVerticalReaderToolbar else { throw XCTSkip("Requires Duo side controls") }
+        let defaults = UserDefaults.standard
+        let original = defaults.object(forKey: "scroll_stories_horizontally")
+        defer {
+            defaults.set(original, forKey: "scroll_stories_horizontally")
+            pages.setNextPreviousButtons()
+        }
+        let previous = try XCTUnwrap(pages.value(forKey: "verticalPreviousButton") as? UIBarButtonItem)
+        let next = try XCTUnwrap(pages.value(forKey: "verticalNextButton") as? UIBarButtonItem)
+        let items = try XCTUnwrap(pages.value(forKey: "verticalReaderToolbarItems") as? [UIBarButtonItem])
+        XCTAssertTrue(previous.sharesBackground)
+        XCTAssertTrue(next.sharesBackground, "Previous and Next must form one continuous native group")
+        XCTAssertEqual(try XCTUnwrap(items.firstIndex(of: next)), try XCTUnwrap(items.firstIndex(of: previous)) + 1)
+        for horizontal in [true, false, true] {
+            defaults.set(horizontal, forKey: "scroll_stories_horizontally")
+            pages.setNextPreviousButtons()
+            XCTAssertNotNil(previous.image?.pngData())
+            XCTAssertNotNil(next.image?.pngData())
+            XCTAssertEqual(previous.image?.pngData(), UIImage(systemName: horizontal ? "chevron.left" : "chevron.up")?.pngData())
+            let symbol = next.title == "Done" ? "checkmark" : (horizontal ? "chevron.right" : "chevron.down")
+            XCTAssertEqual(next.image?.pngData(), UIImage(systemName: symbol)?.pngData(),
+                           "Refreshing unread state must retain the selected paging direction")
+        }
+    }
+
+    func test_nativeFeedSidebarDividerResizesTheRenderedOverlay() async throws {
+        let app = try await prepareApp()
+        let detail = try XCTUnwrap(app.detailViewController)
+        let split = try XCTUnwrap(app.splitViewController)
+        guard !detail.isPhoneOrCompact, !split.isCollapsed, split.style == .doubleColumn else {
+            throw XCTSkip("Requires expanded Duo")
+        }
+        let originalWidth = split.preferredPrimaryColumnWidth
+        let savedWidth = UserDefaults.standard.object(forKey: "split_primary_width")
+        defer {
+            split.preferredPrimaryColumnWidth = originalWidth
+            UserDefaults.standard.set(savedWidth, forKey: "split_primary_width")
+            split.view.setNeedsLayout()
+            split.view.layoutIfNeeded()
+        }
+        let pages = try await openReadableReader(app)
+        let page = try XCTUnwrap(pages.currentPage)
+        let web = try XCTUnwrap(page.webView)
+        let generation = page.value(forKey: "storyLoadGeneration") as? NSNumber
+        let articleWidth = web.bounds.width
+        detail.show(column: .primary, animated: false)
+        try await waitUntil("The native feed overlay must finish opening") {
+            split.displayMode == .oneOverSecondary && split.transitionCoordinator == nil
+        }
+        try await settle(split)
+        let primary = try XCTUnwrap(split.viewController(for: .primary)?.view)
+        let before = primary.convert(primary.bounds, to: split.view)
+        let divider = try XCTUnwrap(split.view.subviews.compactMap { $0 as? DividerView }.first)
+        capture(try XCTUnwrap(app.window), named: "sidebar-resize-before", controller: split)
+        XCTAssertFalse(divider.isHidden, "The visible primary overlay must expose its own resize handle")
+        XCTAssertEqual(divider.frame.midX, before.maxX, accuracy: 3,
+                       "The draggable separator must track the actual feed-list edge")
+        let destination = before.width + 80
+        let pan = DuoSidebarResizePan()
+        pan.simulatedLocation = CGPoint(x: before.maxX, y: before.midY)
+        pan.simulatedState = .began
+        split.perform(NSSelectorFromString("handleFeedsDividerPan:"), with: pan)
+        pan.simulatedLocation.x = before.minX + destination
+        pan.simulatedState = .changed
+        split.perform(NSSelectorFromString("handleFeedsDividerPan:"), with: pan)
+        pan.simulatedState = .ended
+        split.perform(NSSelectorFromString("handleFeedsDividerPan:"), with: pan)
+        try await waitUntil("Dragging must resize the primary content, not just its handle") {
+            abs(primary.bounds.width - destination) < 2
+        }
+        try await settle(split)
+        XCTAssertEqual(divider.frame.midX, primary.convert(primary.bounds, to: split.view).maxX, accuracy: 3)
+        XCTAssertEqual(web.bounds.width, articleWidth, accuracy: 1)
+        XCTAssertTrue(pages.currentPage === page)
+        XCTAssertEqual(page.value(forKey: "storyLoadGeneration") as? NSNumber, generation)
+        capture(try XCTUnwrap(app.window), named: "sidebar-resize-after", controller: split)
+        split.hide(.primary)
+        try await settle(split)
+        detail.show(column: .primary, animated: false)
+        try await settle(split)
+        XCTAssertEqual(primary.bounds.width, destination, accuracy: 2,
+                       "The chosen width must survive closing and reopening the sidebar")
     }
 
     func test_expandedFeedsRevealPreservesReadableArticleViewport() async throws {

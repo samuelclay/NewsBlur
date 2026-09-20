@@ -589,6 +589,10 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 }
 
 - (IBAction)toggleFeeds:(id)sender {
+    if (self.appDelegate.detailViewController.isDuoFullscreenReader) {
+        [self.appDelegate.detailViewController showDuoFullscreenFeeds:sender];
+        return;
+    }
     // If in temporary full-screen, exit it instead of normal sidebar toggle.
     if (self.appDelegate.detailViewController.isTemporaryFullScreen) {
         [self.appDelegate.detailViewController resetTemporaryFullScreenIfNeeded];

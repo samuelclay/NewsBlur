@@ -52,6 +52,9 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
         let feeds = detailController.appDelegate.feedsViewController
         let wasShowingFeeds = feeds != nil && detailController.appDelegate.feedsNavigationController?.topViewController === feeds
         detailController.expandToTwoColumns()
+        if detailController.isDuoFullscreenReader {
+            return detailController.fullscreenSidebarPresentation == .fullscreen ? .secondaryOnly : .oneOverSecondary
+        }
 
         if detailController.isPhone, detailController.storyTitlesOnLeft, !detailController.isDiscoverSitesVisible {
             // SplitViewDelegate.swift preserves the compact source screen before expansion reparents its navigation stack.

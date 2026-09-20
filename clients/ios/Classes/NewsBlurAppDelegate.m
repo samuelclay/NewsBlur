@@ -1034,6 +1034,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)updateSplitBehavior:(BOOL)refresh {
+    if (self.detailViewController.isDuoFullscreenReader) {
+        [self.detailViewController updateDuoFullscreenSplitBehavior];
+        return;
+    }
     if (self.detailViewController.isDiscoverSitesVisible && !self.detailViewController.isPhoneOrCompact) {
         self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
         self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;

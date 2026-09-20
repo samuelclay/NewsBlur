@@ -33,6 +33,8 @@
 @property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic) BOOL doneInitialDisplay;
 @property (nonatomic) BOOL isRefreshingPages;
+@property (nonatomic, readwrite) BOOL retainsDuoSourceArticle;
+@property (nonatomic) BOOL duoPreviousPagerScrollEnabled;
 @property (nonatomic, strong) StoryDetailViewController *pendingPresentationPage;
 @property (nonatomic, copy) NSString *pendingPresentationHash;
 @property (nonatomic, copy) void (^pendingPresentationCompletion)(NSInteger location);
@@ -74,6 +76,7 @@
 @property (nonatomic) BOOL hasPreparedToolbarPresentation;
 @property (nonatomic) BOOL lastUsedVerticalToolbar;
 @property (nonatomic) BOOL lastUsedCustomToolbar;
+@property (nonatomic) BOOL lastVerticalPagingWasHorizontal;
 @property (nonatomic, weak) UIViewController *nativeHeaderScrollOwner;
 @property (nonatomic, weak) UIScrollView *nativeHeaderScrollView;
 @property (nonatomic, weak) UIScrollView *previousHeaderScrollView;
@@ -141,6 +144,7 @@
                                                                      target:appDelegate.detailViewController
                                                                      action:@selector(toggleTemporaryFullScreen:)];
     self.temporaryFullScreenButton.accessibilityLabel = @"Toggle Full Screen";
+    self.temporaryFullScreenButton.accessibilityIdentifier = @"reader-fullscreen";
 }
 
 - (void)updateStoryTitleNavigationButtons {
@@ -150,16 +154,18 @@
     if (self.usesVerticalReaderToolbar) {
         // StoryPagesObjCViewController.m places reader actions in the system bar instead of custom navigation views.
         self.appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = nil;
+        [self updateDuoFullscreenButton];
         return;
     }
 
     NSMutableArray *items = [NSMutableArray array];
+    self.temporaryFullScreenButton.hidden = NO;
     [items addObject:originalStoryButton];
     [items addObject:fontSettingsButton];
 
     // Temporary full-screen toggle button (iPad only, not Mac).
     if (!self.isPhoneOrCompact && !self.isMac) {
-        BOOL isTemporaryFullScreen = self.appDelegate.detailViewController.isTemporaryFullScreen;
+        BOOL isTemporaryFullScreen = self.appDelegate.detailViewController.isTemporaryFullScreen || self.appDelegate.detailViewController.isDuoFullscreenReader;
         NSString *behavior = [[NSUserDefaults standardUserDefaults] stringForKey:@"split_behavior"] ?: @"auto";
         BOOL isUserOverlayMode = [behavior isEqualToString:@"overlay"];
 
@@ -944,20 +950,32 @@
 
 - (void)prepareVerticalReaderToolbar {
     if (self.verticalReaderToolbarItems) return;
+    BOOL horizontal = self.isHorizontal;
     self.verticalTextButton = [self readerBarButtonWithTitle:@"Text view" symbol:@"doc.text" identifier:@"reader-text" action:@selector(toggleTextView:)];
     self.verticalSendButton = [self readerBarButtonWithTitle:@"Share story" symbol:@"square.and.arrow.up" identifier:@"reader-share" action:@selector(openSendToDialog:)];
     self.verticalProgressButton = [self readerBarButtonWithTitle:@"Reading progress" symbol:@"chart.pie" identifier:@"reader-progress" action:@selector(tapProgressBar:)];
-    self.verticalPreviousButton = [self readerBarButtonWithTitle:@"Previous story" symbol:@"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
-    self.verticalNextButton = [self readerBarButtonWithTitle:@"Next unread story" symbol:@"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
+    self.verticalPreviousButton = [self readerBarButtonWithTitle:@"Previous story" symbol:horizontal ? @"chevron.left" : @"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
+    self.verticalNextButton = [self readerBarButtonWithTitle:@"Next unread story" symbol:horizontal ? @"chevron.right" : @"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
     self.verticalOriginalButton = [self readerBarButtonWithTitle:@"Show original story" symbol:@"safari" identifier:@"reader-original" action:@selector(showOriginalSubview:)];
     self.verticalSettingsButton = [self readerBarButtonWithTitle:@"Story settings" symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
     self.verticalMarkReadButton = [self readerBarButtonWithTitle:@"Mark all as read" symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
     self.verticalAutoscrollButton = [self readerBarButtonWithTitle:@"Autoscroll" symbol:@"arrow.down.circle" identifier:@"reader-autoscroll" action:nil];
-    self.verticalReaderToolbarItems = @[self.verticalTextButton, self.verticalSendButton, self.verticalProgressButton,
+    [self ensureTemporaryFullScreenButton];
+    self.temporaryFullScreenButton.accessibilityIdentifier = @"reader-fullscreen";
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        self.temporaryFullScreenButton.axisBehavior = UIBarButtonItemAxisBehaviorVerticalPreferred;
+        self.temporaryFullScreenButton.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+        self.temporaryFullScreenButton.sharesBackground = NO;
+    }
+#endif
+    self.verticalReaderToolbarItems = @[self.temporaryFullScreenButton, self.verticalTextButton, self.verticalSendButton, self.verticalProgressButton,
         self.verticalPreviousButton, self.verticalNextButton, self.verticalOriginalButton, self.verticalSettingsButton,
         self.verticalMarkReadButton, self.verticalAutoscrollButton];
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
     if (@available(iOS 27.1, *)) {
+        self.verticalPreviousButton.sharesBackground = YES;
+        self.verticalNextButton.sharesBackground = YES;
         self.verticalNextButton.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
         self.verticalSettingsButton.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
     }
@@ -966,6 +984,18 @@
     [self setTextButton];
     [self updateAutoscrollButtons];
     [self applyToolbarButtonTint];
+    [self updateDuoFullscreenButton];
+}
+
+- (void)updateDuoFullscreenButton {
+    if (!self.usesVerticalReaderToolbar) return;
+    DetailViewController *detail = self.appDelegate.detailViewController;
+    self.temporaryFullScreenButton.hidden = !detail.canToggleDuoFullscreenReader;
+    self.verticalProgressButton.hidden = detail.canToggleDuoFullscreenReader;
+    self.temporaryFullScreenButton.target = detail;
+    self.temporaryFullScreenButton.accessibilityValue = detail.isDuoFullscreenReader ? @"On" : @"Off";
+    NSString *symbol = detail.isDuoFullscreenReader ? @"rectangle.split.2x1" : @"rectangle.expand.vertical";
+    self.temporaryFullScreenButton.image = [UIImage systemImageNamed:symbol];
 }
 
 - (void)updateReaderToolbarPresentation {
@@ -989,6 +1019,9 @@
 
     if (vertical) {
         [self prepareVerticalReaderToolbar];
+        // StoryPagesObjCViewController.m refreshes a retained reader after Preferences changes its paging direction.
+        if (self.lastVerticalPagingWasHorizontal != self.isHorizontal) [self setNextPreviousButtons];
+        [self updateDuoFullscreenButton];
         self.storyToolbar.hidden = YES;
         self.traverseView.hidden = YES;
         self.autoscrollView.hidden = YES;
@@ -1588,11 +1621,38 @@
     return [[[NSUserDefaults standardUserDefaults] objectForKey:@"scroll_stories_horizontally"] boolValue];
 }
 
+- (void)finishRetainingDuoSourceArticle {
+    if (!self.retainsDuoSourceArticle) return;
+    self.retainsDuoSourceArticle = NO;
+    self.scrollView.scrollEnabled = self.duoPreviousPagerScrollEnabled;
+}
+
 - (void)resetPages {
+    BOOL retainCurrentArticle = appDelegate.detailViewController.isBrowsingDuoFullscreenSources &&
+        self.parentViewController == appDelegate.detailViewController && currentPage.hasStory &&
+        ![self hasHiddenReaderAncestor];
+    if (retainCurrentArticle && !self.retainsDuoSourceArticle) {
+        self.duoPreviousPagerScrollEnabled = self.scrollView.scrollEnabled;
+        self.retainsDuoSourceArticle = YES;
+        self.scrollView.scrollEnabled = NO;
+    } else if (!retainCurrentArticle) {
+        [self finishRetainingDuoSourceArticle];
+    }
     // StoryPagesObjCViewController.m retires the outgoing feed's gesture before reset layout can deliver more offset callbacks.
     self.isDraggingScrollview = NO;
     self.scrollingToPage = -1;
     [self cancelPendingStoryPresentation];
+    if (retainCurrentArticle) {
+        appDelegate.activeStory = currentPage.activeStory;
+        // StoryPagesObjCViewController.m retains the mounted document and action context while Duo's overlay loads another source.
+        for (StoryDetailViewController *neighbor in @[nextPage, previousPage]) {
+            neighbor.activeStory = nil;
+            [neighbor clearStory];
+            [neighbor hideStory];
+            neighbor.pageIndex = -2;
+        }
+        return;
+    }
     appDelegate.detailViewController.navigationItem.titleView = nil;
 
     currentPage.webView.scrollView.scrollEnabled = YES;
@@ -1625,12 +1685,13 @@
 
 - (void)hidePages {
     [self cancelPendingStoryPresentation];
-    [currentPage hideStory];
+    if (!self.retainsDuoSourceArticle) [currentPage hideStory];
     [nextPage hideStory];
     [previousPage hideStory];
 }
 
 - (void)refreshPages {
+    if (self.retainsDuoSourceArticle) { [self reorientPages]; return; }
     if (self.pendingPresentationPage) {
         self.refreshAfterStorySelection = YES;
         return;
@@ -1719,6 +1780,14 @@
 }
 
 - (void)refreshHeaders {
+    if (self.retainsDuoSourceArticle) {
+        if ([appDelegate.activeStory[@"story_hash"] isEqualToString:currentPage.activeStoryId]) {
+            currentPage.activeStory = [appDelegate.activeStory mutableCopy];
+        }
+        [currentPage refreshHeader];
+        [currentPage refreshSideOptions];
+        return;
+    }
     [currentPage setActiveStoryAtIndex:[appDelegate.storiesCollection
                                         indexOfStoryId:currentPage.activeStoryId]];
     [nextPage setActiveStoryAtIndex:[appDelegate.storiesCollection
@@ -1738,7 +1807,7 @@
 - (void)resizeScrollView {
     if ([self hasHiddenReaderAncestor]) return;
     NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
-    if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) storyCount = MAX(storyCount, currentPage.pageIndex + 2);
+    if (self.retainsDuoSourceArticle || [appDelegate.feedDetailViewController hasRetainedFirstPageStory]) storyCount = MAX(storyCount, currentPage.pageIndex + 2);
 	if (storyCount == 0) {
 		storyCount = 1;
 	}
@@ -1946,7 +2015,8 @@
         suppressRedraw = YES;
     }
     BOOL retainedCurrentPage = pageController && pageController == currentPage &&
-        [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
+        (self.retainsDuoSourceArticle || [appDelegate.feedDetailViewController hasRetainedFirstPageStory]);
+    if (self.retainsDuoSourceArticle && pageController != currentPage) return;
     if (retainedCurrentPage) {
         // StoryPagesObjCViewController.m updates a retained article's frame without hiding or reloading its current web content.
         newIndex = currentPage.pageIndex;
@@ -2113,6 +2183,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
+    if (self.retainsDuoSourceArticle) return;
     if (inRotation || self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self setStoryFromScroll]; return; }
     NSInteger currentPageIndex = currentPage.pageIndex;
@@ -2387,7 +2458,7 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-    if (self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
+    if (self.retainsDuoSourceArticle || self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
@@ -2618,7 +2689,7 @@
         [self cancelPendingStoryPresentation];
         return;
     }
-    BOOL animateSelection = !openImmediately && animated && !redrawCover && !self.isPhoneOrCompact && !UIAccessibilityIsReduceMotionEnabled() &&
+    BOOL animateSelection = !self.retainsDuoSourceArticle && !openImmediately && animated && !redrawCover && !self.isPhoneOrCompact && !UIAccessibilityIsReduceMotionEnabled() &&
         self.view.window && currentPage.hasStory && !currentPage.webView.hidden &&
         !self.isDraggingScrollview && !self.scrollView.dragging && !self.scrollView.decelerating &&
         currentPage.pageIndex >= 0 && ![currentPage.activeStoryId isEqualToString:hash];
@@ -2870,6 +2941,7 @@
 }
 
 - (void)promotePreparedPage:(StoryDetailViewController *)page location:(NSInteger)location {
+    [self finishRetainingDuoSourceArticle];
     // StoryPagesObjCViewController.m uses the same selected-page geometry for an early shell and a fully painted transition.
     if (page != currentPage) {
         if (page == nextPage) nextPage = currentPage;
@@ -2907,6 +2979,7 @@
 }
 
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
+    [self finishRetainingDuoSourceArticle];
 //    NSLog(@"changePage to %@ (%@animated)", @(pageIndex), animated ? @"" : @"not ");
     
 	// update the scroll view to the appropriate page
@@ -2993,6 +3066,10 @@
 
 - (void)changeToNextPage:(id)sender {
     [self cancelPendingStoryPresentationForNavigation];
+    if (self.retainsDuoSourceArticle) {
+        if (appDelegate.storiesCollection.storyLocationsCount > 0) [self changePage:0 animated:YES];
+        return;
+    }
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) {
         NSInteger target = [appDelegate.feedDetailViewController consumeRetainedFirstPageStoryInDirection:1];
         if (target != NSNotFound) [self changePage:target animated:YES];
@@ -3009,6 +3086,11 @@
 
 - (void)changeToPreviousPage:(id)sender {
     [self cancelPendingStoryPresentationForNavigation];
+    if (self.retainsDuoSourceArticle) {
+        NSInteger count = appDelegate.storiesCollection.storyLocationsCount;
+        if (count > 0) [self changePage:count - 1 animated:YES];
+        return;
+    }
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) {
         NSInteger target = [appDelegate.feedDetailViewController consumeRetainedFirstPageStoryInDirection:-1];
         if (target != NSNotFound) [self changePage:target animated:YES];
@@ -3029,6 +3111,7 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
+    if (self.retainsDuoSourceArticle) return;
     if (self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     BOOL retainedFirstPageStory = [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
     if (retainedFirstPageStory && !self.scrollView.dragging && !self.scrollView.decelerating) return;
@@ -3215,6 +3298,8 @@
 }
 
 - (void)setNextPreviousButtons {
+    BOOL horizontal = self.isHorizontal;
+    self.lastVerticalPagingWasHorizontal = horizontal;
     // Previous button enabled state
     NSInteger readStoryCount = [appDelegate.readStories count];
     BOOL prevEnabled = !(readStoryCount == 0 ||
@@ -3222,6 +3307,7 @@
          [[appDelegate.readStories lastObject] isEqual:[appDelegate.activeStory objectForKey:@"story_hash"]]));
     [self.traverseBar updatePreviousEnabled:prevEnabled];
     self.verticalPreviousButton.enabled = prevEnabled;
+    self.verticalPreviousButton.image = [UIImage systemImageNamed:horizontal ? @"chevron.left" : @"chevron.up"];
 
     // Next/Done button state
     buttonNext.enabled = YES;
@@ -3232,7 +3318,7 @@
     [self.traverseBar updateNextShowDone:!hasMoreUnread];
     self.verticalNextButton.title = hasMoreUnread ? @"Next unread story" : @"Done";
     self.verticalNextButton.accessibilityLabel = self.verticalNextButton.title;
-    self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? @"chevron.down" : @"checkmark"];
+    self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? (horizontal ? @"chevron.right" : @"chevron.down") : @"checkmark"];
 
     // Progress indicator
     float unreads = (float)[appDelegate unreadCount];
@@ -3510,6 +3596,7 @@
 }
 
 - (void)changedScrollOrientation {
+    [self setNextPreviousButtons];
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     [self reorientPages];

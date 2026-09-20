@@ -14,11 +14,17 @@ import UIKit
                 titleContent: UIView? = nil) {
         guard enabled, let navigation, let controller,
               navigation.topViewController === controller,
-              Utilities.usesSystemVerticalBar(navigation.traitCollection),
               !navigation.isNavigationBarHidden,
               let window = navigation.viewIfLoaded?.window,
               let barParent = navigation.navigationBar.superview,
               abs(navigation.view.convert(navigation.view.bounds, to: window).minY - window.bounds.minY) < 1 else {
+            restore()
+            return
+        }
+        // CompactPhoneNavigationController.swift inherits Duo's side status area only for its fullscreen titles overlay; its own toolbar remains horizontal.
+        let isDuoFullscreenOverlay = (controller as? FeedDetailViewController)?.appDelegate?.detailViewController?.isDuoFullscreenReader == true
+        guard Utilities.usesSystemVerticalBar(navigation.traitCollection) ||
+                (isDuoFullscreenOverlay && Utilities.usesSystemVerticalBar(window.traitCollection)) else {
             restore()
             return
         }
@@ -217,6 +223,12 @@ final class DetailNavigationController: UINavigationController {
     }
 
     private func updateFeedsTitle(for detail: DetailViewController?) {
+        if let detail, detail.isDuoFullscreenReader {
+            restoreFeedsTitle()
+            // CompactPhoneNavigationController.swift leaves the source heading inside the primary overlay while the article fills secondary.
+            detail.navigationItem.titleView = nil
+            return
+        }
         guard let detail, detail.isPhone, !detail.isPhoneOrCompact,
               !detail.isDiscoverSitesVisible, !isNavigationBarHidden else {
             restoreFeedsTitle()
@@ -437,8 +449,9 @@ final class CompactPhoneNavigationController: UINavigationController, UINavigati
         super.viewDidLayoutSubviews()
         updateCompactHeader()
         verticalTitleLayout.update(navigation: self, controller: topViewController,
-                                   enabled: traitCollection.horizontalSizeClass == .compact &&
-                                    topViewController is FeedDetailObjCViewController)
+                                   enabled: topViewController is FeedDetailObjCViewController &&
+                                    (traitCollection.horizontalSizeClass == .compact ||
+                                     (topViewController as? FeedDetailViewController)?.appDelegate.detailViewController.isDuoFullscreenReader == true))
         updateVerticalNavigationBackground()
     }
 

@@ -99,6 +99,11 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic, strong) UIView *feedListRevealContainer;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
 @property (nonatomic, strong) UIBarButtonItem *storiesSidebarBarButton;
+@property (nonatomic, strong) UIBarButtonItem *duoFullscreenFeedsButton;
+@property (nonatomic, strong) NSArray<UIBarButtonItem *> *duoPreviousLeftItems;
+@property (nonatomic, strong) NSArray<UIBarButtonItem *> *duoPreviousRightItems;
+@property (nonatomic) BOOL duoOwnsNavigationItems;
+@property (nonatomic) BOOL duoPreviousSupplementBackButton;
 @property (nonatomic, strong) NSURLSessionDataTask *currentFetchTask;
 @property (nonatomic) CFTimeInterval dailyBriefingReloadStartedAt;
 @property (nonatomic) NSTimeInterval dailyBriefingReloadDataMs;
@@ -997,8 +1002,43 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                                    : @[settingsBarButton];
     NSArray *storiesItems = storiesSidebarButton ? @[storiesSidebarButton] : nil;
 
+    if (appDelegate.detailViewController.isDuoFullscreenReader) {
+        // FeedDetailObjCViewController.m keeps source navigation in Duo's primary overlay and reader actions in secondary.
+        sidebarButton.target = appDelegate.detailViewController;
+        sidebarButton.action = @selector(toggleStoryTitles:);
+        appDelegate.detailViewController.navigationItem.leftBarButtonItems = sidebarButton ? @[sidebarButton] : nil;
+        if (!self.duoOwnsNavigationItems) {
+            self.duoPreviousLeftItems = self.navigationItem.leftBarButtonItems;
+            self.duoPreviousRightItems = self.navigationItem.rightBarButtonItems;
+            self.duoPreviousSupplementBackButton = self.navigationItem.leftItemsSupplementBackButton;
+            self.duoOwnsNavigationItems = YES;
+        }
+        if (!self.duoFullscreenFeedsButton) {
+            self.duoFullscreenFeedsButton = [[UIBarButtonItem alloc] initWithTitle:@"‹ Feeds" style:UIBarButtonItemStylePlain
+                                                                          target:nil action:@selector(showDuoFullscreenFeeds:)];
+            self.duoFullscreenFeedsButton.accessibilityIdentifier = @"expanded-feeds-back";
+            self.duoFullscreenFeedsButton.accessibilityLabel = @"Feeds";
+            [Utilities keepBarButtonInHorizontalBar:self.duoFullscreenFeedsButton];
+        }
+        self.duoFullscreenFeedsButton.target = appDelegate.detailViewController;
+        self.navigationItem.leftItemsSupplementBackButton = NO;
+        self.navigationItem.leftBarButtonItems = @[self.duoFullscreenFeedsButton];
+        self.navigationItem.rightBarButtonItems = settingsBarButton ? @[settingsBarButton] : nil;
+        return;
+    }
+
+    if (self.duoOwnsNavigationItems) {
+        // FeedDetailObjCViewController.m relinquishes only the items owned by the expanded fullscreen overlay.
+        self.navigationItem.leftBarButtonItems = self.duoPreviousLeftItems;
+        self.navigationItem.rightBarButtonItems = self.duoPreviousRightItems;
+        self.navigationItem.leftItemsSupplementBackButton = self.duoPreviousSupplementBackButton;
+        self.duoPreviousLeftItems = nil;
+        self.duoPreviousRightItems = nil;
+        self.duoOwnsNavigationItems = NO;
+    }
     if (self.isPhoneOrCompact) {
         appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
+
     } else if (isFullscreenOverlayController) {
         self.navigationItem.leftItemsSupplementBackButton = YES;
         self.navigationItem.leftBarButtonItems = storiesItems;
@@ -3344,7 +3384,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
     
-    if (!self.isPhoneOrCompact && !self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory]) {
+    if (!self.isPhoneOrCompact && !self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory] && !appDelegate.storyPagesViewController.retainsDuoSourceArticle) {
         NSInteger pageIndex = appDelegate.storyPagesViewController.currentPage.pageIndex;
         BOOL storyChanged = NO;
 
@@ -3380,7 +3420,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             }
         }
     }
-    if (!self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory]) [appDelegate.storyPagesViewController advanceToNextUnread];
+    if (!self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory] && !appDelegate.storyPagesViewController.retainsDuoSourceArticle) [appDelegate.storyPagesViewController advanceToNextUnread];
 
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
