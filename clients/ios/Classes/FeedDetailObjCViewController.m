@@ -1404,11 +1404,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
     if (appDelegate.detailViewController.isDuoFullscreenReader) {
         // FeedDetailObjCViewController.m gives UIKit the complete interactive reveal, including reversal and cancellation, only for Duo fullscreen.
-        appDelegate.splitViewController.presentsWithGesture = YES;
         for (UIGestureRecognizer *gesture in self.suppressedSplitGestures.keyEnumerator) {
             gesture.enabled = [[self.suppressedSplitGestures objectForKey:gesture] boolValue];
         }
         [self.suppressedSplitGestures removeAllObjects];
+        // FeedDetailObjCViewController.m keeps either source overlay available while its reader is empty.
+        appDelegate.splitViewController.presentsWithGesture = !appDelegate.detailViewController.requiresDuoFullscreenSidebar;
         self.feedListSwipeGesture.enabled = NO;
         self.feedListEdgeSwipeGesture.enabled = NO;
         return;

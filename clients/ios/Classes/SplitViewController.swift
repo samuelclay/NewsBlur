@@ -8,6 +8,16 @@
 
 import UIKit
 
+/// SplitViewController.swift absorbs background touches while a full-screen reader still needs a story selection.
+private final class DuoEmptyReaderInteractionShield: UIControl {
+    weak var splitController: SplitViewController?
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        guard super.point(inside: point, with: event), let splitController else { return false }
+        return splitController.blocksEmptyReaderInteraction(at: convert(point, to: splitController.view))
+    }
+}
+
 /// SplitViewController.swift records the original touch before UIPanGestureRecognizer consumes its recognition threshold.
 class FeedsSidebarResizePanGestureRecognizer: UIPanGestureRecognizer {
     private weak var touchCoordinateView: UIView?
@@ -38,6 +48,45 @@ class SplitViewController: UISplitViewController {
     private var ownsCompactPhoneWidth = false
     private var previousPhoneWidthOverride: UIUserInterfaceSizeClass?
     private var isUpdatingPhoneWidthPolicy = false
+    private let emptyReaderInteractionShield = DuoEmptyReaderInteractionShield()
+    private weak var emptyReaderProtectionDetail: DetailViewController?
+
+    func updateDuoEmptyReaderProtection(for detail: DetailViewController) {
+        emptyReaderProtectionDetail = detail
+        updateDuoEmptyReaderProtection()
+    }
+
+    private func updateDuoEmptyReaderProtection() {
+        guard isViewLoaded else { return }
+        guard !isCollapsed, emptyReaderProtectionDetail?.appDelegate?.splitViewController === self,
+              emptyReaderProtectionDetail?.requiresDuoFullscreenSidebar == true else {
+            emptyReaderInteractionShield.removeFromSuperview()
+            return
+        }
+        emptyReaderInteractionShield.splitController = self
+        emptyReaderInteractionShield.accessibilityIdentifier = "duo-empty-reader-interaction-shield"
+        emptyReaderInteractionShield.isAccessibilityElement = false
+        emptyReaderInteractionShield.frame = view.bounds
+        if emptyReaderInteractionShield.superview !== view {
+            view.addSubview(emptyReaderInteractionShield)
+        }
+        view.bringSubviewToFront(emptyReaderInteractionShield)
+        if feedsDividerView.superview === view { view.bringSubviewToFront(feedsDividerView) }
+    }
+
+    fileprivate func blocksEmptyReaderInteraction(at point: CGPoint) -> Bool {
+        guard !isCollapsed, displayMode == .oneOverSecondary,
+              emptyReaderProtectionDetail?.appDelegate?.splitViewController === self,
+              emptyReaderProtectionDetail?.requiresDuoFullscreenSidebar == true,
+              !hasPresentedController(in: self),
+              let primaryFrame = primaryColumnFrame else { return false }
+        if primaryFrame.contains(point) { return false }
+        return view.bounds.contains(point)
+    }
+
+    private func hasPresentedController(in controller: UIViewController) -> Bool {
+        controller.presentedViewController != nil || controller.children.contains { hasPresentedController(in: $0) }
+    }
 
     func updatePhoneWidthPolicy(for traits: UITraitCollection) {
         guard !isUpdatingPhoneWidthPolicy else { return }
@@ -169,6 +218,7 @@ class SplitViewController: UISplitViewController {
         let detailNavigation = viewController(for: .secondary) as? UINavigationController
         (detailNavigation?.viewControllers.first as? DetailViewController)?.updateResolvedFeedSidebarLayout()
         updateFeedsDividerPosition()
+        updateDuoEmptyReaderProtection()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
