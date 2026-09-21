@@ -1033,9 +1033,12 @@ import WebKit
                 .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
                 .trimmingCharacters(in: .whitespacesAndNewlines).count
         }
-        for _ in 0..<300 {
+        var remainingSamples = 300
+        var additionalPages = 0
+        while remainingSamples > 0 {
+            remainingSamples -= 1
             table.layoutIfNeeded()
-            if !stories.pageFetching, !table.isHidden {
+            if !stories.pageFetching, !table.isHidden, !table.hasUncommittedUpdates {
                 // FeedToolbarLayoutTests.swift chooses the longest real body, rather than a short visible newsletter whose markup inflates its length.
                 let articleCandidate = requiresArticleBody ? (0..<Int(stories.storiesCollection.storyLocationsCount))
                     .compactMap { location -> (location: Int, hash: String, length: Int)? in
@@ -1064,13 +1067,39 @@ import WebKit
                     // FeedToolbarLayoutTests.swift excludes legitimate link-only RSS entries from the article-scrolling audit.
                     table.scrollToRow(at: path, at: .middle, animated: false)
                 }
+                let firstPage = stories.value(forKey: "firstPageLoad") as? StoryFirstPageLoad
+                let firstPageReady = firstPage == nil ||
+                    (firstPage?.pending == false && firstPage?.authoritativeReceived == true)
+                if requiresArticleBody, articleCandidate == nil, additionalPages < 3,
+                   !stories.pageFinished, stories.isOnline, firstPageReady,
+                   stories.storiesCollection.feedPage > 0 {
+                    let previousPage = stories.storiesCollection.feedPage
+                    let longestBody = (0..<Int(stories.storiesCollection.storyLocationsCount))
+                        .compactMap { stories.getStoryAtLocation($0) }.map(articleLength).max() ?? 0
+                    print("DUO_READER_AUDIT_NEXT_PAGE page=\(previousPage) rows=\(stories.storiesCollection.storyLocationsCount) longestPlainText=\(longestBody)")
+                    var receivedPage = false
+                    additionalPages += 1
+                    // FeedToolbarLayoutTests.swift uses normal pagination to find a scrollable article without changing the user's filter.
+                    stories.fetchNextPage { receivedPage = true }
+                    for _ in 0..<300 {
+                        table.layoutIfNeeded()
+                        if receivedPage && !stories.pageFetching &&
+                            stories.storiesCollection.feedPage > previousPage && !table.hasUncommittedUpdates { break }
+                        try await Task.sleep(nanoseconds: 50_000_000)
+                    }
+                    guard receivedPage, !stories.pageFetching,
+                          stories.storiesCollection.feedPage > previousPage, !table.hasUncommittedUpdates else {
+                        XCTFail("The article audit must receive and render page \(previousPage + 1); callback=\(receivedPage), page=\(stories.storiesCollection.feedPage), fetching=\(stories.pageFetching), finished=\(stories.pageFinished)")
+                        throw NSError(domain: "DuoReaderAudit", code: 4)
+                    }
+                    remainingSamples = 300
+                }
             }
             try await Task.sleep(nanoseconds: 50_000_000)
         }
-        let longestBody = (0..<Int(stories.storiesCollection.storyLocationsCount)).compactMap {
-            stories.getStoryAtLocation($0)?["story_content"] as? String
-        }.map(\.count).max() ?? 0
-        XCTFail("A loaded, visible story row must be available before opening the reader; longest loaded body: \(longestBody)")
+        let longestBody = (0..<Int(stories.storiesCollection.storyLocationsCount))
+            .compactMap { stories.getStoryAtLocation($0) }.map(articleLength).max() ?? 0
+        XCTFail("A loaded, visible story row must be available before opening the reader; longest plain-text body=\(longestBody), extra pages=\(additionalPages), current page=\(stories.storiesCollection.feedPage), finished=\(stories.pageFinished)")
         throw NSError(domain: "DuoReaderAudit", code: 1)
     }
 
