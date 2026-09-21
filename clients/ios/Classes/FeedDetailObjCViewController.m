@@ -3706,6 +3706,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
+        // FeedDetailObjCViewController.m leaves Duo source browsing in the titles column or restored overlay until an explicit story selection.
+        if (appDelegate.detailViewController.isBrowsingDuoSources ||
+            (appDelegate.detailViewController.isDuoFullscreenReader &&
+             !appDelegate.detailViewController.hasVisibleStoryForSidebarLayout)) return;
         if (appDelegate.activeStory == nil && self.cameFromFeedsList) {
             // FeedDetailObjCViewController.m permits manual cached-row selection, but auto-opening waits for fresh ordering.
             if (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline) return;

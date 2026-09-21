@@ -766,8 +766,131 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
     private var initialUsername: String?
     private var keyboardFrameInScreen: CGRect?
     private var journeyScrolledStories = Set<String>()
+    private var initialDuoFullscreenMode: Bool?
+    private var initialDuoFullscreenPreference: (key: String, value: Any?)?
+
+    func test_liveOpenLaunchKeepsFeedsUntilStorySelection() async throws {
+        let app = try await coldLaunchApp()
+        let feeds = try XCTUnwrap(app.feedsViewController)
+        let titles = try XCTUnwrap(app.feedDetailViewController)
+        let split = try XCTUnwrap(app.splitViewController)
+        try await waitUntil("The cold launch must load its feed list", timeout: 30) {
+            app.dictFeeds.count > 0 && split.view.window != nil && split.transitionCoordinator == nil
+        }
+        let window = try XCTUnwrap(split.view.window)
+        capture(window, named: "open-launch-before-selection", controller: split)
+        XCTAssertEqual(split.displayMode, .oneBesideSecondary, "A normal open launch must show feeds beside the story-list prompt")
+        XCTAssertGreaterThan(visibleViewport(of: feeds.view).width, 150)
+        XCTAssertGreaterThan(visibleViewport(of: titles.view).width, 150)
+        XCTAssertNil(app.activeStory, "Launching normally must not select an article")
+        guard split.displayMode == .oneBesideSecondary else { return }
+
+        let stories = try await openSubscribedFeed(app)
+        try await waitUntil("The selected source must finish loading", timeout: 30) {
+            let load = stories.value(forKey: "firstPageLoad") as? StoryFirstPageLoad
+            return !stories.pageFetching && stories.storiesCollection.storyLocationsCount > 0 &&
+                (load == nil || (load?.authoritativeReceived == true && load?.pending == false))
+        }
+        try await settle(stories)
+        capture(window, named: "open-launch-after-feed-selection", controller: split)
+        XCTAssertEqual(split.displayMode, .oneBesideSecondary, "Selecting a feed must keep both source columns visible")
+        XCTAssertGreaterThan(visibleViewport(of: feeds.view).width, 150)
+        XCTAssertNil(app.activeStory, "Only an explicit story selection should open the reader")
+        feeds.selectFolder("everything")
+        try await waitUntil("The selected folder must finish loading", timeout: 30) {
+            let load = stories.value(forKey: "firstPageLoad") as? StoryFirstPageLoad
+            return stories.storiesCollection.activeFolder == "everything" && !stories.pageFetching &&
+                stories.storiesCollection.storyLocationsCount > 0 &&
+                (load == nil || (load?.authoritativeReceived == true && load?.pending == false))
+        }
+        try await settle(stories)
+        XCTAssertEqual(split.displayMode, .oneBesideSecondary, "Selecting a folder must also keep feeds visible")
+        XCTAssertGreaterThan(visibleViewport(of: feeds.view).width, 150)
+        XCTAssertNil(app.activeStory)
+        capture(window, named: "open-launch-after-folder-selection", controller: split)
+        let hash = try await selectVisibleStoryForReader(stories)
+        let pages = try XCTUnwrap(app.storyPagesViewController)
+        try await waitUntil("Selecting a story must collapse feeds and show the reader") {
+            split.isFeedsListHidden && self.isVisible(pages)
+        }
+        try await waitForReadableArticle(pages, app: app, selectedHash: hash)
+        capture(window, named: "open-launch-after-story-selection", controller: split)
+    }
+
+    func test_liveFullscreenLaunchShowsFeedsOverlayUntilStorySelection() async throws {
+        let app = try await coldLaunchApp()
+        let split = try XCTUnwrap(app.splitViewController)
+        let window = try XCTUnwrap(split.view.window)
+        capture(window, named: "fullscreen-launch-before-selection", controller: split)
+        XCTAssertTrue(app.detailViewController.isDuoFullscreenReader,
+                      "Full-screen reading enabled before quitting must survive a cold launch")
+        XCTAssertEqual(split.displayMode, .oneOverSecondary)
+        XCTAssertGreaterThan(visibleViewport(of: app.feedsViewController.view).width, 150)
+        XCTAssertNil(app.activeStory, "Restoring full-screen mode must not reopen an old article")
+        guard app.detailViewController.isDuoFullscreenReader, split.displayMode == .oneOverSecondary else { return }
+        // DuoPresentationTests.swift exercises native dismissal before any source exists, then the real Feeds reveal action.
+        split.hide(.primary)
+        try await waitUntil("The initial empty-reader overlay must dismiss without losing its controllers") {
+            split.isFeedsListHidden && split.transitionCoordinator == nil
+        }
+        await Task.yield()
+        XCTAssertTrue(app.feedsNavigationController.topViewController === app.feedsViewController,
+                      "Without a selected source, the next native edge reveal must still open Feeds")
+        app.showFeedsList(animated: false)
+        try await waitUntil("Feeds must reopen after dismissing the initial overlay") {
+            split.displayMode == .oneOverSecondary &&
+                app.feedsNavigationController.topViewController === app.feedsViewController &&
+                split.transitionCoordinator == nil
+        }
+        let stories = try await openSubscribedFeed(app)
+        try await waitUntil("A full-screen source selection must show the story-list overlay", timeout: 30) {
+            let load = stories.value(forKey: "firstPageLoad") as? StoryFirstPageLoad
+            return app.feedsNavigationController.topViewController === stories &&
+                !stories.pageFetching && stories.storiesCollection.storyLocationsCount > 0 &&
+                (load == nil || (load?.authoritativeReceived == true && load?.pending == false))
+        }
+        try await settle(stories)
+        XCTAssertEqual(split.displayMode, .oneOverSecondary)
+        XCTAssertNil(app.activeStory)
+        capture(window, named: "fullscreen-launch-after-feed-selection", controller: split)
+        let hash = try await selectVisibleStoryForReader(stories)
+        let pages = try XCTUnwrap(app.storyPagesViewController)
+        try await waitUntil("The explicit story selection must dismiss the full-screen overlay") {
+            split.isFeedsListHidden && self.isVisible(pages)
+        }
+        try await waitForReadableArticle(pages, app: app, selectedHash: hash)
+        XCTAssertTrue(app.detailViewController.isDuoFullscreenReader)
+        capture(window, named: "fullscreen-launch-after-story-selection", controller: split)
+    }
+
+    private func coldLaunchApp() async throws -> NewsBlurAppDelegate {
+        guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_DUO_LAUNCH_TESTS"] == "1" else {
+            throw XCTSkip("Run alone on the logged-in open Duo with NEWSBLUR_LIVE_DUO_LAUNCH_TESTS=1")
+        }
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        guard Bundle.main.bundleIdentifier == "com.newsblur.NB-Alpha",
+              UIDevice.current.name.localizedCaseInsensitiveContains("duo"),
+              !app.detailViewController.isPhoneOrCompact else { throw XCTSkip("Requires NB Alpha on open Duo") }
+        guard let username = app.activeUsername, !username.isEmpty else { throw XCTSkip("Requires the existing logged-in account") }
+        liveApp = app
+        initialUsername = username
+        try await waitUntil("The cold launch must load its feed list", timeout: 30) {
+            app.dictFeeds.count > 0 && app.splitViewController.view.window != nil &&
+                app.splitViewController.transitionCoordinator == nil
+        }
+        print("DUO_COLD_LAUNCH display=\(app.splitViewController.displayMode.rawValue) preferred=\(app.splitViewController.preferredDisplayMode.rawValue) fullscreen=\(app.detailViewController.isDuoFullscreenReader) sidebar=\(app.detailViewController.fullscreenSidebarPresentation.rawValue)")
+        return app
+    }
 
     override func tearDown() async throws {
+        defer {
+            // DuoPresentationTests.swift restores nil as well as true/false after audit actions update the account's saved mode.
+            if let saved = initialDuoFullscreenPreference {
+                UserDefaults.standard.set(saved.value, forKey: saved.key)
+            }
+            initialDuoFullscreenMode = nil
+            initialDuoFullscreenPreference = nil
+        }
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         if let app = liveApp {
@@ -775,7 +898,40 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
             await dismissPresentations(app)
             app.feedDetailViewController?.deactivateSearch()
             app.detailViewController?.dismissDiscoverSites()
+            if app.activeUsername == initialUsername, let initialMode = initialDuoFullscreenMode,
+               let detail = app.detailViewController, detail.isDuoFullscreenReader != initialMode {
+                do {
+                    try await waitUntil("The reader must be ready to restore the audit's original fullscreen mode") {
+                        detail.canToggleDuoFullscreenReader && detail.transitionCoordinator == nil &&
+                            app.splitViewController?.transitionCoordinator == nil &&
+                            app.feedsNavigationController?.transitionCoordinator == nil
+                    }
+                    detail.toggleTemporaryFullScreen(nil)
+                    try await waitUntil("The audit's original fullscreen mode must finish restoring") {
+                        detail.isDuoFullscreenReader == initialMode && detail.transitionCoordinator == nil &&
+                            app.splitViewController?.transitionCoordinator == nil &&
+                            [detail.leftContainerView, detail.topContainerView, detail.verticalDividerView]
+                                .compactMap { $0 }.allSatisfy { $0.layer.animationKeys()?.isEmpty ?? true }
+                    }
+                } catch {
+                    // DuoPresentationTests.swift still restores persisted state and finishes account cleanup if a transition fails.
+                }
+            }
             app.showFeedsList(animated: false)
+            if initialDuoFullscreenMode != nil {
+                do {
+                    try await waitUntil("The restored audit mode must finish returning to Feeds") {
+                        guard let feeds = app.feedsViewController,
+                              feeds.viewIfLoaded?.window != nil else { return false }
+                        return app.feedsNavigationController?.topViewController === feeds &&
+                            app.feedsNavigationController?.transitionCoordinator == nil &&
+                            app.splitViewController?.transitionCoordinator == nil &&
+                            app.detailViewController?.transitionCoordinator == nil
+                    }
+                } catch {
+                    // DuoPresentationTests.swift records the timeout before the deferred preference restoration.
+                }
+            }
             XCTAssertEqual(app.activeUsername, initialUsername, "Presentation checks must preserve the logged-in account")
         }
         liveApp = nil
@@ -2185,6 +2341,27 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
                                                name: UIResponder.keyboardDidShowNotification, object: nil)
         await dismissPresentations(app)
         app.detailViewController?.dismissDiscoverSites()
+        let detail = try XCTUnwrap(app.detailViewController)
+        if initialDuoFullscreenPreference == nil {
+            let key = DetailViewController.Key.duoFullscreenReader(forAccount: username)
+            initialDuoFullscreenPreference = (key, UserDefaults.standard.object(forKey: key))
+            initialDuoFullscreenMode = detail.isDuoFullscreenReader
+        }
+        if detail.isDuoFullscreenReader {
+            try await waitUntil("The reader must be ready to enter the regular audit layout") {
+                detail.canToggleDuoFullscreenReader && detail.transitionCoordinator == nil &&
+                    app.splitViewController?.transitionCoordinator == nil &&
+                    app.feedsNavigationController?.transitionCoordinator == nil
+            }
+            // DuoPresentationTests.swift keeps normal audits independent of the user's persisted fullscreen launch preference.
+            detail.toggleTemporaryFullScreen(nil)
+            try await waitUntil("The regular two-pane audit layout must finish restoring") {
+                !detail.isDuoFullscreenReader && detail.transitionCoordinator == nil &&
+                    app.splitViewController?.transitionCoordinator == nil &&
+                    [detail.leftContainerView, detail.topContainerView, detail.verticalDividerView]
+                        .compactMap { $0 }.allSatisfy { $0.layer.animationKeys()?.isEmpty ?? true }
+            }
+        }
         app.showFeedsList(animated: false)
         try await waitUntil("Feed list and its toolbar must finish navigation") {
             guard let feeds = app.feedsViewController, let navigation = feeds.navigationController,

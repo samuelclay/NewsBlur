@@ -1276,6 +1276,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (void)finishLoadingFeedList:(NSDictionary *)results {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSString *responseUsername = [results[@"user"] isKindOfClass:[NSString class]] ? results[@"user"] : nil;
+    BOOL restoresAuthenticatedLayout = self.awaitingAuthenticatedFeedList;
     self.awaitingAuthenticatedFeedList = NO;
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
@@ -1285,6 +1286,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.isOffline = NO;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
+    // FeedsObjCViewController.m restores the confirmed account's layout only for its first authenticated response, never an ordinary refresh over a selected article.
+    if (restoresAuthenticatedLayout &&
+        [appDelegate.detailViewController restoreDuoFullscreenReaderForAccount:responseUsername]) {
+        [appDelegate updateSplitBehavior:NO];
+    }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
