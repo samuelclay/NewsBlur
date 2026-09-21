@@ -1364,6 +1364,100 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         try await runLiveFoldPreservingStory(fullscreen: false)
     }
 
+    func test_liveFoldAndReaderBackPreserveFullscreenTitleColors() async throws {
+        guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_DUO_FOLD_TESTS"] == "1" else {
+            throw XCTSkip("Drive the actual Device Hub fold with NEWSBLUR_LIVE_DUO_FOLD_TESTS=1")
+        }
+        let app = try await prepareApp()
+        guard !app.detailViewController.isPhoneOrCompact else { throw XCTSkip("Begin with Duo open") }
+        let pages = try await openReadableReader(app)
+        print("DUO_TITLE_READY_CLOSE")
+        fflush(nil)
+        try await waitUntil("Close Duo with the reader visible", timeout: 120) {
+            app.splitViewController.isCollapsed && app.detailViewController.isPhoneOrCompact
+        }
+        await waitForLiveFoldLayout(app)
+        let titles = try XCTUnwrap(app.feedDetailViewController)
+        let navigation = try XCTUnwrap(app.feedsNavigationController)
+        navigation.popToViewController(titles, animated: false)
+        try await settle(titles)
+        XCTAssertTrue(navigation.topViewController === titles)
+        print("DUO_TITLE_READY_OPEN")
+        fflush(nil)
+        try await waitUntil("Reopen Duo after returning to story titles", timeout: 120) {
+            !app.splitViewController.isCollapsed && !app.detailViewController.isPhoneOrCompact
+        }
+        await waitForLiveFoldLayout(app)
+        if !app.detailViewController.isDuoFullscreenReader {
+            app.detailViewController.toggleTemporaryFullScreen(nil)
+            try await settle(pages)
+        }
+        defer {
+            if app.detailViewController.isDuoFullscreenReader { app.detailViewController.toggleTemporaryFullScreen(nil) }
+        }
+        app.detailViewController.toggleStoryTitles(nil)
+        try await settle(titles)
+        XCTAssertTrue(navigation.topViewController === titles)
+        // DuoPresentationTests.swift uses diagnostic favicon pixels in the real reused overlay title host after reader Back and folding.
+        defer { titles.navigationItem.titleView = app.makeFeedTitle(app.storiesCollection.activeFeed) }
+        let source = UILabel()
+        source.text = "     Color feed"
+        source.font = .systemFont(ofSize: 17, weight: .medium)
+        source.textColor = .brown
+        source.shadowColor = .white
+        source.shadowOffset = CGSize(width: 0, height: 1)
+        source.sizeToFit()
+        let icon = UIImageView(image: UIGraphicsImageRenderer(size: CGSize(width: 16, height: 16)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 8, height: 16))
+            UIColor.blue.setFill()
+            context.fill(CGRect(x: 8, y: 0, width: 8, height: 16))
+        })
+        icon.frame = CGRect(x: 0, y: 2, width: 16, height: 16)
+        source.addSubview(icon)
+        titles.navigationItem.titleView = source
+        titles.view.setNeedsLayout()
+        titles.view.layoutIfNeeded()
+        try await settle(titles)
+        let window = try XCTUnwrap(titles.view.window)
+        // DuoPresentationTests.swift waits for the native title host's own animation, which can outlast the list controller's layout.
+        var stableTitleSamples = 0
+        try await waitUntil("The overlay favicon must reach its committed position") {
+            window.layoutIfNeeded()
+            guard let displayedIcon = icon.layer.presentation(), let displayedWindow = window.layer.presentation() else { return false }
+            let displayed = displayedIcon.convert(icon.bounds, to: displayedWindow)
+            let committed = icon.convert(icon.bounds, to: window)
+            stableTitleSamples = abs(displayed.minX - committed.minX) < 0.5 &&
+                abs(displayed.minY - committed.minY) < 0.5 ? stableTitleSamples + 1 : 0
+            return stableTitleSamples >= 3
+        }
+        let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "folded-reader-back-overlay-favicon"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        func rgb(_ point: CGPoint) throws -> [UInt8] {
+            let pixel = icon.convert(point, to: window)
+            let cgImage = try XCTUnwrap(image.cgImage?.cropping(to: CGRect(x: pixel.x * image.scale, y: pixel.y * image.scale, width: 1, height: 1)))
+            var bytes = [UInt8](repeating: 0, count: 4)
+            try bytes.withUnsafeMutableBytes { buffer in
+                let context = try XCTUnwrap(CGContext(data: buffer.baseAddress, width: 1, height: 1, bitsPerComponent: 8,
+                                                     bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(),
+                                                     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue))
+                context.draw(cgImage, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+            }
+            return bytes
+        }
+        let red = try rgb(CGPoint(x: 4, y: 8))
+        let blue = try rgb(CGPoint(x: 12, y: 8))
+        XCTAssertGreaterThan(red[0], 230)
+        XCTAssertLessThan(red[2], 25)
+        XCTAssertGreaterThan(blue[2], 230)
+        XCTAssertLessThan(blue[0], 25)
+    }
+
     func test_liveFoldPreservesFullscreenReaderAndSidebarPreference() async throws {
         try await runLiveFoldPreservingStory(fullscreen: true)
     }

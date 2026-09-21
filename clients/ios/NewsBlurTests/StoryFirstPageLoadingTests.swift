@@ -2454,7 +2454,7 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     }
     override func cleanUpTryFeed() {}
     override func adjustStoryDetailWebView() {}
-    @objc(updateFeedDetailTitleView) func suppressTitleView() {}
+    override func updateFeedDetailTitleView() {}
 
     var testURL = "https://example.test"
     override var url: String! { testURL }

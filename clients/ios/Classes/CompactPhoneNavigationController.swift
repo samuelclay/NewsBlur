@@ -311,6 +311,120 @@ final class DetailNavigationController: UINavigationController {
     }
 }
 
+/// CompactPhoneNavigationController.swift preserves the source title while UIKit applies vibrant rendering to its label.
+@MainActor private final class OriginalColorFeedTitleRendering {
+    let sourceTitle: UIView
+    let originalSourceFrame: CGRect
+    private weak var host: UIView?
+    private var originalTitleImages: [(view: UIImageView, original: UIImage, displayed: UIImage)] = []
+    private var sourceTitleImages: [(view: UIImageView, index: Int, frame: CGRect)] = []
+    private var originalTitleShadow: UIColor?
+
+    init(sourceTitle: UIView, host: UIView) {
+        self.sourceTitle = sourceTitle
+        originalSourceFrame = sourceTitle.frame
+        self.host = host
+        preserveSourceImageColors(in: sourceTitle)
+        if let label = sourceTitle as? UILabel {
+            // CompactPhoneNavigationController.swift keeps favicon colors outside the label's vibrant subtree and avoids recoloring its legacy shadow into duplicate text.
+            originalTitleShadow = label.shadowColor
+            label.shadowColor = nil
+            for (index, child) in label.subviews.enumerated() {
+                guard let imageView = child as? UIImageView else { continue }
+                sourceTitleImages.append((imageView, index, imageView.frame))
+                host.addSubview(imageView)
+            }
+        }
+    }
+
+    var contentSize: CGSize {
+        let intrinsic = sourceTitle.intrinsicContentSize
+        return CGSize(width: max(0, intrinsic.width >= 0 ? intrinsic.width : originalSourceFrame.width),
+                      height: min(44, max(0, intrinsic.height >= 0 ? intrinsic.height : originalSourceFrame.height)))
+    }
+
+    func update() {
+        preserveSourceImageColors(in: sourceTitle)
+        for entry in sourceTitleImages { preserveSourceImageColors(in: entry.view) }
+    }
+
+    func layout() {
+        guard let host else { return }
+        for entry in sourceTitleImages {
+            entry.view.frame = sourceTitle.convert(entry.frame, to: host)
+        }
+    }
+
+    private func preserveSourceImageColors(in view: UIView) {
+        if let imageView = view as? UIImageView, let image = imageView.image,
+           image.renderingMode == .automatic {
+            // CompactPhoneNavigationController.swift preserves favicon pixels when UIKit hosts the title inside a native bar.
+            let displayed = image.withRenderingMode(.alwaysOriginal)
+            originalTitleImages.removeAll { $0.view === imageView }
+            originalTitleImages.append((imageView, image, displayed))
+            imageView.image = displayed
+        }
+        for child in view.subviews { preserveSourceImageColors(in: child) }
+    }
+
+    func releaseSourceTitle() -> UIView {
+        sourceTitle.removeFromSuperview()
+        for entry in originalTitleImages where entry.view.image === entry.displayed {
+            entry.view.image = entry.original
+        }
+        originalTitleImages.removeAll()
+        for entry in sourceTitleImages where entry.view.superview === host {
+            sourceTitle.insertSubview(entry.view, at: min(entry.index, sourceTitle.subviews.count))
+            entry.view.frame = entry.frame
+        }
+        sourceTitleImages.removeAll()
+        if let label = sourceTitle as? UILabel, label.shadowColor == nil {
+            label.shadowColor = originalTitleShadow
+        }
+        sourceTitle.frame = originalSourceFrame
+        return sourceTitle
+    }
+}
+
+/// CompactPhoneNavigationController.swift keeps the fullscreen overlay's native title colors independent of prior reader bar rendering.
+@MainActor private final class OriginalColorFeedTitleView: UIView {
+    private var rendering: OriginalColorFeedTitleRendering?
+    private var lastContentSize: CGSize = .zero
+
+    init(sourceTitle: UIView) {
+        super.init(frame: sourceTitle.frame)
+        addSubview(sourceTitle)
+        rendering = OriginalColorFeedTitleRendering(sourceTitle: sourceTitle, host: self)
+        update()
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override var intrinsicContentSize: CGSize { rendering?.contentSize ?? .zero }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize { intrinsicContentSize }
+
+    func update() {
+        guard let rendering else { return }
+        rendering.update()
+        let size = rendering.contentSize
+        if lastContentSize != size {
+            lastContentSize = size
+            invalidateIntrinsicContentSize()
+        }
+        setNeedsLayout()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        guard let rendering else { return }
+        rendering.sourceTitle.frame = bounds
+        rendering.layout()
+    }
+
+    func releaseSourceTitle() -> UIView? { rendering?.releaseSourceTitle() }
+}
+
 /// CompactPhoneNavigationController.swift keeps Feeds leading and centers the existing title inside its story column.
 @MainActor private final class ExpandedFeedsNavigationTitleView: UIView {
     private let sourceTitle: UIView?
@@ -322,9 +436,7 @@ final class DetailNavigationController: UINavigationController {
     private var lastPreferredSize: CGSize = .zero
     private weak var titleCoordinateView: UIView?
     private var columnCenter: CGFloat = 0
-    private var originalTitleImages: [(view: UIImageView, original: UIImage, displayed: UIImage)] = []
-    private var sourceTitleImages: [(view: UIImageView, index: Int, frame: CGRect)] = []
-    private var originalTitleShadow: UIColor?
+    private var sourceRendering: OriginalColorFeedTitleRendering?
 
     init(sourceTitle: UIView?, showFeeds: @escaping () -> Void) {
         self.sourceTitle = sourceTitle
@@ -343,16 +455,8 @@ final class DetailNavigationController: UINavigationController {
         plainTitleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
         plainTitleLabel.lineBreakMode = .byTruncatingTail
         addSubview(sourceTitle ?? plainTitleLabel)
-        if let sourceTitle { preserveSourceImageColors(in: sourceTitle) }
-        if let label = sourceTitle as? UILabel {
-            // CompactPhoneNavigationController.swift keeps favicon colors outside the label's vibrant subtree and avoids recoloring its legacy shadow into duplicate text.
-            originalTitleShadow = label.shadowColor
-            label.shadowColor = nil
-            for (index, child) in label.subviews.enumerated() {
-                guard let imageView = child as? UIImageView else { continue }
-                sourceTitleImages.append((imageView, index, imageView.frame))
-                addSubview(imageView)
-            }
+        if let sourceTitle {
+            sourceRendering = OriginalColorFeedTitleRendering(sourceTitle: sourceTitle, host: self)
         }
     }
 
@@ -377,8 +481,7 @@ final class DetailNavigationController: UINavigationController {
     }
 
     func update(plainTitle: String?, navigationBar: UINavigationBar, maximumWidth: CGFloat, columnCenter: CGFloat) {
-        if let sourceTitle { preserveSourceImageColors(in: sourceTitle) }
-        for entry in sourceTitleImages { preserveSourceImageColors(in: entry.view) }
+        sourceRendering?.update()
         if plainTitleLabel.text != plainTitle { plainTitleLabel.text = plainTitle }
         let attributes = navigationBar.titleTextAttributes ?? navigationBar.standardAppearance.titleTextAttributes
         plainTitleLabel.font = attributes[.font] as? UIFont ?? .systemFont(ofSize: 17, weight: .semibold)
@@ -411,41 +514,11 @@ final class DetailNavigationController: UINavigationController {
         let titleWidth = min(size.width, halfSpace * 2)
         content.frame = CGRect(x: center - titleWidth / 2, y: (bounds.height - size.height) / 2,
                                width: titleWidth, height: size.height)
-        for entry in sourceTitleImages {
-            entry.view.frame = content.convert(entry.frame, to: self)
-        }
-    }
-
-    private func preserveSourceImageColors(in view: UIView) {
-        if let imageView = view as? UIImageView, let image = imageView.image,
-           image.renderingMode == .automatic {
-            // CompactPhoneNavigationController.swift preserves favicon pixels when UIKit hosts the title inside a bar button.
-            let displayed = image.withRenderingMode(.alwaysOriginal)
-            originalTitleImages.removeAll { $0.view === imageView }
-            originalTitleImages.append((imageView, image, displayed))
-            imageView.image = displayed
-        }
-        for child in view.subviews { preserveSourceImageColors(in: child) }
+        sourceRendering?.layout()
     }
 
     func releaseSourceTitle() -> UIView? {
-        sourceTitle?.removeFromSuperview()
-        for entry in originalTitleImages where entry.view.image === entry.displayed {
-            entry.view.image = entry.original
-        }
-        originalTitleImages.removeAll()
-        if let sourceTitle {
-            for entry in sourceTitleImages where entry.view.superview === self {
-                sourceTitle.insertSubview(entry.view, at: min(entry.index, sourceTitle.subviews.count))
-                entry.view.frame = entry.frame
-            }
-        }
-        sourceTitleImages.removeAll()
-        if let label = sourceTitle as? UILabel, label.shadowColor == nil {
-            label.shadowColor = originalTitleShadow
-        }
-        if let originalSourceFrame { sourceTitle?.frame = originalSourceFrame }
-        return sourceTitle
+        sourceRendering?.releaseSourceTitle()
     }
 }
 
@@ -471,6 +544,9 @@ final class CompactPhoneNavigationController: UINavigationController, UINavigati
     private var clearsVerticalBarBackground = false
     private var originalVerticalBarBackground: UIColor?
     private let verticalTitleLayout = VerticalNavigationTitleLayout()
+    private weak var fullscreenTitleOwner: FeedDetailViewController?
+    private var fullscreenTitleView: OriginalColorFeedTitleView?
+    private var isUpdatingFullscreenTitle = false
 
     private var usesCompactHeader: Bool {
         if Utilities.usesSystemVerticalBar(traitCollection) {
@@ -500,12 +576,55 @@ final class CompactPhoneNavigationController: UINavigationController, UINavigati
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        updateFullscreenTitleRendering()
         updateCompactHeader()
         verticalTitleLayout.update(navigation: self, controller: topViewController,
                                    enabled: topViewController is FeedDetailObjCViewController &&
                                     (traitCollection.horizontalSizeClass == .compact ||
                                      (topViewController as? FeedDetailViewController)?.appDelegate.detailViewController.isDuoFullscreenReader == true))
         updateVerticalNavigationBackground()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateFullscreenTitleRendering()
+    }
+
+    @objc func updateFullscreenTitleRendering() {
+        guard !isUpdatingFullscreenTitle else { return }
+        isUpdatingFullscreenTitle = true
+        defer { isUpdatingFullscreenTitle = false }
+        guard let stories = topViewController as? FeedDetailViewController,
+              let app = stories.appDelegate,
+              app.feedsNavigationController === self,
+              app.detailViewController?.isDuoFullscreenReader == true else {
+            restoreFullscreenTitleRendering()
+            return
+        }
+        let item = stories.navigationItem
+        if fullscreenTitleOwner !== stories || item.titleView !== fullscreenTitleView {
+            restoreFullscreenTitleRendering()
+            guard let source = item.titleView else { return }
+            // CompactPhoneNavigationController.swift releases the native title host before wrapping its live label; the primary overlay can inherit vibrant rendering after a fold.
+            item.titleView = nil
+            let title = OriginalColorFeedTitleView(sourceTitle: source)
+            fullscreenTitleOwner = stories
+            fullscreenTitleView = title
+            item.titleView = title
+        }
+        fullscreenTitleView?.update()
+    }
+
+    private func restoreFullscreenTitleRendering() {
+        guard let title = fullscreenTitleView else { return }
+        let item = fullscreenTitleOwner?.navigationItem
+        let stillOwnsTitle = item?.titleView === title
+        if stillOwnsTitle { item?.titleView = nil }
+        let source = title.releaseSourceTitle()
+        // CompactPhoneNavigationController.swift never replaces a newer feed/theme title while restoring the old source's image hierarchy and shadow.
+        if stillOwnsTitle { item?.titleView = source }
+        fullscreenTitleOwner = nil
+        fullscreenTitleView = nil
     }
 
     private func updateVerticalNavigationBackground() {

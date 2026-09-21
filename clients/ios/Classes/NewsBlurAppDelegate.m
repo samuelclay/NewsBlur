@@ -141,7 +141,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
 
 - (void)presentFeedDetailAfterFeedSelection;
-- (void)updateFeedDetailTitleView;
 
 @end
 
@@ -2275,6 +2274,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (void)updateFeedDetailTitleView {
     detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     self.feedDetailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
+    // NewsBlurAppDelegate.m updates the visible Duo overlay immediately when a source or favicon changes without a navigation layout pass.
+    if ([self.feedsNavigationController isKindOfClass:CompactPhoneNavigationController.class]) {
+        [(CompactPhoneNavigationController *)self.feedsNavigationController updateFullscreenTitleRendering];
+    }
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
@@ -2479,8 +2482,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                     if (favicon) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [self saveFavicon:favicon feedId:feedIdStr];
-                            self.feedDetailViewController.navigationItem.titleView =
-                                [self makeFeedTitle:self.storiesCollection.activeFeed];
+                            [self updateFeedDetailTitleView];
                             [self.feedsViewController reloadFeedTitlesTable];
                             // Update the try-feed subscribe banner favicon
                             UIImageView *bannerFavicon = [self.feedDetailViewController.tryFeedBannerView viewWithTag:1001];
