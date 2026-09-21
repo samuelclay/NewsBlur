@@ -1102,6 +1102,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         if ([appOpening isEqualToString:@"feeds"] && !self.isPhoneOrCompact) {
             self.messageLabel.text = @"Select a feed or folder";
             self.messageView.hidden = NO;
+            // FeedDetailObjCViewController.m commits the empty prompt before native navigation observes the remounted table.
+            [self.storyTitlesTable reloadData];
+            [self.storyTitlesTable layoutIfNeeded];
         }
     }
 
