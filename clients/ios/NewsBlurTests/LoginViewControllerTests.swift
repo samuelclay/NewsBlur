@@ -339,6 +339,78 @@ final class Test_InteractionCellLayout: XCTestCase {
 
 @MainActor
 final class Test_FeedDetailEmptyState: XCTestCase {
+    func test_selectionPromptCommitsLoadingRowsBeforeNavigationReattachment() throws {
+        let preferences = UserDefaults.standard
+        let oldOpening = preferences.object(forKey: "app_opening")
+        preferences.set("feeds", forKey: "app_opening")
+        defer { preferences.set(oldOpening, forKey: "app_opening") }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let app = DuoEmptyFeedApp()
+        let collection = StoriesCollection()
+        collection.appDelegate = app
+        app.storiesCollection = collection
+        let detail = DuoExpansionDetailController()
+        detail.appDelegate = app
+        detail.isCompact = true
+        app.detailViewController = detail
+        let stories = DuoEmptyFeedTransitionStories()
+        stories.fixtureApp = app
+        stories.appDelegate = app
+        stories.storiesCollection = collection
+        app.fixtureStories = stories
+        detail.feedDetailViewController = stories
+        stories.loadViewIfNeeded()
+        let table = try XCTUnwrap(stories.storyTitlesTable)
+        table.dataSource = stories
+        table.delegate = stories
+        let window = UIWindow(windowScene: scene)
+        defer {
+            stories.resetPendingReloadsForFeedChange()
+            table.dataSource = nil
+            table.delegate = nil
+            window.isHidden = true
+            window.rootViewController = nil
+            detail.feedDetailViewController = nil
+            app.fixtureStories = nil
+            stories.fixtureApp = nil
+            stories.appDelegate = nil
+            collection.appDelegate = nil
+            detail.appDelegate = nil
+        }
+        window.rootViewController = stories
+        window.isHidden = false
+        stories.reloadImmediately()
+        window.layoutIfNeeded()
+        table.layoutIfNeeded()
+        XCTAssertEqual(table.numberOfSections, 1)
+        XCTAssertEqual(table.numberOfRows(inSection: 0), 1)
+        XCTAssertTrue(table.visibleCells.contains { NSStringFromClass(type(of: $0)) == "NBLoadingCell" },
+                      "The fixture must render the real loading cell before the source becomes an empty expanded pane")
+
+        window.rootViewController = nil
+        detail.isCompact = false
+        stories.viewWillAppear(false)
+        XCTAssertFalse(stories.messageView.isHidden)
+        XCTAssertEqual(stories.numberOfSections(in: table), 0)
+        XCTAssertEqual(table.numberOfSections, 0,
+                       "The prompt must commit its empty data before UIKit starts observing the remounted table")
+        XCTAssertTrue(table.visibleCells.isEmpty,
+                      "A loading cell must not survive after its section disappears during reparenting")
+
+        // LoginViewControllerTests.swift also exercises a queued theme reload while the old table is detached.
+        stories.reloadImmediately()
+        XCTAssertEqual(table.numberOfSections, 0)
+        XCTAssertTrue(table.visibleCells.isEmpty)
+        guard table.numberOfSections == 0, table.visibleCells.isEmpty else { return }
+
+        let navigation = UINavigationController(rootViewController: stories)
+        window.rootViewController = navigation
+        window.layoutIfNeeded()
+        XCTAssertTrue(stories.navigationController === navigation)
+        XCTAssertEqual(table.numberOfSections, 0)
+        XCTAssertTrue(table.visibleCells.isEmpty)
+    }
+
     func test_expandedPhoneShowsSelectionPromptInsteadOfLoadingAnUnselectedFeed() {
         let preferences = UserDefaults.standard
         let oldOpening = preferences.object(forKey: "app_opening")
@@ -422,7 +494,7 @@ final class Test_FeedDetailEmptyState: XCTestCase {
     override func donateFolder() {}
 }
 
-@MainActor private final class DuoEmptyFeedStories: FeedDetailViewController {
+@MainActor private class DuoEmptyFeedStories: FeedDetailViewController {
     var fixtureApp: NewsBlurAppDelegate?
     override var appDelegate: NewsBlurAppDelegate! {
         get { super.appDelegate }
@@ -451,6 +523,14 @@ final class Test_FeedDetailEmptyState: XCTestCase {
     override func reload() {}
     override func updateSidebarButton(for displayMode: UISplitViewController.DisplayMode) {}
     override func fadeSelectedCell(_ deselect: Bool) {}
+}
+
+@MainActor private final class DuoEmptyFeedTransitionStories: DuoEmptyFeedStories {
+    // LoginViewControllerTests.swift keeps the real deferred theme reload while isolating network and reader appearance work.
+    override func reload() { deferredReload() }
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
 }
 
 @available(iOS 15.0, *)
