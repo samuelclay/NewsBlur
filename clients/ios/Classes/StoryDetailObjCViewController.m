@@ -812,6 +812,9 @@
     }
 #endif
     
+    if (appDelegate.storyPagesViewController.usesVerticalReaderToolbar) {
+        contentWidthClass = [contentWidthClass stringByAppendingString:@" NB-vertical-reader-toolbar"];
+    }
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%ld",
                          contentWidthClass, (long)contentWidth];
     
@@ -1210,18 +1213,23 @@
     }
 
     // StoryDetailObjCViewController.m uses the pager's window protection for every cached page, excluding the other column's navigation header.
-    UIView *viewport = appDelegate.storyPagesViewController.scrollView ?: self.webView;
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    UIView *viewport = pages.scrollView ?: self.webView;
     UIWindow *window = viewport.window;
     CGFloat protectedBottom = scroll.safeAreaInsets.bottom;
     if (window) {
         CGRect viewportFrame = [viewport convertRect:viewport.bounds toView:window];
         protectedBottom = MAX(0, CGRectGetMaxY(viewportFrame) - (CGRectGetMaxY(window.bounds) - window.safeAreaInsets.bottom));
     }
+    // StoryDetailObjCViewController.m leaves the article's bottom clear when the native toolbar occupies the side rail.
+    CGFloat bottomInset = pages.usesVerticalReaderToolbar ? scroll.contentInset.bottom :
+        MAX(scroll.contentInset.bottom, protectedBottom);
     CGFloat headerInset = MAX(0, CGRectGetHeight(self.feedTitleGradient.bounds) - 1);
     UIEdgeInsets insets = UIEdgeInsetsMake(MAX(0, scroll.contentInset.top) + headerInset,
-                                          0, MAX(scroll.contentInset.bottom, protectedBottom), 0);
+                                          0, bottomInset, 0);
     UIEdgeInsets horizontalInsets = self.readerIndicatorPreviousHorizontalInsets;
-    horizontalInsets.bottom = MAX(horizontalInsets.bottom, insets.bottom);
+    horizontalInsets.bottom = pages.usesVerticalReaderToolbar ? bottomInset :
+        MAX(horizontalInsets.bottom, bottomInset);
     self.readerIndicatorAppliedInsets = insets;
     self.readerIndicatorAppliedHorizontalInsets = horizontalInsets;
     if (scroll.automaticallyAdjustsScrollIndicatorInsets) scroll.automaticallyAdjustsScrollIndicatorInsets = NO;
@@ -3864,6 +3872,10 @@
     }
 #endif
     
+    // StoryDetailObjCViewController.m includes toolbar placement in the width cache so folding also updates footer spacing.
+    if (appDelegate.storyPagesViewController.usesVerticalReaderToolbar) {
+        contentWidthClass = [contentWidthClass stringByAppendingString:@" NB-vertical-reader-toolbar"];
+    }
     baseWidthClass = contentWidthClass;
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%ld",
                          contentWidthClass, (long)contentWidth];
