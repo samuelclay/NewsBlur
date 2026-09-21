@@ -2408,7 +2408,14 @@
             }
         }
 #endif
-        
+
+        if (appDelegate.storyPagesViewController.usesVerticalReaderToolbar) {
+            // StoryDetailObjCViewController.m must not relayout the hidden legacy footer or
+            // outer pager while the native side toolbar's article is rubber-banding.
+            [self storeScrollPosition:YES];
+            return;
+        }
+
         if (!atTopForFade && !atBottom && !singlePage) {
             StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
             CGFloat traverseFadeDistance = 80.0;

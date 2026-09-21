@@ -5,6 +5,66 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedToolbarLayout: XCTestCase {
+    func test_duoArticleBottomBounceLeavesLegacyFooterAndPagerGeometryAlone() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The side-toolbar reader uses the iOS layout policy")
+        #else
+        for sideToolbar in [true, false] {
+            for contentHeight in [CGFloat(677), 1500] {
+                let app = DuoPagerResizeApp()
+                app.storiesCollection = StoriesCollection()
+                let detail = DuoPendingTiledReaderDetail()
+                detail.appDelegate = app
+                detail.isCompact = false
+                app.detailViewController = detail
+                let pages = DuoBottomBouncePages(nibName: nil, bundle: nil)
+                pages.appDelegate = app
+                pages.verticalToolbar = sideToolbar
+                detail.storyPagesViewController = pages
+                pages.loadViewIfNeeded()
+                pages.view.frame.size = CGSize(width: 527, height: 669)
+                pages.traverseView = UIView()
+                pages.traverseBottomConstraint = pages.traverseView.bottomAnchor.constraint(equalTo: pages.view.bottomAnchor, constant: 42)
+                let page = DuoScrollingHeaderPage(nibName: nil, bundle: nil)
+                page.appDelegate = app
+                pages.currentPage = page
+                page.loadViewIfNeeded()
+                page.view.frame = pages.view.bounds
+                let scroll = try XCTUnwrap(page.webView.scrollView as? DuoScrollingHeaderScrollView)
+                scroll.frame = page.view.bounds
+                scroll.contentSize = CGSize(width: 527, height: contentHeight)
+                scroll.simulatesTracking = true
+                scroll.simulatesDragging = true
+                let bottom = contentHeight - scroll.bounds.height
+                scroll.contentOffset.y = bottom + 80
+                defer {
+                    page.webView = nil
+                    page.appDelegate = nil
+                    pages.currentPage = nil
+                    pages.appDelegate = nil
+                    detail.storyPagesViewController = nil
+                    detail.appDelegate = nil
+                    app.detailViewController = nil
+                }
+                // FeedToolbarLayoutTests.swift exercises the production scroll observer during overscroll, including short articles and a conventional-toolbar control.
+                page.observeValue(forKeyPath: "contentOffset", of: scroll,
+                                  change: [.oldKey: NSValue(cgPoint: CGPoint(x: 0, y: bottom)),
+                                           .newKey: NSValue(cgPoint: scroll.contentOffset)], context: nil)
+                if sideToolbar {
+                    XCTAssertEqual(pages.traverseBottomConstraint.constant, 42,
+                                   "The hidden bottom controls must not move while the native side toolbar owns reader actions")
+                    XCTAssertEqual(pages.pagerResizeCount, 0,
+                                   "Resizing the outer pager during rubber-banding autoresizes WebKit and clamps the bounce")
+                    XCTAssertEqual(scroll.contentOffset.y, bottom + 80, accuracy: 0.5)
+                } else {
+                    XCTAssertGreaterThan(pages.pagerResizeCount, 0,
+                                         "Conventional reader chrome must retain its existing scroll updates")
+                }
+            }
+        }
+        #endif
+    }
+
     func test_duoArticleFooterDoesNotReserveTheReplacedBottomToolbar() async throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("The side-toolbar reader uses the iOS layout policy")
@@ -2409,7 +2469,7 @@ import WebKit
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { didLoad?(webView) }
 }
 
-@MainActor private final class DuoScrollingHeaderPages: StoryPagesViewController {
+@MainActor private class DuoScrollingHeaderPages: StoryPagesViewController {
     var verticalToolbar = true
     var simulatesPhone = true
     override var isPhone: Bool { simulatesPhone }
@@ -2419,6 +2479,14 @@ import WebKit
     override func updateStoryTitleNavigationButtons() {}
     override func updateStatusBarState() {}
     override func setNextPreviousButtons() {}
+}
+
+@MainActor private final class DuoBottomBouncePages: DuoScrollingHeaderPages {
+    var pagerResizeCount = 0
+    override var isHorizontal: Bool { true }
+    override var useCustomToolbar: Bool { false }
+    override func resizeScrollView() { pagerResizeCount += 1 }
+    override func setNavigationBarFadeAlpha(_ alpha: CGFloat) {}
 }
 
 @MainActor private final class DuoScrollingHeaderPage: StoryDetailViewController {
