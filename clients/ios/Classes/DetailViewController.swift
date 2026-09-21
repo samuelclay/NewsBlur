@@ -679,6 +679,10 @@ class DetailViewController: BaseViewController {
         }
         navigation.setNavigationBarHidden(false, animated: false)
         titles.navigationItem.titleView = appDelegate.makeFeedTitle(appDelegate.storiesCollection.activeFeed)
+        // DetailViewController.swift reclaims Feeds after a compact handoff even when UIKit does not send another display-mode callback.
+        if let split = appDelegate.splitViewController {
+            titles.updateSidebarButton(for: split.displayMode)
+        }
     }
 
     private func applyDuoFullscreenSidebar(_ requestedPresentation: FullscreenSidebarPresentation, animated: Bool) {
