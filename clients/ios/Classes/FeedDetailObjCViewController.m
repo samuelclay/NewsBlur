@@ -1211,6 +1211,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    // FeedDetailObjCViewController.m refreshes replaced source titles even when only the visible story list receives a layout pass.
+    if ([self.navigationController isKindOfClass:CompactPhoneNavigationController.class]) {
+        [(CompactPhoneNavigationController *)self.navigationController updateFullscreenTitleRendering];
+    }
     [self configureAdaptiveStoryToolbar];
     [self restorePendingNotificationViewport];
     // FeedDetailObjCViewController.m leaves room to scroll the final row above the experimental glass bar.
@@ -6992,11 +6996,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self.appDelegate renameFeed:newTitle];
         }
         [self.view setNeedsDisplay];
-        if (!self.isPhoneOrCompact) {
-            self.appDelegate.detailViewController.navigationItem.titleView = [self.appDelegate makeFeedTitle:self.storiesCollection.activeFeed];
-        } else {
-            self.navigationItem.titleView = [self.appDelegate makeFeedTitle:self.storiesCollection.activeFeed];
-        }
+        [self.appDelegate updateFeedDetailTitleView];
         [self.navigationController.view setNeedsDisplay];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -7356,6 +7356,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     if (self.isPhoneOrCompact) {
         self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+    }
+    // FeedDetailObjCViewController.m applies the owned fullscreen rendering to a fresh themed title immediately.
+    if ([self.navigationController isKindOfClass:CompactPhoneNavigationController.class]) {
+        [(CompactPhoneNavigationController *)self.navigationController updateFullscreenTitleRendering];
     }
     
 #if !TARGET_OS_MACCATALYST

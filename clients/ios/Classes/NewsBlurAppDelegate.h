@@ -519,6 +519,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
+- (void)updateFeedDetailTitleView;
 - (NSString *)folderTitle:(NSString *)folder;
 - (UIImage *)folderIcon:(NSString *)folder;
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;

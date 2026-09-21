@@ -1096,6 +1096,112 @@ import UIKit
         #endif
     }
 
+    func test_fullscreenDuoOverlayPreservesFaviconColorsAndReleasesReplacedTitles() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Expanded Duo navigation does not run on Catalyst")
+        #else
+        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo bars") }
+        let app = NewsBlurAppDelegate()
+        let detail = HeaderDuoFullscreenTitleOwner()
+        detail.appDelegate = app
+        app.detailViewController = detail
+        let titles = HeaderDuoFullscreenTitleStories()
+        titles.appDelegate = app
+        titles.view = UIView()
+        let navigation = CompactPhoneNavigationController(rootViewController: titles)
+        app.feedsNavigationController = navigation
+        let feedsButton = UIBarButtonItem(title: "‹ Feeds", style: .plain, target: nil, action: nil)
+        Utilities.keepBarButtonInHorizontalBar(feedsButton)
+        titles.navigationItem.leftBarButtonItem = feedsButton
+        let settingsButton = UIButton(type: .custom)
+        settingsButton.setImage(Utilities.imageNamed("settings", sized: 30)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        titles.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsButton)
+        navigation.navigationBar.tintColor = .systemBrown
+        navigation.navigationBar.isTranslucent = false
+        let appearance = UINavigationBarAppearance(idiom: .phone)
+        appearance.backgroundColor = UIColor(red: 0.95, green: 0.89, blue: 0.80, alpha: 1)
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.systemBrown]
+        navigation.navigationBar.standardAppearance = appearance
+        navigation.navigationBar.scrollEdgeAppearance = appearance
+        navigation.navigationBar.compactAppearance = appearance
+        let readerAppearance = UINavigationBarAppearance()
+        readerAppearance.configureWithTransparentBackground()
+        navigation.navigationBar.compactScrollEdgeAppearance = readerAppearance
+        let split = UISplitViewController(style: .doubleColumn)
+        split.preferredSplitBehavior = .overlay
+        split.preferredDisplayMode = .oneOverSecondary
+        split.displayModeButtonVisibility = .never
+        split.setViewController(navigation, for: .primary)
+        split.setViewController(UIViewController(), for: .secondary)
+        let host = try HeaderDuoTestWindow(controller: split)
+        defer {
+            host.close()
+            app.detailViewController = nil
+            app.feedsNavigationController = nil
+        }
+        guard UIDevice.current.userInterfaceIdiom == .phone,
+              host.window.traitCollection.horizontalSizeClass == .regular else {
+            throw XCTSkip("Requires expanded Duo")
+        }
+        split.show(.primary)
+        let originalIcon = UIGraphicsImageRenderer(size: CGSize(width: 16, height: 16)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 8, height: 16))
+            UIColor.blue.setFill()
+            context.fill(CGRect(x: 8, y: 0, width: 8, height: 16))
+        }
+        var previousTitle: UILabel?
+        var previousIcon: UIImageView?
+        for name in ["First source", "Replacement source"] {
+            let source = UILabel()
+            source.text = "     \(name)"
+            source.font = .systemFont(ofSize: 17, weight: .medium)
+            source.textColor = UIColor(red: 0.30, green: 0.29, blue: 0.28, alpha: 1)
+            source.shadowColor = UIColor(white: 0.94, alpha: 1)
+            source.shadowOffset = CGSize(width: 0, height: 1)
+            source.sizeToFit()
+            let icon = UIImageView(image: originalIcon)
+            icon.frame = CGRect(x: 0, y: 2, width: 16, height: 16)
+            source.addSubview(icon)
+            // StoryTitlesHeaderBarLayoutTests.swift exercises the native fullscreen overlay title host and a subsequent feed/theme replacement.
+            titles.navigationItem.titleView = source
+            navigation.view.setNeedsLayout()
+            host.window.layoutIfNeeded()
+            let ready = expectation(description: "Render overlay \(name)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { ready.fulfill() }
+            wait(for: [ready], timeout: 2)
+            let image = UIGraphicsImageRenderer(bounds: host.window.bounds).image { _ in
+                host.window.drawHierarchy(in: host.window.bounds, afterScreenUpdates: true)
+            }
+            let attachment = XCTAttachment(image: image)
+            attachment.name = "duo-overlay-\(name)"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+            let red = try sampledRGB(image, at: icon.convert(CGPoint(x: 4, y: 8), to: host.window))
+            let blue = try sampledRGB(image, at: icon.convert(CGPoint(x: 12, y: 8), to: host.window))
+            XCTAssertGreaterThan(red[0], 0.9, "The overlay must retain the red favicon pixels")
+            XCTAssertLessThan(red[2], 0.1)
+            XCTAssertGreaterThan(blue[2], 0.9, "The overlay must retain the blue favicon pixels")
+            XCTAssertLessThan(blue[0], 0.1)
+            if let previousTitle, let previousIcon {
+                XCTAssertTrue(previousIcon.superview === previousTitle)
+                XCTAssertTrue(previousIcon.image === originalIcon)
+                XCTAssertEqual(previousTitle.shadowColor, UIColor(white: 0.94, alpha: 1))
+            }
+            previousTitle = source
+            previousIcon = icon
+        }
+        detail.fullscreen = false
+        navigation.view.setNeedsLayout()
+        host.window.layoutIfNeeded()
+        XCTAssertTrue(titles.navigationItem.titleView === previousTitle,
+                      "Leaving fullscreen must restore the latest source, not an obsolete feed title")
+        XCTAssertTrue(previousIcon?.superview === previousTitle)
+        XCTAssertTrue(previousIcon?.image === originalIcon)
+        XCTAssertEqual(previousTitle?.shadowColor, UIColor(white: 0.94, alpha: 1))
+        #endif
+    }
+
     func test_expandedDuoFeedsButtonBesideLiveTitlePreservesGearAndReaderActions() throws {
         guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo bars") }
         let app = NewsBlurAppDelegate()
@@ -2246,6 +2352,8 @@ import UIKit
     override func viewDidDisappear(_ animated: Bool) {}
     override func viewWillLayoutSubviews() {}
     override func viewDidLayoutSubviews() {}
+    // StoryTitlesHeaderBarLayoutTests.swift hosts only navigation rendering, without a loaded story collection to refresh on split resizing.
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {}
 }
 
 @MainActor private final class HeaderDuoHorizontalBarNavigation: UINavigationController {
