@@ -627,7 +627,9 @@ static BOOL NBBoolPreferenceValue(id value) {
         // FeedsObjCViewController.m keeps Duo's toolbar rail while removing the empty horizontal title bar.
         if (!self.navigationController.navigationBarHidden) {
             self.hidNavigationBarForFeedHeader = YES;
-            [self.navigationController setNavigationBarHidden:YES animated:NO];
+            // FeedsObjCViewController.m keeps the outgoing story header in UIKit's interactive Back animation until it finishes or cancels.
+            id<UIViewControllerTransitionCoordinator> transition = self.transitionCoordinator ?: self.navigationController.transitionCoordinator;
+            [self.navigationController setNavigationBarHidden:YES animated:transition.isAnimated];
         }
     } else if (self.hidNavigationBarForFeedHeader) {
         self.hidNavigationBarForFeedHeader = NO;

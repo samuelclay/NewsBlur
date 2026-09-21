@@ -5,6 +5,58 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedToolbarLayout: XCTestCase {
+    func test_duoInteractiveBackKeepsOutgoingHeaderUntilTransitionFinishes() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo navigation is an iOS presentation")
+        #else
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        for cancelled in [true, false] {
+            let feeds = FeedBackHeaderFeeds()
+            let navigation = UINavigationController(rootViewController: feeds)
+            let transition = FeedBackHeaderTransition()
+            let window = UIWindow(windowScene: scene)
+            let previous = scene.windows.first(where: \.isKeyWindow)
+            window.rootViewController = navigation
+            window.makeKeyAndVisible()
+            let stories = UIViewController()
+            stories.view.backgroundColor = .systemYellow
+            stories.title = "Visible story title"
+            navigation.pushViewController(stories, animated: false)
+            window.layoutIfNeeded()
+            XCTAssertFalse(navigation.navigationBar.isHidden)
+            feeds.verticalToolbar = true
+            navigation.delegate = transition
+            transition.driver = UIPercentDrivenInteractiveTransition()
+            navigation.popViewController(animated: true)
+            transition.driver?.update(0.25)
+            // FeedToolbarLayoutTests.swift exercises the real feed policy while the destination is top but the outgoing story header is still onscreen.
+            feeds.updateHeaderPolicy()
+            let frame = expectation(description: "Hold interactive Back")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { frame.fulfill() }
+            wait(for: [frame], timeout: 2)
+            XCTAssertNotNil(navigation.transitionCoordinator)
+            let barFrame = navigation.navigationBar.layer.presentation()?.frame ?? navigation.navigationBar.frame
+            print("DUO_POP_HEADER frame=\(barFrame) model=\(navigation.navigationBar.frame) safe=\(window.safeAreaInsets) hidden=\(navigation.isNavigationBarHidden)")
+            XCTAssertGreaterThan(barFrame.maxY, window.safeAreaInsets.top + 20,
+                                 "The outgoing header must remain onscreen during interactive Back")
+            XCTAssertFalse(navigation.navigationBar.isHidden,
+                           "The outgoing story header must not disappear synchronously during interactive Back")
+            if cancelled { transition.driver?.cancel() } else { transition.driver?.finish() }
+            let completed = expectation(description: "Finish or cancel Back")
+            if let coordinator = navigation.transitionCoordinator {
+                coordinator.animate(alongsideTransition: nil) { _ in completed.fulfill() }
+            } else { completed.fulfill() }
+            wait(for: [completed], timeout: 3)
+            XCTAssertTrue(navigation.topViewController === (cancelled ? stories : feeds))
+            XCTAssertEqual(navigation.isNavigationBarHidden, !cancelled,
+                           "Cancellation restores the story header; completed Back leaves the scrolling feed header")
+            window.isHidden = true
+            previous?.makeKey()
+            navigation.delegate = nil
+        }
+        #endif
+    }
+
     func test_duoArticleBottomBounceLeavesLegacyFooterAndPagerGeometryAlone() throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("The side-toolbar reader uses the iOS layout policy")
@@ -2544,4 +2596,42 @@ import WebKit
 @MainActor private final class HorizontalToolbarFeeds: FeedsViewController {
     // FeedToolbarLayoutTests.swift exercises the ordinary horizontal toolbar on any test host.
     @objc func usesVerticalFeedToolbar() -> Bool { false }
+}
+
+@MainActor private final class FeedBackHeaderFeeds: FeedsViewController {
+    var verticalToolbar = false
+    @objc func usesVerticalFeedToolbar() -> Bool { verticalToolbar }
+    override func loadView() {
+        view = UIView(frame: CGRect(x: 0, y: 0, width: 440, height: 669))
+        view.backgroundColor = .systemBlue
+        // FeedToolbarLayoutTests.swift supplies the search-header prerequisite without loading a real account.
+        setValue(UIView(), forKey: "feedSearchContainerView")
+    }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) { updateHeaderPolicy() }
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewDidLayoutSubviews() {}
+    func updateHeaderPolicy() { perform(NSSelectorFromString("updateFeedNavigationBarForHeader")) }
+}
+
+@MainActor private final class FeedBackHeaderTransition: NSObject, UINavigationControllerDelegate, UIViewControllerAnimatedTransitioning {
+    var driver: UIPercentDrivenInteractiveTransition?
+    func navigationController(_ navigationController: UINavigationController,
+                              animationControllerFor operation: UINavigationController.Operation,
+                              from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? { self }
+    func navigationController(_ navigationController: UINavigationController,
+                              interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? { driver }
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { 0.4 }
+    func animateTransition(using context: UIViewControllerContextTransitioning) {
+        guard let from = context.view(forKey: .from), let to = context.view(forKey: .to),
+              let target = context.viewController(forKey: .to) else { context.completeTransition(false); return }
+        context.containerView.insertSubview(to, belowSubview: from)
+        to.frame = context.finalFrame(for: target)
+        UIView.animate(withDuration: transitionDuration(using: context), animations: {
+            from.transform = CGAffineTransform(translationX: from.bounds.width, y: 0)
+        }, completion: { _ in
+            from.transform = .identity
+            context.completeTransition(!context.transitionWasCancelled)
+        })
+    }
 }
