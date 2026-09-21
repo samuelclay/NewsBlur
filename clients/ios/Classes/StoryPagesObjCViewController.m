@@ -3190,6 +3190,8 @@
     if (self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     BOOL retainedFirstPageStory = [appDelegate.feedDetailViewController hasRetainedFirstPageStory];
     if (retainedFirstPageStory && !self.scrollView.dragging && !self.scrollView.decelerating) return;
+    // StoryPagesObjCViewController.m must not treat an uninitialized page's -1 index as the idle -1 scroll target during layout.
+    if (!currentPage || (!retainedFirstPageStory && currentPage.pageIndex < 0)) return;
     CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
@@ -3248,13 +3250,15 @@
     self.scrollView.scrollsToTop = NO;
     
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
-        if (currentPage.pageIndex == -2) return;
-        self.scrollingToPage = -1;
+        if (currentPage.pageIndex < 0) return;
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
+        NSArray *stories = appDelegate.storiesCollection.activeFeedStories;
         
-        if (storyIndex < 0 || storyIndex >= UINT_MAX) {
+        if (storyIndex < 0 || (NSUInteger)storyIndex >= stories.count) {
             NSLog(@"invalid story index: %@ for page index: %@", @(storyIndex), @(currentPage.pageIndex));  // log
+            return;
         }
+        self.scrollingToPage = -1;
         
         // Harvest read time for the previous story before switching
         NSDictionary *previousStory = appDelegate.activeStory;
@@ -3268,7 +3272,7 @@
             }
         }
 
-        appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
+        appDelegate.activeStory = [stories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
         [self resetTraverseFadeForStoryChange];
         [appDelegate.feedDetailViewController markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
