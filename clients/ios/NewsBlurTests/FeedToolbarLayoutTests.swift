@@ -5,6 +5,39 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedToolbarLayout: XCTestCase {
+    private var liveDuoLayout: (app: NewsBlurAppDelegate, username: String, fullscreen: Bool,
+                                preferenceKey: String, preference: Any?)?
+
+    override func tearDown() async throws {
+        if let saved = liveDuoLayout {
+            defer {
+                // FeedToolbarLayoutTests.swift restores the exact account preference, including an originally absent key.
+                UserDefaults.standard.set(saved.preference, forKey: saved.preferenceKey)
+                liveDuoLayout = nil
+            }
+            XCTAssertEqual(saved.app.activeUsername, saved.username,
+                           "The live layout audit must preserve the signed-in account")
+            if saved.app.activeUsername == saved.username, let detail = saved.app.detailViewController {
+                do {
+                    if detail.isDuoFullscreenReader != saved.fullscreen {
+                        try await waitForLiveDuoLayout(saved.app)
+                        guard detail.canToggleDuoFullscreenReader else {
+                            XCTFail("The audit must restore the original Duo fullscreen mode")
+                            throw NSError(domain: "DuoReaderAudit", code: 2)
+                        }
+                        detail.toggleTemporaryFullScreen(nil)
+                        try await waitForLiveDuoLayout(saved.app, fullscreen: saved.fullscreen)
+                    }
+                    saved.app.showFeedsList(animated: false)
+                    try await waitForSettledView(saved.app.feedsViewController)
+                } catch {
+                    XCTFail("Could not restore the live Duo layout: \(error)")
+                }
+            }
+        }
+        try await super.tearDown()
+    }
+
     func test_duoInteractiveBackKeepsOutgoingHeaderUntilTransitionFinishes() throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("Duo navigation is an iOS presentation")
@@ -950,6 +983,45 @@ import WebKit
         XCTFail("The requested screen must finish its navigation transition")
     }
 
+    private func waitForLiveDuoLayout(_ app: NewsBlurAppDelegate, fullscreen: Bool? = nil) async throws {
+        let detail = try XCTUnwrap(app.detailViewController)
+        var stableSamples = 0
+        for _ in 0..<200 {
+            detail.viewIfLoaded?.window?.layoutIfNeeded()
+            let modeMatches = fullscreen.map { detail.isDuoFullscreenReader == $0 } ?? true
+            let settled = detail.transitionCoordinator == nil &&
+                app.splitViewController?.transitionCoordinator == nil &&
+                app.feedsNavigationController?.transitionCoordinator == nil &&
+                [detail.leftContainerView, detail.topContainerView, detail.verticalDividerView]
+                    .compactMap { $0 }.allSatisfy { $0.layer.animationKeys()?.isEmpty ?? true }
+            stableSamples = modeMatches && settled ? stableSamples + 1 : 0
+            if stableSamples >= 3 { return }
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+        XCTFail("The live Duo layout must settle; fullscreen=\(detail.isDuoFullscreenReader), expected=\(String(describing: fullscreen))")
+        throw NSError(domain: "DuoReaderAudit", code: 3)
+    }
+
+    private func prepareNormalDuoLayout(_ app: NewsBlurAppDelegate) async throws {
+        let detail = try XCTUnwrap(app.detailViewController)
+        guard !detail.isPhoneOrCompact else { return }
+        guard let username = app.activeUsername, !username.isEmpty else {
+            throw XCTSkip("Log in to the existing NB Alpha session before running the live layout audit")
+        }
+        if liveDuoLayout == nil {
+            let key = DetailViewController.Key.duoFullscreenReader(forAccount: username)
+            liveDuoLayout = (app, username, detail.isDuoFullscreenReader, key,
+                             UserDefaults.standard.object(forKey: key))
+        }
+        if detail.isDuoFullscreenReader {
+            try await waitForLiveDuoLayout(app)
+            // FeedToolbarLayoutTests.swift tests embedded title and article columns independently of the saved fullscreen overlay preference.
+            detail.toggleTemporaryFullScreen(nil)
+        }
+        try await waitForLiveDuoLayout(app, fullscreen: false)
+        XCTAssertFalse(detail.isDuoFullscreenReader)
+    }
+
     @discardableResult
     private func openVisibleStory(_ stories: FeedDetailViewController, requiresArticleBody: Bool = false) async throws -> String {
         try await waitForSettledView(stories)
@@ -1019,6 +1091,7 @@ import WebKit
             throw XCTSkip("Run on the existing iPhone Duo simulator")
         }
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        try await prepareNormalDuoLayout(app)
         app.showFeedsList(animated: false)
         try await waitForSettledView(app.feedsViewController)
         // FeedToolbarLayoutTests.swift audits both the single-feed strip and the named river header.
@@ -1245,6 +1318,9 @@ import WebKit
             throw XCTSkip("Run with iPhone Duo open in Device Hub")
         }
         let detail = try XCTUnwrap(app.detailViewController)
+        try await prepareNormalDuoLayout(app)
+        app.showFeedsList(animated: false)
+        try await waitForSettledView(app.feedsViewController)
         app.feedsViewController.selectEverything(nil)
         let stories = try XCTUnwrap(app.feedDetailViewController)
         for _ in 0..<100 {

@@ -3286,6 +3286,10 @@ final class StoryPagesViewControllerTests: XCTestCase {
     }
 
     func test_setStoryFromScrollRefreshesVisiblePageChromeAfterPageSwap() {
+        let preferences = UserDefaults.standard
+        let oldHorizontal = preferences.object(forKey: "scroll_stories_horizontally")
+        preferences.set(true, forKey: "scroll_stories_horizontally")
+        defer { preferences.set(oldHorizontal, forKey: "scroll_stories_horizontally") }
         let appDelegate = NewsBlurAppDelegate()
         let storiesCollection = StoriesCollection()
         storiesCollection.storyLocationsCount = 3
@@ -3299,6 +3303,9 @@ final class StoryPagesViewControllerTests: XCTestCase {
         let previousPage = GradientSpyStoryDetailViewController(pageIndex: -1)
         let currentPage = GradientSpyStoryDetailViewController(pageIndex: 0)
         let nextPage = GradientSpyStoryDetailViewController(pageIndex: 1)
+        XCTAssertEqual(currentPage.pageIndex, 0)
+        XCTAssertEqual(nextPage.pageIndex, 1)
+        XCTAssertEqual(previousPage.pageIndex, -1)
 
         [currentPage, nextPage, previousPage].forEach { controller.scrollView.addSubview($0.view) }
         controller.currentPage = currentPage
@@ -3747,8 +3754,8 @@ private final class GradientSpyStoryDetailViewController: StoryDetailViewControl
 
     init(pageIndex: Int) {
         super.init(nibName: nil, bundle: nil)
-        self.pageIndex = pageIndex
         loadViewIfNeeded()
+        self.pageIndex = pageIndex
     }
 
     @available(*, unavailable)
