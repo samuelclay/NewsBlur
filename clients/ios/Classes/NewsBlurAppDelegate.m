@@ -1037,6 +1037,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self.detailViewController updateDuoFullscreenSplitBehavior];
         return;
     }
+    if (self.detailViewController.isBrowsingDuoSources) {
+        // NewsBlurAppDelegate.m reserves the second Duo column for titles until an explicit story selection needs the reader.
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+        if (refresh) [self.storyPagesViewController refreshPages];
+        return;
+    }
     if (self.detailViewController.preservesExpandedFeedsReveal) {
         // NewsBlurAppDelegate.m refreshes source content without superseding the user's newer Feeds navigation.
         if (refresh) [self.storyPagesViewController refreshPages];
@@ -1454,6 +1461,15 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
+
+    NSUserDefaults *preferences = NSUserDefaults.standardUserDefaults;
+    BOOL restoredDuoFullscreen = [self.detailViewController restoreDuoFullscreenReaderForAccount:[preferences stringForKey:@"active_username"]];
+    if (restoredDuoFullscreen && !self.pendingNotificationStory && !self.pendingDailyBriefingStoryHash &&
+        !self.inFindingStoryMode && !self.tryFeedFeedId &&
+        [self.pendingFolder isEqualToString:[preferences stringForKey:@"app_opening"]]) {
+        // NewsBlurAppDelegate.m starts restored fullscreen at Feeds, while explicit notification and deep-link requests keep their destinations.
+        self.pendingFolder = nil;
+    }
     
     [self updateSplitBehavior:NO];
     
@@ -2312,7 +2328,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController loadingFeed];
         
-        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView" animated:YES];
+        if (!self.detailViewController.isBrowsingDuoSources) {
+            [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView" animated:YES];
+        }
         [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     }
     
@@ -3007,7 +3025,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
     
-    [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
+    if (!self.detailViewController.isBrowsingDuoSources) {
+        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
+    }
     [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     
     StoryFirstPageLoad *firstPageLoad = [feedDetailView prepareCachedFirstPage];

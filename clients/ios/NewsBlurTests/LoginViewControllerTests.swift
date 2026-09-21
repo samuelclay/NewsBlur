@@ -538,6 +538,50 @@ final class DetailViewControllerTests: XCTestCase {
         XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "fullscreen-transition:story")
     }
 
+    func test_duoFullscreenNativeDismissalKeepsFeedsUntilASourceIsSelected() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The restored Duo sidebar uses the iOS double-column layout")
+        #else
+        let fixture = try DuoFullscreenTransitionFixture()
+        defer { fixture.close() }
+        fixture.app.activeStory = nil
+        fixture.app.storiesCollection.activeFeed = nil
+        fixture.app.storiesCollection.activeFolder = nil
+        let username = "fullscreen-empty-dismissal-\(UUID().uuidString)"
+        let key = DetailViewController.Key.duoFullscreenReader(forAccount: username)
+        let previous = UserDefaults.standard.object(forKey: key)
+        UserDefaults.standard.set(true, forKey: key)
+        defer { UserDefaults.standard.set(previous, forKey: key) }
+        XCTAssertTrue(fixture.detail.restoreDuoFullscreenReader(forAccount: username))
+        fixture.split.simulatedDisplayMode = .oneOverSecondary
+        fixture.detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
+        XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.feeds)
+        XCTAssertTrue(fixture.titles.parent === fixture.detail)
+
+        fixture.split.hide(.primary)
+        fixture.split.simulatedDisplayMode = .secondaryOnly
+        fixture.detail.syncFullscreenSidebarPresentation(for: .secondaryOnly)
+        // LoginViewControllerTests.swift drains the deferred native-dismissal preparation before inspecting the next overlay's controller.
+        let completedLayout = expectation(description: "Empty fullscreen sidebar dismissal and deferred preparation completed")
+        DispatchQueue.main.async {
+            fixture.window.layoutIfNeeded()
+            DispatchQueue.main.async { completedLayout.fulfill() }
+        }
+        await fulfillment(of: [completedLayout], timeout: 2)
+        XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.feeds,
+                      "Dismissing the launch overlay must keep Feeds ready for the next native reveal until a source exists")
+        XCTAssertTrue(fixture.titles.parent === fixture.detail,
+                      "The unselected story list must not be reparented into the hidden native overlay")
+
+        fixture.split.show(.primary)
+        fixture.split.simulatedDisplayMode = .oneOverSecondary
+        fixture.detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
+        XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .feeds)
+        XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.feeds)
+        XCTAssertNil(fixture.app.activeStory)
+        #endif
+    }
+
     func test_duoFullscreenToggleAnimatesThePresentedReaderInBothDirections() async throws {
         let fixture = try DuoFullscreenTransitionFixture()
         defer { fixture.close() }
@@ -927,6 +971,8 @@ final class DetailViewControllerTests: XCTestCase {
         defaults.set("auto", forKey: "split_behavior")
         let app = NewsBlurAppDelegate()
         app.storiesCollection = StoriesCollection()
+        // LoginViewControllerTests.swift exercises Feeds over an existing reader, not the tiled source-browsing launch state.
+        app.activeStory = ["story_hash": "sidebar-reading:0", "story_feed_id": "sidebar-reading"]
         let detail = DuoExpansionDetailController()
         detail.appDelegate = app
         detail.isCompact = false
@@ -937,6 +983,7 @@ final class DetailViewControllerTests: XCTestCase {
         split.preferredDisplayMode = .oneBesideSecondary
         app.splitViewController = split
 
+        XCTAssertFalse(detail.isBrowsingDuoSources)
         detail.show(column: .primary, animated: false)
 
         XCTAssertEqual(split.shownColumns, [.primary])
@@ -975,6 +1022,8 @@ final class DetailViewControllerTests: XCTestCase {
             collection.appDelegate = app
             collection.activeFeed = ["id": "sidebar-reveal-race"]
             app.storiesCollection = collection
+            // LoginViewControllerTests.swift retains the selected article while exercising queued overlay updates and explicit dismissals.
+            app.activeStory = ["story_hash": "sidebar-reveal-race:0", "story_feed_id": "sidebar-reveal-race"]
             let detail = DuoExpansionDetailController()
             detail.appDelegate = app
             detail.isCompact = false
@@ -1010,6 +1059,7 @@ final class DetailViewControllerTests: XCTestCase {
             }
 
             // LoginViewControllerTests.swift exercises the real deferred reset around the same primary reveal used by the Feeds back button.
+            XCTAssertFalse(detail.isBrowsingDuoSources)
             if updateBeforeReveal { app.updateSplitBehavior(false) }
             detail.show(column: .primary, animated: true)
             split.simulatedDisplayMode = .oneOverSecondary
@@ -1054,6 +1104,9 @@ final class DetailViewControllerTests: XCTestCase {
                 split.simulatedDisplayMode = .oneOverSecondary
                 detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
                 split.hiddenColumns.removeAll()
+                split.shownColumns.removeAll()
+                // LoginViewControllerTests.swift follows real feed/story selection, which navigates to secondary before updating the sidebar presentation.
+                detail.show(column: .secondary, animated: false)
                 if selectsStory { detail.dismissFullscreenSidebarOverlayAfterStorySelection() }
                 else { detail.dismissFullscreenSidebarOverlayAfterFeedSelection() }
                 app.updateSplitBehavior(false)
@@ -1061,7 +1114,15 @@ final class DetailViewControllerTests: XCTestCase {
                 XCTAssertFalse(detail.preservesExpandedFeedsReveal)
                 XCTAssertEqual(split.preferredDisplayMode, .secondaryOnly,
                                "A new \(selectsStory ? "story" : "source") selection must still dismiss Feeds")
-                XCTAssertEqual(split.hiddenColumns, [.primary])
+                XCTAssertEqual(split.shownColumns, [.secondary], "Selection must request the native reading column")
+                // LoginViewControllerTests.swift resolves the requested native mode; UIKit can hide primary via secondaryOnly without a redundant hide(.primary) call.
+                split.simulatedDisplayMode = split.preferredDisplayMode
+                detail.syncFullscreenSidebarPresentation(for: split.displayMode)
+                drainSidebarUpdates()
+                XCTAssertTrue(split.isFeedsListHidden, "Feeds must remain hidden after the native selection transition")
+                XCTAssertEqual(split.preferredDisplayMode, .secondaryOnly,
+                               "A deferred layout update must not reopen Feeds after selection")
+                XCTAssertEqual(split.shownColumns, [.secondary], "Deferred callbacks must not request primary again")
             }
             detail.show(column: .primary, animated: false)
             defaults.set(behavior == "overlay" ? "displace" : "overlay", forKey: keys[0])
@@ -1112,11 +1173,27 @@ final class DetailViewControllerTests: XCTestCase {
             detail.feedDetailViewController = stories
             let pages = DuoAutomaticStoryPages()
             pages.appDelegate = app
+            // LoginViewControllerTests.swift models a retained article during refresh: global selection is empty, but this is not a fresh source-browsing launch.
+            let retainedPage = DuoAutomaticStoryPage(nibName: nil, bundle: nil)
+            retainedPage.appDelegate = app
+            retainedPage.activeStory = NSMutableDictionary(dictionary: [
+                "story_hash": "automatic-sidebar:retained", "story_feed_id": "automatic-sidebar",
+                "story_title": "Previously selected article", "read_status": 1
+            ])
+            retainedPage.activeStoryId = "automatic-sidebar:retained"
+            retainedPage.hasStory = true
+            pages.currentPage = retainedPage
             detail.storyPagesViewController = pages
+            XCTAssertNil(app.activeStory, "Automatic first-story selection must still run through its nil-global-selection branch")
+            XCTAssertTrue(detail.hasVisibleStoryForSidebarLayout)
+            XCTAssertFalse(detail.isBrowsingDuoSources)
             defer {
                 NSObject.cancelPreviousPerformRequests(withTarget: app)
                 pages.didPrepare = nil
                 pages.preparedCompletion = nil
+                pages.currentPage = nil
+                retainedPage.appDelegate = nil
+                pages.appDelegate = nil
                 app.detailViewController = nil
                 collection.appDelegate = nil
             }
@@ -1186,6 +1263,8 @@ final class DetailViewControllerTests: XCTestCase {
                 collection.activeFolder = folder ? "Source refresh" : nil
                 collection.isRiverView = folder
                 app.storiesCollection = collection
+                // LoginViewControllerTests.swift tests loading/layout refresh of an existing reading session; fresh source browsing has separate coverage.
+                app.activeStory = ["story_hash": "source-refresh:0", "story_feed_id": "source-refresh"]
                 let detail = DuoExpansionDetailController()
                 detail.appDelegate = app
                 detail.simulatesPhone = scenario.phone
@@ -1230,6 +1309,7 @@ final class DetailViewControllerTests: XCTestCase {
 
                 if scenario.compact { app.updateSplitBehavior(false) }
                 else { detail.show(column: .primary, animated: false) }
+                XCTAssertFalse(detail.isBrowsingDuoSources)
                 // LoginViewControllerTests.swift preserves the existing auto policy's tiled layout at 951×669 outside expanded Duo.
                 let expected: UISplitViewController.SplitBehavior = scenario.phone && !scenario.compact ? .overlay : .tile
                 XCTAssertEqual(split.preferredSplitBehavior, expected)
@@ -1253,7 +1333,7 @@ final class DetailViewControllerTests: XCTestCase {
         #endif
     }
 
-    func test_expandedPhoneUnselectedLaunchKeepsInitialSplitBehavior() throws {
+    func test_expandedPhoneUnselectedLaunchShowsFeedsForEveryReadingPreference() throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("The expanded-phone initial split uses the iOS layout policy")
         #else
@@ -1286,13 +1366,76 @@ final class DetailViewControllerTests: XCTestCase {
         XCTAssertNil(collection.activeFolder)
         XCTAssertTrue(detail.storyTitlesOnLeft)
         XCTAssertFalse(detail.preservesExpandedFeedsReveal)
-        for _ in 0..<2 {
-            split.requestedBehaviors.removeAll()
-            app.updateSplitBehavior(false)
-            // LoginViewControllerTests.swift preserves the launch policy that lets UIKit show Feeds beside the unselected-source prompt.
-            XCTAssertEqual(split.preferredSplitBehavior, .displace,
-                           "The empty launch pane must not become a dimmed reader behind a feed overlay")
-            XCTAssertEqual(split.requestedBehaviors, [.displace])
+        for behavior in ["auto", "displace", "overlay", "tile"] {
+            defaults.set(behavior, forKey: "split_behavior")
+            for selectedFeed in [false, true] {
+                collection.activeFeed = selectedFeed ? ["id": 1, "feed_title": "Chosen feed"] : nil
+                split.requestedBehaviors.removeAll()
+                app.updateSplitBehavior(false)
+                // LoginViewControllerTests.swift defers the reading layout until a story is selected, including repeated loading updates.
+                XCTAssertEqual(split.preferredSplitBehavior, .tile, "\(behavior), selected feed: \(selectedFeed)")
+                XCTAssertEqual(split.preferredDisplayMode, .oneBesideSecondary)
+                XCTAssertTrue(split.requestedBehaviors.allSatisfy { $0 == .tile })
+            }
+            XCTAssertEqual(defaults.string(forKey: "split_behavior"), behavior, "Browsing must not rewrite the reading preference")
+        }
+        #endif
+    }
+
+    func test_duoFullscreenLaunchRestoresOnlyTheAccountsLayoutAndStartsAtFeeds() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo restoration does not apply to Catalyst")
+        #else
+        let username = "duo-fullscreen-launch-fixture"
+        let otherUsername = "duo-fullscreen-other-fixture"
+        let defaults = UserDefaults.standard
+        let key = DetailViewController.Key.duoFullscreenReader(forAccount: username)
+        let otherKey = DetailViewController.Key.duoFullscreenReader(forAccount: otherUsername)
+        let oldValue = defaults.object(forKey: key)
+        let otherOldValue = defaults.object(forKey: otherKey)
+        defaults.set(true, forKey: key)
+        defaults.removeObject(forKey: otherKey)
+        defer {
+            defaults.set(oldValue, forKey: key)
+            defaults.set(otherOldValue, forKey: otherKey)
+        }
+        for scenario in [(phone: true, compact: false, account: username),
+                         (phone: true, compact: true, account: username),
+                         (phone: false, compact: false, account: username),
+                         (phone: true, compact: false, account: otherUsername)] {
+            let app = NewsBlurAppDelegate()
+            let detail = DuoExpansionDetailController()
+            detail.appDelegate = app
+            detail.simulatesPhone = scenario.phone
+            detail.isCompact = scenario.compact
+            app.detailViewController = detail
+            let split = DuoSidebarSplitController(style: .doubleColumn)
+            split.view.frame = CGRect(x: 0, y: 0, width: 951, height: 669)
+            app.splitViewController = split
+            detail.simulatedSplitViewController = split
+            defer {
+                detail.appDelegate = nil
+                app.detailViewController = nil
+            }
+            let active = scenario.phone && !scenario.compact && scenario.account == username
+            XCTAssertEqual(detail.restoreDuoFullscreenReader(forAccount: scenario.account), active)
+            XCTAssertEqual(detail.isDuoFullscreenReader, active)
+            XCTAssertNil(app.activeStory, "The restored preference must not fabricate a previous article")
+            if active {
+                XCTAssertEqual(detail.fullscreenSidebarPresentation, .feeds)
+                app.updateSplitBehavior(false)
+                XCTAssertEqual(split.preferredSplitBehavior, .overlay)
+                XCTAssertEqual(split.preferredDisplayMode, .oneOverSecondary)
+                // LoginViewControllerTests.swift runs an ordinary-layout reset queued before fullscreen restoration.
+                detail.resetStoryTitlesRevealOverride()
+                XCTAssertEqual(detail.fullscreenSidebarPresentation, .feeds)
+                XCTAssertEqual(split.preferredDisplayMode, .oneOverSecondary)
+            } else if scenario.phone && scenario.compact {
+                // LoginViewControllerTests.swift keeps the saved preference dormant on the cover display until unfolding.
+                detail.isCompact = false
+                XCTAssertTrue(detail.isDuoFullscreenReader)
+                XCTAssertEqual(detail.fullscreenSidebarPresentation, .feeds)
+            }
         }
         #endif
     }
@@ -1329,6 +1472,8 @@ final class DetailViewControllerTests: XCTestCase {
             collection.appDelegate = app
             collection.activeFeed = ["id": "pending-hide-fixture"]
             app.storiesCollection = collection
+            // LoginViewControllerTests.swift starts with a selected article so the pending hide belongs to the reading layout.
+            app.activeStory = ["story_hash": "pending-hide-fixture:0", "story_feed_id": "pending-hide-fixture"]
             let detail = DuoExpansionDetailController()
             detail.simulatesPhone = scenario.phone
             detail.appDelegate = app
@@ -1340,6 +1485,7 @@ final class DetailViewControllerTests: XCTestCase {
             split.preferredDisplayMode = scenario.visibleMode
             app.splitViewController = split
             XCTAssertTrue(detail.storyTitlesOnLeft)
+            XCTAssertFalse(detail.isBrowsingDuoSources)
 
             // LoginViewControllerTests.swift reproduces checkLayout's queued hide while UIKit still reports the visible primary.
             app.updateSplitBehavior(false)
@@ -1764,6 +1910,8 @@ final class DetailViewControllerTests: XCTestCase {
         defaults.set("auto", forKey: "split_behavior")
         let app = NewsBlurAppDelegate()
         app.storiesCollection = StoriesCollection()
+        // LoginViewControllerTests.swift toggles a reader's Feeds overlay rather than the initial feeds-and-titles columns.
+        app.activeStory = ["story_hash": "sidebar-toggle:0", "story_feed_id": "sidebar-toggle"]
         let detail = DiscoveryTransitionPhoneDetailController()
         detail.appDelegate = app
         detail.isCompact = false
@@ -1774,6 +1922,7 @@ final class DetailViewControllerTests: XCTestCase {
         let source = BaseViewController()
         source.appDelegate = app
 
+        XCTAssertFalse(detail.isBrowsingDuoSources)
         source.toggleFeeds(nil)
         XCTAssertEqual(split.shownColumns, [.primary])
         XCTAssertEqual(split.preferredSplitBehavior, .overlay)
@@ -2133,6 +2282,12 @@ final class DetailViewControllerTests: XCTestCase {
     override var isCompactWidth: Bool { simulatesCompactWindow }
     var readerPresentations = 0
     override func showDetailViewController(_ vc: UIViewController, sender: Any?) { readerPresentations += 1 }
+}
+
+// LoginViewControllerTests.swift retains article identity without creating WebKit for the native navigation-readiness fixture.
+@MainActor private final class DuoAutomaticStoryPage: StoryDetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 474, height: 669)) }
+    override func viewDidLoad() {}
 }
 
 @MainActor private final class DuoAutomaticStoryPages: StoryPagesViewController {

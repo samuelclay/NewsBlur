@@ -118,6 +118,103 @@ import WebKit
         assertAnonymousBrowsing(fixture)
     }
 
+    func test_reauthenticationRestoresOnlyTheConfirmedAccountsDuoFullscreenPreference() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo account restoration uses the iOS expanded-phone layout")
+        #else
+        let savedAccount = "duo-auth-saved-fixture"
+        let otherAccount = "duo-auth-other-fixture"
+        for confirmedAccount in [savedAccount, otherAccount] {
+            let fixture = try await makeFixture(compact: false)
+            defer { fixture.close() }
+            let split = fixture.configureExpandedDuo()
+            let defaults = UserDefaults.standard
+            defaults.set(true, forKey: DetailViewController.Key.duoFullscreenReader(forAccount: savedAccount))
+            defaults.set(false, forKey: DetailViewController.Key.duoFullscreenReader(forAccount: otherAccount))
+            fixture.app.activeUsername = savedAccount
+            defaults.set(savedAccount, forKey: "active_username")
+
+            fixture.login.checkPassword()
+            try fixture.app.completePOST(["code": 1])
+            XCTAssertNil(fixture.app.activeUsername)
+            XCTAssertFalse(fixture.detail.isDuoFullscreenReader,
+                           "Pending authentication must not apply the previous account's saved mode")
+            assertClearedBrowsing(fixture)
+
+            let request = try XCTUnwrap(fixture.app.getRequests.last)
+            XCTAssertTrue(request.url.contains("/reader/feeds?"))
+            let published = expectation(forNotification: NSNotification.Name("FinishedLoadingFeedsNotification"), object: nil) { _ in
+                fixture.app.activeUsername == confirmedAccount && fixture.feeds.userLabel.text == confirmedAccount
+            }
+            // AuthenticationResetTests.swift drives the real authenticated response and its queued publication, never the restore helper directly.
+            request.success(nil, feedResponse(username: confirmedAccount, feedID: "2"))
+            await fulfillment(of: [published], timeout: 5)
+
+            XCTAssertEqual(fixture.app.activeUsername, confirmedAccount)
+            XCTAssertNil(fixture.app.activeStory)
+            XCTAssertNil(fixture.pages.currentPage.activeStory)
+            XCTAssertTrue((fixture.stories.activeFeedStories ?? []).isEmpty)
+            XCTAssertNil(fixture.stories.activeFeed)
+            XCTAssertNil(fixture.stories.activeFolder)
+            XCTAssertEqual(fixture.detail.isDuoFullscreenReader, confirmedAccount == savedAccount)
+            if confirmedAccount == savedAccount {
+                XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .feeds)
+                XCTAssertEqual(split.preferredDisplayMode, .oneOverSecondary)
+                XCTAssertEqual(split.preferredSplitBehavior, .overlay)
+            }
+            XCTAssertTrue(defaults.bool(forKey: DetailViewController.Key.duoFullscreenReader(forAccount: savedAccount)))
+            XCTAssertFalse(defaults.bool(forKey: DetailViewController.Key.duoFullscreenReader(forAccount: otherAccount)))
+        }
+        #endif
+    }
+
+    func test_ordinaryDuoFeedResponseDoesNotRestoreFullscreenOverTheCurrentArticle() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo account restoration uses the iOS expanded-phone layout")
+        #else
+        let fixture = try await makeFixture(compact: false)
+        defer { fixture.close() }
+        let split = fixture.configureExpandedDuo()
+        let username = "duo-refresh-mode-fixture"
+        fixture.app.activeUsername = username
+        UserDefaults.standard.set(true, forKey: DetailViewController.Key.duoFullscreenReader(forAccount: username))
+        UserDefaults.standard.set("overlay", forKey: "split_behavior")
+        // AuthenticationResetTests.swift removes unrelated deep-link work before exercising an ordinary subscription refresh.
+        fixture.app.pendingFolder = nil
+        fixture.app.pendingDailyBriefingStoryHash = nil
+        fixture.app.inFindingStoryMode = false
+        fixture.app.isTryFeedView = false
+        fixture.app.tryFeedFeedId = nil
+        fixture.app.tryFeedStoryId = nil
+        fixture.detail.show(column: .primary, animated: false)
+        let sidebar = fixture.detail.fullscreenSidebarPresentation
+        let displayMode = split.preferredDisplayMode
+        let splitBehavior = split.preferredSplitBehavior
+        let page = fixture.pages.currentPage
+        let webView = page?.webView
+        XCTAssertTrue(fixture.detail.preservesExpandedFeedsReveal)
+        XCTAssertFalse(fixture.detail.isDuoFullscreenReader)
+
+        fixture.app.reloadFeedsView(false)
+        let request = try XCTUnwrap(fixture.app.getRequests.last)
+        let published = expectation(forNotification: NSNotification.Name("FinishedLoadingFeedsNotification"), object: nil) { _ in
+            fixture.feeds.userLabel.text == username
+        }
+        request.success(nil, feedResponse(username: username, feedID: "1"))
+        await fulfillment(of: [published], timeout: 5)
+
+        XCTAssertFalse(fixture.detail.isDuoFullscreenReader, "Only a new authenticated identity may restore its saved mode")
+        XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, sidebar)
+        XCTAssertEqual(split.preferredDisplayMode, displayMode)
+        XCTAssertEqual(split.preferredSplitBehavior, splitBehavior)
+        XCTAssertTrue(fixture.detail.preservesExpandedFeedsReveal)
+        XCTAssertTrue(fixture.pages.currentPage === page)
+        XCTAssertTrue(fixture.pages.currentPage.webView === webView)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "anonymous-story")
+        XCTAssertEqual(fixture.pages.currentPage.activeStory?["story_hash"] as? String, "anonymous-story")
+        #endif
+    }
+
     func test_oldSubscriptionResponseCannotRestoreAnEarlierIdentityAfterSuccessfulLogin() async throws {
         let fixture = try await makeFixture(compact: false)
         defer { fixture.close() }
@@ -486,6 +583,19 @@ import WebKit
         sharedPreferences = UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.persistentDomain(forName: "group.com.newsblur.NewsBlur-Group") ?? [:]
     }
 
+    func configureExpandedDuo() -> AuthenticationDuoSplitController {
+        detail.simulatesPhone = true
+        detail.traitOverrides.horizontalSizeClass = .regular
+        detail.traitOverrides.verticalSizeClass = .regular
+        detail.isCompact = false
+        let split = AuthenticationDuoSplitController(style: .doubleColumn)
+        app.splitViewController = split
+        if let key = stories.storyTitlesPositionKey {
+            UserDefaults.standard.set("titles_on_left", forKey: key)
+        }
+        return split
+    }
+
     func configure() throws {
         app.storiesCollection = stories
         stories.appDelegate = app
@@ -654,6 +764,7 @@ import WebKit
         app.detailViewController = nil
         app.feedsViewController = nil
         app.feedsNavigationController = nil
+        app.splitViewController = nil
         app.storiesCollection = nil
         UserDefaults.standard.setPersistentDomain(preferences, forName: preferenceDomain)
         UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.setPersistentDomain(sharedPreferences, forName: "group.com.newsblur.NewsBlur-Group")
@@ -752,9 +863,27 @@ private final class AuthenticationAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class AuthenticationDetailController: DetailViewController {
+    var simulatesPhone: Bool?
+    override var isPhone: Bool { simulatesPhone ?? super.isPhone }
     override var isPhoneOrCompact: Bool { isCompact }
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 1024, height: 780)) }
     override func viewDidLoad() {}
+}
+
+@MainActor private final class AuthenticationDuoSplitController: SplitViewController {
+    private var shownMode: UISplitViewController.DisplayMode = .secondaryOnly
+    override var displayMode: UISplitViewController.DisplayMode { shownMode }
+    override var splitBehavior: UISplitViewController.SplitBehavior { preferredSplitBehavior }
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 951, height: 669)) }
+    override func viewDidLoad() {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+    override func show(_ column: UISplitViewController.Column) {
+        shownMode = column == .primary ? preferredDisplayMode : .secondaryOnly
+    }
+    override func hide(_ column: UISplitViewController.Column) {
+        if column == .primary { shownMode = .secondaryOnly }
+    }
 }
 
 @MainActor private final class AuthenticationPagesController: StoryPagesViewController {

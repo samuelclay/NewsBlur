@@ -285,6 +285,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, readonly) NSString *widgetFolder;
 @property (nonatomic, strong) NSString *pendingFolder;
 @property (nonatomic, strong) NSString *pendingDailyBriefingStoryHash;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
