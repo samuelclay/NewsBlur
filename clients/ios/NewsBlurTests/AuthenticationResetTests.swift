@@ -19,8 +19,15 @@ import WebKit
             XCTAssertNotNil(releasedWebView)
             fixture.close()
         }
-        // AuthenticationResetTests.swift drains queued layout work before checking the fixture's ownership teardown.
-        await settle()
+        // AuthenticationResetTests.swift waits for queued layout and animation completions to release their captures, while keeping ownership cycles a failure.
+        let releaseStarted = ProcessInfo.processInfo.systemUptime
+        let releaseDeadline = releaseStarted + 2
+        while (releasedApp != nil || releasedReader != nil || releasedArticle != nil || releasedWebView != nil),
+              ProcessInfo.processInfo.systemUptime < releaseDeadline {
+            await settle(0.01)
+        }
+        let releaseElapsed = ProcessInfo.processInfo.systemUptime - releaseStarted
+        print("AUTH_FIXTURE_RELEASE elapsed=\(String(format: "%.3f", releaseElapsed)) app=\(releasedApp == nil) reader=\(releasedReader == nil) article=\(releasedArticle == nil) web=\(releasedWebView == nil)")
         XCTAssertNil(releasedApp, "Closing the fixture must break its app/controller ownership cycles")
         XCTAssertNil(releasedReader, "Closed authentication fixtures must not retain their reader")
         XCTAssertNil(releasedArticle, "Closed authentication fixtures must release their article controllers")
