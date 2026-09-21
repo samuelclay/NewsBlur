@@ -970,6 +970,132 @@ import UIKit
         withExtendedLifetime(rows) {}
     }
 
+    func test_expandedDuoFeedHeadingPreservesOriginalTitleAndFaviconColors() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Expanded Duo navigation does not run on Catalyst")
+        #else
+        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo bars") }
+        let app = NewsBlurAppDelegate()
+        app.storiesCollection = StoriesCollection()
+        app.splitViewController = HeaderDuoFeedReturnSplit(style: .doubleColumn)
+        let detail = HeaderDuoSharedTitleDetail()
+        detail.appDelegate = app
+        detail.isCompact = false
+        detail.simulatesCompact = true
+        app.detailViewController = detail
+        let source = UILabel()
+        source.text = "     Color feed"
+        source.font = .systemFont(ofSize: 17, weight: .medium)
+        source.textColor = UIColor(red: 0.30, green: 0.29, blue: 0.28, alpha: 1)
+        source.shadowColor = UIColor(white: 0.94, alpha: 1)
+        source.shadowOffset = CGSize(width: 0, height: 1)
+        source.sizeToFit()
+        // StoryTitlesHeaderBarLayoutTests.swift uses an automatic-mode multicolor favicon like makeFeedTitle:, whose pixels must survive the expanded bar-button host.
+        let originalIcon = UIGraphicsImageRenderer(size: CGSize(width: 16, height: 16)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 8, height: 16))
+            UIColor.blue.setFill()
+            context.fill(CGRect(x: 8, y: 0, width: 8, height: 16))
+        }
+        let icon = UIImageView(image: originalIcon)
+        icon.frame = CGRect(x: 0, y: 2, width: 16, height: 16)
+        source.addSubview(icon)
+        detail.navigationItem.titleView = source
+        let navigation = DetailNavigationController(rootViewController: detail)
+        navigation.navigationBar.tintColor = .systemBrown
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(red: 0.95, green: 0.89, blue: 0.80, alpha: 1)
+        navigation.navigationBar.standardAppearance = appearance
+        navigation.navigationBar.scrollEdgeAppearance = appearance
+        let host = try HeaderDuoTestWindow(controller: navigation)
+        defer {
+            host.close()
+            app.detailViewController = nil
+            app.splitViewController = nil
+        }
+        guard UIDevice.current.userInterfaceIdiom == .phone,
+              navigation.traitCollection.horizontalSizeClass == .regular else {
+            throw XCTSkip("Requires expanded Duo")
+        }
+        func capture(_ name: String) -> UIImage {
+            navigation.view.setNeedsLayout()
+            host.window.layoutIfNeeded()
+            navigation.navigationBar.layoutIfNeeded()
+            let ready = expectation(description: "Render \(name)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { ready.fulfill() }
+            wait(for: [ready], timeout: 2)
+            let image = UIGraphicsImageRenderer(bounds: host.window.bounds).image { _ in
+                host.window.drawHierarchy(in: host.window.bounds, afterScreenUpdates: true)
+            }
+            let attachment = XCTAttachment(image: image)
+            attachment.name = name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+            return image
+        }
+        func iconColors(_ image: UIImage) throws -> [[CGFloat]] {
+            try [CGPoint(x: 4, y: 8), CGPoint(x: 12, y: 8)].map {
+                try sampledRGB(image, at: icon.convert($0, to: host.window))
+            }
+        }
+        func textColor(_ image: UIImage) throws -> [CGFloat] {
+            // StoryTitlesHeaderBarLayoutTests.swift compares solid glyph interiors rather than antialiased edge pixels or a private UIKit rendering flag.
+            var pixels: [[CGFloat]] = []
+            for y in stride(from: CGFloat(3), to: source.bounds.height - 2, by: 1) {
+                for x in stride(from: CGFloat(24), to: source.bounds.width - 2, by: 1) {
+                    pixels.append(try sampledRGB(image, at: source.convert(CGPoint(x: x, y: y), to: host.window)))
+                }
+            }
+            let darkest = pixels.sorted { $0.reduce(0, +) < $1.reduce(0, +) }.prefix(20)
+            return (0..<3).map { channel in darkest.reduce(0) { $0 + $1[channel] } / CGFloat(darkest.count) }
+        }
+        func darkTextPixelCount(_ image: UIImage) throws -> Int {
+            var count = 0
+            for y in stride(from: CGFloat(0), to: source.bounds.height, by: 0.5) {
+                for x in stride(from: CGFloat(24), to: source.bounds.width, by: 0.5) {
+                    let rgb = try sampledRGB(image, at: source.convert(CGPoint(x: x, y: y), to: host.window))
+                    if rgb.allSatisfy({ $0 < 0.7 }) { count += 1 }
+                }
+            }
+            return count
+        }
+        let baseline = capture("duo-title-original-rendering")
+
+        let expectedIcon = try iconColors(baseline)
+        let expectedText = try textColor(baseline)
+        let expectedShadow = try darkTextPixelCount(baseline)
+        XCTAssertGreaterThan(expectedShadow, 5, "The fixture must render solid title glyphs")
+        XCTAssertGreaterThan(expectedIcon[0][0], 0.9)
+        XCTAssertLessThan(expectedIcon[0][2], 0.1)
+        XCTAssertGreaterThan(expectedIcon[1][2], 0.9)
+        for expanded in [true, false] {
+            detail.simulatesCompact = !expanded
+            let image = capture(expanded ? "duo-title-expanded-rendering" : "duo-title-restored-rendering")
+            let actualIcon = try iconColors(image)
+            let actualText = try textColor(image)
+            XCTAssertLessThanOrEqual(try darkTextPixelCount(image), Int(Double(expectedShadow) * 1.15),
+                                        "Expanded \(expanded): the shadow must not become a second dark copy of the title")
+            for index in 0..<2 {
+                for channel in 0..<3 {
+                    XCTAssertEqual(actualIcon[index][channel], expectedIcon[index][channel], accuracy: 0.06,
+                                   "Expanded \(expanded): preserve the actual favicon colors")
+                }
+            }
+            for channel in 0..<3 {
+                XCTAssertEqual(actualText[channel], expectedText[channel], accuracy: 0.035,
+                               "Expanded \(expanded): preserve the normal title foreground and shadow")
+            }
+            XCTAssertEqual(source.shadowOffset, CGSize(width: 0, height: 1))
+            if !expanded {
+                XCTAssertTrue(icon.superview === source)
+                XCTAssertTrue(icon.image === originalIcon)
+                XCTAssertEqual(source.shadowColor, UIColor(white: 0.94, alpha: 1))
+            }
+        }
+        #endif
+    }
+
     func test_expandedDuoFeedsButtonBesideLiveTitlePreservesGearAndReaderActions() throws {
         guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo bars") }
         let app = NewsBlurAppDelegate()

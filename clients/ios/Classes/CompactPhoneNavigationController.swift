@@ -322,6 +322,9 @@ final class DetailNavigationController: UINavigationController {
     private var lastPreferredSize: CGSize = .zero
     private weak var titleCoordinateView: UIView?
     private var columnCenter: CGFloat = 0
+    private var originalTitleImages: [(view: UIImageView, original: UIImage, displayed: UIImage)] = []
+    private var sourceTitleImages: [(view: UIImageView, index: Int, frame: CGRect)] = []
+    private var originalTitleShadow: UIColor?
 
     init(sourceTitle: UIView?, showFeeds: @escaping () -> Void) {
         self.sourceTitle = sourceTitle
@@ -340,6 +343,17 @@ final class DetailNavigationController: UINavigationController {
         plainTitleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
         plainTitleLabel.lineBreakMode = .byTruncatingTail
         addSubview(sourceTitle ?? plainTitleLabel)
+        if let sourceTitle { preserveSourceImageColors(in: sourceTitle) }
+        if let label = sourceTitle as? UILabel {
+            // CompactPhoneNavigationController.swift keeps favicon colors outside the label's vibrant subtree and avoids recoloring its legacy shadow into duplicate text.
+            originalTitleShadow = label.shadowColor
+            label.shadowColor = nil
+            for (index, child) in label.subviews.enumerated() {
+                guard let imageView = child as? UIImageView else { continue }
+                sourceTitleImages.append((imageView, index, imageView.frame))
+                addSubview(imageView)
+            }
+        }
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -363,6 +377,8 @@ final class DetailNavigationController: UINavigationController {
     }
 
     func update(plainTitle: String?, navigationBar: UINavigationBar, maximumWidth: CGFloat, columnCenter: CGFloat) {
+        if let sourceTitle { preserveSourceImageColors(in: sourceTitle) }
+        for entry in sourceTitleImages { preserveSourceImageColors(in: entry.view) }
         if plainTitleLabel.text != plainTitle { plainTitleLabel.text = plainTitle }
         let attributes = navigationBar.titleTextAttributes ?? navigationBar.standardAppearance.titleTextAttributes
         plainTitleLabel.font = attributes[.font] as? UIFont ?? .systemFont(ofSize: 17, weight: .semibold)
@@ -395,10 +411,39 @@ final class DetailNavigationController: UINavigationController {
         let titleWidth = min(size.width, halfSpace * 2)
         content.frame = CGRect(x: center - titleWidth / 2, y: (bounds.height - size.height) / 2,
                                width: titleWidth, height: size.height)
+        for entry in sourceTitleImages {
+            entry.view.frame = content.convert(entry.frame, to: self)
+        }
+    }
+
+    private func preserveSourceImageColors(in view: UIView) {
+        if let imageView = view as? UIImageView, let image = imageView.image,
+           image.renderingMode == .automatic {
+            // CompactPhoneNavigationController.swift preserves favicon pixels when UIKit hosts the title inside a bar button.
+            let displayed = image.withRenderingMode(.alwaysOriginal)
+            originalTitleImages.removeAll { $0.view === imageView }
+            originalTitleImages.append((imageView, image, displayed))
+            imageView.image = displayed
+        }
+        for child in view.subviews { preserveSourceImageColors(in: child) }
     }
 
     func releaseSourceTitle() -> UIView? {
         sourceTitle?.removeFromSuperview()
+        for entry in originalTitleImages where entry.view.image === entry.displayed {
+            entry.view.image = entry.original
+        }
+        originalTitleImages.removeAll()
+        if let sourceTitle {
+            for entry in sourceTitleImages where entry.view.superview === self {
+                sourceTitle.insertSubview(entry.view, at: min(entry.index, sourceTitle.subviews.count))
+                entry.view.frame = entry.frame
+            }
+        }
+        sourceTitleImages.removeAll()
+        if let label = sourceTitle as? UILabel, label.shadowColor == nil {
+            label.shadowColor = originalTitleShadow
+        }
         if let originalSourceFrame { sourceTitle?.frame = originalSourceFrame }
         return sourceTitle
     }
