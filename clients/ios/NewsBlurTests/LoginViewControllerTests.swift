@@ -648,6 +648,8 @@ final class DetailViewControllerTests: XCTestCase {
             DispatchQueue.main.async { completedLayout.fulfill() }
         }
         await fulfillment(of: [completedLayout], timeout: 2)
+        XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .feeds,
+                       "An outside tap must not dismiss Feeds onto an empty Duo reader")
         XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.feeds,
                       "Dismissing the launch overlay must keep Feeds ready for the next native reveal until a source exists")
         XCTAssertTrue(fixture.titles.parent === fixture.detail,
@@ -659,6 +661,51 @@ final class DetailViewControllerTests: XCTestCase {
         XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .feeds)
         XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.feeds)
         XCTAssertNil(fixture.app.activeStory)
+        #endif
+    }
+
+    func test_duoFullscreenKeepsSourceTitlesOpenUntilAnArticleIsSelected() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The empty Duo reader uses the iOS double-column overlay")
+        #else
+        for folder in [false, true] {
+            let fixture = try DuoFullscreenTransitionFixture()
+            defer { fixture.close() }
+            fixture.app.activeStory = nil
+            if folder {
+                fixture.app.storiesCollection.activeFeed = nil
+                fixture.app.storiesCollection.activeFolder = "Empty reader folder"
+            }
+            XCTAssertFalse(fixture.detail.hasVisibleStoryForSidebarLayout)
+            fixture.detail.toggleTemporaryFullScreen(nil)
+            fixture.detail.dismissFullscreenSidebarOverlayAfterFeedSelection()
+            fixture.split.simulatedDisplayMode = .oneOverSecondary
+            fixture.detail.syncFullscreenSidebarPresentation(for: .oneOverSecondary)
+            XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .storyTitles)
+            XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.titles)
+
+            // LoginViewControllerTests.swift models the native outside-tap callback with a selected source but no article.
+            fixture.split.hide(.primary)
+            fixture.split.simulatedDisplayMode = .secondaryOnly
+            fixture.detail.syncFullscreenSidebarPresentation(for: .secondaryOnly)
+            let settled = expectation(description: "Selected-source empty reader layout settled")
+            DispatchQueue.main.async {
+                fixture.window.layoutIfNeeded()
+                DispatchQueue.main.async { settled.fulfill() }
+            }
+            await fulfillment(of: [settled], timeout: 2)
+            XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .storyTitles,
+                           "An empty reader must not dismiss the selected \(folder ? "folder" : "feed") titles")
+            XCTAssertTrue(fixture.app.feedsNavigationController.topViewController === fixture.titles)
+            XCTAssertNil(fixture.app.activeStory)
+
+            // LoginViewControllerTests.swift preserves normal native dismissal as soon as a real article is selected.
+            fixture.app.activeStory = ["story_hash": "fullscreen-transition:selected"]
+            fixture.detail.dismissFullscreenSidebarOverlayAfterStorySelection()
+            fixture.detail.syncFullscreenSidebarPresentation(for: .secondaryOnly)
+            XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .fullscreen)
+            XCTAssertTrue(fixture.pages.parent === fixture.detail)
+        }
         #endif
     }
 

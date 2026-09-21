@@ -828,20 +828,44 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         XCTAssertGreaterThan(visibleViewport(of: app.feedsViewController.view).width, 150)
         XCTAssertNil(app.activeStory, "Restoring full-screen mode must not reopen an old article")
         guard app.detailViewController.isDuoFullscreenReader, split.displayMode == .oneOverSecondary else { return }
-        // DuoPresentationTests.swift exercises native dismissal before any source exists, then the real Feeds reveal action.
-        split.hide(.primary)
-        try await waitUntil("The initial empty-reader overlay must dismiss without losing its controllers") {
-            split.isFeedsListHidden && split.transitionCoordinator == nil
+        func assertEmptyReaderBlocksBackgroundTouches() throws {
+            window.layoutIfNeeded()
+            let primary = app.feedsNavigationController.view!
+            let primaryFrame = primary.convert(primary.bounds, to: window)
+            let splitFrame = split.view.convert(split.view.bounds, to: window)
+            let primaryOnLeft = primaryFrame.midX < splitFrame.midX
+            let readerX = primaryOnLeft ? (primaryFrame.maxX + splitFrame.maxX) / 2 : (splitFrame.minX + primaryFrame.minX) / 2
+            let point = CGPoint(x: readerX, y: splitFrame.midY)
+            let hit = try XCTUnwrap(window.hitTest(point, with: nil))
+            XCTAssertEqual(hit.accessibilityIdentifier, "duo-empty-reader-interaction-shield",
+                           "The empty reader must consume touches before UIKit can dismiss source navigation")
+            let sourceHit = try XCTUnwrap(window.hitTest(CGPoint(x: primaryFrame.midX, y: primaryFrame.midY), with: nil))
+            XCTAssertNotEqual(sourceHit.accessibilityIdentifier, "duo-empty-reader-interaction-shield",
+                              "The source overlay must remain interactive")
+            let divider = try XCTUnwrap(split.view.subviews.first {
+                $0.accessibilityIdentifier == "feeds-sidebar-resize-handle"
+            } as? DividerView)
+            divider.layoutIfNeeded()
+            let dividerFrame = divider.convert(divider.bounds, to: window)
+            XCTAssertFalse(divider.isHidden)
+            XCTAssertGreaterThan(dividerFrame.height, 200)
+            // DuoPresentationTests.swift distinguishes the divider's full-height frame from its handle-only hit target.
+            let boundaryPoint = CGPoint(x: primaryOnLeft ? primaryFrame.maxX + 1 : primaryFrame.minX - 1,
+                                        y: dividerFrame.minY + 20)
+            XCTAssertFalse(primaryFrame.contains(boundaryPoint))
+            XCTAssertTrue(dividerFrame.contains(boundaryPoint))
+            XCTAssertFalse(divider.point(inside: divider.convert(boundaryPoint, from: window), with: nil))
+            let boundaryHit = try XCTUnwrap(window.hitTest(boundaryPoint, with: nil))
+            XCTAssertEqual(boundaryHit.accessibilityIdentifier, "duo-empty-reader-interaction-shield",
+                           "Empty background beside the divider must not fall through to UIKit's dismissal surface")
+            let handlePoint = CGPoint(x: divider.bounds.midX, y: divider.bounds.midY)
+            XCTAssertTrue(divider.point(inside: handlePoint, with: nil))
+            XCTAssertTrue(window.hitTest(divider.convert(handlePoint, to: window), with: nil) === divider,
+                          "The real sidebar resize handle must remain interactive")
+            XCTAssertFalse(split.presentsWithGesture, "An empty reader must not allow swiping its source navigation away")
         }
-        await Task.yield()
-        XCTAssertTrue(app.feedsNavigationController.topViewController === app.feedsViewController,
-                      "Without a selected source, the next native edge reveal must still open Feeds")
-        app.showFeedsList(animated: false)
-        try await waitUntil("Feeds must reopen after dismissing the initial overlay") {
-            split.displayMode == .oneOverSecondary &&
-                app.feedsNavigationController.topViewController === app.feedsViewController &&
-                split.transitionCoordinator == nil
-        }
+        // DuoPresentationTests.swift checks UIKit's actual window hit target instead of explicitly hiding an overlay the user needs.
+        try assertEmptyReaderBlocksBackgroundTouches()
         let stories = try await openSubscribedFeed(app)
         try await waitUntil("A full-screen source selection must show the story-list overlay", timeout: 30) {
             let load = stories.value(forKey: "firstPageLoad") as? StoryFirstPageLoad
@@ -852,6 +876,7 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         try await settle(stories)
         XCTAssertEqual(split.displayMode, .oneOverSecondary)
         XCTAssertNil(app.activeStory)
+        try assertEmptyReaderBlocksBackgroundTouches()
         capture(window, named: "fullscreen-launch-after-feed-selection", controller: split)
         let hash = try await selectVisibleStoryForReader(stories)
         let pages = try XCTUnwrap(app.storyPagesViewController)
@@ -860,6 +885,9 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         }
         try await waitForReadableArticle(pages, app: app, selectedHash: hash)
         XCTAssertTrue(app.detailViewController.isDuoFullscreenReader)
+        XCTAssertTrue(split.presentsWithGesture, "Selecting a story must restore native interactive sidebar gestures")
+        XCTAssertNotEqual(window.hitTest(CGPoint(x: window.bounds.midX, y: window.bounds.midY), with: nil)?.accessibilityIdentifier,
+                          "duo-empty-reader-interaction-shield", "The loaded reader must receive touches normally")
         capture(window, named: "fullscreen-launch-after-story-selection", controller: split)
     }
 
