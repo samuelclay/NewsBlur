@@ -382,6 +382,68 @@ import WebKit
         try await auditPagerResizeSelection(resizesViewport: false)
     }
 
+    func test_idlePlaceholderPagerCallbackCannotSelectAStoryDuringSourceHandoff() {
+        for storyCount in [0, 6] {
+            auditIdlePlaceholderPager(storyCount: storyCount)
+        }
+    }
+
+    private func auditIdlePlaceholderPager(storyCount: Int) {
+        let app = DuoPagerResizeApp()
+        let detail = DuoPhoneReaderLayout()
+        detail.appDelegate = app
+        detail.isCompact = false
+        app.detailViewController = detail
+        let collection = DuoPlaceholderPagerCollection()
+        collection.appDelegate = app
+        collection.activeFeedStories = (0..<max(1, storyCount)).map {
+            ["story_hash": "unexpected-placeholder-selection:\($0)", "read_status": 1] as [String: Any]
+        }
+        collection.activeFeedStoryLocations = NSMutableArray(array: Array(0..<storyCount))
+        collection.activeFeedStoryLocationIds = NSMutableArray(array: (0..<storyCount).map { "unexpected-placeholder-selection:\($0)" })
+        collection.storyCount = Int32(storyCount)
+        collection.storyLocationsCount = Int32(storyCount)
+        app.storiesCollection = collection
+        app.activeStory = ["story_hash": "explicitly-selected-story"]
+        let pages = DuoPagerResizePages()
+        pages.appDelegate = app
+        pages.recordedSelections = []
+        detail.storyPagesViewController = pages
+        pages.loadViewIfNeeded()
+        let placeholders = (0..<3).map { _ -> DuoPagerResizePage in
+            let page = DuoPagerResizePage()
+            page.appDelegate = app
+            page.pageIndex = -1
+            page.hasStory = false
+            return page
+        }
+        pages.previousPage = placeholders[0]
+        pages.currentPage = placeholders[1]
+        pages.nextPage = placeholders[2]
+        pages.scrollingToPage = -1
+        pages.isDraggingScrollview = false
+        defer {
+            pages.currentPage = nil
+            pages.nextPage = nil
+            pages.previousPage = nil
+            pages.appDelegate = nil
+            detail.storyPagesViewController = nil
+            detail.appDelegate = nil
+            app.detailViewController = nil
+            collection.appDelegate = nil
+            app.storiesCollection = nil
+            for page in placeholders { page.appDelegate = nil }
+        }
+
+        // FeedToolbarLayoutTests.swift reproduces the idle callback reached when UIKit rounds the pager's frame while a source's first reader is still a placeholder.
+        pages.setStoryFromScroll()
+
+        XCTAssertEqual(collection.requestedLocations, [], "An idle placeholder must never be mapped to a story-array index, even with \(storyCount) source rows")
+        XCTAssertTrue(pages.currentPage === placeholders[1], "A geometry callback must not promote another placeholder with \(storyCount) source rows")
+        XCTAssertEqual(pages.recordedSelections, [], "Source rows: \(storyCount)")
+        XCTAssertEqual(app.activeStory?["story_hash"] as? String, "explicitly-selected-story", "Source rows: \(storyCount)")
+    }
+
     private func auditPagerResizeSelection(resizesViewport: Bool) async throws {
         let app = DuoPagerResizeApp()
         let detail = DuoPhoneReaderLayout()
@@ -2475,6 +2537,7 @@ import WebKit
 }
 
 @MainActor private final class DuoPagerResizePages: StoryPagesViewController {
+    var recordedSelections: [Int]?
     override var isHorizontal: Bool { true }
     override var useCustomToolbar: Bool { false }
     override var usesVerticalReaderToolbar: Bool { true }
@@ -2493,6 +2556,19 @@ import WebKit
     override func setNextPreviousButtons() {}
     override func setTextButton() {}
     override func setTextButton(_ storyViewController: StoryDetailViewController!) {}
+    override func updatePage(withActiveStory location: Int, updateFeedDetail: Bool) {
+        if recordedSelections != nil { recordedSelections?.append(location) }
+        else { super.updatePage(withActiveStory: location, updateFeedDetail: updateFeedDetail) }
+    }
+}
+
+@MainActor private final class DuoPlaceholderPagerCollection: StoriesCollection {
+    var requestedLocations: [Int] = []
+    override func index(fromLocation location: Int) -> Int {
+        requestedLocations.append(location)
+        // FeedToolbarLayoutTests.swift records the invalid lookup without letting the known -1 array access abort the test runner.
+        return 0
+    }
 }
 
 @MainActor private final class DuoPagerResizePage: StoryDetailViewController {
