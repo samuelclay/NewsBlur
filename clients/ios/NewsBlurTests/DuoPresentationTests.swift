@@ -878,6 +878,45 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         XCTAssertNil(app.activeStory)
         try assertEmptyReaderBlocksBackgroundTouches()
         capture(window, named: "fullscreen-launch-after-feed-selection", controller: split)
+        do {
+            let detail = try XCTUnwrap(app.detailViewController)
+            let navigation = try XCTUnwrap(app.feedsNavigationController)
+            let feeds = try XCTUnwrap(app.feedsViewController)
+            let delegate = split.delegate
+            let originalBackItem = feeds.navigationItem.backBarButtonItem
+            // DuoPresentationTests.swift replays closed source selection without a subsequent display-mode callback repairing the reopened header.
+            split.delegate = nil
+            defer {
+                if detail.isCompact { detail.expandToTwoColumns() }
+                feeds.navigationItem.backBarButtonItem = originalBackItem
+                split.delegate = delegate
+                stories.updateSidebarButton(for: split.displayMode)
+            }
+            detail.collapseToSingleColumn()
+            detail.restoreCompactNavigationAfterSplitCollapse(showFeed: true, showStory: false)
+            feeds.navigationItem.backBarButtonItem = UIBarButtonItem(title: "All", style: .plain, target: nil, action: nil)
+            stories.updateSidebarButton(for: split.displayMode)
+            XCTAssertFalse(detail.isDuoFullscreenReader)
+            XCTAssertTrue(navigation.topViewController === stories)
+            XCTAssertEqual(feeds.navigationItem.backBarButtonItem?.title, "All")
+            XCTAssertFalse(stories.navigationItem.leftBarButtonItems?.contains {
+                $0.accessibilityIdentifier == "expanded-feeds-back"
+            } ?? false, "The compact source list must relinquish its fullscreen Feeds item")
+
+            detail.expandToTwoColumns()
+            XCTAssertTrue(detail.isDuoFullscreenReader)
+            XCTAssertTrue(navigation.topViewController === stories)
+            XCTAssertTrue(navigation.navigationBar.topItem === stories.navigationItem)
+            let feedsItem = try XCTUnwrap(stories.navigationItem.leftBarButtonItems?.first {
+                $0.accessibilityIdentifier == "expanded-feeds-back"
+            }, "Reattaching fullscreen titles must replace compact All with the owned Feeds action")
+            XCTAssertEqual(feedsItem.title, "‹ Feeds")
+            XCTAssertEqual(feedsItem.accessibilityLabel, "Feeds")
+            XCTAssertEqual(feedsItem.action, NSSelectorFromString("showDuoFullscreenFeeds:"))
+            XCTAssertTrue(feedsItem.target === detail)
+            XCTAssertFalse(stories.navigationItem.leftItemsSupplementBackButton,
+                           "The compact All back item must not remain beside Feeds")
+        }
         let hash = try await selectVisibleStoryForReader(stories)
         let pages = try XCTUnwrap(app.storyPagesViewController)
         try await waitUntil("The explicit story selection must dismiss the full-screen overlay") {
