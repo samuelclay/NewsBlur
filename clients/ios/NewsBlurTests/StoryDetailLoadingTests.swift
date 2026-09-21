@@ -1825,7 +1825,10 @@ import XCTest
         XCTAssertEqual(web.scrollView.contentInset.top, 64, accuracy: 0.5)
         fixture.pages.toolbarScrollHandler.setOffset(toolbarOffset)
         sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
-        for _ in 0..<60 where !selected.readyForPresentation { await delay(0.02) }
+        // StoryDetailLoadingTests.swift waits for the low-priority scroll query and preparation gate; the early native shell can already be presented before either finishes.
+        try await requireState("The selected article completes scroll restoration and preparation before checking its detached handoff") {
+            selected.readyForPresentation && selected.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+        }
 
         XCTAssertEqual(fixture.app.presentations, 1)
         XCTAssertTrue(fixture.pages.currentPage === selected)
@@ -2397,7 +2400,7 @@ import XCTest
         XCTAssertFalse(fixture.web.loads.last?.html.contains("Fixture article body") == true)
     }
 
-    func test_delayedScrollRestoreStillRestoresTheSameStory() async {
+    func test_delayedScrollRestoreStillRestoresTheSameStory() async throws {
         let fixture = makeFixture()
         let database = HeldStoryScrollQueue()
         fixture.app.setValue(database, forKey: "database")
@@ -2406,7 +2409,10 @@ import XCTest
         restoreScroll(on: fixture.page)
         await fulfillment(of: [database.started], timeout: 2)
         database.release()
-        await delay(0.05)
+        // StoryDetailLoadingTests.swift waits for the released database result to reach the main queue before asserting its exact position.
+        try await requireState("The delayed scroll restoration completes for the same story") {
+            fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool == false
+        }
 
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, 2_500)
     }
