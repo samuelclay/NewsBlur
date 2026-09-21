@@ -2401,7 +2401,7 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         let stories = try XCTUnwrap(app.feedDetailViewController)
         try await settle(stories)
         try await waitUntil("The folder sidebar transition must finish and expose the real Options pill") {
-            guard let split = app.splitViewController, split.isFeedsListHidden,
+            guard let split = app.splitViewController,
                   split.transitionCoordinator == nil,
                   app.detailViewController?.transitionCoordinator == nil,
                   stories.navigationController?.transitionCoordinator == nil,
@@ -2409,7 +2409,7 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
                   let pill = stories.storyTitlesHeaderBar?.optionsPill,
                   let window = pill.window, pill.isEnabled, !pill.isHidden,
                   pill.bounds.width > 0, pill.bounds.height > 0 else { return false }
-            // DuoPresentationTests.swift must not invoke a covered button while the native feed overlay is still disappearing.
+            // DuoPresentationTests.swift accepts exposed Options beside tiled feeds, but never a button covered by an overlay.
             let point = pill.convert(CGPoint(x: pill.bounds.midX, y: pill.bounds.midY), to: window)
             return window.hitTest(point, with: nil)?.isDescendant(of: pill) == true
         }
@@ -3244,10 +3244,12 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
             feeds.view.layoutIfNeeded()
             let feedViews = self.allViews(in: feeds.view)
             let hasVisibleHUD = feedViews.contains {
-                String(describing: type(of: $0)).contains("MBProgressHUD") && !$0.isHidden && $0.alpha > 0.01
+                String(describing: type(of: $0)).contains("MBProgressHUD") &&
+                    !self.visibleViewport(of: $0).isEmpty
             }
+            // DuoPresentationTests.swift ignores hidden refresh-control descendants that keep animating offscreen.
             let hasRowAnimations = self.allViews(in: table).contains {
-                !$0.isHidden && $0.alpha > 0.01 && !($0.layer.animationKeys() ?? []).isEmpty
+                !($0.layer.animationKeys() ?? []).isEmpty && !self.visibleViewport(of: $0).isEmpty
             }
             guard !hasVisibleHUD, !hasRowAnimations else {
                 stableSamples = 0
