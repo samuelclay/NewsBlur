@@ -5,7 +5,82 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedToolbarLayout: XCTestCase {
-    func test_duoArticleScrollIndicatorExcludesListHeaderAndKeepsBottomProtection() throws {
+    func test_duoArticleFooterDoesNotReserveTheReplacedBottomToolbar() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("The side-toolbar reader uses the iOS layout policy")
+        #else
+        let app = NewsBlurAppDelegate()
+        app.storiesCollection = StoriesCollection()
+        let detail = DuoPhoneReaderLayout()
+        detail.appDelegate = app
+        detail.isCompact = false
+        app.detailViewController = detail
+        let pages = DuoScrollingHeaderPages(nibName: nil, bundle: nil)
+        pages.appDelegate = app
+        detail.storyPagesViewController = pages
+        let page = DuoPagerResizePage(nibName: nil, bundle: nil)
+        page.appDelegate = app
+        page.loadViewIfNeeded()
+        pages.currentPage = page
+        let web = try XCTUnwrap(page.webView)
+        web.frame = CGRect(x: 0, y: 0, width: 527, height: 669)
+        let cssURL = try XCTUnwrap(Bundle.main.url(forResource: "storyDetailView", withExtension: "css"))
+        let css = try String(contentsOf: cssURL, encoding: .utf8)
+        let loaded = expectation(description: "Load the real article stylesheet and footer structure")
+        let navigation = DuoPagerResizeNavigationDelegate()
+        navigation.didLoad = { _ in loaded.fulfill() }
+        web.navigationDelegate = navigation
+        defer {
+            web.navigationDelegate = nil
+            web.stopLoading()
+            page.webView = nil
+            page.appDelegate = nil
+            pages.currentPage = nil
+            pages.appDelegate = nil
+            detail.storyPagesViewController = nil
+            detail.appDelegate = nil
+            app.detailViewController = nil
+        }
+        // FeedToolbarLayoutTests.swift uses the production CSS and real empty-comment footer hierarchy, with tall content so the bottom is scrollable.
+        web.loadHTMLString("""
+            <html><head><meta id="viewport" name="viewport" content="width=527, initial-scale=1.0"><style>\(css)</style></head>
+            <body id="story_pane"><div id="NB-story" class="NB-story" style="height:1200px">Article</div>
+            <div class="NB-share-wrapper"><div class="NB-share-inner-wrapper" style="height:40px">Train Share Save Ask AI</div></div>
+            <div id="NB-comments-wrapper"></div></body></html>
+            """, baseURL: Bundle.main.resourceURL)
+        await fulfillment(of: [loaded], timeout: 15)
+        func geometry() async throws -> [String: NSNumber] {
+            let value = try await web.evaluateJavaScript("""
+                (() => { const footer = document.querySelector('.NB-share-wrapper');
+                const comments = document.querySelector('#NB-comments-wrapper');
+                const end = comments.childElementCount ? comments : footer;
+                return {tail:document.documentElement.scrollHeight - (end.getBoundingClientRect().bottom + scrollY),
+                padding:parseFloat(getComputedStyle(document.body).paddingBottom),
+                commentsMargin:parseFloat(getComputedStyle(comments).marginBottom)}; })()
+                """)
+            return try XCTUnwrap(value as? [String: NSNumber])
+        }
+        for hasComments in [false, true] {
+            _ = try await web.evaluateJavaScript("document.querySelector('#NB-comments-wrapper').innerHTML = '\(hasComments ? "<div style=\"height:200px\">Comments</div>" : "")'")
+            for vertical in [true, false, true] {
+                pages.verticalToolbar = vertical
+                detail.simulatesPhone = vertical
+                page.changeWebViewWidth()
+                let metrics = try await geometry()
+                let tail = try XCTUnwrap(metrics["tail"]).doubleValue
+                if vertical {
+                    XCTAssertLessThanOrEqual(tail, 24, "The side-toolbar article must not retain a bottom-toolbar-sized blank tail; comments=\(hasComments)")
+                    XCTAssertGreaterThanOrEqual(tail, 8, "Keep a small reading margin at the end")
+                } else {
+                    XCTAssertEqual(metrics["padding"]?.doubleValue, 64, "Conventional iPad footer spacing must remain unchanged")
+                    XCTAssertEqual(metrics["commentsMargin"]?.doubleValue, 64)
+                }
+            }
+        }
+        #endif
+    }
+
+    func test_duoArticleScrollIndicatorExcludesListHeaderAndSideToolbarBottomGap() throws {
         let app = NewsBlurAppDelegate()
         let detail = DuoPhoneReaderLayout()
         detail.appDelegate = app
@@ -79,6 +154,7 @@ import WebKit
                      (vertical: false, compact: false)] {
             detail.isCompact = pose.compact
             pages.verticalToolbar = pose.vertical
+            let expectedBottom: CGFloat = pose.vertical ? 0 : 34
             for protectedTop in [CGFloat(0), 22] {
                 window.protectedTop = protectedTop
                 scroll.simulatedSafeAreaInsets = UIEdgeInsets(top: protectedTop + 58, left: 0, bottom: 34, right: 0)
@@ -88,8 +164,8 @@ import WebKit
                 for headerHeight in [CGFloat(10), 25] {
                     // FeedToolbarLayoutTests.swift compares with native geometry for this exact inset; screen-corner clearance is not a fixed zero-inset floor.
                     unobstructedScroll.verticalScrollIndicatorInsets = UIEdgeInsets(top: protectedTop + headerHeight - 1,
-                                                                                    left: 0, bottom: 34, right: 0)
-                    unobstructedScroll.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 34, right: 0)
+                                                                                    left: 0, bottom: expectedBottom, right: 0)
+                    unobstructedScroll.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: expectedBottom, right: 0)
                     unobstructedScroll.contentOffset = CGPoint(x: 0, y: -protectedTop)
                     header.frame.size.height = headerHeight
                     scroll.automaticallyAdjustsScrollIndicatorInsets = true
@@ -113,10 +189,10 @@ import WebKit
                     XCTAssertFalse(scroll.automaticallyAdjustsScrollIndicatorInsets,
                                    "The independent Duo article must not inherit the story-list navigation bar's 58pt obstruction")
                     XCTAssertEqual(scroll.verticalScrollIndicatorInsets.top, protectedTop + headerHeight - 1, accuracy: 0.5)
-                    XCTAssertEqual(scroll.verticalScrollIndicatorInsets.bottom, 34, accuracy: 0.5,
-                                   "Removing the unrelated top obstruction must retain the window's real bottom protection")
-                    XCTAssertEqual(scroll.horizontalScrollIndicatorInsets.bottom, 34, accuracy: 0.5,
-                                   "The shared automatic-adjustment policy must also preserve horizontal indicator protection")
+                    XCTAssertEqual(scroll.verticalScrollIndicatorInsets.bottom, expectedBottom, accuracy: 0.5,
+                                   "The right-side toolbar must not leave a legacy bottom-bar gap")
+                    XCTAssertEqual(scroll.horizontalScrollIndicatorInsets.bottom, expectedBottom, accuracy: 0.5,
+                                   "Horizontal indicator policy must follow the active toolbar edge")
                     XCTAssertEqual(scroll.verticalScrollIndicatorInsets.right, 0, accuracy: 0.5,
                                    "The pager already excludes the native side toolbar")
                     XCTAssertEqual(topFrame.minY, unobstructedTop, accuracy: 1,
@@ -126,8 +202,8 @@ import WebKit
                     scroll.flashScrollIndicators()
                     scroll.layoutIfNeeded()
                     let bottomFrame = web.convert(indicator.bounds, from: indicator)
-                    XCTAssertLessThanOrEqual(bottomFrame.maxY, web.bounds.maxY - 34,
-                                             "The scrollbar must stop above the device's protected bottom edge")
+                    XCTAssertLessThanOrEqual(bottomFrame.maxY, web.bounds.maxY - expectedBottom,
+                                             "The scrollbar must use the current toolbar-edge policy")
                 }
             }
         }
