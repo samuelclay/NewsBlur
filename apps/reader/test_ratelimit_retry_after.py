@@ -60,6 +60,25 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
         # Every hit landed in the 14:30 bucket, which stays inside the six-bucket window
         # until 14:36:00, so the client has to wait five minutes plus the rest of this minute.
         self.assertEqual(response["Retry-After"], str(5 * 60 + 45))
+        # One clock read per request: the bucket keys, the increment, and the Retry-After
+        # arithmetic must not drift across a minute boundary mid-request.
+        self.assertEqual(mock_datetime.now.call_count, 4)
+
+    def test_refused_requests_do_not_extend_the_block(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=1, requests=3)
+        with patch("utils.ratelimit.datetime") as mock_datetime:
+            mock_datetime.now.return_value = frozen
+            for _ in range(3):
+                self.assertEqual(view(self.make_request()).status_code, 200)
+            for _ in range(5):
+                response = view(self.make_request())
+                self.assertEqual(response.status_code, 429)
+                # The 14:30 bucket stays in the two-bucket window until 14:32:00.
+                self.assertEqual(response["Retry-After"], str(60 + 45))
+        # A client that ignores Retry-After and keeps polling is refused, but the bucket stays
+        # at the three requests that were served, so the header stays truthful.
+        self.assertEqual(cache.get("rl-test-session-202609221430"), 3)
 
     def test_old_bucket_aging_out_gives_a_short_retry_after(self):
         frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)

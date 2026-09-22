@@ -40,15 +40,19 @@ class ratelimit(object):
         if not self.should_ratelimit(request):
             return fn(request, *args, **kwargs)
 
-        counters = self.get_counters(request)
-        counts = list(counters.values())
+        # One clock read for the whole check, so the buckets read, the bucket incremented, and
+        # the Retry-After arithmetic all describe the same window. utils/ratelimit.py
+        now = datetime.now()
+        keys = self.keys_to_check(request, now)
+        counters = self.cache_get_many(keys)
 
-        # Increment rate limiting counter
-        self.cache_incr(self.current_key(request))
+        # Have they failed? A refused request is not counted, so Retry-After is the real wait
+        # and a client that keeps polling does not stretch its own block.
+        if sum(counters.values()) >= self.limit():
+            return self.disallowed(request, retry_after=self.retry_after(keys, counters, now))
 
-        # Have they failed?
-        if sum(counts) >= self.limit():
-            return self.disallowed(request, retry_after=self.retry_after(request, counters))
+        # Increment rate limiting counter for the current minute
+        self.cache_incr(keys[0])
 
         return fn(request, *args, **kwargs)
 
@@ -58,22 +62,20 @@ class ratelimit(object):
             return self.requests * self.DEBUG_MULTIPLIER
         return self.requests
 
-    def retry_after(self, request, counters):
+    def retry_after(self, keys, counters, now):
         """Seconds until enough one-minute buckets have aged out of the window for a retry to pass.
 
-        keys_to_check() lists the buckets newest first. The oldest bucket leaves the window at
-        the next minute boundary, the next oldest a minute after that, and so on. The request
-        being refused has already been counted in the current bucket, so it is added here
-        before working out how many buckets have to drop. utils/ratelimit.py
+        `keys` is the keys_to_check() list for `now`, newest first. The oldest bucket leaves the
+        window at the next minute boundary, the next oldest a minute after that, and so on.
+        Refused requests are not counted, so the buckets are used as read. utils/ratelimit.py
         """
-        now = datetime.now()
-        counts = [counters.get(key, 0) for key in self.keys_to_check(request)]
-        counts[0] += 1
+        counts = [counters.get(key, 0) for key in keys]
         seconds_to_next_minute = 60 - now.second
         limit = self.limit()
-        for dropped in range(1, len(counts) + 1):
+        for dropped in range(1, len(counts)):
             if sum(counts[: len(counts) - dropped]) < limit:
                 return (dropped - 1) * 60 + seconds_to_next_minute
+        # Even the current bucket alone is over the limit, so wait until it leaves the window.
         return (len(counts) - 1) * 60 + seconds_to_next_minute
 
     def cache_get_many(self, keys):
@@ -94,16 +96,18 @@ class ratelimit(object):
     def get_counters(self, request):
         return self.cache_get_many(self.keys_to_check(request))
 
-    def keys_to_check(self, request):
+    def keys_to_check(self, request, now=None):
+        "Bucket keys for the window ending at `now`, newest first. utils/ratelimit.py"
         extra = self.key_extra(request)
-        now = datetime.now()
+        if now is None:
+            now = datetime.now()
         return [
             "%s%s-%s" % (self.prefix, extra, (now - timedelta(minutes=minute)).strftime("%Y%m%d%H%M"))
             for minute in range(self.minutes + 1)
         ]
 
     def current_key(self, request):
-        return "%s%s-%s" % (self.prefix, self.key_extra(request), datetime.now().strftime("%Y%m%d%H%M"))
+        return self.keys_to_check(request)[0]
 
     def key_extra(self, request):
         key = getattr(request.session, "session_key", "")
