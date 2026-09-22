@@ -32,27 +32,49 @@ class ratelimit(object):
             return self.view_wrapper(request, fn, *args, **kwargs)
 
         functools.update_wrapper(wrapper, fn)
+        # Expose the limiter on the view so callers and tests can read its window. utils/ratelimit.py
+        wrapper.ratelimit = self
         return wrapper
 
     def view_wrapper(self, request, fn, *args, **kwargs):
         if not self.should_ratelimit(request):
             return fn(request, *args, **kwargs)
 
-        counts = list(self.get_counters(request).values())
+        counters = self.get_counters(request)
+        counts = list(counters.values())
 
         # Increment rate limiting counter
         self.cache_incr(self.current_key(request))
 
-        # In DEBUG mode, allow 10x more requests
-        limit = self.requests
-        if settings.DEBUG:
-            limit = self.requests * self.DEBUG_MULTIPLIER
-
         # Have they failed?
-        if sum(counts) >= limit:
-            return self.disallowed(request)
+        if sum(counts) >= self.limit():
+            return self.disallowed(request, retry_after=self.retry_after(request, counters))
 
         return fn(request, *args, **kwargs)
+
+    def limit(self):
+        "Allowed requests per window. In DEBUG mode, allow 10x more requests."
+        if settings.DEBUG:
+            return self.requests * self.DEBUG_MULTIPLIER
+        return self.requests
+
+    def retry_after(self, request, counters):
+        """Seconds until enough one-minute buckets have aged out of the window for a retry to pass.
+
+        keys_to_check() lists the buckets newest first. The oldest bucket leaves the window at
+        the next minute boundary, the next oldest a minute after that, and so on. The request
+        being refused has already been counted in the current bucket, so it is added here
+        before working out how many buckets have to drop. utils/ratelimit.py
+        """
+        now = datetime.now()
+        counts = [counters.get(key, 0) for key in self.keys_to_check(request)]
+        counts[0] += 1
+        seconds_to_next_minute = 60 - now.second
+        limit = self.limit()
+        for dropped in range(1, len(counts) + 1):
+            if sum(counts[: len(counts) - dropped]) < limit:
+                return (dropped - 1) * 60 + seconds_to_next_minute
+        return (len(counts) - 1) * 60 + seconds_to_next_minute
 
     def cache_get_many(self, keys):
         return cache.get_many(keys)
@@ -99,8 +121,13 @@ class ratelimit(object):
 
         return key
 
-    def disallowed(self, request):
-        return HttpResponse("Rate limit exceeded", status=429)
+    def disallowed(self, request, retry_after=None):
+        response = HttpResponse("Rate limit exceeded", status=429)
+        if retry_after:
+            # Tell the client when the window frees up so it backs off instead of retrying
+            # into the same block. utils/ratelimit.py
+            response["Retry-After"] = str(retry_after)
+        return response
 
     def expire_after(self):
         "Used for setting the memcached cache expiry"

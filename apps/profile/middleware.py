@@ -889,11 +889,15 @@ class IPRateTrackingMiddleware:
                             "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s"
                             % (ip, full_path, user_info),
                         )
-                        return HttpResponse(
+                        response = HttpResponse(
                             '{"error": "Rate limit exceeded", "code": -1}',
                             status=429,
                             content_type="application/json",
                         )
+                        # The block lasts until the 5-minute window rolls over, so say so
+                        # and clients can wait instead of retrying into it. apps/profile/middleware.py
+                        response["Retry-After"] = str(self.tracker.seconds_until_next_window())
+                        return response
             except Exception as e:
                 # Don't let tracking errors break the request
                 logging.debug(" ***> IP rate tracking error: %s" % e)

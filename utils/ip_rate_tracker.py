@@ -81,6 +81,16 @@ class IPRateTracker:
         window_time = now.replace(minute=minute, second=0, microsecond=0)
         return window_time.strftime("%Y%m%d%H%M")
 
+    def seconds_until_next_window(self, now=None):
+        """
+        Seconds until the current 5-minute window ends and per-IP counts reset.
+        Used as the Retry-After value on 429s from apps/profile/middleware.py.
+        """
+        if now is None:
+            now = datetime.datetime.utcnow()
+        elapsed = (now.minute % self.WINDOW_MINUTES) * 60 + now.second
+        return self.WINDOW_MINUTES * 60 - elapsed
+
     def get_ip(self, request):
         """
         Extract client IP from request, handling proxy headers.

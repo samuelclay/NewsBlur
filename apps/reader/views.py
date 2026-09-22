@@ -1760,7 +1760,9 @@ def load_feed_page(request, feed_id):
     return HttpResponse(data, content_type="text/html; charset=utf-8")
 
 
-@ratelimit(minutes=5, requests=50, use_path=True)
+# 100 per 5 minutes: clients that page saved stories 10 at a time need one request per page,
+# and 50 cut a sync of a few hundred saved stories off partway (forum #13844). apps/reader/views.py
+@ratelimit(minutes=5, requests=100, use_path=True)
 @json.json_view
 def load_starred_stories(request):
     user = get_user(request)
