@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import com.google.gson.Gson
 import com.newsblur.domain.Story
 import com.newsblur.util.FeedSet
+import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.ReadingAction
 import java.util.function.Predicate
 
@@ -51,14 +52,17 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
 
     fun registerStory(story: Story) = registerClusters(story.storyHash, story.clusterStories ?: emptyArray())
 
+    data class UnreadReconciliationStats(val inspectedChildCount: Int, val retirementCandidateCount: Int)
+
     @JvmOverloads
     fun reconcileServerUnread(
         hashes: Collection<String>,
         requestStartedAt: Long,
         isFeedEligible: Predicate<String> = Predicate { true },
-    ): Int {
+    ): UnreadReconciliationStats {
         val serverUnread = hashes.toSet()
-        val embeddedUnread = mutableMapOf<String, Boolean?>()
+        val retirementCandidates = mutableSetOf<String>()
+        val explicitUnread = mutableSetOf<String>()
         // UnreadsSubService.kt cannot retire children absent from the standalone story table.
         // Limit this lookup to cached cluster members, honoring receipts before stored or embedded state.
         db.rawQuery("SELECT DISTINCT m.child_hash, COALESCE(r.read, s.read) FROM $MEMBERS m " +
@@ -67,14 +71,18 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
             "WHERE COALESCE(r.read, s.read, 0) = 0", null).use {
             while (it.moveToNext()) {
                 val hash = it.getString(0)
-                if (hash !in serverUnread) embeddedUnread[hash] = if (it.isNull(1)) null else it.getInt(1) != 0
+                if (hash in serverUnread) continue
+                val feedId = inferFeedId(hash)?.takeIf { it.isNotBlank() } ?: continue
+                if (!isFeedEligible.test(feedId)) continue
+                retirementCandidates.add(hash)
+                if (!it.isNull(1)) explicitUnread.add(hash)
             }
         }
         val retired = mutableSetOf<String>()
-        for (children in parentsReferencing(embeddedUnread.keys).values) {
+        for (children in parentsReferencing(retirementCandidates).values) {
             for (child in children) {
                 val feedId = child.feedId?.takeIf { it.isNotBlank() } ?: continue
-                if (child.storyHash in embeddedUnread && !(embeddedUnread[child.storyHash] ?: child.read) &&
+                if (child.storyHash in retirementCandidates && (child.storyHash in explicitUnread || !child.read) &&
                     isFeedEligible.test(feedId)) retired.add(child.storyHash)
             }
         }
@@ -98,7 +106,7 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
             }
         }
         reconcileServerReadState(candidates, false, requestStartedAt)
-        return retired.size
+        return UnreadReconciliationStats(retirementCandidates.size, retired.size)
     }
 
     fun reconcileServerReadState(hashes: Collection<String>, read: Boolean, requestStartedAt: Long) {

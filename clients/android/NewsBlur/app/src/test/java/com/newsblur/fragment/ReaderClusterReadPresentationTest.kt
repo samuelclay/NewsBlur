@@ -50,8 +50,10 @@ class ReaderClusterReadPresentationTest {
 
                 fixture.child.read = true
                 fixture.bind()
-                verify { fixture.title.setTextColor(palette.readTitleColor) }
-                verify { fixture.sentiment.imageAlpha = 38 }
+                withReadStateContext("theme=$theme, read=true") {
+                    verify { fixture.title.setTextColor(palette.readTitleColor) }
+                    verify { fixture.sentiment.imageAlpha = 38 }
+                }
 
                 fixture.child.read = false
                 for (enabled in listOf(true, false, true)) {
@@ -59,20 +61,30 @@ class ReaderClusterReadPresentationTest {
                     clearMocks(fixture.title, fixture.sentiment, fixture.outerBar, answers = false)
                     fixture.bind()
 
-                    verify(exactly = 1) { fixture.title.setTextColor(palette.titleColor) }
-                    verify(exactly = 1) { fixture.sentiment.imageAlpha = 255 }
-                    verify(exactly = 1) { fixture.outerBar.alpha = 1f }
-                    verify { StoryClusterBadgeViewBinder.bind(fixture.badge, fixture.context, any(), palette, false) }
-                    verify {
-                        fixture.fragment["bindClusterPreview"](
-                            fixture.preview, fixture.badge, fixture.title, fixture.date, "https://example.com/child.jpg", false,
-                        )
+                    withReadStateContext("theme=$theme, clusterMarkRead=$enabled, read=false") {
+                        verify(exactly = 1) { fixture.title.setTextColor(palette.titleColor) }
+                        verify(exactly = 1) { fixture.sentiment.imageAlpha = 255 }
+                        verify(exactly = 1) { fixture.outerBar.alpha = 1f }
+                        verify { StoryClusterBadgeViewBinder.bind(fixture.badge, fixture.context, any(), palette, false) }
+                        verify {
+                            fixture.fragment["bindClusterPreview"](
+                                fixture.preview, fixture.badge, fixture.title, fixture.date, "https://example.com/child.jpg", false,
+                            )
+                        }
                     }
                 }
             }
         } finally {
             unmockkObject(StoryClusterBadgeViewBinder)
             unmockkStatic(Color::class, UIUtils::class, StoryUtils::class)
+        }
+    }
+
+    private inline fun withReadStateContext(context: String, assertions: () -> Unit) {
+        try {
+            assertions()
+        } catch (failure: AssertionError) {
+            throw AssertionError(context, failure)
         }
     }
 

@@ -2,20 +2,32 @@ package com.newsblur.database
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.text.TextUtils
 import com.newsblur.domain.Story
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.spyk
+import io.mockk.unmockkStatic
 import io.mockk.verify
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import java.util.function.Predicate
 
 class ClusterUnreadRetirementTest {
+    @Before fun setUp() {
+        mockkStatic(TextUtils::class)
+        every { TextUtils.split(any<String>(), ":") } answers { firstArg<String>().split(':').toTypedArray() }
+    }
+
+    @After fun tearDown() = unmockkStatic(TextUtils::class)
+
     @Test fun remoteReadRetiresAnEmbeddedOnlyUnreadChild() {
         val hash = "2:embedded"
         val db = mockk<SQLiteDatabase>()
@@ -91,6 +103,47 @@ class ClusterUnreadRetirementTest {
         assertEquals(mapOf("2:eligible" to true), fixture.receipts)
     }
 
+    @Test fun ineligibleFeedsAreExcludedBeforeDecodingParentClusters() {
+        val fixture = Fixture()
+        fixture.parents["1:parent"] = arrayOf(child("2:eligible", false))
+        fixture.parents["3:parent"] = arrayOf(child("3:orphan", false))
+        fixture.parents["4:parent"] = arrayOf(child("4:disabled", false))
+        fixture.parents["5:parent"] = arrayOf(child("5:capped", false))
+
+        fixture.store.reconcileServerUnread(emptyList(), 200L, Predicate { it == "2" })
+
+        verify(exactly = 0) {
+            fixture.store.parentsReferencing(match { hashes -> hashes.any { it != "2:eligible" } })
+        }
+        assertEquals(mapOf("2:eligible" to true), fixture.receipts)
+    }
+
+    @Test fun malformedAndBlankHashFeedIdsAreExcludedBeforeDecodingParentClusters() {
+        val fixture = Fixture()
+        fixture.parents["1:parent"] = arrayOf(
+            child("invalid-hash", false).apply { feedId = "2" },
+            child(":blank-feed", false).apply { feedId = "2" },
+            child(" :whitespace-feed", false).apply { feedId = "2" },
+        )
+
+        val stats = fixture.store.reconcileServerUnread(emptyList(), 200L)
+
+        verify(exactly = 0) { fixture.store.parentsReferencing(match { it.isNotEmpty() }) }
+        assertEquals(ClusterReadStore.UnreadReconciliationStats(0, 0), stats)
+        assertTrue(fixture.receipts.isEmpty())
+    }
+
+    @Test fun reconciliationStatsDistinguishInspectedChildrenFromRetirementCandidates() {
+        val fixture = Fixture()
+        fixture.parents["1:parent"] = arrayOf(child("2:unread", false), child("2:read-metadata", true))
+        fixture.parents["3:parent"] = arrayOf(child("3:excluded", false))
+
+        val stats = fixture.store.reconcileServerUnread(emptyList(), 200L, Predicate { it == "2" })
+
+        assertEquals(ClusterReadStore.UnreadReconciliationStats(2, 1), stats)
+        assertEquals(mapOf("2:unread" to true), fixture.receipts)
+    }
+
     @Test fun pendingUnreadActionSurvivesRemoteReadRetirement() {
         val fixture = Fixture()
         fixture.addChild("2:embedded", false)
@@ -161,10 +214,11 @@ class ClusterUnreadRetirementTest {
             child("3:blank-feed", false).apply { feedId = " " },
         )
         val eligibility = mockk<Predicate<String>>()
+        every { eligibility.test(any()) } returns true
 
         fixture.store.reconcileServerUnread(emptyList(), 200L, eligibility)
 
-        verify(exactly = 0) { eligibility.test(any()) }
+        verify(exactly = 0) { eligibility.test(match { it.isBlank() }) }
         verify(exactly = 0) { fixture.store.setLocalReadState(any(), any(), any()) }
     }
 
