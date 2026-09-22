@@ -292,6 +292,7 @@ def status(request):
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
 
+    # Read only this account's analysis written by apps/webfeed/tasks.py.
     status_data = r.get(f"webfeed:status:{request.user.pk}:{request_id}")
     if not status_data:
         return {"code": -1, "status": "unknown"}

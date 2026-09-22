@@ -140,18 +140,18 @@ class SessionDataSource private constructor(
         }
 
     /**
-     * @return The next folder with feeds to read and those feeds, walking forward from the
-     * given folder and wrapping past the end, or null once every other folder has been
-     * checked. Each folder is visited at most once: recursing until a folder had unread
-     * feeds looped forever when none did and crashed with a StackOverflowError once the
-     * user had read everything (forum #13826). SessionDataSource.kt
+     * @return The next non empty folder and its feeds based on the given folder name.
+     * SessionDataSource.kt checks at most one complete wrap, including the starting folder
+     * only after all other folders, so sessions without an eligible target terminate.
+     * Recursing until a folder had unread feeds looped forever when none did and crashed
+     * with a StackOverflowError once the user had read everything (forum #13826).
      */
     private fun getNextNonEmptyFolder(folderName: String): Pair<String, List<Feed>>? {
-        val startIndex = folders.indexOf(folderName)
-        if (startIndex !in folders.indices) return null
+        val folderIndex = folders.indexOf(folderName)
+        if (folderIndex < 0 || folders.size < 2) return null
 
-        for (offset in 1 until folders.size) {
-            val nextFolderName = folders[(startIndex + offset) % folders.size]
+        for (offset in 1..folders.size) {
+            val nextFolderName = folders[(folderIndex + offset) % folders.size]
             val feeds = foldersChildrenMap[nextFolderName]
             if (!feeds.isNullOrEmpty() && feeds.hasNextUnreadTarget()) {
                 return nextFolderName to feeds

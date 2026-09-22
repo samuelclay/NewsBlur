@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 6;
+	static final int VERSION = 9;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);
@@ -24,6 +24,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(DatabaseConstants.FOLDER_SQL);
 		db.execSQL(DatabaseConstants.USER_SQL);
 		db.execSQL(DatabaseConstants.STORY_SQL);
+        ClusterReadStore.createTables(db);
         db.execSQL(DatabaseConstants.READING_SESSION_SQL);
         db.execSQL(DatabaseConstants.STORY_TEXT_SQL);
 		db.execSQL(DatabaseConstants.COMMENT_SQL);
@@ -52,6 +53,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 	}
 
 	private void dropAndRecreateTables(SQLiteDatabase db) {
+		ClusterReadStore.dropTables(db);
 		String drop = "DROP TABLE IF EXISTS ";
 		db.execSQL(drop + DatabaseConstants.FEED_TABLE);
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_TABLE);
@@ -78,6 +80,25 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int previousVersion, int nextVersion) {
+        if (previousVersion >= 6 && previousVersion < 9) {
+            // Folder.java reconstructs segment keys from the cached parent list. Display
+            // paths can collide when a folder title contains the hierarchy separator.
+            db.execSQL("ALTER TABLE " + DatabaseConstants.FOLDER_TABLE + " RENAME TO folders_legacy");
+            db.execSQL(DatabaseConstants.FOLDER_SQL);
+            try (android.database.Cursor cursor = db.query("folders_legacy", null, null, null, null, null, null)) {
+                while (cursor.moveToNext()) {
+                    db.insertOrThrow(DatabaseConstants.FOLDER_TABLE, null,
+                            com.newsblur.domain.Folder.fromCursor(cursor).getValues());
+                }
+            }
+            db.execSQL("DROP TABLE folders_legacy");
+            if (previousVersion < 8) {
+                // ClusterReadStore.kt backfills membership without replacing cached stories or queued actions.
+                ClusterReadStore.createTables(db);
+                ClusterReadStore.backfill(db);
+            }
+            return;
+        }
         dropAndRecreateTables(db);
     }
 

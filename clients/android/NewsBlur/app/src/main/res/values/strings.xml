@@ -1,4 +1,15 @@
 <resources>
+    <string name="try_feed_instafetching">Insta-fetching stories…</string>
+    <string name="try_feed_fetch_failed">Unable to fetch stories. Tap to try again.</string>
+    <string name="try_feed_empty">No stories are available from this site yet. Tap to refresh.</string>
+    <string name="image_viewer_close">Close image</string>
+    <string name="image_viewer_loading">Loading image…</string>
+    <string name="image_viewer_failed">Could not load the full image.</string>
+    <string name="image_viewer_retry">Try again</string>
+    <string name="settings_story_toolbar_position">Story list toolbar position</string>
+    <string name="settings_story_toolbar_top">Top</string>
+    <string name="settings_story_toolbar_bottom">Bottom</string>
+    <string name="story_header_mark_read_cutoff">Choose how far back to mark read</string>
 
     <string name="newsblur">NewsBlur</string>
 
@@ -31,6 +42,7 @@ people together to talk about the world.</string>
     <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
+    <string name="story_navigation_failed">Couldn\'t open the story. Please try again.</string>
     <string name="orig_text_loading">Fetching story text…</string>
 
     <string name="follow_error">There was a problem following the user.</string>
@@ -173,10 +185,13 @@ people together to talk about the world.</string>
     <string name="menu_font">Font</string>
     <string name="menu_save_story">Save this story</string>
     <string name="menu_unsave_story">Unsave this story</string>
-    <string name="menu_newest_mark_older_stories_as_read">\u21E3 Mark older as read</string>
-    <string name="menu_newest_mark_newer_stories_as_read">\u21E1 Mark newer as read</string>
-    <string name="menu_oldest_mark_older_stories_as_read">\u21E1 Mark older as read</string>
-    <string name="menu_oldest_mark_newer_stories_as_read">\u21E3 Mark newer as read</string>
+    <string name="menu_newest_mark_older_stories_as_read">Mark older as read</string>
+    <string name="menu_newest_mark_newer_stories_as_read">Mark newer as read</string>
+    <string name="menu_oldest_mark_older_stories_as_read">Mark older as read</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">Mark newer as read</string>
+    <string name="story_menu_open_feed">Open feed</string>
+    <string name="story_menu_share_link">Share link…</string>
+    <string name="story_menu_share_story">Share story…</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
     <string name="menu_search_stories">Search…</string>
@@ -186,7 +201,8 @@ people together to talk about the world.</string>
     <string name="menu_unmute_folder">Unmute folder</string>
     <string name="menu_delete_folder">Delete folder</string>
     <string name="menu_rename_folder">Rename folder</string>
-    <string name="menu_instafetch_feed">Insta-fetch stories</string>
+    <string name="menu_instafetch_feed">Insta-fetch Stories</string>
+    <string name="feed_menu_back_to_actions">Back to feed actions</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
     <string name="menu_rename_feed">Rename feed</string>
@@ -238,6 +254,8 @@ people together to talk about the world.</string>
     <string name="feed_list_clear_search">Clear search</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="discover_related_sites_title">Related Sites</string>
+    <string name="discover_show_grid">Show grid</string>
+    <string name="discover_show_list">Show list</string>
     <string name="discover_loading">Finding related sites…</string>
     <string name="discover_no_related_sites">No related sites found</string>
     <string name="discover_view_mode_grid">Grid</string>
@@ -253,7 +271,7 @@ people together to talk about the world.</string>
     <string name="try_feed_banner_subtitle">Preview. Not yet subscribed.</string>
     <string name="try_feed_subscribe_button">Subscribe</string>
     <string name="empty_search_notice">Type a search term to begin</string>
-    <string name="menu_add_feed">Add new feed</string>
+    <string name="menu_add_feed">Add + Discover Sites</string>
     <string name="adding_feed_progress">Adding feed…</string>
     <string name="feed_list_search_hint">Search feeds</string>
     <string name="add_folder_name">Please enter folder name</string>
@@ -267,6 +285,17 @@ people together to talk about the world.</string>
     <string name="add_folder_error">Could not add folder</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
+    <string name="contact_us">Contact us</string>
+    <string name="contact_description">NewsBlur is a news reader and aggregator developed by NewsBlur, Inc. Contact the NewsBlur team for app support, questions, or feedback.</string>
+    <string name="contact_email_label">Email the developer</string>
+    <string name="contact_email" translatable="false">android@newsblur.com</string>
+    <string name="contact_send_email">Send email</string>
+    <string name="contact_website_label">NewsBlur website</string>
+    <string name="contact_website" translatable="false">https://www.newsblur.com</string>
+    <string name="contact_open_website">Visit website</string>
+    <string name="contact_back">Back</string>
+    <string name="contact_no_email_app">No email app is installed. You can select and copy the email address on this page.</string>
+    <string name="contact_no_browser">No web browser is installed. You can select and copy the website address on this page.</string>
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
@@ -281,6 +310,7 @@ people together to talk about the world.</string>
     <string name="loginas_title">Login As User</string>
 
     <string name="empty_list_view_loading">Loading…</string>
+    <string name="story_loading_description">Loading stories</string>
     <string name="empty_list_view_no_stories">No stories to read</string>
     <string name="empty_list_view_no_stories_unread">No unread stories</string>
 
@@ -604,6 +634,11 @@ people together to talk about the world.</string>
     <string name="settings_story_clustering_title_only">Title only</string>
     <string name="settings_cluster_mode_title_match_only">Title match only</string>
     <string name="settings_cluster_mode_title_match_plus_related">Title match plus related</string>
+    <string name="settings_cluster_mark_read_matches">Mark matching stories as read</string>
+    <string name="settings_cluster_mark_read_related">Mark related stories as read</string>
+    <string name="settings_cluster_mark_read_matches_summary">When you read a story, also mark its matching stories as read.</string>
+    <string name="settings_cluster_mark_read_related_summary">When you read a story, also mark matching and related stories as read.</string>
+    <string name="settings_cluster_mark_read_save_failed">Couldn\'t save the related stories read preference</string>
     <string name="settings_story_clustering_title">Title</string>
     <string name="settings_story_clustering_only">only</string>
     <string name="settings_story_clustering_plus">+</string>
@@ -612,7 +647,11 @@ people together to talk about the world.</string>
 
     <string name="settings_mark_story_read">Mark a story as read…</string>
     <string name="settings_mark_story_read_title">Mark stories read</string>
-    <string name="mark_story_read_immediately">Immediately</string>
+    <string name="mark_story_read_immediately">Only on selection</string>
+    <string name="mark_story_read_on_scroll">On scroll or selection</string>
+    <string name="mark_story_read_1_second">After 1 second</string>
+    <string name="mark_story_read_2_seconds">After 2 seconds</string>
+    <string name="mark_story_read_3_seconds">After 3 seconds</string>
     <string name="mark_story_read_5_seconds">After 5 seconds</string>
     <string name="mark_story_read_10_seconds">After 10 seconds</string>
     <string name="mark_story_read_20_seconds">After 20 seconds</string>
@@ -621,7 +660,11 @@ people together to talk about the world.</string>
     <string name="mark_story_read_60_seconds">After 60 seconds</string>
     <string name="mark_story_read_manually">Manually</string>
     <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
         <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
         <item>@string/mark_story_read_5_seconds</item>
         <item>@string/mark_story_read_10_seconds</item>
         <item>@string/mark_story_read_20_seconds</item>
@@ -632,7 +675,11 @@ people together to talk about the world.</string>
     </string-array>
 
     <string-array name="mark_story_read_values">
+        <item>ON_SCROLL</item>
         <item>IMMEDIATELY</item>
+        <item>SECONDS_1</item>
+        <item>SECONDS_2</item>
+        <item>SECONDS_3</item>
         <item>SECONDS_5</item>
         <item>SECONDS_10</item>
         <item>SECONDS_20</item>
@@ -669,7 +716,7 @@ people together to talk about the world.</string>
     <string name="ask_ai_transcribing">Transcribing…</string>
     <string name="ask_ai_microphone_permission_denied">Microphone permission denied</string>
     <string name="ask_ai_microphone_error">Unable to record audio</string>
-    <string name="settings_confirm_mark_all_read_note">Mark read options are always available via long press on the mark read button.</string>
+    <string name="settings_confirm_mark_all_read_note">Marking all site stories read always asks for confirmation. Long press the mark read button for more options.</string>
     <string name="settings_confirm_mark_all_read_segment_both">Both</string>
     <string name="settings_confirm_mark_all_read_segment_folders">Folders</string>
     <string name="settings_confirm_mark_all_read_segment_never">Never</string>
@@ -857,7 +904,7 @@ people together to talk about the world.</string>
 
     <string name="default_browser">Default browser…</string>
     <string name="font">Font…</string>
-    <string name="default_font">Default</string>
+    <string name="default_font">Whitney</string>
     <string name="gotham_narrow_font">Gotham Narrow</string>
     <string name="chronicle_font">Chronicle</string>
     <string name="noto_sans_font">Noto Sans</string>
@@ -1000,4 +1047,7 @@ people together to talk about the world.</string>
     <string name="renaming_feed_message">Renaming feed %s</string>
     <string name="renaming_folder_message">Renaming folder %s</string>
 
+    <string name="parent_folder">Parent folder</string>
+    <string name="folder_added">Folder added</string>
+    <string name="new_folder_parent">In: %1$s</string>
 </resources>

@@ -60,6 +60,7 @@ from apps.rss_feeds.tasks import NewFeeds
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import add_object_to_folder, chunks
+from utils.folder_paths import InvalidFolderPath, resolve_folder_path
 
 
 def unread_cutoff_default():
@@ -2843,6 +2844,9 @@ class UserSubscriptionFolders(models.Model):
 
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         feed_id = int(feed_id)
+        explicit_path = isinstance(in_folder, list)
+        if explicit_path:
+            resolve_folder_path(json.decode(self.folders), in_folder)
 
         # apps/reader/models.py
         # Count every placement of the feed and note whether any sits directly in the
@@ -2863,17 +2867,19 @@ class UserSubscriptionFolders(models.Model):
                             in_requested = True
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        sub_total, sub_in = _count_feed(f_v, f_k)
+                        sub_total, sub_in = _count_feed(f_v, folder_name + [f_k] if explicit_path else f_k)
                         total += sub_total
                         in_requested = in_requested or sub_in
             return total, in_requested
 
         arranged = self.arranged_folders()
-        total_occurrences, occurrence_in_requested = _count_feed(arranged)
+        total_occurrences, occurrence_in_requested = _count_feed(arranged, [] if explicit_path else "")
 
         # Honor the requested folder only when the feed actually lives there; otherwise
         # remove the first placement anywhere so a mismatched in_folder can't leave the
         # feed stuck and subscribed.
+        if explicit_path and not occurrence_in_requested:
+            raise InvalidFolderPath("That feed is no longer in the selected folder. Refresh and try again.")
         target_folder = in_folder if (in_folder is not None and occurrence_in_requested) else None
         removal = {"deleted": False}
 
@@ -2894,10 +2900,12 @@ class UserSubscriptionFolders(models.Model):
                     new_folders.append(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        new_folders.append({f_k: _remove_one(f_v, f_k)})
+                        new_folders.append(
+                            {f_k: _remove_one(f_v, folder_name + [f_k] if explicit_path else f_k)}
+                        )
             return new_folders
 
-        user_sub_folders = _remove_one(arranged)
+        user_sub_folders = _remove_one(arranged, [] if explicit_path else "")
         self.folders = json.encode(user_sub_folders)
         self.save()
 
@@ -2919,6 +2927,13 @@ class UserSubscriptionFolders(models.Model):
                 user_sub.delete()
 
     def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder, commit_delete=True):
+        explicit_path = isinstance(in_folder, list)
+        if explicit_path:
+            destination = resolve_folder_path(json.decode(self.folders), in_folder)
+            target_name = folder_to_delete
+            if not any(isinstance(item, dict) and target_name in item for item in destination):
+                raise InvalidFolderPath("That folder has changed. Refresh and try again.")
+
         def _find_folder_in_folders(old_folders, folder_name, feeds_to_delete, deleted_folder=None):
             new_folders = []
             for k, folder in enumerate(old_folders):
@@ -2936,7 +2951,10 @@ class UserSubscriptionFolders(models.Model):
                             deleted_folder = folder
                         else:
                             nf, feeds_to_delete, deleted_folder = _find_folder_in_folders(
-                                f_v, f_k, feeds_to_delete, deleted_folder
+                                f_v,
+                                folder_name + [f_k] if explicit_path else f_k,
+                                feeds_to_delete,
+                                deleted_folder,
                             )
                             new_folders.append({f_k: nf})
 
@@ -2944,7 +2962,7 @@ class UserSubscriptionFolders(models.Model):
 
         user_sub_folders = json.decode(self.folders)
         user_sub_folders, feeds_to_delete, deleted_folder = _find_folder_in_folders(
-            user_sub_folders, "", feed_ids_in_folder
+            user_sub_folders, [] if explicit_path else "", feed_ids_in_folder
         )
         self.folders = json.encode(user_sub_folders)
         self.save()
@@ -2964,6 +2982,13 @@ class UserSubscriptionFolders(models.Model):
         return self
 
     def rename_folder(self, folder_to_rename, new_folder_name, in_folder):
+        explicit_path = isinstance(in_folder, list)
+        if explicit_path:
+            destination = resolve_folder_path(json.decode(self.folders), in_folder)
+            target_name = folder_to_rename
+            if not any(isinstance(item, dict) and target_name in item for item in destination):
+                raise InvalidFolderPath("That folder has changed. Refresh and try again.")
+
         def _find_folder_in_folders(old_folders, folder_name):
             new_folders = []
             for k, folder in enumerate(old_folders):
@@ -2971,7 +2996,7 @@ class UserSubscriptionFolders(models.Model):
                     new_folders.append(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        nf = _find_folder_in_folders(f_v, f_k)
+                        nf = _find_folder_in_folders(f_v, folder_name + [f_k] if explicit_path else f_k)
                         if f_k == folder_to_rename and in_folder == folder_name:
                             logging.user(
                                 self.user,
@@ -2984,7 +3009,7 @@ class UserSubscriptionFolders(models.Model):
             return new_folders
 
         user_sub_folders = json.decode(self.folders)
-        user_sub_folders = _find_folder_in_folders(user_sub_folders, "")
+        user_sub_folders = _find_folder_in_folders(user_sub_folders, [] if explicit_path else "")
         self.folders = json.encode(user_sub_folders)
         self.save()
 
@@ -2993,6 +3018,12 @@ class UserSubscriptionFolders(models.Model):
             self.user, "~FBMoving feed '~SB%s~SN' in '%s' to: ~SB%s" % (feed_id, in_folders, to_folders)
         )
         user_sub_folders = json.decode(self.folders)
+        for path in to_folders:
+            if isinstance(path, list):
+                resolve_folder_path(user_sub_folders, path)
+        for path in in_folders:
+            if isinstance(path, list) and int(feed_id) not in resolve_folder_path(user_sub_folders, path):
+                raise InvalidFolderPath("That feed has moved. Refresh and try again.")
         for in_folder in in_folders:
             self.delete_feed(feed_id, in_folder, commit_delete=False)
         user_sub_folders = json.decode(self.folders)

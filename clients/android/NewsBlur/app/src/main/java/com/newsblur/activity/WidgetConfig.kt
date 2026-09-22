@@ -85,6 +85,8 @@ class WidgetConfig : FeedChooser() {
         feeds.clear()
         feeds.addAll(data.feeds.filter { it.active })
 
+        folderNames.clear()
+        folderChildren.clear()
         val feedMap = feeds.associateBy { it.feedId }
 
         for (folder in folders) {

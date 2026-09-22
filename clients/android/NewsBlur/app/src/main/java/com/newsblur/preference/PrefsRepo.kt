@@ -131,7 +131,7 @@ class PrefsRepo(
         val f =
             com.newsblur.util.Log
                 .getLogfile() ?: return
-        val localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f)
+        val localPath = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", f)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "*/*"
         i.putExtra(Intent.EXTRA_EMAIL, arrayOf("android@newsblur.com"))
@@ -400,6 +400,8 @@ class PrefsRepo(
     ) {
         prefs.edit { putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString()) }
     }
+
+    fun isStoryToolbarAtBottom(): Boolean = prefs.getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
 
     fun getStoryListStyleForFeed(feedId: String): StoryListStyle =
         StoryListStyle.safeValueOf(
@@ -710,10 +712,10 @@ class PrefsRepo(
 
     fun isAutoOpenFirstUnread() = prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
-    fun isMarkReadOnFeedScroll() = prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)
+    fun isMarkReadOnFeedScroll() = getMarkStoryReadBehavior() == MarkStoryReadBehavior.ON_SCROLL
 
     fun setMarkReadOnScroll(value: Boolean) {
-        prefs.edit { putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, value) }
+        setMarkStoryReadBehavior(if (value) MarkStoryReadBehavior.ON_SCROLL else MarkStoryReadBehavior.IMMEDIATELY)
     }
 
     fun isOfflineEnabled() = prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false)
@@ -832,15 +834,23 @@ class PrefsRepo(
 
     fun isConfirmMarkRangeRead() = prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
 
-    fun getLeftToRightGestureAction(): GestureAction =
-        GestureAction.valueOf(
-            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK.toString())!!,
-        )
+    fun gestureAction(key: String, fallback: GestureAction): GestureAction {
+        val saved = prefs.getString(key, fallback.name)
+        return GestureAction.entries.firstOrNull { it.name == saved } ?: fallback
+    }
 
-    fun getRightToLeftGestureAction(): GestureAction =
-        GestureAction.valueOf(
-            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ.toString())!!,
-        )
+    fun getLeftToRightGestureAction() = gestureAction(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK)
+    fun getRightToLeftGestureAction() = gestureAction(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ)
+    fun isFeedSwipesEnabled() = prefs.getBoolean("enable_feed_swipes", true)
+    fun isStorySwipesEnabled() = prefs.getBoolean("enable_story_swipes", true)
+    fun getFeedSwipeAction(right: Boolean) = gestureAction(
+        if (right) "feed_swipe_right" else "feed_swipe_left",
+        if (right) GestureAction.GEST_ACTION_NOTIFICATIONS else GestureAction.GEST_ACTION_MARKREAD,
+    )
+    fun getFeedLongPressAction() = gestureAction("feed_long_press", GestureAction.GEST_ACTION_MENU)
+    fun getStoryLongPressAction() = gestureAction("story_long_press", GestureAction.GEST_ACTION_MENU)
+
+    fun getReaderGesture(key: String, fallback: String): String = prefs.getString(key, fallback) ?: fallback
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
@@ -937,6 +947,8 @@ class PrefsRepo(
 
     fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
 
+    fun isClusterMarkReadEnabled(): Boolean = getIsArchive() && prefs.getBoolean(PrefConstants.CLUSTER_MARK_READ, false)
+
     fun setPro(
         isPro: Boolean,
         proExpire: Long?,
@@ -1001,10 +1013,23 @@ class PrefsRepo(
 
     fun getCookie(): String? = prefs.getString(PrefConstants.PREF_COOKIE, null)
 
-    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior =
-        MarkStoryReadBehavior.valueOf(
-            prefs.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!,
-        )
+    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior {
+        val stored = prefs.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)
+        val behavior = MarkStoryReadBehavior.entries.firstOrNull { it.name == stored } ?: MarkStoryReadBehavior.IMMEDIATELY
+        // PrefsRepo.kt previously stored scrolling separately. Preserve explicit delays and manual mode.
+        return if (behavior == MarkStoryReadBehavior.IMMEDIATELY && prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)) {
+            MarkStoryReadBehavior.ON_SCROLL
+        } else {
+            behavior
+        }
+    }
+
+    fun setMarkStoryReadBehavior(behavior: MarkStoryReadBehavior) {
+        prefs.edit {
+            putString(PrefConstants.STORY_MARK_READ_BEHAVIOR, behavior.name)
+            putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, behavior == MarkStoryReadBehavior.ON_SCROLL)
+        }
+    }
 
     fun loadNextOnMarkRead(): Boolean = prefs.getBoolean(PrefConstants.LOAD_NEXT_ON_MARK_READ, false)
 

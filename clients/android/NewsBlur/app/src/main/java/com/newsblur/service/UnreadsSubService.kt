@@ -4,6 +4,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
 import com.newsblur.util.StoryOrder
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
@@ -26,7 +27,13 @@ class UnreadsSubService(
                 setServiceState(ServiceState.UnreadsSync)
 
                 if (doMeta.getAndSet(false)) {
-                    syncUnreadList()
+                    try {
+                        syncUnreadList()
+                    } catch (e: CancellationException) {
+                        // UnreadsSubService.kt retries metadata consumed by a canceled generation.
+                        doMeta.set(true)
+                        throw e
+                    }
                 }
 
                 ensureActive()
@@ -42,6 +49,7 @@ class UnreadsSubService(
     private suspend fun syncUnreadList() {
         currentCoroutineContext().ensureActive()
         // get unread hashes and dates from the API
+        val requestStartedAt = System.currentTimeMillis()
         val unreadHashes = storyApi.getUnreadStoryHashes()
 
         currentCoroutineContext().ensureActive()
@@ -61,6 +69,7 @@ class UnreadsSubService(
         // process the api response, both bookkeeping no-longer-unread stories and populating
         // the sortation list we will use to create the fetch list for step two
         var count = 0
+        val serverUnreadHashes = mutableListOf<String>()
         feedLoop@ for (entry in unreadHashes.unreadHashes.entries) {
             // the API gives us a list of unreads, split up by feed ID. the unreads are tuples of
             // story hash and date
@@ -70,6 +79,7 @@ class UnreadsSubService(
             // ignore unreads from disabled feeds
             if (delegate.isDisabledFeed(feedId)) continue@feedLoop
             for (newUnread in entry.value) {
+                serverUnreadHashes.add(newUnread[0])
                 // only fetch the reported unreads if we don't already have them
                 if (!oldUnreadHashes.contains(newUnread[0])) {
                     sortationList.add(newUnread)
@@ -80,12 +90,13 @@ class UnreadsSubService(
             }
         }
         Log.i(this, "new unread count: $count")
+        dbHelper.reconcileServerUnreadHashes(serverUnreadHashes, requestStartedAt)
         Log.i(this, "new unreads found: ${sortationList.size}")
         Log.i(this, "unreads to retire: ${oldUnreadHashes.size}")
 
         // any stories that we previously thought to be unread but were not found in the
         // list, mark them read now
-        dbHelper.markStoryHashesRead(oldUnreadHashes)
+        dbHelper.markStoryHashesRead(oldUnreadHashes, requestStartedAt)
 
         currentCoroutineContext().ensureActive()
 
@@ -141,6 +152,7 @@ class UnreadsSubService(
 
             currentCoroutineContext().ensureActive()
             val response = storyApi.getStoriesByHash(hashBatch)
+            currentCoroutineContext().ensureActive()
             if (!SyncServiceUtil.isStoryResponseGood(response)) {
                 Log.e(this, "error fetching unreads batch, abandoning sync.")
                 break@unreadSyncLoop

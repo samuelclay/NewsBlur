@@ -11,6 +11,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
 import com.newsblur.fragment.AddFeedFragment
+import com.newsblur.fragment.ChooseFoldersFragment
 import com.newsblur.fragment.DeleteFeedFragment
 import com.newsblur.fragment.FeedIntelTrainerFragment
 import com.newsblur.fragment.RenameDialogFragment
@@ -75,6 +76,18 @@ class FeedItemsList : ItemsList() {
         }
 
         return when (item.itemId) {
+            R.id.menu_choose_folders -> {
+                ChooseFoldersFragment.newInstance(feed).show(supportFragmentManager, "choose-folders")
+                true
+            }
+            R.id.menu_mute_feed -> {
+                feedUtils.muteFeeds(this, setOf(feed.feedId))
+                true
+            }
+            R.id.menu_unmute_feed -> {
+                feedUtils.unmuteFeeds(this, setOf(feed.feedId))
+                true
+            }
             R.id.menu_delete_feed -> {
                 showDeleteFeedDialog()
                 true
@@ -96,8 +109,12 @@ class FeedItemsList : ItemsList() {
             }
 
             R.id.menu_instafetch_feed -> {
-                feedUtils.instaFetchFeed(this, feed.feedId)
-                finish()
+                if (isTryFeed && syncServiceState.getTryFeedRefreshStatus(fs) != com.newsblur.service.TryFeedRefreshStatus.NONE) {
+                    if (syncServiceState.getTryFeedRefreshStatus(fs) != com.newsblur.service.TryFeedRefreshStatus.FETCHING) restartReadingSession()
+                } else {
+                    feedUtils.instaFetchFeed(this, feed.feedId)
+                    finish()
+                }
                 true
             }
 
@@ -125,6 +142,9 @@ class FeedItemsList : ItemsList() {
     override fun prepareItemListMenuModel(menu: Menu): Boolean {
         super.prepareItemListMenuModel(menu)
         if (!::feed.isInitialized) return true
+        menu.findItem(R.id.menu_mute_feed).isVisible = !isTryFeed && !fs.isFilterSaved && feed.active
+        menu.findItem(R.id.menu_unmute_feed).isVisible = !isTryFeed && !fs.isFilterSaved && !feed.active
+        menu.findItem(R.id.menu_choose_folders).isVisible = !isTryFeed && !fs.isFilterSaved
 
         when {
             feed.isAndroidNotifyUnread() -> {
@@ -271,15 +291,18 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FEED_SET, feedSet)
                     putExtra(EXTRA_STORY_HASH, storyHash)
                     putExtra(EXTRA_AUTO_OPEN_STORY, true)
+                    putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
                 }.also { intent ->
                     context.startActivity(intent)
                 }
         }
 
         @JvmStatic
+        @JvmOverloads
         fun startTryFeedActivity(
             context: Context,
             feed: Feed,
+            storyHash: String? = null,
         ) {
             Intent(context, FeedItemsList::class.java)
                 .apply {
@@ -288,6 +311,11 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FEED_SET, FeedSet.singleFeed(feed.feedId))
                     putExtra(EXTRA_IS_TRY_FEED, true)
                     putExtra(EXTRA_TRY_FEED_URL, feed.address)
+                    if (!storyHash.isNullOrBlank()) {
+                        putExtra(EXTRA_STORY_HASH, storyHash)
+                        putExtra(EXTRA_AUTO_OPEN_STORY, true)
+                        putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
+                    }
                 }.also { intent ->
                     context.startActivity(intent)
                 }

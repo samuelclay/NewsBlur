@@ -6,6 +6,12 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <com.newsblur.view.StoryLoadingBar
+        android:id="@+id/bottom_loading_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/fleuron"
         android:layout_width="wrap_content"

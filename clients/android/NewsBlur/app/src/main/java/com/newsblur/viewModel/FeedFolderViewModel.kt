@@ -29,8 +29,7 @@ class FeedFolderViewModel
                 val folders =
                     dbHelper.getFoldersCursor(cancellationSignal).use { cursor ->
                         generateSequence { if (cursor.moveToNext()) Folder.fromCursor(cursor) else null }
-                            .filter { it.feedIds.isNotEmpty() }
-                            .sortedWith { o1, o2 -> Folder.compareFolderNames(o1.flatName(), o2.flatName()) }
+                            .sortedWith(Folder.FolderComparator)
                             .toList()
                     }
 

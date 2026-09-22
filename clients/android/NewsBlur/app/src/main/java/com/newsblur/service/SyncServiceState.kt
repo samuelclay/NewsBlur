@@ -8,6 +8,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.Log
 import com.newsblur.util.ReadingAction
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.concurrent.Volatile
@@ -25,6 +26,7 @@ interface SyncServiceState {
 
     var pendingFeed: FeedSet?
     var pendingFeedTarget: Int
+    val readingSessionGeneration: Long
 
     /**
      * Feed to reset to zero-state, so it is fetched fresh, presumably with new filters.
@@ -88,6 +90,10 @@ interface SyncServiceState {
     fun isFeedSetSyncing(fs: FeedSet?): Boolean
 
     fun isFeedSetStoriesFresh(fs: FeedSet?): Boolean
+
+    fun getTryFeedRefreshStatus(fs: FeedSet?): TryFeedRefreshStatus
+
+    fun setTryFeedRefreshStatus(fs: FeedSet, status: TryFeedRefreshStatus)
 
     fun getPendingInfo(): String
 
@@ -155,7 +161,22 @@ class DefaultSyncServiceState
         override var lastApiFailure: Long = 0L
         override var lastActionCount: Int = 0
 
+        private val sessionGeneration = AtomicLong()
+        @Volatile
+        private var tryFeedRefresh: Pair<FeedSet, TryFeedRefreshStatus>? = null
+        override val readingSessionGeneration: Long get() = sessionGeneration.get()
+
+        @Volatile
         override var pendingFeed: FeedSet? = null
+            set(value) {
+                synchronized(pendingFeedMutex) {
+                    if (field != value) {
+                        sessionGeneration.incrementAndGet()
+                        if (value != null) tryFeedRefresh = null
+                    }
+                    field = value
+                }
+            }
         override var pendingFeedTarget: Int = 0
 
         @Volatile
@@ -215,9 +236,13 @@ class DefaultSyncServiceState
         }
 
         override fun resetFetchState(fs: FeedSet?) {
-            synchronized(resetFeedMutex) {
-                Log.d(SyncServiceState::class.java.name, "requesting feed fetch state reset")
-                resetFeed = fs
+            synchronized(pendingFeedMutex) {
+                synchronized(resetFeedMutex) {
+                    tryFeedRefresh = null
+                    sessionGeneration.incrementAndGet()
+                    Log.d(SyncServiceState::class.java.name, "requesting feed fetch state reset")
+                    resetFeed = fs
+                }
             }
         }
 
@@ -234,6 +259,13 @@ class DefaultSyncServiceState
         override fun isFeedSetSyncing(fs: FeedSet?) = fs == pendingFeed
 
         override fun isFeedSetStoriesFresh(fs: FeedSet?) = (_feedStoriesSeen[fs] ?: 0) >= 1
+
+        override fun getTryFeedRefreshStatus(fs: FeedSet?): TryFeedRefreshStatus =
+            tryFeedRefresh?.takeIf { it.first == fs }?.second ?: TryFeedRefreshStatus.NONE
+
+        override fun setTryFeedRefreshStatus(fs: FeedSet, status: TryFeedRefreshStatus) {
+            tryFeedRefresh = FeedSet.fromCompactSerial(fs.toCompactSerial()) to status
+        }
 
         override fun getPendingInfo(): String =
             StringBuilder()
@@ -289,46 +321,46 @@ class DefaultSyncServiceState
             callerSeen: Int?,
         ): Boolean {
             synchronized(pendingFeedMutex) {
-                if (exhaustedFeeds.contains(fs) && (fs == lastFeedSet && (callerSeen != null))) {
+                val samePendingFeed = fs == pendingFeed
+                val requiresSession = fs != lastFeedSet || resetFeed == fs || (pendingFeed != null && !samePendingFeed)
+                if (exhaustedFeeds.contains(fs) && !requiresSession && callerSeen != null) {
                     android.util.Log.d(SyncServiceState::class.java.name, "rejecting request for feedset that is exhausted")
                     return false
                 }
-                var alreadyPending = 0
-                if (fs == pendingFeed) alreadyPending = pendingFeedTarget
-                var alreadySeen = feedStoriesSeen[fs]
-                if (alreadySeen == null) alreadySeen = 0
+                val existingTarget = if (samePendingFeed) pendingFeedTarget else 0
+                var alreadyPending = existingTarget
+                var alreadySeen = feedStoriesSeen[fs] ?: 0
                 if ((callerSeen != null) && (callerSeen < alreadySeen)) {
-                    // the caller is probably filtering and thinks they have fewer than we do, so
-                    // update our count to agree with them, and force-allow another requet
+                    // SyncServiceState.kt counts visible stories when filtering hides fetched rows.
                     alreadySeen = callerSeen
                     _feedStoriesSeen.put(fs, callerSeen)
                     alreadyPending = 0
                 }
 
-                pendingFeed = fs
-                pendingFeedTarget = desiredStoryCount
+                if (!requiresSession && (desiredStoryCount <= alreadySeen || desiredStoryCount <= alreadyPending)) {
+                    return false
+                }
 
-                if (fs != lastFeedSet) {
-                    return true
-                }
-                if (desiredStoryCount <= alreadySeen) {
-                    return false
-                }
-                if (desiredStoryCount <= alreadyPending) {
-                    return false
-                }
+                // SyncServiceState.kt only advertises loading when scheduling work and retains
+                // the largest target while the same feed is already being fetched.
+                pendingFeed = fs
+                pendingFeedTarget = maxOf(desiredStoryCount, existingTarget)
             }
             return true
         }
 
         override fun clearState() {
-            pendingFeed = null
-            resetFeed = null
-            _followupActions.clear()
-            _recountCandidates.clear()
-            _exhaustedFeeds.clear()
-            _feedPagesSeen.clear()
-            _feedStoriesSeen.clear()
+            synchronized(pendingFeedMutex) {
+                tryFeedRefresh = null
+                sessionGeneration.incrementAndGet()
+                pendingFeed = null
+                resetFeed = null
+                _followupActions.clear()
+                _recountCandidates.clear()
+                _exhaustedFeeds.clear()
+                _feedPagesSeen.clear()
+                _feedStoriesSeen.clear()
+            }
 
             UnreadsSubService.clear()
             ImagePrefetchSubService.clear()
@@ -383,6 +415,8 @@ class DefaultSyncServiceState
         override fun resetReadingSession(dbHelper: BlurDatabaseHelper) {
             Log.d(SyncServiceState::class.simpleName, "requesting reading session reset")
             synchronized(pendingFeedMutex) {
+                tryFeedRefresh = null
+                sessionGeneration.incrementAndGet()
                 pendingFeed = null
                 dbHelper.sessionFeedSet = null
             }

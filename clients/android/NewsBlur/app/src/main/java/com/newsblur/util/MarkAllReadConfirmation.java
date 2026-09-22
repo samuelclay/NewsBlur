@@ -17,7 +17,9 @@ public enum MarkAllReadConfirmation {
     }
 
     public boolean feedSetRequiresConfirmation(FeedSet fs) {
-        if (fs.isFolder() || fs.isAllNormal()) {
+        // MarkAllReadConfirmation.java always confirms the account-wide action.
+        if (fs.isAllNormal()) return true;
+        if (fs.isFolder()) {
             return this != NONE;
         } else {
             return this == FEED_AND_FOLDER;
