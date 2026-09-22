@@ -1292,6 +1292,8 @@ import XCTest
         feed.eventTimes.removeAll()
         let titlesFinished = expectation(description: "The native title reveal animation completes")
         feed.titleScrollDidFinish = { titlesFinished.fulfill() }
+        let articleStart = articlePages[0].view.convert(CGPoint.zero, to: window).x
+        let articleEnd = articleStart - pages.scrollView.bounds.width
         let nextTappedAt = CACurrentMediaTime()
         // StoryDetailLoadingTests.swift drives the same UIButton action and real pager/list/read callbacks as the landscape app.
         next.sendActions(for: .touchUpInside)
@@ -1315,7 +1317,10 @@ import XCTest
         XCTAssertEqual(table.rowReloads, 0, "The Next read update must preserve the ongoing title reveal")
         XCTAssertGreaterThan(Set(titles.offsets.map { Int($0.rounded()) }).count, 5)
         XCTAssertGreaterThan(Set(titles.cellPositions.map { Int($0.rounded()) }).count, 5)
-        XCTAssertGreaterThan(Set(motion.positions.map { Int($0.rounded()) }).count, 5, "The article must keep its normal page animation")
+        let articleMotionFailures = StorySelectionFrameRecorder.motionFailures(
+            positions: motion.positions, times: motion.sampleTimes, frameDurations: motion.frameDurations,
+            start: articleStart, end: articleEnd)
+        XCTAssertTrue(articleMotionFailures.isEmpty, "The article must keep its normal page animation: \(articleMotionFailures)")
         for (earlier, later) in zip(titles.offsets, titles.offsets.dropFirst()) {
             XCTAssertGreaterThanOrEqual(later + 0.5, earlier, "Title table bounds must not jump backwards")
         }
@@ -1338,7 +1343,31 @@ import XCTest
         let body = try await pages.currentPage.webView.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Prepared article 4") == true)
         attachPanes("Landscape after Next: fourth title selected and read beside the actual fourth article")
-        print("NEXT_BUTTON_LANDSCAPE reloads=\(table.rowReloads) callbacks=\(feed.events) callback_times=\(feed.eventTimes.map { $0 - nextTappedAt }) times=\(titles.sampleTimes.map { $0 - nextTappedAt }) table=\(titles.offsets) drawn_cell=\(titles.cellPositions) article=\(motion.positions)")
+        print("NEXT_BUTTON_LANDSCAPE reloads=\(table.rowReloads) callbacks=\(feed.events) callback_times=\(feed.eventTimes.map { $0 - nextTappedAt }) times=\(titles.sampleTimes.map { $0 - nextTappedAt }) table=\(titles.offsets) drawn_cell=\(titles.cellPositions) article=\(motion.positions) article_times=\(motion.sampleTimes.map { $0 - nextTappedAt })")
+    }
+
+    func test_nextButtonArticleMotionAcceptsHostedSamplingButRejectsMissingMotionAndSnaps() {
+        // StoryDetailLoadingTests.swift pairs the failed hosted run's post-tap article positions
+        // with its companion title display-link timestamps; the 176 ms callback gap skipped frames.
+        let positions: [CGFloat] = [440, 350.66666666666674, 205.66666666666674, -206, -220]
+        let times: [CFTimeInterval] = [-0.0006279166666445235, 0.09456354166673009,
+                                      0.13604666666674348, 0.3118309166668496, 0.34675745833351357]
+        func failures(_ positions: [CGFloat], _ times: [CFTimeInterval]) -> [String] {
+            StorySelectionFrameRecorder.motionFailures(
+                positions: positions, times: times,
+                frameDurations: Array(repeating: 1.0 / 60, count: positions.count), start: 440, end: -220)
+        }
+        XCTAssertTrue(failures(positions, times).isEmpty)
+        XCTAssertTrue(failures([440, -220], [0, 0.35]).contains("Missing intermediate motion"),
+                      "Correct endpoints alone cannot prove an animation")
+        XCTAssertTrue(failures([440, 205, -220], [0, 0.175, 0.35]).contains("Missing intermediate motion"),
+                      "One intermediate snapshot cannot prove continuous motion")
+        var snappedTimes = times
+        snappedTimes[3] = times[2] + 1.0 / 60
+        XCTAssertTrue(failures(positions, snappedTimes).contains { $0.hasPrefix("Jump at sample 3:") },
+                      "A one-frame snap must fail even with the expected endpoints and multiple intermediate positions")
+        XCTAssertTrue(failures([440, 440], [0, 0.35]).contains("Wrong endpoint"))
+        XCTAssertTrue(failures([440, 205, 350, -206, -220], times).contains("Wrong direction"))
     }
 
     func test_nextButtonMotionSamplingAllowsOneDisplayFrameButRejectsASnapAfterADelayedCallback() {
@@ -3163,6 +3192,33 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     private let horizontal: Bool
     private var displayLink: CADisplayLink?
     private(set) var positions: [CGFloat] = []
+    private(set) var sampleTimes: [CFTimeInterval] = []
+    private(set) var frameDurations: [CFTimeInterval] = []
+
+    static func motionFailures(positions: [CGFloat], times: [CFTimeInterval],
+                               frameDurations: [CFTimeInterval], start: CGFloat, end: CGFloat) -> [String] {
+        guard positions.count > 1, times.count == positions.count, frameDurations.count == positions.count else {
+            return ["Missing motion samples"]
+        }
+        var failures: [String] = []
+        if abs(positions[0] - start) > 0.5 { failures.append("Wrong start") }
+        if abs(positions[positions.count - 1] - end) > 0.5 { failures.append("Wrong endpoint") }
+        let lower = min(start, end), upper = max(start, end)
+        let intermediate = positions.filter { $0 > lower + 0.5 && $0 < upper - 0.5 }
+        if Set(intermediate.map { Int($0.rounded()) }).count < 2 { failures.append("Missing intermediate motion") }
+        let direction: CGFloat = end > start ? 1 : -1
+        for index in 1..<positions.count {
+            let step = positions[index] - positions[index - 1]
+            if step * direction < -0.5 { failures.append("Wrong direction") }
+            let elapsed = max(0, times[index] - times[index - 1])
+            let maximumStep = NextButtonReadingRecorder.maximumContinuousStep(
+                travel: abs(end - start), elapsed: elapsed, frameDuration: frameDurations[index])
+            if abs(step) > maximumStep {
+                failures.append("Jump at sample \(index): \(positions[index - 1]) → \(positions[index]) in \(elapsed)s")
+            }
+        }
+        return failures
+    }
 
     init(view: UIView, window: UIWindow, horizontal: Bool) {
         observedView = view
@@ -3171,18 +3227,24 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     }
 
     func start() {
-        recordFrame()
-        displayLink = CADisplayLink(target: self, selector: #selector(recordFrame))
+        recordFrame(at: CACurrentMediaTime(), frameDuration: 1.0 / 60)
+        displayLink = CADisplayLink(target: self, selector: #selector(sample(_:)))
         displayLink?.add(to: .main, forMode: .common)
     }
 
     func stop() { displayLink?.invalidate(); displayLink = nil }
 
-    @objc private func recordFrame() {
+    @objc private func sample(_ link: CADisplayLink) {
+        recordFrame(at: link.timestamp, frameDuration: link.duration)
+    }
+
+    private func recordFrame(at time: CFTimeInterval, frameDuration: CFTimeInterval) {
         // StoryDetailLoadingTests.swift measures the actual presented article position through its animated ancestors.
         guard let layer = observedView?.layer.presentation(), let root = window?.layer.presentation() else { return }
         let point = layer.convert(CGPoint.zero, to: root)
         positions.append(horizontal ? point.x : point.y)
+        sampleTimes.append(time)
+        frameDurations.append(frameDuration)
     }
 }
 
