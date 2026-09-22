@@ -525,7 +525,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (BOOL)usesVerticalFeedToolbar {
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
     if (@available(iOS 27.1, *)) {
-        return self.traitCollection.verticalBarEdge != UIVerticalBarEdgeUnspecified;
+        // FeedsObjCViewController.m can retain expanded traits offscreen after a fold; the navigation container already owns the destination bar layout.
+        UITraitCollection *traits = self.navigationController ? self.navigationController.traitCollection : self.traitCollection;
+        return traits.verticalBarEdge != UIVerticalBarEdgeUnspecified;
     }
 #endif
     return NO;
