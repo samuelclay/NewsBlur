@@ -90,7 +90,10 @@ class UnreadsSubService(
             }
         }
         Log.i(this, "new unread count: $count")
-        dbHelper.reconcileServerUnreadHashes(serverUnreadHashes, requestStartedAt)
+        // ClusterReadStore.kt also retires embedded children, whose feeds may be absent from this response.
+        dbHelper.reconcileServerUnreadHashes(serverUnreadHashes, requestStartedAt) { feedId ->
+            !delegate.isOrphanFeed(feedId) && !delegate.isDisabledFeed(feedId)
+        }
         Log.i(this, "new unreads found: ${sortationList.size}")
         Log.i(this, "unreads to retire: ${oldUnreadHashes.size}")
 
