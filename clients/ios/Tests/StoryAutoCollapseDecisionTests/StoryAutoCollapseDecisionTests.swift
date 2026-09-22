@@ -951,8 +951,8 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
-    func test_overlay_story_selection_disables_animation_while_sidebar_is_visible() {
-        XCTAssertFalse(
+    func test_overlay_story_selection_keeps_animation_while_sidebar_is_visible() {
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
@@ -960,7 +960,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 isMac: false
             )
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
@@ -968,7 +968,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 isMac: false
             )
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
@@ -976,7 +976,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 isMac: false
             )
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,

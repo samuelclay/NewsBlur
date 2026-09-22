@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>web-feed-ai-analyze</title>
+    <g id="web-feed-ai-analyze" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(12, 8)" fill-rule="nonzero">
+            <!-- Document outline -->
+            <path d="M14,0 C6.268,0 0,6.268 0,14 L0,118 C0,125.732 6.268,132 14,132 L112,132 C119.732,132 126,125.732 126,118 L126,14 C126,6.268 119.732,0 112,0 L14,0 Z M14,8 L112,8 C115.314,8 118,10.686 118,14 L118,118 C118,121.314 115.314,124 112,124 L14,124 C10.686,124 8,121.314 8,118 L8,14 C8,10.686 10.686,8 14,8 Z" fill="#95968E"/>
+
+            <!-- Story row 1 -->
+            <rect x="20" y="22" width="20" height="20" rx="4" fill="#95968E"/>
+            <rect x="48" y="24" width="56" height="6" rx="3" fill="#95968E"/>
+            <rect x="48" y="34" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.5"/>
+
+            <!-- Story row 2 (highlighted - blue selection) -->
+            <rect x="14" y="52" width="98" height="36" rx="6" fill="#5C89C9" opacity="0.15"/>
+            <rect x="20" y="58" width="20" height="20" rx="4" fill="#5C89C9"/>
+            <rect x="48" y="60" width="56" height="6" rx="3" fill="#5C89C9"/>
+            <rect x="48" y="70" width="38" height="5" rx="2.5" fill="#5C89C9" opacity="0.6"/>
+
+            <!-- Story row 3 -->
+            <rect x="20" y="98" width="20" height="20" rx="4" fill="#95968E"/>
+            <rect x="48" y="100" width="56" height="6" rx="3" fill="#95968E"/>
+            <rect x="48" y="110" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.5"/>
+        </g>
+    </g>
+</svg>

@@ -39,6 +39,30 @@ body {
 .NB-story-permalink {
     color: lightgray;
 }
+
+.NB-story-url {
+    background-color: #333333;
+    color: #cccccc;
+}
+
+.NB-story-url.NB-score-1 {
+    background-color: #29442b;
+    color: #cfe8c6;
+}
+
+.NB-story-url.NB-score-1 .NB-story-url-matched {
+    color: #9de58d;
+}
+
+.NB-story-url.NB-score--1 {
+    background-color: #512d31;
+    color: #f0c5c7;
+}
+
+.NB-story-url.NB-score--1 .NB-story-url-matched {
+    color: #ffa3a5;
+}
+
 .NB-story-toggle-changes {
     color: #c6c6c6;
     text-shadow: 0 1px 0 rgba(28, 28, 28, .1);

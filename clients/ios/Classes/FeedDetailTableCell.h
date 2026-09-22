@@ -10,6 +10,8 @@
 #import "NewsBlurAppDelegate.h"
 #import "NBSwipeableCell.h"
 
+@class StoryTextLayoutCache;
+
 typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 {
     FeedDetailTextSizeTitleOnly = 0,
@@ -49,6 +51,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 
 @property (nonatomic) NSString *siteTitle;
 @property (nonatomic) UIImage *siteFavicon;
+- (void)setPreparedSiteFavicon:(UIImage *)image;
 
 @property (readwrite) int storyScore;
 @property (nonatomic, readwrite) BOOL isSaved;
@@ -67,6 +70,8 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (nonatomic) UIColor *feedColorBarTopBorder;
 
 @property (readwrite) BOOL isRead;
+@property (nonatomic, readonly) BOOL readStateAnimationsEnabled;
+- (void)setRead:(BOOL)read animated:(BOOL)animated;
 @property (readwrite) BOOL isReadAvailable;
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
@@ -75,6 +80,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL hasAlpha;
 
 @property (nonatomic) FeedDetailTextSize textSize;
+@property (nonatomic, strong) StoryTextLayoutCache *storyTextLayoutCache;
 
 - (void)setupGestures;
 

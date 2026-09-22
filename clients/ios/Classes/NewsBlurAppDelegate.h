@@ -51,6 +51,7 @@
 @class PremiumViewController;
 @class WKWebView;
 @class BGAppRefreshTask;
+@class FeedIconPreparationRequest;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -289,6 +290,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
 @property (nonatomic) NSOperationQueue *offlineQueue;
+@property (atomic) BOOL clearingOfflineCache;
 @property (nonatomic) NSOperationQueue *offlineCleaningQueue;
 @property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
@@ -304,6 +306,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
 - (void)prepareViewControllers;
+- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void (^)(void))completionHandler;
 
 - (BOOL)openURL:(NSURL *)url;
 
@@ -361,6 +364,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds;
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds sourceView:(UIView *)sourceView;
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress;
+- (void)openDiscoverSitesView;
 - (void)cleanUpTryFeed;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
@@ -414,6 +418,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openDailyBriefingWithStoryHash:(NSString *)storyHash;
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
+- (void)finishAuthentication;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)showOriginalStory:(NSURL *)url sender:(id)sender;
@@ -518,6 +523,11 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (UIImage *)folderIcon:(NSString *)folder;
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename;
+- (UIImage *)preparedFavicon:(NSString *)filename size:(CGSize)size;
+- (void)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests;
+- (NSObject *)prepareFavicons:(NSArray<FeedIconPreparationRequest *> *)requests maximumRequestCount:(NSInteger)maximumRequestCount;
+- (void)cancelFaviconPreparation;
+- (void)cancelFaviconPreparation:(NSObject *)preparation;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
 
@@ -576,10 +586,19 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)fetchTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId checkCache:(BOOL)checkCache withCallback:(void(^)(NSString *))callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash;
+- (void)prefetchCachedStoryImageForStoryHash:(NSString *)storyHash operation:(NSOperation *)operation;
 - (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash;
+- (BOOL)cachedStoryImageForStoryHash:(NSString *)storyHash matchesSourceURLs:(NSArray *)sourceURLs;
+- (NSUInteger)beginStoryImageSourceRefresh;
+- (NSDictionary *)storyImageRequestForStoryHash:(NSString *)storyHash sourceURLs:(NSArray *)sourceURLs minimumRevision:(NSUInteger)minimumRevision;
+- (BOOL)isCurrentStoryImageRequest:(NSDictionary *)request;
+- (BOOL)cacheStoryImage:(UIImage *)image forRequest:(NSDictionary *)request;
 - (void)cacheStoryImagePlaceholder:(NSString *)storyHash;
+- (void)removeCachedStoryImageForStoryHash:(NSString *)storyHash;
+- (void)removeAllCachedStoryImages;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;
+- (void)deleteAllCachedImagesWithCompletion:(void (^ _Nonnull)(BOOL success))completion NS_SWIFT_NAME(deleteAllCachedImages(completion:));
 
 @end
 

@@ -37,7 +37,7 @@ jobs:
 
       - name: Claude code review
         id: claude_review
-        uses: anthropics/claude-code-action@c81e3bc69d1b18badbb63ba39581218f02421678 # v1.0.201
+        uses: anthropics/claude-code-action@a874e9ecd7bb36efdad65429c6b35815f5a08f10 # v1.0.210
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           # The review text is public on the PR anyway; full output puts the API error in
