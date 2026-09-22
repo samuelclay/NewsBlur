@@ -182,11 +182,16 @@ final class Test_DuoLiveUI: XCTestCase {
         folder.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let list = app.tables["story-titles-list"]
         XCTAssertTrue(list.waitForExistence(timeout: 15))
-        let row = list.cells.matching(NSPredicate(format: "identifier BEGINSWITH 'story-row-'"))
-            .allElementsBoundByIndex.first { list.frame.contains($0.frame) && $0.frame.height > 20 }
-        let selected = try XCTUnwrap(row)
-        selected.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let rows = list.cells.matching(NSPredicate(format: "identifier BEGINSWITH 'story-row-'"))
+        func visibleStoryRow() -> XCUIElement? {
+            rows.allElementsBoundByIndex.first { list.frame.contains($0.frame) && $0.frame.height > 20 }
+        }
+        let rowsReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in visibleStoryRow() != nil }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [rowsReady], timeout: 20), .completed,
+                       "All Site Stories must render a visible story row before selecting the reader")
+        let selected = try XCTUnwrap(visibleStoryRow())
         let hash = String(selected.identifier.dropFirst("story-row-".count))
+        selected.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let probe = app.staticTexts["story-current-story"].firstMatch
         try waitForLiveReader(probe, expectedHash: hash)
         let outgoingTitle = probe.label
