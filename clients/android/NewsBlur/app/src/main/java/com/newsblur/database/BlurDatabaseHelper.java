@@ -874,8 +874,10 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                int retirementCandidates = new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible);
-                Log.i(getClass().getName(), "embedded unread retirement candidates: " + retirementCandidates);
+                ClusterReadStore.UnreadReconciliationStats stats =
+                        new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible);
+                Log.i(getClass().getName(), "embedded unread candidates inspected: " + stats.getInspectedChildCount()
+                        + ", retirement candidates: " + stats.getRetirementCandidateCount());
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();

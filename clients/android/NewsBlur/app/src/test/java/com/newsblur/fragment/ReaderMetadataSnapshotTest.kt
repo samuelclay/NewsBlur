@@ -13,14 +13,14 @@ class ReaderMetadataSnapshotTest {
             val story = Story().apply { storyHash = "1:parent"; clusterStories = arrayOf(child) }
             val unread = ReaderClusterSnapshot(story, true, theme)
             story.read = true
-            assertEquals("Reading the parent alone must not rebuild its unread child", unread, ReaderClusterSnapshot(story, true, theme))
+            assertEquals("theme=$theme: Reading the parent alone must not rebuild its unread child", unread, ReaderClusterSnapshot(story, true, theme))
             child.read = true
             val read = ReaderClusterSnapshot(story, true, theme)
-            assertNotEquals(unread, read)
+            assertNotEquals("theme=$theme: Reading the child must invalidate the footer", unread, read)
             child.read = false
             val explicitlyUnread = ReaderClusterSnapshot(story, true, theme)
-            assertNotEquals("An explicit unread action must invalidate the footer", read, explicitlyUnread)
-            assertEquals(unread, explicitlyUnread)
+            assertNotEquals("theme=$theme: An explicit unread action must invalidate the footer", read, explicitlyUnread)
+            assertEquals("theme=$theme: Marking unread must restore the original child state", unread, explicitlyUnread)
         }
     }
 
