@@ -70,12 +70,14 @@ class IPRateTracker:
             self._redis = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         return self._redis
 
-    def get_current_window(self):
+    def get_current_window(self, now=None):
         """
-        Return current 5-minute window as string (e.g., '202512161430').
-        Windows align to 5-minute boundaries (00, 05, 10, 15, ...).
+        Return the 5-minute window for `now` (default: current UTC time) as a string
+        (e.g., '202512161430'). Windows align to 5-minute boundaries (00, 05, 10, 15, ...).
+        Callers that also need seconds_until_next_window() pass the same `now` to both.
         """
-        now = datetime.datetime.utcnow()
+        if now is None:
+            now = datetime.datetime.utcnow()
         # Round down to nearest 5 minutes
         minute = (now.minute // self.WINDOW_MINUTES) * self.WINDOW_MINUTES
         window_time = now.replace(minute=minute, second=0, microsecond=0)

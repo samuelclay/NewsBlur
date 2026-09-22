@@ -110,6 +110,20 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
         self.assertEqual(response.status_code, 429)
         self.assertEqual(response["Retry-After"], "45")
 
+    def test_two_old_buckets_must_age_out(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=5, requests=7)
+        # 14:25 (3) leaves the window at 14:31:00 but 4 + 3 still hits the limit of seven;
+        # only once 14:26 (3) leaves at 14:32:00 does the window drop under it.
+        cache.set("rl-test-session-202609221425", 3, 600)
+        cache.set("rl-test-session-202609221426", 3, 600)
+        cache.set("rl-test-session-202609221430", 4, 600)
+        with patch("utils.ratelimit.datetime") as mock_datetime:
+            mock_datetime.now.return_value = frozen
+            response = view(self.make_request())
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response["Retry-After"], str(60 + 45))
+
     def test_allowed_request_has_no_retry_after(self):
         view = self.decorated_view(minutes=1, requests=5)
         response = view(self.make_request())

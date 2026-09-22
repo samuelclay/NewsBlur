@@ -34,8 +34,14 @@ class Test_IPRateLimitRetryAfter(SimpleTestCase):
         with patch.object(IPRateTracker, "track_request"), patch.object(
             IPRateTracker, "track_would_be_denied"
         ), patch.object(IPRateTracker, "is_rate_limited", return_value=True), patch.object(
+            IPRateTracker, "get_current_window", return_value="202609221430"
+        ) as window_mock, patch.object(
             IPRateTracker, "seconds_until_next_window", return_value=170
-        ):
+        ) as wait_mock:
             response = middleware(request)
         self.assertEqual(response.status_code, 429)
         self.assertEqual(response["Retry-After"], "170")
+        # The window that was checked and the wait that was reported come from one clock read,
+        # so a 5-minute boundary between them cannot report a wait for a block already lifted.
+        self.assertIsInstance(wait_mock.call_args.args[0], datetime.datetime)
+        self.assertEqual(window_mock.call_args.args, wait_mock.call_args.args)

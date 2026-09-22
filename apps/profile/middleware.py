@@ -865,9 +865,12 @@ class IPRateTrackingMiddleware:
                 # Track the request
                 self.tracker.track_request(request, endpoint)
 
-                # Check if rate limit would be exceeded
+                # Check if rate limit would be exceeded. One clock read covers both the window
+                # being checked and the Retry-After below, so a 5-minute boundary landing between
+                # them cannot report a wait for a block that has already lifted.
                 ip = self.tracker.get_ip(request)
-                if self.tracker.is_rate_limited(ip):
+                now = datetime.datetime.utcnow()
+                if self.tracker.is_rate_limited(ip, window=self.tracker.get_current_window(now)):
                     full_path = request.get_full_path()
                     user_info = ""
                     if hasattr(request, "user") and request.user.is_authenticated:
@@ -896,7 +899,7 @@ class IPRateTrackingMiddleware:
                         )
                         # The block lasts until the 5-minute window rolls over, so say so
                         # and clients can wait instead of retrying into it. apps/profile/middleware.py
-                        response["Retry-After"] = str(self.tracker.seconds_until_next_window())
+                        response["Retry-After"] = str(self.tracker.seconds_until_next_window(now))
                         return response
             except Exception as e:
                 # Don't let tracking errors break the request
