@@ -146,16 +146,16 @@
     "13839": {
       "title": "Unable to access API, possibly blocked?",
       "url": "https://forum.newsblur.com/t/unable-to-access-api-possibly-blocked/13839",
-      "status": "tier2-pending",
+      "status": "reply-drafted",
       "tier": 2,
-      "handled_at": "2026-09-18T16:08:30Z",
-      "last_posted_at": "2026-09-18T15:52:49.552Z",
+      "handled_at": "2026-09-18T23:44:41Z",
+      "last_posted_at": "2026-09-18T21:17:30.169Z",
       "pr": null,
       "branch": null,
       "worktree": null,
-      "note": "Source IP 172.237.159.95 (Akamai/Linode) is explicitly dropped by ufw on hwww (rule #1, ufw-user-input DROP). /etc/ufw/user.rules mtime 2026-07-09 12:24:22 EDT is the only timestamp; origin of the ban not recoverable. Adjacent commit b983bb005 (2026-07-10) added 'ruby' to the API UA list in utils/ip_rate_tracker.py. haproxy has no source-IP rules; app-level AttackDetector bans are 24h redis TTLs, so the ufw rule is the only block. Live sample 2026-09-18 16:04Z: 11 dropped packets in 30s. Prometheus (retained back to July) shows no spike on 2026-07-09 in reader endpoints, login views, or total Django requests.",
-      "reply": null,
-      "question": "Forum #13839 (EnzoReaderRSS): Ruby-based reader syncing 20 NewsBlur accounts from one Linode IP 172.237.159.95 gets TCP open timeouts on POST /api/login. Confirmed hwww has 'ufw deny from 172.237.159.95' as rule #1, inserted around 2026-07-09 12:24 EDT (user.rules mtime); no record of why (auth.log rotated, journal starts Jul 22, no shell history, no Claude session). Next day commit b983bb005 'Classify Ruby clients as API traffic'. Prometheus shows no spike on Jul 9. IP now sends ~22 dropped packets/min, 1.56M dropped total. Nothing else blocks it. Options: (a) unblock now with 'sudo ufw delete deny from 172.237.159.95' on hwww and reply with rate expectations; (b) keep the block and ask them for their polling pattern first; (c) you remember the reason and will handle it."
+      "note": "Source IP 172.237.159.95 (Akamai/Linode) is explicitly dropped by ufw on hwww (rule #1, ufw-user-input DROP). /etc/ufw/user.rules mtime 2026-07-09 12:24:22 EDT is the only timestamp; origin of the ban not recoverable. Adjacent commit b983bb005 (2026-07-10) added 'ruby' to the API UA list in utils/ip_rate_tracker.py. haproxy has no source-IP rules; app-level AttackDetector bans are 24h redis TTLs, so the ufw rule is the only block. Live sample 2026-09-18 16:04Z: 11 dropped packets in 30s. Prometheus (retained back to July) shows no spike on 2026-07-09 in reader endpoints, login views, or total Django requests. Sam's decision 2026-09-18: keep the block and ask them for their polling pattern before lifting it. No prod change made. Lifting it later is one command on hwww: sudo ufw delete deny from 172.237.159.95 Sam posted the first reply (post #2). EnzoReaderRSS replied (posts #3, #5): a test container ignoring rate limits was deployed to production in early July (matches the Jul 9 ban); now verified ~75 req/min across 20 accounts, retries at 60s then 60min then discard, honors Retry-After; endpoints are standard reader API calls. Sam approved unblocking 2026-09-18. Ran on hwww: sudo ufw delete deny from 172.237.159.95 (ufw, iptables, nft all clear afterwards; other deny rules untouched). No connections seen from the IP in the first 2 minutes; their retries likely gave up long ago, so the reply asks them to kick off syncs. Second reply drafted, not posted.",
+      "reply": "That all sounds fine, and the timing lines up with a test container ignoring limits. I've removed the block, so connections from 172.237.159.95 will go through now. Your current settings are good: 75 requests a minute across all accounts is under the 100 a minute per IP that our tracker flags, and retrying once after 60 seconds and once after an hour before giving up is exactly what I'd want. Two small things. A session cookie from /api/login is good for years, so there's no need to log in on every sync. And since your retries gave up long ago, you'll probably need to kick off syncs again on your side. If anything looks off once you reconnect, post here.",
+      "question": null
     },
     "13837": {
       "title": "Android: Restore mark older/newer read options for long press",
