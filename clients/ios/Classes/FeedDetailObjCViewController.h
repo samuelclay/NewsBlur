@@ -15,6 +15,7 @@
 
 @class MCSwipeTableViewCell;
 @class StoryTitlesHeaderBar;
+@class StoryFirstPageLoad;
 
 @interface FeedDetailObjCViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
@@ -48,6 +49,8 @@
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
+
+- (void)updateStoryTitleSwipePreference;
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic) NSIndexPath *swipingIndexPath;
@@ -90,10 +93,17 @@
 - (void)reloadWithSizing;
 - (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
+- (StoryFirstPageLoad *)prepareCachedFirstPage;
+- (void)beginExplicitFeedSelection;
+- (BOOL)isCurrentFirstPageLoad:(StoryFirstPageLoad *)load;
+- (BOOL)hasRetainedFirstPageStory;
+- (NSInteger)consumeRetainedFirstPageStoryInDirection:(NSInteger)direction;
+- (void)resetStoryImageSources;
 - (void)reloadStories;
 - (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;
 - (void)fetchNextPage:(void(^)(void))callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback;
+- (void)finishedLoadingFeed:(NSDictionary *)results feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId;
 - (void)loadOfflineStories;
 - (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback;
@@ -140,6 +150,7 @@
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (IBAction)instafetchFeed;
+- (void)finishRefresh;
 - (void)changeActiveStoryTitleCellLayout;
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;

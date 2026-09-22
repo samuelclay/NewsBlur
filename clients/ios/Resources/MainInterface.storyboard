@@ -869,7 +869,7 @@
         <!--Navigation Controller-->
         <scene sceneID="gvC-iq-nYU">
             <objects>
-                <navigationController storyboardIdentifier="FeedsNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TEt-aw-KDr" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="FeedsNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TEt-aw-KDr" customClass="CompactPhoneNavigationController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="FYM-Eb-jEE">
                         <rect key="frame" x="0.0" y="32" width="320" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>

@@ -43,6 +43,7 @@
         [urls count] == 0) {
         NSLog(@"Finished caching images. %ld total", (long)self.appDelegate.totalUncachedImagesCount);
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
             [self.appDelegate.feedsViewController showDoneNotifier];
             [self.appDelegate cleanImageCache];
             [self.appDelegate finishBackground];
@@ -52,6 +53,7 @@
 
     if (![self.appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
             [self.appDelegate.feedsViewController showDoneNotifier];
         });
         return NO;
@@ -153,6 +155,7 @@
                           (float)appDelegate.totalUncachedImagesCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
         [self.appDelegate.feedsViewController showCachingNotifier:@"Images" progress:progress hoursBack:hours];
     });
 }
@@ -163,50 +166,54 @@
         return;
     }
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
-                                             (unsigned long)NULL), ^{
-        
-        NSData *responseData = UIImageJPEGRepresentation(image, 0.6);
-//        NSString *md5Url = [Utilities md5:imageUrl storyHash:storyHash];
-        NSString *md5Url = [Utilities md5:imageUrl];
-//            NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
-        
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-        NSString *fullPath = [[cacheDirectory stringByAppendingPathComponent:md5Url] stringByAppendingPathExtension:@"jpeg"];
-        
-        [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
-        
-        NSLog(@"📚 stored storyHash: %@ imageURL: %@ cachedURL: %@", storyHash, imageUrl, fullPath);
-        
-        [self.appDelegate.database inDatabase:^(FMDatabase *db) {
-            [db executeUpdate:@"UPDATE cached_images SET "
-             "image_cached = 1 WHERE story_hash = ?",
-             storyHash];
-        }];
-        
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
-            if (storyTimestamp > self.appDelegate.latestCachedImageDate) {
-                self.appDelegate.latestCachedImageDate = storyTimestamp;
-            }
-        } else {
-            if (!self.appDelegate.latestCachedImageDate || storyTimestamp < self.appDelegate.latestCachedImageDate) {
-                self.appDelegate.latestCachedImageDate = storyTimestamp;
-            }
+    NSData *responseData = UIImageJPEGRepresentation(image, 0.6);
+    __block BOOL stored = NO;
+    __block BOOL storageFailed = NO;
+    [self.appDelegate.database inDatabase:^(FMDatabase *db) {
+        if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
+        // OfflineFetchImages.m serializes file creation with pruning and checks that this image is still retained.
+        BOOL retained = [db intForQuery:@"SELECT COUNT(*) FROM cached_images WHERE story_hash = ? AND image_url = ?", storyHash, imageUrl] > 0;
+        if (!retained) return;
+        NSString *filename = [[Utilities md5:imageUrl] stringByAppendingPathExtension:@"jpeg"];
+        NSURL *fileURL = [[self.appDelegate.documentsURL URLByAppendingPathComponent:@"story_images"] URLByAppendingPathComponent:filename];
+        NSError *writeError = nil;
+        if (![responseData writeToURL:fileURL options:NSDataWritingAtomic error:&writeError]) {
+            NSLog(@"OfflineFetchImages.m could not write cached image: %@", writeError);
+            storageFailed = YES;
+            [self cancel];
+            return;
         }
-        
-        @synchronized (self) {
-            self.appDelegate.remainingUncachedImagesCount--;
-            if (self.appDelegate.remainingUncachedImagesCount % 10 == 0) {
-                [self updateProgress];
-            }
+        stored = [db executeUpdate:@"UPDATE cached_images SET image_cached = 1 WHERE story_hash = ? AND image_url = ?", storyHash, imageUrl] && [db changes] > 0;
+        if (!stored) {
+            NSLog(@"OfflineFetchImages.m could not record cached image: %@", [db lastErrorMessage]);
+            storageFailed = YES;
+            [self cancel];
         }
-    });
+    }];
+    if (storageFailed) {
+        // OfflineFetchImages.m stops retrying an unwritable cache while keeping the image pending for a later sync.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.appDelegate.clearingOfflineCache) return;
+            [self.appDelegate.feedsViewController showDoneNotifier];
+            [self.appDelegate finishBackground];
+        });
+    }
+    if (!stored || self.isCancelled || self.appDelegate.clearingOfflineCache) return;
+    if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
+        if (storyTimestamp > self.appDelegate.latestCachedImageDate) self.appDelegate.latestCachedImageDate = storyTimestamp;
+    } else if (!self.appDelegate.latestCachedImageDate || storyTimestamp < self.appDelegate.latestCachedImageDate) {
+        self.appDelegate.latestCachedImageDate = storyTimestamp;
+    }
+    @synchronized (self) {
+        self.appDelegate.remainingUncachedImagesCount--;
+        if (self.appDelegate.remainingUncachedImagesCount % 10 == 0) [self updateProgress];
+    }
+
 }
 
 - (void)storeFailedImage:(NSString *)storyHash {
     [self.appDelegate.database inDatabase:^(FMDatabase *db) {
+        if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
         [db executeUpdate:@"UPDATE cached_images SET "
          "image_cached = 1, failed = 1 WHERE story_hash = ?",
          storyHash];
