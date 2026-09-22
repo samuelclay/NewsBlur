@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import com.newsblur.domain.CustomIcon;
@@ -435,6 +436,19 @@ public class BlurDatabaseHelper {
         }
         c.close();
         return hashes;
+    }
+
+    /** UnreadsSubService.kt needs story ages to interpret capped unread-hash responses safely. */
+    @NonNull
+    public Map<String, Long> getUnreadStoryTimestamps() {
+        String query = "SELECT " + DatabaseConstants.STORY_HASH + ", " + DatabaseConstants.STORY_TIMESTAMP +
+                " FROM " + DatabaseConstants.STORY_TABLE +
+                " WHERE " + DatabaseConstants.STORY_READ + " = 0";
+        Map<String, Long> timestamps = new HashMap<>();
+        try (Cursor cursor = dbRO.rawQuery(query, null)) {
+            while (cursor.moveToNext()) timestamps.put(cursor.getString(0), cursor.getLong(1));
+        }
+        return timestamps;
     }
 
     @NonNull
@@ -870,13 +884,14 @@ public class BlurDatabaseHelper {
     }
 
     public void reconcileServerUnreadHashes(@NonNull Collection<String> hashes, long requestStartedAt,
-                                           @NonNull Predicate<String> isFeedEligible) {
+                                           @NonNull Predicate<String> isFeedEligible,
+                                           @NonNull BiPredicate<String, Long> isTimestampEligible) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
                 ClusterReadStore.UnreadReconciliationStats stats =
-                        new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible);
-                Log.i(getClass().getName(), "embedded unread candidates inspected: " + stats.getInspectedChildCount()
+                        new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible, isTimestampEligible);
+                com.newsblur.util.Log.i(getClass().getName(), "embedded unread candidates inspected: " + stats.getInspectedChildCount()
                         + ", retirement candidates: " + stats.getRetirementCandidateCount());
                 dbRW.setTransactionSuccessful();
             } finally {

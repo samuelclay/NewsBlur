@@ -50,7 +50,8 @@ class UnreadsSubServiceReconciliationTest {
             unreadHashes = mapOf("2" to listOf(arrayOf("2:unread", "100")), "3" to listOf(arrayOf("3:orphan", "100")),
                 "4" to listOf(arrayOf("4:disabled", "100")))
         }
-        every { dbHelper.getUnreadStoryHashesAsSet() } returns mutableSetOf()
+        every { dbHelper.getUnreadStoryTimestamps() } returns emptyMap()
+        every { dbHelper.getAllActiveFeeds() } returns setOf("2", "3", "4")
         every { delegate.prefsRepo.getDefaultStoryOrder() } returns StoryOrder.NEWEST
         every { delegate.prefsRepo.isOfflineEnabled() } returns false
         every { delegate.prefsRepo.isEnableNotifications() } returns false
@@ -63,7 +64,7 @@ class UnreadsSubServiceReconciliationTest {
 
         val eligibility = slot<Predicate<String>>()
         verify(exactly = 1) {
-            dbHelper.reconcileServerUnreadHashes(listOf("2:unread"), any(), capture(eligibility))
+            dbHelper.reconcileServerUnreadHashes(listOf("2:unread"), any(), capture(eligibility), any())
         }
         assertTrue(eligibility.captured.test("2"))
         assertFalse(eligibility.captured.test("3"))
@@ -83,9 +84,10 @@ class UnreadsSubServiceReconciliationTest {
                 "5" to listOf(arrayOf("5:disabled", "100")),
             )
         }
-        every { dbHelper.getUnreadStoryHashesAsSet() } returns mutableSetOf(
+        every { dbHelper.getUnreadStoryTimestamps() } returns listOf(
             "2:retire", "2:still-unread", "3:older-capped", "4:orphan", "5:disabled",
-        )
+        ).associateWith { 99_000L }
+        every { dbHelper.getAllActiveFeeds() } returns setOf("2", "3", "4", "5")
         every { delegate.prefsRepo.getDefaultStoryOrder() } returns StoryOrder.NEWEST
         every { delegate.prefsRepo.isOfflineEnabled() } returns false
         every { delegate.prefsRepo.isEnableNotifications() } returns false
@@ -102,6 +104,90 @@ class UnreadsSubServiceReconciliationTest {
         coVerify(exactly = 0) { storyApi.getStoriesByHash(any()) }
     }
 
+    @Test fun unsubscribedFeedCannotRetireItsEmbeddedUnreadChild() = runTest {
+        assertFalse(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 0, activeFeeds = emptySet()))
+    }
+
+    @Test fun cappedFeedCanRetireAnOmittedEmbeddedChildNewerThanItsOldestReturnedHash() = runTest {
+        assertTrue(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500, timestampMillis = 101_000L))
+    }
+
+    @Test fun cappedFeedKeepsAnOmittedEmbeddedChildAtTheOldestReturnedTimestamp() = runTest {
+        assertFalse(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500, timestampMillis = 100_000L))
+    }
+
+    @Test fun activeFeedWithNoUnreadHashesCanRetireItsEmbeddedChild() = runTest {
+        assertTrue(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 0))
+    }
+
+    @Test fun malformedOrMissingCapTimestampDoesNotRetireAnEmbeddedChild() = runTest {
+        for (invalidTimestamp in listOf(null, "bad", "0", "-1", "NaN", "Infinity", "1e100")) {
+            assertFalse(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500,
+                timestampMillis = 101_000L, lastTimestamp = invalidTimestamp))
+        }
+    }
+
+    @Test fun fractionalSecondCapTimestampPreservesAnExactTieAndRetiresNewerChild() = runTest {
+        assertFalse(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500,
+            timestampMillis = 100_500L, returnedTimestamp = "100.5"))
+        assertTrue(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500,
+            timestampMillis = 100_501L, returnedTimestamp = "100.5"))
+    }
+
+    @Test fun capTimestampWithFractionalSecondsCannotRoundBelowAnExactMillisecondTie() = runTest {
+        assertFalse(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500,
+            timestampMillis = 1001L, returnedTimestamp = "1.001"))
+        assertFalse(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500,
+            timestampMillis = 1000L, returnedTimestamp = "1.001"))
+        assertTrue(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500,
+            timestampMillis = 1002L, returnedTimestamp = "1.001"))
+    }
+
+    @Test fun cappedStandaloneRetirementUsesStrictTimestampWindowAndKeepsServerListedStories() = runTest {
+        val delegate = mockk<SyncServiceDelegate>(relaxed = true)
+        val dbHelper = delegate.dbHelper
+        val storyApi = delegate.storyApi
+        coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply {
+            unreadHashes = mapOf("2" to (1..499).map { arrayOf("2:newer-$it", "100.0") } +
+                listOf(arrayOf("2:still-unread", "101.0")))
+        }
+        every { dbHelper.getUnreadStoryTimestamps() } returns mapOf(
+            "2:older" to 99_000L, "2:tie" to 100_000L, "2:newer" to 100_001L,
+            "2:still-unread" to 101_000L, "3:uncapped" to 0L,
+        )
+        every { dbHelper.getAllActiveFeeds() } returns setOf("2", "3")
+        every { delegate.prefsRepo.getDefaultStoryOrder() } returns StoryOrder.NEWEST
+        every { delegate.prefsRepo.isOfflineEnabled() } returns false
+        every { delegate.prefsRepo.isEnableNotifications() } returns false
+        val service = UnreadsSubService(delegate)
+        service.doMetadata()
+
+        service.launchIn(this).join()
+
+        val retired = slot<Collection<String>>()
+        verify(exactly = 1) { dbHelper.markStoryHashesRead(capture(retired), any()) }
+        assertEquals(setOf("2:newer", "3:uncapped"), retired.captured.toSet())
+        coVerify(exactly = 0) { storyApi.getStoriesByHash(any()) }
+    }
+
+    @Test fun unsubscribedFeedCannotRetireItsStandaloneUnreadStory() = runTest {
+        val delegate = mockk<SyncServiceDelegate>(relaxed = true)
+        val dbHelper = delegate.dbHelper
+        val storyApi = delegate.storyApi
+        coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply { unreadHashes = emptyMap() }
+        every { dbHelper.getUnreadStoryTimestamps() } returns mapOf("2:active" to 99_000L, "6:unsubscribed" to 99_000L)
+        every { dbHelper.getAllActiveFeeds() } returns setOf("2")
+        every { delegate.prefsRepo.getDefaultStoryOrder() } returns StoryOrder.NEWEST
+        val service = UnreadsSubService(delegate)
+        service.doMetadata()
+
+        service.launchIn(this).join()
+
+        val retired = slot<Collection<String>>()
+        verify(exactly = 1) { dbHelper.markStoryHashesRead(capture(retired), any()) }
+        assertEquals(setOf("2:active"), retired.captured.toSet())
+    }
+
     @Test fun cappedFeedResponseDoesNotRetireAnOmittedEmbeddedUnreadChild() = runTest {
         // apps/reader/models.py returns only 500 hashes even when this feed has 501 unread stories.
         assertFalse(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 500))
@@ -111,9 +197,21 @@ class UnreadsSubServiceReconciliationTest {
         assertTrue(reconcileOmittedEmbeddedChild(this, returnedUnreadCount = 499))
     }
 
-    private suspend fun reconcileOmittedEmbeddedChild(scope: CoroutineScope, returnedUnreadCount: Int): Boolean {
+    private suspend fun reconcileOmittedEmbeddedChild(
+        scope: CoroutineScope,
+        returnedUnreadCount: Int,
+        timestampMillis: Long = 99_000L,
+        activeFeeds: Set<String> = setOf("2"),
+        returnedTimestamp: String = "100.0",
+        lastTimestamp: String? = returnedTimestamp,
+    ): Boolean {
         val omittedHash = "2:older-embedded-child"
-        var embedded = arrayOf(Story.ClusterStory().apply { storyHash = omittedHash; feedId = "2"; read = false })
+        var embedded = arrayOf(Story.ClusterStory().apply {
+            storyHash = omittedHash
+            feedId = "2"
+            read = false
+            timestamp = timestampMillis
+        })
         val database = mockk<SQLiteDatabase>()
         val store = spyk(ClusterReadStore(database))
         every { database.rawQuery(any(), any()) } answers {
@@ -122,7 +220,8 @@ class UnreadsSubServiceReconciliationTest {
             mockk<Cursor>(relaxed = true).also { cursor ->
                 every { cursor.moveToNext() } answers { ++position < values.size }
                 every { cursor.getString(0) } answers { values[position] }
-                every { cursor.isNull(1) } returns true
+                every { cursor.getString(1) } returns "2"
+                every { cursor.getLong(2) } returns timestampMillis
             }
         }
         every { store.parentsReferencing(any()) } answers {
@@ -140,11 +239,15 @@ class UnreadsSubServiceReconciliationTest {
         val dbHelper = delegate.dbHelper
         val storyApi = delegate.storyApi
         coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply {
-            unreadHashes = mapOf("2" to (1..returnedUnreadCount).map { arrayOf("2:newer-$it", "100") })
+            unreadHashes = mapOf("2" to (1..returnedUnreadCount).map {
+                val timestamp = if (it == returnedUnreadCount) lastTimestamp else returnedTimestamp
+                if (timestamp == null) arrayOf("2:newer-$it") else arrayOf("2:newer-$it", timestamp)
+            })
         }
-        every { dbHelper.getUnreadStoryHashesAsSet() } returns mutableSetOf()
-        every { dbHelper.reconcileServerUnreadHashes(any(), any(), any()) } answers {
-            store.reconcileServerUnread(firstArg(), secondArg(), thirdArg())
+        every { dbHelper.getUnreadStoryTimestamps() } returns emptyMap()
+        every { dbHelper.getAllActiveFeeds() } returns activeFeeds
+        every { dbHelper.reconcileServerUnreadHashes(any(), any(), any(), any()) } answers {
+            store.reconcileServerUnread(firstArg(), secondArg(), thirdArg(), arg(3))
         }
         every { delegate.prefsRepo.getDefaultStoryOrder() } returns StoryOrder.NEWEST
         every { delegate.prefsRepo.isOfflineEnabled() } returns false

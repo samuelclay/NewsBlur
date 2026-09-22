@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 9;
+	static final int VERSION = 10;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);
@@ -92,11 +92,15 @@ public class BlurDatabase extends SQLiteOpenHelper {
                 }
             }
             db.execSQL("DROP TABLE folders_legacy");
+        }
+        if (previousVersion >= 6 && previousVersion < 10) {
+            // ClusterReadStore.kt upgrades membership without replacing cached stories, actions, or receipts.
             if (previousVersion < 8) {
-                // ClusterReadStore.kt backfills membership without replacing cached stories or queued actions.
                 ClusterReadStore.createTables(db);
-                ClusterReadStore.backfill(db);
+            } else {
+                ClusterReadStore.addMemberMetadata(db);
             }
+            ClusterReadStore.backfill(db);
             return;
         }
         dropAndRecreateTables(db);
