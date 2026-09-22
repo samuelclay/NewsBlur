@@ -392,6 +392,24 @@ import XCTest
         XCTAssertFalse(fixture.web.isHidden)
     }
 
+    func test_releasedStoryParserImmediatelyCompletesLateAlertCallbacks() {
+        for releaseBeforeAlert in [false, true] {
+            let parser = HeldStoryParser()
+            defer { parser.release() }
+            var completions = 0
+            if releaseBeforeAlert { parser.release() }
+            parser.hold { completions += 1 }
+            XCTAssertEqual(completions, releaseBeforeAlert ? 1 : 0)
+            XCTAssertEqual(parser.isHeld, !releaseBeforeAlert)
+            parser.release()
+            parser.release()
+            XCTAssertEqual(completions, 1, "Parser cleanup must release each completion exactly once")
+            parser.hold { completions += 1 }
+            XCTAssertEqual(completions, 2, "An alert delivered after cleanup must never block WebKit")
+            XCTAssertFalse(parser.isHeld)
+        }
+    }
+
     func test_actualWebKitDoesNotRevealWhileTheArticleParserIsBlocked() async throws {
         let web = RealStoryLoadWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
         let page = makePage(web: web)
@@ -406,29 +424,35 @@ import XCTest
         window.makeKeyAndVisible()
         let parser = HeldStoryParser()
         defer {
+            web.stopLoading()
             parser.release()
+            web.uiDelegate = nil
+            web.navigationDelegate = nil
+            page.readyObserver = nil
             window.isHidden = true
+            window.rootViewController = nil
             previousKeyWindow?.makeKey()
             page.webView = nil
         }
         web.navigationDelegate = page
         page.perform(NSSelectorFromString("clearWebView"))
-        for _ in 0..<60 where page.value(forKey: "preparedWebViewFonts") as? Bool != true { await delay(0.05) }
-        XCTAssertEqual(page.value(forKey: "preparedWebViewFonts") as? Bool, true)
+        try await requireState("The blocked-parser WebKit fixture finishes its bundled-font bootstrap") {
+            page.value(forKey: "preparedWebViewFonts") as? Bool == true
+        }
         // StoryDetailLoadingTests.swift pauses the actual parser via its UI delegate, without a visible dialog or mixed-content request.
         web.uiDelegate = parser
         web.configuration.userContentController.addUserScript(WKUserScript(source: "alert('hold-article-parser');", injectionTime: .atDocumentStart, forMainFrameOnly: true))
-        let ready = expectation(description: "The unblocked current article completes DOM preparation")
-        page.readyObserver = { ready.fulfill() }
+        var ready = false
+        page.readyObserver = { ready = true }
         page.drawStory()
-        for _ in 0..<60 where !parser.isHeld { await delay(0.05) }
-        XCTAssertTrue(parser.isHeld)
+        try await requireState("The actual article parser reaches its held alert") { parser.isHeld }
         await delay(0.15)
         XCTAssertTrue(web.isHidden, "The real WKWebView must not expose its blank, unfinished document")
 
         parser.release()
-        await fulfillment(of: [ready], timeout: 5)
-        await delay(0.15)
+        try await requireState("The unblocked current article completes DOM preparation and becomes visible") {
+            ready && !web.isHidden
+        }
         XCTAssertFalse(web.isHidden)
         let body = try await web.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Article must exist") == true)
@@ -810,7 +834,18 @@ import XCTest
                 XCTAssertEqual(fixture.pages.scrollView.contentOffset, sourceOffset)
                 let selected = try XCTUnwrap(fixture.pages.value(forKey: "pendingPresentationPage") as? StoryLoadPage)
                 let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+                let initialOrigin = fixture.original.view.convert(CGPoint.zero, to: window)
+                let initialPosition = horizontal ? initialOrigin.x : initialOrigin.y
                 motion.start()
+                let initialSampleCount = motion.sampleTimes.count
+                // StoryDetailLoadingTests.swift establishes displayed setup geometry before releasing readiness into the real animation.
+                try await requireState("The initial article reaches three unchanged display-link samples. start=\(start), target=\(target), horizontal=\(horizontal), positions=\(motion.positions), times=\(motion.sampleTimes)") {
+                    guard let displayedOffset = fixture.pages.scrollView.layer.presentation()?.bounds.origin else { return false }
+                    return motion.sampleTimes.count >= initialSampleCount + 3 &&
+                        motion.positions.suffix(3).allSatisfy { abs($0 - initialPosition) < 0.5 } &&
+                        fixture.pages.currentPage === fixture.original &&
+                        abs(displayedOffset.x - sourceOffset.x) < 0.5 && abs(displayedOffset.y - sourceOffset.y) < 0.5
+                }
                 let began = CACurrentMediaTime()
                 sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
                 await fulfillment(of: [enteredAnimation], timeout: 2)
@@ -819,7 +854,7 @@ import XCTest
                 motion.stop()
                 let positions = Set(motion.positions.map { Int(($0 * 10).rounded()) })
                 XCTAssertGreaterThanOrEqual(positions.count, 3,
-                    "A title selection must show intermediate positions, not an immediate jump. start=\(start), target=\(target), horizontal=\(horizontal), positions=\(motion.positions)")
+                    "A title selection must show intermediate positions, not an immediate jump. start=\(start), target=\(target), horizontal=\(horizontal), positions=\(motion.positions), times=\(motion.sampleTimes.map { $0 - began })")
                 XCTAssertTrue(selected.readyForPresentation, "The destination must still be painted before starting its transition")
                 print("STORY_TITLE_SELECTION start=\(start) target=\(target) horizontal=\(horizontal) presented_positions=\(positions.count) ready_to_completion_ms=\((CACurrentMediaTime() - began) * 1000)")
             }
@@ -3529,14 +3564,22 @@ private final class StoryScrollCursor: NSObject {
 
 @MainActor private final class HeldStoryParser: NSObject, WKUIDelegate {
     private var pending: (() -> Void)?
+    private var isReleased = false
     var isHeld: Bool { pending != nil }
 
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
                  initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        hold(completionHandler)
+    }
+
+    func hold(_ completionHandler: @escaping () -> Void) {
+        // StoryDetailLoadingTests.swift must also unblock alerts delivered after failed setup has already cleaned up.
+        guard !isReleased else { completionHandler(); return }
         pending = completionHandler
     }
 
     func release() {
+        isReleased = true
         let completion = pending
         pending = nil
         completion?()
