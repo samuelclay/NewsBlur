@@ -26,6 +26,7 @@ import com.newsblur.R;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
 import com.newsblur.delegate.MainContextMenuDelegateImpl;
+import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.fragment.FeedSelectorFragment;
 import com.newsblur.fragment.FeedsShortcutFragment;
 import com.newsblur.fragment.FolderListFragment;
@@ -43,6 +44,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 import java.lang.ref.WeakReference;
+import java.text.NumberFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -75,6 +77,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private ActivityMainBinding binding;
     private MainContextMenuDelegate contextMenuDelegate;
     private KeyboardManager keyboardManager;
+    private final NumberFormat unreadCountFormatter = NumberFormat.getIntegerInstance();
     private boolean hasSeenActiveSyncStatus = false;
     private boolean isShowingDoneSyncStatus = false;
     private boolean isShowingLoadingSyncPlaceholder = true;
@@ -127,6 +130,16 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
+        binding.bottomToolbar.setBackground(com.newsblur.view.FloatingToolbarSurface.background(this, prefsRepo.getResolvedTheme(this)));
+        binding.bottomToolbar.bringToFront();
+        binding.bottomToolbar.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            View list = findViewById(R.id.folderfeed_list);
+            if (list != null) {
+                int inset = binding.getRoot().getHeight() - binding.bottomToolbar.getTop() + UIUtils.dp2px(this, 8);
+                if (list.getPaddingBottom() != inset) list.setPadding(list.getPaddingLeft(), list.getPaddingTop(), list.getPaddingRight(), inset);
+                if (list instanceof android.view.ViewGroup) ((android.view.ViewGroup) list).setClipToPadding(false);
+            }
+        });
 
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
@@ -292,8 +305,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
-        binding.mainUnreadCountNeutText.setText(Integer.toString(neutCount));
-        binding.mainUnreadCountPosiText.setText(Integer.toString(posiCount));
+        binding.mainUnreadCountNeutText.setText(unreadCountFormatter.format(neutCount));
+        binding.mainUnreadCountPosiText.setText(unreadCountFormatter.format(posiCount));
     }
 
     /**
@@ -352,12 +365,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             return;
         }
 
+        // FolderListFragment.java may still be reading cached feeds before the service reports any status.
+        if (!folderFeedList.firstCursorSeenYet) {
+            isShowingLoadingSyncPlaceholder = true;
+            showSyncStatusIndicator(getString(R.string.loading), SyncStatusAccessory.SPINNER);
+            return;
+        }
+
         if (hasSeenActiveSyncStatus) {
-            if (!folderFeedList.firstCursorSeenYet) {
-                isShowingLoadingSyncPlaceholder = true;
-                showSyncStatusIndicator(getString(R.string.loading), SyncStatusAccessory.SPINNER);
-                return;
-            }
             hasSeenActiveSyncStatus = false;
             shouldTrackActiveSyncStatus = false;
             isShowingLoadingSyncPlaceholder = false;
@@ -478,8 +493,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickAddButton() {
-        Intent i = new Intent(this, FeedSearchActivity.class);
-        startActivity(i);
+        if (getSupportFragmentManager().findFragmentByTag("add_site") == null) {
+            AddFeedFragment.newInstance().show(getSupportFragmentManager(), "add_site");
+        }
     }
 
     private void onClickUserButton() {

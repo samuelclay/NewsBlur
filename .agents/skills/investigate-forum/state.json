@@ -170,6 +170,20 @@
       "note": "Reproduced iOS cleanup defects with isolated NB Alpha database tests: low unread counts skip pruning, cached_text is missed, VACUUM runs before deletion. User chose unread priority with recent read stories in remaining quota and maximum manual compaction. Fix added to existing branch at explicit user request. Reply assumes merge and inclusion in the next iOS release; not yet released or posted. Validation and current-head CI/review results are recorded in PR #2079.",
       "reply": "There is a Delete offline stories button under Preferences → Offline Stories, but I found bugs in both that button and automatic cleanup. Cached article text was being left behind, and deleting stories wasn't shrinking the database file.\n\nI've fixed those for the next iOS update. Manual deletion will clear the cached stories, text, and images and reclaim the disk space. Automatic cleanup will respect your Stories to store limit, prioritizing unread stories and keeping recent read stories only in the remaining space. Your subscriptions and pending read or saved story changes are preserved.",
       "question": null
+    },
+    "13837": {
+      "title": "Android: Restore mark older/newer read options for long press",
+      "url": "https://forum.newsblur.com/t/android-restore-mark-older-newer-read-options-for-long-press/13837/3",
+      "status": "reply-drafted",
+      "tier": 1,
+      "handled_at": "2026-09-18T18:05:34Z",
+      "last_posted_at": "2026-09-18T13:36:48.106Z",
+      "pr": null,
+      "branch": "android-add-discover-sites",
+      "worktree": "/Users/sclay/projects/newsblur/.worktree/android-scroll-performance",
+      "note": "Reply only. Verified Android_15.0.2 PrefsRepo restores story menu default; Android_15.0.0 calls the preference Show actions. Actual Samsung long press shows both read-range actions in current local build. Screenshot: /Users/sclay/Downloads/NewsBlur-Android-Mark-Older-Newer-Read.png. Theme/read-marking preferences restored. No claim of current store or F-Droid availability. No forum post, commit, or push.",
+      "reply": "Yep, v15.0.0 changed the default long press action to Share. I’ve restored the action menu as the default in 15.0.2, with both “Mark older as read” and “Mark newer as read” available regardless of sort order.\n\nIf you’re still on 15.0.0, you can restore it now under Preferences → Gestures → Story titles → Long press → Show actions. Here’s the updated menu:",
+      "question": null
     }
   }
 }

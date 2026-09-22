@@ -24,16 +24,23 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 283
-        versionName = "14.5.8"
+        versionCode = 289
+        versionName = "15.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["defaultLauncherEnabled"] = "true"
     }
 
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
+        }
+        create("alpha") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".alpha"
+            matchingFallbacks += listOf("debug")
+            manifestPlaceholders["defaultLauncherEnabled"] = "false"
         }
         maybeCreate("benchmark")
         getByName("benchmark") {

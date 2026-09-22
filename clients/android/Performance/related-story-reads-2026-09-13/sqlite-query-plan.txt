@@ -1,0 +1,27 @@
+Run Time: real 0.000 user 0.000013 sys 0.000427
+Run Time: real 0.004 user 0.000226 sys 0.002603
+Run Time: real 0.000 user 0.000043 sys 0.000066
+Run Time: real 0.000 user 0.000058 sys 0.000042
+Run Time: real 0.000 user 0.000030 sys 0.000097
+Run Time: real 0.321 user 0.021411 sys 0.048863
+Run Time: real 0.007 user 0.000091 sys 0.000522
+ok
+Run Time: real 0.217 user 0.029460 sys 0.036665
+stories|15123
+Run Time: real 0.000 user 0.000191 sys 0.000046
+feeds|684
+Run Time: real 0.000 user 0.000018 sys 0.000004
+memberships|1375
+Run Time: real 0.000 user 0.000023 sys 0.000013
+QUERY PLAN
+|--SEARCH m USING INDEX story_cluster_child (child_hash=?)
+|--SEARCH s USING INDEX sqlite_autoindex_stories_1 (story_hash=?)
+`--USE TEMP B-TREE FOR DISTINCT
+Run Time: real 0.000 user 0.000027 sys 0.000002
+parents|2
+Run Time: real 0.000 user 0.000038 sys 0.000029
+Run Time: real 0.000 user 0.000002 sys 0.000000
+Run Time: real 0.000 user 0.000022 sys 0.000010
+deleted parent memberships|0
+Run Time: real 0.000 user 0.000007 sys 0.000000
+Run Time: real 0.000 user 0.000004 sys 0.000003

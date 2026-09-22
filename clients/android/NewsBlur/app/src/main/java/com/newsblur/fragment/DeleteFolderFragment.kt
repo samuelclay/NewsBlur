@@ -32,6 +32,7 @@ import com.newsblur.R
 import com.newsblur.design.LocalNbColors
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
+import com.newsblur.network.FolderPath
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.viewModel.DeleteFolderViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -115,7 +116,7 @@ fun DeleteFolderDialogContent(
             ) {
                 if (state is DeleteFolderViewModel.UiState.Confirm) {
                     Text(
-                        text = stringResource(R.string.delete_folder_message, folderName),
+                        text = stringResource(R.string.delete_folder_message, FolderPath.leaf(folderName)),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 } else {
@@ -124,7 +125,7 @@ fun DeleteFolderDialogContent(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = stringResource(R.string.deleting_folder_message, folderName),
+                            text = stringResource(R.string.deleting_folder_message, FolderPath.leaf(folderName)),
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         Spacer(modifier = Modifier.width(12.dp))

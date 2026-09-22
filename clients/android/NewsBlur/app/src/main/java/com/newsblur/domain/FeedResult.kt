@@ -8,12 +8,14 @@ data class FeedResult(
     val id: Int = 0,
     @SerializedName("tagline")
     val tagline: String? = null,
-    @SerializedName("label")
+    @SerializedName(value = "label", alternate = ["feed_title"])
     val label: String,
     @SerializedName("num_subscribers")
     val numberOfSubscriber: Int = 0,
-    @SerializedName("value")
+    @SerializedName(value = "value", alternate = ["feed_address"])
     val url: String,
+    @SerializedName("last_story_seconds_ago")
+    val lastStorySecondsAgo: Long? = null,
 ) {
     val faviconUrl: String
         get() = "${APIConstants.buildUrl(APIConstants.PATH_FEED_FAVICON_URL)}$id"
