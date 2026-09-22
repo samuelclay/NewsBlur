@@ -3,26 +3,32 @@ package com.newsblur.fragment
 import com.newsblur.domain.Story
 import com.newsblur.util.PrefConstants.ThemeValue
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ReaderMetadataSnapshotTest {
-    @Test fun footerReadStateTracksParentPreferenceAndChildChangesInEveryTheme() {
+    @Test fun footerTracksChildReadChangesIndependentlyOfItsParentInEveryTheme() {
         for (theme in listOf(ThemeValue.LIGHT, ThemeValue.DARK, ThemeValue.BLACK, ThemeValue.SEPIA)) {
             val child = Story.ClusterStory()
             val story = Story().apply { storyHash = "1:parent"; clusterStories = arrayOf(child) }
-            val unread = ReaderClusterSnapshot(story, true, true, theme)
-            assertFalse(unread.inheritParentRead)
+            val unread = ReaderClusterSnapshot(story, true, theme)
             story.read = true
-            val inherited = ReaderClusterSnapshot(story, true, true, theme)
-            assertTrue(inherited.inheritParentRead)
-            assertNotEquals(unread, inherited)
-            assertEquals(unread, ReaderClusterSnapshot(story, false, true, theme))
+            assertEquals("Reading the parent alone must not rebuild its unread child", unread, ReaderClusterSnapshot(story, true, theme))
             child.read = true
-            assertNotEquals(inherited, ReaderClusterSnapshot(story, true, true, theme))
+            val read = ReaderClusterSnapshot(story, true, theme)
+            assertNotEquals(unread, read)
+            child.read = false
+            val explicitlyUnread = ReaderClusterSnapshot(story, true, theme)
+            assertNotEquals("An explicit unread action must invalidate the footer", read, explicitlyUnread)
+            assertEquals(unread, explicitlyUnread)
         }
+    }
+
+    @Test fun footerStillRefreshesWhenThemeOrArchiveAccessChanges() {
+        val story = Story().apply { storyHash = "1:parent" }
+        val snapshot = ReaderClusterSnapshot(story, true, ThemeValue.LIGHT)
+        assertNotEquals(snapshot, ReaderClusterSnapshot(story, false, ThemeValue.LIGHT))
+        assertNotEquals(snapshot, ReaderClusterSnapshot(story, true, ThemeValue.DARK))
     }
 
     @Test

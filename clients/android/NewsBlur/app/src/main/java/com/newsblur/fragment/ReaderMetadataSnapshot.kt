@@ -7,14 +7,12 @@ import com.newsblur.util.PrefConstants.ThemeValue
 internal data class ReaderClusterSnapshot(
     val storyHash: String?,
     val clusters: List<List<Any?>>,
-    val inheritParentRead: Boolean,
     val archive: Boolean,
     val theme: ThemeValue,
 ) {
-    constructor(story: Story, clusterMarkRead: Boolean, archive: Boolean, theme: ThemeValue) : this(
+    constructor(story: Story, archive: Boolean, theme: ThemeValue) : this(
         storyHash = story.storyHash,
         clusters = ReaderMetadataSnapshot(story).clusters,
-        inheritParentRead = story.read && clusterMarkRead,
         archive = archive,
         theme = theme,
     )
