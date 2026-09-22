@@ -42,6 +42,7 @@ env TEST_RUNNER_NEWSBLUR_LIVE_DUO_UI_TESTS=1 \
 | Unprefixed variable | Audit |
 | --- | --- |
 | `NEWSBLUR_LIVE_DUO_UI_TESTS=1` | `Test_DuoLiveUI`: actual taps, scrolling, full-screen overlays, edge gestures, and divider resizing |
+| `NEWSBLUR_DUO_PHOTO_FEED` | Optional subscribed photo-feed name for the image edge-cancellation audit; defaults to `STREET ART UTOPIA`, with a clear skip when the source is unavailable |
 | `NEWSBLUR_LIVE_DUO_LAUNCH_TESTS=1` | Run a selected cold-launch test in `Test_DuoPresentation` alone, starting Open |
 | `NEWSBLUR_LIVE_DUO_FOLD_TESTS=1` | Selected live reader fold test; operate Device Hub when the test requests a pose |
 | `NEWSBLUR_LIVE_DUO_BACK_TESTS=1` | `test_liveClosedBackKeepsReturningFeedsAtTheirFinalTopEdge`, starting Closed |
