@@ -868,11 +868,12 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void reconcileServerUnreadHashes(@NonNull Collection<String> hashes, long requestStartedAt) {
+    public void reconcileServerUnreadHashes(@NonNull Collection<String> hashes, long requestStartedAt,
+                                           @NonNull java.util.function.Predicate<String> isFeedEligible) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt);
+                new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible);
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
