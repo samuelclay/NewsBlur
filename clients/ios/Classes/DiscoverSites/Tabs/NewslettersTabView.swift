@@ -1,0 +1,218 @@
+//
+//  NewslettersTabView.swift
+//  NewsBlur
+//
+//  Created by Claude on 2026-03-05.
+//  Copyright 2026 NewsBlur. All rights reserved.
+//
+
+import SwiftUI
+
+@available(iOS 15.0, *)
+struct NewslettersTabView: View {
+    @ObservedObject var viewModel: DiscoverSitesViewModel
+    var onTryFeed: ((DiscoverPopularFeed) -> Void)?
+    var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
+    var onAddFeed: ((DiscoverPopularFeed) -> Void)?
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                DiscoverSearchBarView(
+                    placeholder: "Search newsletters...",
+                    text: $viewModel.newslettersState.searchQuery,
+                    isLoading: viewModel.newslettersState.isSearching,
+                    onSubmit: {
+                        viewModel.searchFeeds(
+                            type: "newsletter", query: viewModel.newslettersState.searchQuery)
+                    },
+                    viewMode: $viewModel.feedViewMode
+                )
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+
+                if !viewModel.newslettersState.platformCounts.isEmpty
+                    && viewModel.newslettersState.searchQuery.isEmpty
+                {
+                    platformPillsSection
+                }
+
+                if !viewModel.newslettersState.categories.isEmpty
+                    && viewModel.newslettersState.searchQuery.isEmpty
+                {
+                    DiscoverCategoryPillsView(
+                        categories: viewModel.newslettersState.categories,
+                        selectedCategory: $viewModel.newslettersState.selectedCategory,
+                        selectedSubcategory: $viewModel.newslettersState.selectedSubcategory
+                    )
+                    .onChange(of: viewModel.newslettersState.selectedCategory) { _ in
+                        reloadFeeds()
+                    }
+                    .onChange(of: viewModel.newslettersState.selectedSubcategory) { _ in
+                        reloadFeeds()
+                    }
+                }
+
+                feedsList
+                DiscoverResultsStatusView(
+                    isLoading: viewModel.newslettersState.isLoading || viewModel.newslettersState.isSearching,
+                    isEmpty: viewModel.newslettersState.submittedQuery.isEmpty
+                        ? viewModel.newslettersState.feeds.isEmpty
+                        : viewModel.newslettersState.searchResults.isEmpty,
+                    error: viewModel.newslettersState.errorMessage,
+                    isSearching: !viewModel.newslettersState.submittedQuery.isEmpty,
+                    retry: {
+                        if viewModel.newslettersState.searchQuery.isEmpty {
+                            reloadFeeds()
+                        } else {
+                            viewModel.searchFeeds(
+                                type: "newsletter", query: viewModel.newslettersState.searchQuery)
+                        }
+                    }
+                )
+
+            }
+        }
+        .background(DiscoverColors.background)
+        .scrollDismissesKeyboard(.interactively)
+        .task(id: viewModel.newslettersState.searchQuery) {
+            do { try await Task.sleep(nanoseconds: 350_000_000) } catch { return }
+            viewModel.searchFeeds(type: "newsletter", query: viewModel.newslettersState.searchQuery)
+        }
+
+        .onAppear {
+            if !viewModel.newslettersState.isCategoriesLoaded {
+                viewModel.loadPopularFeeds(type: "newsletter", category: nil, subcategory: nil, offset: 0)
+            }
+        }
+        .onChange(of: viewModel.feedViewMode) { newMode in
+            if newMode == .list && !viewModel.newslettersState.hasLoadedStories {
+                reloadFeeds()
+            }
+        }
+    }
+
+    // MARK: - Platform Pills
+
+    private var platformPillsSection: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                platformPill(
+                    label: "All", count: nil, isActive: viewModel.newslettersState.platformFilter == nil
+                ) {
+                    viewModel.newslettersState.platformFilter = nil
+                    reloadFeeds()
+                }
+
+                ForEach(sortedPlatforms, id: \.key) { platform, count in
+                    platformPill(
+                        label: platform, count: count,
+                        isActive: viewModel.newslettersState.platformFilter == platform
+                    ) {
+                        if viewModel.newslettersState.platformFilter == platform {
+                            viewModel.newslettersState.platformFilter = nil
+                        } else {
+                            viewModel.newslettersState.platformFilter = platform
+                        }
+                        reloadFeeds()
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.vertical, 6)
+    }
+
+    private var sortedPlatforms: [(key: String, value: Int)] {
+        viewModel.newslettersState.platformCounts.sorted { $0.value > $1.value }
+    }
+
+    private func platformPill(label: String, count: Int?, isActive: Bool, action: @escaping () -> Void)
+        -> some View
+    {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Text(label)
+                    .font(.subheadline.weight(.medium))
+                if let count = count, count > 0 {
+                    Text("(\(count))")
+                        .font(.caption)
+                }
+            }
+            .padding(.horizontal, 10)
+            .frame(minHeight: 44)
+            .background(isActive ? DiscoverColors.addButtonBackground : DiscoverColors.cardBackground)
+            .foregroundColor(isActive ? .white : DiscoverColors.textSecondary)
+            .cornerRadius(22)
+            .overlay(
+                RoundedRectangle(cornerRadius: 22)
+                    .stroke(isActive ? Color.clear : DiscoverColors.border, lineWidth: 1)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+
+    // MARK: - Feeds List
+
+    @ViewBuilder
+    private var feedsList: some View {
+        let feeds =
+            viewModel.newslettersState.submittedQuery.isEmpty
+            ? viewModel.newslettersState.feeds
+            : viewModel.newslettersState.searchResults
+
+        LazyVGrid(
+            columns: [
+                viewModel.feedViewMode == .grid
+                    ? GridItem(.adaptive(minimum: 300), spacing: 12, alignment: .top) : GridItem(.flexible())
+            ], alignment: .leading, spacing: 12
+        ) {
+            ForEach(feeds) { feed in
+                DiscoverFeedCardView(
+                    feed: feed,
+                    showStories: viewModel.feedViewMode == .list,
+                    onTryFeed: onTryFeed,
+                    onOpenStory: onOpenStory,
+                    onAddFeed: onAddFeed
+                )
+                .onAppear {
+                    if viewModel.newslettersState.searchQuery.isEmpty
+                        && feed.id == viewModel.newslettersState.feeds.last?.id
+                        && viewModel.newslettersState.hasMore && !viewModel.newslettersState.isLoading
+                    {
+                        loadMore()
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+        if viewModel.newslettersState.isLoading {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: DiscoverColors.accent))
+                .padding(.vertical, 20)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func reloadFeeds() {
+        viewModel.loadPopularFeeds(
+            type: "newsletter",
+            category: viewModel.newslettersState.selectedCategory?.name,
+            subcategory: viewModel.newslettersState.selectedSubcategory?.name,
+            offset: 0
+        )
+    }
+
+    private func loadMore() {
+        viewModel.loadPopularFeeds(
+            type: "newsletter",
+            category: viewModel.newslettersState.selectedCategory?.name,
+            subcategory: viewModel.newslettersState.selectedSubcategory?.name,
+            offset: viewModel.newslettersState.offset
+        )
+    }
+}

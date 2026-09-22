@@ -7,6 +7,7 @@
 //
 
 #import "LoginViewController.h"
+#import "NewsBlur-Swift.h"
 #import "../Other Sources/OnePasswordExtension/OnePasswordExtension.h"
 #import <QuartzCore/QuartzCore.h>
 #import <MetalKit/MetalKit.h>
@@ -623,7 +624,7 @@ static NSString *const kWaveShaderSource =
             }
         } else {
             [self.passwordInput setText:@""];
-            [self.appDelegate reloadFeedsView:YES];
+            [self.appDelegate finishAuthentication];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -663,7 +664,7 @@ static NSString *const kWaveShaderSource =
             }
         } else {
             [self.passwordInput setText:@""];
-            [self.appDelegate reloadFeedsView:YES];
+            [self.appDelegate finishAuthentication];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

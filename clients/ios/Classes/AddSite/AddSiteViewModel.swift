@@ -31,6 +31,7 @@ struct AutocompleteResult: Identifiable {
     let numSubscribers: Int
     let favicon: String?
     let lastStorySecondsAgo: Int?
+    let lastStoryDate: String?
 
     init(dict: [String: Any]) {
         self.label = dict["feed_title"] as? String ?? dict["label"] as? String ?? ""
@@ -38,6 +39,7 @@ struct AutocompleteResult: Identifiable {
         self.numSubscribers = dict["num_subscribers"] as? Int ?? dict["subs"] as? Int ?? 0
         self.favicon = dict["favicon"] as? String
         self.lastStorySecondsAgo = dict["last_story_seconds_ago"] as? Int
+        self.lastStoryDate = dict["last_story_date"] as? String
         self.id = self.value
     }
 }
@@ -83,7 +85,7 @@ class AddSiteViewModel: ObservableObject {
         let excluded: Set<String> = [
             "saved_searches", "saved_stories", "read_stories", "widget_stories",
             "river_blurblogs", "river_global", "trending:well_read", "trending:long_reads", "trending:good_reads",
-            "dashboard", "infrequent", "everything"
+            "dashboard", "daily_briefing", "discover_sites", "infrequent", "everything"
         ]
         return allFolders.filter { !excluded.contains($0) }
     }

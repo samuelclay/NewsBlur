@@ -1,6 +1,44 @@
 import XCTest
+import UIKit
 
 @testable import NewsBlur
+
+@MainActor final class Test_FeedFilterAccessibility: XCTestCase {
+    func test_iPhoneSEWidthKeepsTheLabeledIntelligenceFilters() throws {
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
+        let controller = try XCTUnwrap(storyboard.instantiateViewController(withIdentifier: "FeedsViewController") as? FeedsViewController)
+        controller.loadViewIfNeeded()
+        controller.view.frame = CGRect(x: 0, y: 0, width: 375, height: 667)
+        controller.viewDidLayoutSubviews()
+        // AppDelegateHelperTests.swift resolves the storyboard's margin-relative constraints without a host window.
+        let leading = controller.view.layoutMargins.left + controller.toolbarLeadingConstraint.constant
+        let trailing = controller.view.layoutMargins.right + controller.toolbarTrailingConstraint.constant
+        controller.feedViewToolbar.frame = CGRect(x: leading, y: 0, width: 375 - leading - trailing, height: 48)
+        controller.layout(for: .portrait)
+        let control = try XCTUnwrap(controller.intelligenceControl)
+        // AppDelegateHelperTests.swift requires the original text-bearing images at iPhone SE width.
+        XCTAssertEqual(control.widthForSegment(at: 1), 68)
+        XCTAssertEqual(control.widthForSegment(at: 2), 62)
+        XCTAssertEqual(control.widthForSegment(at: 3), 60)
+    }
+
+    func test_loadingSidebarKeepsImageFiltersAccessible() throws {
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
+        let controller = try XCTUnwrap(storyboard.instantiateViewController(withIdentifier: "FeedsViewController") as? FeedsViewController)
+
+        // AppDelegateHelperTests.swift exercises the startup path that crashed on newer UIKit segment layouts.
+        controller.loadViewIfNeeded()
+
+        let control = try XCTUnwrap(controller.intelligenceControl)
+        XCTAssertEqual(control.numberOfSegments, 4)
+        for (index, label) in [(1, "Unread"), (2, "Focus"), (3, "Saved")] {
+            let image = try XCTUnwrap(control.imageForSegment(at: index))
+            XCTAssertEqual(image.accessibilityLabel, label)
+            control.selectedSegmentIndex = index
+            XCTAssertEqual(control.selectedSegmentIndex, index)
+        }
+    }
+}
 
 final class AppDelegateHelperTests: XCTestCase {
     private let defaults = UserDefaults.standard
@@ -52,6 +90,118 @@ final class AppDelegateHelperTests: XCTestCase {
         AppDelegateHelper.shared.upgradeSettings(from: 153)
 
         XCTAssertEqual(userValue("default_mark_read_filter") as? String, "selection")
+    }
+
+    func test_fadeSelectionWithNoSelectedRowAfterFoldersAreCleared() {
+        let app = NewsBlurAppDelegate()
+        app.dictFoldersArray = []
+        app.dictFolders = [:]
+        let controller = FeedsViewController()
+        controller.appDelegate = app
+        let table = FeedFadeSelectionTable()
+        controller.feedTitlesTable = table
+
+        controller.fadeSelectedCell()
+
+        XCTAssertEqual(table.rowReloads, 0)
+    }
+
+    func test_feedToolbarLayoutWaitsForItsOutlets() {
+        let controller = FeedsViewController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.view = UIView()
+
+        controller.layout(for: .portrait)
+
+        XCTAssertNil(controller.feedViewToolbar)
+    }
+
+    func test_feedToolbarLayoutPopulatesConnectedOutlets() {
+        let controller = FeedsViewController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let toolbar = UIToolbar()
+        let intelligence = UISegmentedControl(items: ["All", "Unread", "Focus", "Saved"])
+        let add = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
+        let settings = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
+        controller.feedViewToolbar = toolbar
+        controller.intelligenceControl = intelligence
+        controller.addBarButton = add
+        controller.settingsBarButton = settings
+
+        controller.layout(for: .portrait)
+
+        XCTAssertEqual(toolbar.items?.filter { $0 === add }.count, 1)
+        XCTAssertEqual(toolbar.items?.filter { $0 === settings }.count, 1)
+        XCTAssertEqual(toolbar.items?.filter { $0.customView === intelligence }.count, 1)
+        // AppDelegateHelperTests.swift keeps the primary feed actions outside overflow and edge-aligned.
+        XCTAssertTrue(toolbar.items?.first === add, "Add must be the leading toolbar item")
+        XCTAssertTrue(toolbar.items?.last === settings, "Settings must be the trailing toolbar item")
+    }
+
+    func test_feedFilterFitsNarrowToolbarAndRestoresLabelsAfterResize() {
+        let controller = FeedsViewController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let toolbar = UIToolbar()
+        let intelligence = UISegmentedControl(items: ["All", "", "", ""])
+        controller.feedViewToolbar = toolbar
+        controller.intelligenceControl = intelligence
+        controller.addBarButton = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
+        controller.settingsBarButton = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
+
+        // AppDelegateHelperTests.swift covers ClayPad's sidebar, ClayPhone, and a wider phone in both directions.
+        for width: CGFloat in [288, 359, 374, 288] {
+            toolbar.frame = CGRect(x: 0, y: 0, width: width, height: 48)
+            controller.layout(for: .portrait)
+            let segmentWidth = (0..<4).reduce(CGFloat.zero) { $0 + intelligence.widthForSegment(at: $1) }
+            if #available(iOS 27.0, *) {
+                XCTAssertLessThanOrEqual(segmentWidth, width - 144 + 0.01)
+                XCTAssertEqual(segmentWidth, width >= 374 ? 230 : min(165, width - 144), accuracy: 0.01)
+            } else {
+                XCTAssertEqual(segmentWidth, width < 352 ? 165 : 230, accuracy: 0.01)
+            }
+            XCTAssertEqual(intelligence.numberOfSegments, 4)
+            for index in 0..<4 {
+                XCTAssertGreaterThanOrEqual(intelligence.widthForSegment(at: index), 34)
+            }
+        }
+    }
+
+    func test_fadeSelectionAfterSelectedFolderIsRemoved() {
+        let app = NewsBlurAppDelegate()
+        app.dictFoldersArray = ["Feeds"]
+        app.dictFolders = ["Feeds": [1]]
+        let controller = FeedsViewController()
+        controller.appDelegate = app
+        let table = FeedFadeSelectionTable()
+        table.selectedPath = IndexPath(row: 0, section: 1)
+        controller.feedTitlesTable = table
+
+        controller.fadeSelectedCell()
+
+        XCTAssertEqual(table.rowReloads, 0)
+    }
+
+    func test_fadeSelectionAfterSelectedRowOrFolderContentsAreRemoved() {
+        let app = NewsBlurAppDelegate()
+        app.dictFoldersArray = ["Feeds"]
+        app.dictFolders = ["Feeds": [1]]
+        let controller = FeedsViewController()
+        controller.appDelegate = app
+        let table = FeedFadeSelectionTable()
+        controller.feedTitlesTable = table
+
+        for path in [IndexPath(row: 1, section: 0), IndexPath(row: NSNotFound, section: 0),
+                     IndexPath(row: 0, section: NSNotFound)] {
+            table.selectedPath = path
+            controller.fadeSelectedCell()
+        }
+        app.dictFolders = [:]
+        table.selectedPath = IndexPath(row: 0, section: 0)
+        controller.fadeSelectedCell()
+
+        XCTAssertEqual(table.rowReloads, 0)
     }
 
     func test_upgradeSettings_migratesLegacyScrollTrueToScroll() {
@@ -504,8 +654,9 @@ final class AppDelegateHelperTests: XCTestCase {
 
         let control = try XCTUnwrap(feedDetailViewController.value(forKey: "bottomNextFeedControl") as? UIView)
         XCTAssertFalse(control.isHidden)
-        XCTAssertGreaterThan(control.alpha, 0)
-        XCTAssertLessThan(control.alpha, 1)
+        // AppDelegateHelperTests.swift separates a fully revealed control from one armed by an active drag.
+        XCTAssertEqual(control.alpha, 1)
+        XCTAssertEqual(feedDetailViewController.value(forKey: "bottomNextFeedReady") as? Bool, false)
         XCTAssertEqual(feedsViewController.selectNextUnreadFolderOrFeedCount, 0)
     }
 
@@ -974,5 +1125,14 @@ private final class FeedListReturnTrackingViewController: FeedsViewController {
     override func reloadFeedTitlesTable() {
         reloadFeedTitlesTableCount += 1
         super.reloadFeedTitlesTable()
+    }
+}
+
+private final class FeedFadeSelectionTable: UITableView {
+    var selectedPath: IndexPath?
+    var rowReloads = 0
+    override var indexPathForSelectedRow: IndexPath? { selectedPath }
+    override func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
+        rowReloads += 1
     }
 }

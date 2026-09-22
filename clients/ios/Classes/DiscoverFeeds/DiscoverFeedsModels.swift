@@ -8,38 +8,10 @@
 
 import Foundation
 
-struct DiscoverFeed: Identifiable {
-    let id: String
-    let feedTitle: String
-    let feedAddress: String
-    let feedLink: String
-    let numSubscribers: Int
-    let averageStoriesPerMonth: Int
-    let faviconUrl: String?
-    let faviconColor: String?
-    let faviconFade: String?
-    let stories: [DiscoverStory]
-    let rawFeedDict: [String: Any]
-
-    init(feedId: String, feedDict: [String: Any], storiesArray: [[String: Any]]) {
-        self.id = feedId
-        self.feedTitle = feedDict["feed_title"] as? String ?? ""
-        self.feedAddress = feedDict["feed_address"] as? String ?? ""
-        self.feedLink = feedDict["feed_link"] as? String ?? ""
-        self.numSubscribers = feedDict["num_subscribers"] as? Int ?? feedDict["subs"] as? Int ?? 0
-        self.averageStoriesPerMonth = feedDict["average_stories_per_month"] as? Int ?? 0
-        self.faviconUrl = feedDict["favicon_url"] as? String
-        self.faviconColor = feedDict["favicon_color"] as? String
-        self.faviconFade = feedDict["favicon_fade"] as? String
-        self.rawFeedDict = feedDict
-
-        self.stories = storiesArray.compactMap { DiscoverStory(dict: $0) }
-    }
-}
-
 struct DiscoverStory: Identifiable {
     let id: String
     let title: String
+    let excerpt: String
     let authors: String
     let date: Date?
     let permalink: String
@@ -48,7 +20,8 @@ struct DiscoverStory: Identifiable {
     init?(dict: [String: Any]) {
         guard let hash = dict["story_hash"] as? String else { return nil }
         self.id = hash
-        self.title = dict["story_title"] as? String ?? ""
+        self.title = Self.previewText(from: dict["story_title"] as? String ?? "")
+        self.excerpt = Self.previewText(from: dict["story_content"] as? String ?? "")
         self.authors = dict["story_authors"] as? String ?? ""
         self.permalink = dict["story_permalink"] as? String ?? ""
 
@@ -68,9 +41,20 @@ struct DiscoverStory: Identifiable {
             self.imageUrls = []
         }
     }
-}
 
-enum DiscoverFeedsViewMode: String, CaseIterable {
-    case grid
-    case list
+    private static func previewText(from html: String) -> String {
+        guard !html.isEmpty else { return "" }
+
+        // DiscoverFeedsModels.swift bounds preview parsing and reuses NSString+HTML's non-rendering scanner.
+        let visibleHTML = String(html.prefix(12_000))
+            .replacingOccurrences(of: "(?is)<(script|style)\\b[^>]*>.*?(?:</\\1\\s*>|\\z)",
+                                  with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "(?i)<(?:br|hr)\\b[^>]*>",
+                                  with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "<(?=\\s|\\d)", with: "&lt;", options: .regularExpression)
+        let plainText = (visibleHTML as NSString).convertingHTMLToPlainText() ?? ""
+        let normalized = plainText.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return String(normalized.prefix(500))
+    }
 }

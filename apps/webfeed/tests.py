@@ -536,7 +536,8 @@ class Test_AnalyzeWebFeedPageModel(TestCase):
         mock_provider.get_last_usage.return_value = (100, 25)
         mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
 
-        result = AnalyzeWebFeedPage(self.user.pk, "https://example.com/")
+        request_id = "shared-request-id"
+        result = AnalyzeWebFeedPage(self.user.pk, "https://example.com/", request_id=request_id)
 
         self.assertEqual(result["code"], 1)
         mock_get_provider.assert_called_once_with("openai")
@@ -550,6 +551,14 @@ class Test_AnalyzeWebFeedPageModel(TestCase):
         self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-5.6-luna")
         self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "webfeed")
         mock_record_result.assert_called_once_with(success=True)
+        stored_keys = {call.args[0] for call in mock_redis.return_value.set.call_args_list}
+        self.assertEqual(
+            stored_keys,
+            {
+                f"webfeed:status:{self.user.pk}:{request_id}",
+                f"webfeed:results:{self.user.pk}:{request_id}",
+            },
+        )
 
 
 class Test_DegenerateContainerXPaths(TestCase):
@@ -853,3 +862,86 @@ class Test_WebFeedProxySkips(TestCase):
         fetcher.config.record_failure.assert_not_called()
         mock_capped.assert_called_once_with("webfeed", url=self.URL)
         self.assertIn("daily proxy credit cap", fetcher.skip_reason)
+
+
+class Test_WebFeedStatus(TestCase):
+    """apps/webfeed/views.py must preserve the worker payload for the iOS poller."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("webfeed_poll_tester")
+        self.client.force_login(self.user)
+        self.request_id = "12345678-1234-1234-1234-123456789012"
+
+    @patch("apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result")
+    @patch("apps.webfeed.tasks.fetch_page_html", return_value=None)
+    @patch("apps.webfeed.tasks.redis.Redis")
+    def test_same_request_id_is_isolated_between_users(self, redis_client, mock_fetch, mock_record):
+        from apps.webfeed.tasks import AnalyzeWebFeedPage
+
+        other_user = User.objects.create_user("other_webfeed_poll_tester")
+        stored = {}
+        redis_client.return_value.set.side_effect = lambda key, value, **kwargs: stored.update({key: value})
+        redis_client.return_value.get.side_effect = stored.get
+
+        AnalyzeWebFeedPage(self.user.pk, "https://example.com/first", request_id=self.request_id)
+        owner_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(owner_response.content)["url"], "https://example.com/first")
+
+        self.client.force_login(other_user)
+        other_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        other_data = json.decode(other_response.content)
+        self.assertEqual(other_data["code"], -1)
+        self.assertEqual(other_data["status"], "unknown")
+        self.assertNotIn("url", other_data)
+
+        AnalyzeWebFeedPage(other_user.pk, "https://example.com/second", request_id=self.request_id)
+        other_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(other_response.content)["url"], "https://example.com/second")
+        self.client.force_login(self.user)
+        owner_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(owner_response.content)["url"], "https://example.com/first")
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_complete_includes_preview_patterns_and_page_title(self, redis_client):
+        variants = {
+            "page_title": "Example Stories",
+            "html_hash": "page-hash",
+            "variants": [
+                {
+                    "story_container": "//article",
+                    "title": ".//h2/text()",
+                    "preview_stories": [{"title": "First story", "link": "https://example.com/story"}],
+                }
+            ],
+        }
+        stored = {
+            f"webfeed:status:{self.user.pk}:{self.request_id}": json.encode({"type": "complete"}),
+            f"webfeed:results:{self.user.pk}:{self.request_id}": json.encode(variants),
+            f"webfeed:results:{self.request_id}": json.encode({"page_title": "Another user's result"}),
+        }
+        redis_client.return_value.get.side_effect = stored.get
+        response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        data = json.decode(response.content)
+        self.assertEqual(data["code"], 1)
+        self.assertEqual(data["variants_data"], variants)
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_pending_and_worker_error_are_distinct(self, redis_client):
+        redis_client.return_value.get.return_value = None
+        pending = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(pending.content)["status"], "unknown")
+        redis_client.return_value.get.return_value = json.encode(
+            {"type": "error", "error": "No stories found"}
+        )
+        failed = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(failed.content)["error"], "No stories found")
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_invalid_identifier_does_not_query_redis(self, redis_client):
+        response = self.client.get("/webfeed/status", {"request_id": "not a request id"})
+        self.assertEqual(json.decode(response.content)["status"], "invalid")
+        redis_client.assert_not_called()
+
+    def test_requires_authentication(self):
+        self.client.logout()
+        self.assertEqual(self.client.get("/webfeed/status", {"request_id": self.request_id}).status_code, 403)

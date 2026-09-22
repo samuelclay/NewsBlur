@@ -1,0 +1,463 @@
+//
+//  WebFeedTabView.swift
+//  NewsBlur
+//
+//  Created by Claude on 2026-03-05.
+//  Copyright 2026 NewsBlur. All rights reserved.
+//
+
+import SwiftUI
+
+@available(iOS 15.0, *)
+struct WebFeedTabView: View {
+    @ObservedObject var viewModel: DiscoverSitesViewModel
+    var onTryFeed: ((DiscoverPopularFeed) -> Void)?
+    var onAddFeed: ((DiscoverPopularFeed) -> Void)?
+    @State private var storyHint = ""
+    private let explainerCards: [WebFeedExplainerCard] = [
+        WebFeedExplainerCard(
+            id: "any-site",
+            assetName: "web-feed-any-site",
+            title: "Works on any website",
+            description: "Paste any URL and NewsBlur creates a feed from the page, even without RSS.",
+            detail: "The page HTML is fetched and parsed to extract content structure."
+        ),
+        WebFeedExplainerCard(
+            id: "ai-analyze",
+            assetName: "web-feed-ai-analyze",
+            title: "AI finds the stories",
+            description: "You're presented with multiple story pattern options to choose from.",
+            detail: "XPath patterns identify story blocks, headlines, links, and images."
+        ),
+        WebFeedExplainerCard(
+            id: "refine",
+            assetName: "web-feed-refine",
+            title: "Refine with a hint",
+            description: "If none of the options match, type a story title you see on the page and we'll re-analyze.",
+            detail: "A second pass uses your hint to find the right pattern on the page."
+        ),
+        WebFeedExplainerCard(
+            id: "updates",
+            assetName: "web-feed-updates",
+            title: "Updates come to you",
+            description: "NewsBlur checks for changes and delivers new stories to your feed.",
+            detail: "New stories arrive alongside your other feeds."
+        )
+    ]
+
+    var body: some View {
+        ScrollView {
+            // WebFeedTabView.swift lays out its finite form eagerly to keep keyboard scrolling
+            // from repeatedly invalidating lazy section placement as results enter the viewport.
+            VStack(spacing: 16) {
+                urlInputSection
+
+                if viewModel.webFeedState.variants.isEmpty && !viewModel.webFeedState.isAnalyzing && viewModel.webFeedState.detectedFeedURL == nil {
+                    explainerSection
+                }
+
+                if viewModel.webFeedState.isAnalyzing {
+                    analyzingSection
+                }
+
+                if let errorMessage = viewModel.webFeedState.errorMessage {
+                    errorSection(errorMessage)
+                }
+
+                if let feedURL = viewModel.webFeedState.detectedFeedURL {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("This site already has a feed", systemImage: "dot.radiowaves.left.and.right")
+                            .font(.headline)
+                        Text("Add it directly to your selected folder.").font(.subheadline)
+                        HStack(spacing: 8) {
+                            Spacer(minLength: 0)
+                            DiscoverFolderPicker(viewModel: viewModel,
+                                                 identifier: "discover-folder-picker-webfeed-detected")
+                            Button("Add feed") { viewModel.addFeed(url: feedURL) }
+                                .frame(minHeight: 44)
+                                .buttonStyle(.borderedProminent).tint(DiscoverColors.accent)
+                                .disabled(viewModel.isAdding)
+                                .accessibilityIdentifier("discover-add-webfeed-detected")
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading).padding(16)
+                    .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
+                }
+                if !viewModel.webFeedState.isAnalyzing && (!viewModel.webFeedState.variants.isEmpty || viewModel.webFeedState.errorMessage != nil) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Not the stories you wanted?").font(.headline)
+                        TextField("Paste a story title from the page", text: $storyHint)
+                            .textFieldStyle(.roundedBorder)
+                        Button("Refine with this title") {
+                            viewModel.analyzeWebFeed(url: viewModel.webFeedState.url, hint: storyHint)
+                        }
+                        .frame(minHeight: 44)
+                        .disabled(storyHint.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                    .foregroundColor(DiscoverColors.textPrimary)
+                }
+                if !viewModel.webFeedState.variants.isEmpty {
+
+                    variantsSection
+                    configureSection
+                    subscribeSection
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+        }
+        .background(DiscoverColors.background)
+        .scrollDismissesKeyboard(.interactively)
+    }
+
+    // MARK: - URL Input
+
+    private var urlInputSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Create a feed from any web page")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(DiscoverColors.textPrimary)
+
+            Text("Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to.")
+                .font(.system(size: 13))
+                .foregroundColor(DiscoverColors.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "globe")
+                        .font(.system(size: 14))
+                        .foregroundColor(DiscoverColors.textSecondary)
+
+                    TextField("Enter a web page URL...", text: $viewModel.webFeedState.url)
+                        .font(.system(size: 15))
+                        .foregroundColor(DiscoverColors.textPrimary)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .keyboardType(.URL)
+                        .submitLabel(.go)
+                        .onSubmit {
+                            viewModel.analyzeWebFeed(url: viewModel.webFeedState.url)
+                        }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(DiscoverColors.textFieldBackground)
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(DiscoverColors.border, lineWidth: 1)
+                )
+
+                Button(action: {
+                    viewModel.analyzeWebFeed(url: viewModel.webFeedState.url)
+                }) {
+                    Text("Analyze")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
+                        .background(
+                            viewModel.webFeedState.url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.webFeedState.isAnalyzing
+                                ? DiscoverColors.accent.opacity(0.5)
+                                : DiscoverColors.accent
+                        )
+                        .cornerRadius(8)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .disabled(viewModel.webFeedState.url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.webFeedState.isAnalyzing)
+            }
+        }
+    }
+
+    // MARK: - Explainer
+
+    private var explainerSection: some View {
+        LazyVGrid(
+            columns: [GridItem(.adaptive(minimum: 160), spacing: 12, alignment: .top)],
+            alignment: .center,
+            spacing: 12
+        ) {
+            ForEach(explainerCards) { card in
+                explainerCard(card)
+            }
+        }
+    }
+
+    private func explainerCard(_ card: WebFeedExplainerCard) -> some View {
+        VStack(spacing: 0) {
+            Image(card.assetName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 72, height: 72)
+                .padding(.bottom, 14)
+
+            Text(card.title)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(DiscoverColors.textPrimary)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 8)
+
+            Text(card.description)
+                .font(.system(size: 13))
+                .foregroundColor(DiscoverColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, 8)
+
+        }
+        .frame(maxWidth: .infinity, minHeight: 240, alignment: .top)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 20)
+        .background(DiscoverColors.cardBackground)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(DiscoverColors.border.opacity(0.8), lineWidth: 1)
+        )
+    }
+
+    // MARK: - Analyzing
+
+    private var analyzingSection: some View {
+        VStack(spacing: 12) {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: DiscoverColors.accent))
+
+            Text(viewModel.webFeedState.progressMessage)
+                .font(.system(size: 14))
+                .foregroundColor(DiscoverColors.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+        .padding(.horizontal, 16)
+        .background(DiscoverColors.cardBackground)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(DiscoverColors.border.opacity(0.6), lineWidth: 1)
+        )
+    }
+
+    // MARK: - Error
+
+    private func errorSection(_ message: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 14))
+                .foregroundColor(DiscoverColors.errorText)
+
+            Text(message)
+                .font(.system(size: 14))
+                .foregroundColor(DiscoverColors.errorText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(12)
+        .background(DiscoverColors.errorText.opacity(0.1))
+        .cornerRadius(8)
+    }
+
+    // MARK: - Variants
+
+    private var variantsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Select a feed variant")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(DiscoverColors.textPrimary)
+
+            ForEach(viewModel.webFeedState.variants) { variant in
+                variantCard(variant)
+            }
+        }
+    }
+
+    private func variantCard(_ variant: WebFeedVariant) -> some View {
+        let isSelected = viewModel.webFeedState.selectedVariantIndex == variant.id
+
+        return Button(action: {
+            viewModel.webFeedState.selectedVariantIndex = variant.id
+        }) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(variant.label)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(DiscoverColors.textPrimary)
+
+                    Spacer()
+
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 16))
+                            .foregroundColor(DiscoverColors.accent)
+                    }
+                }
+
+                if !variant.stories.isEmpty {
+                    Rectangle()
+                        .fill(DiscoverColors.border.opacity(0.5))
+                        .frame(height: 1)
+
+                    ForEach(variant.stories.prefix(3)) { story in
+                        HStack(alignment: .top, spacing: 8) {
+                            Circle()
+                                .fill(DiscoverColors.accent)
+                                .frame(width: 5, height: 5)
+                                .padding(.top, 6)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(story.title)
+                                    .font(.system(size: 13))
+                                    .foregroundColor(DiscoverColors.textPrimary)
+                                    .lineLimit(2)
+
+                                Text(story.link)
+                                    .font(.system(size: 11))
+                                    .foregroundColor(DiscoverColors.textSecondary)
+                                    .lineLimit(1)
+                            }
+
+                            Spacer(minLength: 0)
+
+                            if let imageUrl = story.imageUrl, let url = URL(string: imageUrl) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 40, height: 40)
+                                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                                    default:
+                                        Color.clear
+                                            .frame(width: 40, height: 40)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            .padding(12)
+            .background(DiscoverColors.cardBackground)
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isSelected ? DiscoverColors.accent : DiscoverColors.border.opacity(0.6), lineWidth: isSelected ? 2 : 1)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+
+    // MARK: - Configure
+
+    private var configureSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Configure")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(DiscoverColors.textPrimary)
+
+            // Custom title
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Feed Title")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(DiscoverColors.textSecondary)
+
+                TextField("Custom feed title", text: $viewModel.webFeedState.feedTitle)
+                    .font(.system(size: 14))
+                    .foregroundColor(DiscoverColors.textPrimary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(DiscoverColors.textFieldBackground)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(DiscoverColors.border, lineWidth: 1)
+                    )
+            }
+
+            // Staleness slider
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("Alert after no new stories for")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(DiscoverColors.textSecondary)
+
+                    Spacer()
+
+                    Text("\(Int(viewModel.webFeedState.stalenessDays)) \(Int(viewModel.webFeedState.stalenessDays) == 1 ? "day" : "days")")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(DiscoverColors.accent)
+                }
+
+                Slider(
+                    value: $viewModel.webFeedState.stalenessDays,
+                    in: 1...90,
+                    step: 1
+                )
+                .accentColor(DiscoverColors.accent)
+            }
+
+            // Mark unread toggle
+            Toggle(isOn: $viewModel.webFeedState.markUnreadOnChange) {
+                Text("Mark stories as unread on change")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(DiscoverColors.textSecondary)
+            }
+            .toggleStyle(SwitchToggleStyle(tint: DiscoverColors.accent))
+
+        }
+        .padding(12)
+        .background(DiscoverColors.cardBackground)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(DiscoverColors.border.opacity(0.6), lineWidth: 1)
+        )
+    }
+
+    // MARK: - Subscribe
+
+    private var subscribeSection: some View {
+        HStack(spacing: 8) {
+            Spacer(minLength: 0)
+            DiscoverFolderPicker(viewModel: viewModel, identifier: "discover-folder-picker-webfeed")
+            Button(action: {
+                viewModel.subscribeWebFeed()
+            }) {
+                HStack {
+                    if viewModel.webFeedState.isSubscribing {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(0.8)
+                    }
+
+                    Text(viewModel.webFeedState.isSubscribing ? "Subscribing..." : "Subscribe")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 44)
+                .background(
+                    viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing
+                        ? DiscoverColors.accent.opacity(0.5)
+                        : DiscoverColors.accent
+                )
+                .cornerRadius(10)
+            }
+            .buttonStyle(PlainButtonStyle())
+            .disabled(viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing)
+            .accessibilityLabel("Subscribe to Web Feed")
+            .accessibilityIdentifier("discover-subscribe-webfeed")
+        }
+    }
+}
+
+private struct WebFeedExplainerCard: Identifiable {
+    let id: String
+    let assetName: String
+    let title: String
+    let description: String
+    let detail: String
+}
