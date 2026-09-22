@@ -802,6 +802,7 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
             return layer.convert(layer.bounds, to: root)
         }
         let visibleFrames = views.mapValues { view -> CGRect in
+            guard view.window === window else { return .null }
             let layer = view.layer.presentation() ?? view.layer
             var visible = layer.convert(layer.bounds, to: root)
             var ancestor = view.superview
@@ -836,6 +837,73 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
     private var journeyScrolledStories = Set<String>()
     private var initialDuoFullscreenMode: Bool?
     private var initialDuoFullscreenPreference: (key: String, value: Any?)?
+
+    func test_liveClosedBackKeepsReturningFeedsAtTheirFinalTopEdge() async throws {
+        guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_DUO_BACK_TESTS"] == "1" else {
+            throw XCTSkip("Run alone on logged-in closed Duo with NEWSBLUR_LIVE_DUO_BACK_TESTS=1")
+        }
+        let app = try await prepareApp()
+        let feeds = try XCTUnwrap(app.feedsViewController)
+        let navigation = try XCTUnwrap(feeds.navigationController)
+        let window = try XCTUnwrap(feeds.view.window)
+        if ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_DUO_BACK_FOLD"] == "1" {
+            guard !app.detailViewController.isPhoneOrCompact else { throw XCTSkip("Start this fold reproduction open") }
+            _ = try await openSubscribedFeed(app)
+            print("DUO_BACK_READY_TO_FOLD_CLOSED")
+            try await waitUntil("Fold the actual Device Hub to Closed", timeout: 60) {
+                app.detailViewController.isPhoneOrCompact && app.splitViewController.transitionCoordinator == nil &&
+                    navigation.transitionCoordinator == nil
+            }
+            try await settle(app.feedDetailViewController)
+        }
+        guard app.detailViewController.isPhoneOrCompact,
+              Utilities.usesSystemVerticalBar(navigation.traitCollection) else {
+            throw XCTSkip("Requires the closed Duo side toolbar")
+        }
+        let baselineTop = window.safeAreaInsets.top
+        for scrolled in [false, true] {
+            let stories = navigation.topViewController === app.feedDetailViewController
+                ? try XCTUnwrap(app.feedDetailViewController) : try await openSubscribedFeed(app)
+            try await waitUntil("The closed source push must finish") {
+                navigation.topViewController === stories && navigation.transitionCoordinator == nil
+            }
+            let table = try XCTUnwrap(stories.storyTitlesTable)
+            table.setContentOffset(CGPoint(x: 0, y: scrolled ? 350 : -table.adjustedContentInset.top), animated: false)
+            try await settle(stories)
+            let recorder = DuoColumnMotionRecorder(window: window,
+                views: ["feeds": feeds.view, "feedTable": feeds.feedTitlesTable,
+                        "header": try XCTUnwrap(feeds.feedTitlesTable.tableHeaderView)], hasStoryRows: { true })
+            recorder.start()
+            navigation.popViewController(animated: true)
+            var geometry: [String] = []
+            // DuoPresentationTests.swift observes native Back through its final layout, rather than sampling only its already-correct destination.
+            let deadline = Date().addingTimeInterval(1.2)
+            while Date() < deadline {
+                geometry.append("feeds=\(feeds.view.frame) safe=\(feeds.view.safeAreaInsets) additional=\(feeds.additionalSafeAreaInsets) table=\(feeds.feedTitlesTable.frame) bar=\(navigation.navigationBar.frame) hidden=\(navigation.isNavigationBarHidden) transition=\(navigation.transitionCoordinator != nil)")
+                try await Task.sleep(nanoseconds: 16_000_000)
+            }
+            recorder.stop()
+            let visible = recorder.samples.dropFirst().filter {
+                ($0.visibleFrames["feeds"]?.width ?? 0) > 40 && ($0.opacities["feeds"] ?? 0) > 0.5
+            }
+            let tops = visible.compactMap { $0.frames["feeds"]?.minY }
+            print("DUO_FEEDS_BACK scrolled=\(scrolled) baseline=\(baselineTop) min=\(tops.min() ?? -1) max=\(tops.max() ?? -1) samples=\(tops.count)")
+            let trace = recorder.samples.map { "\($0.time) frames=\($0.frames) visible=\($0.visibleFrames)" }.joined(separator: "\n")
+            let attachment = XCTAttachment(string: trace + "\n" + geometry.joined(separator: "\n"))
+            attachment.name = "closed-back-feed-top-scrolled-\(scrolled)"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+            XCTAssertGreaterThan(tops.count, 3)
+            XCTAssertLessThan((tops.max() ?? baselineTop) - baselineTop, 1.5,
+                              "Returning Feeds must not reserve the outgoing story header then jump upward when Back completes")
+            XCTAssertEqual(tops.last ?? -1, baselineTop, accuracy: 1)
+            let tableTops = visible.compactMap { $0.frames["feedTable"]?.minY }
+            XCTAssertLessThan((tableTops.max() ?? baselineTop) - baselineTop, 1.5,
+                              "The account header and feeds must begin at their final top edge throughout the pop")
+            XCTAssertTrue(navigation.topViewController === feeds)
+            capture(window, named: "closed-back-feed-top-scrolled-\(scrolled)", controller: navigation)
+        }
+    }
 
     func test_liveOpenLaunchKeepsFeedsUntilStorySelection() async throws {
         let app = try await coldLaunchApp()

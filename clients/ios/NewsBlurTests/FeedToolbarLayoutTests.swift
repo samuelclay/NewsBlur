@@ -38,6 +38,40 @@ import WebKit
         try await super.tearDown()
     }
 
+    func test_duoFeedBarUsesCurrentNavigationTraitsBeforeTheChildReattaches() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo navigation is an iOS presentation")
+        #else
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let currentTraits = try XCTUnwrap(app.feedsNavigationController?.traitCollection)
+        guard Utilities.usesSystemVerticalBar(currentTraits) else {
+            throw XCTSkip("Run with the actual Duo navigation using its side bar")
+        }
+        let horizontalTraits = UITraitCollection(userInterfaceIdiom: .pad)
+        XCTAssertFalse(Utilities.usesSystemVerticalBar(horizontalTraits))
+        // FeedToolbarLayoutTests.swift models the child trait lag captured during the first native Back after folding.
+        for (navigationTraits, childTraits, expected) in [
+            (currentTraits, horizontalTraits, true),
+            (horizontalTraits, currentTraits, false)
+        ] {
+            let feeds = FeedBarTraitFeeds()
+            feeds.fixtureTraits = childTraits
+            let navigation = FeedBarTraitNavigation()
+            navigation.fixtureTraits = navigationTraits
+            navigation.setViewControllers([feeds], animated: false)
+            XCTAssertTrue(feeds.navigationController === navigation)
+            XCTAssertEqual((feeds.value(forKey: "usesVerticalFeedToolbar") as? NSNumber)?.boolValue, expected,
+                           "Feed header and toolbar policy must use the native container's destination traits before attachment")
+            navigation.setViewControllers([], animated: false)
+        }
+        let standalone = FeedBarTraitFeeds()
+        standalone.fixtureTraits = currentTraits
+        XCTAssertNil(standalone.navigationController)
+        XCTAssertEqual((standalone.value(forKey: "usesVerticalFeedToolbar") as? NSNumber)?.boolValue, true,
+                       "A feed list without a navigation container must retain its own trait policy")
+        #endif
+    }
+
     func test_duoInteractiveBackKeepsOutgoingHeaderUntilTransitionFinishes() throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("Duo navigation is an iOS presentation")
@@ -2777,6 +2811,21 @@ import WebKit
 @MainActor private final class HorizontalToolbarFeeds: FeedsViewController {
     // FeedToolbarLayoutTests.swift exercises the ordinary horizontal toolbar on any test host.
     @objc func usesVerticalFeedToolbar() -> Bool { false }
+}
+
+@MainActor private final class FeedBarTraitFeeds: FeedsViewController {
+    var fixtureTraits: UITraitCollection?
+    override var traitCollection: UITraitCollection { fixtureTraits ?? super.traitCollection }
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewDidLayoutSubviews() {}
+}
+
+@MainActor private final class FeedBarTraitNavigation: UINavigationController {
+    var fixtureTraits: UITraitCollection?
+    override var traitCollection: UITraitCollection { fixtureTraits ?? super.traitCollection }
 }
 
 @MainActor private final class FeedBackHeaderFeeds: FeedsViewController {
