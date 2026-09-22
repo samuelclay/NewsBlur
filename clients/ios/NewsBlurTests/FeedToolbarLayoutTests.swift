@@ -38,6 +38,57 @@ import WebKit
         try await super.tearDown()
     }
 
+    func test_readerRestoresKeyboardShortcutsWithoutWalkingUnrelatedContent() throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first(where: \.isKeyWindow)
+        let window = UIWindow(windowScene: scene)
+        let root = UIViewController()
+        window.rootViewController = root
+        window.makeKeyAndVisible()
+        let pages = ReaderFocusPages()
+        let article = ReaderFocusPage()
+        root.addChild(pages)
+        root.view.addSubview(pages.view)
+        pages.didMove(toParent: root)
+        pages.currentPage = article
+        let field = UITextField(frame: CGRect(x: 10, y: 10, width: 200, height: 40))
+        field.text = "Keep this search"
+        root.view.addSubview(field)
+        let unrelatedContent = ReaderFocusContentProbe()
+        unrelatedContent.addSubview(UIView())
+        root.view.addSubview(unrelatedContent)
+        defer {
+            unrelatedContent.recordsEnumeration = false
+            field.resignFirstResponder()
+            pages.currentPage = nil
+            pages.willMove(toParent: nil)
+            pages.view.removeFromSuperview()
+            pages.removeFromParent()
+            window.isHidden = true
+            window.rootViewController = nil
+            previousWindow?.makeKeyAndVisible()
+        }
+
+        XCTAssertTrue(field.becomeFirstResponder())
+        unrelatedContent.recordsEnumeration = true
+        for _ in 0..<3 {
+            XCTAssertFalse(pages.becomeFirstResponder())
+            XCTAssertTrue(field.isFirstResponder, "Reader updates must preserve editing outside the reader")
+        }
+        XCTAssertEqual(field.text, "Keep this search")
+        XCTAssertEqual(article.focusRequests, 0)
+        XCTAssertEqual(unrelatedContent.enumerations, 0,
+                       "Keyboard ownership must not enumerate unrelated table or web content on each story change")
+
+        unrelatedContent.recordsEnumeration = false
+        field.resignFirstResponder()
+        unrelatedContent.enumerations = 0
+        unrelatedContent.recordsEnumeration = true
+        XCTAssertTrue(pages.becomeFirstResponder())
+        XCTAssertEqual(article.focusRequests, 1, "Reader shortcuts must resume after editing ends")
+        XCTAssertEqual(unrelatedContent.enumerations, 0)
+    }
+
     func test_duoFeedBarUsesCurrentNavigationTraitsBeforeTheChildReattaches() throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("Duo navigation is an iOS presentation")
@@ -2734,6 +2785,29 @@ import WebKit
 @MainActor private final class DuoPagerResizeNavigationDelegate: NSObject, WKNavigationDelegate {
     var didLoad: ((WKWebView) -> Void)?
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { didLoad?(webView) }
+}
+
+@MainActor private final class ReaderFocusPages: StoryPagesViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 60, width: 300, height: 400)) }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+}
+
+@MainActor private final class ReaderFocusPage: StoryDetailViewController {
+    var focusRequests = 0
+    override func becomeFirstResponder() -> Bool { focusRequests += 1; return true }
+}
+
+@MainActor private final class ReaderFocusContentProbe: UIView {
+    var recordsEnumeration = false
+    var enumerations = 0
+    override var subviews: [UIView] {
+        if recordsEnumeration { enumerations += 1 }
+        return super.subviews
+    }
 }
 
 @MainActor private class DuoScrollingHeaderPages: StoryPagesViewController {

@@ -854,13 +854,10 @@
     }
     if (window.rootViewController.presentedViewController) return NO;
 
-    NSMutableArray<UIView *> *views = [NSMutableArray arrayWithObject:window];
-    while (views.count > 0) {
-        UIView *view = views.lastObject;
-        [views removeLastObject];
-        if (view.isFirstResponder && [view conformsToProtocol:@protocol(UITextInput)]) return NO;
-        [views addObjectsFromArray:view.subviews];
-    }
+    UIResponder *firstResponder = [UIResponder currentFirstResponder];
+    if ([firstResponder isKindOfClass:UIView.class] &&
+        ((UIView *)firstResponder).window == window &&
+        [firstResponder conformsToProtocol:@protocol(UITextInput)]) return NO;
     return [currentPage becomeFirstResponder];
 }
 
