@@ -56,7 +56,7 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
         hashes: Collection<String>,
         requestStartedAt: Long,
         isFeedEligible: Predicate<String> = Predicate { true },
-    ) {
+    ): Int {
         val serverUnread = hashes.toSet()
         val embeddedUnread = mutableMapOf<String, Boolean?>()
         // UnreadsSubService.kt cannot retire children absent from the standalone story table.
@@ -98,6 +98,7 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
             }
         }
         reconcileServerReadState(candidates, false, requestStartedAt)
+        return retired.size
     }
 
     fun reconcileServerReadState(hashes: Collection<String>, read: Boolean, requestStartedAt: Long) {

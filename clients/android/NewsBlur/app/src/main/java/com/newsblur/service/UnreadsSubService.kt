@@ -11,6 +11,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import java.util.Collections
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.function.Predicate
 
 class UnreadsSubService(
     delegate: SyncServiceDelegate,
@@ -91,8 +92,15 @@ class UnreadsSubService(
         }
         Log.i(this, "new unread count: $count")
         // ClusterReadStore.kt also retires embedded children, whose feeds may be absent from this response.
-        dbHelper.reconcileServerUnreadHashes(serverUnreadHashes, requestStartedAt) { feedId ->
-            !delegate.isOrphanFeed(feedId) && !delegate.isDisabledFeed(feedId)
+        val canRetireFeed = Predicate<String> { feedId ->
+            !delegate.isOrphanFeed(feedId) && !delegate.isDisabledFeed(feedId) &&
+                (unreadHashes.unreadHashes[feedId]?.size ?: 0) < SERVER_UNREAD_HASH_LIMIT
+        }
+        dbHelper.reconcileServerUnreadHashes(serverUnreadHashes, requestStartedAt, canRetireFeed)
+        // BlurDatabaseHelper.java also propagates standalone retirement to every embedded copy.
+        oldUnreadHashes.removeAll { hash ->
+            val feedId = inferFeedId(hash)
+            feedId == null || !canRetireFeed.test(feedId)
         }
         Log.i(this, "new unreads found: ${sortationList.size}")
         Log.i(this, "unreads to retire: ${oldUnreadHashes.size}")
@@ -179,6 +187,10 @@ class UnreadsSubService(
     }
 
     companion object {
+        // apps/reader/views.py uses the apps/reader/models.py story_hashes default of 500 per feed.
+        // A response at the cap may omit unread children, so absence cannot establish that they were read.
+        private const val SERVER_UNREAD_HASH_LIMIT = 500
+
         /** Unread story hashes the API listed that we do not appear to have locally yet.  */
         var storyHashQueue = ConcurrentLinkedQueue<String>()
 
