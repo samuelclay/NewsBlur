@@ -760,6 +760,74 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
     }
 }
 
+// DuoPresentationTests.swift samples rendered column positions, including native split-view ancestor animations.
+@MainActor private final class DuoColumnMotionRecorder: NSObject {
+    struct Sample {
+        let time: CFTimeInterval
+        let frames: [String: CGRect]
+        let visibleFrames: [String: CGRect]
+        let opacities: [String: Float]
+        let hasStoryRows: Bool
+    }
+    let window: UIWindow
+    let views: [String: UIView]
+    let hasStoryRows: () -> Bool
+    private var displayLink: CADisplayLink?
+    private(set) var samples: [Sample] = []
+
+    init(window: UIWindow, views: [String: UIView], hasStoryRows: @escaping () -> Bool) {
+        self.window = window
+        self.views = views
+        self.hasStoryRows = hasStoryRows
+        super.init()
+    }
+
+    func start() {
+        record()
+        let link = CADisplayLink(target: self, selector: #selector(record))
+        link.add(to: .main, forMode: .common)
+        displayLink = link
+    }
+
+    func stop() {
+        record()
+        displayLink?.invalidate()
+        displayLink = nil
+    }
+
+    @objc private func record() {
+        let root = window.layer.presentation() ?? window.layer
+        let frames = views.mapValues { view -> CGRect in
+            let layer = view.layer.presentation() ?? view.layer
+            return layer.convert(layer.bounds, to: root)
+        }
+        let visibleFrames = views.mapValues { view -> CGRect in
+            let layer = view.layer.presentation() ?? view.layer
+            var visible = layer.convert(layer.bounds, to: root)
+            var ancestor = view.superview
+            while let current = ancestor {
+                if current.clipsToBounds || current === window {
+                    let clip = current.layer.presentation() ?? current.layer
+                    visible = visible.intersection(clip.convert(clip.bounds, to: root))
+                }
+                ancestor = current.superview
+            }
+            return visible
+        }
+        let opacities = views.mapValues { view -> Float in
+            var opacity: Float = 1
+            var ancestor: UIView? = view
+            while let current = ancestor, current !== window {
+                opacity *= (current.layer.presentation() ?? current.layer).opacity
+                ancestor = current.superview
+            }
+            return opacity
+        }
+        samples.append(Sample(time: CACurrentMediaTime(), frames: frames,
+                              visibleFrames: visibleFrames, opacities: opacities, hasStoryRows: hasStoryRows()))
+    }
+}
+
 /// DuoPresentationTests.swift exercises the logged-in Alpha app in the pose selected in Device Hub.
 @MainActor final class Test_DuoPresentation: XCTestCase {
     private var liveApp: NewsBlurAppDelegate?
@@ -815,6 +883,138 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
         }
         try await waitForReadableArticle(pages, app: app, selectedHash: hash)
         capture(window, named: "open-launch-after-story-selection", controller: split)
+    }
+
+    func test_liveOpenSourceSelectionsAnimateTitlesThenShiftIntoReading() async throws {
+        let app = try await coldLaunchApp()
+        let split = try XCTUnwrap(app.splitViewController)
+        let feeds = try XCTUnwrap(app.feedsViewController)
+        let titles = try XCTUnwrap(app.feedDetailViewController)
+        let pages = try XCTUnwrap(app.storyPagesViewController)
+        let window = try XCTUnwrap(split.view.window)
+        guard !UIAccessibility.isReduceMotionEnabled else { throw XCTSkip("The motion audit requires Reduce Motion off") }
+        XCTAssertFalse(app.detailViewController.isDuoFullscreenReader)
+        XCTAssertNil(app.activeStory)
+        XCTAssertEqual(split.displayMode, .oneBesideSecondary)
+        guard !app.detailViewController.isDuoFullscreenReader, app.activeStory == nil else { return }
+        let initiallyClipsColumns = app.detailViewController.view.clipsToBounds
+        let initialTitleTransform = app.detailViewController.leftContainerView.layer.sublayerTransform
+
+        func hasStoryRows() -> Bool {
+            titles.storyTitlesTable.visibleCells.contains { cell in
+                guard let cell = cell as? FeedDetailTableCell, let path = titles.storyTitlesTable.indexPath(for: cell) else { return false }
+                let location = titles.storyLocation(for: path)
+                guard location >= 0, location < titles.storiesCollection.storyLocationsCount,
+                      let hash = titles.getStoryAtLocation(location)?["story_hash"] as? String else { return false }
+                return cell.storyHash == hash
+            }
+        }
+
+        func record(_ operation: () async throws -> Void) async throws -> [DuoColumnMotionRecorder.Sample] {
+            let recorder = DuoColumnMotionRecorder(window: window,
+                views: ["feeds": feeds.view, "titles": titles.view, "reader": pages.view], hasStoryRows: hasStoryRows)
+            recorder.start()
+            defer { recorder.stop() }
+            try await operation()
+            try await waitUntil("The source entrance must include actual story rows", timeout: 30, condition: hasStoryRows)
+            try await waitUntil("The authoritative update must not replay a cached source entrance", timeout: 30) {
+                let load = titles.value(forKey: "firstPageLoad") as? StoryFirstPageLoad
+                return !titles.pageFetching && load?.pending != true
+            }
+            // DuoPresentationTests.swift observes the entire visible animation, including delayed native split callbacks.
+            try await Task.sleep(nanoseconds: 800_000_000)
+            return recorder.samples
+        }
+        func attach(_ samples: [DuoColumnMotionRecorder.Sample], name: String) {
+            let text = samples.map { "\($0.time): \($0.frames) visible=\($0.visibleFrames) opacity=\($0.opacities) rows=\($0.hasStoryRows)" }.joined(separator: "\n")
+            let attachment = XCTAttachment(string: text)
+            attachment.name = name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+            let xs = samples.compactMap { $0.frames["titles"]?.minX }
+            print("DUO_COLUMN_MOTION \(name) samples=\(xs.count) min=\(xs.min() ?? 0) max=\(xs.max() ?? 0) first=\(xs.first ?? 0) last=\(xs.last ?? 0)")
+        }
+        func assertEntrance(_ samples: [DuoColumnMotionRecorder.Sample], name: String) {
+            attach(samples, name: name)
+            let titlesX = samples.compactMap { $0.frames["titles"]?.minX }
+            let feedsX = samples.compactMap { $0.frames["feeds"]?.minX }
+            let finalX = titles.view.convert(titles.view.bounds, to: window).minX
+            XCTAssertGreaterThan(finalX - (titlesX.min() ?? finalX), 8,
+                                 "\(name): each explicit source selection must slide the story list rightward from beneath Feeds")
+            XCTAssertGreaterThanOrEqual(titlesX.filter { $0 < finalX - 1 }.count, 3,
+                                        "\(name): the entrance must have intermediate rendered frames")
+            let loadedFrames = samples.filter(\.hasStoryRows)
+            XCTAssertGreaterThanOrEqual(loadedFrames.filter { ($0.frames["titles"]?.minX ?? finalX) < finalX - 1 }.count, 3,
+                                        "\(name): actual story rows must slide into view, not only the loading placeholder")
+            XCTAssertLessThan(loadedFrames.compactMap { $0.opacities["titles"] }.min() ?? 1, 0.9,
+                              "\(name): the rendered story rows must participate in the fade")
+            XCTAssertLessThan((feedsX.max() ?? 0) - (feedsX.min() ?? 0), 1.5,
+                              "\(name): Feeds must remain stationary beside the entering titles")
+            for sample in samples {
+                if let visibleTitles = sample.visibleFrames["titles"], !visibleTitles.isNull,
+                   let visibleFeeds = sample.visibleFrames["feeds"], !visibleFeeds.isNull {
+                    XCTAssertGreaterThanOrEqual(visibleTitles.minX, visibleFeeds.maxX - 1,
+                                               "\(name): incoming titles must stay beneath Feeds at the shared edge")
+                }
+            }
+            if let start = titlesX.min(), let index = titlesX.firstIndex(of: start) {
+                let entrance = Array(titlesX.dropFirst(index))
+                for (previous, next) in zip(entrance, entrance.dropFirst()) {
+                    XCTAssertGreaterThanOrEqual(next, previous - 1,
+                                             "\(name): source entrance must not reverse into a second wipe")
+                }
+            }
+            XCTAssertLessThan(samples.compactMap { $0.opacities["titles"] }.min() ?? 1, 0.9,
+                              "\(name): the incoming list should fade as it slides")
+            XCTAssertEqual(titles.view.alpha, 1, accuracy: 0.001)
+            XCTAssertEqual(titles.view.transform, .identity)
+            XCTAssertEqual(app.detailViewController.leftContainerView.alpha, 1, accuracy: 0.001)
+            XCTAssertEqual(app.detailViewController.leftContainerView.transform, .identity)
+            XCTAssertTrue(CATransform3DEqualToTransform(app.detailViewController.leftContainerView.layer.sublayerTransform,
+                                                      initialTitleTransform), "The title content transform must be restored")
+            XCTAssertEqual(app.detailViewController.view.clipsToBounds, initiallyClipsColumns,
+                           "The entrance must restore the host's original clipping policy")
+            XCTAssertEqual(split.displayMode, .oneBesideSecondary)
+            XCTAssertNil(app.activeStory)
+        }
+        let first = try await record { _ = try await self.openSubscribedFeed(app) }
+        assertEntrance(first, name: "first-feed-entrance")
+        for folder in ["everything", "everything"] {
+            let samples = try await record { feeds.selectFolder(folder) }
+            assertEntrance(samples, name: "folder-entrance")
+        }
+        try await waitUntil("The selected source must finish before testing incidental layout", timeout: 30) {
+            let load = titles.value(forKey: "firstPageLoad") as? StoryFirstPageLoad
+            return !titles.pageFetching && titles.storiesCollection.storyLocationsCount > 0 &&
+                (load == nil || (load?.authoritativeReceived == true && load?.pending == false))
+        }
+        let incidental = try await record {
+            app.updateSplitBehavior(false)
+            app.detailViewController.checkLayout()
+            titles.reloadImmediately()
+        }
+        attach(incidental, name: "incidental-layout")
+        let incidentalX = incidental.compactMap { $0.frames["titles"]?.minX }
+        XCTAssertLessThan((incidentalX.max() ?? 0) - (incidentalX.min() ?? 0), 1.5,
+                          "A fetch or layout reconciliation must not replay source entrance")
+
+        var selectedHash = ""
+        let movement = try await record { selectedHash = try await self.selectVisibleStoryForReader(titles) }
+        attach(movement, name: "source-columns-to-reader")
+        let positions = movement.compactMap { $0.frames["titles"]?.minX }
+        let start = try XCTUnwrap(positions.first)
+        let end = try XCTUnwrap(positions.last)
+        XCTAssertGreaterThan(start - end, 100, "Story selection must move titles into the old Feeds position")
+        XCTAssertGreaterThanOrEqual(positions.filter { $0 < start - 2 && $0 > end + 2 }.count, 3,
+                                    "The title column must move through intermediate positions rather than jump")
+        for (previous, next) in zip(positions, positions.dropFirst()) {
+            XCTAssertLessThanOrEqual(next, previous + 2, "The columns must slide once without reversing direction")
+        }
+        XCTAssertTrue(split.isFeedsListHidden)
+        XCTAssertGreaterThan(visibleViewport(of: titles.view).width, 150)
+        XCTAssertGreaterThan(visibleViewport(of: pages.view).width, 250)
+        try await waitForReadableArticle(pages, app: app, selectedHash: selectedHash)
+        capture(window, named: "animated-source-selection-reader", controller: split)
     }
 
     func test_liveFullscreenLaunchShowsFeedsOverlayUntilStorySelection() async throws {

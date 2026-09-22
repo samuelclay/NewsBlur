@@ -44,6 +44,7 @@ class DetailViewController: BaseViewController {
     }
 
     private func mountDiscoveryPane(_ controller: UIViewController) {
+        finishDuoSourceEntrance()
         loadViewIfNeeded()
         guard discoveryPaneNavigationController == nil else { return }
         removeFromFeedsNavigation(viewController: controller)
@@ -116,6 +117,7 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func resetDiscoveryForAccountChange() {
+        finishDuoSourceEntrance()
         expandedFeedsReveal = nil
         appDelegate.trainerViewController?.resetForAccountChange()
         duoFullscreenRequested = false
@@ -338,7 +340,10 @@ class DetailViewController: BaseViewController {
     
     /// Whether or not we are using compact size class, instead of regular size class. (A local property, instead of asking the OS, so it is updated when the split delegate handles the change.)
     @objc var isCompact = false {
-        didSet { hasResolvedSplitLayout = true }
+        didSet {
+            hasResolvedSplitLayout = true
+            if isCompact { finishDuoSourceEntrance() }
+        }
     }
 
     private var hasResolvedSplitLayout = false
@@ -725,6 +730,7 @@ class DetailViewController: BaseViewController {
     }
 
     private func toggleDuoFullscreenReader() {
+        finishDuoSourceEntrance()
         // DetailViewController.swift animates the existing reader host rather than replacing its loaded document during the column change.
         view.layoutIfNeeded()
         UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0 : 0.25,
@@ -1106,7 +1112,10 @@ class DetailViewController: BaseViewController {
     }
     
     @objc(showColumn:animated:) func show(column: UISplitViewController.Column, animated: Bool) {
-        if column == .secondary { expandedFeedsReveal = nil }
+        if column == .secondary {
+            finishDuoSourceEntrance()
+            expandedFeedsReveal = nil
+        }
         if isDuoFullscreenReader {
             if column == .primary { applyDuoFullscreenSidebar(.feeds, animated: animated) }
             return
@@ -1464,6 +1473,7 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterStorySelection() {
+        finishDuoSourceEntrance()
         expandedFeedsReveal = nil
         if isDuoFullscreenReader { applyDuoFullscreenSidebar(.fullscreen, animated: true); return }
         if showsStoryTitlesBesideTiledFeeds {
@@ -1506,11 +1516,18 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterFeedSelection() {
+        finishDuoSourceEntrance()
         expandedFeedsReveal = nil
         if isDuoFullscreenReader { applyDuoFullscreenSidebar(.storyTitles, animated: true); return }
         if isBrowsingDuoSources {
             // DetailViewController.swift keeps source browsing beside Feeds until a story is explicitly selected.
             appDelegate.updateSplitBehavior(false)
+            if !UIAccessibility.isReduceMotionEnabled, UIView.areAnimationsEnabled,
+               viewIfLoaded?.window != nil, let titles = feedDetailViewController,
+               titles.isLegacyTable, let collection = titles.storiesCollection {
+                // NewsBlurAppDelegate.m resets the source before this hook, so this generation belongs to the new selection.
+                pendingDuoSourceEntrance = (ObjectIdentifier(titles), ObjectIdentifier(collection), titles.fetchRequestId)
+            }
             return
         }
         let prefersNativeFullscreenSidebarOverlay = shouldPreferNativeFullscreenSidebarOverlay
@@ -1531,6 +1548,73 @@ class DetailViewController: BaseViewController {
         }
 
         applyFullscreenSidebarPresentation(nextPresentation, sender: nil)
+    }
+
+    private var duoSourceEntrance: (animator: UIViewPropertyAnimator, view: UIView,
+                                   transform: CATransform3D, alpha: CGFloat)?
+    private var pendingDuoSourceEntrance: (titles: ObjectIdentifier, collection: ObjectIdentifier, fetchID: UInt)?
+
+    private func finishDuoSourceEntrance() {
+        pendingDuoSourceEntrance = nil
+        guard let entrance = duoSourceEntrance else { return }
+        duoSourceEntrance = nil
+        if entrance.animator.state == .active { entrance.animator.stopAnimation(true) }
+        UIView.performWithoutAnimation {
+            entrance.view.layer.sublayerTransform = entrance.transform
+            entrance.view.alpha = entrance.alpha
+        }
+    }
+
+    func storyTitlesDidReload(_ titles: FeedDetailViewController) {
+        guard let pending = pendingDuoSourceEntrance, pending.titles == ObjectIdentifier(titles) else { return }
+        guard isBrowsingDuoSources, feedDetailViewController === titles,
+              let collection = titles.storiesCollection,
+              pending.collection == ObjectIdentifier(collection), pending.fetchID == titles.fetchRequestId,
+              !UIAccessibility.isReduceMotionEnabled, UIView.areAnimationsEnabled else {
+            finishDuoSourceEntrance()
+            return
+        }
+        guard collection.storyLocationsCount > 0 else {
+            if titles.pageFinished && !titles.pageFetching { finishDuoSourceEntrance() }
+            return
+        }
+        guard let table = titles.storyTitlesTable, table.window != nil, !table.isHidden else { return }
+        // FeedDetailViewController.swift calls after reloadTable; commit the selected source's real cells before consuming its entrance.
+        table.layoutIfNeeded()
+        let hasCurrentRows = table.visibleCells.contains { cell in
+            guard let cell = cell as? FeedDetailTableCell, let path = table.indexPath(for: cell) else { return false }
+            let location = titles.storyLocation(for: path)
+            guard location >= 0, location < collection.storyLocationsCount,
+                  let hash = titles.getStoryAtLocation(location)?["story_hash"] as? String else { return false }
+            return cell.storyHash == hash
+        }
+        guard hasCurrentRows else { return }
+        pendingDuoSourceEntrance = nil
+        animateDuoSourceEntrance()
+    }
+
+    private func animateDuoSourceEntrance() {
+        guard isBrowsingDuoSources, !UIAccessibility.isReduceMotionEnabled, UIView.areAnimationsEnabled,
+              viewIfLoaded?.window != nil else { return }
+        // DetailViewController.swift animates only explicit source selections after native column geometry settles; fetch/layout updates never replay it.
+        appDelegate.splitViewController?.view.layoutIfNeeded()
+        guard let titles = leftContainerView, !titles.isHidden, titles.alpha > 0,
+              showsStoryTitlesBesideTiledFeeds else { return }
+        let originalTransform = titles.layer.sublayerTransform
+        let originalAlpha = titles.alpha
+        // DetailViewController.swift keeps the clipping container stationary while its title content enters from beneath Feeds.
+        titles.layer.sublayerTransform = CATransform3DTranslate(originalTransform, -24, 0, 0)
+        titles.alpha = originalAlpha * 0.72
+        let animator = UIViewPropertyAnimator(duration: 0.28, curve: .easeOut) {
+            titles.layer.sublayerTransform = originalTransform
+            titles.alpha = originalAlpha
+        }
+        duoSourceEntrance = (animator, titles, originalTransform, originalAlpha)
+        animator.addCompletion { [weak self, weak animator] _ in
+            guard let self, let animator, self.duoSourceEntrance?.animator === animator else { return }
+            self.finishDuoSourceEntrance()
+        }
+        animator.startAnimation()
     }
 
     @objc(syncFullscreenSidebarPresentationForDisplayMode:)
@@ -1849,6 +1933,7 @@ class DetailViewController: BaseViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        finishDuoSourceEntrance()
         super.viewWillTransition(to: size, with: coordinator)
         
         if self.verticalDividerView == nil {
@@ -2200,6 +2285,7 @@ private extension DetailViewController {
         guard isViewLoaded else {
             return
         }
+        if !isBrowsingDuoSources { finishDuoSourceEntrance() }
         if !showsStoryTitlesBesideTiledFeeds { restoreReaderBesideStoryTitles() }
         if isDiscoverSitesVisible { return }
 

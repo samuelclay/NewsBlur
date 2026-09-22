@@ -677,6 +677,11 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         configureDataSource()
     }
 
+    @objc override func reloadTable() {
+        super.reloadTable()
+        appDelegate.detailViewController?.storyTitlesDidReload(self)
+    }
+
     @objc func resetForAccountChange() {
         storiesCollection.reset()
         resetFeedDetail()
