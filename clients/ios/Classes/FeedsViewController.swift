@@ -11,6 +11,19 @@ import StoreKit
 
 ///Sidebar listing all of the feeds.
 class FeedsViewController: FeedsObjCViewController {
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard GesturePreferences.feedLongPressShowsMenu,
+              let folders = appDelegate.dictFoldersArray as? [String], folders.indices.contains(indexPath.section),
+              let feeds = appDelegate.dictFolders[folders[indexPath.section]] as? [Any], feeds.indices.contains(indexPath.row),
+              let cell = tableView.cellForRow(at: indexPath) else { return nil }
+        let feedID = String(describing: feeds[indexPath.row])
+        // FeedsViewController.swift never applies a subscription action to a saved-search alias.
+        guard !appDelegate.isSavedSearch(feedID) else { return nil }
+        let groups = feedActions(feedID: feedID, folder: folders[indexPath.section], source: cell)
+        guard !groups.isEmpty else { return nil }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in RowActionMenus.menu(groups) }
+    }
+
     struct Keys {
         static let reviewDate = "datePromptedForReview"
         static let reviewVersion = "versionPromptedForReview"
@@ -123,6 +136,16 @@ class FeedsViewController: FeedsObjCViewController {
     
     var dashboardTimer: Timer?
     
+    @objc func cancelPendingFeedListWorkForAccountChange() {
+        loadWorkItem?.cancel()
+        loadWorkItem = nil
+        reloadWorkItem?.cancel()
+        reloadWorkItem = nil
+        dashWorkItem?.cancel()
+        dashWorkItem = nil
+        clearDashboard()
+    }
+
     @objc func clearDashboard() {
         NSLog("🎛️ clearDashboard")
         
@@ -318,6 +341,7 @@ class FeedsViewController: FeedsObjCViewController {
     }
 
     @objc func refreshFeedCounts() {
+        refreshVisibleFeedCounts()
         refreshFolderCounts()
         refreshHeaderCounts()
     }

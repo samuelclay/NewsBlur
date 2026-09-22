@@ -99,6 +99,19 @@ import SwiftUI
     
     var currentFeed: Feed?
     
+    func resetForAccountChange() {
+        before.removeAll()
+        selected = nil
+        after.removeAll()
+        openSwipeStoryID = nil
+        currentFeed = nil
+        Self.folder = nil
+        Self.feeds.removeAll()
+        Self.cachedDashboard.removeAll()
+        dashboardLeft.removeAll()
+        dashboardRight.removeAll()
+    }
+
     func reload() {
         guard let storiesCollection = appDelegate.storiesCollection else {
             return

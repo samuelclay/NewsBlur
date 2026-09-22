@@ -96,6 +96,7 @@
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
+@property (nonatomic, strong) UIPanGestureRecognizer *fullScreenPopGesture;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
 @property (nonatomic) CGFloat navBarFadeAccumulator;
 @property (nonatomic) CGFloat traverseFadeAccumulator;
@@ -119,12 +120,21 @@
 - (void)hidePages;
 - (void)refreshPages;
 - (void)reorientPages;
+- (void)preserveCurrentPageAtLocation:(NSInteger)location;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)advanceToNextUnread;
 - (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail;
 - (void)animateIntoPlace:(BOOL)animated;
+- (BOOL)shouldOpenReaderImmediately;
+- (void)preparePageForPresentation:(NSInteger)pageIndex completion:(void (^)(NSInteger location))completion;
+- (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated completion:(void (^)(NSInteger location))completion;
+- (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated openReaderImmediately:(BOOL)openImmediately completion:(void (^)(NSInteger location))completion;
+- (void)cancelPendingStoryPresentation;
+- (void)storyDetailReadyForPresentation:(StoryDetailViewController *)page;
+- (void)storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)page;
+- (BOOL)deferStoryRedrawDuringSelection:(StoryDetailViewController *)page;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 
