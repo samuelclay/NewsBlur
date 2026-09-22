@@ -1623,7 +1623,10 @@ import UIKit
     }
 
     func test_expandedTitleHeaderDefersRoutingUntilCurrentTableIsCommitted() async throws {
-        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo header minimization") }
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo header minimization is not used on Catalyst")
+        #else
+        guard #available(iOS 27.0, *) else { throw XCTSkip("Requires Duo header minimization") }
         let app = NewsBlurAppDelegate()
         app.storiesCollection = StoriesCollection()
         let detail = HeaderDuoSharedTitleDetail()
@@ -1700,10 +1703,14 @@ import UIKit
         XCTAssertTrue(detail.contentScrollView(for: .top) === previous,
                       "A queued bind must revalidate its owner after Discover replaces the list")
         withExtendedLifetime(rows) {}
+        #endif
     }
 
     func test_expandedTitleHeaderObservesOnlyStoriesAndRestoresPreviousScrollSource() async throws {
-        guard #available(iOS 27.1, *) else { throw XCTSkip("Requires Duo header minimization") }
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo header minimization is not used on Catalyst")
+        #else
+        guard #available(iOS 27.0, *) else { throw XCTSkip("Requires Duo header minimization") }
         let app = NewsBlurAppDelegate()
         app.storiesCollection = StoriesCollection()
         let detail = HeaderDuoSharedTitleDetail()
@@ -1781,6 +1788,7 @@ import UIKit
         XCTAssertTrue(detail.contentScrollView(for: .top) === newerOwnerScroll,
                       "Restoration must preserve a scroll source explicitly installed by the next owner")
         withExtendedLifetime(rows) {}
+        #endif
     }
 
     func test_expandedEmbeddedStoryListKeepsItsFooterWhileReaderOwnsSystemBar() throws {

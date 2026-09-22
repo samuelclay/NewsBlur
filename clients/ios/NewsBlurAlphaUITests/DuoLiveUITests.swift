@@ -10,6 +10,10 @@ final class Test_DuoLiveUI: XCTestCase {
     private var auditAppIconChooserOpen = false
     private var auditDailyBriefingSettingsOpen = false
     private var auditDailyBriefingSettingsScroll: XCUIElement?
+    private var fullscreenModeToRestore: Bool?
+    private var changedFullscreenMode = false
+    private var overlayWidthToRestore: CGFloat?
+    private var feedSearchToRestore: String?
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -47,11 +51,21 @@ final class Test_DuoLiveUI: XCTestCase {
     override func tearDownWithError() throws {
         guard app != nil else { return }
         continueAfterFailure = true
-        do {
-            try recoverAuditModals()
-        } catch {
-            capture("duo-live-cleanup-failed")
-            XCTFail("Could not dismiss an audit sheet: \(error)")
+        func cleanUp(_ description: String, _ operation: () throws -> Void) {
+            do {
+                try operation()
+            } catch {
+                capture("duo-live-cleanup-failed")
+                XCTFail("Could not restore \(description): \(error)")
+            }
+        }
+        let restoresReaderPreferences = fullscreenModeToRestore != nil || overlayWidthToRestore != nil
+        cleanUp("audit sheets") { try recoverAuditModals() }
+        cleanUp("the original sidebar width") { try restoreOverlayWidth() }
+        cleanUp("the original full-screen mode") { try restoreFullscreenMode() }
+        cleanUp("the original feed search") { try restoreFeedSearch() }
+        if restoresReaderPreferences {
+            cleanUp("the feed-list starting screen") { try returnToFeedsFromStoryList() }
         }
         if let orientation = orientationToRestore {
             XCUIDevice.shared.orientation = orientation
@@ -151,17 +165,7 @@ final class Test_DuoLiveUI: XCTestCase {
     func test_fullscreenReaderKeepsTitlesAndFeedsInAnOverlay() throws {
         try requireVisibleFeeds()
         let initialFullscreen = app.buttons["reader-fullscreen"]
-        if initialFullscreen.exists && initialFullscreen.value as? String == "On" {
-            let sidebar = try XCTUnwrap(app.buttons.matching(identifier: "Sidebar")
-                .allElementsBoundByIndex.first { $0.isHittable })
-            sidebar.tap()
-            XCTAssertTrue(waitUntilHittable(initialFullscreen))
-            initialFullscreen.tap()
-            let back = app.buttons["expanded-feeds-back"]
-            XCTAssertTrue(waitUntilHittable(back))
-            back.tap()
-            try requireVisibleFeeds()
-        }
+        if initialFullscreen.exists { try rememberFullscreenMode(initialFullscreen) }
         let feeds = app.tables["feeds-list"]
         let folder = feeds.children(matching: .other).children(matching: .button)
             .matching(identifier: "folder-header-everything").element
@@ -187,12 +191,22 @@ final class Test_DuoLiveUI: XCTestCase {
         try waitForLiveReader(probe, expectedHash: hash)
         let outgoingTitle = probe.label
         let web = try XCTUnwrap(app.webViews.allElementsBoundByIndex.first { $0.isHittable })
-        let splitWidth = web.frame.width
-        capture("duo-fullscreen-before-toggle")
         let fullscreen = app.buttons["reader-fullscreen"]
         XCTAssertTrue(waitUntilHittable(fullscreen), "Open Duo needs a full-screen reader toggle in place of reading progress")
+        try rememberFullscreenMode(fullscreen)
+        // DuoLiveUITests.swift changes the saved mode only after an article gives teardown a reachable reader control.
+        if try fullscreenMode(of: fullscreen) {
+            let fullWidth = web.frame.width
+            try tapFullscreen(fullscreen)
+            let normal = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                list.isHittable && web.frame.width < fullWidth - 100
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [normal], timeout: 10), .completed)
+        }
+        let splitWidth = web.frame.width
+        capture("duo-fullscreen-before-toggle")
         XCTAssertFalse(app.buttons["reader-progress"].exists && app.buttons["reader-progress"].isHittable)
-        fullscreen.tap()
+        try tapFullscreen(fullscreen)
         let expanded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             web.frame.width > splitWidth + 100 && (!list.exists || !list.isHittable)
         }, object: nil)
@@ -233,6 +247,7 @@ final class Test_DuoLiveUI: XCTestCase {
                                  "The overlay title must not reserve an obsolete horizontal status band")
         capture("duo-fullscreen-titles-overlay")
         let originalOverlayWidth = list.frame.width
+        overlayWidthToRestore = originalOverlayWidth
         let resizeHandle = app.descendants(matching: .any)["feeds-sidebar-resize-handle"].firstMatch
         XCTAssertTrue(waitUntilHittable(resizeHandle), "The native titles overlay needs a working resize handle")
         // DuoLiveUITests.swift drags the rendered native handle, then checks the actual list edge instead of the handle alone.
@@ -295,7 +310,7 @@ final class Test_DuoLiveUI: XCTestCase {
         XCTAssertFalse(list.exists && list.isHittable)
         capture("duo-fullscreen-selected-from-overlay")
         XCTAssertTrue(waitUntilHittable(fullscreen))
-        fullscreen.tap()
+        try tapFullscreen(fullscreen)
         XCTAssertTrue(waitUntilHittable(list))
         XCTAssertEqual(web.frame.width, splitWidth, accuracy: 1)
         capture("duo-fullscreen-returned-to-two-columns")
@@ -307,22 +322,31 @@ final class Test_DuoLiveUI: XCTestCase {
 
     func test_fullscreenPhotoEdgeCancellationPreservesReader() throws {
         try requireVisibleFeeds()
-        let search = app.textFields["Search feeds"]
+        let initialFullscreen = app.buttons["reader-fullscreen"]
+        if initialFullscreen.exists { try rememberFullscreenMode(initialFullscreen) }
+        let search = try revealFeedSearch()
+        feedSearchToRestore = feedSearchText(search)
+        let sourceQuery = (ProcessInfo.processInfo.environment["NEWSBLUR_DUO_PHOTO_FEED"] ?? "STREET ART UTOPIA")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !sourceQuery.isEmpty else { throw XCTSkip("NEWSBLUR_DUO_PHOTO_FEED must name a subscribed photo feed") }
+        try setFeedSearch(sourceQuery, field: search)
         let feeds = app.tables["feeds-list"]
-        for _ in 0..<12 {
-            if search.exists && search.isHittable { break }
-            feeds.swipeDown()
+        // DuoLiveUITests.swift discovers the signed-in account's source ID instead of assuming a particular subscription.
+        let sources = feeds.cells.matching(NSPredicate(format: "identifier MATCHES 'feed-row-[0-9]+' AND label CONTAINS[cd] %@", sourceQuery))
+        func visibleSource() -> XCUIElement? {
+            sources.allElementsBoundByIndex.first { $0.isHittable && feeds.frame.contains($0.frame) && $0.frame.height > 20 }
         }
-        XCTAssertTrue(waitUntilHittable(search))
-        search.tap()
-        search.typeText("STREET ART UTOPIA\n")
-        let source = feeds.cells["feed-row-674970"]
-        XCTAssertTrue(waitUntilHittable(source), "The signed-in photo feed used in the cancellation reproduction must be available")
+        let sourceReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in visibleSource() != nil }, object: nil)
+        guard XCTWaiter.wait(for: [sourceReady], timeout: 10) == .completed else {
+            throw XCTSkip("The signed-in account has no visible photo feed matching '\(sourceQuery)'; configure NEWSBLUR_DUO_PHOTO_FEED for this audit")
+        }
+        let source = try XCTUnwrap(visibleSource())
+        let sourceID = String(source.identifier.dropFirst("feed-row-".count))
         shouldReturnToFeeds = true
         source.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let list = app.tables["story-titles-list"]
         XCTAssertTrue(waitUntilHittable(list))
-        let rows = list.cells.matching(NSPredicate(format: "identifier BEGINSWITH 'story-row-674970:'"))
+        let rows = list.cells.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-\(sourceID):"))
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             rows.allElementsBoundByIndex.contains { list.frame.contains($0.frame) && $0.frame.height > 20 }
         }, object: nil)
@@ -334,8 +358,9 @@ final class Test_DuoLiveUI: XCTestCase {
         try waitForLiveReader(probe, expectedHash: hash)
         let fullscreen = app.buttons["reader-fullscreen"]
         XCTAssertTrue(waitUntilHittable(fullscreen))
+        try rememberFullscreenMode(fullscreen)
         let wasFullscreen = fullscreen.value as? String == "On"
-        if !wasFullscreen { fullscreen.tap() }
+        if !wasFullscreen { try tapFullscreen(fullscreen) }
         let web = try XCTUnwrap(app.webViews.allElementsBoundByIndex.first { $0.isHittable })
         func visiblePhoto() -> XCUIElement? {
             web.images.allElementsBoundByIndex.first {
@@ -361,7 +386,6 @@ final class Test_DuoLiveUI: XCTestCase {
         XCTAssertTrue(app.otherElements["story-image-viewer"].waitForExistence(timeout: 5))
         app.buttons["Close image"].tap()
         XCTAssertTrue(app.otherElements["story-image-viewer"].waitForDisappearance(timeout: 5))
-        if !wasFullscreen { fullscreen.tap() }
         try returnToFeedsFromStoryList()
     }
 
@@ -1134,6 +1158,131 @@ final class Test_DuoLiveUI: XCTestCase {
         let feeds = app.tables["feeds-list"]
         XCTAssertTrue(feeds.waitForExistence(timeout: 10), "Start this audit on the signed-in feed list")
         XCTAssertTrue(waitUntilHittable(feeds), "The feed list must be visible before the audit continues")
+    }
+
+    private enum AuditCleanupError: Error {
+        case unavailable(String)
+    }
+
+    private func fullscreenMode(of button: XCUIElement) throws -> Bool {
+        switch button.value as? String {
+        case "On": return true
+        case "Off": return false
+        default: throw AuditCleanupError.unavailable("reader-fullscreen must expose its On/Off value")
+        }
+    }
+
+    private func rememberFullscreenMode(_ button: XCUIElement) throws {
+        if fullscreenModeToRestore == nil { fullscreenModeToRestore = try fullscreenMode(of: button) }
+    }
+
+    private func tapFullscreen(_ button: XCUIElement) throws {
+        try rememberFullscreenMode(button)
+        changedFullscreenMode = true
+        button.tap()
+    }
+
+    private func restoreFullscreenMode() throws {
+        guard let original = fullscreenModeToRestore else { return }
+        guard changedFullscreenMode else { fullscreenModeToRestore = nil; return }
+        let button = app.buttons["reader-fullscreen"]
+        if !button.exists || !button.isHittable {
+            // DuoLiveUITests.swift reveals the retained reader before its toolbar exists in tiled Feeds + titles.
+            // Prefer the secondary column's rightmost visible Sidebar, not an AX duplicate in the primary header.
+            let sidebar = app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex
+                .filter { $0.isHittable }.max { $0.frame.midX < $1.frame.midX }
+            guard let sidebar else {
+                throw AuditCleanupError.unavailable("No visible Sidebar can reveal the retained reader")
+            }
+            sidebar.tap()
+        }
+        guard button.waitForExistence(timeout: 5) else {
+            throw AuditCleanupError.unavailable("The reader full-screen control is missing")
+        }
+        if try fullscreenMode(of: button) != original {
+            guard waitUntilHittable(button) else {
+                throw AuditCleanupError.unavailable("The reader full-screen control remains covered")
+            }
+            button.tap()
+            let restored = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                button.exists && button.value as? String == (original ? "On" : "Off")
+            }, object: nil)
+            guard XCTWaiter.wait(for: [restored], timeout: 10) == .completed else {
+                throw AuditCleanupError.unavailable("The original reader full-screen mode did not return")
+            }
+        }
+        fullscreenModeToRestore = nil
+        changedFullscreenMode = false
+    }
+
+    private func restoreOverlayWidth() throws {
+        guard let width = overlayWidthToRestore else { return }
+        try returnToFeedsFromStoryList()
+        let feeds = app.tables["feeds-list"]
+        if abs(feeds.frame.width - width) >= 3 {
+            let handle = app.descendants(matching: .any)["feeds-sidebar-resize-handle"].firstMatch
+            guard waitUntilHittable(handle) else {
+                throw AuditCleanupError.unavailable("The sidebar resize handle is missing")
+            }
+            let start = handle.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            start.press(forDuration: 0.1,
+                        thenDragTo: start.withOffset(CGVector(dx: width - feeds.frame.width, dy: 0)),
+                        withVelocity: .slow, thenHoldForDuration: 0)
+            let restored = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                feeds.exists && abs(feeds.frame.width - width) < 3 && abs(handle.frame.midX - feeds.frame.maxX) < 3
+            }, object: nil)
+            guard XCTWaiter.wait(for: [restored], timeout: 5) == .completed else {
+                throw AuditCleanupError.unavailable("The original sidebar width did not return")
+            }
+        }
+        overlayWidthToRestore = nil
+    }
+
+    private func revealFeedSearch() throws -> XCUIElement {
+        let search = app.textFields["Search feeds"]
+        let feeds = app.tables["feeds-list"]
+        for _ in 0..<12 {
+            if search.exists && search.isHittable { return search }
+            guard feeds.exists && feeds.isHittable else {
+                throw AuditCleanupError.unavailable("The feed list must be visible to restore its search")
+            }
+            feeds.swipeDown()
+        }
+        guard waitUntilHittable(search) else {
+            throw AuditCleanupError.unavailable("The feed search field is missing")
+        }
+        return search
+    }
+
+    private func feedSearchText(_ field: XCUIElement) -> String {
+        let value = field.value as? String ?? ""
+        return value == field.placeholderValue ? "" : value
+    }
+
+    private func setFeedSearch(_ text: String, field: XCUIElement) throws {
+        field.tap()
+        if !feedSearchText(field).isEmpty {
+            // FeedsObjCViewController.m gives this UITextField a native clear button that also resets searchFeedIds.
+            let clear = field.buttons.firstMatch
+            guard waitUntilHittable(clear) else {
+                throw AuditCleanupError.unavailable("The feed search clear button is missing")
+            }
+            clear.tap()
+        }
+        field.typeText(text + "\n")
+        let restored = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            self.feedSearchText(field) == text && !self.app.keyboards.firstMatch.exists
+        }, object: nil)
+        guard XCTWaiter.wait(for: [restored], timeout: 5) == .completed else {
+            throw AuditCleanupError.unavailable("The feed search did not settle on the requested text")
+        }
+    }
+
+    private func restoreFeedSearch() throws {
+        guard let text = feedSearchToRestore else { return }
+        try returnToFeedsFromStoryList()
+        try setFeedSearch(text, field: revealFeedSearch())
+        feedSearchToRestore = nil
     }
 
     private func tapFeedAction(_ identifier: String, fallbackTitle: String) throws {
