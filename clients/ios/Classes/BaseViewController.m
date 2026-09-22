@@ -13,40 +13,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     }
 }
 
-static StorySplitPreferredDisplayMode NBDecisionDisplayModeFromSplitDisplayMode(UISplitViewControllerDisplayMode displayMode) {
-    switch (displayMode) {
-        case UISplitViewControllerDisplayModeOneBesideSecondary:
-            return StorySplitPreferredDisplayModeOneBesideSecondary;
-        case UISplitViewControllerDisplayModeOneOverSecondary:
-            return StorySplitPreferredDisplayModeOneOverSecondary;
-        case UISplitViewControllerDisplayModeTwoBesideSecondary:
-            return StorySplitPreferredDisplayModeTwoBesideSecondary;
-        case UISplitViewControllerDisplayModeTwoOverSecondary:
-            return StorySplitPreferredDisplayModeTwoOverSecondary;
-        case UISplitViewControllerDisplayModeTwoDisplaceSecondary:
-            return StorySplitPreferredDisplayModeTwoDisplaceSecondary;
-        default:
-            return StorySplitPreferredDisplayModeSecondaryOnly;
-    }
-}
-
-static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySplitPreferredDisplayMode displayMode) {
-    switch (displayMode) {
-        case StorySplitPreferredDisplayModeOneBesideSecondary:
-            return UISplitViewControllerDisplayModeOneBesideSecondary;
-        case StorySplitPreferredDisplayModeOneOverSecondary:
-            return UISplitViewControllerDisplayModeOneOverSecondary;
-        case StorySplitPreferredDisplayModeTwoBesideSecondary:
-            return UISplitViewControllerDisplayModeTwoBesideSecondary;
-        case StorySplitPreferredDisplayModeTwoOverSecondary:
-            return UISplitViewControllerDisplayModeTwoOverSecondary;
-        case StorySplitPreferredDisplayModeTwoDisplaceSecondary:
-            return UISplitViewControllerDisplayModeTwoDisplaceSecondary;
-        default:
-            return UISplitViewControllerDisplayModeSecondaryOnly;
-    }
-}
-
 @implementation BaseViewController
 
 @synthesize appDelegate;
@@ -374,13 +340,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         }
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
-        UISplitViewController *splitViewController = self.appDelegate.splitViewController;
-        UISplitViewControllerDisplayMode preferredDisplayMode = splitViewController.preferredDisplayMode;
-        BOOL isSidebarVisible = preferredDisplayMode == UISplitViewControllerDisplayModeOneBesideSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeOneOverSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoBesideSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoOverSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        BOOL isSidebarVisible = !self.appDelegate.splitViewController.isFeedsListHidden;
         command.title = isSidebarVisible ? @"Hide Sidebar" : @"Show Sidebar";
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
@@ -629,6 +589,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (IBAction)toggleFeeds:(id)sender {
+    if (self.appDelegate.detailViewController.isDuoFullscreenReader) {
+        [self.appDelegate.detailViewController showDuoFullscreenFeeds:sender];
+        return;
+    }
     // If in temporary full-screen, exit it instead of normal sidebar toggle.
     if (self.appDelegate.detailViewController.isTemporaryFullScreen) {
         [self.appDelegate.detailViewController resetTemporaryFullScreenIfNeeded];
@@ -647,7 +611,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     
     NSLog(@"toggleSidebar: displayMode: %@; preferredDisplayMode: %@; splitBehavior: %@", @(splitViewController.displayMode), @(splitViewController.preferredDisplayMode), @(splitViewController.splitBehavior));  // log
 
-    NSString *behavior = [[NSUserDefaults standardUserDefaults] stringForKey:@"split_behavior"] ?: @"auto";
+    NSString *behavior = self.appDelegate.detailViewController.behaviorString;
     CGSize size = splitViewController.view.bounds.size;
     if (size.width <= 0) {
         size = UIScreen.mainScreen.bounds.size;
@@ -657,18 +621,21 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
                                                                                                width:size.width
                                                                                               height:size.height
                                                                                                isMac:self.isMac];
-    BOOL usesTiledSidebarLayout = [StorySplitBehaviorDecision usesTiledSidebarLayoutFor:behavior
-                                                                                  width:size.width
-                                                                                 height:size.height
-                                                                                  isMac:self.isMac];
-    StorySplitPreferredDisplayMode currentDisplayMode = NBDecisionDisplayModeFromSplitDisplayMode(splitViewController.displayMode);
-    StorySplitPreferredDisplayMode nextDisplayMode = [StorySplitBehaviorDecision sidebarDisplayModeForTiledLayout:usesTiledSidebarLayout
-                                                                                              currentDisplayMode:currentDisplayMode];
-
-    [UIView animateWithDuration:0.2 animations:^{
-        splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
-        splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(nextDisplayMode);
-    }];
+    BOOL shouldShowFeeds = self.appDelegate.splitViewController.isFeedsListHidden;
+    if (shouldShowFeeds && self.appDelegate.detailViewController.isPhone &&
+        !self.appDelegate.detailViewController.isPhoneOrCompact &&
+        splitViewController.style == UISplitViewControllerStyleDoubleColumn) {
+        // BaseViewController.m shares DetailViewController.swift's supported native reveal with the Feeds title action.
+        [self.appDelegate.detailViewController showColumn:UISplitViewControllerColumnPrimary animated:YES];
+        return;
+    }
+    splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
+    // BaseViewController.m lets UIKit choose a valid display mode for the actual split style and behavior.
+    if (shouldShowFeeds) {
+        [splitViewController showColumn:UISplitViewControllerColumnPrimary];
+    } else {
+        [splitViewController hideColumn:UISplitViewControllerColumnPrimary];
+    }
 }
 
 - (IBAction)hideStoryTitlesSidebar:(id)sender {
@@ -780,7 +747,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (IBAction)showTrain:(id)sender {
-    [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
+    [self.appDelegate.storyPagesViewController openStoryTrainerFromKeyboard:sender];
 }
 
 - (IBAction)showShare:(id)sender {

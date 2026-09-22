@@ -122,6 +122,12 @@ static BOOL NBBoolPreferenceValue(id value) {
 @property (nonatomic, strong) NSIndexPath *lastRowAtIndexPath;
 @property (nonatomic) NSInteger lastSection;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *defaultFeedToolbarItems;
+@property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalFeedToolbarItems;
+@property (nonatomic, strong) NSArray<UIBarButtonItem *> *verticalIntelligenceItems;
+@property (nonatomic, strong) UIView *feedSearchContainerView;
+@property (nonatomic, strong) UIView *scrollingFeedHeaderView;
+@property (nonatomic) CGFloat horizontalFeedTopMargin;
+@property (nonatomic) BOOL hidNavigationBarForFeedHeader;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
 @property (nonatomic, strong) NSLayoutConstraint *intelligenceControlWidthConstraint;
 @property (nonatomic, strong) NSOperationQueue *faviconPrefetchQueue;
@@ -305,6 +311,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self.searchField addTarget:self action:@selector(searchFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 
     [searchContainerView addSubview:self.searchField];
+    self.feedSearchContainerView = searchContainerView;
+    self.horizontalFeedTopMargin = self.view.directionalLayoutMargins.top;
     self.feedTitlesTable.tableHeaderView = searchContainerView;
     self.feedTitlesTable.accessibilityIdentifier = @"feeds-list";
     
@@ -433,6 +441,18 @@ static BOOL NBBoolPreferenceValue(id value) {
         return;
     }
 
+    if ([self usesVerticalFeedToolbar]) {
+        [self configureVerticalFeedToolbar];
+        return;
+    }
+    if (self.feedViewToolbar.hidden) {
+        self.feedViewToolbar.hidden = NO;
+        self.toolbarItems = nil;
+        if (self.navigationController.topViewController == self) {
+            [self.navigationController setToolbarHidden:YES animated:NO];
+        }
+    }
+
     UIBarButtonItem *intelligenceItem = nil;
     for (UIBarButtonItem *item in self.feedViewToolbar.items) {
         if (item.customView == self.intelligenceControl) {
@@ -502,6 +522,124 @@ static BOOL NBBoolPreferenceValue(id value) {
 #endif
 }
 
+- (BOOL)usesVerticalFeedToolbar {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        // FeedsObjCViewController.m can retain expanded traits offscreen after a fold; the navigation container already owns the destination bar layout.
+        UITraitCollection *traits = self.navigationController ? self.navigationController.traitCollection : self.traitCollection;
+        return traits.verticalBarEdge != UIVerticalBarEdgeUnspecified;
+    }
+#endif
+    return NO;
+}
+
+- (void)configureVerticalFeedToolbar {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        if (!self.verticalFeedToolbarItems) {
+            UIBarButtonItem *add = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"plus"]
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self action:@selector(tapAddSite:)];
+            add.title = @"Add Site";
+            add.accessibilityIdentifier = @"feed-list-add";
+            UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"gearshape"]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self action:@selector(showSettingsPopover:)];
+            settings.title = @"Settings";
+            settings.accessibilityIdentifier = @"feed-list-settings";
+
+            NSArray<NSString *> *titles = @[@"All", @"Unread", @"Focus", @"Saved"];
+            // FeedsObjCViewController.m preserves the existing intelligence artwork and its semantic colors.
+            NSArray<UIImage *> *images = @[
+                [UIImage systemImageNamed:@"tray.full"],
+                [[UIImage imageNamed:@"unread_yellow_icn.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal],
+                [[Utilities imageNamed:@"indicator-focus" sized:14] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal],
+                [[Utilities imageNamed:@"unread_blue_icn.png" sized:14] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+            ];
+            NSMutableArray<UIBarButtonItem *> *filters = [NSMutableArray array];
+            for (NSInteger index = 0; index < titles.count; index++) {
+                UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithImage:images[index]
+                                                                       style:UIBarButtonItemStylePlain
+                                                                      target:self action:@selector(selectVerticalIntelligence:)];
+                item.title = titles[index];
+                item.tag = index;
+                item.accessibilityIdentifier = [@"feed-list-intelligence-" stringByAppendingString:titles[index].lowercaseString];
+                [filters addObject:item];
+            }
+            self.verticalIntelligenceItems = filters;
+            self.verticalFeedToolbarItems = @[
+                add, filters[0], filters[1], filters[2], filters[3], settings
+            ];
+            for (UIBarButtonItem *item in self.verticalFeedToolbarItems) {
+                // FeedsObjCViewController.m groups the four intelligence filters between separate Add and Settings controls.
+                item.axisBehavior = UIBarButtonItemAxisBehaviorVerticalPreferred;
+                item.sharesBackground = [self.verticalIntelligenceItems containsObject:item];
+                item.accessibilityLabel = item.title;
+            }
+            add.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+            settings.visibilityPriority = UIBarButtonItemVisibilityPriorityHigh;
+        }
+        self.feedViewToolbar.hidden = YES;
+        if (self.toolbarItems != self.verticalFeedToolbarItems) {
+            self.toolbarItems = self.verticalFeedToolbarItems;
+        }
+        [self updateVerticalFeedToolbarSelection];
+        if (self.navigationController.topViewController == self && self.navigationController.toolbarHidden) {
+            [self.navigationController setToolbarHidden:NO animated:NO];
+        }
+    }
+#endif
+}
+
+- (void)updateVerticalFeedToolbarSelection {
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        for (UIBarButtonItem *item in self.verticalFeedToolbarItems) {
+            if (![item.tintColor isEqual:self.addBarButton.tintColor]) {
+                item.tintColor = self.addBarButton.tintColor;
+            }
+        }
+        for (UIBarButtonItem *item in self.verticalIntelligenceItems) {
+            BOOL selected = item.tag == self.intelligenceControl.selectedSegmentIndex;
+            if (item.selected != selected) item.selected = selected;
+            UIBarButtonItemVisibilityPriority priority = selected ? UIBarButtonItemVisibilityPriorityHigh : UIBarButtonItemVisibilityPriorityStandard;
+            if (item.visibilityPriority != priority) item.visibilityPriority = priority;
+        }
+    }
+#endif
+}
+
+- (void)selectVerticalIntelligence:(UIBarButtonItem *)sender {
+    self.intelligenceControl.selectedSegmentIndex = sender.tag;
+    [self selectIntelligence];
+}
+
+- (void)updateFeedNavigationBarForHeader {
+#if !TARGET_OS_MACCATALYST
+    if (!self.feedSearchContainerView) return;
+    BOOL scrollingHeader = [self usesVerticalFeedToolbar];
+    NSDirectionalEdgeInsets margins = self.view.directionalLayoutMargins;
+    CGFloat topMargin = scrollingHeader ? 0 : self.horizontalFeedTopMargin;
+    if (margins.top != topMargin) {
+        margins.top = topMargin;
+        self.view.directionalLayoutMargins = margins;
+    }
+    if (self.navigationController.topViewController != self) return;
+    if (scrollingHeader) {
+        // FeedsObjCViewController.m keeps Duo's toolbar rail while removing the empty horizontal title bar.
+        if (!self.navigationController.navigationBarHidden) {
+            self.hidNavigationBarForFeedHeader = YES;
+            // FeedsObjCViewController.m keeps the outgoing story header in UIKit's interactive Back animation until it finishes or cancels.
+            id<UIViewControllerTransitionCoordinator> transition = self.transitionCoordinator ?: self.navigationController.transitionCoordinator;
+            [self.navigationController setNavigationBarHidden:YES animated:transition.isAnimated];
+        }
+    } else if (self.hidNavigationBarForFeedHeader) {
+        self.hidNavigationBarForFeedHeader = NO;
+        [self.navigationController setNavigationBarHidden:NO animated:NO];
+    }
+#endif
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 //    NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
     
@@ -514,6 +652,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 //    }
 //    NSLog(@"Feed List timing 0: %f", [NSDate timeIntervalSinceReferenceDate] - start);
     [super viewWillAppear:animated];
+    [self updateFeedNavigationBarForHeader];
     
 #if TARGET_OS_MACCATALYST
     UINavigationController *navController = self.navigationController;
@@ -587,6 +726,32 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+
+    BOOL usesVerticalToolbar = [self usesVerticalFeedToolbar];
+    BOOL hasScrollingHeader = self.scrollingFeedHeaderView && self.feedTitlesTable.tableHeaderView == self.scrollingFeedHeaderView;
+    if (usesVerticalToolbar != hasScrollingHeader) {
+        [self layoutHeaderCounts:UIInterfaceOrientationUnknown];
+        [self refreshHeaderCounts];
+    }
+    if (usesVerticalToolbar != self.feedViewToolbar.hidden) {
+        [self configureFeedToolbarItemsForOrientation:UIInterfaceOrientationUnknown];
+    }
+    if (usesVerticalToolbar) {
+        // FeedsObjCViewController.m manually reserves only the bottom safe area because this table disables automatic adjustment.
+        CGFloat bottomInset = MAX(0, self.view.safeAreaInsets.bottom);
+        UIEdgeInsets inset = self.feedTitlesTable.contentInset;
+        if (inset.bottom != bottomInset) {
+            inset.bottom = bottomInset;
+            self.feedTitlesTable.contentInset = inset;
+        }
+        UIEdgeInsets indicatorInsets = self.feedTitlesTable.verticalScrollIndicatorInsets;
+        if (indicatorInsets.bottom != bottomInset) {
+            indicatorInsets.bottom = bottomInset;
+            self.feedTitlesTable.verticalScrollIndicatorInsets = indicatorInsets;
+        }
+        [self updateVerticalFeedToolbarSelection];
+        return;
+    }
 
     // Set content inset so feed list can scroll above the toolbar.
     // Toolbar is pinned to the superview bottom with an adaptive gap:
@@ -743,8 +908,39 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self cancelFaviconPrefetch];
-    [self.appDelegate hidePopoverAnimated:YES];
+    BOOL dismissFeedPopover = YES;
+#if !TARGET_OS_MACCATALYST
+    UIPopoverPresentationController *popover = self.appDelegate.feedsNavigationController.presentedViewController.popoverPresentationController;
+    if (popover) {
+        // FeedsObjCViewController.m can disappear after a sibling has opened a menu through their shared split presenter.
+        // The anchor identifies ownership; the primary navigation controller also forwards the sibling's popover.
+        UIBarButtonItem *item = popover.barButtonItem;
+        UIView *source = item ? item.customView : popover.sourceView;
+        BOOL sourceInFeeds = source && self.isViewLoaded && [source isDescendantOfView:self.view];
+        UINavigationController *navigation = self.navigationController;
+        BOOL sourceInFeedBar = source && navigation.topViewController == self &&
+            ([source isDescendantOfView:navigation.navigationBar] || [source isDescendantOfView:navigation.toolbar]);
+        if (item) {
+            dismissFeedPopover = item == self.settingsBarButton || item == self.addBarButton ||
+                [self.navigationItem.leftBarButtonItems containsObject:item] ||
+                [self.navigationItem.rightBarButtonItems containsObject:item] ||
+                [self.toolbarItems containsObject:item] || [self.feedViewToolbar.items containsObject:item] ||
+                [self.verticalFeedToolbarItems containsObject:item] || sourceInFeeds || sourceInFeedBar;
+        } else if (source) {
+            dismissFeedPopover = sourceInFeeds || sourceInFeedBar;
+        }
+        // FeedsObjCViewController.m keeps legacy cleanup for popovers without an inspectable anchor.
+    }
+#endif
+    if (dismissFeedPopover) {
+        [self.appDelegate hidePopoverAnimated:YES];
+    }
     [super viewWillDisappear:animated];
+    if (self.hidNavigationBarForFeedHeader) {
+        // FeedsObjCViewController.m restores navigation chrome for the story or modal that follows the feed list.
+        self.hidNavigationBarForFeedHeader = NO;
+        [self.navigationController setNavigationBarHidden:NO animated:animated];
+    }
     [self.searchField resignFirstResponder];
 }
 
@@ -1082,6 +1278,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (void)finishLoadingFeedList:(NSDictionary *)results {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSString *responseUsername = [results[@"user"] isKindOfClass:[NSString class]] ? results[@"user"] : nil;
+    BOOL restoresAuthenticatedLayout = self.awaitingAuthenticatedFeedList;
     self.awaitingAuthenticatedFeedList = NO;
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
@@ -1091,6 +1288,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.isOffline = NO;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
+    // FeedsObjCViewController.m restores the confirmed account's layout only for its first authenticated response, never an ordinary refresh over a selected article.
+    if (restoresAuthenticatedLayout &&
+        [appDelegate.detailViewController restoreDuoFullscreenReaderForAccount:responseUsername]) {
+        [appDelegate updateSplitBehavior:NO];
+    }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
@@ -1592,7 +1794,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 #if TARGET_OS_MACCATALYST
         [appDelegate showUserProfileModal:self.userAvatarButton];
 #else
-        [appDelegate showUserProfileModal:self.navigationItem.titleView];
+        [appDelegate showUserProfileModal:[self usesVerticalFeedToolbar] ? self.userAvatarButton : self.navigationItem.titleView];
 #endif
 }
 
@@ -1704,6 +1906,13 @@ static BOOL NBBoolPreferenceValue(id value) {
     UINavigationController *navController = self.navigationController;
     
 #if !TARGET_OS_MACCATALYST
+    if ([self usesVerticalFeedToolbar]) {
+        // FeedsObjCViewController.m anchors Duo settings to the visible side control after folding.
+        [viewController showFromNavigationController:navController
+                                       barButtonItem:self.verticalFeedToolbarItems.lastObject
+                            permittedArrowDirections:UIPopoverArrowDirectionAny];
+        return;
+    }
     if (@available(iOS 17.0, *)) {
         [self.feedViewToolbar layoutIfNeeded];
         CGRect settingsFrame = [self.settingsBarButton frameInView:self.view];
@@ -1930,6 +2139,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
     self.addBarButton.tintColor = toolbarButtonTint;
     self.settingsBarButton.tintColor = toolbarButtonTint;
+    [self updateVerticalFeedToolbarSelection];
     if (self.sidebarBarButton) {
         self.sidebarBarButton.tintColor = tintColor;
     }
@@ -1971,6 +2181,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     // Update search field colors for theme
     self.feedTitlesTable.tableHeaderView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    self.feedSearchContainerView.backgroundColor = self.feedTitlesTable.tableHeaderView.backgroundColor;
     self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
     self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
     self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
@@ -3733,6 +3944,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (IBAction)selectIntelligence {
+    [self updateVerticalFeedToolbarSelection];
     [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	hud.mode = MBProgressHUDModeText;
@@ -4222,10 +4434,12 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
+    // FeedsObjCViewController.m keeps the cleared account header intact until the authenticated subscription response arrives.
+    if (self.awaitingAuthenticatedFeedList) return;
+    [self.userInfoView removeFromSuperview];
+    [self updateFeedNavigationBarForHeader];
 #if TARGET_OS_MACCATALYST
     int yOffset = 10;
-    
-    [self.userInfoView removeFromSuperview];
     
     self.userInfoView = [[UIView alloc]
                          initWithFrame:CGRectMake(0, 0, self.innerView.bounds.size.width, 50)];
@@ -4241,12 +4455,13 @@ heightForHeaderInSection:(NSInteger)section {
         isShort = YES;
     }
     
-    int yOffset = isShort ? 0 : 12;
+    BOOL scrollingHeader = [self usesVerticalFeedToolbar];
+    int yOffset = scrollingHeader ? 10 : (isShort ? 0 : 12);
     
     self.userInfoView = [[UIView alloc]
                          initWithFrame:CGRectMake(0, 0,
-                                                  self.navigationController.navigationBar.frame.size.width,
-                                                  self.navigationController.navigationBar.frame.size.height)];
+                                                  scrollingHeader ? self.feedTitlesTable.bounds.size.width : self.navigationController.navigationBar.frame.size.width,
+                                                  scrollingHeader ? 58 : self.navigationController.navigationBar.frame.size.height)];
 #endif
     
     // adding user avatar to left
@@ -4273,8 +4488,8 @@ heightForHeaderInSection:(NSInteger)section {
     int avatarXOffset = 48; // avatar width (38) + padding (10)
 #else
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
-    userAvatarButton.frame = CGRectMake(-10, yOffset, 38, 38);
-    int avatarXOffset = 38; // avatar end (-10 + 38 = 28) + padding (10)
+    userAvatarButton.frame = CGRectMake(scrollingHeader ? 16 : -10, yOffset, 38, 38);
+    int avatarXOffset = scrollingHeader ? 64 : 38; // FeedsObjCViewController.m keeps 10 points between avatar and account text.
 #endif
 //    userAvatarButton.backgroundColor = UIColor.blueColor;
 
@@ -4371,13 +4586,36 @@ heightForHeaderInSection:(NSInteger)section {
     
     self.feedTitlesTopConstraint.constant = 50;
 #else
-    [self.userInfoView sizeToFit];
-    self.navigationItem.titleView = self.userInfoView;
+    if (scrollingHeader) {
+        // FeedsObjCViewController.m puts account details and search in the table so both scroll away together on Duo.
+        self.navigationItem.titleView = nil;
+        if (!self.scrollingFeedHeaderView) {
+            self.scrollingFeedHeaderView = [[UIView alloc] init];
+            self.scrollingFeedHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        }
+        CGFloat width = CGRectGetWidth(self.feedTitlesTable.bounds);
+        self.scrollingFeedHeaderView.frame = CGRectMake(0, 0, width, 86);
+        self.scrollingFeedHeaderView.backgroundColor = self.feedSearchContainerView.backgroundColor;
+        self.userInfoView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [self.scrollingFeedHeaderView addSubview:self.userInfoView];
+        self.feedSearchContainerView.frame = CGRectMake(0, 58, width, 28);
+        self.feedSearchContainerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [self.scrollingFeedHeaderView addSubview:self.feedSearchContainerView];
+        self.feedTitlesTable.tableHeaderView = self.scrollingFeedHeaderView;
+    } else {
+        if (self.feedTitlesTable.tableHeaderView == self.scrollingFeedHeaderView) {
+            [self.feedSearchContainerView removeFromSuperview];
+            self.feedSearchContainerView.frame = CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.bounds), 28);
+            self.feedTitlesTable.tableHeaderView = self.feedSearchContainerView;
+        }
+        [self.userInfoView sizeToFit];
+        self.navigationItem.titleView = self.userInfoView;
+    }
 #endif
 }
 
 - (void)refreshHeaderCounts {
-    if (!appDelegate.activeUsername) {
+    if (self.awaitingAuthenticatedFeedList || !appDelegate.activeUsername) {
         userAvatarButton.hidden = YES;
         return;
     }

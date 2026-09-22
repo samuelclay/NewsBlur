@@ -51,10 +51,17 @@
 @property (nonatomic) CFTimeInterval fontWarmupStarted;
 @property (nonatomic) NSUInteger fontPreparationWaitGeneration;
 @property (nonatomic, strong) NSString *lastWidthClassKey;
+@property (nonatomic) BOOL appliesDuoFullscreenFeedTitleInset;
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic) BOOL hasScrolledAwayFromTop;
 @property (nonatomic) BOOL hasLiveScrollFraction;
+@property (nonatomic, weak) UIScrollView *readerIndicatorScrollView;
+@property (nonatomic) BOOL readerIndicatorWasAutomatic;
+@property (nonatomic) UIEdgeInsets readerIndicatorPreviousInsets;
+@property (nonatomic) UIEdgeInsets readerIndicatorAppliedInsets;
+@property (nonatomic) UIEdgeInsets readerIndicatorPreviousHorizontalInsets;
+@property (nonatomic) UIEdgeInsets readerIndicatorAppliedHorizontalInsets;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -68,6 +75,7 @@
 - (void)refreshClusterStories;
 - (void)invalidateStoryLoad;
 - (BOOL)isCurrentStoryLoad:(NSUInteger)generation;
+- (void)updateReaderScrollIndicatorInsets:(BOOL)independentHeader;
 
 @end
 
@@ -324,6 +332,19 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    // StoryDetailObjCViewController.m retains only the captured article while UIKit temporarily removes the compact stack.
+    if (self.parentViewController == pages && pages.currentPage == self && self.hasStory &&
+        [appDelegate.detailViewController preservesArticleDuringSplitCollapse:self]) return;
+    BOOL isOwnedActiveArticle = self.parentViewController == pages && pages.currentPage == self &&
+        self.hasStory && [self.activeStoryId isEqualToString:appDelegate.activeStory[@"story_hash"]];
+    BOOL isVisibleCompactReader = pages.parentViewController == appDelegate.feedsNavigationController &&
+        appDelegate.feedsNavigationController.topViewController == pages;
+    BOOL isOwnedExpandedReader = pages.parentViewController == appDelegate.detailViewController &&
+        !appDelegate.detailViewController.isCompact;
+    // StoryDetailObjCViewController.m can receive a departing split column's disappearance after its reader has moved.
+    if (isOwnedActiveArticle && (isVisibleCompactReader || isOwnedExpandedReader)) return;
     
     if (!appDelegate.showingSafariViewController &&
         appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
@@ -432,6 +453,7 @@
     UIInterfaceOrientation orientation = (self.view.window ?: self.webView.window).windowScene.interfaceOrientation;
     [super viewWillLayoutSubviews];
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.appDelegate.storyPagesViewController hasHiddenReaderAncestor]) return;
         [self.appDelegate.storyPagesViewController layoutForInterfaceOrientation:orientation];
         [self changeWebViewWidth];
         [self drawFeedGradient];
@@ -450,7 +472,8 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+    if (self.appDelegate.detailViewController) return self.appDelegate.detailViewController.isPhoneOrCompact;
+    return self.isPhone || self.appDelegate.isCompactWidth;
 }
 
 // allow keyboard commands
@@ -789,6 +812,9 @@
     }
 #endif
     
+    if (appDelegate.storyPagesViewController.usesVerticalReaderToolbar) {
+        contentWidthClass = [contentWidthClass stringByAppendingString:@" NB-vertical-reader-toolbar"];
+    }
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%ld",
                          contentWidthClass, (long)contentWidth];
     
@@ -1051,12 +1077,51 @@
     return contentInsetTop > 0 ? contentInsetTop : -1;
 }
 
+- (void)updateFeedTitleGradientContentLayout {
+    BOOL fullscreen = appDelegate.detailViewController.isDuoFullscreenReader;
+    if (!fullscreen && !self.appliesDuoFullscreenFeedTitleInset) return;
+
+    // StoryDetailObjCViewController.m aligns fullscreen's favicon with storyDetailView.css's 30pt NB-ipad-wide/narrow header padding.
+    CGFloat iconLeading = fullscreen ? 30 : 8;
+    for (UIView *content in self.feedTitleGradient.subviews) {
+        CGRect frame = content.frame;
+        if ([content isKindOfClass:UIImageView.class]) {
+            frame.origin.x = iconLeading;
+        } else if ([content isKindOfClass:UILabel.class]) {
+            frame.origin.x = iconLeading + 24;
+            frame.size.width = MAX(0, CGRectGetWidth(self.feedTitleGradient.bounds) - frame.origin.x);
+        } else {
+            continue;
+        }
+        if (!CGRectEqualToRect(content.frame, frame)) content.frame = frame;
+    }
+    self.appliesDuoFullscreenFeedTitleInset = fullscreen;
+}
+
 - (void)updateFeedTitleGradientPosition {
     if (!self.feedTitleGradient || self.feedTitleGradient.superview != self.webView) {
         return;
     }
 
+    [self updateFeedTitleGradientContentLayout];
+
     StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+    BOOL pinsFeedHeader = pagesVC.usesVerticalReaderToolbar ||
+        (appDelegate.detailViewController.isPhone && !self.isPhoneOrCompact);
+
+    // StoryDetailObjCViewController.m keeps the pinned article feed header opaque above scrolling article content.
+    self.feedTitleGradient.backgroundColor = pinsFeedHeader ? UIColorFromRGB(NEWSBLUR_WHITE_COLOR) : nil;
+    [self updateReaderScrollIndicatorInsets:pinsFeedHeader];
+
+    if (pinsFeedHeader) {
+        CGFloat scale = self.webView.window.screen.scale ?: UIScreen.mainScreen.scale;
+        CGRect frame = self.feedTitleGradient.frame;
+        // StoryDetailObjCViewController.m follows the page only during a top pull; ordinary reading keeps the feed header pinned.
+        CGFloat top = MAX(self.webView.scrollView.contentInset.top, -self.webView.scrollView.contentOffset.y);
+        frame.origin.y = floor(top * scale) / scale;
+        self.feedTitleGradient.frame = frame;
+        return;
+    }
 
     // Get current scroll state
     CGFloat contentInsetTop = self.webView.scrollView.contentInset.top;
@@ -1122,12 +1187,68 @@
     [self updateContentInsetForNavigationBarAlpha:alpha maintainVisualPosition:YES];
 }
 
+- (void)updateReaderScrollIndicatorInsets:(BOOL)independentHeader {
+    UIScrollView *scroll = self.webView.scrollView;
+    UIScrollView *previousScroll = self.readerIndicatorScrollView;
+    if (previousScroll && (!independentHeader || previousScroll != scroll)) {
+        // StoryDetailObjCViewController.m restores only its own manual geometry; a newer legacy layout may already have supplied its insets.
+        if (UIEdgeInsetsEqualToEdgeInsets(previousScroll.verticalScrollIndicatorInsets, self.readerIndicatorAppliedInsets)) {
+            previousScroll.verticalScrollIndicatorInsets = self.readerIndicatorPreviousInsets;
+        }
+        if (UIEdgeInsetsEqualToEdgeInsets(previousScroll.horizontalScrollIndicatorInsets, self.readerIndicatorAppliedHorizontalInsets)) {
+            previousScroll.horizontalScrollIndicatorInsets = self.readerIndicatorPreviousHorizontalInsets;
+        }
+        if (!previousScroll.automaticallyAdjustsScrollIndicatorInsets) {
+            previousScroll.automaticallyAdjustsScrollIndicatorInsets = self.readerIndicatorWasAutomatic;
+        }
+        self.readerIndicatorScrollView = nil;
+    }
+    if (!independentHeader || !scroll) return;
+
+    if (!self.readerIndicatorScrollView) {
+        self.readerIndicatorScrollView = scroll;
+        self.readerIndicatorWasAutomatic = scroll.automaticallyAdjustsScrollIndicatorInsets;
+        self.readerIndicatorPreviousInsets = scroll.verticalScrollIndicatorInsets;
+        self.readerIndicatorPreviousHorizontalInsets = scroll.horizontalScrollIndicatorInsets;
+    }
+
+    // StoryDetailObjCViewController.m uses the pager's window protection for every cached page, excluding the other column's navigation header.
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    UIView *viewport = pages.scrollView ?: self.webView;
+    UIWindow *window = viewport.window;
+    CGFloat protectedBottom = scroll.safeAreaInsets.bottom;
+    if (window) {
+        CGRect viewportFrame = [viewport convertRect:viewport.bounds toView:window];
+        protectedBottom = MAX(0, CGRectGetMaxY(viewportFrame) - (CGRectGetMaxY(window.bounds) - window.safeAreaInsets.bottom));
+    }
+    // StoryDetailObjCViewController.m leaves the article's bottom clear when the native toolbar occupies the side rail.
+    CGFloat bottomInset = pages.usesVerticalReaderToolbar ? scroll.contentInset.bottom :
+        MAX(scroll.contentInset.bottom, protectedBottom);
+    CGFloat headerInset = MAX(0, CGRectGetHeight(self.feedTitleGradient.bounds) - 1);
+    UIEdgeInsets insets = UIEdgeInsetsMake(MAX(0, scroll.contentInset.top) + headerInset,
+                                          0, bottomInset, 0);
+    UIEdgeInsets horizontalInsets = self.readerIndicatorPreviousHorizontalInsets;
+    horizontalInsets.bottom = pages.usesVerticalReaderToolbar ? bottomInset :
+        MAX(horizontalInsets.bottom, bottomInset);
+    self.readerIndicatorAppliedInsets = insets;
+    self.readerIndicatorAppliedHorizontalInsets = horizontalInsets;
+    if (scroll.automaticallyAdjustsScrollIndicatorInsets) scroll.automaticallyAdjustsScrollIndicatorInsets = NO;
+    if (!UIEdgeInsetsEqualToEdgeInsets(scroll.verticalScrollIndicatorInsets, insets)) {
+        scroll.verticalScrollIndicatorInsets = insets;
+    }
+    if (!UIEdgeInsetsEqualToEdgeInsets(scroll.horizontalScrollIndicatorInsets, horizontalInsets)) {
+        scroll.horizontalScrollIndicatorInsets = horizontalInsets;
+    }
+}
+
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition {
     [self updateContentInsetForNavigationBarAlpha:alpha maintainVisualPosition:maintainVisualPosition force:NO];
 }
 
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition force:(BOOL)force {
-    if (!appDelegate.isCompactWidth && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+    if ([appDelegate.storyPagesViewController hasHiddenReaderAncestor]) return;
+    // StoryDetailObjCViewController.m clears a compact reader's old inset when unfolding into regular columns.
+    if (!self.isPhoneOrCompact && !appDelegate.storyPagesViewController.usesVerticalReaderToolbar && fabs(self.webView.scrollView.contentInset.top) < 0.5) {
         [self updateFeedTitleGradientPosition];
         return;
     }
@@ -2287,7 +2408,14 @@
             }
         }
 #endif
-        
+
+        if (appDelegate.storyPagesViewController.usesVerticalReaderToolbar) {
+            // StoryDetailObjCViewController.m must not relayout the hidden legacy footer or
+            // outer pager while the native side toolbar's article is rubber-banding.
+            [self storeScrollPosition:YES];
+            return;
+        }
+
         if (!atTopForFade && !atBottom && !singlePage) {
             StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
             CGFloat traverseFadeDistance = 80.0;
@@ -2856,6 +2984,8 @@
     // the view is laid out at its final device width (e.g., XIB default 414pt vs
     // iPhone 13's 390pt), baking the wrong width into the viewport meta tag.
     if (self.hasStory) {
+        // StoryDetailObjCViewController.m may have cached a resize against the outgoing document before this navigation committed.
+        self.lastWidthClassKey = nil;
         [self changeWebViewWidth];
     }
 }
@@ -3008,6 +3138,8 @@
     if (!self.hasStory || ![self isCurrentStoryLoad:self.storyLoadGeneration] ||
         self.readyStoryLoadGeneration == self.storyLoadGeneration) return;
     self.readyStoryLoadGeneration = self.storyLoadGeneration;
+    // StoryDetailObjCViewController.m also sizes ready content before slow subresources trigger didFinishNavigation.
+    self.lastWidthClassKey = nil;
     [self revealCurrentStory];
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
@@ -3204,6 +3336,7 @@
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
 
     self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x000000);
+    [self updateFeedTitleGradientPosition];
     
     if ([ThemeManager themeManager].isDarkTheme) {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
@@ -3705,6 +3838,7 @@
 }
 
 - (void)changeWebViewWidth {
+    if ([appDelegate.storyPagesViewController hasHiddenReaderAncestor]) return;
     // Don't do this in the background, to avoid scrolling to the top unnecessarily
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         return;
@@ -3745,6 +3879,10 @@
     }
 #endif
     
+    // StoryDetailObjCViewController.m includes toolbar placement in the width cache so folding also updates footer spacing.
+    if (appDelegate.storyPagesViewController.usesVerticalReaderToolbar) {
+        contentWidthClass = [contentWidthClass stringByAppendingString:@" NB-vertical-reader-toolbar"];
+    }
     baseWidthClass = contentWidthClass;
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%ld",
                          contentWidthClass, (long)contentWidth];
@@ -3776,7 +3914,7 @@
     self.lastWidthClassKey = widthClassKey;
 
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"var w = Math.floor(window.innerWidth || document.documentElement.clientWidth || %li);"
+                          @"var w = %li;"
                           "if (document.body) { document.body.className = '%@ %@ %@ NB-width-' + w; }"
                           "var viewport = document.getElementById('viewport');"
                           "if (viewport) { viewport.setAttribute('content', 'width=%li, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'); }",

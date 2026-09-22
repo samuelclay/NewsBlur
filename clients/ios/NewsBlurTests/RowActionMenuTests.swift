@@ -4,6 +4,78 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_RowActionMenus: XCTestCase {
+    func test_storySettingsMenuRowsAnchorToVisibleNativeReaderBar() throws {
+        try verifyStorySettingsMenuAnchors(vertical: true)
+    }
+
+    func test_storySettingsMenuRowsKeepHorizontalReaderAnchors() throws {
+        try verifyStorySettingsMenuAnchors(vertical: false)
+    }
+
+    private func verifyStorySettingsMenuAnchors(vertical: Bool) throws {
+        let app = StorySettingsAnchorApp()
+        let pages = StorySettingsAnchorPages()
+        pages.simulatedVerticalToolbar = vertical
+        pages.appDelegate = app
+        app.fixturePages = pages
+        app.storiesCollection = StoriesCollection()
+        app.activeStory = ["story_hash": "42:anchor", "story_feed_id": "42"]
+
+        let nativeView = UIButton(type: .system)
+        nativeView.setImage(UIImage(systemName: "textformat.size"), for: .normal)
+        nativeView.frame.size = CGSize(width: 44, height: 44)
+        let nativeItem = UIBarButtonItem(customView: nativeView)
+        let horizontalView = UIButton(type: .system)
+        horizontalView.setImage(UIImage(systemName: "textformat.size"), for: .normal)
+        horizontalView.frame.size = CGSize(width: 44, height: 44)
+        let horizontalItem = UIBarButtonItem(customView: horizontalView)
+        pages.setValue(nativeItem, forKey: "verticalSettingsButton")
+        pages.fontSettingsButton = horizontalItem
+        let expected = vertical ? nativeItem : horizontalItem
+        let detached = vertical ? horizontalItem : nativeItem
+
+        // RowActionMenuTests.swift mounts only the active toolbar item; the obsolete item deliberately has no window.
+        let host = UIViewController()
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 440, height: 44))
+        toolbar.items = [expected]
+        host.view.addSubview(toolbar)
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 440, height: 678))
+        window.rootViewController = host
+        window.isHidden = false
+        window.layoutIfNeeded()
+        toolbar.layoutIfNeeded()
+        defer {
+            NSObject.cancelPreviousPerformRequests(withTarget: pages)
+            window.isHidden = true
+            window.rootViewController = nil
+            toolbar.items = nil
+            app.fixturePages = nil
+            pages.appDelegate = nil
+        }
+        XCTAssertTrue(expected.customView?.window === window)
+        XCTAssertNil(detached.customView?.window)
+
+        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
+        let menu = controllerType.init(nibName: nil, bundle: nil)
+        menu.setValue(app, forKey: "appDelegate")
+        let groups = try XCTUnwrap(menu.value(forKey: "menuGroups") as? [[NSNumber]])
+        let source = try XCTUnwrap(menu as? UITableViewDataSource)
+        let delegate = try XCTUnwrap(menu as? UITableViewDelegate)
+        let table = UITableView()
+        for (action, label) in [(3, "Train this story"), (2, "Send to...")] {
+            let section = try XCTUnwrap(groups.firstIndex { $0.contains(NSNumber(value: action)) })
+            let row = try XCTUnwrap(groups[section].firstIndex(of: NSNumber(value: action)))
+            let path = IndexPath(row: row, section: section)
+            XCTAssertEqual(source.tableView(table, cellForRowAt: path).textLabel?.text, label)
+            app.presentedAnchor = nil
+            delegate.tableView?(table, didSelectRowAt: path)
+            XCTAssertTrue(app.presentedAnchor === expected, "\(label) must use the currently mounted settings item")
+            XCTAssertTrue((app.presentedAnchor as? UIBarButtonItem)?.customView?.window === window,
+                          "\(label) must retain a visible presentation anchor after leaving Story Options")
+        }
+        menu.setValue(nil, forKey: "appDelegate")
+    }
+
     func test_goToFeedFromUnsubscribedSharedStoryOpensFeedPreview() throws {
         let app = GoToFeedMenuApp()
         app.dictFeeds = [:]
@@ -553,6 +625,21 @@ import UIKit
         let controller = FeedsViewController()
         controller.appDelegate = app
         return (app, controller)
+    }
+}
+
+@MainActor private final class StorySettingsAnchorPages: StoryPagesViewController {
+    var simulatedVerticalToolbar = false
+    override var usesVerticalReaderToolbar: Bool { simulatedVerticalToolbar }
+}
+
+@MainActor private final class StorySettingsAnchorApp: NewsBlurAppDelegate {
+    var fixturePages: StoryPagesViewController?
+    var presentedAnchor: AnyObject?
+    override var storyPagesViewController: StoryPagesViewController! { fixturePages }
+    override func openTrainStory(_ sender: Any!) { presentedAnchor = sender as AnyObject? }
+    override func showSend(to controller: UIViewController!, sender: Any!) {
+        presentedAnchor = sender as AnyObject?
     }
 }
 

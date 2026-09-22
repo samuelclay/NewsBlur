@@ -504,7 +504,10 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 
     private var isPhoneOrCompactLayout: Bool {
-        UIDevice.current.userInterfaceIdiom == .phone || appDelegate.isCompactWidth
+        if let detail = appDelegate.detailViewController {
+            return detail.isPhoneOrCompact
+        }
+        return UIDevice.current.userInterfaceIdiom == .phone || appDelegate.isCompactWidth
     }
 
     private func correctReturnFrameIfNeeded() {
@@ -674,6 +677,11 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         configureDataSource()
     }
 
+    @objc override func reloadTable() {
+        super.reloadTable()
+        appDelegate.detailViewController?.storyTitlesDidReload(self)
+    }
+
     @objc func resetForAccountChange() {
         storiesCollection.reset()
         resetFeedDetail()
@@ -686,7 +694,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         title = nil
         navigationItem.titleView = nil
         // FeedDetailObjCViewController.m uses this same state before any feed is selected.
-        messageLabel.text = "Select a feed to read"
+        messageLabel.text = "Select a feed or folder"
         messageView.isHidden = false
         reloadImmediately()
     }
@@ -774,14 +782,27 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 
     @objc func openDailyBriefingSettingsFrom(_ sourceView: UIView) {
+        openDailyBriefingSettings(sourceView: sourceView, barButtonItem: nil)
+    }
+
+    @objc func openDailyBriefingSettingsFromBarButton(_ barButtonItem: UIBarButtonItem) {
+        openDailyBriefingSettings(sourceView: nil, barButtonItem: barButtonItem)
+    }
+
+    private func openDailyBriefingSettings(sourceView: UIView?, barButtonItem: UIBarButtonItem?) {
         let host = UIHostingController(rootView: DailyBriefingSettingsPopoverView(store: dailyBriefingStore))
         host.modalPresentationStyle = .popover
         host.preferredContentSize = CGSize(width: 520, height: 760)
 
         if let popover = host.popoverPresentationController {
-            popover.sourceView = sourceView
-            popover.sourceRect = sourceView.bounds
-            popover.permittedArrowDirections = .up
+            if let barButtonItem {
+                popover.barButtonItem = barButtonItem
+                popover.permittedArrowDirections = .any
+            } else if let sourceView {
+                popover.sourceView = sourceView
+                popover.sourceRect = sourceView.bounds
+                popover.permittedArrowDirections = .any
+            }
         }
 
         present(host, animated: true)

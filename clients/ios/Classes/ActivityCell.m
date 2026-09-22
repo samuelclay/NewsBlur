@@ -10,6 +10,15 @@
 #import "UIImageView+AFNetworking.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlur-Swift.h"
+#import "NSString+HTML.h"
+
+@interface ActivityCell ()
+@property (nonatomic, strong) NSLayoutConstraint *labelLeadingConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelTrailingConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelTopConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelBottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *minimumContentHeightConstraint;
+@end
 
 @implementation ActivityCell
 
@@ -45,39 +54,46 @@
         leftMargin = 20;
         rightMargin = 20;
         avatarSize = 48;
+
+        activity.translatesAutoresizingMaskIntoConstraints = NO;
+        activity.numberOfLines = 0;
+        self.labelLeadingConstraint = [activity.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:leftMargin * 2 + avatarSize];
+        self.labelTrailingConstraint = [activity.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-rightMargin];
+        self.labelTopConstraint = [activity.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:topMargin];
+        self.labelBottomConstraint = [activity.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-bottomMargin];
+        self.minimumContentHeightConstraint = [self.contentView.heightAnchor constraintGreaterThanOrEqualToConstant:avatarSize + topMargin + bottomMargin];
+        self.minimumContentHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+        [NSLayoutConstraint activateConstraints:@[self.labelLeadingConstraint, self.labelTrailingConstraint,
+                                                 self.labelTopConstraint, self.labelBottomConstraint,
+                                                 self.minimumContentHeightConstraint]];
     }
     
     return self;
 }
 
 
-- (void)layoutSubviews {    
-    [super layoutSubviews];
-    
-    // determine outer bounds
-    [self.activityLabel sizeToFit];
-    CGRect contentRect = self.frame;
-    CGRect labelFrame = self.activityLabel.frame;
-    
-    // position label to bounds
-    labelFrame.origin.x = leftMargin*2 + avatarSize;
-    labelFrame.origin.y = 0;
-    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
-    labelFrame.size.height = contentRect.size.height;
-    self.activityLabel.frame = labelFrame;
+- (void)updateConstraints {
+    // ActivityCell.m leaves multiline height calculation to the table's actual content area and accessory layout.
+    self.labelLeadingConstraint.constant = leftMargin * 2 + avatarSize;
+    self.labelTrailingConstraint.constant = -rightMargin;
+    self.labelTopConstraint.constant = topMargin;
+    self.labelBottomConstraint.constant = -bottomMargin;
+    self.minimumContentHeightConstraint.constant = avatarSize + topMargin + bottomMargin;
+    [super updateConstraints];
 }
 
-- (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width {
-    // must set the height again for dynamic height in heightForRowAtIndexPath in
-    CGRect activityLabelRect = self.activityLabel.frame;
-    activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
-    
-    self.activityLabel.frame = activityLabelRect;
-    self.activityLabel.numberOfLines = 0;
++ (BOOL)shouldCollapseActivity:(NSDictionary *)activity {
+    // ActivityCell.m only requires another user for these activity categories.
+    return activity[@"with_user"] == NSNull.null &&
+        [@[@"follow", @"comment_reply", @"comment_like", @"signup"] containsObject:activity[@"category"]];
+}
+
+- (void)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile {
+    [self setNeedsUpdateConstraints];
     self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
 
     NSString *category = [activity objectForKey:@"category"];
-    NSString *content = [activity objectForKey:@"content"];
+    NSString *content = [self plainTextComment:[activity objectForKey:@"content"]];
     NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [activity objectForKey:@"title"]]];
     NSString *time = [NSString stringWithFormat:@"%@ ago", [activity objectForKey:@"time_since"]];
@@ -91,10 +107,10 @@
         [category isEqualToString:@"comment_like"] ||
         [category isEqualToString:@"signup"]) {
         // this is for the rare instance when the with_user doesn't return anything
-        if ([[activity objectForKey:@"with_user"] class] == [NSNull class]) {
+        if ([ActivityCell shouldCollapseActivity:activity]) {
             self.faviconView.frame = CGRectZero;
             self.activityLabel.attributedText = nil;
-            return 1;
+            return;
         }
 
         UIImage *placeholder = [[NewsBlurAppDelegate sharedAppDelegate] defaultUserAvatar];
@@ -202,11 +218,31 @@
     
     self.activityLabel.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.activityLabel.attributedText = attrStr;
-    [self.activityLabel sizeToFit];
-        
-    int height = self.activityLabel.frame.size.height;
-    
-    return MAX(height + topMargin + bottomMargin, self.faviconView.frame.size.height + topMargin + bottomMargin);
+}
+
+- (NSString *)plainTextComment:(id)content {
+    if (![content isKindOfClass:[NSString class]]) {
+        return @"";
+    }
+
+    NSString *text = content;
+    NSString *tagPattern = @"</?[A-Za-z][^>]*>";
+    if ([text rangeOfString:tagPattern options:NSRegularExpressionSearch].location == NSNotFound) {
+        return [text stringByDecodingHTMLEntities];
+    }
+
+    // ActivityCell.m preserves comment paragraphs while NSString+HTML decodes their entities without loading web content.
+    text = [text stringByReplacingOccurrencesOfString:@"(?i)</(?:p|div|blockquote|li|h[1-6])\\s*>"
+                                          withString:@"\n\n" options:NSRegularExpressionSearch range:NSMakeRange(0, text.length)];
+    text = [text stringByReplacingOccurrencesOfString:@"(?i)<br\\s*/?>"
+                                          withString:@"\n" options:NSRegularExpressionSearch range:NSMakeRange(0, text.length)];
+    text = [text stringByReplacingOccurrencesOfString:tagPattern
+                                          withString:@"" options:NSRegularExpressionSearch range:NSMakeRange(0, text.length)];
+    text = [text stringByReplacingOccurrencesOfString:@"[ \\t]*\\n[ \\t]*"
+                                          withString:@"\n" options:NSRegularExpressionSearch range:NSMakeRange(0, text.length)];
+    text = [text stringByReplacingOccurrencesOfString:@"\\n{3,}"
+                                          withString:@"\n\n" options:NSRegularExpressionSearch range:NSMakeRange(0, text.length)];
+    return [[text stringByDecodingHTMLEntities] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

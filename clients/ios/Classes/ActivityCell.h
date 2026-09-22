@@ -26,7 +26,8 @@
 @property (readwrite) int rightMargin;
 @property (readwrite) int avatarSize;
 
-- (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width;
++ (BOOL)shouldCollapseActivity:(NSDictionary *)activity;
+- (void)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile;
 - (NSString *)stripFormatting:(NSString *)str;
 
 @end

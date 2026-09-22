@@ -11,6 +11,7 @@ import SwiftUI
 /// A protocol of interaction between the trainer view and the enclosing view controller.
 @MainActor protocol TrainerInteraction {
     var isStoryTrainer: Bool { get set }
+    func reloadTrainerContext()
 }
 
 struct TrainerView: View {
@@ -270,8 +271,7 @@ struct TrainerView: View {
         }
         .background(listBackground)
         .onAppear {
-            addingTitle = ""
-            cache.reload()
+            reload()
         }
     }
 
@@ -280,7 +280,7 @@ struct TrainerView: View {
     }
 
     func reload() {
-        cache.reload()
+        interaction.reloadTrainerContext()
         addingTitle = ""
     }
 

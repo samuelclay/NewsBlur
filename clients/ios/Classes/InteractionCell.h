@@ -26,7 +26,8 @@
 @property (readwrite) int rightMargin;
 @property (readwrite) int avatarSize;
 
-- (int)setInteraction:(NSDictionary *)interaction withWidth:(int)width;
++ (BOOL)shouldCollapseInteraction:(NSDictionary *)interaction;
+- (void)setInteraction:(NSDictionary *)interaction;
 - (NSString *)stripFormatting:(NSString *)str;
 
 @end
