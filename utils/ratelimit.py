@@ -93,9 +93,6 @@ class ratelimit(object):
     def should_ratelimit(self, request):
         return True
 
-    def get_counters(self, request):
-        return self.cache_get_many(self.keys_to_check(request))
-
     def keys_to_check(self, request, now=None):
         "Bucket keys for the window ending at `now`, newest first. utils/ratelimit.py"
         extra = self.key_extra(request)
@@ -105,9 +102,6 @@ class ratelimit(object):
             "%s%s-%s" % (self.prefix, extra, (now - timedelta(minutes=minute)).strftime("%Y%m%d%H%M"))
             for minute in range(self.minutes + 1)
         ]
-
-    def current_key(self, request):
-        return self.keys_to_check(request)[0]
 
     def key_extra(self, request):
         key = getattr(request.session, "session_key", "")

@@ -7,6 +7,7 @@ apps/reader/test_ratelimit_retry_after.py
 """
 
 import datetime
+import itertools
 from unittest.mock import patch
 
 from django.core.cache import cache
@@ -60,9 +61,25 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
         # Every hit landed in the 14:30 bucket, which stays inside the six-bucket window
         # until 14:36:00, so the client has to wait five minutes plus the rest of this minute.
         self.assertEqual(response["Retry-After"], str(5 * 60 + 45))
-        # One clock read per request: the bucket keys, the increment, and the Retry-After
-        # arithmetic must not drift across a minute boundary mid-request.
-        self.assertEqual(mock_datetime.now.call_count, 4)
+
+    def test_retry_after_matches_the_buckets_when_the_clock_ticks_mid_request(self):
+        before = datetime.datetime(2026, 9, 22, 14, 30, 59)
+        after = datetime.datetime(2026, 9, 22, 14, 31, 0)
+        view = self.decorated_view(minutes=5, requests=3)
+        with patch("utils.ratelimit.datetime") as mock_datetime:
+            mock_datetime.now.return_value = before
+            for _ in range(3):
+                self.assertEqual(view(self.make_request()).status_code, 200)
+            # The refused request sees 14:30:59 on its first clock read and 14:31:00 on any
+            # later one. The buckets and the wait must come from the same read.
+            mock_datetime.now.side_effect = itertools.chain([before], itertools.repeat(after))
+            response = view(self.make_request())
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(cache.get("rl-test-session-202609221430"), 3)
+        # Seen from 14:30:59, the 14:30 bucket leaves the window at 14:36:00: 301 seconds. A
+        # window built at 14:30:59 but timed from 14:31:00 would say 360, and buckets built
+        # at 14:31:00 would say 300.
+        self.assertEqual(response["Retry-After"], "301")
 
     def test_refused_requests_do_not_extend_the_block(self):
         frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
