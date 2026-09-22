@@ -7,6 +7,7 @@ import com.newsblur.domain.Story
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.ReadingAction
+import java.util.function.BiPredicate
 import java.util.function.Predicate
 
 /** ClusterReadStore.kt uses an indexed reverse lookup instead of scanning story JSON during scrolling. */
@@ -59,54 +60,41 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
         hashes: Collection<String>,
         requestStartedAt: Long,
         isFeedEligible: Predicate<String> = Predicate { true },
+        canRetireTimestamp: BiPredicate<String, Long> = BiPredicate { _, _ -> true },
     ): UnreadReconciliationStats {
         val serverUnread = hashes.toSet()
-        val retirementCandidates = mutableSetOf<String>()
-        val explicitUnread = mutableSetOf<String>()
+        val inspectedChildren = mutableSetOf<String>()
+        val retired = mutableSetOf<String>()
         // UnreadsSubService.kt cannot retire children absent from the standalone story table.
         // Limit this lookup to cached cluster members, honoring receipts before stored or embedded state.
-        db.rawQuery("SELECT DISTINCT m.child_hash, COALESCE(r.read, s.read) FROM $MEMBERS m " +
+        db.rawQuery("SELECT DISTINCT m.child_hash, m.feed_id, m.child_timestamp FROM $MEMBERS m " +
             "LEFT JOIN $READ_STATE r ON r.story_hash = m.child_hash " +
             "LEFT JOIN ${DatabaseConstants.STORY_TABLE} s ON s.story_hash = m.child_hash " +
-            "WHERE COALESCE(r.read, s.read, 0) = 0", null).use {
+            "WHERE COALESCE(r.read, s.read, m.child_read, 0) = 0", null).use {
             while (it.moveToNext()) {
                 val hash = it.getString(0)
                 if (hash in serverUnread) continue
-                val feedId = inferFeedId(hash)?.takeIf { it.isNotBlank() } ?: continue
+                val feedId = it.getString(1)?.takeIf { it.isNotBlank() } ?: continue
+                if (inferFeedId(hash) != feedId) continue
                 if (!isFeedEligible.test(feedId)) continue
-                retirementCandidates.add(hash)
-                if (!it.isNull(1)) explicitUnread.add(hash)
+                inspectedChildren.add(hash)
+                if (canRetireTimestamp.test(feedId, it.getLong(2))) retired.add(hash)
             }
         }
-        val retired = mutableSetOf<String>()
-        for (children in parentsReferencing(retirementCandidates).values) {
-            for (child in children) {
-                val feedId = child.feedId?.takeIf { it.isNotBlank() } ?: continue
-                if (child.storyHash in retirementCandidates && (child.storyHash in explicitUnread || !child.read) &&
-                    isFeedEligible.test(feedId)) retired.add(child.storyHash)
-            }
-        }
-        reconcileServerReadState(retired, true, requestStartedAt)
+        if (retired.isNotEmpty()) reconcileServerReadState(retired, true, requestStartedAt)
 
         val candidates = mutableSetOf<String>()
-        val embeddedCandidates = mutableSetOf<String>()
         for (chunk in hashes.chunked(400)) {
             val params = chunk.joinToString(",") { "?" }
             db.rawQuery("SELECT story_hash FROM ${DatabaseConstants.STORY_TABLE} WHERE read = 1 AND story_hash IN ($params) " +
                 "UNION SELECT story_hash FROM $READ_STATE WHERE read = 1 AND story_hash IN ($params)",
                 (chunk + chunk).toTypedArray()).use { while (it.moveToNext()) candidates.add(it.getString(0)) }
-            db.rawQuery("SELECT DISTINCT child_hash FROM $MEMBERS WHERE child_hash IN ($params)",
-                chunk.toTypedArray()).use { while (it.moveToNext()) embeddedCandidates.add(it.getString(0)) }
+            // ClusterReadStore.kt selects known-read embedded children without decoding their parents twice.
+            db.rawQuery("SELECT DISTINCT child_hash FROM $MEMBERS WHERE child_read = 1 AND child_hash IN ($params)",
+                chunk.toTypedArray()).use { while (it.moveToNext()) candidates.add(it.getString(0)) }
         }
-        // ClusterReadStore.kt also respects remote unread changes for children not yet stored individually.
-        // Only indexed, known-read children need a receipt; the rest of the server unread list stays untouched.
-        for (children in parentsReferencing(embeddedCandidates).values) {
-            for (child in children) {
-                if (child.read && child.storyHash in embeddedCandidates) candidates.add(child.storyHash)
-            }
-        }
-        reconcileServerReadState(candidates, false, requestStartedAt)
-        return UnreadReconciliationStats(retirementCandidates.size, retired.size)
+        if (candidates.isNotEmpty()) reconcileServerReadState(candidates, false, requestStartedAt)
+        return UnreadReconciliationStats(inspectedChildren.size, retired.size)
     }
 
     fun reconcileServerReadState(hashes: Collection<String>, read: Boolean, requestStartedAt: Long) {
@@ -125,6 +113,9 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
             db.insertWithOnConflict(MEMBERS, null, ContentValues().apply {
                 put("parent_hash", parentHash)
                 put("child_hash", child.storyHash)
+                put("child_read", child.read)
+                put("child_timestamp", child.timestamp)
+                put("feed_id", child.feedId)
             }, SQLiteDatabase.CONFLICT_IGNORE)
         }
     }
@@ -214,6 +205,7 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
         db.update(DatabaseConstants.STORY_TABLE, ContentValues().apply {
             put(DatabaseConstants.STORY_CLUSTER_STORIES, gson.toJson(children))
         }, "story_hash = ?", arrayOf(hash))
+        registerClusters(hash, children)
     }
 
     override fun adjustCounts(state: ClusterReadRepository.State, delta: Int) {
@@ -233,12 +225,19 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
         const val READ_STATE = "story_cluster_read_state"
 
         @JvmStatic fun createTables(db: SQLiteDatabase) {
-            db.execSQL("CREATE TABLE $MEMBERS (parent_hash TEXT NOT NULL, child_hash TEXT NOT NULL, PRIMARY KEY(parent_hash, child_hash))")
+            db.execSQL("CREATE TABLE $MEMBERS (parent_hash TEXT NOT NULL, child_hash TEXT NOT NULL, " +
+                "child_read INTEGER, child_timestamp INTEGER, feed_id TEXT, PRIMARY KEY(parent_hash, child_hash))")
             db.execSQL("CREATE INDEX story_cluster_child ON $MEMBERS(child_hash)")
             db.execSQL("CREATE TABLE $READ_STATE (story_hash TEXT PRIMARY KEY NOT NULL, read INTEGER NOT NULL, updated_at INTEGER NOT NULL)")
             // BlurDatabaseHelper.java deletes cached stories through several paths; the trigger covers all of them.
             db.execSQL("CREATE TRIGGER story_cluster_cleanup AFTER DELETE ON ${DatabaseConstants.STORY_TABLE} BEGIN " +
                 "DELETE FROM $MEMBERS WHERE parent_hash = OLD.story_hash; END")
+        }
+
+        @JvmStatic fun addMemberMetadata(db: SQLiteDatabase) {
+            db.execSQL("ALTER TABLE $MEMBERS ADD COLUMN child_read INTEGER")
+            db.execSQL("ALTER TABLE $MEMBERS ADD COLUMN child_timestamp INTEGER")
+            db.execSQL("ALTER TABLE $MEMBERS ADD COLUMN feed_id TEXT")
         }
 
         @JvmStatic fun backfill(db: SQLiteDatabase) {

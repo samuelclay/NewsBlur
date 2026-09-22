@@ -18,6 +18,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.function.BiPredicate
 import java.util.function.Predicate
 
 class ClusterUnreadRetirementTest {
@@ -38,7 +39,8 @@ class ClusterUnreadRetirementTest {
             mockk<Cursor>(relaxed = true).also { cursor ->
                 every { cursor.moveToNext() } answers { ++position < values.size }
                 every { cursor.getString(0) } answers { values[position] }
-                every { cursor.isNull(1) } returns true
+                every { cursor.getString(1) } returns "2"
+                every { cursor.getLong(2) } returns 100L
             }
         }
         every { store.parentsReferencing(any()) } returns mapOf(
@@ -118,6 +120,19 @@ class ClusterUnreadRetirementTest {
         assertEquals(mapOf("2:eligible" to true), fixture.receipts)
     }
 
+    @Test fun repeatedUnreadRefreshDoesNotDecodeKnownReadEmbeddedChildren() {
+        val fixture = Fixture()
+        repeat(100) { index ->
+            fixture.parents["1:parent-$index"] = arrayOf(child("2:read-$index", true))
+        }
+
+        repeat(3) { fixture.store.reconcileServerUnread(emptyList(), 200L) }
+
+        verify(exactly = 0) { fixture.store.parentsReferencing(match { it.isNotEmpty() }) }
+        verify(exactly = 0) { fixture.store.pendingReadStateHashes() }
+        assertTrue(fixture.receipts.isEmpty())
+    }
+
     @Test fun malformedAndBlankHashFeedIdsAreExcludedBeforeDecodingParentClusters() {
         val fixture = Fixture()
         fixture.parents["1:parent"] = arrayOf(
@@ -133,15 +148,21 @@ class ClusterUnreadRetirementTest {
         assertTrue(fixture.receipts.isEmpty())
     }
 
-    @Test fun reconciliationStatsDistinguishInspectedChildrenFromRetirementCandidates() {
+    @Test fun reconciliationStatsExcludeKnownReadChildrenAndCountTimestampFilteredCandidates() {
         val fixture = Fixture()
-        fixture.parents["1:parent"] = arrayOf(child("2:unread", false), child("2:read-metadata", true))
+        fixture.parents["1:parent"] = arrayOf(
+            child("2:unread", false).apply { timestamp = 2000L },
+            child("2:too-old", false).apply { timestamp = 1000L },
+            child("2:read-metadata", true),
+        )
         fixture.parents["3:parent"] = arrayOf(child("3:excluded", false))
 
-        val stats = fixture.store.reconcileServerUnread(emptyList(), 200L, Predicate { it == "2" })
+        val stats = fixture.store.reconcileServerUnread(emptyList(), 200L, Predicate { it == "2" },
+            BiPredicate { feedId, timestamp -> feedId == "2" && timestamp > 1000L })
 
         assertEquals(ClusterReadStore.UnreadReconciliationStats(2, 1), stats)
         assertEquals(mapOf("2:unread" to true), fixture.receipts)
+        verify(exactly = 0) { fixture.store.parentsReferencing(match { "2:too-old" in it || "2:read-metadata" in it }) }
     }
 
     @Test fun pendingUnreadActionSurvivesRemoteReadRetirement() {
@@ -236,18 +257,20 @@ class ClusterUnreadRetirementTest {
             every { db.rawQuery(any(), any()) } answers {
                 val sql = firstArg<String>()
                 val requested = secondArg<Array<String>?>().orEmpty().toSet()
-                val children = parents.values.flatMap { it.toList() }.map { it.storyHash }.toSet()
+                val children = parents.values.flatMap { it.toList() }.associateBy { it.storyHash }
                 val values = when {
-                    sql.startsWith("SELECT DISTINCT m.child_hash") -> children.filter { (receipts[it] ?: stored[it]) != true }
-                    sql.startsWith("SELECT DISTINCT child_hash") -> children.filter { it in requested }
+                    sql.startsWith("SELECT DISTINCT m.child_hash") -> children.values.filter {
+                        !(receipts[it.storyHash] ?: stored[it.storyHash] ?: (sql.contains("m.child_read") && it.read))
+                    }.map { it.storyHash }
+                    sql.startsWith("SELECT DISTINCT child_hash") -> children.values.filter { it.read && it.storyHash in requested }.map { it.storyHash }
                     else -> (receipts.filterValues { it }.keys + stored.filterValues { it }.keys).filter { it in requested }
                 }
                 var position = -1
                 mockk<Cursor>(relaxed = true).also { cursor ->
                     every { cursor.moveToNext() } answers { ++position < values.size }
                     every { cursor.getString(0) } answers { values[position] }
-                    every { cursor.isNull(1) } answers { values[position] !in receipts && values[position] !in stored }
-                    every { cursor.getInt(1) } answers { if ((receipts[values[position]] ?: stored[values[position]]) == true) 1 else 0 }
+                    every { cursor.getString(1) } answers { children[values[position]]?.feedId }
+                    every { cursor.getLong(2) } answers { children.getValue(values[position]).timestamp }
                 }
             }
             every { store.parentsReferencing(any()) } answers {
