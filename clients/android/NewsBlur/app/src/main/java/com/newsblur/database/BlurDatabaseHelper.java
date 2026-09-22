@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 
 import com.newsblur.domain.CustomIcon;
 
@@ -869,11 +870,12 @@ public class BlurDatabaseHelper {
     }
 
     public void reconcileServerUnreadHashes(@NonNull Collection<String> hashes, long requestStartedAt,
-                                           @NonNull java.util.function.Predicate<String> isFeedEligible) {
+                                           @NonNull Predicate<String> isFeedEligible) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible);
+                int retirementCandidates = new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible);
+                Log.i(getClass().getName(), "embedded unread retirement candidates: " + retirementCandidates);
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
