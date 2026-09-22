@@ -175,6 +175,73 @@ import WebKit
         #endif
     }
 
+    func test_compactPhoneInteractiveBackPreservesAndRestoresStoryHeader() throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Compact landscape navigation is an iPhone presentation")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .phone else { throw XCTSkip("Requires an iPhone test host") }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let feeds = FeedBackHeaderFeeds()
+        feeds.title = "samuel"
+        let stories = CompactBackHeaderStories()
+        stories.title = "Engadget"
+        stories.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
+        let navigation = CompactPhoneNavigationController(rootViewController: feeds)
+        navigation.traitOverrides.verticalSizeClass = .compact
+        let transition = FeedBackHeaderTransition()
+        let window = UIWindow(windowScene: scene)
+        let previous = scene.windows.first(where: \.isKeyWindow)
+        window.rootViewController = navigation
+        window.makeKeyAndVisible()
+        defer {
+            navigation.delegate = nil
+            window.isHidden = true
+            window.rootViewController = nil
+            previous?.makeKeyAndVisible()
+        }
+        guard !Utilities.usesSystemVerticalBar(navigation.traitCollection) else {
+            throw XCTSkip("The Duo side bar does not use the standalone landscape header")
+        }
+        navigation.pushViewController(stories, animated: false)
+        window.layoutIfNeeded()
+        let bar = navigation.compactNavigationBar
+        XCTAssertFalse(bar.isHidden)
+        XCTAssertEqual(bar.topItem?.title, "Engadget")
+        XCTAssertEqual(bar.topItem?.rightBarButtonItem?.title, "Settings")
+        XCTAssertEqual(bar.items?.count, 2)
+        XCTAssertEqual(stories.additionalSafeAreaInsets.top, 44)
+        navigation.delegate = transition
+
+        for cancelled in [true, true, false] {
+            transition.driver = UIPercentDrivenInteractiveTransition()
+            navigation.popViewController(animated: true)
+            transition.driver?.update(0.2)
+            let held = expectation(description: "Hold landscape interactive Back")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { held.fulfill() }
+            wait(for: [held], timeout: 2)
+            XCTAssertNotNil(navigation.transitionCoordinator)
+            XCTAssertTrue(navigation.topViewController === feeds,
+                          "UIKit provisionally exposes the destination before deciding whether Back completes")
+            // FeedToolbarLayoutTests.swift checks the real mirror while UIKit temporarily removes stories from its stack.
+            XCTAssertEqual(bar.topItem?.title, "Engadget", "The outgoing header must remain with the visible story list")
+            XCTAssertEqual(bar.topItem?.rightBarButtonItem?.title, "Settings")
+            XCTAssertEqual(bar.items?.count, 2, "The outgoing Back action must survive a cancellable transition")
+            XCTAssertEqual(stories.additionalSafeAreaInsets.top, 44)
+            let completed = expectation(description: "Complete landscape interactive Back")
+            let coordinator = try XCTUnwrap(navigation.transitionCoordinator)
+            coordinator.animate(alongsideTransition: nil) { _ in completed.fulfill() }
+            if cancelled { transition.driver?.cancel() } else { transition.driver?.finish() }
+            wait(for: [completed], timeout: 3)
+            XCTAssertTrue(navigation.topViewController === (cancelled ? stories : feeds))
+            XCTAssertEqual(bar.topItem?.title, cancelled ? "Engadget" : "samuel")
+            XCTAssertEqual(bar.topItem?.rightBarButtonItem?.title, cancelled ? "Settings" : nil)
+            XCTAssertEqual(bar.items?.count, cancelled ? 2 : 1)
+            XCTAssertEqual(stories.additionalSafeAreaInsets.top, cancelled ? 44 : 0)
+            XCTAssertEqual(feeds.additionalSafeAreaInsets.top, cancelled ? 0 : 44)
+        }
+        #endif
+    }
+
     func test_duoArticleBottomBounceLeavesLegacyFooterAndPagerGeometryAlone() throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("The side-toolbar reader uses the iOS layout policy")
@@ -2916,6 +2983,17 @@ import WebKit
     override func viewDidAppear(_ animated: Bool) {}
     override func viewDidLayoutSubviews() {}
     func updateHeaderPolicy() { perform(NSSelectorFromString("updateFeedNavigationBarForHeader")) }
+}
+
+@MainActor private final class CompactBackHeaderStories: FeedDetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 844, height: 390)) }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillDisappear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
 }
 
 @MainActor private final class FeedBackHeaderTransition: NSObject, UINavigationControllerDelegate, UIViewControllerAnimatedTransitioning {
