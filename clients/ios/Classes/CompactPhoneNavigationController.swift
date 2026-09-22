@@ -538,6 +538,7 @@ final class CompactPhoneNavigationController: UINavigationController, UINavigati
     private var mirroredTitle: String?
     private var mirroredBackTitle: String?
     private var isUpdatingHeader = false
+    private var isWaitingForCompactTransition = false
     private var ownsVerticalNavigationBackground = false
     private var originalNavigationBackground: UIColor?
     private var appliedVerticalNavigationBackground: UIColor?
@@ -687,10 +688,26 @@ final class CompactPhoneNavigationController: UINavigationController, UINavigati
         }
     }
 
-    private func updateCompactHeader() {
+    private func updateCompactHeader(afterInteractiveTransition: Bool = false) {
         guard !isUpdatingHeader else { return }
         isUpdatingHeader = true
         defer { isUpdatingHeader = false }
+
+        if !afterInteractiveTransition, compactHeaderActive, usesCompactHeader,
+           let transition = transitionCoordinator, transition.initiallyInteractive {
+            // CompactPhoneNavigationController.swift keeps the outgoing header and inset while UIKit provisionally exposes the Back destination.
+            if isWaitingForCompactTransition { return }
+            isWaitingForCompactTransition = true
+            let registered = transition.animate(alongsideTransition: nil) { [weak self] _ in
+                guard let self else { return }
+                self.isWaitingForCompactTransition = false
+                // CompactPhoneNavigationController.swift reclaims custom views from the managed bar and mirrors the settled stack after finish or cancellation.
+                self.mirroredIdentity = []
+                self.updateCompactHeader(afterInteractiveTransition: true)
+            }
+            if registered { return }
+            isWaitingForCompactTransition = false
+        }
 
         guard usesCompactHeader, let controller = topViewController else {
             compactNavigationBar.isHidden = true
