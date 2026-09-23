@@ -1044,6 +1044,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)finishedWithError:(NSError *)error statusCode:(NSInteger)statusCode {
     [self finishRefresh];
+    if (statusCode != 403) [appDelegate feedSubscriptionsDidFail];
     
     if (statusCode == 403) {
         NSLog(@"Showing login");

@@ -79,12 +79,6 @@ class ShareViewController: UIViewController {
     /// Title of the item being shared.
     var itemTitle: String? = nil
 
-    /// URL of the site being added, for notification display.
-    var addedSiteURL: String? = nil
-
-    /// Folder name for notification display.
-    var addedToFolder: String? = nil
-    
     /// The index path of the new tag field.
     lazy var indexPathForNewTag: IndexPath = {
         return IndexPath(item: tags.count, section: 0)
@@ -93,7 +87,6 @@ class ShareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        modeSegmentedControl.setTitle("Subscribe", forSegmentAt: 2)
         if Bundle.main.bundleIdentifier?.hasSuffix(".Subscribe-Extension") == true {
             modeSegmentedControl.selectedSegmentIndex = 2
             mode = .add
@@ -182,10 +175,6 @@ class ShareViewController: UIViewController {
         if let itemProvider = providerWithURL {
             itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil) { item, error in
                 if let url = item as? URL {
-                    self.addedSiteURL = url.host ?? url.absoluteString
-                    if self.mode == .add {
-                        self.sendNotification(body: self.addingNotificationBody())
-                    }
                     self.send(url: url)
                 }
 
@@ -194,15 +183,6 @@ class ShareViewController: UIViewController {
         } else if let itemProvider = providerWithText {
             itemProvider.loadItem(forTypeIdentifier: kUTTypeText as String, options: nil) { item, error in
                 if let text = item as? String {
-                    // Extract domain from URL string if possible
-                    if let url = URL(string: text) {
-                        self.addedSiteURL = url.host ?? text
-                    } else {
-                        self.addedSiteURL = text
-                    }
-                    if self.mode == .add {
-                        self.sendNotification(body: self.addingNotificationBody())
-                    }
                     self.send(text: text)
                 }
 
@@ -381,13 +361,15 @@ private extension ShareViewController {
     }
     
     func send(url: URL? = nil, text: String? = nil) {
+        guard mode == .save || mode == .share else { return }
+        let requestPath = mode == .share ? "api/share_story" : "api/save_story"
         guard let host = prefs.object(forKey: "share:host") as? String,
               let token = prefs.object(forKey: "share:token") as? String,
               let requestURL = URL(string: "\(host)/\(requestPath)/\(token)") else {
             return
         }
         
-        let postBody = postBody(url: url, text: text)
+        let postBody = mode == .share ? postShare(url: url, text: text) : postSave(url: url, text: text)
         var request = URLRequest(url: requestURL)
         
         request.httpMethod = "POST"
@@ -404,45 +386,10 @@ private extension ShareViewController {
         NSLog("⚾️ sending: \(request) \(postBody) \(config.identifier ?? "")")
     }
     
-    var requestPath: String {
-        switch mode {
-        case .share:
-            return "api/share_story"
-        case .save:
-            return "api/save_story"
-        case .add:
-            return "api/add_url"
-        }
-    }
-    
     func encoded(_ string: String?) -> String {
         return string?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? ""
     }
 
-    func sendNotification(body: String) {
-        let content = UNMutableNotificationContent()
-        content.title = "NewsBlur"
-        content.body = body
-
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error {
-                print("notification error: \(error)")
-            }
-        }
-    }
-
-    func addingNotificationBody() -> String {
-        let siteName = addedSiteURL ?? "site"
-        if let folder = addedToFolder {
-            return "Adding \(siteName) to \(folder)..."
-        } else {
-            return "Adding \(siteName)..."
-        }
-    }
-    
     func postSave(url: URL?, text: String?) -> String {
         let title = itemTitle
         let encodedURL = encoded(url?.absoluteString)
@@ -512,73 +459,26 @@ private extension ShareViewController {
         return folderPath
     }
 
-    func postAdd(url: URL?, text: String?) -> String {
-        let folderPath = folders[selectedFolderIndexPath.row]
-        let folder = extractFolderName(folderPath)
-        let encodedFolder = encoded(folder)
-        let encodedURL = encoded(url?.absoluteString)
-
-        var postBody = "folder=\(encodedFolder)&url=\(encodedURL)"
-
-        if newFolder != "" {
-            postBody += "&new_folder=\(encoded(newFolder))"
-        }
-
-        return postBody
-    }
-    
-    func postBody(url: URL?, text: String?) -> String {
-        switch mode {
-        case .save:
-            return postSave(url: url, text: text)
-        case .share:
-            return postShare(url: url, text: text)
-        case .add:
-            return postAdd(url: url, text: text)
-        }
-    }
 }
-
-//extension ShareViewController: URLSessionDataDelegate {
-//    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-//        NSLog("⚾️ received \(String(describing: String(data: data, encoding: .utf8)))")
-//    }
-//}
 
 extension ShareViewController: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        guard mode == .save || mode == .share else { return }
         let content = UNMutableNotificationContent()
         content.title = "NewsBlur"
-
-        let siteName = addedSiteURL ?? "site"
-        let folderSuffix = addedToFolder.map { " to \($0)" } ?? ""
 
         if let error {
             NSLog("task completed with error: \(error)")
             
             NSLog("⚾️ share error: \(error)")
 
-            switch mode {
-            case .save:
-                content.body = "Unable to save this story"
-            case .share:
-                content.body = "Unable to share this story"
-            case .add:
-                content.body = "Failed to add \(siteName)\(folderSuffix)"
-            }
+            content.body = mode == .save ? "Unable to save this story" : "Unable to share this story"
         } else {
             NSLog("task completed successfully: \(String(describing: task.response))")
             
             NSLog("⚾️ share success: \(String(describing: task.response))")
 
-            switch mode {
-            case .save:
-                content.body = "Saved this story"
-            case .share:
-                content.body = "Shared this story"
-            case .add:
-                content.body = "Added \(siteName)\(folderSuffix)"
-            }
+            content.body = mode == .save ? "Saved this story" : "Shared this story"
         }
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
