@@ -10,7 +10,7 @@ import ObjectiveC
     private var pendingAccount: String?
     private var pendingHost: String?
     private var openingFeedID: String?
-    private var sharedFeedID: String?
+    private var confirmedFeedID: String?
     private var isSubscribing = false
     private var inFlightURL: URL?
     private var needsReload = false
@@ -25,8 +25,8 @@ import ObjectiveC
         guard let feedURL = FeedSubscriptionURL.parse(url) else { return false }
         if feedURL == inFlightURL { return true }
         errorMessage = nil
-        if let sharedFeedID, let app {
-            clearSharedHandoff(sharedFeedID, app: app)
+        if let confirmedFeedID, let app {
+            clearConfirmedFeed(confirmedFeedID, app: app)
             openingFeedID = nil
         }
         pendingURL = feedURL
@@ -45,7 +45,7 @@ import ObjectiveC
         isSubscribing = false
         inFlightURL = nil
         openingFeedID = nil
-        sharedFeedID = nil
+        confirmedFeedID = nil
         errorMessage = nil
         needsReload = false
         // FeedSubscriptionCoordinator.swift preserves links received before the user signs in.
@@ -56,7 +56,7 @@ import ObjectiveC
     func feedsDidLoad() {
         ready = true
         needsReload = false
-        if openingFeedID == nil, pendingURL == nil, !isSubscribing { openingFeedID = sharedFeedID }
+        if openingFeedID == nil, pendingURL == nil, !isSubscribing { openingFeedID = confirmedFeedID }
         resume()
     }
 
@@ -64,7 +64,7 @@ import ObjectiveC
         guard needsReload else { return }
         needsReload = false
         openingFeedID = nil
-        // FeedSubscriptionCoordinator.swift leaves shared handoffs persisted while FeedsObjCViewController.m reports the refresh error.
+        // FeedSubscriptionCoordinator.swift retains the confirmed destination while FeedsObjCViewController.m reports the refresh error.
         if pendingURL != nil { resume() }
     }
 
@@ -75,8 +75,8 @@ import ObjectiveC
             if pending["username"] as? String == account,
                pending["host"] as? String == app.url,
                let feedID = pending["feed_id"] as? String, let number = Int(feedID), number > 0 {
-                if sharedFeedID != feedID {
-                    sharedFeedID = feedID
+                if confirmedFeedID != feedID {
+                    confirmedFeedID = feedID
                     openingFeedID = feedID
                     pendingAccount = account
                     pendingHost = app.url
@@ -92,6 +92,7 @@ import ObjectiveC
         if let owner = pendingAccount, owner != account || pendingHost != app.url {
             pendingURL = nil
             openingFeedID = nil
+            confirmedFeedID = nil
             pendingAccount = nil
             return
         }
@@ -106,10 +107,10 @@ import ObjectiveC
                           app.activeUsername == account, app.url == host else { return }
                     self.openSubscribedFeed(feedID, app: app)
                     // FeedSubscriptionCoordinator.swift retains the handoff across failed refreshes and app termination.
-                    self.clearSharedHandoff(feedID, app: app)
+                    self.clearConfirmedFeed(feedID, app: app)
                 })
             } else {
-                clearSharedHandoff(feedID, app: app)
+                clearConfirmedFeed(feedID, app: app)
                 showError("The site was subscribed, but its feed could not be loaded. Refresh your sites and try again.")
             }
             return
@@ -139,6 +140,7 @@ import ObjectiveC
                 self.resume()
                 return
             }
+            self.confirmedFeedID = feedID
             self.openingFeedID = feedID
             self.needsReload = true
             self.app?.reloadFeedsView(false)
@@ -151,14 +153,14 @@ import ObjectiveC
         })
     }
 
-    private func clearSharedHandoff(_ feedID: String, app: NewsBlurAppDelegate) {
+    private func clearConfirmedFeed(_ feedID: String, app: NewsBlurAppDelegate) {
         if let pending = defaults?.dictionary(forKey: "subscription:pending-feed"),
            pending["feed_id"] as? String == feedID,
            pending["username"] as? String == app.activeUsername,
            pending["host"] as? String == app.url {
             defaults?.removeObject(forKey: "subscription:pending-feed")
         }
-        if sharedFeedID == feedID { sharedFeedID = nil }
+        if confirmedFeedID == feedID { confirmedFeedID = nil }
     }
 
     private func openSubscribedFeed(_ feedID: String, app: NewsBlurAppDelegate) {
