@@ -242,6 +242,55 @@ import UIKit
         }
     }
 
+    func test_directSubscriptionOpensAfterFailedRefreshRecovers() {
+        withSharedSubscriptionDefaults { defaults in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            feeds.completeFeedListFailure(status: 0)
+            app.resumeFeedSubscription()
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            XCTAssertEqual(app.feedReloads, 1)
+            XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["123"])
+            XCTAssertEqual(app.storiesCollection.activeFeedIdStr, "123")
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["123"], "Recovered direct subscriptions should open only once")
+        }
+    }
+
+    func test_newLinkSupersedesDirectSubscriptionWaitingForRefreshRecovery() {
+        withSharedSubscriptionDefaults { _ in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            feeds.completeFeedListFailure(status: 0)
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.openedFeedIDs.isEmpty, "A recovered older feed must not replace the newer requested feed")
+            app.completeSubscription(["code": 1, "feed": ["id": 456]])
+            app.dictFeeds = ["123": ["id": 123], "456": ["id": 456]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["456"])
+            XCTAssertEqual(app.storiesCollection.activeFeedIdStr, "456")
+            XCTAssertEqual(app.subscriptionRequests, 2)
+        }
+    }
+
     func test_sharedSubscriptionSurvivesFailedRefreshAndRestarts() {
         withSharedSubscriptionDefaults { defaults in
             do {
