@@ -34,7 +34,7 @@ let package = Package(
                 "ShareViewController~ipad.xib",
                 "StoryPagesViewController.xib",
             ],
-            sources: ["StoryAutoCollapseDecision.swift", "ClassifierScope.swift"]
+            sources: ["StoryAutoCollapseDecision.swift", "ClassifierScope.swift", "FeedSubscriptionURL.swift"]
         ),
         .testTarget(
             name: "StoryAutoCollapseDecisionTests",
@@ -44,6 +44,18 @@ let package = Package(
         .testTarget(
             name: "StoryDetailHighlightTests",
             path: "Tests/StoryDetailHighlightTests"
+        ),
+        .target(
+            name: "FeedSubscriptionRequest",
+            path: "Subscribe Extension",
+            exclude: ["Info.plist", "Subscribe Extension.entitlements",
+                      "SubscribeIcon@2x.png", "SubscribeIcon@3x.png"],
+            sources: ["FeedSubscriptionRequest.swift"]
+        ),
+        .testTarget(
+            name: "FeedSubscriptionTests",
+            dependencies: ["StoryAutoCollapseDecision", "FeedSubscriptionRequest"],
+            path: "Tests/FeedSubscriptionTests"
         ),
     ]
 )

@@ -1534,6 +1534,25 @@
 		5381F56CB9C32BE993925842 /* PodcastsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442DEAA52956C3DD8ACA141C /* PodcastsTabView.swift */; };
 		9377F5CC7BB5AE45FEF140E0 /* GoogleNewsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */; };
 		4C3C1AAB474F4ABD02A47BC1 /* GoogleNewsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */; };
+		FEEDSUB00000000000000001 /* FeedSubscriptionURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDSUB00000000000000003 /* FeedSubscriptionURL.swift */; };
+		FEEDSUB00000000000000002 /* FeedSubscriptionURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDSUB00000000000000003 /* FeedSubscriptionURL.swift */; };
+		FEEDSUB00000000000000101 /* FeedSubscriptionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDSUB00000000000000103 /* FeedSubscriptionCoordinator.swift */; };
+		FEEDSUB00000000000000102 /* FeedSubscriptionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDSUB00000000000000103 /* FeedSubscriptionCoordinator.swift */; };
+		A92200000000000000000002 /* FeedSubscriptionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9220000000000000000000C /* FeedSubscriptionRequest.swift */; };
+		A92200000000000000000003 /* Subscribe Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A9220000000000000000000F /* Subscribe Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A92200000000000000000004 /* SubscribeIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A92200000000000000000010 /* SubscribeIcon@2x.png */; };
+		A92200000000000000000005 /* SubscribeIcon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A92200000000000000000011 /* SubscribeIcon@3x.png */; };
+		A92200000000000000000064 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CC926A51BB600B0E747 /* ShareViewController.swift */; };
+		A92200000000000000000065 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CCB26A51E6300B0E747 /* ShareViewDelegate.swift */; };
+		A92200000000000000000066 /* ShareSaveTagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CCD26A5212000B0E747 /* ShareSaveTagCell.swift */; };
+		A92200000000000000000067 /* ShareSaveNewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CCF26A5218000B0E747 /* ShareSaveNewCell.swift */; };
+		A92200000000000000000068 /* ShareCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CD126A521A300B0E747 /* ShareCommentCell.swift */; };
+		A92200000000000000000069 /* ShareAddSiteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FF4F7C27DA9645000526E6 /* ShareAddSiteCell.swift */; };
+		A9220000000000000000006E /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
+		A9220000000000000000006F /* ak-icon-allstories.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7216D6A972002D334D /* ak-icon-allstories.png */; };
+		A92200000000000000000070 /* g_icn_folder.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD847216E887D3000AA0A2 /* g_icn_folder.png */; };
+		A92200000000000000000071 /* g_icn_folder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD847316E887D3000AA0A2 /* g_icn_folder@2x.png */; };
+		A92200000000000000000078 /* FeedSubscriptionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9220000000000000000000C /* FeedSubscriptionRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1593,6 +1612,13 @@
 			remoteGlobalIDString = 175790592930605500490924;
 			remoteInfo = "NewsBlur Alpha";
 		};
+		A92200000000000000000014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A9220000000000000000001E;
+			remoteInfo = "Subscribe Extension";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1626,6 +1652,7 @@
 			files = (
 				177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed Foundation Extensions */,
 				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed Foundation Extensions */,
+				A92200000000000000000003 /* Subscribe Extension.appex in Embed Foundation Extensions */,
 				173CB31A26BCE94A00BA872A /* NewsBlur Widget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -2601,6 +2628,14 @@
 		E420337AC619D7830BEBFB26 /* NewslettersTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewslettersTabView.swift; sourceTree = "<group>"; };
 		442DEAA52956C3DD8ACA141C /* PodcastsTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PodcastsTabView.swift; sourceTree = "<group>"; };
 		76E20E1B12514A31D7DAFE3C /* GoogleNewsTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoogleNewsTabView.swift; sourceTree = "<group>"; };
+		FEEDSUB00000000000000003 /* FeedSubscriptionURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSubscriptionURL.swift; sourceTree = "<group>"; };
+		FEEDSUB00000000000000103 /* FeedSubscriptionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSubscriptionCoordinator.swift; sourceTree = "<group>"; };
+		A9220000000000000000000C /* FeedSubscriptionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedSubscriptionRequest.swift"; sourceTree = "<group>"; };
+		A9220000000000000000000D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+		A9220000000000000000000E /* Subscribe Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Subscribe Extension.entitlements"; sourceTree = "<group>"; };
+		A92200000000000000000010 /* SubscribeIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SubscribeIcon@2x.png"; sourceTree = "<group>"; };
+		A92200000000000000000011 /* SubscribeIcon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SubscribeIcon@3x.png"; sourceTree = "<group>"; };
+		A9220000000000000000000F /* Subscribe Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Subscribe Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2734,6 +2769,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D4E5F60718293A0006 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A92200000000000000000020 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2915,6 +2957,7 @@
 			children = (
 				1D6058910D05DD3D006BFB54 /* NewsBlur.app */,
 				174939101C251BFE003D98AA /* Share Extension.appex */,
+				A9220000000000000000000F /* Subscribe Extension.appex */,
 				FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */,
 				177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */,
 				173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */,
@@ -2940,6 +2983,7 @@
 				43B8F017156603170008733D /* Resources-iPhone */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				174939111C251BFE003D98AA /* Share Extension */,
+				A92200000000000000000016 /* Subscribe Extension */,
 				FF8A94981DE3BB77000A4C31 /* Story Notification Service Extension */,
 				177551D6238E228A00E27818 /* Old Widget Extension */,
 				173CB31226BCE94700BA872A /* Widget Extension */,
@@ -3862,6 +3906,8 @@
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				17867D152C58394100A99F4C /* AppDelegateHelper.swift */,
+				FEEDSUB00000000000000103 /* FeedSubscriptionCoordinator.swift */,
+				FEEDSUB00000000000000003 /* FeedSubscriptionURL.swift */,
 				1787512B2E5E45C100B66DED /* AppMenuHelper.swift */,
 				17150E1D2B05775A004D5309 /* SceneDelegate.swift */,
 				17A051892C095B20000994E9 /* AuxSceneDelegate.swift */,
@@ -4176,6 +4222,18 @@
 			path = "cocoa-oauth";
 			sourceTree = "<group>";
 		};
+		A92200000000000000000016 /* Subscribe Extension */ = {
+			isa = PBXGroup;
+			children = (
+				A9220000000000000000000C /* FeedSubscriptionRequest.swift */,
+				A9220000000000000000000D /* Info.plist */,
+				A9220000000000000000000E /* Subscribe Extension.entitlements */,
+				A92200000000000000000010 /* SubscribeIcon@2x.png */,
+				A92200000000000000000011 /* SubscribeIcon@3x.png */,
+			);
+			path = "Subscribe Extension";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4280,6 +4338,7 @@
 			);
 			dependencies = (
 				1749391A1C251BFE003D98AA /* PBXTargetDependency */,
+				A92200000000000000000015 /* PBXTargetDependency */,
 				FF8A949E1DE3BB77000A4C31 /* PBXTargetDependency */,
 				177551DE238E228A00E27818 /* PBXTargetDependency */,
 				173CB31926BCE94A00BA872A /* PBXTargetDependency */,
@@ -4360,6 +4419,21 @@
 			productReference = 6E05B405D8AB39D269C812A8 /* NewsBlurAlphaPerformanceTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		A9220000000000000000001E /* Subscribe Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A92200000000000000000028 /* Build configuration list for PBXNativeTarget "Subscribe Extension" */;
+			buildPhases = (
+				A9220000000000000000001F /* Sources */,
+				A92200000000000000000020 /* Frameworks */,
+				A92200000000000000000021 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = "Subscribe Extension";
+			productName = "Subscribe Extension";
+			productReference = A9220000000000000000000F /* Subscribe Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4371,6 +4445,16 @@
 				LastUpgradeCheck = 2620;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
+					A9220000000000000000001E = {
+						CreatedOnToolsVersion = 27.1;
+						DevelopmentTeam = HR7P97SD72;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
 					173CB30C26BCE94700BA872A = {
 						CreatedOnToolsVersion = 12.5.1;
 					};
@@ -4457,6 +4541,7 @@
 				1D6058900D05DD3D006BFB54 /* NewsBlur */,
 				175790592930605500490924 /* NewsBlur Alpha */,
 				1749390F1C251BFE003D98AA /* Share Extension */,
+				A9220000000000000000001E /* Subscribe Extension */,
 				FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */,
 				177551D2238E228A00E27818 /* Old Widget Extension */,
 				173CB30C26BCE94700BA872A /* NewsBlur Widget */,
@@ -5481,6 +5566,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A92200000000000000000021 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9220000000000000000006E /* MainInterface.storyboard in Resources */,
+				A9220000000000000000006F /* ak-icon-allstories.png in Resources */,
+				A92200000000000000000070 /* g_icn_folder.png in Resources */,
+				A92200000000000000000071 /* g_icn_folder@2x.png in Resources */,
+				A92200000000000000000004 /* SubscribeIcon@2x.png in Resources */,
+				A92200000000000000000005 /* SubscribeIcon@3x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -5503,6 +5601,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A92200000000000000000078 /* FeedSubscriptionRequest.swift in Sources */,
 				17DC7CD026A5218000B0E747 /* ShareSaveNewCell.swift in Sources */,
 				17DC7CCA26A51BB600B0E747 /* ShareViewController.swift in Sources */,
 				17FF4F7D27DA9645000526E6 /* ShareAddSiteCell.swift in Sources */,
@@ -5520,6 +5619,8 @@
 				176B596C2CDAB433003B0C48 /* Folder.swift in Sources */,
 				175792272930605500490924 /* AFHTTPSessionManager.m in Sources */,
 				17867D172C58394200A99F4C /* AppDelegateHelper.swift in Sources */,
+				FEEDSUB00000000000000102 /* FeedSubscriptionCoordinator.swift in Sources */,
+				FEEDSUB00000000000000002 /* FeedSubscriptionURL.swift in Sources */,
 				177D076B2F29B80900B66376 /* DividerView.swift in Sources */,
 				175792282930605500490924 /* AFImageDownloader.m in Sources */,
 				175792292930605500490924 /* AFNetworkActivityIndicatorManager.m in Sources */,
@@ -5782,6 +5883,8 @@
 				176B596D2CDAB433003B0C48 /* Folder.swift in Sources */,
 				FFC0E5AA1F7AC00A0023B9D9 /* AFHTTPSessionManager.m in Sources */,
 				17867D162C58394200A99F4C /* AppDelegateHelper.swift in Sources */,
+				FEEDSUB00000000000000101 /* FeedSubscriptionCoordinator.swift in Sources */,
+				FEEDSUB00000000000000001 /* FeedSubscriptionURL.swift in Sources */,
 				177D076C2F29B80900B66376 /* DividerView.swift in Sources */,
 				FFC0E5AC1F7AC00A0023B9D9 /* AFImageDownloader.m in Sources */,
 				FFC0E5AE1F7AC00A0023B9D9 /* AFNetworkActivityIndicatorManager.m in Sources */,
@@ -6110,6 +6213,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A9220000000000000000001F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A92200000000000000000064 /* ShareViewController.swift in Sources */,
+				A92200000000000000000065 /* ShareViewDelegate.swift in Sources */,
+				A92200000000000000000066 /* ShareSaveTagCell.swift in Sources */,
+				A92200000000000000000067 /* ShareSaveNewCell.swift in Sources */,
+				A92200000000000000000068 /* ShareCommentCell.swift in Sources */,
+				A92200000000000000000069 /* ShareAddSiteCell.swift in Sources */,
+				A92200000000000000000002 /* FeedSubscriptionRequest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -6155,6 +6272,12 @@
 			isa = PBXTargetDependency;
 			target = 175790592930605500490924 /* NewsBlur */;
 			targetProxy = E5D7C9B10516273849A00005 /* PBXContainerItemProxy */;
+		};
+		A92200000000000000000015 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = A9220000000000000000001E /* Subscribe Extension */;
+			targetProxy = A92200000000000000000014 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -7174,6 +7297,121 @@
 			};
 			name = Release;
 		};
+		A92200000000000000000029 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				DEVELOPMENT_TEAM = HR7P97SD72;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				SWIFT_VERSION = 5.0;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "Subscribe Extension/Subscribe Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 339;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "Subscribe Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 15.0.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Subscribe-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A9220000000000000000002A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				DEVELOPMENT_TEAM = HR7P97SD72;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				SWIFT_VERSION = 5.0;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "Subscribe Extension/Subscribe Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 339;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "Subscribe Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 15.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Subscribe-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -7272,6 +7510,15 @@
 			buildConfigurations = (
 				E5D7C9B10516273849A00009 /* Debug */,
 				E5D7C9B10516273849A0000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A92200000000000000000028 /* Build configuration list for PBXNativeTarget "Subscribe Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A92200000000000000000029 /* Debug */,
+				A9220000000000000000002A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

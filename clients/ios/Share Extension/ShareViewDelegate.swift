@@ -70,7 +70,7 @@ extension ShareViewDelegate: UITableViewDataSource {
             if indexPath.section == 0 {
                 return makeAddSiteCell(for: tableView, indexPath: indexPath)
             } else {
-                return makeSaveNewCell(for: tableView, indexPath: indexPath, name: viewController.newFolder, placeholder: "new tag")
+                return makeSaveNewCell(for: tableView, indexPath: indexPath, name: viewController.newFolder, placeholder: "new folder")
             }
         } else {
             return makeShareCommentCell(for: tableView, indexPath: indexPath)
@@ -110,8 +110,8 @@ private extension ShareViewDelegate {
         
         let components = viewController.folders[indexPath.item].components(separatedBy: " ▸ ")
         
-        if components.first == "everything" {
-            cell.folderImageView.image = UIImage(named: "all-stories")
+        if components == ["everything"] {
+            cell.folderImageView.image = UIImage(named: "ak-icon-allstories.png")
             cell.folderLabel.text = "Top Level"
             cell.folderImageLeadingConstraint.constant = 20
         } else {
