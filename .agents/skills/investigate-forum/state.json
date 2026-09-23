@@ -1,5 +1,19 @@
 {
   "topics": {
+    "13848": {
+      "title": "Android app not correctly wrapping titles",
+      "url": "https://forum.newsblur.com/t/android-app-not-correctly-wrapping-titles/13848",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-09-23T04:45:18.202Z",
+      "last_posted_at": "2026-09-23T01:58:36.683Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2147",
+      "branch": "forum-13847-dimmer-read-titles",
+      "worktree": ".worktree/android-scroll-performance",
+      "note": "Sam requested balanced wrapping for the main Android article headline in the same PR as the read-title colors. The native reader TextView now uses the balanced break strategy already used by list and tile titles, matching the web reader intent. The Alpha build and 688 unit tests pass. Device evidence, CI and review results are tracked on the PR. Planned for the v15.0.5 follow-up from main; no version bump, release or forum post.",
+      "reply": "I've added the same balanced wrapping to the title inside the article. This is planned for Android 15.0.5.",
+      "question": null
+    },
     "13847": {
       "title": "Read and Unread Titles Hard to Differentiate",
       "url": "https://forum.newsblur.com/t/read-and-unread-titles-hard-to-differentiate/13847",
