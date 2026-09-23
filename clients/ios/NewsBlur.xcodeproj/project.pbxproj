@@ -6398,8 +6398,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -6462,8 +6462,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -6722,8 +6722,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -6775,8 +6775,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconMeadowSage AppIconAtlanticBlue AppIconCoralRose AppIconRubyRed AppIconEmberOrange AppIconTealMint AppIconLavenderIris AppIconSlateGray AppIconSepiaCocoa AppIconArcticCyan AppIconPlumBerry AppIconSunriseGoldLight AppIconSunriseGoldDark AppIconMeadowSageLight AppIconMeadowSageDark AppIconAtlanticBlueLight AppIconAtlanticBlueDark AppIconCoralRoseLight AppIconCoralRoseDark AppIconRubyRedLight AppIconRubyRedDark AppIconEmberOrangeLight AppIconEmberOrangeDark AppIconTealMintLight AppIconTealMintDark AppIconLavenderIrisLight AppIconLavenderIrisDark AppIconSlateGrayLight AppIconSlateGrayDark AppIconSepiaCocoaLight AppIconSepiaCocoaDark AppIconArcticCyanLight AppIconArcticCyanDark AppIconPlumBerryLight AppIconPlumBerryDark";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
