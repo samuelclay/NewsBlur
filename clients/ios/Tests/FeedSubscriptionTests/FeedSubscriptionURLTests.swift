@@ -31,7 +31,8 @@ final class Test_FeedSubscriptionURL: XCTestCase {
 
     func test_requiresSuccessfulResponseAndValidFeed() {
         XCTAssertEqual(FeedSubscriptionURL.feedID(in: ["code": 1, "feed": ["id": 123]]), "123")
-        XCTAssertEqual(FeedSubscriptionURL.feedID(in: ["code": 0, "feed": ["id": "123"]]), "123")
+        XCTAssertEqual(FeedSubscriptionURL.feedID(in: ["code": 1, "feed": ["id": "123"]]), "123")
+        XCTAssertNil(FeedSubscriptionURL.feedID(in: ["code": 0, "feed": ["id": "123"]]))
         for value: [String: Any] in [["code": -1, "feed": ["id": 123]], ["feed": ["id": 123]],
                                      ["code": 1], ["code": 1, "feed": ["id": 0]]] {
             XCTAssertNil(FeedSubscriptionURL.feedID(in: value))

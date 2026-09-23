@@ -3,6 +3,7 @@ import Foundation
 enum FeedSubscriptionError: LocalizedError {
     case invalidURL
     case signInRequired
+    case accountRefreshRequired
     case server(String)
     case invalidResponse
 
@@ -12,6 +13,8 @@ enum FeedSubscriptionError: LocalizedError {
             return "Share an RSS feed or website URL from Safari to subscribe."
         case .signInRequired:
             return "Open NewsBlur and sign in, then share this link again."
+        case .accountRefreshRequired:
+            return "Open NewsBlur once to refresh your account, then share this link again."
         case .server(let message):
             return message
         case .invalidResponse:
