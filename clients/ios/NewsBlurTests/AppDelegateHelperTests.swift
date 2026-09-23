@@ -38,6 +38,48 @@ import UIKit
         XCTAssertEqual(app.subscriptionParameters?["folder"] as? String, "")
     }
 
+    func test_emptyAuthenticatedFeedListResumesFirstSubscription() {
+        let preferences = UserDefaults.standard
+        let previousUsername = preferences.object(forKey: "active_username")
+        let shared = UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")!
+        let previousPending = shared.object(forKey: "subscription:pending-feed")
+        shared.removeObject(forKey: "subscription:pending-feed")
+        defer {
+            if let previousUsername { preferences.set(previousUsername, forKey: "active_username") }
+            else { preferences.removeObject(forKey: "active_username") }
+            if let previousPending { shared.set(previousPending, forKey: "subscription:pending-feed") }
+            else { shared.removeObject(forKey: "subscription:pending-feed") }
+        }
+        for (offline, finished, expectedRequests) in [(false, true, 1), (false, false, 0), (true, true, 0)] {
+            let app = makeApp()
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            feeds.isOffline = offline
+            app.feedsViewController = feeds
+            XCTAssertTrue(app.open(URL(string: "feed:https://example.com/first-feed.xml")!))
+            XCTAssertEqual(app.subscriptionRequests, 0)
+            let result: NSDictionary = [
+                "user": "new-reader", "feeds": [:], "inactive_feeds": [:], "social_feeds": [],
+                "flat_folders_with_inactive": [:], "user_profile": [:], "saved_searches": [],
+                "starred_count": 0, "categories": NSNull(),
+            ]
+            // AppDelegateHelperTests.swift exercises the production empty-feed branch, including its first-time-user return.
+            let selector = NSSelectorFromString("finishLoadingFeedListWithDict:finished:")
+            typealias FinishFeedList = @convention(c) (AnyObject, Selector, NSDictionary, Bool) -> Void
+            let finish = unsafeBitCast(feeds.method(for: selector), to: FinishFeedList.self)
+            finish(feeds, selector, result, finished)
+
+            XCTAssertEqual(app.activeUsername, "new-reader")
+            XCTAssertTrue(app.hasNoSites)
+            XCTAssertEqual(app.firstTimeUserPresentations, offline ? 0 : 1)
+            XCTAssertEqual(app.subscriptionRequests, expectedRequests,
+                           "Only a completed authenticated feed list may resume the queued first subscription")
+            if expectedRequests == 1 {
+                XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/first-feed.xml")
+            }
+        }
+    }
+
     func test_errorAndMalformedSuccessDoNotNavigateOrReload() {
         for response: [String: Any] in [["code": -1, "message": "No feed found"], ["code": 1]] {
             let app = makeApp()
@@ -220,6 +262,8 @@ private final class SubscriptionRoutingAppDelegate: NewsBlurAppDelegate {
     var subscriptionRequests = 0
     var subscriptionParameters: [String: Any]?
     var subscriptionSuccess: ((URLSessionDataTask, Any?) -> Void)?
+    var firstTimeUserPresentations = 0
+    override func showFirstTimeUser() { firstTimeUserPresentations += 1 }
     var feedReloads = 0
     var openedFeedIDs: [String] = []
 
@@ -256,6 +300,17 @@ private final class SubscriptionRoutingAppDelegate: NewsBlurAppDelegate {
         subscriptionSuccess?(task, response)
         task.cancel()
     }
+}
+
+@MainActor private final class EmptySubscriptionFeedListController: FeedsViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 780)) }
+    override func viewDidLoad() {}
+    override func updateSidebarButton() {}
+    override func calculateFeedLocations() {}
+    override func reloadFeedTitlesTable() {}
+    override func refreshHeaderCounts() {}
+    override func layoutHeaderCounts(_ orientation: UIInterfaceOrientation) {}
+    override func loadNotificationStory() {}
 }
 
 @MainActor final class Test_FeedFilterAccessibility: XCTestCase {
