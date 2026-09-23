@@ -132,12 +132,12 @@ import ObjectiveC
                   self.app?.activeUsername == account, self.app?.url == host else { return }
             self.isSubscribing = false
             self.inFlightURL = nil
-            guard let response = response as? [String: Any], let feedID = FeedSubscriptionURL.feedID(in: response) else {
-                self.showError((response as? [String: Any])?["message"] as? String ?? "NewsBlur could not subscribe to this feed.")
-                return
-            }
             if self.pendingURL != nil {
                 self.resume()
+                return
+            }
+            guard let response = response as? [String: Any], let feedID = FeedSubscriptionURL.feedID(in: response) else {
+                self.showError((response as? [String: Any])?["message"] as? String ?? "NewsBlur could not subscribe to this feed.")
                 return
             }
             self.confirmedFeedID = feedID
@@ -154,6 +154,10 @@ import ObjectiveC
                 self.pendingURL = self.pendingURL ?? url
                 self.pendingAccount = nil
                 self.app?.showLogin()
+                return
+            }
+            if self.pendingURL != nil {
+                self.resume()
                 return
             }
             self.showError(error?.localizedDescription ?? "NewsBlur could not subscribe to this feed.")

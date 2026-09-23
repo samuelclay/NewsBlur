@@ -14,6 +14,14 @@ final class Test_FeedSubscriptionURL: XCTestCase {
                        "http://example.com/rss")
     }
 
+    func test_nestedWebSchemeAfterFeedSlashesPreservesOriginalURL() {
+        for webURL in ["http://example.com/rss?a=1&b=2", "https://ngrislain.github.io/feed.xml"] {
+            for prefix in ["feed://", "feeds://"] {
+                XCTAssertEqual(FeedSubscriptionURL.parse(URL(string: prefix + webURL)!)?.absoluteString, webURL)
+            }
+        }
+    }
+
     func test_decodesSubscriptionURLExactlyOnce() {
         var components = URLComponents(string: "newsblur://subscribe")!
         let feed = "https://example.com/rss?name=one%20two&filter=a+b"
