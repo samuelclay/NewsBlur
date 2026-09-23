@@ -124,6 +124,24 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
         self.assertEqual(response.status_code, 429)
         self.assertEqual(response["Retry-After"], str(60 + 45))
 
+    def test_retrying_after_the_header_says_to_is_allowed(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=5, requests=7)
+        cache.set("rl-test-session-202609221425", 3, 600)
+        cache.set("rl-test-session-202609221426", 3, 600)
+        cache.set("rl-test-session-202609221430", 4, 600)
+        with patch("utils.ratelimit.datetime") as mock_datetime:
+            mock_datetime.now.return_value = frozen
+            refused = view(self.make_request())
+            self.assertEqual(refused.status_code, 429)
+            wait = int(refused["Retry-After"])
+            # One second early is still refused, exactly on time is served. This is the
+            # property a client that honors the header depends on.
+            mock_datetime.now.return_value = frozen + datetime.timedelta(seconds=wait - 1)
+            self.assertEqual(view(self.make_request()).status_code, 429)
+            mock_datetime.now.return_value = frozen + datetime.timedelta(seconds=wait)
+            self.assertEqual(view(self.make_request()).status_code, 200)
+
     def test_allowed_request_has_no_retry_after(self):
         view = self.decorated_view(minutes=1, requests=5)
         response = view(self.make_request())

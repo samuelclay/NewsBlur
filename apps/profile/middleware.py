@@ -862,14 +862,16 @@ class IPRateTrackingMiddleware:
 
         if endpoint:
             try:
-                # Track the request
-                self.tracker.track_request(request, endpoint)
-
-                # Check if rate limit would be exceeded. One clock read covers both the window
-                # being checked and the Retry-After below, so a 5-minute boundary landing between
-                # them cannot report a wait for a block that has already lifted.
-                ip = self.tracker.get_ip(request)
+                # One clock read per request: the window the request is counted in, the window
+                # it is checked against, and the Retry-After below all come from it, so a
+                # 5-minute boundary landing mid-request cannot split them.
                 now = datetime.datetime.utcnow()
+
+                # Track the request
+                self.tracker.track_request(request, endpoint, now=now)
+
+                # Check if rate limit would be exceeded
+                ip = self.tracker.get_ip(request)
                 if self.tracker.is_rate_limited(ip, window=self.tracker.get_current_window(now)):
                     full_path = request.get_full_path()
                     user_info = ""
@@ -877,7 +879,7 @@ class IPRateTrackingMiddleware:
                         user_info = " user=%s" % request.user.username
 
                     # Track this "would be denied" event for soft launch monitoring
-                    self.tracker.track_would_be_denied(request, endpoint)
+                    self.tracker.track_would_be_denied(request, endpoint, now=now)
 
                     # Log what would have been blocked
                     logging.user(

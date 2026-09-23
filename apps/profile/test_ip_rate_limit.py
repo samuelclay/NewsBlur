@@ -31,7 +31,7 @@ class Test_IPRateLimitRetryAfter(SimpleTestCase):
         middleware = IPRateTrackingMiddleware(lambda request: HttpResponse("ok"))
         request = RequestFactory().get("/reader/feeds", REMOTE_ADDR="203.0.113.7")
         request.user = AnonymousUser()
-        with patch.object(IPRateTracker, "track_request"), patch.object(
+        with patch.object(IPRateTracker, "track_request") as track_mock, patch.object(
             IPRateTracker, "track_would_be_denied"
         ), patch.object(IPRateTracker, "is_rate_limited", return_value=True), patch.object(
             IPRateTracker, "get_current_window", return_value="202609221430"
@@ -41,7 +41,10 @@ class Test_IPRateLimitRetryAfter(SimpleTestCase):
             response = middleware(request)
         self.assertEqual(response.status_code, 429)
         self.assertEqual(response["Retry-After"], "170")
-        # The window that was checked and the wait that was reported come from one clock read,
-        # so a 5-minute boundary between them cannot report a wait for a block already lifted.
-        self.assertIsInstance(wait_mock.call_args.args[0], datetime.datetime)
-        self.assertEqual(window_mock.call_args.args, wait_mock.call_args.args)
+        # The window the request was counted in, the window that was checked, and the wait
+        # that was reported all come from one clock read, so a 5-minute boundary landing
+        # mid-request cannot count it in one window and check or time it against another.
+        now = wait_mock.call_args.args[0]
+        self.assertIsInstance(now, datetime.datetime)
+        self.assertEqual(window_mock.call_args.args, (now,))
+        self.assertIs(track_mock.call_args.kwargs["now"], now)

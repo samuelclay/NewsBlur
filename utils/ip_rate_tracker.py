@@ -125,19 +125,21 @@ class IPRateTracker:
             return str(request.user.pk), request.user.username
         return "0", "anonymous"
 
-    def track_request(self, request, endpoint):
+    def track_request(self, request, endpoint, now=None):
         """
         Record a request for rate tracking.
 
         Args:
             request: Django HttpRequest
             endpoint: Endpoint shortcode (feeds, feed, river, starred, read)
+            now: The clock read the caller is using for this request, so the window the
+                 request is counted in matches the one it is checked against
         """
         ip = self.get_ip(request)
         ua_type = self.get_user_agent_type(request)
         user_id, username = self.get_user_info(request)
         method = request.method
-        window = self.get_current_window()
+        window = self.get_current_window(now)
         now_ts = str(int(time.time()))
 
         # Increment Prometheus counter (low cardinality)
@@ -267,7 +269,7 @@ class IPRateTracker:
         threshold = getattr(settings, "IP_RATE_LIMIT_THRESHOLD", self.ABUSE_THRESHOLD)
         return int(count) > threshold
 
-    def track_would_be_denied(self, request, endpoint):
+    def track_would_be_denied(self, request, endpoint, now=None):
         """
         Record that a request WOULD have been denied if rate limiting was enforced.
 
@@ -279,7 +281,7 @@ class IPRateTracker:
         ip = self.get_ip(request)
         ua_type = self.get_user_agent_type(request)
         user_id, username = self.get_user_info(request)
-        window = self.get_current_window()
+        window = self.get_current_window(now)
         now_ts = str(int(time.time()))
 
         # Increment Prometheus counter
