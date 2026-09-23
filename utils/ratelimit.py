@@ -12,6 +12,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
 
+from utils import log as logging
+
 
 class ratelimit(object):
     "Instances of this class can be used as decorators"
@@ -120,6 +122,10 @@ class ratelimit(object):
         return key
 
     def disallowed(self, request, retry_after=None):
+        # A refused request is not counted and never reaches the view, so this line is the only
+        # server-side trace of the block. It is the grep target for the next 429 report.
+        # utils/ratelimit.py
+        logging.user(request, "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (request.path, retry_after))
         response = HttpResponse("Rate limit exceeded", status=429)
         if retry_after:
             # Tell the client when the window frees up so it backs off instead of retrying
