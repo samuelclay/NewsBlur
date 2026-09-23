@@ -38,7 +38,7 @@ object StoryRowPalette {
                     feed = 0xFF606060.toInt(),
                     readFeed = 0xFF808080.toInt(),
                     heading = 0xFF333333.toInt(),
-                    readHeading = 0xFF585858.toInt(),
+                    readHeading = 0xFF888888.toInt(),
                     metadata = 0xFF404040.toInt(),
                     read = 0xFFB8B8B8.toInt(),
                 )
@@ -48,7 +48,7 @@ object StoryRowPalette {
                     feed = 0xFFD0D0D0.toInt(),
                     readFeed = 0xFFB0B0B0.toInt(),
                     heading = 0xFFD0D0D0.toInt(),
-                    readHeading = 0xFF989898.toInt(),
+                    readHeading = 0xFF909090.toInt(),
                     metadata = 0xFFC0C0C0.toInt(),
                     read = 0xFFA0A0A0.toInt(),
                 )
@@ -58,7 +58,7 @@ object StoryRowPalette {
                     feed = 0xFF909090.toInt(),
                     readFeed = 0xFF707070.toInt(),
                     heading = 0xFFCCCCCC.toInt(),
-                    readHeading = 0xFF888888.toInt(),
+                    readHeading = 0xFF808080.toInt(),
                     metadata = 0xFFB0B0B0.toInt(),
                     read = 0xFF707070.toInt(),
                 )
@@ -68,7 +68,7 @@ object StoryRowPalette {
                     feed = 0xFF606060.toInt(),
                     readFeed = 0xFF808080.toInt(),
                     heading = 0xFF111111.toInt(),
-                    readHeading = 0xFF585858.toInt(),
+                    readHeading = 0xFF909090.toInt(),
                     metadata = 0xFF404040.toInt(),
                     read = 0xFFB8B8B8.toInt(),
                 )
