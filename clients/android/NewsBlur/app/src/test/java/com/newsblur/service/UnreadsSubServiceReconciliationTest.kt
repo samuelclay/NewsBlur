@@ -34,6 +34,8 @@ class UnreadsSubServiceReconciliationTest {
         UnreadsSubService.clear()
         mockkStatic(Log::class, TextUtils::class)
         every { Log.i(any<Any>(), any()) } just runs
+        every { Log.w(any<Any>(), any()) } just runs
+        every { Log.d(any<String>(), any()) } just runs
         every { TextUtils.split(any<String>(), ":") } answers { firstArg<String>().split(':').toTypedArray() }
     }
 
@@ -42,11 +44,49 @@ class UnreadsSubServiceReconciliationTest {
         unmockkStatic(Log::class, TextUtils::class)
     }
 
+    @Test fun unauthenticatedUnreadResponseCannotRetireCachedStories() = runTest {
+        assertUnusableResponseDoesNotRetire(this, UnreadStoryHashesResponse().apply {
+            authenticated = false
+            unreadHashes = emptyMap()
+        })
+    }
+
+    @Test fun erroredUnreadResponseCannotRetireCachedStories() = runTest {
+        assertUnusableResponseDoesNotRetire(this, UnreadStoryHashesResponse().apply {
+            authenticated = true
+            isProtocolError = true
+            unreadHashes = emptyMap()
+        })
+    }
+
+    @Test fun missingUnreadHashesCannotRetireCachedStories() = runTest {
+        assertUnusableResponseDoesNotRetire(this, UnreadStoryHashesResponse().apply { authenticated = true })
+    }
+
+    private suspend fun assertUnusableResponseDoesNotRetire(scope: CoroutineScope, response: UnreadStoryHashesResponse) {
+        val delegate = mockk<SyncServiceDelegate>(relaxed = true)
+        val dbHelper = delegate.dbHelper
+        val storyApi = delegate.storyApi
+        coEvery { storyApi.getUnreadStoryHashes() } returns response
+        every { dbHelper.getUnreadStoryTimestamps() } returns mapOf("2:keep-unread" to 100_000L)
+        every { dbHelper.getAllActiveFeeds() } returns setOf("2")
+        every { delegate.prefsRepo.getDefaultStoryOrder() } returns StoryOrder.NEWEST
+        val service = UnreadsSubService(delegate)
+        service.doMetadata()
+
+        service.launchIn(scope).join()
+
+        verify(exactly = 0) { dbHelper.reconcileServerUnreadHashes(any(), any(), any(), any()) }
+        verify(exactly = 0) { dbHelper.markStoryHashesRead(any(), any()) }
+        coVerify(exactly = 0) { storyApi.getStoriesByHash(any()) }
+    }
+
     @Test fun embeddedReconciliationRunsWithoutOfflineOrNotificationsAndExcludesIneligibleFeeds() = runTest {
         val delegate = mockk<SyncServiceDelegate>(relaxed = true)
         val dbHelper = delegate.dbHelper
         val storyApi = delegate.storyApi
         coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply {
+            authenticated = true
             unreadHashes = mapOf("2" to listOf(arrayOf("2:unread", "100")), "3" to listOf(arrayOf("3:orphan", "100")),
                 "4" to listOf(arrayOf("4:disabled", "100")))
         }
@@ -77,6 +117,7 @@ class UnreadsSubServiceReconciliationTest {
         val dbHelper = delegate.dbHelper
         val storyApi = delegate.storyApi
         coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply {
+            authenticated = true
             unreadHashes = mapOf(
                 "2" to listOf(arrayOf("2:still-unread", "100")),
                 "3" to (1..500).map { arrayOf("3:newer-$it", "100") },
@@ -148,6 +189,7 @@ class UnreadsSubServiceReconciliationTest {
         val dbHelper = delegate.dbHelper
         val storyApi = delegate.storyApi
         coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply {
+            authenticated = true
             unreadHashes = mapOf("2" to (1..499).map { arrayOf("2:newer-$it", "100.0") } +
                 listOf(arrayOf("2:still-unread", "101.0")))
         }
@@ -174,7 +216,10 @@ class UnreadsSubServiceReconciliationTest {
         val delegate = mockk<SyncServiceDelegate>(relaxed = true)
         val dbHelper = delegate.dbHelper
         val storyApi = delegate.storyApi
-        coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply { unreadHashes = emptyMap() }
+        coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply {
+            authenticated = true
+            unreadHashes = emptyMap()
+        }
         every { dbHelper.getUnreadStoryTimestamps() } returns mapOf("2:active" to 99_000L, "6:unsubscribed" to 99_000L)
         every { dbHelper.getAllActiveFeeds() } returns setOf("2")
         every { delegate.prefsRepo.getDefaultStoryOrder() } returns StoryOrder.NEWEST
@@ -239,6 +284,7 @@ class UnreadsSubServiceReconciliationTest {
         val dbHelper = delegate.dbHelper
         val storyApi = delegate.storyApi
         coEvery { storyApi.getUnreadStoryHashes() } returns UnreadStoryHashesResponse().apply {
+            authenticated = true
             unreadHashes = mapOf("2" to (1..returnedUnreadCount).map {
                 val timestamp = if (it == returnedUnreadCount) lastTimestamp else returnedTimestamp
                 if (timestamp == null) arrayOf("2:newer-$it") else arrayOf("2:newer-$it", timestamp)
