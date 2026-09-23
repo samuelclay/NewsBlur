@@ -422,22 +422,6 @@ public class BlurDatabaseHelper {
         }
     }
 
-    // note method name: this gets a set rather than a list, in case the caller wants to
-    // spend the up-front cost of hashing for better lookup speed rather than iteration!
-    @NonNull
-    public Set<String> getUnreadStoryHashesAsSet() {
-        String q = "SELECT " + DatabaseConstants.STORY_HASH +
-                " FROM " + DatabaseConstants.STORY_TABLE +
-                " WHERE " + DatabaseConstants.STORY_READ + " = 0";
-        Cursor c = dbRO.rawQuery(q, null);
-        Set<String> hashes = new HashSet<>();
-        while (c.moveToNext()) {
-            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
-        }
-        c.close();
-        return hashes;
-    }
-
     /** UnreadsSubService.kt needs story ages to interpret capped unread-hash responses safely. */
     @NonNull
     public Map<String, Long> getUnreadStoryTimestamps() {

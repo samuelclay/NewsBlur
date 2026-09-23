@@ -211,6 +211,8 @@ class UnreadsSubService(
 
     companion object {
         // apps/reader/views.py uses the apps/reader/models.py story_hashes default of 500 per feed.
+        // Lowering that server default requires updating this limit first, or omitted unreads can retire.
+        // apps/reader/views.py unread_story_hashes does not accept a client-supplied limit parameter.
         // Capped responses establish absence only strictly newer than their oldest timestamp; ties may be truncated.
         private const val SERVER_UNREAD_HASH_LIMIT = 500
 

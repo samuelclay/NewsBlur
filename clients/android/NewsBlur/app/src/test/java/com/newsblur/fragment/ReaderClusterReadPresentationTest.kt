@@ -107,16 +107,7 @@ class ReaderClusterReadPresentationTest {
         private val view = mockk<View>(relaxed = true)
 
         init {
-            val parent = Story().apply { storyHash = "1:parent"; read = true; clusterStories = arrayOf(child) }
             val feedUtils = mockk<FeedUtils>(relaxed = true)
-            val fields = mapOf(
-                "prefsRepo" to prefs,
-                "feedUtils" to feedUtils,
-                "lastClusterSnapshot" to ReaderClusterSnapshot(parent, true, theme),
-            )
-            fields.forEach { (name, value) ->
-                ReadingItemFragment::class.java.getDeclaredField(name).apply { isAccessible = true }.set(fragment, value)
-            }
             every { fragment.prefsRepo } returns prefs
             every { fragment.feedUtils } returns feedUtils
             every { fragment.requireContext() } returns context
@@ -129,14 +120,11 @@ class ReaderClusterReadPresentationTest {
             every { view.findViewById<ImageView>(R.id.story_cluster_feed_icon) } returns mockk(relaxed = true)
             every { view.findViewById<StoryThumbnailView>(R.id.story_cluster_preview) } returns preview
             every { view.findViewById<View>(R.id.story_cluster_bar_outer) } returns outerBar
-            every { fragment["bindClusterItemView"](any<View>(), any<Story.ClusterStory>(), any<Boolean>(), any<Int>(), any<() -> Unit>()) } answers { callOriginal() }
+            every { fragment.bindClusterItemView(any(), any(), any(), any(), any()) } answers { callOriginal() }
         }
 
         fun bind() {
-            ReadingItemFragment::class.java.getDeclaredMethod(
-                "bindClusterItemView", View::class.java, Story.ClusterStory::class.java,
-                Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Function0::class.java,
-            ).apply { isAccessible = true }.invoke(fragment, view, child, false, 1, {})
+            fragment.bindClusterItemView(view, child, false, 1, {})
         }
     }
 }
