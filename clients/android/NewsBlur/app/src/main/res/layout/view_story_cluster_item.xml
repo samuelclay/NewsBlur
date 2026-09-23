@@ -87,11 +87,12 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_toEndOf="@id/story_cluster_feed_icon"
         android:layout_toStartOf="@id/story_cluster_badge"
-        android:ellipsize="end"
+        android:breakStrategy="balanced"
         android:fontFamily="sans-serif-medium"
-        android:maxLines="2"
         android:textSize="13sp"
         android:textStyle="normal" />
 
