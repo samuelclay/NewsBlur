@@ -26,12 +26,12 @@ LOCMEM_CACHE = {
     }
 }
 
-# The production backend. KEY_PREFIX keeps these tests' keys apart from everything else in the
-# shared dev cache db, and setUp() deletes only keys under that prefix.
+# The production backend, taken from the configured default so the redis class keeps covering
+# whatever the site actually runs. KEY_PREFIX keeps these tests' keys apart from everything else
+# in the shared cache db, and setUp() deletes only keys under that prefix.
 REDIS_CACHE = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://%s:%s/6" % (settings.REDIS_USER["host"], settings.REDIS_USER_PORT),
+        **settings.CACHES["default"],
         "KEY_PREFIX": "ratelimit-retry-after-tests",
     }
 }
@@ -261,17 +261,25 @@ class Test_RatelimitRetryAfterOnRedis(Test_RatelimitRetryAfter):
         "Fire `count` requests at `view` from `count` threads released together."
         barrier = Barrier(count)
         responses = [None] * count
+        errors = []
 
         def hit(index):
             request = self.make_request()
             barrier.wait()
-            responses[index] = view(request)
+            try:
+                responses[index] = view(request)
+            except Exception as error:
+                # Surface the real failure (a dropped redis connection, say) instead of a
+                # None response that only fails later on .status_code.
+                errors.append(error)
 
         threads = [Thread(target=hit, args=(index,)) for index in range(count)]
         for thread in threads:
             thread.start()
         for thread in threads:
             thread.join()
+        if errors:
+            raise errors[0]
         return responses
 
     def test_count_script_is_registered_once_per_limiter(self):
