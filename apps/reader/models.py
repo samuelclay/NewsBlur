@@ -961,6 +961,68 @@ class UserSubscription(models.Model):
 
         return story_hashes, unread_feed_story_hashes
 
+    @classmethod
+    def peek_new_story_hashes(
+        cls,
+        user_id,
+        feed_ids,
+        read_filter="all",
+        known_story_hashes=None,
+        limit=25,
+    ):
+        """Read the top `limit` story hashes for a feed or river WITHOUT touching
+        the ranked-stories paging cache, then return any hashes not already in
+        `known_story_hashes`.
+
+        Used by the new-stories indicator (see media/js/newsblur/views/new_stories_indicator_view.js)
+        to let the client poll for stories that arrived while the user is reading, without
+        disturbing the paging cache they've already built up via infinite scroll.
+
+        Only supports order='newest' in v1; oldest-first is not meaningful here because
+        new arrivals would land at the end, not the top.
+
+        Args:
+            user_id: User ID.
+            feed_ids: List of feed IDs. Single-element list = single feed; multiple = river.
+            read_filter: 'all', 'unread', or 'starred'. 'starred' returns [] (no peek semantics).
+            known_story_hashes: Set/list of story hashes the client already has loaded.
+            limit: Max hashes to inspect (default 25).
+
+        Returns:
+            List of story hashes present on the server but missing from the client's set.
+            Empty list if no peek is possible (e.g. no cache exists for this river yet).
+        """
+        if not feed_ids:
+            return []
+        if read_filter == "starred":
+            return []
+        known = set(known_story_hashes or [])
+
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        if len(feed_ids) == 1:
+            feed_id = feed_ids[0]
+            if read_filter == "unread":
+                key = f"zU:{user_id}:{feed_id}"
+                if not rt.exists(key):
+                    return []
+                top_hashes = rt.zrevrange(key, 0, limit - 1)
+            else:
+                key = f"zF:{feed_id}"
+                if not rt.exists(key):
+                    return []
+                top_hashes = rt.zrevrange(key, 0, limit - 1)
+        else:
+            ranked_stories_key, unread_ranked_stories_key = cls.get_river_cache_keys(user_id, feed_ids)
+            key = unread_ranked_stories_key if read_filter == "unread" else ranked_stories_key
+            if not rt.exists(key):
+                return []
+            top_hashes = rt.zrevrange(key, 0, limit - 1)
+
+        # Redis may return bytes; normalize to str.
+        top_hashes = [h.decode("utf-8") if isinstance(h, bytes) else h for h in top_hashes]
+        return [h for h in top_hashes if h not in known]
+
     def oldest_manual_unread_story_date(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
