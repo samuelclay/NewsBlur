@@ -1417,6 +1417,8 @@ static BOOL NBBoolPreferenceValue(id value) {
             [self layoutHeaderCounts:0];
             [self refreshHeaderCounts];
             [appDelegate showFirstTimeUser];
+            // FeedsObjCViewController.m also resumes a first subscription after an authenticated empty feed list.
+            if (finished) [appDelegate feedSubscriptionsDidLoad];
             return;
         }
         
