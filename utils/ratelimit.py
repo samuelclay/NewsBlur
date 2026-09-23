@@ -46,6 +46,7 @@ class ratelimit(object):
     requests = 4  # Number of allowed requests in that time period
     DEBUG_MULTIPLIER = 10  # In DEBUG mode, multiply request limits by this factor
     use_path = False  # Whether to include the request path in the key
+    count_script = None  # COUNT_IF_UNDER_LIMIT registered with redis, built on first use
 
     prefix = "rl-"  # Prefix for memcache key
 
@@ -81,11 +82,17 @@ class ratelimit(object):
             # minute per key: a client that ignores the header and keeps polling is refused
             # every time but logged once a minute, so the log says who was blocked without
             # growing with the poll rate. The marker expires with its bucket. utils/ratelimit.py
-            if cache.add(keys[0] + "-logged", 1, 60 - now.second):
-                logging.user(
-                    request,
-                    "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (self.log_path(request), retry_after),
-                )
+            try:
+                if cache.add(keys[0] + "-logged", 1, 60 - now.second):
+                    logging.user(
+                        request,
+                        "~FR~SB429 rate limited~SN ~FR%s retry in %ss"
+                        % (self.log_path(request), retry_after),
+                    )
+            except Exception as error:
+                # The 429 must never depend on the log line: a missing profile row or a cache
+                # error on the marker is worth a debug line, not a 500. utils/ratelimit.py
+                logging.debug(" ***> Rate limit refusal log failed: %s" % error)
             return self.disallowed(request, retry_after=retry_after)
 
         return fn(request, *args, **kwargs)
@@ -142,9 +149,16 @@ class ratelimit(object):
         """
         redis_client = self.redis_client()
         if redis_client is not None:
-            redis_keys = [cache.make_key(key) for key in keys]
-            result = redis_client.eval(
-                COUNT_IF_UNDER_LIMIT, len(redis_keys), *redis_keys, self.limit(), self.expire_after()
+            # register_script() sends EVALSHA and only falls back to EVAL on NOSCRIPT, so the
+            # script body crosses the wire once per redis restart rather than once per request.
+            # The client is passed at call time so a swapped cache backend never reuses a stale
+            # connection through the cached Script object. utils/ratelimit.py
+            if self.count_script is None:
+                self.count_script = redis_client.register_script(COUNT_IF_UNDER_LIMIT)
+            result = self.count_script(
+                keys=[cache.make_key(key) for key in keys],
+                args=[self.limit(), self.expire_after()],
+                client=redis_client,
             )
             counts = [int(count) for count in result[1:]]
             return bool(int(result[0])), dict(zip(keys, counts))

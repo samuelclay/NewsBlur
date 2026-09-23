@@ -219,6 +219,19 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
         self.assertEqual(response.status_code, 429)
         self.assertEqual(cache.get("rl-test-session-202609221430"), 3)
 
+    def test_refusal_survives_a_logging_failure(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=1, requests=1)
+        with patch("utils.ratelimit.datetime") as mock_datetime, patch(
+            "utils.ratelimit.logging.user", side_effect=RuntimeError("no profile")
+        ):
+            mock_datetime.now.return_value = frozen
+            self.assertEqual(view(self.make_request()).status_code, 200)
+            response = view(self.make_request())
+        # The log line is a courtesy; the refusal and its header are the contract.
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response["Retry-After"], str(60 + 45))
+
     def test_allowed_request_has_no_retry_after(self):
         view = self.decorated_view(minutes=1, requests=5)
         response = view(self.make_request())
@@ -260,6 +273,16 @@ class Test_RatelimitRetryAfterOnRedis(Test_RatelimitRetryAfter):
         for thread in threads:
             thread.join()
         return responses
+
+    def test_count_script_is_registered_once_per_limiter(self):
+        view = self.decorated_view(minutes=1, requests=5)
+        self.assertIsNone(view.ratelimit.count_script)
+        self.assertEqual(view(self.make_request()).status_code, 200)
+        script = view.ratelimit.count_script
+        self.assertIsNotNone(script)
+        self.assertEqual(view(self.make_request()).status_code, 200)
+        # The second request reused the registered script (EVALSHA) instead of re-sending the body.
+        self.assertIs(view.ratelimit.count_script, script)
 
     def test_parallel_burst_serves_exactly_the_limit(self):
         frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
