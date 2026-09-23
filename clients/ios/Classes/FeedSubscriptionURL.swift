@@ -14,6 +14,10 @@ enum FeedSubscriptionURL {
         guard scheme == "feed" || scheme == "feeds" else { return nil }
         let value = String(url.absoluteString.dropFirst((scheme?.count ?? 0) + 1))
         if value.hasPrefix("//") {
+            let nested = String(value.dropFirst(2))
+            if nested.lowercased().hasPrefix("http://") || nested.lowercased().hasPrefix("https://") {
+                return URL(string: nested).flatMap(webURL)
+            }
             return URL(string: (scheme == "feeds" ? "https:" : "http:") + value).flatMap(webURL)
         }
         return URL(string: value).flatMap(webURL)

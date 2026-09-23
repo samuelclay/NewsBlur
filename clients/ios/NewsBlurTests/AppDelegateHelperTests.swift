@@ -114,6 +114,39 @@ import UIKit
         }
     }
 
+    func test_newerLinkProceedsAfterEarlierSubscriptionReturnsAnAPIError() {
+        for response: [String: Any] in [["code": -1, "message": "No feed found"], ["code": 1], [:]] {
+            let app = makeApp()
+            app.activeUsername = "reader"
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+            app.completeSubscription(response)
+            XCTAssertEqual(app.subscriptionRequests, 2, "An obsolete API failure must not stall the newer requested URL")
+            XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+            app.completeSubscription(["code": 1, "feed": ["id": 456]])
+            app.dictFeeds = ["456": ["id": 456]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["456"])
+        }
+    }
+
+    func test_newerLinkProceedsAfterEarlierSubscriptionNetworkFailure() {
+        let app = makeApp()
+        app.activeUsername = "reader"
+        app.feedSubscriptionsDidLoad()
+        XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+        XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+        app.subscriptionFailure?(nil, NSError(domain: NSURLErrorDomain, code: NSURLErrorNetworkConnectionLost))
+        XCTAssertEqual(app.subscriptionRequests, 2)
+        XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+        XCTAssertEqual(app.loginPresentations, 0)
+        app.completeSubscription(["code": 1, "feed": ["id": 456]])
+        app.dictFeeds = ["456": ["id": 456]]
+        app.feedSubscriptionsDidLoad()
+        XCTAssertEqual(app.openedFeedIDs, ["456"])
+    }
+
     func test_existingSubscriptionRefreshesBeforeOpening() {
         let app = makeApp()
         app.activeUsername = "reader"
