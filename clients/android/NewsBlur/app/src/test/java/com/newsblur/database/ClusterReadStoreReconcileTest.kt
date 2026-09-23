@@ -19,7 +19,9 @@ class ClusterReadStoreReconcileTest {
         val knownUnread = "3:unread-child"
         val serverHashes = listOf(knownRead, knownUnread) + (1..1000).map { "4:uncached-$it" }
         every { db.rawQuery(any(), any()) } answers {
-            val values = if (firstArg<String>().startsWith("SELECT DISTINCT child_hash")) listOf(knownRead, knownUnread) else emptyList()
+            val values = if (firstArg<String>().startsWith("SELECT DISTINCT child_hash") && firstArg<String>().contains("child_read = 1")) {
+                listOf(knownRead)
+            } else emptyList()
             var position = -1
             mockk<Cursor>(relaxed = true).also { cursor ->
                 every { cursor.moveToNext() } answers { ++position < values.size }
@@ -35,5 +37,6 @@ class ClusterReadStoreReconcileTest {
         store.reconcileServerUnread(serverHashes, 100L)
 
         verify(exactly = 1) { store.reconcileServerReadState(setOf(knownRead), false, 100L) }
+        verify(exactly = 0) { store.parentsReferencing(any()) }
     }
 }

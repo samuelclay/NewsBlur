@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import com.newsblur.domain.CustomIcon;
 
@@ -420,20 +422,17 @@ public class BlurDatabaseHelper {
         }
     }
 
-    // note method name: this gets a set rather than a list, in case the caller wants to
-    // spend the up-front cost of hashing for better lookup speed rather than iteration!
+    /** UnreadsSubService.kt needs story ages to interpret capped unread-hash responses safely. */
     @NonNull
-    public Set<String> getUnreadStoryHashesAsSet() {
-        String q = "SELECT " + DatabaseConstants.STORY_HASH +
+    public Map<String, Long> getUnreadStoryTimestamps() {
+        String query = "SELECT " + DatabaseConstants.STORY_HASH + ", " + DatabaseConstants.STORY_TIMESTAMP +
                 " FROM " + DatabaseConstants.STORY_TABLE +
                 " WHERE " + DatabaseConstants.STORY_READ + " = 0";
-        Cursor c = dbRO.rawQuery(q, null);
-        Set<String> hashes = new HashSet<>();
-        while (c.moveToNext()) {
-            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
+        Map<String, Long> timestamps = new HashMap<>();
+        try (Cursor cursor = dbRO.rawQuery(query, null)) {
+            while (cursor.moveToNext()) timestamps.put(cursor.getString(0), cursor.getLong(1));
         }
-        c.close();
-        return hashes;
+        return timestamps;
     }
 
     @NonNull
@@ -868,11 +867,16 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void reconcileServerUnreadHashes(@NonNull Collection<String> hashes, long requestStartedAt) {
+    public void reconcileServerUnreadHashes(@NonNull Collection<String> hashes, long requestStartedAt,
+                                           @NonNull Predicate<String> isFeedEligible,
+                                           @NonNull BiPredicate<String, Long> isTimestampEligible) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt);
+                ClusterReadStore.UnreadReconciliationStats stats =
+                        new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible, isTimestampEligible);
+                com.newsblur.util.Log.i(getClass().getName(), "embedded unread candidates inspected: " + stats.getInspectedChildCount()
+                        + ", retirement candidates: " + stats.getRetirementCandidateCount());
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();

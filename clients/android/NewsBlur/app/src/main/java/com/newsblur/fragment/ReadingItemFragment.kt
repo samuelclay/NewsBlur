@@ -1113,7 +1113,6 @@ class ReadingItemFragment :
         }
         val snapshot = ReaderClusterSnapshot(
             currentStory,
-            prefsRepo.isClusterMarkReadEnabled(),
             isArchiveUser(),
             prefsRepo.getResolvedTheme(requireContext()),
         )
@@ -1220,7 +1219,7 @@ class ReadingItemFragment :
         binding.readingStoryClusterMore.setOnClickListener(null)
     }
 
-    private fun bindClusterItemView(
+    internal fun bindClusterItemView(
         clusterView: View,
         clusterStory: Story.ClusterStory,
         showDivider: Boolean,
@@ -1228,7 +1227,7 @@ class ReadingItemFragment :
         onClick: () -> Unit,
     ) {
         val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(requireContext()))
-        val isRead = clusterStory.read || lastClusterSnapshot?.inheritParentRead == true
+        val isRead = clusterStory.read
         val rowView: View = clusterView.findViewById(R.id.story_cluster_detail_row)
         val dividerView: View = clusterView.findViewById(R.id.story_cluster_detail_divider)
         val outerBar: View = clusterView.findViewById(R.id.story_cluster_bar_outer)

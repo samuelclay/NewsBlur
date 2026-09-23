@@ -12,6 +12,7 @@ import io.mockk.unmockkConstructor
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -68,6 +69,12 @@ class Test_FolderMigration {
         assertEquals(legacyRows.toSet(), migrated.values.map { values -> columns.map(values::getValue) }.toSet())
         assertEquals(2, migrated.values.count { it[DatabaseConstants.FOLDER_PATH] == "A ▸ B" })
         assertFalse(statements.any { it.startsWith("DROP TABLE IF EXISTS") })
+        if (previousVersion < 8) {
+            assertTrue(statements.any { it.startsWith("CREATE TABLE ${ClusterReadStore.MEMBERS}") && it.contains("child_timestamp INTEGER") })
+            assertFalse(statements.any { it.startsWith("ALTER TABLE ${ClusterReadStore.MEMBERS}") })
+        } else {
+            assertEquals(3, statements.count { it.startsWith("ALTER TABLE ${ClusterReadStore.MEMBERS} ADD COLUMN") })
+        }
     }
 
     private fun cursor(rows: List<List<String>>): Cursor {
