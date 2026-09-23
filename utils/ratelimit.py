@@ -59,7 +59,8 @@ class ratelimit(object):
             # growing with the poll rate. utils/ratelimit.py
             if cache.add(keys[0] + "-logged", 1, 60):
                 logging.user(
-                    request, "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (request.path, retry_after)
+                    request,
+                    "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (self.log_path(request), retry_after),
                 )
             return self.disallowed(request, retry_after=retry_after)
 
@@ -67,6 +68,11 @@ class ratelimit(object):
         self.cache_incr(keys[0])
 
         return fn(request, *args, **kwargs)
+
+    def log_path(self, request):
+        """The path as it may appear in the refusal log. Subclasses whose URLs carry a secret
+        override this to mask it before it reaches the log. utils/ratelimit.py"""
+        return request.path
 
     def limit(self):
         "Allowed requests per window. In DEBUG mode, allow 10x more requests."
@@ -179,3 +185,14 @@ class ratelimit_by_url_user(ratelimit):
             user_id = path_parts[self.user_id_path_index]
             return f"url-user-{user_id}"
         return super().key_extra(request)
+
+    def log_path(self, request):
+        """Mask the segment after the user id before the path is logged. On
+        /reader/folder_rss/<user_id>/<secret_token>/... that segment is the account's
+        secret token, which autologin also accepts, so it must never land in a log line.
+        utils/ratelimit.py"""
+        path_parts = request.path.strip("/").split("/")
+        token_index = self.user_id_path_index + 1
+        if len(path_parts) > token_index:
+            path_parts[token_index] = "<token>"
+        return "/" + "/".join(path_parts)

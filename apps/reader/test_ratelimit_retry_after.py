@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from django.test import RequestFactory, SimpleTestCase, override_settings
 
 from apps.reader import views
-from utils.ratelimit import ratelimit
+from utils.ratelimit import ratelimit, ratelimit_by_url_user
 
 LOCMEM_CACHE = {
     "default": {
@@ -164,6 +164,24 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
             for _ in range(3):
                 self.assertEqual(view(self.make_request()).status_code, 429)
             self.assertEqual(log.call_count, 2)
+
+    def test_refusal_log_masks_the_url_token(self):
+        # folder_rss_feed is limited by ratelimit_by_url_user and its URL carries the account's
+        # secret token, which autologin accepts. The refusal log must show the route, not the token.
+        @ratelimit_by_url_user(minutes=1, requests=1)
+        def view(request):
+            return HttpResponse("ok")
+
+        path = "/reader/folder_rss/42/s3cr3ttok3n/unread/folder-name/"
+        with patch("utils.ratelimit.logging.user") as log:
+            self.assertEqual(view(self.make_request(path)).status_code, 200)
+            response = view(self.make_request(path))
+        self.assertEqual(response.status_code, 429)
+        log.assert_called_once()
+        message = log.call_args.args[1]
+        self.assertNotIn("s3cr3ttok3n", message)
+        self.assertIn("/reader/folder_rss/42/<token>/unread/folder-name", message)
+        self.assertIn(response["Retry-After"], message)
 
     def test_allowed_request_has_no_retry_after(self):
         view = self.decorated_view(minutes=1, requests=5)
