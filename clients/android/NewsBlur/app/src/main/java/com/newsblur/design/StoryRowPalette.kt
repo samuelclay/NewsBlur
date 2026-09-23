@@ -30,7 +30,7 @@ object StoryRowPalette {
         return if (isRead) colors.read else colors.metadata
     }
 
-    // FeedDetailTableCell.m keeps feed names secondary to headlines in its iOS palette.
+    // FeedDetailTableCell.m supplies the base palette; Android read headlines fade further.
     private fun textColors(theme: ThemeValue): TextColors =
         when (theme) {
             ThemeValue.SEPIA ->
@@ -38,7 +38,7 @@ object StoryRowPalette {
                     feed = 0xFF606060.toInt(),
                     readFeed = 0xFF808080.toInt(),
                     heading = 0xFF333333.toInt(),
-                    readHeading = 0xFF888888.toInt(),
+                    readHeading = 0xFFA8A8A8.toInt(),
                     metadata = 0xFF404040.toInt(),
                     read = 0xFFB8B8B8.toInt(),
                 )
@@ -68,7 +68,7 @@ object StoryRowPalette {
                     feed = 0xFF606060.toInt(),
                     readFeed = 0xFF808080.toInt(),
                     heading = 0xFF111111.toInt(),
-                    readHeading = 0xFF909090.toInt(),
+                    readHeading = 0xFFB0B0B0.toInt(),
                     metadata = 0xFF404040.toInt(),
                     read = 0xFFB8B8B8.toInt(),
                 )
