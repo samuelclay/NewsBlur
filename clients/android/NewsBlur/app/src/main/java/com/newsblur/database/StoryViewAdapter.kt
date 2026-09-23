@@ -415,10 +415,8 @@ class StoryViewAdapter(
                     isPremiumArchive = isArchiveUser,
                     clusterMode = clusterMode,
                 ).forEach { clusterStory ->
-                    val displayedChild = if (story.read && prefsRepo.isClusterMarkReadEnabled() && !clusterStory.read) {
-                        ClusterReadRepository.copyWithReadState(clusterStory, true)
-                    } else clusterStory
-                    add(DisplayItem.ClusterRow(displayedChild, storyIndex, story.storyHash))
+                    // StoryViewAdapter.kt displays the child's reconciled state, including explicit unread actions.
+                    add(DisplayItem.ClusterRow(clusterStory, storyIndex, story.storyHash))
                 }
             }
         }
