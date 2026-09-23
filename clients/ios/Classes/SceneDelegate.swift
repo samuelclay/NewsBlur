@@ -30,6 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if appDelegate.window != nil {
             handleNotificationResponse(connectionOptions.notificationResponse)
+            connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }
             DispatchQueue.main.async {
                 self.window?.isHidden = true
                 UIApplication.shared.requestSceneSessionDestruction(session, options: .none)
@@ -60,6 +61,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #endif
         
         appDelegate.prepareViewControllers()
+        connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }
         handleNotificationResponse(connectionOptions.notificationResponse)
 
         if #available(iOS 16.0, *) {
@@ -67,6 +69,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 NewsBlurUITestHarness.configureIfNeeded(appDelegate: self.appDelegate)
             }
         }
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        appDelegate.resumeFeedSubscription()
     }
 
     private func handleNotificationResponse(_ response: UNNotificationResponse?) {

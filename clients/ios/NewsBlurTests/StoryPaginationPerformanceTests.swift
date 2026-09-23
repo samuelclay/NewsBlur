@@ -536,6 +536,20 @@ import QuartzCore
         XCTAssertEqual(fixture.appDelegate.fontLookups, 0)
     }
 
+    func test_finishedScrollReadRowRemainsValidDuringCollapsedLayout() {
+        let fixture = makeFixture(storyCount: 1)
+        fixture.controller.pageFinished = true
+        let path = IndexPath(row: fixture.table.numberOfRows(inSection: 0) - 1, section: 0)
+
+        // StoryPaginationPerformanceTests.swift reproduces the transient zero-height view during Duo navigation restoration.
+        for height: CGFloat in [0, 20, 40, 80, 780] {
+            fixture.controller.view.bounds.size.height = height
+            let rowHeight = fixture.controller.tableView(fixture.table, heightForRowAt: path)
+            XCTAssertGreaterThanOrEqual(rowHeight, 40, "A finished feed must never return a negative table row height")
+        }
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), 740)
+    }
+
     func test_appendedStoryCannotReuseFormerLoadingRowHeight() throws {
         let fixture = makeFixture(storyCount: 100)
         let formerLoadingPath = IndexPath(row: fixture.table.numberOfRows(inSection: 0) - 1, section: 0)
