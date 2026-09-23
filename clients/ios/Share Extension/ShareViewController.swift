@@ -36,6 +36,9 @@ class ShareViewController: UIViewController {
     
     /// Whether we are saving the story privately, sharing publicly, or adding a site.
     var mode: Mode = .save
+    private var subscriptionTask: URLSessionDataTask?
+    private var isSubscribing = false
+    private var didFinish = false
     
     /// Dictionary representation of a tag.
     typealias TagDict = [String : Any]
@@ -76,12 +79,6 @@ class ShareViewController: UIViewController {
     /// Title of the item being shared.
     var itemTitle: String? = nil
 
-    /// URL of the site being added, for notification display.
-    var addedSiteURL: String? = nil
-
-    /// Folder name for notification display.
-    var addedToFolder: String? = nil
-    
     /// The index path of the new tag field.
     lazy var indexPathForNewTag: IndexPath = {
         return IndexPath(item: tags.count, section: 0)
@@ -89,6 +86,11 @@ class ShareViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if Bundle.main.bundleIdentifier?.hasSuffix(".Subscribe-Extension") == true {
+            modeSegmentedControl.selectedSegmentIndex = 2
+            mode = .add
+        }
         
         tableView.isEditing = mode == .save
         
@@ -102,19 +104,18 @@ class ShareViewController: UIViewController {
             }
         }
         
-        if let foldersArray = prefs.object(forKey: "share:folders") as? [String] {
-            folders = foldersArray
-            
-            folders.removeAll { ["river_global", "river_blurblogs", "trending:well_read", "trending:long_reads", "trending:good_reads", "dashboard", "infrequent", "widget_stories", "read_stories", "saved_searches", "saved_stories"].contains($0) }
-        }
-        
-        updateSaveButtonState()
+        folders = FeedSubscriptionRequest.selectableFolders(prefs.stringArray(forKey: "share:folders") ?? [])
+        changedMode(modeSegmentedControl as Any)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow(notification:)), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func updateSaveButtonState() {
+        guard !isSubscribing else {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+            return
+        }
         switch mode {
         case .save:
             if let rows = tableView.indexPathsForSelectedRows {
@@ -158,26 +159,22 @@ class ShareViewController: UIViewController {
     }
     
     @IBAction func cancel(_ sender: Any) {
+        didFinish = true
+        subscriptionTask?.cancel()
+        subscriptionTask = nil
         extensionContext?.cancelRequest(withError: NSError(domain: Bundle.main.bundleIdentifier!, code: 0))
     }
     
     @IBAction func save(_ sender: Any) {
-        itemTitle = nil
-
-        // Capture folder name for notification display (only for .add mode)
         if mode == .add {
-            let folderPath = folders[selectedFolderIndexPath.row]
-            let folder = extractFolderName(folderPath)
-            addedToFolder = folder.isEmpty ? nil : folder
+            subscribe()
+            return
         }
+        itemTitle = nil
 
         if let itemProvider = providerWithURL {
             itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil) { item, error in
                 if let url = item as? URL {
-                    self.addedSiteURL = url.host ?? url.absoluteString
-                    if self.mode == .add {
-                        self.sendNotification(body: self.addingNotificationBody())
-                    }
                     self.send(url: url)
                 }
 
@@ -186,15 +183,6 @@ class ShareViewController: UIViewController {
         } else if let itemProvider = providerWithText {
             itemProvider.loadItem(forTypeIdentifier: kUTTypeText as String, options: nil) { item, error in
                 if let text = item as? String {
-                    // Extract domain from URL string if possible
-                    if let url = URL(string: text) {
-                        self.addedSiteURL = url.host ?? text
-                    } else {
-                        self.addedSiteURL = text
-                    }
-                    if self.mode == .add {
-                        self.sendNotification(body: self.addingNotificationBody())
-                    }
                     self.send(text: text)
                 }
 
@@ -210,7 +198,7 @@ class ShareViewController: UIViewController {
             navigationItem.rightBarButtonItem?.title = "Share"
         case 2:
             mode = .add
-            navigationItem.rightBarButtonItem?.title = "Add"
+            navigationItem.rightBarButtonItem?.title = "Subscribe"
         default:
             mode = .save
             navigationItem.rightBarButtonItem?.title = "Save"
@@ -224,6 +212,115 @@ class ShareViewController: UIViewController {
 }
 
 private extension ShareViewController {
+    func setSubscribing(_ subscribing: Bool) {
+        isSubscribing = subscribing
+        modeSegmentedControl.isEnabled = !subscribing
+        tableView.isUserInteractionEnabled = !subscribing
+        navigationItem.rightBarButtonItem?.title = subscribing ? "Subscribing…" : "Subscribe"
+        if subscribing {
+            let spinner = UIActivityIndicatorView(style: .medium)
+            spinner.startAnimating()
+            navigationItem.titleView = spinner
+        } else {
+            navigationItem.titleView = nil
+        }
+        updateSaveButtonState()
+    }
+
+    func subscribe() {
+        guard !isSubscribing, !didFinish else { return }
+        view.endEditing(true)
+        guard let host = prefs.string(forKey: "share:host"), !host.isEmpty,
+              let token = prefs.string(forKey: "share:token"), !token.isEmpty else {
+            showSubscriptionError(FeedSubscriptionError.signInRequired)
+            return
+        }
+        guard let username = prefs.string(forKey: "share:username"), !username.isEmpty else {
+            showSubscriptionError(FeedSubscriptionError.accountRefreshRequired)
+            return
+        }
+        setSubscribing(true)
+        let items = extensionContext?.inputItems as? [NSExtensionItem] ?? []
+        let providers = items.flatMap { $0.attachments ?? [] }
+        let candidates = [kUTTypeURL as String, kUTTypeText as String].flatMap { type in
+            providers.filter { $0.hasItemConformingToTypeIdentifier(type) }.map { ($0, type) }
+        }
+        loadSubscriptionURL(candidates, index: 0) { [weak self] url in
+            guard let self, !self.didFinish else { return }
+            guard let url else {
+                self.showSubscriptionError(FeedSubscriptionError.invalidURL)
+                return
+            }
+            let folderPath = self.folders.indices.contains(self.selectedFolderIndexPath.row)
+                ? self.folders[self.selectedFolderIndexPath.row] : "everything"
+            do {
+                let request = try FeedSubscriptionRequest.make(url: url, host: host, token: token,
+                                                              folder: self.extractFolderName(folderPath),
+                                                              newFolder: self.newFolder)
+                self.subscriptionTask = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+                    let result: Result<String, Error> = Result {
+                        if let error { throw error }
+                        guard let data, let response = response as? HTTPURLResponse else {
+                            throw FeedSubscriptionError.invalidResponse
+                        }
+                        return try FeedSubscriptionRequest.feedID(data: data, statusCode: response.statusCode)
+                    }
+                    DispatchQueue.main.async {
+                        guard let self, !self.didFinish else { return }
+                        self.subscriptionTask = nil
+                        switch result {
+                        case .success(let feedID):
+                            // FeedSubscriptionCoordinator.swift opens the confirmed feed after the app refreshes.
+                            self.prefs.set(["feed_id": feedID, "username": username, "host": host],
+                                           forKey: "subscription:pending-feed")
+                            self.setSubscribing(false)
+                            let alert = UIAlertController(title: "Subscribed", message: "Open NewsBlur to read this feed.", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "Done", style: .default) { [weak self] _ in
+                                self?.didFinish = true
+                                self?.extensionContext?.completeRequest(returningItems: [])
+                            })
+                            self.present(alert, animated: true)
+                        case .failure(let error):
+                            self.showSubscriptionError(error)
+                        }
+                    }
+                }
+                self.subscriptionTask?.resume()
+            } catch {
+                self.showSubscriptionError(error)
+            }
+        }
+    }
+
+    func loadSubscriptionURL(_ candidates: [(NSItemProvider, String)], index: Int, completion: @escaping (URL?) -> Void) {
+        guard !didFinish else { return }
+        guard index < candidates.count else {
+            completion(nil)
+            return
+        }
+        let (provider, type) = candidates[index]
+        provider.loadItem(forTypeIdentifier: type, options: nil) { [weak self] item, _ in
+            DispatchQueue.main.async {
+                guard let self, !self.didFinish else { return }
+                if let url = FeedSubscriptionRequest.remoteURL(item) {
+                    completion(url)
+                } else {
+                    self.loadSubscriptionURL(candidates, index: index + 1, completion: completion)
+                }
+            }
+        }
+    }
+
+    func showSubscriptionError(_ error: Error) {
+        setSubscribing(false)
+        let alert = UIAlertController(title: "Could Not Subscribe", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Try Again", style: .default) { [weak self] _ in
+            self?.subscribe()
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+
     var providerWithURL: NSItemProvider? {
         guard let extensionItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             return nil
@@ -267,13 +364,15 @@ private extension ShareViewController {
     }
     
     func send(url: URL? = nil, text: String? = nil) {
+        guard mode == .save || mode == .share else { return }
+        let requestPath = mode == .share ? "api/share_story" : "api/save_story"
         guard let host = prefs.object(forKey: "share:host") as? String,
               let token = prefs.object(forKey: "share:token") as? String,
               let requestURL = URL(string: "\(host)/\(requestPath)/\(token)") else {
             return
         }
         
-        let postBody = postBody(url: url, text: text)
+        let postBody = mode == .share ? postShare(url: url, text: text) : postSave(url: url, text: text)
         var request = URLRequest(url: requestURL)
         
         request.httpMethod = "POST"
@@ -290,45 +389,10 @@ private extension ShareViewController {
         NSLog("⚾️ sending: \(request) \(postBody) \(config.identifier ?? "")")
     }
     
-    var requestPath: String {
-        switch mode {
-        case .share:
-            return "api/share_story"
-        case .save:
-            return "api/save_story"
-        case .add:
-            return "api/add_url"
-        }
-    }
-    
     func encoded(_ string: String?) -> String {
         return string?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? ""
     }
 
-    func sendNotification(body: String) {
-        let content = UNMutableNotificationContent()
-        content.title = "NewsBlur"
-        content.body = body
-
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error {
-                print("notification error: \(error)")
-            }
-        }
-    }
-
-    func addingNotificationBody() -> String {
-        let siteName = addedSiteURL ?? "site"
-        if let folder = addedToFolder {
-            return "Adding \(siteName) to \(folder)..."
-        } else {
-            return "Adding \(siteName)..."
-        }
-    }
-    
     func postSave(url: URL?, text: String?) -> String {
         let title = itemTitle
         let encodedURL = encoded(url?.absoluteString)
@@ -398,73 +462,26 @@ private extension ShareViewController {
         return folderPath
     }
 
-    func postAdd(url: URL?, text: String?) -> String {
-        let folderPath = folders[selectedFolderIndexPath.row]
-        let folder = extractFolderName(folderPath)
-        let encodedFolder = encoded(folder)
-        let encodedURL = encoded(url?.absoluteString)
-
-        var postBody = "folder=\(encodedFolder)&url=\(encodedURL)"
-
-        if newFolder != "" {
-            postBody += "&new_folder=\(encoded(newFolder))"
-        }
-
-        return postBody
-    }
-    
-    func postBody(url: URL?, text: String?) -> String {
-        switch mode {
-        case .save:
-            return postSave(url: url, text: text)
-        case .share:
-            return postShare(url: url, text: text)
-        case .add:
-            return postAdd(url: url, text: text)
-        }
-    }
 }
-
-//extension ShareViewController: URLSessionDataDelegate {
-//    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-//        NSLog("⚾️ received \(String(describing: String(data: data, encoding: .utf8)))")
-//    }
-//}
 
 extension ShareViewController: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        guard mode == .save || mode == .share else { return }
         let content = UNMutableNotificationContent()
         content.title = "NewsBlur"
-
-        let siteName = addedSiteURL ?? "site"
-        let folderSuffix = addedToFolder.map { " to \($0)" } ?? ""
 
         if let error {
             NSLog("task completed with error: \(error)")
             
             NSLog("⚾️ share error: \(error)")
 
-            switch mode {
-            case .save:
-                content.body = "Unable to save this story"
-            case .share:
-                content.body = "Unable to share this story"
-            case .add:
-                content.body = "Failed to add \(siteName)\(folderSuffix)"
-            }
+            content.body = mode == .save ? "Unable to save this story" : "Unable to share this story"
         } else {
             NSLog("task completed successfully: \(String(describing: task.response))")
             
             NSLog("⚾️ share success: \(String(describing: task.response))")
 
-            switch mode {
-            case .save:
-                content.body = "Saved this story"
-            case .share:
-                content.body = "Shared this story"
-            case .add:
-                content.body = "Added \(siteName)\(folderSuffix)"
-            }
+            content.body = mode == .save ? "Saved this story" : "Shared this story"
         }
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
