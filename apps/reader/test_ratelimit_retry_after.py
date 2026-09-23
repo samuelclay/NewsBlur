@@ -8,8 +8,10 @@ apps/reader/test_ratelimit_retry_after.py
 
 import datetime
 import itertools
+from threading import Barrier, Thread
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.test import RequestFactory, SimpleTestCase, override_settings
@@ -21,6 +23,16 @@ LOCMEM_CACHE = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "ratelimit-retry-after-tests",
+    }
+}
+
+# The production backend. KEY_PREFIX keeps these tests' keys apart from everything else in the
+# shared dev cache db, and setUp() deletes only keys under that prefix.
+REDIS_CACHE = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://%s:%s/6" % (settings.REDIS_USER["host"], settings.REDIS_USER_PORT),
+        "KEY_PREFIX": "ratelimit-retry-after-tests",
     }
 }
 
@@ -212,6 +224,70 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
         response = view(self.make_request())
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.has_header("Retry-After"))
+
+
+@override_settings(CACHES=REDIS_CACHE, DEBUG=False)
+class Test_RatelimitRetryAfterOnRedis(Test_RatelimitRetryAfter):
+    """Every guarantee above, on the production backend, where count_request() is one Lua call.
+
+    Plus the two properties only that path can promise: a parallel burst serves exactly the
+    limit, and overlapping refusals cannot pad each other's Retry-After.
+    """
+
+    def setUp(self):
+        try:
+            cache.delete_pattern("*")
+        except Exception as error:
+            self.skipTest("redis cache unavailable: %s" % error)
+        self.factory = RequestFactory()
+
+    def test_last_free_slot_is_decided_by_the_atomic_increment(self):
+        self.skipTest("the redis path decides inside one Lua call; see the parallel burst tests")
+
+    def hit_in_parallel(self, view, count):
+        "Fire `count` requests at `view` from `count` threads released together."
+        barrier = Barrier(count)
+        responses = [None] * count
+
+        def hit(index):
+            request = self.make_request()
+            barrier.wait()
+            responses[index] = view(request)
+
+        threads = [Thread(target=hit, args=(index,)) for index in range(count)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        return responses
+
+    def test_parallel_burst_serves_exactly_the_limit(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=5, requests=5)
+        with patch("utils.ratelimit.datetime") as mock_datetime:
+            mock_datetime.now.return_value = frozen
+            responses = self.hit_in_parallel(view, 20)
+        served = [r for r in responses if r.status_code == 200]
+        refused = [r for r in responses if r.status_code == 429]
+        self.assertEqual((len(served), len(refused)), (5, 15))
+        self.assertEqual(cache.get("rl-test-session-202609221430"), 5)
+        # Every refusal saw the same five served requests and nothing else.
+        self.assertEqual({r["Retry-After"] for r in refused}, {str(5 * 60 + 45)})
+
+    def test_overlapping_refusals_do_not_pad_retry_after(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=5, requests=3)
+        # One request five minutes ago and two this minute: the window is full.
+        cache.set("rl-test-session-202609221425", 1, 600)
+        cache.set("rl-test-session-202609221430", 2, 600)
+        with patch("utils.ratelimit.datetime") as mock_datetime:
+            mock_datetime.now.return_value = frozen
+            responses = self.hit_in_parallel(view, 10)
+        self.assertEqual({r.status_code for r in responses}, {429})
+        # Refusals never touch the counter, so none of them can make another one report the
+        # 345 seconds a padded current bucket would imply; the 14:25 bucket ages out at 14:31:00.
+        self.assertEqual({r["Retry-After"] for r in responses}, {"45"})
+        self.assertEqual(cache.get("rl-test-session-202609221430"), 2)
 
 
 class Test_StarredStoriesRateLimit(SimpleTestCase):

@@ -14,6 +14,30 @@ from django.http import HttpResponse
 
 from utils import log as logging
 
+# Atomic check-and-count for django-redis. Reads every bucket in the window, refuses without
+# touching anything when this request would go over the limit, otherwise counts it and sets
+# the bucket's TTL on first use. Returns 1 (served) or 0 (refused) followed by the bucket
+# counts the decision was made on, newest first. Because the read and the increment happen
+# inside one call, two requests can never both take the last free slot, and because a refused
+# request never writes, overlapping refusals cannot pad each other's Retry-After.
+# utils/ratelimit.py
+COUNT_IF_UNDER_LIMIT = """
+local counts = {}
+local total = 0
+for i = 1, #KEYS do
+    counts[i] = tonumber(redis.call('GET', KEYS[i]) or '0')
+    total = total + counts[i]
+end
+if total + 1 > tonumber(ARGV[1]) then
+    return {0, unpack(counts)}
+end
+counts[1] = redis.call('INCR', KEYS[1])
+if counts[1] == 1 then
+    redis.call('EXPIRE', KEYS[1], tonumber(ARGV[2]))
+end
+return {1, unpack(counts)}
+"""
+
 
 class ratelimit(object):
     "Instances of this class can be used as decorators"
@@ -46,16 +70,11 @@ class ratelimit(object):
         # the Retry-After arithmetic all describe the same window. utils/ratelimit.py
         now = datetime.now()
         keys = self.keys_to_check(request, now)
-        counters = self.cache_get_many(keys[1:])
 
-        # The increment is the check: INCR returns the new count atomically, so two requests
-        # arriving together can never both see the last free slot. A request that lands over
-        # the limit is taken back out, so refusals stay uncounted, Retry-After is the real
-        # wait, and a client that keeps polling does not stretch its own block.
-        current = self.cache_incr(keys[0])
-        if sum(counters.values()) + current > self.limit():
-            self.cache_decr(keys[0])
-            counters[keys[0]] = current - 1
+        # Decide and count in one step. A refused request is not counted, so Retry-After is
+        # the real wait and a client that keeps polling does not stretch its own block.
+        served, counters = self.count_request(keys)
+        if not served:
             retry_after = self.retry_after(keys, counters, now)
             # A refused request is not counted and never reaches the view, so this line is the
             # only server-side trace of the block. It is written for the first refusal in each
@@ -100,6 +119,44 @@ class ratelimit(object):
 
     def cache_get_many(self, keys):
         return cache.get_many(keys)
+
+    def redis_client(self):
+        "The raw client behind the cache when the backend is django-redis, else None. utils/ratelimit.py"
+        client = getattr(cache, "client", None)
+        if client is None or not hasattr(client, "get_client"):
+            return None
+        return client.get_client(write=True)
+
+    def count_request(self, keys):
+        """Decide whether to serve the request and count it if so, in one step.
+
+        Returns (served, counters). `counters` is keyed like `keys` and holds the bucket counts
+        the decision was made on; on a refusal the current bucket does not include this request.
+
+        With django-redis this is one Lua call (COUNT_IF_UNDER_LIMIT), so two requests can never
+        both take the last free slot and a refused request never touches a counter. Other
+        backends fall back to incr-then-decr: the decision is still made on INCR's atomic return
+        value, but a refusal is briefly visible in the bucket until its decr lands, so overlapping
+        refusals can pad each other's Retry-After by one minute step on those backends.
+        utils/ratelimit.py
+        """
+        redis_client = self.redis_client()
+        if redis_client is not None:
+            redis_keys = [cache.make_key(key) for key in keys]
+            result = redis_client.eval(
+                COUNT_IF_UNDER_LIMIT, len(redis_keys), *redis_keys, self.limit(), self.expire_after()
+            )
+            counts = [int(count) for count in result[1:]]
+            return bool(int(result[0])), dict(zip(keys, counts))
+
+        counters = self.cache_get_many(keys[1:])
+        current = self.cache_incr(keys[0])
+        if sum(counters.values()) + current > self.limit():
+            self.cache_decr(keys[0])
+            counters[keys[0]] = current - 1
+            return False, counters
+        counters[keys[0]] = current
+        return True, counters
 
     def cache_incr(self, key):
         "Count a request in its bucket and return the bucket's new count. utils/ratelimit.py"
