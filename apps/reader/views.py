@@ -1761,7 +1761,10 @@ def load_feed_page(request, feed_id):
 
 
 # 100 per 5 minutes: clients that page saved stories 10 at a time need one request per page,
-# and 50 cut a sync of a few hundred saved stories off partway (forum #13844). apps/reader/views.py
+# and 50 cut a sync of a few hundred saved stories off partway (forum #13844). The limiter's
+# window is the current minute plus the five before it, so this is really 100 per 5 to 6
+# minutes and a client that spends the whole budget at once is told to retry in up to 345
+# seconds. apps/reader/views.py
 @ratelimit(minutes=5, requests=100, use_path=True)
 @json.json_view
 def load_starred_stories(request):

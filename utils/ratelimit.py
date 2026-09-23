@@ -46,11 +46,16 @@ class ratelimit(object):
         # the Retry-After arithmetic all describe the same window. utils/ratelimit.py
         now = datetime.now()
         keys = self.keys_to_check(request, now)
-        counters = self.cache_get_many(keys)
+        counters = self.cache_get_many(keys[1:])
 
-        # Have they failed? A refused request is not counted, so Retry-After is the real wait
-        # and a client that keeps polling does not stretch its own block.
-        if sum(counters.values()) >= self.limit():
+        # The increment is the check: INCR returns the new count atomically, so two requests
+        # arriving together can never both see the last free slot. A request that lands over
+        # the limit is taken back out, so refusals stay uncounted, Retry-After is the real
+        # wait, and a client that keeps polling does not stretch its own block.
+        current = self.cache_incr(keys[0])
+        if sum(counters.values()) + current > self.limit():
+            self.cache_decr(keys[0])
+            counters[keys[0]] = current - 1
             retry_after = self.retry_after(keys, counters, now)
             # A refused request is not counted and never reaches the view, so this line is the
             # only server-side trace of the block. It is written for the first refusal in each
@@ -63,9 +68,6 @@ class ratelimit(object):
                     "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (self.log_path(request), retry_after),
                 )
             return self.disallowed(request, retry_after=retry_after)
-
-        # Increment rate limiting counter for the current minute
-        self.cache_incr(keys[0])
 
         return fn(request, *args, **kwargs)
 
@@ -100,13 +102,25 @@ class ratelimit(object):
         return cache.get_many(keys)
 
     def cache_incr(self, key):
-        # memcache is only backend that can increment atomically
+        "Count a request in its bucket and return the bucket's new count. utils/ratelimit.py"
+        # memcache and redis increment atomically
         try:
             # add first, to ensure the key exists
             cache.add(key, 0, self.expire_after())
-            cache.incr(key)
+            return cache.incr(key)
         except (AttributeError, ValueError):
-            cache.set(key, cache.get(key, 0) + 1, self.expire_after())
+            count = cache.get(key, 0) + 1
+            cache.set(key, count, self.expire_after())
+            return count
+
+    def cache_decr(self, key):
+        "Take a refused request back out of its bucket. utils/ratelimit.py"
+        try:
+            return cache.decr(key)
+        except (AttributeError, ValueError):
+            count = max(cache.get(key, 0) - 1, 0)
+            cache.set(key, count, self.expire_after())
+            return count
 
     def should_ratelimit(self, request):
         return True

@@ -183,6 +183,30 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
         self.assertIn("/reader/folder_rss/42/<token>/unread/folder-name", message)
         self.assertIn(response["Retry-After"], message)
 
+    def test_last_free_slot_is_decided_by_the_atomic_increment(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=1, requests=3)
+        cache.set("rl-test-session-202609221430", 2, 600)
+        real_incr = cache.incr
+
+        def incr_with_a_concurrent_request(key, delta=1, version=None):
+            if delta > 0:
+                # Another request lands between this one's read and its own increment.
+                # (cache.decr() also routes through incr() with a negative delta; leave that alone.)
+                real_incr(key, delta, version=version)
+            return real_incr(key, delta, version=version)
+
+        with patch("utils.ratelimit.datetime") as mock_datetime, patch(
+            "utils.ratelimit.cache.incr", side_effect=incr_with_a_concurrent_request
+        ):
+            mock_datetime.now.return_value = frozen
+            response = view(self.make_request())
+        # Two already served plus the concurrent one make three, so this request is over the
+        # limit even though a read taken before its increment would have shown a free slot.
+        # The refusal is taken back out and the bucket holds exactly the three that were served.
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(cache.get("rl-test-session-202609221430"), 3)
+
     def test_allowed_request_has_no_retry_after(self):
         view = self.decorated_view(minutes=1, requests=5)
         response = view(self.make_request())
