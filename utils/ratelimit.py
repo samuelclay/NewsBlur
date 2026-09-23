@@ -56,8 +56,8 @@ class ratelimit(object):
             # only server-side trace of the block. It is written for the first refusal in each
             # minute per key: a client that ignores the header and keeps polling is refused
             # every time but logged once a minute, so the log says who was blocked without
-            # growing with the poll rate. utils/ratelimit.py
-            if cache.add(keys[0] + "-logged", 1, 60):
+            # growing with the poll rate. The marker expires with its bucket. utils/ratelimit.py
+            if cache.add(keys[0] + "-logged", 1, 60 - now.second):
                 logging.user(
                     request,
                     "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (self.log_path(request), retry_after),
