@@ -2,6 +2,21 @@ import XCTest
 import UIKit
 
 final class Test_SafariFeedSubscription: XCTestCase {
+    // AddSiteUITests.swift defaults to the reported Safari flow; live fixtures can be overridden without code changes.
+    private var liveFeedURL: String {
+        ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_URL"] ?? "https://ngrislain.github.io/feed.xml"
+    }
+    private var liveArticleURL: String {
+        ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_ARTICLE_URL"] ?? "https://ngrislain.github.io/projects/2026-3-12-dont-vibe--prove/"
+    }
+    private var liveLinkLabel: String {
+        ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_LINK_LABEL"] ?? "RSS Feed"
+    }
+    private var liveStoryIdentifierPrefix: String {
+        let feedID = ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_FEED_ID"] ?? "10317479"
+        return "story-row-\(feedID):"
+    }
+
     func test_liveFeedSchemeOpensSubscribedFeed() throws {
         guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_SUBSCRIBE"] == "1" else {
             throw XCTSkip("Explicit subscription check: TEST_RUNNER_NEWSBLUR_LIVE_RSS_SUBSCRIBE=1")
@@ -9,18 +24,18 @@ final class Test_SafariFeedSubscription: XCTestCase {
         continueAfterFailure = false
         let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
         safari.terminate()
-        safari.open(URL(string: "feed:https://ngrislain.github.io/feed.xml")!)
+        safari.open(try XCTUnwrap(URL(string: "feed:\(liveFeedURL)")))
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         let open = springboard.alerts.buttons["Open"]
         if open.waitForExistence(timeout: 5) {
             open.tap()
-        } else if safari.alerts.buttons["Open"].exists {
-            safari.alerts.buttons["Open"].tap()
+        } else if safari.buttons["Open"].waitForExistence(timeout: 5) {
+            safari.buttons["Open"].tap()
         }
         let newsblur = XCUIApplication()
         XCTAssertTrue(newsblur.wait(for: .runningForeground, timeout: 20))
         let subscribedStory = newsblur.cells.matching(
-            NSPredicate(format: "identifier BEGINSWITH %@", "story-row-10317479:")
+            NSPredicate(format: "identifier BEGINSWITH %@", liveStoryIdentifierPrefix)
         ).firstMatch
         XCTAssertTrue(subscribedStory.waitForExistence(timeout: 60))
     }
@@ -32,8 +47,8 @@ final class Test_SafariFeedSubscription: XCTestCase {
         continueAfterFailure = false
         let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
         safari.terminate()
-        safari.open(URL(string: "https://ngrislain.github.io/projects/2026-3-12-dont-vibe--prove/")!)
-        let rss = safari.links["RSS Feed"]
+        safari.open(try XCTUnwrap(URL(string: liveArticleURL)))
+        let rss = safari.links[liveLinkLabel]
         XCTAssertTrue(rss.waitForExistence(timeout: 30))
         rss.tap()
         let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
@@ -91,7 +106,7 @@ final class Test_SafariFeedSubscription: XCTestCase {
             let newsblur = XCUIApplication()
             newsblur.activate()
             let subscribedStory = newsblur.cells.matching(
-                NSPredicate(format: "identifier BEGINSWITH %@", "story-row-10317479:")
+                NSPredicate(format: "identifier BEGINSWITH %@", liveStoryIdentifierPrefix)
             ).firstMatch
             XCTAssertTrue(subscribedStory.waitForExistence(timeout: 60))
             let openedFeed = XCTAttachment(screenshot: XCUIScreen.main.screenshot())

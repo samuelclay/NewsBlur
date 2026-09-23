@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import StoryAutoCollapseDecision
+@testable import FeedSubscriptionURLs
 
 final class Test_FeedSubscriptionURL: XCTestCase {
     func test_preservesHTTPSAndFeedQueryParameters() {

@@ -219,6 +219,122 @@ import UIKit
         XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
     }
 
+    func test_failedFeedListRefreshDoesNotBlockNextSubscriptionLink() {
+        withSharedSubscriptionDefaults { _ in
+            for status in [0, 429, 503] {
+                let app = makeApp()
+                app.activeUsername = "reader"
+                let feeds = EmptySubscriptionFeedListController()
+                feeds.appDelegate = app
+                app.feedsViewController = feeds
+                app.feedSubscriptionsDidLoad()
+                XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+                app.completeSubscription(["code": 1, "feed": ["id": 123]])
+                XCTAssertEqual(app.feedReloads, 1)
+
+                // AppDelegateHelperTests.swift exercises the production error branches after add_url succeeds.
+                feeds.completeFeedListFailure(status: status)
+                XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+                XCTAssertEqual(app.subscriptionRequests, 2, "Failed refresh status \(status) must not lock the subscription queue")
+                XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+                XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            }
+        }
+    }
+
+    func test_sharedSubscriptionSurvivesFailedRefreshAndRestarts() {
+        withSharedSubscriptionDefaults { defaults in
+            do {
+                let app = makeApp()
+                app.activeUsername = "reader"
+                let feeds = EmptySubscriptionFeedListController()
+                feeds.appDelegate = app
+                app.feedsViewController = feeds
+                defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+                app.feedSubscriptionsDidLoad()
+                XCTAssertEqual(app.feedReloads, 1)
+                feeds.completeFeedListFailure(status: 0)
+                XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+            }
+            let nextLaunch = makeApp()
+            nextLaunch.activeUsername = "reader"
+            nextLaunch.feedSubscriptionsDidLoad()
+            XCTAssertEqual(nextLaunch.feedReloads, 1)
+            XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+        }
+    }
+
+    func test_sharedSubscriptionRecoversAfterTransientRefreshFailure() {
+        withSharedSubscriptionDefaults { defaults in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+            app.feedSubscriptionsDidLoad()
+            feeds.completeFeedListFailure(status: 0)
+            app.resumeFeedSubscription()
+            XCTAssertEqual(app.feedReloads, 1)
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["123"])
+            XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+        }
+    }
+
+    func test_linkQueuedDuringRefreshStartsWhenRefreshFails() {
+        withSharedSubscriptionDefaults { _ in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+            XCTAssertEqual(app.subscriptionRequests, 1)
+            feeds.completeFeedListFailure(status: 0)
+            XCTAssertEqual(app.subscriptionRequests, 2)
+            XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+        }
+    }
+
+    func test_missingSharedFeedAfterSuccessfulRefreshDoesNotRecurAfterRestart() {
+        let suite = "Test_FeedSubscriptionLifecycle.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let app = makeApp()
+        app.activeUsername = "reader"
+        defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+        do {
+            let firstLaunch = FeedSubscriptionCoordinator(app: app, defaults: defaults)
+            firstLaunch.feedsDidLoad()
+            XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+            // AppDelegateHelperTests.swift distinguishes authoritative absence from an unfinished/offline refresh.
+            firstLaunch.feedsDidLoad()
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+        }
+        let reloads = app.feedReloads
+        let nextLaunch = FeedSubscriptionCoordinator(app: app, defaults: defaults)
+        nextLaunch.feedsDidLoad()
+        XCTAssertEqual(app.feedReloads, reloads, "A deleted subscription must not retry its stale handoff on every launch")
+    }
+
+    private func withSharedSubscriptionDefaults(_ body: (UserDefaults) -> Void) {
+        let defaults = UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")!
+        let previous = defaults.object(forKey: "subscription:pending-feed")
+        defaults.removeObject(forKey: "subscription:pending-feed")
+        defer {
+            if let previous { defaults.set(previous, forKey: "subscription:pending-feed") }
+            else { defaults.removeObject(forKey: "subscription:pending-feed") }
+        }
+        body(defaults)
+    }
+
     func test_sharedSubscriptionRequiresMatchingAccountAndHost() {
         let suite = "Test_FeedSubscriptionLifecycle.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
@@ -311,6 +427,17 @@ private final class SubscriptionRoutingAppDelegate: NewsBlurAppDelegate {
     override func refreshHeaderCounts() {}
     override func layoutHeaderCounts(_ orientation: UIInterfaceOrientation) {}
     override func loadNotificationStory() {}
+    override func showOfflineNotifier() {}
+    override func informError(_ error: Any!) {}
+    @objc(finishRefresh) func recordFinishedRefresh() {}
+
+    func completeFeedListFailure(status: Int) {
+        let selector = NSSelectorFromString("finishedWithError:statusCode:")
+        typealias FinishFailure = @convention(c) (AnyObject, Selector, NSError, Int) -> Void
+        let finish = unsafeBitCast(method(for: selector), to: FinishFailure.self)
+        finish(self, selector, NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet), status)
+    }
+
 }
 
 @MainActor final class Test_FeedFilterAccessibility: XCTestCase {

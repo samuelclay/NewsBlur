@@ -2,6 +2,24 @@
 
 import PackageDescription
 
+// Package.swift excludes iOS interfaces from the portable logic targets.
+let iOSInterfaceResources = [
+    "AuthorizeServicesViewController.xib",
+    "FeedChooserViewController.xib",
+    "FirstTimeUserAddFriendsViewController.xib",
+    "FirstTimeUserAddNewsBlurViewController.xib",
+    "FirstTimeUserAddSitesViewController.xib",
+    "FirstTimeUserViewController.xib",
+    "FontListViewController.xib",
+    "FontSettingsViewController.xib",
+    "LaunchScreen.xib",
+    "LaunchScreenDev.xib",
+    "MenuViewController.xib",
+    "PremiumViewController.xib",
+    "ShareViewController~ipad.xib",
+    "StoryPagesViewController.xib",
+]
+
 let package = Package(
     name: "NewsBluriOSLogic",
     platforms: [
@@ -17,24 +35,8 @@ let package = Package(
         .target(
             name: "StoryAutoCollapseDecision",
             path: "Classes",
-            // Package.swift tests portable logic; SwiftPM must not compile the neighboring iOS interfaces.
-            exclude: [
-                "AuthorizeServicesViewController.xib",
-                "FeedChooserViewController.xib",
-                "FirstTimeUserAddFriendsViewController.xib",
-                "FirstTimeUserAddNewsBlurViewController.xib",
-                "FirstTimeUserAddSitesViewController.xib",
-                "FirstTimeUserViewController.xib",
-                "FontListViewController.xib",
-                "FontSettingsViewController.xib",
-                "LaunchScreen.xib",
-                "LaunchScreenDev.xib",
-                "MenuViewController.xib",
-                "PremiumViewController.xib",
-                "ShareViewController~ipad.xib",
-                "StoryPagesViewController.xib",
-            ],
-            sources: ["StoryAutoCollapseDecision.swift", "ClassifierScope.swift", "FeedSubscriptionURL.swift"]
+            exclude: iOSInterfaceResources,
+            sources: ["StoryAutoCollapseDecision.swift", "ClassifierScope.swift"]
         ),
         .testTarget(
             name: "StoryAutoCollapseDecisionTests",
@@ -46,6 +48,12 @@ let package = Package(
             path: "Tests/StoryDetailHighlightTests"
         ),
         .target(
+            name: "FeedSubscriptionURLs",
+            path: "Classes",
+            exclude: iOSInterfaceResources,
+            sources: ["FeedSubscriptionURL.swift"]
+        ),
+        .target(
             name: "FeedSubscriptionRequest",
             path: "Subscribe Extension",
             exclude: ["Info.plist", "Subscribe Extension.entitlements",
@@ -54,7 +62,7 @@ let package = Package(
         ),
         .testTarget(
             name: "FeedSubscriptionTests",
-            dependencies: ["StoryAutoCollapseDecision", "FeedSubscriptionRequest"],
+            dependencies: ["FeedSubscriptionURLs", "FeedSubscriptionRequest"],
             path: "Tests/FeedSubscriptionTests"
         ),
     ]

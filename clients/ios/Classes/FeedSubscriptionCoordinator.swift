@@ -24,6 +24,11 @@ import ObjectiveC
     func accept(_ url: URL) -> Bool {
         guard let feedURL = FeedSubscriptionURL.parse(url) else { return false }
         if feedURL == inFlightURL { return true }
+        errorMessage = nil
+        if let sharedFeedID, let app {
+            clearSharedHandoff(sharedFeedID, app: app)
+            openingFeedID = nil
+        }
         pendingURL = feedURL
         pendingAccount = ready ? app?.activeUsername : nil
         pendingHost = app?.url
@@ -51,7 +56,16 @@ import ObjectiveC
     func feedsDidLoad() {
         ready = true
         needsReload = false
+        if openingFeedID == nil, pendingURL == nil, !isSubscribing { openingFeedID = sharedFeedID }
         resume()
+    }
+
+    func feedsDidFail() {
+        guard needsReload else { return }
+        needsReload = false
+        openingFeedID = nil
+        // FeedSubscriptionCoordinator.swift leaves shared handoffs persisted while FeedsObjCViewController.m reports the refresh error.
+        if pendingURL != nil { resume() }
     }
 
     func resume() {
@@ -92,15 +106,10 @@ import ObjectiveC
                           app.activeUsername == account, app.url == host else { return }
                     self.openSubscribedFeed(feedID, app: app)
                     // FeedSubscriptionCoordinator.swift retains the handoff across failed refreshes and app termination.
-                    if let pending = self.defaults?.dictionary(forKey: "subscription:pending-feed"),
-                       pending["feed_id"] as? String == feedID,
-                       pending["username"] as? String == account,
-                       pending["host"] as? String == host {
-                        self.defaults?.removeObject(forKey: "subscription:pending-feed")
-                    }
-                    self.sharedFeedID = nil
+                    self.clearSharedHandoff(feedID, app: app)
                 })
             } else {
+                clearSharedHandoff(feedID, app: app)
                 showError("The site was subscribed, but its feed could not be loaded. Refresh your sites and try again.")
             }
             return
@@ -140,6 +149,16 @@ import ObjectiveC
             self.inFlightURL = nil
             self.showError(error?.localizedDescription ?? "NewsBlur could not subscribe to this feed.")
         })
+    }
+
+    private func clearSharedHandoff(_ feedID: String, app: NewsBlurAppDelegate) {
+        if let pending = defaults?.dictionary(forKey: "subscription:pending-feed"),
+           pending["feed_id"] as? String == feedID,
+           pending["username"] as? String == app.activeUsername,
+           pending["host"] as? String == app.url {
+            defaults?.removeObject(forKey: "subscription:pending-feed")
+        }
+        if sharedFeedID == feedID { sharedFeedID = nil }
     }
 
     private func openSubscribedFeed(_ feedID: String, app: NewsBlurAppDelegate) {
@@ -198,6 +217,7 @@ extension NewsBlurAppDelegate {
     }
 
     @MainActor @objc func feedSubscriptionsDidLoad() { feedSubscriptionCoordinator.feedsDidLoad() }
+    @MainActor @objc func feedSubscriptionsDidFail() { feedSubscriptionCoordinator.feedsDidFail() }
     @MainActor @objc func resumeFeedSubscription() { feedSubscriptionCoordinator.resume() }
     @MainActor @objc func resetFeedSubscriptionForAccountChange() { feedSubscriptionCoordinator.resetForAccountChange() }
 }
