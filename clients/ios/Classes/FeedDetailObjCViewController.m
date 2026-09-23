@@ -5070,7 +5070,8 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         } else {
             BOOL markReadOnScroll = self.isMarkReadOnScroll;
             if (markReadOnScroll) {
-                rowHeight = CGRectGetHeight(self.view.frame) - 40;
+                // FeedDetailObjCViewController.m can be measured before split-navigation restoration lays out its view.
+                rowHeight = MAX(40, CGRectGetHeight(self.view.bounds) - 40);
             } else {
                 rowHeight = 120;
             }

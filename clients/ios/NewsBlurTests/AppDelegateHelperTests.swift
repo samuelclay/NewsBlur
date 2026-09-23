@@ -3,6 +3,601 @@ import UIKit
 
 @testable import NewsBlur
 
+@MainActor final class Test_FeedSubscriptionRouting: XCTestCase {
+    func test_feedLinkIsAcceptedWhileWaitingForLogin() throws {
+        let app = SubscriptionRoutingAppDelegate()
+        app.activeUsername = nil
+        XCTAssertTrue(app.open(URL(string: "feed:https://ngrislain.github.io/feed.xml")!))
+    }
+}
+
+@MainActor final class Test_FeedSubscriptionLifecycle: XCTestCase {
+    private var sharedSubscriptionDefaultsForTest: UserDefaults?
+    private func makeApp() -> SubscriptionRoutingAppDelegate {
+        let app = SubscriptionRoutingAppDelegate()
+        app.subscriptionDefaults = sharedSubscriptionDefaultsForTest
+        app.feedsViewController = FeedsViewController()
+        app.feedsViewController.appDelegate = app
+        app.detailViewController = DetailViewController()
+        app.detailViewController.appDelegate = app
+        app.feedDetailViewController.appDelegate = app
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.appDelegate = app
+        app.dictFeeds = [:]
+        return app
+    }
+
+    func test_waitsForAuthenticatedFeedListThenSubscribesAtTopLevel() {
+        let app = makeApp()
+        let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
+        XCTAssertTrue(coordinator.accept(URL(string: "feed:https://example.com/rss")!))
+        XCTAssertNil(app.subscriptionParameters)
+        app.activeUsername = "reader"
+        coordinator.resume()
+        XCTAssertNil(app.subscriptionParameters)
+        coordinator.feedsDidLoad()
+        XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/rss")
+        XCTAssertEqual(app.subscriptionParameters?["folder"] as? String, "")
+    }
+
+    func test_emptyAuthenticatedFeedListResumesFirstSubscription() {
+        let preferences = UserDefaults.standard
+        let previousUsername = preferences.object(forKey: "active_username")
+        defer {
+            if let previousUsername { preferences.set(previousUsername, forKey: "active_username") }
+            else { preferences.removeObject(forKey: "active_username") }
+        }
+        for (offline, finished, expectedRequests) in [(false, true, 1), (false, false, 0), (true, true, 0)] {
+            let app = makeApp()
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            feeds.isOffline = offline
+            app.feedsViewController = feeds
+            XCTAssertTrue(app.open(URL(string: "feed:https://example.com/first-feed.xml")!))
+            XCTAssertEqual(app.subscriptionRequests, 0)
+            let result: NSDictionary = [
+                "user": "new-reader", "feeds": [:], "inactive_feeds": [:], "social_feeds": [],
+                "flat_folders_with_inactive": [:], "user_profile": [:], "saved_searches": [],
+                "starred_count": 0, "categories": NSNull(),
+            ]
+            // AppDelegateHelperTests.swift exercises the production empty-feed branch, including its first-time-user return.
+            let selector = NSSelectorFromString("finishLoadingFeedListWithDict:finished:")
+            typealias FinishFeedList = @convention(c) (AnyObject, Selector, NSDictionary, Bool) -> Void
+            let finish = unsafeBitCast(feeds.method(for: selector), to: FinishFeedList.self)
+            finish(feeds, selector, result, finished)
+
+            XCTAssertEqual(app.activeUsername, "new-reader")
+            XCTAssertTrue(app.hasNoSites)
+            XCTAssertEqual(app.firstTimeUserPresentations, offline ? 0 : 1)
+            XCTAssertEqual(app.subscriptionRequests, expectedRequests,
+                           "Only a completed authenticated feed list may resume the queued first subscription")
+            if expectedRequests == 1 {
+                XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/first-feed.xml")
+            }
+        }
+    }
+
+    func test_expiredSubscriptionSessionResumesLatestURLAfterLogin() {
+        for hasNewerURL in [false, true] {
+            let app = makeApp()
+            app.activeUsername = "reader"
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            if hasNewerURL { XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!)) }
+            app.failSubscriptionWithExpiredSession()
+            XCTAssertEqual(app.loginPresentations, 1)
+            XCTAssertEqual(app.subscriptionRequests, 1)
+            app.resumeFeedSubscription()
+            XCTAssertEqual(app.subscriptionRequests, 1, "An expired session must wait for authenticated feed readiness")
+
+            app.activeUsername = "reader"
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.subscriptionRequests, 2)
+            XCTAssertEqual(app.subscriptionParameters?["url"] as? String,
+                           hasNewerURL ? "https://example.com/second" : "https://example.com/first")
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["123"])
+        }
+    }
+
+    func test_errorAndMalformedSuccessDoNotNavigateOrReload() {
+        for response: [String: Any] in [["code": -1, "message": "No feed found"], ["code": 1]] {
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
+            coordinator.feedsDidLoad()
+            XCTAssertTrue(coordinator.accept(URL(string: "feeds://example.com/rss")!))
+            app.completeSubscription(response)
+            XCTAssertEqual(app.feedReloads, 0)
+        }
+    }
+
+    func test_newerLinkProceedsAfterEarlierSubscriptionReturnsAnAPIError() {
+        for response: [String: Any] in [["code": -1, "message": "No feed found"], ["code": 1], [:]] {
+            let app = makeApp()
+            app.activeUsername = "reader"
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+            app.completeSubscription(response)
+            XCTAssertEqual(app.subscriptionRequests, 2, "An obsolete API failure must not stall the newer requested URL")
+            XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+            app.completeSubscription(["code": 1, "feed": ["id": 456]])
+            app.dictFeeds = ["456": ["id": 456]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["456"])
+        }
+    }
+
+    func test_newerLinkProceedsAfterEarlierSubscriptionNetworkFailure() {
+        let app = makeApp()
+        app.activeUsername = "reader"
+        app.feedSubscriptionsDidLoad()
+        XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+        XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+        app.subscriptionFailure?(nil, NSError(domain: NSURLErrorDomain, code: NSURLErrorNetworkConnectionLost))
+        XCTAssertEqual(app.subscriptionRequests, 2)
+        XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+        XCTAssertEqual(app.loginPresentations, 0)
+        app.completeSubscription(["code": 1, "feed": ["id": 456]])
+        app.dictFeeds = ["456": ["id": 456]]
+        app.feedSubscriptionsDidLoad()
+        XCTAssertEqual(app.openedFeedIDs, ["456"])
+    }
+
+    func test_existingSubscriptionRefreshesBeforeOpening() {
+        let app = makeApp()
+        app.activeUsername = "reader"
+        let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
+        coordinator.feedsDidLoad()
+        XCTAssertTrue(coordinator.accept(URL(string: "feeds://example.com/rss")!))
+        app.completeSubscription(["code": 1, "feed": ["id": 123]])
+        XCTAssertEqual(app.feedReloads, 1)
+        XCTAssertTrue(app.openedFeedIDs.isEmpty)
+        app.dictFeeds = ["123": ["id": 123]]
+        coordinator.feedsDidLoad()
+        XCTAssertEqual(app.openedFeedIDs, ["123"])
+        coordinator.resume()
+        XCTAssertEqual(app.openedFeedIDs, ["123"])
+    }
+
+    func test_subscriptionOpensReadFeedWithoutResumingOldRiverOrStoryLookup() {
+        let app = makeApp()
+        app.useRealFeedNavigation = true
+        app.activeUsername = "reader"
+        app.storiesCollection.isRiverView = true
+        app.storiesCollection.activeFolder = "everything"
+        app.storiesCollection.inSearch = true
+        app.storiesCollection.searchQuery = "old search"
+        app.inFindingStoryMode = true
+        app.tryFeedFeedId = "999"
+        app.tryFeedStoryId = "999:old"
+        app.pendingDailyBriefingStoryHash = "briefing:old"
+        app.detailViewController.storyTitlesInDashboard = true
+        let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
+        coordinator.feedsDidLoad()
+        XCTAssertTrue(coordinator.accept(URL(string: "feeds://example.com/rss")!))
+        app.completeSubscription(["code": 1, "feed": ["id": 123]])
+        app.dictFeeds = ["123": ["id": 123, "nt": 0, "ps": 0, "ng": 0]]
+        coordinator.feedsDidLoad()
+
+        XCTAssertEqual(app.storiesCollection.activeFeedIdStr, "123")
+        XCTAssertEqual(app.storiesCollection.activeReadFilter, "all")
+        XCTAssertFalse(app.storiesCollection.isRiverView)
+        XCTAssertFalse(app.storiesCollection.inSearch)
+        XCTAssertFalse(app.detailViewController.storyTitlesInDashboard)
+        XCTAssertFalse(app.inFindingStoryMode)
+        XCTAssertNil(app.tryFeedFeedId)
+        XCTAssertNil(app.tryFeedStoryId)
+        XCTAssertNil(app.pendingDailyBriefingStoryHash)
+        // AppDelegateHelperTests.swift delivers the real delayed feed-list callback after subscription navigation.
+        app.backgroundLoadNotificationStory()
+        XCTAssertEqual(app.storiesCollection.activeFeedIdStr, "123")
+        XCTAssertEqual(app.openedFeedIDs, ["123"])
+        XCTAssertEqual(app.feedReloads, 1)
+    }
+
+    func test_accountChangeDiscardsOldSubscriptionResponse() {
+        let app = makeApp()
+        app.activeUsername = "first"
+        let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
+        coordinator.feedsDidLoad()
+        XCTAssertTrue(coordinator.accept(URL(string: "feeds://example.com/rss")!))
+        coordinator.resetForAccountChange()
+        app.activeUsername = "second"
+        coordinator.feedsDidLoad()
+        app.completeSubscription(["code": 1, "feed": ["id": 123]])
+        XCTAssertEqual(app.feedReloads, 0)
+    }
+
+    func test_repeatedInFlightLinkDoesNotDuplicateSubscription() {
+        let app = makeApp()
+        app.activeUsername = "reader"
+        let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
+        coordinator.feedsDidLoad()
+        let url = URL(string: "feeds://example.com/rss")!
+        XCTAssertTrue(coordinator.accept(url))
+        XCTAssertTrue(coordinator.accept(url))
+        XCTAssertEqual(app.subscriptionRequests, 1)
+        app.completeSubscription(["code": 1, "feed": ["id": 123]])
+        app.dictFeeds = ["123": ["id": 123]]
+        coordinator.feedsDidLoad()
+        coordinator.resume()
+        XCTAssertEqual(app.openedFeedIDs, ["123"])
+        XCTAssertEqual(app.subscriptionRequests, 1)
+    }
+
+    func test_latestLinkWaitsForCurrentRequestAndOpensItsOwnFeed() {
+        let app = makeApp()
+        app.activeUsername = "reader"
+        let coordinator = FeedSubscriptionCoordinator(app: app, defaults: nil)
+        coordinator.feedsDidLoad()
+        XCTAssertTrue(coordinator.accept(URL(string: "feeds://example.com/first")!))
+        XCTAssertTrue(coordinator.accept(URL(string: "feeds://example.com/second")!))
+        XCTAssertEqual(app.subscriptionRequests, 1)
+        app.completeSubscription(["code": 1, "feed": ["id": 123]])
+        XCTAssertEqual(app.subscriptionRequests, 2)
+        XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+        app.completeSubscription(["code": 1, "feed": ["id": 456]])
+        app.dictFeeds = ["123": ["id": 123], "456": ["id": 456]]
+        coordinator.feedsDidLoad()
+        XCTAssertEqual(app.openedFeedIDs, ["456"])
+    }
+
+    func test_sharedSubscriptionSurvivesTerminationBeforeRefreshCompletes() {
+        let suite = "Test_FeedSubscriptionLifecycle.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let app = makeApp()
+        app.activeUsername = "reader"
+        defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+        do {
+            let firstLaunch = FeedSubscriptionCoordinator(app: app, defaults: defaults)
+            firstLaunch.feedsDidLoad()
+            firstLaunch.resume()
+            firstLaunch.resume()
+            XCTAssertEqual(app.feedReloads, 1)
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+        }
+        // AppDelegateHelperTests.swift recreates the coordinator after the offline refresh never completes.
+        let nextLaunch = FeedSubscriptionCoordinator(app: app, defaults: defaults)
+        nextLaunch.feedsDidLoad()
+        XCTAssertEqual(app.feedReloads, 2)
+        app.dictFeeds = ["123": ["id": 123]]
+        nextLaunch.feedsDidLoad()
+        nextLaunch.resume()
+        XCTAssertEqual(app.openedFeedIDs, ["123"])
+        XCTAssertEqual(app.feedReloads, 2)
+        XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+    }
+
+    func test_failedFeedListRefreshDoesNotBlockNextSubscriptionLink() {
+        withSharedSubscriptionDefaults { _ in
+            for status in [0, 429, 503] {
+                let app = makeApp()
+                app.activeUsername = "reader"
+                let feeds = EmptySubscriptionFeedListController()
+                feeds.appDelegate = app
+                app.feedsViewController = feeds
+                app.feedSubscriptionsDidLoad()
+                XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+                app.completeSubscription(["code": 1, "feed": ["id": 123]])
+                XCTAssertEqual(app.feedReloads, 1)
+
+                // AppDelegateHelperTests.swift exercises the production error branches after add_url succeeds.
+                feeds.completeFeedListFailure(status: status)
+                XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+                XCTAssertEqual(app.subscriptionRequests, 2, "Failed refresh status \(status) must not lock the subscription queue")
+                XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+                XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            }
+        }
+    }
+
+    func test_directSubscriptionOpensAfterFailedRefreshRecovers() {
+        withSharedSubscriptionDefaults { defaults in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            feeds.completeFeedListFailure(status: 0)
+            app.resumeFeedSubscription()
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            XCTAssertEqual(app.feedReloads, 1)
+            XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["123"])
+            XCTAssertEqual(app.storiesCollection.activeFeedIdStr, "123")
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["123"], "Recovered direct subscriptions should open only once")
+        }
+    }
+
+    func test_newLinkQueuedDuringSuccessfulRefreshSupersedesEarlierDestination() {
+        withSharedSubscriptionDefaults { _ in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            XCTAssertEqual(app.feedReloads, 1)
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+            XCTAssertEqual(app.subscriptionRequests, 1)
+
+            // AppDelegateHelperTests.swift delivers the earlier successful refresh after the newer URL was queued.
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.subscriptionRequests, 2)
+            XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+
+            app.completeSubscription(["code": 1, "feed": ["id": 456]])
+            app.dictFeeds = ["123": ["id": 123], "456": ["id": 456]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["456"])
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["456"])
+            XCTAssertEqual(app.subscriptionRequests, 2)
+        }
+    }
+
+    func test_newLinkSupersedesDirectSubscriptionWaitingForRefreshRecovery() {
+        withSharedSubscriptionDefaults { _ in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            feeds.completeFeedListFailure(status: 0)
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.openedFeedIDs.isEmpty, "A recovered older feed must not replace the newer requested feed")
+            app.completeSubscription(["code": 1, "feed": ["id": 456]])
+            app.dictFeeds = ["123": ["id": 123], "456": ["id": 456]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["456"])
+            XCTAssertEqual(app.storiesCollection.activeFeedIdStr, "456")
+            XCTAssertEqual(app.subscriptionRequests, 2)
+        }
+    }
+
+    func test_sharedSubscriptionSurvivesFailedRefreshAndRestarts() {
+        withSharedSubscriptionDefaults { defaults in
+            do {
+                let app = makeApp()
+                app.activeUsername = "reader"
+                let feeds = EmptySubscriptionFeedListController()
+                feeds.appDelegate = app
+                app.feedsViewController = feeds
+                defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+                app.feedSubscriptionsDidLoad()
+                XCTAssertEqual(app.feedReloads, 1)
+                feeds.completeFeedListFailure(status: 0)
+                XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+            }
+            let nextLaunch = makeApp()
+            nextLaunch.activeUsername = "reader"
+            nextLaunch.feedSubscriptionsDidLoad()
+            XCTAssertEqual(nextLaunch.feedReloads, 1)
+            XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+        }
+    }
+
+    func test_sharedSubscriptionRecoversAfterTransientRefreshFailure() {
+        withSharedSubscriptionDefaults { defaults in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+            app.feedSubscriptionsDidLoad()
+            feeds.completeFeedListFailure(status: 0)
+            app.resumeFeedSubscription()
+            XCTAssertEqual(app.feedReloads, 1)
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            app.dictFeeds = ["123": ["id": 123]]
+            app.feedSubscriptionsDidLoad()
+            XCTAssertEqual(app.openedFeedIDs, ["123"])
+            XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+        }
+    }
+
+    func test_linkQueuedDuringRefreshStartsWhenRefreshFails() {
+        withSharedSubscriptionDefaults { _ in
+            let app = makeApp()
+            app.activeUsername = "reader"
+            let feeds = EmptySubscriptionFeedListController()
+            feeds.appDelegate = app
+            app.feedsViewController = feeds
+            app.feedSubscriptionsDidLoad()
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/first")!))
+            app.completeSubscription(["code": 1, "feed": ["id": 123]])
+            XCTAssertTrue(app.open(URL(string: "feeds://example.com/second")!))
+            XCTAssertEqual(app.subscriptionRequests, 1)
+            feeds.completeFeedListFailure(status: 0)
+            XCTAssertEqual(app.subscriptionRequests, 2)
+            XCTAssertEqual(app.subscriptionParameters?["url"] as? String, "https://example.com/second")
+        }
+    }
+
+    func test_missingSharedFeedAfterSuccessfulRefreshDoesNotRecurAfterRestart() {
+        let suite = "Test_FeedSubscriptionLifecycle.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let app = makeApp()
+        app.activeUsername = "reader"
+        defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+        do {
+            let firstLaunch = FeedSubscriptionCoordinator(app: app, defaults: defaults)
+            firstLaunch.feedsDidLoad()
+            XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+            // AppDelegateHelperTests.swift distinguishes authoritative absence from an unfinished/offline refresh.
+            firstLaunch.feedsDidLoad()
+            XCTAssertTrue(app.openedFeedIDs.isEmpty)
+            XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+        }
+        let reloads = app.feedReloads
+        let nextLaunch = FeedSubscriptionCoordinator(app: app, defaults: defaults)
+        nextLaunch.feedsDidLoad()
+        XCTAssertEqual(app.feedReloads, reloads, "A deleted subscription must not retry its stale handoff on every launch")
+    }
+
+    private func withSharedSubscriptionDefaults(_ body: (UserDefaults) -> Void) {
+        let suite = "Test_FeedSubscriptionLifecycle.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        let previous = sharedSubscriptionDefaultsForTest
+        sharedSubscriptionDefaultsForTest = defaults
+        defer {
+            sharedSubscriptionDefaultsForTest = previous
+            defaults.removePersistentDomain(forName: suite)
+        }
+        body(defaults)
+    }
+
+    func test_sharedSubscriptionRequiresMatchingAccountAndHost() {
+        let suite = "Test_FeedSubscriptionLifecycle.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let app = makeApp()
+        app.activeUsername = "reader"
+        let coordinator = FeedSubscriptionCoordinator(app: app, defaults: defaults)
+        for pending in [
+            ["feed_id": "123", "username": "other", "host": app.url!],
+            ["feed_id": "123", "username": "reader", "host": "https://other.example.com"],
+            ["feed_id": "123", "host": app.url!]
+        ] {
+            defaults.set(pending, forKey: "subscription:pending-feed")
+            coordinator.feedsDidLoad()
+            XCTAssertEqual(app.feedReloads, 0)
+        }
+        defaults.set(["feed_id": "123", "username": "reader", "host": app.url!], forKey: "subscription:pending-feed")
+        coordinator.resume()
+        XCTAssertEqual(app.feedReloads, 1)
+        XCTAssertNotNil(defaults.object(forKey: "subscription:pending-feed"))
+        XCTAssertTrue(app.openedFeedIDs.isEmpty)
+        app.dictFeeds = ["123": ["id": 123]]
+        coordinator.feedsDidLoad()
+        XCTAssertEqual(app.openedFeedIDs, ["123"])
+        XCTAssertNil(defaults.object(forKey: "subscription:pending-feed"))
+
+        defaults.set("old-token", forKey: "share:token")
+        defaults.set("reader", forKey: "share:username")
+        defaults.set(app.url, forKey: "share:host")
+        coordinator.resetForAccountChange()
+        for key in ["share:token", "share:username", "share:host", "subscription:pending-feed"] {
+            XCTAssertNil(defaults.object(forKey: key))
+        }
+    }
+}
+
+@MainActor private final class SubscriptionRoutingAppDelegate: NewsBlurAppDelegate {
+    var subscriptionDefaults: UserDefaults?
+    private lazy var testSubscriptionCoordinator = FeedSubscriptionCoordinator(app: self, defaults: subscriptionDefaults)
+    override func handleFeedSubscriptionURL(_ url: URL) -> Bool { testSubscriptionCoordinator.accept(url) }
+    override func feedSubscriptionsDidLoad() { testSubscriptionCoordinator.feedsDidLoad() }
+    override func feedSubscriptionsDidFail() { testSubscriptionCoordinator.feedsDidFail() }
+    override func resumeFeedSubscription() { testSubscriptionCoordinator.resume() }
+    override func resetFeedSubscriptionForAccountChange() { testSubscriptionCoordinator.resetForAccountChange() }
+    private let subscriptionFeedDetail = FeedDetailViewController()
+    override var feedDetailViewController: FeedDetailViewController! { subscriptionFeedDetail }
+    var useRealFeedNavigation = false
+    var subscriptionRequests = 0
+    var subscriptionParameters: [String: Any]?
+    var subscriptionSuccess: ((URLSessionDataTask, Any?) -> Void)?
+    var subscriptionFailure: ((URLSessionDataTask?, Error) -> Void)?
+    var loginPresentations = 0
+    override func showLogin() {
+        loginPresentations += 1
+        resetFeedSubscriptionForAccountChange()
+        activeUsername = nil
+    }
+    var firstTimeUserPresentations = 0
+    override func showFirstTimeUser() { firstTimeUserPresentations += 1 }
+    var feedReloads = 0
+    var openedFeedIDs: [String] = []
+
+    override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error) -> Void)!) {
+        subscriptionRequests += 1
+        subscriptionParameters = parameters as? [String: Any]
+        subscriptionSuccess = success
+        subscriptionFailure = failure
+    }
+
+    override func reloadFeedsView(_ showLoader: Bool) { feedReloads += 1 }
+
+    override func popToRoot(completion: (() -> Void)!) { completion?() }
+
+    override func loadFeed(_ feedId: String!, withStory contentId: String!, animated: Bool) {
+        openedFeedIDs.append(feedId)
+        if useRealFeedNavigation { super.loadFeed(feedId, withStory: contentId, animated: animated) }
+    }
+
+    @objc(presentFeedDetailAfterFeedSelection)
+    func recordSubscriptionPresentation() {}
+
+    override func loadFolder(_ folder: String!, feedID feedIdStr: String!) {
+        openedFeedIDs.append(feedIdStr)
+        super.loadFolder(folder, feedID: feedIdStr)
+    }
+
+    override func loadFeedDetailView() {}
+    override func cleanUpTryFeed() {}
+    override func openDailyBriefing(withStoryHash storyHash: String!) {}
+    override func loadRiverFeedDetailView(_ feedDetailView: FeedDetailViewController!, withFolder folder: String!) {}
+
+    func failSubscriptionWithExpiredSession() {
+        subscriptionFailure?(SubscriptionUnauthorizedTask(), NSError(domain: "Test_Subscription", code: 403))
+    }
+
+    func completeSubscription(_ response: [String: Any]) {
+        let task = URLSession.shared.dataTask(with: URL(string: "https://example.com")!)
+        subscriptionSuccess?(task, response)
+        task.cancel()
+    }
+}
+
+private final class SubscriptionUnauthorizedTask: URLSessionDataTask, @unchecked Sendable {
+    override var response: URLResponse? {
+        HTTPURLResponse(url: URL(string: "https://example.com/reader/add_url")!, statusCode: 403, httpVersion: nil, headerFields: nil)
+    }
+}
+
+@MainActor private final class EmptySubscriptionFeedListController: FeedsViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 780)) }
+    override func viewDidLoad() {}
+    override func updateSidebarButton() {}
+    override func calculateFeedLocations() {}
+    override func reloadFeedTitlesTable() {}
+    override func refreshHeaderCounts() {}
+    override func layoutHeaderCounts(_ orientation: UIInterfaceOrientation) {}
+    override func loadNotificationStory() {}
+    override func showOfflineNotifier() {}
+    override func informError(_ error: Any!) {}
+    @objc(finishRefresh) func recordFinishedRefresh() {}
+
+    func completeFeedListFailure(status: Int) {
+        let selector = NSSelectorFromString("finishedWithError:statusCode:")
+        typealias FinishFailure = @convention(c) (AnyObject, Selector, NSError, Int) -> Void
+        let finish = unsafeBitCast(method(for: selector), to: FinishFailure.self)
+        finish(self, selector, NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet), status)
+    }
+
+}
+
 @MainActor final class Test_FeedFilterAccessibility: XCTestCase {
     func test_iPhoneSEWidthKeepsTheLabeledIntelligenceFilters() throws {
         let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))

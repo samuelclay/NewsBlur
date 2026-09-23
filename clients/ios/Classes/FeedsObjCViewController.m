@@ -974,6 +974,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)resetForAccountChange {
+    [appDelegate resetFeedSubscriptionForAccountChange];
     self.feedListAccountGeneration++;
     self.awaitingAuthenticatedFeedList = YES;
     [(FeedsViewController *)self cancelPendingFeedListWorkForAccountChange];
@@ -1043,6 +1044,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)finishedWithError:(NSError *)error statusCode:(NSInteger)statusCode {
     [self finishRefresh];
+    if (statusCode != 403) [appDelegate feedSubscriptionsDidFail];
     
     if (statusCode == 403) {
         NSLog(@"Showing login");
@@ -1097,6 +1099,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
     [defaults setObject:self.appDelegate.url forKey:@"share:host"];
+    [defaults setObject:appDelegate.activeUsername forKey:@"share:username"];
     [defaults setObject:appDelegate.dictSavedStoryTags forKey:@"share:tags"];
     [defaults setObject:appDelegate.dictFoldersArray forKey:@"share:folders"];
     [defaults setObject:preview forKey:@"widget:preview_images_size"];
@@ -1415,6 +1418,8 @@ static BOOL NBBoolPreferenceValue(id value) {
             [self layoutHeaderCounts:0];
             [self refreshHeaderCounts];
             [appDelegate showFirstTimeUser];
+            // FeedsObjCViewController.m also resumes a first subscription after an authenticated empty feed list.
+            if (finished) [appDelegate feedSubscriptionsDidLoad];
             return;
         }
         
@@ -1445,6 +1450,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self loadNotificationStory];
     }
     
+    if (finished && !self.isOffline) [appDelegate feedSubscriptionsDidLoad];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 

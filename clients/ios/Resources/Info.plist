@@ -431,6 +431,8 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>newsblur</string>
+				<string>feed</string>
+				<string>feeds</string>
 			</array>
 		</dict>
 		<dict>
