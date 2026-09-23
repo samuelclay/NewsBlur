@@ -3,6 +3,7 @@ layout: post
 title: "NewsBlur 15 for iOS: smoother reading, floating toolbars, and Add + Discover Sites"
 tags: ["ios"]
 image: /assets/ios-15-story-list.png
+mobile_release: true
 ---
 
 Scrolling through your news should feel effortless. So should opening a story, going back to the list, and picking up where you left off. NewsBlur 15 for iOS puts a lot of work into those small, repeated motions: faster story lists, smoother scrolling, more reliable reading positions, and controls that are easier to reach.

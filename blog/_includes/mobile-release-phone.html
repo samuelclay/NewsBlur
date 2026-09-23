@@ -1,8 +1,18 @@
-<figure style="margin: 28px auto; width: 310px; max-width: 85%; text-align: center;">
-  <a href="{{ include.image | relative_url }}" style="display: block; position: relative; padding: 11px; border: 2px solid #777a7e; border-radius: 43px; background: #191a1c; box-shadow: 0 12px 28px rgba(0,0,0,0.18);">
-    <span aria-hidden="true" style="position: absolute; left: -5px; top: 110px; width: 3px; height: 58px; border-radius: 2px 0 0 2px; background: #55585c;"></span>
-    <span aria-hidden="true" style="position: absolute; right: -5px; top: 140px; width: 3px; height: 44px; border-radius: 0 2px 2px 0; background: #55585c;"></span>
-    <img src="{{ include.image | relative_url }}" alt="{{ include.alt | escape }}" style="display: block; width: 100%; height: auto; border-radius: 30px;" loading="lazy">
-  </a>
-  <figcaption style="margin-top: 16px; font-size: 14px; line-height: 1.5;">{{ include.caption }}</figcaption>
+{% assign phone = 'iphone-17' %}
+{% if include.image contains 'android-' %}{% assign phone = 'galaxy-s22' %}{% endif %}
+<figure class="mobile-release-phone mobile-release-phone--{{ phone }}">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      {% if include.video %}
+      <video muted loop playsinline controls preload="metadata" poster="{{ include.image | relative_url }}" aria-label="{{ include.alt | escape }}">
+        <source src="{{ include.video | relative_url }}" type="video/mp4">
+        <img src="{{ include.image | relative_url }}" alt="{{ include.alt | escape }}">
+      </video>
+      {% else %}
+      <img src="{{ include.image | relative_url }}" alt="{{ include.alt | escape }}" loading="lazy">
+      {% endif %}
+    </div>
+    <img class="mobile-release-phone__frame" src="{{ '/assets/' | append: phone | append: '-frame.png' | relative_url }}" alt="" aria-hidden="true" width="388" height="800">
+  </div>
+  <figcaption>{{ include.caption }}{% if include.video %}<br><button class="mobile-release-phone__play" type="button" hidden>Play animation</button> <a class="mobile-release-phone__download" href="{{ include.video | relative_url }}">Open video</a>{% endif %}</figcaption>
 </figure>
