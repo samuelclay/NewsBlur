@@ -56,6 +56,10 @@ class UnreadsSubService(
         val unreadHashes = storyApi.getUnreadStoryHashes()
 
         currentCoroutineContext().ensureActive()
+        if (unreadHashes.isError() || !unreadHashes.authenticated || unreadHashes.unreadHashes == null) {
+            Log.w(this, "Ignoring unusable unread-hash response")
+            return
+        }
 
         // get all the stories we thought were unread before. we should not enqueue a fetch of
         // stories we already have.  also, if any existing unreads fail to appear in
