@@ -1219,7 +1219,7 @@ class ReadingItemFragment :
         binding.readingStoryClusterMore.setOnClickListener(null)
     }
 
-    private fun bindClusterItemView(
+    internal fun bindClusterItemView(
         clusterView: View,
         clusterStory: Story.ClusterStory,
         showDivider: Boolean,

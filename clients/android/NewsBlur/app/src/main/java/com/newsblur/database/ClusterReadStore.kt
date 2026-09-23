@@ -70,15 +70,15 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
         db.rawQuery("SELECT DISTINCT m.child_hash, m.feed_id, m.child_timestamp FROM $MEMBERS m " +
             "LEFT JOIN $READ_STATE r ON r.story_hash = m.child_hash " +
             "LEFT JOIN ${DatabaseConstants.STORY_TABLE} s ON s.story_hash = m.child_hash " +
-            "WHERE COALESCE(r.read, s.read, m.child_read, 0) = 0", null).use {
-            while (it.moveToNext()) {
-                val hash = it.getString(0)
+            "WHERE COALESCE(r.read, s.read, m.child_read, 0) = 0", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                val hash = cursor.getString(0)
                 if (hash in serverUnread) continue
-                val feedId = it.getString(1)?.takeIf { it.isNotBlank() } ?: continue
+                val feedId = cursor.getString(1)?.takeIf { it.isNotBlank() } ?: continue
                 if (inferFeedId(hash) != feedId) continue
                 if (!isFeedEligible.test(feedId)) continue
                 inspectedChildren.add(hash)
-                if (canRetireTimestamp.test(feedId, it.getLong(2))) retired.add(hash)
+                if (canRetireTimestamp.test(feedId, cursor.getLong(2))) retired.add(hash)
             }
         }
         if (retired.isNotEmpty()) reconcileServerReadState(retired, true, requestStartedAt)
