@@ -292,6 +292,22 @@ class Test_RatelimitRetryAfterOnRedis(Test_RatelimitRetryAfter):
         # The second request reused the registered script (EVALSHA) instead of re-sending the body.
         self.assertIs(view.ratelimit.count_script, script)
 
+    def test_bucket_without_a_ttl_gets_one_on_the_next_count(self):
+        frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
+        view = self.decorated_view(minutes=5, requests=5)
+        # A bucket that lost its expiry (a hand-written key, a raced fallback write) must not
+        # count against this session forever: the next served request re-arms the TTL.
+        cache.set("rl-test-session-202609221430", 1, timeout=None)
+        self.assertEqual(cache.ttl("rl-test-session-202609221430"), None)
+        with patch("utils.ratelimit.datetime") as mock_datetime:
+            mock_datetime.now.return_value = frozen
+            self.assertEqual(view(self.make_request()).status_code, 200)
+        self.assertEqual(cache.get("rl-test-session-202609221430"), 2)
+        ttl = cache.ttl("rl-test-session-202609221430")
+        self.assertIsNotNone(ttl)
+        self.assertGreater(ttl, 0)
+        self.assertLessEqual(ttl, view.ratelimit.expire_after())
+
     def test_parallel_burst_serves_exactly_the_limit(self):
         frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
         view = self.decorated_view(minutes=5, requests=5)

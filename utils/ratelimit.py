@@ -16,7 +16,8 @@ from utils import log as logging
 
 # Atomic check-and-count for django-redis. Reads every bucket in the window, refuses without
 # touching anything when this request would go over the limit, otherwise counts it and sets
-# the bucket's TTL on first use. Returns 1 (served) or 0 (refused) followed by the bucket
+# the bucket's TTL on first use or whenever the key has lost it, so no bucket can outlive its
+# window and count against a user forever. Returns 1 (served) or 0 (refused) followed by the bucket
 # counts the decision was made on, newest first. Because the read and the increment happen
 # inside one call, two requests can never both take the last free slot, and because a refused
 # request never writes, overlapping refusals cannot pad each other's Retry-After.
@@ -32,7 +33,7 @@ if total + 1 > tonumber(ARGV[1]) then
     return {0, unpack(counts)}
 end
 counts[1] = redis.call('INCR', KEYS[1])
-if counts[1] == 1 then
+if counts[1] == 1 or redis.call('TTL', KEYS[1]) < 0 then
     redis.call('EXPIRE', KEYS[1], tonumber(ARGV[2]))
 end
 return {1, unpack(counts)}
