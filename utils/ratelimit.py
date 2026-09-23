@@ -51,7 +51,17 @@ class ratelimit(object):
         # Have they failed? A refused request is not counted, so Retry-After is the real wait
         # and a client that keeps polling does not stretch its own block.
         if sum(counters.values()) >= self.limit():
-            return self.disallowed(request, retry_after=self.retry_after(keys, counters, now))
+            retry_after = self.retry_after(keys, counters, now)
+            # A refused request is not counted and never reaches the view, so this line is the
+            # only server-side trace of the block. It is written for the first refusal in each
+            # minute per key: a client that ignores the header and keeps polling is refused
+            # every time but logged once a minute, so the log says who was blocked without
+            # growing with the poll rate. utils/ratelimit.py
+            if cache.add(keys[0] + "-logged", 1, 60):
+                logging.user(
+                    request, "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (request.path, retry_after)
+                )
+            return self.disallowed(request, retry_after=retry_after)
 
         # Increment rate limiting counter for the current minute
         self.cache_incr(keys[0])
@@ -122,10 +132,6 @@ class ratelimit(object):
         return key
 
     def disallowed(self, request, retry_after=None):
-        # A refused request is not counted and never reaches the view, so this line is the only
-        # server-side trace of the block. It is the grep target for the next 429 report.
-        # utils/ratelimit.py
-        logging.user(request, "~FR~SB429 rate limited~SN ~FR%s retry in %ss" % (request.path, retry_after))
         response = HttpResponse("Rate limit exceeded", status=429)
         if retry_after:
             # Tell the client when the window frees up so it backs off instead of retrying

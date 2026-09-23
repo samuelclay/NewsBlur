@@ -142,20 +142,28 @@ class Test_RatelimitRetryAfter(SimpleTestCase):
             mock_datetime.now.return_value = frozen + datetime.timedelta(seconds=wait)
             self.assertEqual(view(self.make_request()).status_code, 200)
 
-    def test_refusal_is_logged_with_the_path_and_the_wait(self):
+    def test_refusal_is_logged_once_per_minute_with_the_path_and_the_wait(self):
         frozen = datetime.datetime(2026, 9, 22, 14, 30, 15)
         view = self.decorated_view(minutes=1, requests=1)
         with patch("utils.ratelimit.datetime") as mock_datetime, patch("utils.ratelimit.logging.user") as log:
             mock_datetime.now.return_value = frozen
             self.assertEqual(view(self.make_request()).status_code, 200)
-            response = view(self.make_request())
-        self.assertEqual(response.status_code, 429)
-        # A refused request never reaches the view and is not counted, so the log line is the
-        # only server-side trace of the block; it has to name the path and the wait.
-        log.assert_called_once()
-        message = log.call_args.args[1]
-        self.assertIn("/reader/starred_stories", message)
-        self.assertIn(response["Retry-After"], message)
+            for _ in range(5):
+                response = view(self.make_request())
+                self.assertEqual(response.status_code, 429)
+            # A refused request never reaches the view and is not counted, so the log line is
+            # the only server-side trace of the block. Five refusals in one minute write one
+            # line, and it names the path and the wait.
+            log.assert_called_once()
+            message = log.call_args.args[1]
+            self.assertIn("/reader/starred_stories", message)
+            self.assertIn(response["Retry-After"], message)
+            # The next minute is still inside the window, so the block continues and is logged
+            # again, once, however many times the client polls.
+            mock_datetime.now.return_value = frozen + datetime.timedelta(minutes=1)
+            for _ in range(3):
+                self.assertEqual(view(self.make_request()).status_code, 429)
+            self.assertEqual(log.call_count, 2)
 
     def test_allowed_request_has_no_retry_after(self):
         view = self.decorated_view(minutes=1, requests=5)
