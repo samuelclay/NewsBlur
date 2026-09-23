@@ -230,10 +230,13 @@ private extension ShareViewController {
     func subscribe() {
         guard !isSubscribing, !didFinish else { return }
         view.endEditing(true)
-        guard let host = prefs.string(forKey: "share:host"),
-              let token = prefs.string(forKey: "share:token"),
-              let username = prefs.string(forKey: "share:username"), !username.isEmpty else {
+        guard let host = prefs.string(forKey: "share:host"), !host.isEmpty,
+              let token = prefs.string(forKey: "share:token"), !token.isEmpty else {
             showSubscriptionError(FeedSubscriptionError.signInRequired)
+            return
+        }
+        guard let username = prefs.string(forKey: "share:username"), !username.isEmpty else {
+            showSubscriptionError(FeedSubscriptionError.accountRefreshRequired)
             return
         }
         setSubscribing(true)

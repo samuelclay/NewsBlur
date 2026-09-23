@@ -144,11 +144,18 @@ import ObjectiveC
             self.openingFeedID = feedID
             self.needsReload = true
             self.app?.reloadFeedsView(false)
-        }, failure: { [weak self] _, error in
+        }, failure: { [weak self] task, error in
             guard let self, self.generation == requestGeneration,
                   self.app?.activeUsername == account, self.app?.url == host else { return }
             self.isSubscribing = false
             self.inFlightURL = nil
+            if (task?.response as? HTTPURLResponse)?.statusCode == 403 {
+                // FeedSubscriptionCoordinator.swift retains the latest requested URL through the login reset.
+                self.pendingURL = self.pendingURL ?? url
+                self.pendingAccount = nil
+                self.app?.showLogin()
+                return
+            }
             self.showError(error?.localizedDescription ?? "NewsBlur could not subscribe to this feed.")
         })
     }

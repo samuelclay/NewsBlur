@@ -27,7 +27,7 @@ enum FeedSubscriptionURL {
     }
 
     static func feedID(in response: [String: Any]) -> String? {
-        guard let code = response["code"] as? Int, code >= 0,
+        guard let code = response["code"] as? Int, code > 0,
               let feed = response["feed"] as? [String: Any] else { return nil }
         let id = (feed["id"] as? NSNumber)?.stringValue ?? feed["id"] as? String
         guard let id, let number = Int(id), number > 0 else { return nil }
