@@ -12,6 +12,33 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
 
+from utils import log as logging
+
+# Atomic check-and-count for django-redis. Reads every bucket in the window, refuses without
+# touching anything when this request would go over the limit, otherwise counts it and sets
+# the bucket's TTL on first use or whenever the key has lost it, so no bucket can outlive its
+# window and count against a user forever. Returns 1 (served) or 0 (refused) followed by the bucket
+# counts the decision was made on, newest first. Because the read and the increment happen
+# inside one call, two requests can never both take the last free slot, and because a refused
+# request never writes, overlapping refusals cannot pad each other's Retry-After.
+# utils/ratelimit.py
+COUNT_IF_UNDER_LIMIT = """
+local counts = {}
+local total = 0
+for i = 1, #KEYS do
+    counts[i] = tonumber(redis.call('GET', KEYS[i]) or '0')
+    total = total + counts[i]
+end
+if total + 1 > tonumber(ARGV[1]) then
+    return {0, unpack(counts)}
+end
+counts[1] = redis.call('INCR', KEYS[1])
+if counts[1] == 1 or redis.call('TTL', KEYS[1]) < 0 then
+    redis.call('EXPIRE', KEYS[1], tonumber(ARGV[2]))
+end
+return {1, unpack(counts)}
+"""
+
 
 class ratelimit(object):
     "Instances of this class can be used as decorators"
@@ -20,6 +47,7 @@ class ratelimit(object):
     requests = 4  # Number of allowed requests in that time period
     DEBUG_MULTIPLIER = 10  # In DEBUG mode, multiply request limits by this factor
     use_path = False  # Whether to include the request path in the key
+    count_script = None  # COUNT_IF_UNDER_LIMIT registered with redis, built on first use
 
     prefix = "rl-"  # Prefix for memcache key
 
@@ -32,56 +60,152 @@ class ratelimit(object):
             return self.view_wrapper(request, fn, *args, **kwargs)
 
         functools.update_wrapper(wrapper, fn)
+        # Expose the limiter on the view so callers and tests can read its window. utils/ratelimit.py
+        wrapper.ratelimit = self
         return wrapper
 
     def view_wrapper(self, request, fn, *args, **kwargs):
         if not self.should_ratelimit(request):
             return fn(request, *args, **kwargs)
 
-        counts = list(self.get_counters(request).values())
+        # One clock read for the whole check, so the buckets read, the bucket incremented, and
+        # the Retry-After arithmetic all describe the same window. utils/ratelimit.py
+        now = datetime.now()
+        keys = self.keys_to_check(request, now)
 
-        # Increment rate limiting counter
-        self.cache_incr(self.current_key(request))
-
-        # In DEBUG mode, allow 10x more requests
-        limit = self.requests
-        if settings.DEBUG:
-            limit = self.requests * self.DEBUG_MULTIPLIER
-
-        # Have they failed?
-        if sum(counts) >= limit:
-            return self.disallowed(request)
+        # Decide and count in one step. A refused request is not counted, so Retry-After is
+        # the real wait and a client that keeps polling does not stretch its own block.
+        served, counters = self.count_request(keys)
+        if not served:
+            retry_after = self.retry_after(keys, counters, now)
+            # A refused request is not counted and never reaches the view, so this line is the
+            # only server-side trace of the block. It is written for the first refusal in each
+            # minute per key: a client that ignores the header and keeps polling is refused
+            # every time but logged once a minute, so the log says who was blocked without
+            # growing with the poll rate. The marker expires with its bucket. utils/ratelimit.py
+            try:
+                if cache.add(keys[0] + "-logged", 1, 60 - now.second):
+                    logging.user(
+                        request,
+                        "~FR~SB429 rate limited~SN ~FR%s retry in %ss"
+                        % (self.log_path(request), retry_after),
+                    )
+            except Exception as error:
+                # The 429 must never depend on the log line: a missing profile row or a cache
+                # error on the marker is worth a debug line, not a 500. utils/ratelimit.py
+                logging.debug(" ***> Rate limit refusal log failed: %s" % error)
+            return self.disallowed(request, retry_after=retry_after)
 
         return fn(request, *args, **kwargs)
+
+    def log_path(self, request):
+        """The path as it may appear in the refusal log. Subclasses whose URLs carry a secret
+        override this to mask it before it reaches the log. utils/ratelimit.py"""
+        return request.path
+
+    def limit(self):
+        "Allowed requests per window. In DEBUG mode, allow 10x more requests."
+        if settings.DEBUG:
+            return self.requests * self.DEBUG_MULTIPLIER
+        return self.requests
+
+    def retry_after(self, keys, counters, now):
+        """Seconds until enough one-minute buckets have aged out of the window for a retry to pass.
+
+        `keys` is the keys_to_check() list for `now`, newest first. The oldest bucket leaves the
+        window at the next minute boundary, the next oldest a minute after that, and so on.
+        Refused requests are not counted, so the buckets are used as read. utils/ratelimit.py
+        """
+        counts = [counters.get(key, 0) for key in keys]
+        seconds_to_next_minute = 60 - now.second
+        limit = self.limit()
+        for dropped in range(1, len(counts)):
+            if sum(counts[: len(counts) - dropped]) < limit:
+                return (dropped - 1) * 60 + seconds_to_next_minute
+        # Even the current bucket alone is over the limit, so wait until it leaves the window.
+        return (len(counts) - 1) * 60 + seconds_to_next_minute
 
     def cache_get_many(self, keys):
         return cache.get_many(keys)
 
+    def redis_client(self):
+        "The raw client behind the cache when the backend is django-redis, else None. utils/ratelimit.py"
+        client = getattr(cache, "client", None)
+        if client is None or not hasattr(client, "get_client"):
+            return None
+        return client.get_client(write=True)
+
+    def count_request(self, keys):
+        """Decide whether to serve the request and count it if so, in one step.
+
+        Returns (served, counters). `counters` is keyed like `keys` and holds the bucket counts
+        the decision was made on; on a refusal the current bucket does not include this request.
+
+        With django-redis this is one Lua call (COUNT_IF_UNDER_LIMIT), so two requests can never
+        both take the last free slot and a refused request never touches a counter. Other
+        backends fall back to incr-then-decr: the decision is still made on INCR's atomic return
+        value, but a refusal is briefly visible in the bucket until its decr lands, so overlapping
+        refusals can pad each other's Retry-After by one minute step on those backends.
+        utils/ratelimit.py
+        """
+        redis_client = self.redis_client()
+        if redis_client is not None:
+            # register_script() sends EVALSHA and only falls back to EVAL on NOSCRIPT, so the
+            # script body crosses the wire once per redis restart rather than once per request.
+            # The client is passed at call time so a swapped cache backend never reuses a stale
+            # connection through the cached Script object. utils/ratelimit.py
+            if self.count_script is None:
+                self.count_script = redis_client.register_script(COUNT_IF_UNDER_LIMIT)
+            result = self.count_script(
+                keys=[cache.make_key(key) for key in keys],
+                args=[self.limit(), self.expire_after()],
+                client=redis_client,
+            )
+            counts = [int(count) for count in result[1:]]
+            return bool(int(result[0])), dict(zip(keys, counts))
+
+        counters = self.cache_get_many(keys[1:])
+        current = self.cache_incr(keys[0])
+        if sum(counters.values()) + current > self.limit():
+            self.cache_decr(keys[0])
+            counters[keys[0]] = current - 1
+            return False, counters
+        counters[keys[0]] = current
+        return True, counters
+
     def cache_incr(self, key):
-        # memcache is only backend that can increment atomically
+        "Count a request in its bucket and return the bucket's new count. utils/ratelimit.py"
+        # memcache and redis increment atomically
         try:
             # add first, to ensure the key exists
             cache.add(key, 0, self.expire_after())
-            cache.incr(key)
+            return cache.incr(key)
         except (AttributeError, ValueError):
-            cache.set(key, cache.get(key, 0) + 1, self.expire_after())
+            count = cache.get(key, 0) + 1
+            cache.set(key, count, self.expire_after())
+            return count
+
+    def cache_decr(self, key):
+        "Take a refused request back out of its bucket. utils/ratelimit.py"
+        try:
+            return cache.decr(key)
+        except (AttributeError, ValueError):
+            count = max(cache.get(key, 0) - 1, 0)
+            cache.set(key, count, self.expire_after())
+            return count
 
     def should_ratelimit(self, request):
         return True
 
-    def get_counters(self, request):
-        return self.cache_get_many(self.keys_to_check(request))
-
-    def keys_to_check(self, request):
+    def keys_to_check(self, request, now=None):
+        "Bucket keys for the window ending at `now`, newest first. utils/ratelimit.py"
         extra = self.key_extra(request)
-        now = datetime.now()
+        if now is None:
+            now = datetime.now()
         return [
             "%s%s-%s" % (self.prefix, extra, (now - timedelta(minutes=minute)).strftime("%Y%m%d%H%M"))
             for minute in range(self.minutes + 1)
         ]
-
-    def current_key(self, request):
-        return "%s%s-%s" % (self.prefix, self.key_extra(request), datetime.now().strftime("%Y%m%d%H%M"))
 
     def key_extra(self, request):
         key = getattr(request.session, "session_key", "")
@@ -99,8 +223,13 @@ class ratelimit(object):
 
         return key
 
-    def disallowed(self, request):
-        return HttpResponse("Rate limit exceeded", status=429)
+    def disallowed(self, request, retry_after=None):
+        response = HttpResponse("Rate limit exceeded", status=429)
+        if retry_after:
+            # Tell the client when the window frees up so it backs off instead of retrying
+            # into the same block. utils/ratelimit.py
+            response["Retry-After"] = str(retry_after)
+        return response
 
     def expire_after(self):
         "Used for setting the memcached cache expiry"
@@ -142,3 +271,14 @@ class ratelimit_by_url_user(ratelimit):
             user_id = path_parts[self.user_id_path_index]
             return f"url-user-{user_id}"
         return super().key_extra(request)
+
+    def log_path(self, request):
+        """Mask the segment after the user id before the path is logged. On
+        /reader/folder_rss/<user_id>/<secret_token>/... that segment is the account's
+        secret token, which autologin also accepts, so it must never land in a log line.
+        utils/ratelimit.py"""
+        path_parts = request.path.strip("/").split("/")
+        token_index = self.user_id_path_index + 1
+        if len(path_parts) > token_index:
+            path_parts[token_index] = "<token>"
+        return "/" + "/".join(path_parts)

@@ -862,19 +862,24 @@ class IPRateTrackingMiddleware:
 
         if endpoint:
             try:
+                # One clock read per request: the window the request is counted in, the window
+                # it is checked against, and the Retry-After below all come from it, so a
+                # 5-minute boundary landing mid-request cannot split them.
+                now = datetime.datetime.utcnow()
+
                 # Track the request
-                self.tracker.track_request(request, endpoint)
+                self.tracker.track_request(request, endpoint, now=now)
 
                 # Check if rate limit would be exceeded
                 ip = self.tracker.get_ip(request)
-                if self.tracker.is_rate_limited(ip):
+                if self.tracker.is_rate_limited(ip, window=self.tracker.get_current_window(now)):
                     full_path = request.get_full_path()
                     user_info = ""
                     if hasattr(request, "user") and request.user.is_authenticated:
                         user_info = " user=%s" % request.user.username
 
                     # Track this "would be denied" event for soft launch monitoring
-                    self.tracker.track_would_be_denied(request, endpoint)
+                    self.tracker.track_would_be_denied(request, endpoint, now=now)
 
                     # Log what would have been blocked
                     logging.user(
@@ -889,11 +894,15 @@ class IPRateTrackingMiddleware:
                             "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s"
                             % (ip, full_path, user_info),
                         )
-                        return HttpResponse(
+                        response = HttpResponse(
                             '{"error": "Rate limit exceeded", "code": -1}',
                             status=429,
                             content_type="application/json",
                         )
+                        # The block lasts until the 5-minute window rolls over, so say so
+                        # and clients can wait instead of retrying into it. apps/profile/middleware.py
+                        response["Retry-After"] = str(self.tracker.seconds_until_next_window(now))
+                        return response
             except Exception as e:
                 # Don't let tracking errors break the request
                 logging.debug(" ***> IP rate tracking error: %s" % e)
