@@ -20,6 +20,8 @@ The floating controls put the things you reach for near your thumb. In the story
 
 Gestures are configurable, with separate choices for feeds and stories. Set the swipe, tap, and long press actions to suit how you read. If you prefer to see your options, long press a story to open its action menu. The menus have clearer groups and open from the control you tapped, and appearance controls let you adjust the view without digging through a separate settings screen.
 
+{% include mobile-release-phone.html image="/assets/android-15-article-scroll.png" video="/assets/android-15-article-scroll.mp4" alt="Scrolling a full article on Android as the floating reading controls hide and return" caption="The controls move out of the way as you read and return when you scroll back." %}
+
 ### Take a closer look
 
 Article images now have their own viewer. Tap an image, pinch or double tap to zoom, then swipe to dismiss it and return to your article. The status and navigation bars stay in place when the viewer opens, so the page behind it doesn't jump to a different height.
