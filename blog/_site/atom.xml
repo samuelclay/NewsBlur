@@ -1,6 +1,223 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-09-15T11:03:20-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-09-24T00:18:12-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">Matching Stories: see every story behind a tag, author, or classifier</title><link href="https://blog.newsblur.com/2026/09/15/matching-stories/" rel="alternate" type="text/html" title="Matching Stories: see every story behind a tag, author, or classifier" /><published>2026-09-15T00:00:00-04:00</published><updated>2026-09-15T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/09/15/matching-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/09/15/matching-stories/"><![CDATA[<p>The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.</p>
+</subtitle><entry><title type="html">NewsBlur v15 for iOS and Mac: Faster story lists, Add + Discover Sites, glass toolbars, and a new image viewer</title><link href="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-ios-and-mac/" rel="alternate" type="text/html" title="NewsBlur v15 for iOS and Mac: Faster story lists, Add + Discover Sites, glass toolbars, and a new image viewer" /><published>2026-09-23T00:00:00-04:00</published><updated>2026-09-23T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/09/23/newsblur-v15-for-ios-and-mac</id><content type="html" xml:base="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-ios-and-mac/"><![CDATA[<p>I use NewsBlur on my iPhone and iPad all day, and the story list had gotten slower than I wanted. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles would flash blank for a moment before appearing. So I spent this release measuring every part of the story list and reader, then fixing what the numbers pointed at.</p>
+
+<p>On top of that, v15 brings the full Add + Discover Sites experience to iPhone, iPad, and Mac, along with a glass story list toolbar, a new image viewer, native context menus, and offline storage that finally cleans up after itself.</p>
+
+<p>Here’s what’s new.</p>
+
+<h3 id="faster-story-lists-and-smoother-scrolling">Faster story lists and smoother scrolling</h3>
+
+<p>Most of the slowness came from work happening at the wrong time or happening more often than it needed to:</p>
+
+<ul>
+  <li>Loading the next page of a folder reloaded the entire story list. New stories are now appended in place.</li>
+  <li>Feeds tucked inside collapsed folders were still building rows and loading favicons. They’re skipped now.</li>
+  <li>Favicons, thumbnails, and story text were being read and measured on the main thread while you scrolled. That work now happens in the background, ahead of time.</li>
+  <li>Opening a feed waited on the server before showing anything. Now the first page appears immediately from cache, and fresh stories merge in as they arrive.</li>
+  <li>Articles used to slide in blank and then fill in. Now the reader appears right away, and the article fades in fully laid out.</li>
+</ul>
+
+<p>The measurements:</p>
+
+<ul>
+  <li>Opening All Site Stories went from 1,148ms to 208ms.</li>
+  <li>Opening a single feed went from 671ms to 233ms.</li>
+  <li>Loading another page into a list of 5,000 stories went from 722ms to 22ms.</li>
+  <li>Stalls during the first fast scroll through the feed list after launch dropped by 86%.</li>
+</ul>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-scroll.mp4" type="video/mp4" />
+</video>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>Add + Discover Sites now sits at the top of your feed list. The + button in the bottom toolbar opens a Quick Add sheet where you can paste a URL or search for a site, pick a folder, and add it, with shortcuts below into every discovery source.</p>
+
+<p>The discovery screen itself covers Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News, and you can swipe between them like pages. Each source has categories to browse and a Grid or List view. List view shows the latest few stories from each site with an image and a short excerpt, so you know what you’re getting before you subscribe. Every card also shows how recently the site published, and there’s a folder picker right next to each Add button that remembers the last folder you chose.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-discover.mp4" type="video/mp4" />
+</video>
+
+<p>If you’ve used <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites on the web</a>, this is the same catalog, rebuilt natively for iOS.</p>
+
+<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
+
+<p>Tap Try on any site to preview its stories without subscribing. A banner at the top lets you subscribe once you’ve decided. If the feed hasn’t been fetched in a while, the preview fetches fresh stories automatically. Tapping a story in a discovery card opens that exact story, and when you come back, Discover returns you to the same spot in the list with that story highlighted.</p>
+
+<p>On iPad, Try keeps all three columns in place, so you can browse a new site’s stories and read them side by side.</p>
+
+<h3 id="related-sites">Related Sites</h3>
+
+<p>The Related Sites button in the story list toolbar now uses the same cards as discovery, with story excerpts, freshness, and Try, folder, and Add buttons. Tapping one of its stories closes Related Sites and opens that exact article.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-related.mp4" type="video/mp4" />
+</video>
+
+<h3 id="a-glass-story-list-toolbar">A glass story list toolbar</h3>
+
+<p>The story list toolbar is now a floating glass footer on both iPhone and iPad. Your stories scroll right behind it. Related Sites, the story order menu, and search sit on the left, with Add and Mark as read on the right. When there’s room, the two groups separate and search gets its label back. If you’d rather keep the toolbar at the top, change Story list toolbar position under Story Layout in Preferences.</p>
+
+<p><img src="/assets/ios-15-story-list.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-new-image-viewer">A new image viewer</h3>
+
+<p>Tap any image in an article and it opens in a full screen viewer, animating out from its spot in the story. Pinch or double tap to zoom, drag to pan, and tap or swipe in any direction to go back to the story. The menu in the corner has Save Image, Copy Image, Share Image, and Open Image in Browser. On iPad, the viewer covers all three columns, and your reading position is right where you left it when you close it.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-reader.mp4" type="video/mp4" />
+</video>
+
+<h3 id="native-context-menus">Native context menus</h3>
+
+<p>Long press any feed, folder, or story for a native context menu. Story menus include Mark as read, Mark newer as read, Mark older as read, Save, sharing, Share on NewsBlur, Train intelligence, and Ask AI. Mark newer and Mark older now include the story you pressed and update your unread counts right away, including in collapsed folders. Settings and reader menus got the same treatment, with grouped actions, grayscale icons, and inline appearance controls.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-menu.mp4" type="video/mp4" />
+</video>
+
+<h3 id="offline-storage-that-cleans-up-after-itself">Offline storage that cleans up after itself</h3>
+
+<p>A reader on the forum found NewsBlur using 4.2 GB on their iPhone with no unread stories. Digging in turned up three bugs in the offline cache. Automatic cleanup skipped pruning whenever you had fewer unread stories than your storage limit, which is exactly the case when you’re all caught up. It also never cleared cached article text because it was pointed at the wrong table, and it compacted the database before deleting anything, so no space came back.</p>
+
+<p>Automatic cleanup now keeps storage within your Stories to store limit, giving unread stories priority and filling the remaining space with recent read stories. Delete offline stories under Offline Stories in Preferences clears cached stories, article text, and images and actually reclaims the space. In testing, it shrank an 8.5 MB database down to 115 KB. Your subscriptions and any pending read or saved changes are preserved.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes across iPhone, iPad, and Mac.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>The Mac app gets the new discovery screen, Related Sites cards, image viewer, menus, and offline cleanup.</li>
+  <li>Explicitly selecting the same feed or folder again clears the old story and loads fresh titles, opening the first story if you have that preference on.</li>
+  <li>In phone landscape, Related Sites opens as a popover you can close by tapping outside.</li>
+  <li>Compact phone landscape headers no longer waste space under the status bar.</li>
+  <li>At the largest accessibility text sizes, discovery keeps the search field usable.</li>
+  <li>Trained URLs are easier to read in the gray theme.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed tapping a notification sometimes getting stuck instead of opening the story.</li>
+  <li>Fixed reading positions not being restored correctly.</li>
+  <li>Fixed the trainer and other dialogs disappearing while the reader was still loading.</li>
+  <li>Fixed unread counts going stale after Mark newer or older as read, including while offline.</li>
+  <li>Fixed a number of story selection and theme issues.</li>
+</ul>
+
+<p>NewsBlur v15 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The same performance and discovery work also shipped in <a href="/2026/09/23/newsblur-v15-for-android/">NewsBlur v15 for Android</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><summary type="html"><![CDATA[I use NewsBlur on my iPhone and iPad all day, and the story list had gotten slower than I wanted. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles would flash blank for a moment before appearing. So I spent this release measuring every part of the story list and reader, then fixing what the numbers pointed at.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/ios-15-story-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/ios-15-story-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer</title><link href="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/" rel="alternate" type="text/html" title="NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer" /><published>2026-09-23T00:00:00-04:00</published><updated>2026-09-23T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/"><![CDATA[<p>I read NewsBlur on my Android phone every day, and for a while now it hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.</p>
+
+<p>With that foundation in place, v15 also brings the Add + Discover Sites experience from the web to Android, along with floating toolbars, full bleed images with a new image viewer, and gestures you can configure.</p>
+
+<p>Here’s what’s new.</p>
+
+<h3 id="smoother-scrolling-and-faster-story-opens">Smoother scrolling and faster story opens</h3>
+
+<p>Most of the slowness came from the app doing far more work than it needed to:</p>
+
+<ul>
+  <li>Marking a story read used to rebuild its entire row, parsing the title again and reloading the thumbnail. Now only the read styling changes, with a short fade.</li>
+  <li>Background syncs could overlap, with a canceled sync still doing network work while its replacement started. Syncs now run one at a time.</li>
+  <li>The feed list waited for the sync service before showing anything. It now loads straight from the local cache, so your feeds show up right away and work fully offline.</li>
+  <li>The reader waited for the article to finish rendering before appearing. Now it slides in immediately with the title, and the article fades in a moment later.</li>
+</ul>
+
+<p>The difference is easy to feel, and it shows up in the measurements too:</p>
+
+<ul>
+  <li>Janky frames while scrolling the feed list dropped from 32% to 15%.</li>
+  <li>Janky frames while scrolling the story list dropped from 14% to 7%.</li>
+  <li>The worst stall while scrolling a long article went from 152ms to 88ms.</li>
+  <li>Opening a story you’ve opened before went from 889ms to 189ms.</li>
+</ul>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-scroll.mp4" type="video/mp4" />
+</video>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>The + button in the feed list now opens a compact Add Site sheet. Paste a URL or search for a site, pick a folder, and add it. Below that are eight shortcuts into discovery: Web Feed, Popular, Trending, YouTube, Reddit, Newsletters, Podcasts, and Google News.</p>
+
+<p>Each shortcut opens the full Add + Discover Sites screen, the same one I launched <a href="/2026/03/04/add-and-discover-sites/">on the web</a> earlier this year. Browse by category, search within a source, and add a site straight into the folder you want. Folder pickers remember the last folder you chose. Web Feed turns any website into a feed, and Google News has 47 categories across eight topics.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-discover.mp4" type="video/mp4" />
+</video>
+
+<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
+
+<p>Every site has a Try button that opens a preview of its stories without subscribing. If a feed hasn’t been fetched in a while, the preview fetches fresh stories automatically and shows you its progress. Tap a story in a discovery card and it opens that exact story in the preview, with the rest of the site’s stories loaded behind it.</p>
+
+<h3 id="related-sites-with-story-previews">Related Sites with story previews</h3>
+
+<p>Related Sites got the same rich cards. Tap the Related Sites button on the left side of the story list toolbar, or pick it from the feed menu, and you’ll see similar sites along with their latest stories, images, and excerpts. Each card has Try, a folder picker, and Add. Related Sites and Add + Discover share your Grid or List choice, so switching in one switches both.</p>
+
+<p><img src="/assets/android-15-related-sites.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="floating-toolbars">Floating toolbars</h3>
+
+<p>The story list controls now float at the bottom of the screen, so stories scroll right behind them and you get more room to read. If you’d rather have them at the top, there’s a Story list toolbar position setting under Story Layout in Preferences. The feed list has a single floating capsule too, with Add on the left, the All, Unread, Focus, and Saved filter in the middle, and settings on the right.</p>
+
+<p>In the reader, the toolbar hides as you scroll down and comes back the moment you scroll up.</p>
+
+<p><img src="/assets/android-15-story-list.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="full-bleed-images-and-a-new-image-viewer">Full bleed images and a new image viewer</h3>
+
+<p>Wide article images now run edge to edge, in both portrait and landscape. Tap any image to open it full screen. Double tap to zoom in, pinch to zoom further, drag to pan around, and swipe in any direction to dismiss it and go right back to the article.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-reader.mp4" type="video/mp4" />
+</video>
+
+<h3 id="gestures-your-way">Gestures, your way</h3>
+
+<p>There’s a new Gestures section in Preferences. Choose what swiping left and right does on feeds and on stories, what a long press does (saving a story is a new option), and what double tap and two finger double tap do while reading a story. Rows now follow your finger as you swipe and show an icon for the action you’re about to trigger. Swiping from the left edge of the story list always takes you back to your feeds, even if you turn story swipes off.</p>
+
+<p><img src="/assets/android-15-gestures.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="menus-that-stay-out-of-the-way">Menus that stay out of the way</h3>
+
+<p>Menus now fade in and grow out of the button you tapped. Long press a feed or a story and you get a grouped menu with icons, including Mark newer as read and Mark older as read. Font size, list density, and theme are right in the settings menu, so changing them doesn’t mean digging through Preferences.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/android-15-story-menu.png" style="width: 45%;" />
+<img src="/assets/android-15-appearance-menu.png" style="width: 45%;" />
+</div>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>Nested folders show up as an indented tree, and folder pickers can choose subfolders and create new folders inside them.</li>
+  <li>A single Mark stories read setting covers on scroll or selection, on selection only, after a delay of 1 to 60 seconds, or manually.</li>
+  <li>Matching stories from other sites are marked read along with the story they match, following your web preference.</li>
+  <li>The story you tapped stays highlighted while the reader opens. When you go back, the list scrolls to the last story you read and fades its highlight.</li>
+  <li>Next and Previous prepare the next story before it animates in, so you never see a blank page.</li>
+  <li>Story rows use Whitney to match iOS, and long headlines wrap in balanced lines.</li>
+  <li>Folders animate smoothly as they expand and collapse.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed the next folder search looping forever when nothing was unread.</li>
+  <li>Fixed the Previous button sometimes being disabled.</li>
+  <li>Fixed dark bands appearing during folder animations.</li>
+  <li>Fixed an older bulk mark read overriding stories you had since marked unread.</li>
+  <li>Fixed folders with similar names colliding during a database upgrade.</li>
+</ul>
+
+<p>NewsBlur v15 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. The same performance and discovery work also shipped in <a href="/2026/09/23/newsblur-v15-for-ios-and-mac/">NewsBlur v15 for iOS and Mac</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="android" /><summary type="html"><![CDATA[I read NewsBlur on my Android phone every day, and for a while now it hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/android-15-related-sites.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/android-15-related-sites.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Matching Stories: see every story behind a tag, author, or classifier</title><link href="https://blog.newsblur.com/2026/09/15/matching-stories/" rel="alternate" type="text/html" title="Matching Stories: see every story behind a tag, author, or classifier" /><published>2026-09-15T00:00:00-04:00</published><updated>2026-09-15T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/09/15/matching-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/09/15/matching-stories/"><![CDATA[<p>The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.</p>
 
 <p>Now every tag, author, and URL on a story has a small button next to it: <strong>View matching stories</strong>. Click it and the story list turns into a view of every story on that site that carries that exact value. Not just unread stories, read ones too, so you get the whole picture. It’s the fastest way I’ve found to answer “what else is like this?”</p>
 
@@ -443,166 +660,4 @@ newsblur auth login
 
 <p>The CLI, AI skill, and MCP server are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. See the <a href="https://newsblur.com/features/mcp">MCP Server</a> and <a href="https://newsblur.com/features/cli">CLI Tool</a> feature pages for full documentation.</p>
 
-<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping three new ways to interact with your NewsBlur: a command-line tool that puts your entire NewsBlur in your terminal, an AI skill that teaches your agent every CLI command without eating your context window, and an MCP server that connects any MCP-compatible agent directly to your account.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mcp-cli.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mcp-cli.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more</title><link href="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/" rel="alternate" type="text/html" title="NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more" /><published>2026-03-30T00:00:00-04:00</published><updated>2026-03-30T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/30/newsblur-v14-for-android/"><![CDATA[<p>A few weeks ago I shipped <a href="/2026/03/05/newsblur-v14-for-ios-and-mac/">NewsBlur v14 for iOS and Mac</a>, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.</p>
-
-<p>Here’s what’s new.</p>
-
-<h3 id="ask-ai">Ask AI</h3>
-
-<p>Ask AI brings the same AI-powered Q&amp;A from the web and iOS to Android. Open any story, tap Ask AI, and ask questions about it. Summarize a long article, get background on a developing situation, or fact-check a claim. Pick your preferred AI model and keep the conversation going with follow-ups. The Ask AI sheet matches your current theme and slides up as a bottom sheet, consistent with the share and trainer dialogs.</p>
-
-<p><img src="/assets/android-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="discover-related-sites">Discover related sites</h3>
-
-<p>Discover Related Sites lets you find new feeds related to any feed you’re already subscribed to. Tap the Discover button in the story list header bar, browse what’s available, and preview a feed before subscribing. Duplicate feeds are filtered out so you only see new options.</p>
-
-<p><img src="/assets/android-14-discover.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="daily-briefing">Daily Briefing</h3>
-
-<p>The Daily Briefing generates a personalized summary of your news, organized into sections like Top Stories, Based on Your Interests, and Long Reads. It uses native Android story rows, so it feels like a regular feed rather than a bolted-on feature. Configure your briefing frequency, writing style, and sections from the briefing view in your sidebar.</p>
-
-<p><img src="/assets/android-14-daily-briefing.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="sepia-theme-and-refined-dark-themes">Sepia theme and refined dark themes</h3>
-
-<p>A new Sepia theme brings warmer tones for comfortable long reading sessions. The Dark theme has been lightened to match the iOS gray/medium palette, and the Black theme now uses true absolute black backgrounds for feed and story cells, making it ideal for OLED screens.</p>
-
-<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
-<img src="/assets/android-14-sepia.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/android-14-dark.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/android-14-black.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-</div>
-
-<h3 id="story-list-header-bar">Story list header bar</h3>
-
-<p>The top of the story list now has a header bar with quick access to Discover, search, display options, and settings. The display and settings controls are split into separate menus so you can change the view without wading through unrelated options.</p>
-
-<p><img src="/assets/android-14-header-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="redesigned-reading-experience">Redesigned reading experience</h3>
-
-<p>The reading view has been rethought from top to bottom. Story traversal buttons are lifted above the bottom edge for easier thumb access. A new traverse bar with refined icons shows your position and unread count. Story actions are hidden until the story finishes rendering, so you never tap a button before the content is ready. Opening a story from the list now animates smoothly into the reader, and swiping back uses an interactive gesture that tracks your finger.</p>
-
-<p><img src="/assets/android-14-reader.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="redesigned-preferences-and-menus">Redesigned preferences and menus</h3>
-
-<p>Preferences have been rebuilt as a modern settings screen with inline segments instead of separate dialog pickers. The feed list menu, reading menu, and folder menus have all been redesigned with cleaner styling and better organization. Menus now scale with your device font size, so they stay readable at any accessibility setting.</p>
-
-<p><img src="/assets/android-14-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="premium-archive-and-pro-subscriptions">Premium Archive and Pro subscriptions</h3>
-
-<p>You can now subscribe to Premium Archive and Premium Pro directly from the Android app. An upgrade banner appears in the story list when you’re on a lower tier, showing what you’d unlock by upgrading.</p>
-
-<h3 id="everything-else">Everything else</h3>
-
-<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
-
-<h4 id="improvements">Improvements</h4>
-
-<ul>
-  <li>Interactive swipe-back gesture in both the story list and reading view with predictive back support on Android 14+.</li>
-  <li>Feed list aligned with iOS styling, with new collapse-all and expand-all toggles.</li>
-  <li>Story header pills with compact layout and title case formatting.</li>
-  <li>Active reading time tracking per story, synced to your account.</li>
-  <li>Full text and regex classifiers for the Intelligence Trainer.</li>
-  <li>Feed search field themed to match your current theme with autofill disabled.</li>
-  <li>Sync done pill delayed until feeds actually render, so you see the update happen.</li>
-  <li>Story thumbnails enlarged for small sizes and cropping fixed.</li>
-  <li>Status banners at the top of the story list for loading and error states.</li>
-  <li>Mute Sites redesigned with upgrade card and progress bar.</li>
-  <li>Custom folder and feed icon support.</li>
-</ul>
-
-<h4 id="fixes">Fixes</h4>
-
-<ul>
-  <li>Fixed TransactionTooLargeException crash in the reading pager.</li>
-  <li>Fixed database version mismatch crash on launch.</li>
-  <li>Fixed ItemListMenuPopup crash on small and split-screen displays.</li>
-  <li>Fixed login autofill and app switching losing input.</li>
-  <li>Fixed story row thumbnail cropping.</li>
-  <li>Fixed search pill text vanishing.</li>
-  <li>Fixed story list edge back gesture interference.</li>
-  <li>Brightened story feed titles for better readability.</li>
-</ul>
-
-<p>Coming up next: v14.2 will bring story clustering to Android, so duplicate stories across your feeds get grouped together automatically, just like on the web.</p>
-
-<p>NewsBlur v14 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="android" /><summary type="html"><![CDATA[A few weeks ago I shipped NewsBlur v14 for iOS and Mac, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/android-14-ask-ai.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/android-14-ask-ai.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hide what you hate, track what you love: super dislikes and per-classifier notifications</title><link href="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/" rel="alternate" type="text/html" title="Hide what you hate, track what you love: super dislikes and per-classifier notifications" /><published>2026-03-27T00:00:00-04:00</published><updated>2026-03-27T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications</id><content type="html" xml:base="https://blog.newsblur.com/2026/03/27/super-dislikes-and-classifier-notifications/"><![CDATA[<p>NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.</p>
-
-<p>Today I’m shipping two features that give the Intelligence Trainer more teeth: super dislikes that override any number of likes, and per-classifier notifications that ping you only when specific classifiers match.</p>
-
-<p>Super dislikes are available to all users – free, Premium, Premium Archive, and Premium Pro. Folder and global scoping requires Premium Archive. Per-classifier notifications are exclusive to Premium Archive and Premium Pro subscribers.</p>
-
-<h3 id="super-dislikes">Super dislikes</h3>
-
-<p>A super dislike is a new third state for classifiers. The regular thumbs down hides a story unless a thumbs up overrides it. The super dislike – shown as a double thumbs-down icon – overrides everything. If a story matches a super-disliked classifier, it’s hidden no matter how many positive classifiers it also matches.</p>
-
-<!-- SCREENSHOT: Intelligence Trainer showing classifier pills with the regular thumbs-up, thumbs-down, and the new double-thumbs-down super dislike icon -->
-<p><img src="/assets/super-dislike-trainer.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The priority order is now: natural language prompt classifiers &gt; super dislike &gt; thumbs up &gt; thumbs down &gt; feed score. This means super dislikes are the strongest manual signal you can set, second only to natural language classifiers.</p>
-
-<h4 id="how-to-use-it">How to use it</h4>
-
-<p>In the Intelligence Trainer, every classifier pill now has three clickable icons on the right side: thumbs up, thumbs down, and the double thumbs-down for super dislike. Click the double thumbs-down to super-dislike a classifier. Click it again to remove the super dislike.</p>
-
-<p>An explainer banner at the top of the trainer shows the priority chain so you always know how scoring works:</p>
-
-<ul>
-  <li><strong>Thumbs up</strong> beats any number of thumbs down</li>
-  <li><strong>Super thumbs down</strong> beats any number of thumbs up</li>
-</ul>
-
-<!-- SCREENSHOT: Explainer banner at top of trainer showing the priority chain with icons -->
-<p><img src="/assets/super-dislike-explainer.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h4 id="visual-highlighting">Visual highlighting</h4>
-
-<p>Super-disliked classifiers are highlighted in a deeper crimson color, distinct from the regular red of a normal dislike. When you’re reading stories, you’ll see the same color treatment on matched titles, authors, tags, and text, with a small double thumbs-down icon inline so you can tell at a glance why a story was scored the way it was.</p>
-
-<!-- SCREENSHOT: Story detail view showing a super-disliked title or tag highlighted in deep crimson with the double thumbs-down icon -->
-<p><img src="/assets/super-dislike-highlight.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h4 id="works-with-scopes">Works with scopes</h4>
-
-<p>Super dislikes work with all scope levels. Set a global super dislike on a topic like “sponsored” and it’s hidden across every feed. Set a folder-scoped super dislike on an author and they’re hidden in that folder regardless of positive training elsewhere. The same scoping rules from regular classifiers apply.</p>
-
-<h3 id="per-classifier-notifications">Per-classifier notifications</h3>
-
-<p>NewsBlur’s notifications have always been per-feed: turn them on and you get pinged on every new story. That’s fine for low-volume feeds, but not great for a high-volume feed where you only care about specific topics or authors. You end up choosing between too many notifications or none at all.</p>
-
-<p>Now you can set notifications on individual classifiers. Every classifier pill in the Intelligence Trainer has a small bell icon. Hover over it and a popover appears with four channel toggles: Email, Web, iOS, and Android. Choose any combination, and when a new story matches that specific classifier, you get notified. Everything else in the feed stays quiet.</p>
-
-<!-- SCREENSHOT: Classifier pill with bell icon and notification popover showing Email/Web/iOS/Android toggles -->
-<p><img src="/assets/classifier-notification-popover.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The bell icon lights up on classifiers with active notifications, so you can see at a glance which ones will ping you.</p>
-
-<h4 id="works-with-scopes-and-regex">Works with scopes and regex</h4>
-
-<p>Classifier notifications respect the scope system. A notification on a global “breaking news” classifier fires when any feed publishes a matching story. A notification on a folder-scoped “earnings” classifier fires only for feeds in that folder.</p>
-
-<p>Regex classifiers work too. If you have a regex title or text classifier, the notification evaluates the pattern with timeout protection on every new story.</p>
-
-<h4 id="smart-deduplication">Smart deduplication</h4>
-
-<p>If a story already triggered a feed-level notification on a channel, the classifier notification won’t duplicate it. Each story is sent once per channel, regardless of how many classifiers or feed rules it matches. There’s also a cap of 3 stories per classifier per update cycle, so a burst of matching stories won’t flood you.</p>
-
-<h4 id="real-world-examples">Real-world examples</h4>
-
-<p><strong>Breaking news alerts.</strong> Train “breaking” as a global title classifier, set it to notify via iOS and Email. You get a push notification whenever any feed publishes a story with “breaking” in the title.</p>
-
-<p><strong>Author tracking.</strong> Follow a journalist across multiple outlets. Train their name as a global author classifier with notifications, and you’ll know the moment they publish regardless of which feed it’s in.</p>
-
-<p><strong>Keyword monitoring.</strong> Use a regex classifier for a product name or company, scoped to your industry folder. Get an email when a matching story appears, without turning on notifications for every feed in that folder.</p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Super dislikes are available now on the web for all NewsBlur users. Per-classifier notifications are available on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers – all users can see the bell icon and popover, but toggling channels requires an Archive or Pro subscription.</p>
-
-<p>If you have feedback or ideas for how to make these features better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you absolutely never want to see, and a regular thumbs down isn’t enough because a single thumbs up from another classifier overrides it.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/super-dislike-trainer.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/super-dislike-trainer.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping three new ways to interact with your NewsBlur: a command-line tool that puts your entire NewsBlur in your terminal, an AI skill that teaches your agent every CLI command without eating your context window, and an MCP server that connects any MCP-compatible agent directly to your account.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mcp-cli.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mcp-cli.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

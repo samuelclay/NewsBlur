@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-09-15T11:03:20-04:00</updated>
+  <updated>2026-09-24T00:18:12-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,267 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur v15 for iOS and Mac: Faster story lists, Add + Discover Sites, glass toolbars, and a new image viewer</title>
+    <link href="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-ios-and-mac/" rel="alternate" type="text/html" title="NewsBlur v15 for iOS and Mac: Faster story lists, Add + Discover Sites, glass toolbars, and a new image viewer" />
+    <published>2026-09-23T00:00:00-04:00</published>
+    <updated>2026-09-23T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/09/23/newsblur-v15-for-ios-and-mac</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-ios-and-mac/">
+      <![CDATA[<p>I use NewsBlur on my iPhone and iPad all day, and the story list had gotten slower than I wanted. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles would flash blank for a moment before appearing. So I spent this release measuring every part of the story list and reader, then fixing what the numbers pointed at.</p>
+
+<p>On top of that, v15 brings the full Add + Discover Sites experience to iPhone, iPad, and Mac, along with a glass story list toolbar, a new image viewer, native context menus, and offline storage that finally cleans up after itself.</p>
+
+<p>Here’s what’s new.</p>
+
+<h3 id="faster-story-lists-and-smoother-scrolling">Faster story lists and smoother scrolling</h3>
+
+<p>Most of the slowness came from work happening at the wrong time or happening more often than it needed to:</p>
+
+<ul>
+  <li>Loading the next page of a folder reloaded the entire story list. New stories are now appended in place.</li>
+  <li>Feeds tucked inside collapsed folders were still building rows and loading favicons. They’re skipped now.</li>
+  <li>Favicons, thumbnails, and story text were being read and measured on the main thread while you scrolled. That work now happens in the background, ahead of time.</li>
+  <li>Opening a feed waited on the server before showing anything. Now the first page appears immediately from cache, and fresh stories merge in as they arrive.</li>
+  <li>Articles used to slide in blank and then fill in. Now the reader appears right away, and the article fades in fully laid out.</li>
+</ul>
+
+<p>The measurements:</p>
+
+<ul>
+  <li>Opening All Site Stories went from 1,148ms to 208ms.</li>
+  <li>Opening a single feed went from 671ms to 233ms.</li>
+  <li>Loading another page into a list of 5,000 stories went from 722ms to 22ms.</li>
+  <li>Stalls during the first fast scroll through the feed list after launch dropped by 86%.</li>
+</ul>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-scroll.mp4" type="video/mp4" />
+</video>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>Add + Discover Sites now sits at the top of your feed list. The + button in the bottom toolbar opens a Quick Add sheet where you can paste a URL or search for a site, pick a folder, and add it, with shortcuts below into every discovery source.</p>
+
+<p>The discovery screen itself covers Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News, and you can swipe between them like pages. Each source has categories to browse and a Grid or List view. List view shows the latest few stories from each site with an image and a short excerpt, so you know what you’re getting before you subscribe. Every card also shows how recently the site published, and there’s a folder picker right next to each Add button that remembers the last folder you chose.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-discover.mp4" type="video/mp4" />
+</video>
+
+<p>If you’ve used <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites on the web</a>, this is the same catalog, rebuilt natively for iOS.</p>
+
+<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
+
+<p>Tap Try on any site to preview its stories without subscribing. A banner at the top lets you subscribe once you’ve decided. If the feed hasn’t been fetched in a while, the preview fetches fresh stories automatically. Tapping a story in a discovery card opens that exact story, and when you come back, Discover returns you to the same spot in the list with that story highlighted.</p>
+
+<p>On iPad, Try keeps all three columns in place, so you can browse a new site’s stories and read them side by side.</p>
+
+<h3 id="related-sites">Related Sites</h3>
+
+<p>The Related Sites button in the story list toolbar now uses the same cards as discovery, with story excerpts, freshness, and Try, folder, and Add buttons. Tapping one of its stories closes Related Sites and opens that exact article.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-related.mp4" type="video/mp4" />
+</video>
+
+<h3 id="a-glass-story-list-toolbar">A glass story list toolbar</h3>
+
+<p>The story list toolbar is now a floating glass footer on both iPhone and iPad. Your stories scroll right behind it. Related Sites, the story order menu, and search sit on the left, with Add and Mark as read on the right. When there’s room, the two groups separate and search gets its label back. If you’d rather keep the toolbar at the top, change Story list toolbar position under Story Layout in Preferences.</p>
+
+<p><img src="/assets/ios-15-story-list.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-new-image-viewer">A new image viewer</h3>
+
+<p>Tap any image in an article and it opens in a full screen viewer, animating out from its spot in the story. Pinch or double tap to zoom, drag to pan, and tap or swipe in any direction to go back to the story. The menu in the corner has Save Image, Copy Image, Share Image, and Open Image in Browser. On iPad, the viewer covers all three columns, and your reading position is right where you left it when you close it.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-reader.mp4" type="video/mp4" />
+</video>
+
+<h3 id="native-context-menus">Native context menus</h3>
+
+<p>Long press any feed, folder, or story for a native context menu. Story menus include Mark as read, Mark newer as read, Mark older as read, Save, sharing, Share on NewsBlur, Train intelligence, and Ask AI. Mark newer and Mark older now include the story you pressed and update your unread counts right away, including in collapsed folders. Settings and reader menus got the same treatment, with grouped actions, grayscale icons, and inline appearance controls.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/ios-15-menu.mp4" type="video/mp4" />
+</video>
+
+<h3 id="offline-storage-that-cleans-up-after-itself">Offline storage that cleans up after itself</h3>
+
+<p>A reader on the forum found NewsBlur using 4.2 GB on their iPhone with no unread stories. Digging in turned up three bugs in the offline cache. Automatic cleanup skipped pruning whenever you had fewer unread stories than your storage limit, which is exactly the case when you’re all caught up. It also never cleared cached article text because it was pointed at the wrong table, and it compacted the database before deleting anything, so no space came back.</p>
+
+<p>Automatic cleanup now keeps storage within your Stories to store limit, giving unread stories priority and filling the remaining space with recent read stories. Delete offline stories under Offline Stories in Preferences clears cached stories, article text, and images and actually reclaims the space. In testing, it shrank an 8.5 MB database down to 115 KB. Your subscriptions and any pending read or saved changes are preserved.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes across iPhone, iPad, and Mac.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>The Mac app gets the new discovery screen, Related Sites cards, image viewer, menus, and offline cleanup.</li>
+  <li>Explicitly selecting the same feed or folder again clears the old story and loads fresh titles, opening the first story if you have that preference on.</li>
+  <li>In phone landscape, Related Sites opens as a popover you can close by tapping outside.</li>
+  <li>Compact phone landscape headers no longer waste space under the status bar.</li>
+  <li>At the largest accessibility text sizes, discovery keeps the search field usable.</li>
+  <li>Trained URLs are easier to read in the gray theme.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed tapping a notification sometimes getting stuck instead of opening the story.</li>
+  <li>Fixed reading positions not being restored correctly.</li>
+  <li>Fixed the trainer and other dialogs disappearing while the reader was still loading.</li>
+  <li>Fixed unread counts going stale after Mark newer or older as read, including while offline.</li>
+  <li>Fixed a number of story selection and theme issues.</li>
+</ul>
+
+<p>NewsBlur v15 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The same performance and discovery work also shipped in <a href="/2026/09/23/newsblur-v15-for-android/">NewsBlur v15 for Android</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[I use NewsBlur on my iPhone and iPad all day, and the story list had gotten slower than I wanted. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles would flash blank for a moment before appearing. So I...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer</title>
+    <link href="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/" rel="alternate" type="text/html" title="NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer" />
+    <published>2026-09-23T00:00:00-04:00</published>
+    <updated>2026-09-23T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/">
+      <![CDATA[<p>I read NewsBlur on my Android phone every day, and for a while now it hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.</p>
+
+<p>With that foundation in place, v15 also brings the Add + Discover Sites experience from the web to Android, along with floating toolbars, full bleed images with a new image viewer, and gestures you can configure.</p>
+
+<p>Here’s what’s new.</p>
+
+<h3 id="smoother-scrolling-and-faster-story-opens">Smoother scrolling and faster story opens</h3>
+
+<p>Most of the slowness came from the app doing far more work than it needed to:</p>
+
+<ul>
+  <li>Marking a story read used to rebuild its entire row, parsing the title again and reloading the thumbnail. Now only the read styling changes, with a short fade.</li>
+  <li>Background syncs could overlap, with a canceled sync still doing network work while its replacement started. Syncs now run one at a time.</li>
+  <li>The feed list waited for the sync service before showing anything. It now loads straight from the local cache, so your feeds show up right away and work fully offline.</li>
+  <li>The reader waited for the article to finish rendering before appearing. Now it slides in immediately with the title, and the article fades in a moment later.</li>
+</ul>
+
+<p>The difference is easy to feel, and it shows up in the measurements too:</p>
+
+<ul>
+  <li>Janky frames while scrolling the feed list dropped from 32% to 15%.</li>
+  <li>Janky frames while scrolling the story list dropped from 14% to 7%.</li>
+  <li>The worst stall while scrolling a long article went from 152ms to 88ms.</li>
+  <li>Opening a story you’ve opened before went from 889ms to 189ms.</li>
+</ul>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-scroll.mp4" type="video/mp4" />
+</video>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>The + button in the feed list now opens a compact Add Site sheet. Paste a URL or search for a site, pick a folder, and add it. Below that are eight shortcuts into discovery: Web Feed, Popular, Trending, YouTube, Reddit, Newsletters, Podcasts, and Google News.</p>
+
+<p>Each shortcut opens the full Add + Discover Sites screen, the same one I launched <a href="/2026/03/04/add-and-discover-sites/">on the web</a> earlier this year. Browse by category, search within a source, and add a site straight into the folder you want. Folder pickers remember the last folder you chose. Web Feed turns any website into a feed, and Google News has 47 categories across eight topics.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-discover.mp4" type="video/mp4" />
+</video>
+
+<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
+
+<p>Every site has a Try button that opens a preview of its stories without subscribing. If a feed hasn’t been fetched in a while, the preview fetches fresh stories automatically and shows you its progress. Tap a story in a discovery card and it opens that exact story in the preview, with the rest of the site’s stories loaded behind it.</p>
+
+<h3 id="related-sites-with-story-previews">Related Sites with story previews</h3>
+
+<p>Related Sites got the same rich cards. Tap the Related Sites button on the left side of the story list toolbar, or pick it from the feed menu, and you’ll see similar sites along with their latest stories, images, and excerpts. Each card has Try, a folder picker, and Add. Related Sites and Add + Discover share your Grid or List choice, so switching in one switches both.</p>
+
+<p><img src="/assets/android-15-related-sites.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="floating-toolbars">Floating toolbars</h3>
+
+<p>The story list controls now float at the bottom of the screen, so stories scroll right behind them and you get more room to read. If you’d rather have them at the top, there’s a Story list toolbar position setting under Story Layout in Preferences. The feed list has a single floating capsule too, with Add on the left, the All, Unread, Focus, and Saved filter in the middle, and settings on the right.</p>
+
+<p>In the reader, the toolbar hides as you scroll down and comes back the moment you scroll up.</p>
+
+<p><img src="/assets/android-15-story-list.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="full-bleed-images-and-a-new-image-viewer">Full bleed images and a new image viewer</h3>
+
+<p>Wide article images now run edge to edge, in both portrait and landscape. Tap any image to open it full screen. Double tap to zoom in, pinch to zoom further, drag to pan around, and swipe in any direction to dismiss it and go right back to the article.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-reader.mp4" type="video/mp4" />
+</video>
+
+<h3 id="gestures-your-way">Gestures, your way</h3>
+
+<p>There’s a new Gestures section in Preferences. Choose what swiping left and right does on feeds and on stories, what a long press does (saving a story is a new option), and what double tap and two finger double tap do while reading a story. Rows now follow your finger as you swipe and show an icon for the action you’re about to trigger. Swiping from the left edge of the story list always takes you back to your feeds, even if you turn story swipes off.</p>
+
+<p><img src="/assets/android-15-gestures.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="menus-that-stay-out-of-the-way">Menus that stay out of the way</h3>
+
+<p>Menus now fade in and grow out of the button you tapped. Long press a feed or a story and you get a grouped menu with icons, including Mark newer as read and Mark older as read. Font size, list density, and theme are right in the settings menu, so changing them doesn’t mean digging through Preferences.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/android-15-story-menu.png" style="width: 45%;" />
+<img src="/assets/android-15-appearance-menu.png" style="width: 45%;" />
+</div>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>Nested folders show up as an indented tree, and folder pickers can choose subfolders and create new folders inside them.</li>
+  <li>A single Mark stories read setting covers on scroll or selection, on selection only, after a delay of 1 to 60 seconds, or manually.</li>
+  <li>Matching stories from other sites are marked read along with the story they match, following your web preference.</li>
+  <li>The story you tapped stays highlighted while the reader opens. When you go back, the list scrolls to the last story you read and fades its highlight.</li>
+  <li>Next and Previous prepare the next story before it animates in, so you never see a blank page.</li>
+  <li>Story rows use Whitney to match iOS, and long headlines wrap in balanced lines.</li>
+  <li>Folders animate smoothly as they expand and collapse.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed the next folder search looping forever when nothing was unread.</li>
+  <li>Fixed the Previous button sometimes being disabled.</li>
+  <li>Fixed dark bands appearing during folder animations.</li>
+  <li>Fixed an older bulk mark read overriding stories you had since marked unread.</li>
+  <li>Fixed folders with similar names colliding during a database upgrade.</li>
+</ul>
+
+<p>NewsBlur v15 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. The same performance and discovery work also shipped in <a href="/2026/09/23/newsblur-v15-for-ios-and-mac/">NewsBlur v15 for iOS and Mac</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[I read NewsBlur on my Android phone every day, and for a while now it hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Matching Stories: see every story behind a tag, author, or classifier</title>
@@ -1924,92 +2185,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Custom icons for folders and feeds</title>
-    <link href="https://blog.newsblur.com/2026/01/07/custom-icons/" rel="alternate" type="text/html" title="Custom icons for folders and feeds" />
-    <published>2026-01-07T00:00:00-05:00</published>
-    <updated>2026-01-07T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/01/07/custom-icons</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/01/07/custom-icons/">
-      <![CDATA[<p>I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance, especially the ones I check most often.</p>
-
-<p>That’s why I built custom icons for both folders and feeds. You can now personalize any folder or feed with an emoji, a preset icon in any color, or even upload your own image.</p>
-
-<p><img src="/assets/custom-icons-folder-list.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Right-click on any folder or feed in your feed list and select “Folder settings” or “Site settings”. You’ll see a new “Folder Icon” or “Feed Icon” tab where you can customize the icon.</p>
-
-<p><img src="/assets/custom-icons-colors.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>There are three ways to set a custom icon:</p>
-
-<p><strong>Preset icons</strong>: Pick from over 240 icons (a mix of outline and filled styles) and colorize them with any of 84 colors organized by hue. Want a red heart for your favorites folder? A blue code bracket for programming feeds? It’s all there.</p>
-
-<p><img src="/assets/custom-icons-preset.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" />
-<img src="/assets/custom-icons-preset2.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Emoji</strong>: Choose from 180 emojis organized by category. A basketball for sports feeds, a fork and knife for cooking, a newspaper for news—you get the idea.</p>
-
-<p><img src="/assets/custom-icons-emoji.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Upload your own</strong>: Have a specific image in mind? Upload any image and it will be automatically resized to fit perfectly in your feed list.</p>
-
-<p><img src="/assets/custom-icons-upload.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="great-for-feeds-without-icons">Great for feeds without icons</h3>
-
-<p>Many feeds don’t have favicons, or they have generic RSS icons that all look the same. Custom feed icons let you give these feeds distinctive icons so you can spot them instantly. I’ve been using this to add icons to older blogs and newsletters that never bothered setting up a proper favicon.</p>
-
-<p>Custom icons are available now on the web for all NewsBlur users. Folders and feeds both support the same icon options of emoji, preset icons with colors, or uploaded images.</p>
-
-<p>If you have feedback or ideas for additional icon options, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance,...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Auto-enable captions on YouTube videos</title>
-    <link href="https://blog.newsblur.com/2025/12/22/youtube-captions/" rel="alternate" type="text/html" title="Auto-enable captions on YouTube videos" />
-    <published>2025-12-22T00:00:00-05:00</published>
-    <updated>2025-12-22T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2025/12/22/youtube-captions</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2025/12/22/youtube-captions/">
-      <![CDATA[<p>You can now automatically enable captions on YouTube videos embedded in your feeds. Head to Preferences &gt; Stories and check the new “YouTube Captions” option.</p>
-
-<p><img src="/assets/youtube-captions-preference.png" style="border: 1px solid rgba(0,0,0,0.1);" /></p>
-
-<p>When enabled, any YouTube video in any story will automatically show captions when you start playing it (assuming the video has captions available). This is great for watching videos in noisy environments, for accessibility, or for following along in a language you’re learning.</p>
-
-<p><img src="/assets/youtube-captions-video.png" style="border: 1px solid rgba(0,0,0,0.1);" /></p>
-
-<p>This works by adding the <code class="language-plaintext highlighter-rouge">cc_load_policy=1</code> parameter to YouTube embed URLs on-the-fly, so it applies to all your feeds without modifying the original content. The preference is off by default, so existing behavior is unchanged unless you opt in.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[You can now automatically enable captions on YouTube videos embedded in your feeds. Head to Preferences &gt; Stories and check the new “YouTube Captions” option.
 ]]>
     </summary>
     
