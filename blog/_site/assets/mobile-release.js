@@ -6,7 +6,7 @@
         var button = document.createElement('button');
         button.type = 'button';
         button.className = 'mobile-release-phone__play';
-        caption.insertBefore(button, caption.querySelector('a'));
+        caption.insertBefore(button, caption.querySelector('.mobile-release-phone__download'));
         var manually_paused = false;
         var manually_played = false;
         var visible = false;
