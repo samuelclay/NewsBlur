@@ -13,5 +13,5 @@
       {% endif %}
     </div>
   </div>
-  <figcaption>{{ include.caption }}{% if include.video %}<br><button class="mobile-release-phone__play" type="button" hidden>Play animation</button> <a class="mobile-release-phone__download" href="{{ include.video | relative_url }}">Open video</a>{% endif %}</figcaption>
+  <figcaption>{{ include.caption }}{% if include.video %}<br><a class="mobile-release-phone__download" href="{{ include.video | relative_url }}">Open video</a>{% endif %}</figcaption>
 </figure>
