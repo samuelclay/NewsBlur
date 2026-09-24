@@ -19,9 +19,10 @@
 #                merge from main or a rebase). The workflow does not run the bot.
 #
 # How the previously reviewed head is found:
-#   codex   Reviews posted by codex-pr-review.yml carry
-#           `<!-- codex-pr-review head=<sha> -->`; older reviews fall back to the
-#           review's commit_id.
+#   codex   The first review posted by codex-pr-review.yml carries
+#           `<!-- codex-pr-review head=<sha> -->`, and each later review rewrites that
+#           marker to its own head instead of posting a new summary. Reviews from
+#           before the marker existed fall back to the review's commit_id.
 #   claude  Claude posts its own comments, so there is no marker to trust. The head
 #           of the most recent successful claude-pr-review.yml run for this PR is the
 #           last head Claude finished reviewing. Cancelled runs (superseded by a newer
@@ -151,6 +152,13 @@ EOF
     scope_line="Skipped the $reviewer_name review: $reason."
     ;;
 esac
+
+# codex-pr-review.yml posts the summary only on a PR's first Codex review, so a later
+# review has to carry every finding as an inline comment or it is never seen.
+if [ "$REVIEWER" = "codex" ] && [ -n "$previous_head" ] && [ "$mode" != "skip" ]; then
+  instructions="$instructions
+- This PR already has a Codex summary review, so the \`summary\` from this run is not posted. Put every finding in \`inline_comments\`, anchored to a changed line. A finding that appears only in \`summary\` is lost."
+fi
 
 {
   echo "mode=$mode"
