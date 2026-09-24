@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-09-23T20:12:54-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-09-23T21:47:54-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
 </subtitle><entry><title type="html">NewsBlur 15 for iOS: smoother reading, floating toolbars, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/09/23/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS: smoother reading, floating toolbars, and Add + Discover Sites" /><published>2026-09-23T00:00:00-04:00</published><updated>2026-09-23T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/09/23/newsblur-15-for-ios</id><content type="html" xml:base="https://blog.newsblur.com/2026/09/23/newsblur-15-for-ios/"><![CDATA[<p>Scrolling through your news should feel effortless. So should opening a story, going back to the list, and picking up where you left off. NewsBlur 15 for iOS puts a lot of work into those small, repeated motions: faster story lists, smoother scrolling, more reliable reading positions, and controls that are easier to reach.</p>
 
@@ -20,7 +20,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/iphone-17-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Scroll through stories, open an article, and return to your place.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/ios-15-reader.mp4">Open video</a></figcaption>
 </figure>
@@ -39,7 +38,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/iphone-17-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>The controls move out of the way as you read and return when you scroll back.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/ios-15-article-scroll.mp4">Open video</a></figcaption>
 </figure>
@@ -60,7 +58,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/iphone-17-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Open an image, then swipe back to the article.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/ios-15-image-viewer.mp4">Open video</a></figcaption>
 </figure>
@@ -79,7 +76,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/iphone-17-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Quick Add is also a starting point for discovery.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/ios-15-add-site.mp4">Open video</a></figcaption>
 </figure>
@@ -98,7 +94,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/iphone-17-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Read a story, then pick up where you left off in discovery.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/ios-15-discover.mp4">Open video</a></figcaption>
 </figure>
@@ -131,7 +126,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/galaxy-s22-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Scroll through stories, open an article, and return to your place.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/android-15-reader.mp4">Open video</a></figcaption>
 </figure>
@@ -148,7 +142,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/galaxy-s22-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>The controls move out of the way as you read and return when you scroll back.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/android-15-article-scroll.mp4">Open video</a></figcaption>
 </figure>
@@ -167,7 +160,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/galaxy-s22-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Open an image, double tap to zoom, and swipe back to your article.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/android-15-image-viewer.mp4">Open video</a></figcaption>
 </figure>
@@ -186,7 +178,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/galaxy-s22-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Open Quick Add and jump into discovery.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/android-15-add-site.mp4">Open video</a></figcaption>
 </figure>
@@ -205,7 +196,6 @@ A new sound of an old instrument.
       </video>
       
     </div>
-    <img class="mobile-release-phone__frame" src="/assets/galaxy-s22-frame.png" alt="" aria-hidden="true" width="388" height="800" />
   </div>
   <figcaption>Open a story preview, then return to discovery where you left off.<br /><button class="mobile-release-phone__play" type="button" hidden="">Play animation</button> <a class="mobile-release-phone__download" href="/assets/android-15-discover.mp4">Open video</a></figcaption>
 </figure>

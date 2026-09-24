@@ -12,7 +12,6 @@
       <img src="{{ include.image | relative_url }}" alt="{{ include.alt | escape }}" loading="lazy">
       {% endif %}
     </div>
-    <img class="mobile-release-phone__frame" src="{{ '/assets/' | append: phone | append: '-frame.png' | relative_url }}" alt="" aria-hidden="true" width="388" height="800">
   </div>
   <figcaption>{{ include.caption }}{% if include.video %}<br><button class="mobile-release-phone__play" type="button" hidden>Play animation</button> <a class="mobile-release-phone__download" href="{{ include.video | relative_url }}">Open video</a>{% endif %}</figcaption>
 </figure>
