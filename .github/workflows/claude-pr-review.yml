@@ -14,6 +14,9 @@ name: Claude PR Review
 # Runs on the Claude Max subscription through CLAUDE_CODE_OAUTH_TOKEN (generated with
 # `claude setup-token`), not the API key, so reviews draw from the plan's usage limits
 # instead of the API bill.
+#
+# Claude posts at most one top-level summary per PR; later pushes get inline comments
+# only, matching .github/workflows/codex-pr-review.yml.
 on:
   pull_request:
     types: [opened, reopened, ready_for_review, synchronize]
@@ -124,7 +127,8 @@ jobs:
             Output requirements:
             - Leave inline comments for concrete issues.
             - Do not repeat already-reported inline issues unless the code changed or there is new evidence.
-            - Provide a final summary grouped by severity: Critical, High, Medium, Low.
+            - Post at most one top-level comment per PR. Before posting one, run `gh pr view ${{ github.event.pull_request.number }} --comments`; if Claude already posted a review summary there, do not post another top-level comment. Leave inline comments only, and post nothing when there are no new findings.
+            - Provide a final summary grouped by severity: Critical, High, Medium, Low. When a top-level comment is not allowed, keep the summary in your final response only.
             - Start the summary with this line, verbatim: ${{ steps.scope.outputs.scope_line }}
             - For each Critical/High issue include why it matters (user impact) and a specific fix suggestion.
             - If no major risks are found, explicitly state why this PR is low risk.

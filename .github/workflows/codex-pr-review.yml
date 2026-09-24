@@ -10,6 +10,10 @@ name: Codex PR Review
 # previous Codex review covered (stamped into the review marker) and hands Codex only
 # the changes since then, so a 100-commit PR is not re-read in full on each push. A
 # `codex-full-review` label on the PR forces a full review.
+#
+# Only the first review posts a top-level summary. Later pushes add inline comments
+# only, or nothing when Codex finds nothing, and move the head marker in that first
+# summary forward instead of posting a new one.
 on:
   pull_request:
     types: [opened, reopened, ready_for_review, synchronize]
@@ -235,35 +239,75 @@ jobs:
               return lines;
             }
 
-            // The marker records which head this review covered so the next run of
-            // pr-review-scope.sh can review only the commits pushed after it.
             const headSha = process.env.PR_HEAD_SHA;
-            const marker = `<!-- codex-pr-review head=${headSha} -->`;
             const scopeLine = (process.env.REVIEW_SCOPE || '').trim();
             const header = [
-              marker,
               '**Codex review: GPT-6 Astra, Medium thinking**',
               ...(scopeLine ? [scopeLine] : []),
             ];
 
-            let review;
-            try {
-              review = parseCodexOutput(process.env.CODEX_FINAL_MESSAGE);
-            } catch (error) {
-              await github.rest.pulls.createReview({
+            // Only the first Codex review of a PR posts a top-level summary, so the PR is not
+            // buried under a new summary on every push. That summary carries the marker that
+            // .github/scripts/pr-review-scope.sh reads to find the last reviewed head, and
+            // every later review moves the marker forward to its own head.
+            const markerPattern = /<!-- codex-pr-review(?: head=[0-9a-f]{40})? -->/;
+            const marker = `<!-- codex-pr-review head=${headSha} -->`;
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            const summaryReviews = reviews.filter(
+              (item) => item.user?.login === 'github-actions[bot]' && markerPattern.test(item.body || '')
+            );
+            const summaryReview = summaryReviews[summaryReviews.length - 1];
+
+            async function postReview(bodyLines, comments) {
+              const reviewRequest = {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: context.payload.pull_request.number,
                 commit_id: headSha,
                 event: 'COMMENT',
-                body: [
-                  ...header,
-                  '',
-                  'Codex returned output that could not be parsed as structured review JSON, so posting the raw review output.',
-                  '',
-                  process.env.CODEX_FINAL_MESSAGE,
-                ].join('\n'),
+                body: bodyLines.join('\n'),
+              };
+
+              if (comments.length > 0) {
+                reviewRequest.comments = comments;
+              }
+
+              await github.rest.pulls.createReview(reviewRequest);
+            }
+
+            async function advanceMarker() {
+              await github.rest.pulls.updateReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                review_id: summaryReview.id,
+                body: summaryReview.body.replace(markerPattern, marker),
               });
+            }
+
+            let review;
+            try {
+              review = parseCodexOutput(process.env.CODEX_FINAL_MESSAGE);
+            } catch (error) {
+              // Raw output is posted even after the first review: its findings have no other way onto the PR.
+              const rawBody = [
+                ...header,
+                '',
+                'Codex returned output that could not be parsed as structured review JSON, so posting the raw review output.',
+                '',
+                process.env.CODEX_FINAL_MESSAGE,
+              ];
+              if (summaryReview) {
+                await postReview(rawBody, []);
+                await advanceMarker();
+              } else {
+                await postReview([marker, ...rawBody], []);
+              }
               return;
             }
 
@@ -311,31 +355,33 @@ jobs:
               });
             }
 
-            const bodyParts = [
-              ...header,
-              '',
-              String(review.summary || '').trim() || 'Codex completed the review without a summary.',
-            ];
-
+            const skippedLines = [];
             if (skipped.length > 0) {
-              bodyParts.push(
+              skippedLines.push(
                 '',
                 `${skipped.length} finding(s) could not be anchored to the current PR diff and are preserved here:`,
                 ...skipped.map((item) => `- **${item.severity}** \`${item.path}:${item.line}\`: ${item.body.replace(/\s*\n\s*/g, ' ')}`)
               );
             }
 
-            const reviewRequest = {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              commit_id: headSha,
-              event: 'COMMENT',
-              body: bodyParts.join('\n'),
-            };
-
-            if (comments.length > 0) {
-              reviewRequest.comments = comments;
+            if (!summaryReview) {
+              await postReview(
+                [
+                  marker,
+                  ...header,
+                  '',
+                  String(review.summary || '').trim() || 'Codex completed the review without a summary.',
+                  ...skippedLines,
+                ],
+                comments
+              );
+              return;
             }
 
-            await github.rest.pulls.createReview(reviewRequest);
+            // A later review drops Codex's summary and posts its findings as inline comments.
+            // Findings that cannot be anchored to a diff line are the one exception: they go in
+            // the review body, because an inline comment cannot carry them.
+            if (comments.length > 0 || skipped.length > 0) {
+              await postReview(skipped.length > 0 ? [...header, ...skippedLines] : [], comments);
+            }
+            await advanceMarker();
