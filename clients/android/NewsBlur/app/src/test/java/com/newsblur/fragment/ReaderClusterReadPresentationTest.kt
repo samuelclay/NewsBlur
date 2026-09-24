@@ -120,11 +120,11 @@ class ReaderClusterReadPresentationTest {
             every { view.findViewById<ImageView>(R.id.story_cluster_feed_icon) } returns mockk(relaxed = true)
             every { view.findViewById<StoryThumbnailView>(R.id.story_cluster_preview) } returns preview
             every { view.findViewById<View>(R.id.story_cluster_bar_outer) } returns outerBar
-            every { fragment.bindClusterItemView(any(), any(), any(), any(), any()) } answers { callOriginal() }
+            every { fragment.bindClusterItemView(any(), any(), any(), any()) } answers { callOriginal() }
         }
 
         fun bind() {
-            fragment.bindClusterItemView(view, child, false, 1, {})
+            fragment.bindClusterItemView(view, child, false, {})
         }
     }
 }

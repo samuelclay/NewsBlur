@@ -1144,7 +1144,6 @@ class ReadingItemFragment :
                 clusterView = clusterView,
                 clusterStory = clusterStory,
                 showDivider = index > 0,
-                maxTitleLines = 1,
                 onClick = {
                     when (
                         val target =
@@ -1223,7 +1222,6 @@ class ReadingItemFragment :
         clusterView: View,
         clusterStory: Story.ClusterStory,
         showDivider: Boolean,
-        maxTitleLines: Int,
         onClick: () -> Unit,
     ) {
         val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(requireContext()))
@@ -1259,7 +1257,6 @@ class ReadingItemFragment :
         dateView.setTextColor(if (isRead) palette.readMetaColor else palette.metaColor)
 
         titleView.text = UIUtils.fromHtml(clusterStory.title ?: "")
-        titleView.maxLines = maxTitleLines
         titleView.setTextColor(if (isRead) palette.readTitleColor else palette.titleColor)
         StoryClusterBadgeViewBinder.bind(
             badgeView,
