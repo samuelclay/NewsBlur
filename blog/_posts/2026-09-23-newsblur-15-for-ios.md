@@ -16,13 +16,13 @@ Story lists scroll more smoothly, even with thumbnails and long titles. Returnin
 
 The story list now has a floating glass toolbar at the bottom, with search, display options, and settings within reach. Its controls fit into smaller groups when there's room, leaving the stories visible between them. Prefer your toolbar at the top? There's a Top or Bottom choice in Preferences.
 
-{% include mobile-release-phone.html image="/assets/ios-15-story-list.png" video="/assets/ios-15-reader.mp4" alt="iPhone story list with the floating glass toolbar at the bottom" caption="Scroll through stories, open an article, and return to your place." %}
+{% include mobile-release-phone.html image="/assets/ios-15-story-list.webp" video="/assets/ios-15-reader.mp4" alt="iPhone story list with the floating glass toolbar at the bottom" caption="Scroll through stories, open an article, and return to your place." %}
 
 Feed and story gestures have separate preferences, including independent left and right swipe actions for story titles. If you like swiping right to save a story, you can choose that. If you prefer swiping back to your feeds, you can keep that instead. Long press a feed, folder, or story for a native action menu, or keep a custom long press shortcut.
 
 Menus have been reorganized with quieter icons and clearer groups, and appearance controls are available inline. Common actions such as saving, sharing, training, and marking older or newer stories read are easier to find.
 
-{% include mobile-release-phone.html image="/assets/ios-15-reader.png" video="/assets/ios-15-article-scroll.mp4" alt="Scrolling an article on iPhone as its floating controls hide and return" caption="The controls move out of the way as you read and return when you scroll back." %}
+{% include mobile-release-phone.html image="/assets/ios-15-reader.webp" video="/assets/ios-15-article-scroll.mp4" alt="Scrolling an article on iPhone as its floating controls hide and return" caption="The controls move out of the way as you read and return when you scroll back." %}
 
 ### Images deserve a little more room
 
@@ -30,19 +30,19 @@ Tap an article image to open the new viewer. Pinch or double tap to zoom, and pa
 
 On iPad, the viewer opens across the whole app, giving the image room beyond the article column. Dismissing it returns you to your place in the reader.
 
-{% include mobile-release-phone.html image="/assets/ios-15-image-viewer.png" video="/assets/ios-15-image-viewer.mp4" alt="An article image opening in the iPhone image viewer and returning to the article" caption="Open an image, then swipe back to the article." %}
+{% include mobile-release-phone.html image="/assets/ios-15-image-viewer.webp" video="/assets/ios-15-image-viewer.mp4" alt="An article image opening in the iPhone image viewer and returning to the article" caption="Open an image, then swipe back to the article." %}
 
 ### Add an address, or find something new
 
 The plus button opens a compact panel for adding a site and choosing its folder. It also gives you shortcuts into discovery. If you have something in mind, paste its address. If you don't, start exploring.
 
-{% include mobile-release-phone.html image="/assets/ios-15-add-site.png" video="/assets/ios-15-add-site.mp4" alt="The iPhone Add Site sheet with an address field and discovery source shortcuts" caption="Quick Add is also a starting point for discovery." %}
+{% include mobile-release-phone.html image="/assets/ios-15-add-site.webp" video="/assets/ios-15-add-site.mp4" alt="The iPhone Add Site sheet with an address field and discovery source shortcuts" caption="Quick Add is also a starting point for discovery." %}
 
 **Add + Discover Sites** brings together search, popular sites, YouTube, Reddit, newsletters, podcasts, Google News, and Web Feeds. Swipe between sources to find a channel, a subreddit, or a podcast, or build a feed from a page that doesn't have RSS. Each source keeps its scroll position when you move to another and come back.
 
 Site previews show recent story titles, images, and excerpts, with publishing activity to help you judge a feed. Tap an article to read that exact story, or use **Try** to browse the feed before subscribing. Returning to discovery brings you back to your place, with the preview you opened highlighted.
 
-{% include mobile-release-phone.html image="/assets/ios-15-discover.png" video="/assets/ios-15-discover.mp4" alt="Opening a story from iPhone discovery results and returning to its highlighted preview" caption="Read a story, then pick up where you left off in discovery." %}
+{% include mobile-release-phone.html image="/assets/ios-15-discover.webp" video="/assets/ios-15-discover.mp4" alt="Opening a story from iPhone discovery results and returning to its highlighted preview" caption="Read a story, then pick up where you left off in discovery." %}
 
 Choose a folder beside **Add** and the site goes straight into it. The folder choice is remembered, and you can switch between List and Grid views. Related Sites now uses the same previews and controls. On iPad, trying a feed keeps the three column reader available, so you can browse discovery, scan titles, and read an article together.
 

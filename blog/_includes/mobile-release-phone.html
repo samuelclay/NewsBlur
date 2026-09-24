@@ -4,7 +4,7 @@
   <div class="mobile-release-phone__device">
     <div class="mobile-release-phone__screen">
       {% if include.video %}
-      <video muted loop playsinline controls preload="metadata" poster="{{ include.image | relative_url }}" aria-label="{{ include.alt | escape }}">
+      <video muted loop playsinline controls preload="none" poster="{{ include.image | relative_url }}" aria-label="{{ include.alt | escape }}">
         <source src="{{ include.video | relative_url }}" type="video/mp4">
         <img src="{{ include.image | relative_url }}" alt="{{ include.alt | escape }}">
       </video>
