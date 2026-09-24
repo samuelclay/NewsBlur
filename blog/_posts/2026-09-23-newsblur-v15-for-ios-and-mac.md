@@ -8,8 +8,6 @@ I use NewsBlur on my iPhone and iPad all day, and the story list had gotten slow
 
 On top of that, v15 brings the full Add + Discover Sites experience to iPhone, iPad, and Mac, along with a glass story list toolbar, a new image viewer, native context menus, and offline storage that finally cleans up after itself.
 
-Here's what's new.
-
 ### Faster story lists and smoother scrolling
 
 Most of the slowness came from work happening at the wrong time or happening more often than it needed to:
@@ -35,23 +33,15 @@ The measurements:
 
 Add + Discover Sites now sits at the top of your feed list. The + button in the bottom toolbar opens a Quick Add sheet where you can paste a URL or search for a site, pick a folder, and add it, with shortcuts below into every discovery source.
 
-The discovery screen itself covers Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News, and you can swipe between them like pages. Each source has categories to browse and a Grid or List view. List view shows the latest few stories from each site with an image and a short excerpt, so you know what you're getting before you subscribe. Every card also shows how recently the site published, and there's a folder picker right next to each Add button that remembers the last folder you chose.
+The discovery screen is the same catalog as [Add + Discover Sites on the web](/2026/03/04/add-and-discover-sites/), rebuilt natively for iOS. It covers Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News, and you can swipe between them like pages. Each source has categories to browse and a Grid or List view. List view shows the latest few stories from each site with an image and a short excerpt, so you know what you're getting before you subscribe. Every card also shows how recently the site published, and there's a folder picker right next to each Add button that remembers the last folder you chose.
 
 <video autoplay loop muted playsinline width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/ios-15-discover.mp4" type="video/mp4">
 </video>
 
-If you've used [Add + Discover Sites on the web](/2026/03/04/add-and-discover-sites/), this is the same catalog, rebuilt natively for iOS.
+Tap Try on any site to preview its stories without subscribing. A banner at the top lets you subscribe once you've decided. If the feed hasn't been fetched in a while, the preview fetches fresh stories automatically. Tapping a story in a discovery card opens that exact story, and when you come back, Discover returns you to the same spot in the list with that story highlighted. On iPad, Try keeps all three columns in place, so you can browse a new site's stories and read them side by side.
 
-### Try before you subscribe
-
-Tap Try on any site to preview its stories without subscribing. A banner at the top lets you subscribe once you've decided. If the feed hasn't been fetched in a while, the preview fetches fresh stories automatically. Tapping a story in a discovery card opens that exact story, and when you come back, Discover returns you to the same spot in the list with that story highlighted.
-
-On iPad, Try keeps all three columns in place, so you can browse a new site's stories and read them side by side.
-
-### Related Sites
-
-The Related Sites button in the story list toolbar now uses the same cards as discovery, with story excerpts, freshness, and Try, folder, and Add buttons. Tapping one of its stories closes Related Sites and opens that exact article.
+Related Sites, in the story list toolbar, now uses the same cards. Tapping one of its stories closes Related Sites and opens that exact article.
 
 <video autoplay loop muted playsinline width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/ios-15-related.mp4" type="video/mp4">
@@ -59,7 +49,7 @@ The Related Sites button in the story list toolbar now uses the same cards as di
 
 ### A glass story list toolbar
 
-The story list toolbar is now a floating glass footer on both iPhone and iPad. Your stories scroll right behind it. Related Sites, the story order menu, and search sit on the left, with Add and Mark as read on the right. When there's room, the two groups separate and search gets its label back. If you'd rather keep the toolbar at the top, change Story list toolbar position under Story Layout in Preferences.
+The story list toolbar is now a floating glass footer on both iPhone and iPad, and your stories scroll right behind it. If you'd rather keep the toolbar at the top, change Story list toolbar position under Story Layout in Preferences.
 
 <img src="/assets/ios-15-story-list.png" style="width: 45%;margin: 24px auto;display: block;">
 
@@ -73,7 +63,7 @@ Tap any image in an article and it opens in a full screen viewer, animating out 
 
 ### Native context menus
 
-Long press any feed, folder, or story for a native context menu. Story menus include Mark as read, Mark newer as read, Mark older as read, Save, sharing, Share on NewsBlur, Train intelligence, and Ask AI. Mark newer and Mark older now include the story you pressed and update your unread counts right away, including in collapsed folders. Settings and reader menus got the same treatment, with grouped actions, grayscale icons, and inline appearance controls.
+Long press any feed, folder, or story for a native context menu, with everything from saving and sharing to training and Ask AI. Mark newer and Mark older as read now include the story you pressed and update your unread counts right away, including in collapsed folders. Settings and reader menus got the same treatment, with grouped actions, grayscale icons, and inline appearance controls.
 
 <video autoplay loop muted playsinline width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/ios-15-menu.mp4" type="video/mp4">
@@ -94,9 +84,7 @@ Beyond the headline features, this release includes a long list of improvements 
 - The Mac app gets the new discovery screen, Related Sites cards, image viewer, menus, and offline cleanup.
 - Explicitly selecting the same feed or folder again clears the old story and loads fresh titles, opening the first story if you have that preference on.
 - In phone landscape, Related Sites opens as a popover you can close by tapping outside.
-- Compact phone landscape headers no longer waste space under the status bar.
 - At the largest accessibility text sizes, discovery keeps the search field usable.
-- Trained URLs are easier to read in the gray theme.
 
 #### Fixes
 
@@ -104,6 +92,5 @@ Beyond the headline features, this release includes a long list of improvements 
 - Fixed reading positions not being restored correctly.
 - Fixed the trainer and other dialogs disappearing while the reader was still loading.
 - Fixed unread counts going stale after Mark newer or older as read, including while offline.
-- Fixed a number of story selection and theme issues.
 
 NewsBlur v15 is available now on the [App Store](https://apps.apple.com/app/newsblur/id463981119) for iPhone, iPad, and Mac. The same performance and discovery work also shipped in [NewsBlur v15 for Android](/2026/09/23/newsblur-v15-for-android/). If you have feedback or run into issues, I'd love to hear about it on the [NewsBlur forum](https://forum.newsblur.com).

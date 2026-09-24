@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-09-24T00:18:12-04:00</updated>
+  <updated>2026-09-24T10:38:38-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -31,8 +31,6 @@ A new sound of an old instrument.
       <![CDATA[<p>I use NewsBlur on my iPhone and iPad all day, and the story list had gotten slower than I wanted. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles would flash blank for a moment before appearing. So I spent this release measuring every part of the story list and reader, then fixing what the numbers pointed at.</p>
 
 <p>On top of that, v15 brings the full Add + Discover Sites experience to iPhone, iPad, and Mac, along with a glass story list toolbar, a new image viewer, native context menus, and offline storage that finally cleans up after itself.</p>
-
-<p>Here’s what’s new.</p>
 
 <h3 id="faster-story-lists-and-smoother-scrolling">Faster story lists and smoother scrolling</h3>
 
@@ -63,23 +61,15 @@ A new sound of an old instrument.
 
 <p>Add + Discover Sites now sits at the top of your feed list. The + button in the bottom toolbar opens a Quick Add sheet where you can paste a URL or search for a site, pick a folder, and add it, with shortcuts below into every discovery source.</p>
 
-<p>The discovery screen itself covers Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News, and you can swipe between them like pages. Each source has categories to browse and a Grid or List view. List view shows the latest few stories from each site with an image and a short excerpt, so you know what you’re getting before you subscribe. Every card also shows how recently the site published, and there’s a folder picker right next to each Add button that remembers the last folder you chose.</p>
+<p>The discovery screen is the same catalog as <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites on the web</a>, rebuilt natively for iOS. It covers Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News, and you can swipe between them like pages. Each source has categories to browse and a Grid or List view. List view shows the latest few stories from each site with an image and a short excerpt, so you know what you’re getting before you subscribe. Every card also shows how recently the site published, and there’s a folder picker right next to each Add button that remembers the last folder you chose.</p>
 
 <video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/ios-15-discover.mp4" type="video/mp4" />
 </video>
 
-<p>If you’ve used <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites on the web</a>, this is the same catalog, rebuilt natively for iOS.</p>
+<p>Tap Try on any site to preview its stories without subscribing. A banner at the top lets you subscribe once you’ve decided. If the feed hasn’t been fetched in a while, the preview fetches fresh stories automatically. Tapping a story in a discovery card opens that exact story, and when you come back, Discover returns you to the same spot in the list with that story highlighted. On iPad, Try keeps all three columns in place, so you can browse a new site’s stories and read them side by side.</p>
 
-<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
-
-<p>Tap Try on any site to preview its stories without subscribing. A banner at the top lets you subscribe once you’ve decided. If the feed hasn’t been fetched in a while, the preview fetches fresh stories automatically. Tapping a story in a discovery card opens that exact story, and when you come back, Discover returns you to the same spot in the list with that story highlighted.</p>
-
-<p>On iPad, Try keeps all three columns in place, so you can browse a new site’s stories and read them side by side.</p>
-
-<h3 id="related-sites">Related Sites</h3>
-
-<p>The Related Sites button in the story list toolbar now uses the same cards as discovery, with story excerpts, freshness, and Try, folder, and Add buttons. Tapping one of its stories closes Related Sites and opens that exact article.</p>
+<p>Related Sites, in the story list toolbar, now uses the same cards. Tapping one of its stories closes Related Sites and opens that exact article.</p>
 
 <video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/ios-15-related.mp4" type="video/mp4" />
@@ -87,7 +77,7 @@ A new sound of an old instrument.
 
 <h3 id="a-glass-story-list-toolbar">A glass story list toolbar</h3>
 
-<p>The story list toolbar is now a floating glass footer on both iPhone and iPad. Your stories scroll right behind it. Related Sites, the story order menu, and search sit on the left, with Add and Mark as read on the right. When there’s room, the two groups separate and search gets its label back. If you’d rather keep the toolbar at the top, change Story list toolbar position under Story Layout in Preferences.</p>
+<p>The story list toolbar is now a floating glass footer on both iPhone and iPad, and your stories scroll right behind it. If you’d rather keep the toolbar at the top, change Story list toolbar position under Story Layout in Preferences.</p>
 
 <p><img src="/assets/ios-15-story-list.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
 
@@ -101,7 +91,7 @@ A new sound of an old instrument.
 
 <h3 id="native-context-menus">Native context menus</h3>
 
-<p>Long press any feed, folder, or story for a native context menu. Story menus include Mark as read, Mark newer as read, Mark older as read, Save, sharing, Share on NewsBlur, Train intelligence, and Ask AI. Mark newer and Mark older now include the story you pressed and update your unread counts right away, including in collapsed folders. Settings and reader menus got the same treatment, with grouped actions, grayscale icons, and inline appearance controls.</p>
+<p>Long press any feed, folder, or story for a native context menu, with everything from saving and sharing to training and Ask AI. Mark newer and Mark older as read now include the story you pressed and update your unread counts right away, including in collapsed folders. Settings and reader menus got the same treatment, with grouped actions, grayscale icons, and inline appearance controls.</p>
 
 <video autoplay="" loop="" muted="" playsinline="" width="720" height="1472" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/ios-15-menu.mp4" type="video/mp4" />
@@ -123,9 +113,7 @@ A new sound of an old instrument.
   <li>The Mac app gets the new discovery screen, Related Sites cards, image viewer, menus, and offline cleanup.</li>
   <li>Explicitly selecting the same feed or folder again clears the old story and loads fresh titles, opening the first story if you have that preference on.</li>
   <li>In phone landscape, Related Sites opens as a popover you can close by tapping outside.</li>
-  <li>Compact phone landscape headers no longer waste space under the status bar.</li>
   <li>At the largest accessibility text sizes, discovery keeps the search field usable.</li>
-  <li>Trained URLs are easier to read in the gray theme.</li>
 </ul>
 
 <h4 id="fixes">Fixes</h4>
@@ -135,7 +123,6 @@ A new sound of an old instrument.
   <li>Fixed reading positions not being restored correctly.</li>
   <li>Fixed the trainer and other dialogs disappearing while the reader was still loading.</li>
   <li>Fixed unread counts going stale after Mark newer or older as read, including while offline.</li>
-  <li>Fixed a number of story selection and theme issues.</li>
 </ul>
 
 <p>NewsBlur v15 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The same performance and discovery work also shipped in <a href="/2026/09/23/newsblur-v15-for-android/">NewsBlur v15 for Android</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
@@ -163,8 +150,6 @@ A new sound of an old instrument.
       <![CDATA[<p>I read NewsBlur on my Android phone every day, and for a while now it hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.</p>
 
 <p>With that foundation in place, v15 also brings the Add + Discover Sites experience from the web to Android, along with floating toolbars, full bleed images with a new image viewer, and gestures you can configure.</p>
-
-<p>Here’s what’s new.</p>
 
 <h3 id="smoother-scrolling-and-faster-story-opens">Smoother scrolling and faster story opens</h3>
 
@@ -194,19 +179,15 @@ A new sound of an old instrument.
 
 <p>The + button in the feed list now opens a compact Add Site sheet. Paste a URL or search for a site, pick a folder, and add it. Below that are eight shortcuts into discovery: Web Feed, Popular, Trending, YouTube, Reddit, Newsletters, Podcasts, and Google News.</p>
 
-<p>Each shortcut opens the full Add + Discover Sites screen, the same one I launched <a href="/2026/03/04/add-and-discover-sites/">on the web</a> earlier this year. Browse by category, search within a source, and add a site straight into the folder you want. Folder pickers remember the last folder you chose. Web Feed turns any website into a feed, and Google News has 47 categories across eight topics.</p>
+<p>Each shortcut opens the full Add + Discover Sites screen, the same one I launched <a href="/2026/03/04/add-and-discover-sites/">on the web</a> earlier this year. Browse by category, search within a source, and add a site straight into the folder you want. Folder pickers remember the last folder you chose, and Web Feed turns any website into a feed.</p>
 
 <video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/android-15-discover.mp4" type="video/mp4" />
 </video>
 
-<h3 id="try-before-you-subscribe">Try before you subscribe</h3>
+<p>Every site has a Try button that previews its stories without subscribing. If a feed hasn’t been fetched in a while, the preview fetches fresh stories automatically and shows you its progress. Tap a story in a discovery card and it opens that exact story, with the rest of the site’s stories loaded behind it.</p>
 
-<p>Every site has a Try button that opens a preview of its stories without subscribing. If a feed hasn’t been fetched in a while, the preview fetches fresh stories automatically and shows you its progress. Tap a story in a discovery card and it opens that exact story in the preview, with the rest of the site’s stories loaded behind it.</p>
-
-<h3 id="related-sites-with-story-previews">Related Sites with story previews</h3>
-
-<p>Related Sites got the same rich cards. Tap the Related Sites button on the left side of the story list toolbar, or pick it from the feed menu, and you’ll see similar sites along with their latest stories, images, and excerpts. Each card has Try, a folder picker, and Add. Related Sites and Add + Discover share your Grid or List choice, so switching in one switches both.</p>
+<p>Related Sites uses the same cards. Tap the Related Sites button on the left side of the story list toolbar, or pick it from the feed menu, to see similar sites along with their latest stories, images, and excerpts. Your Grid or List choice carries over between the two.</p>
 
 <p><img src="/assets/android-15-related-sites.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
 
@@ -228,7 +209,7 @@ A new sound of an old instrument.
 
 <h3 id="gestures-your-way">Gestures, your way</h3>
 
-<p>There’s a new Gestures section in Preferences. Choose what swiping left and right does on feeds and on stories, what a long press does (saving a story is a new option), and what double tap and two finger double tap do while reading a story. Rows now follow your finger as you swipe and show an icon for the action you’re about to trigger. Swiping from the left edge of the story list always takes you back to your feeds, even if you turn story swipes off.</p>
+<p>There’s a new Gestures section in Preferences. Choose what swiping left and right does on feeds and on stories, what a long press does (saving a story is a new option), and what a double tap does in the reader. Rows now follow your finger as you swipe and show an icon for the action you’re about to trigger.</p>
 
 <p><img src="/assets/android-15-gestures.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
 
@@ -264,7 +245,6 @@ A new sound of an old instrument.
   <li>Fixed the Previous button sometimes being disabled.</li>
   <li>Fixed dark bands appearing during folder animations.</li>
   <li>Fixed an older bulk mark read overriding stories you had since marked unread.</li>
-  <li>Fixed folders with similar names colliding during a database upgrade.</li>
 </ul>
 
 <p>NewsBlur v15 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. The same performance and discovery work also shipped in <a href="/2026/09/23/newsblur-v15-for-ios-and-mac/">NewsBlur v15 for iOS and Mac</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>

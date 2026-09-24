@@ -8,8 +8,6 @@ I read NewsBlur on my Android phone every day, and for a while now it hasn't fel
 
 With that foundation in place, v15 also brings the Add + Discover Sites experience from the web to Android, along with floating toolbars, full bleed images with a new image viewer, and gestures you can configure.
 
-Here's what's new.
-
 ### Smoother scrolling and faster story opens
 
 Most of the slowness came from the app doing far more work than it needed to:
@@ -34,19 +32,15 @@ The difference is easy to feel, and it shows up in the measurements too:
 
 The + button in the feed list now opens a compact Add Site sheet. Paste a URL or search for a site, pick a folder, and add it. Below that are eight shortcuts into discovery: Web Feed, Popular, Trending, YouTube, Reddit, Newsletters, Podcasts, and Google News.
 
-Each shortcut opens the full Add + Discover Sites screen, the same one I launched [on the web](/2026/03/04/add-and-discover-sites/) earlier this year. Browse by category, search within a source, and add a site straight into the folder you want. Folder pickers remember the last folder you chose. Web Feed turns any website into a feed, and Google News has 47 categories across eight topics.
+Each shortcut opens the full Add + Discover Sites screen, the same one I launched [on the web](/2026/03/04/add-and-discover-sites/) earlier this year. Browse by category, search within a source, and add a site straight into the folder you want. Folder pickers remember the last folder you chose, and Web Feed turns any website into a feed.
 
 <video autoplay loop muted playsinline width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
 <source src="/assets/android-15-discover.mp4" type="video/mp4">
 </video>
 
-### Try before you subscribe
+Every site has a Try button that previews its stories without subscribing. If a feed hasn't been fetched in a while, the preview fetches fresh stories automatically and shows you its progress. Tap a story in a discovery card and it opens that exact story, with the rest of the site's stories loaded behind it.
 
-Every site has a Try button that opens a preview of its stories without subscribing. If a feed hasn't been fetched in a while, the preview fetches fresh stories automatically and shows you its progress. Tap a story in a discovery card and it opens that exact story in the preview, with the rest of the site's stories loaded behind it.
-
-### Related Sites with story previews
-
-Related Sites got the same rich cards. Tap the Related Sites button on the left side of the story list toolbar, or pick it from the feed menu, and you'll see similar sites along with their latest stories, images, and excerpts. Each card has Try, a folder picker, and Add. Related Sites and Add + Discover share your Grid or List choice, so switching in one switches both.
+Related Sites uses the same cards. Tap the Related Sites button on the left side of the story list toolbar, or pick it from the feed menu, to see similar sites along with their latest stories, images, and excerpts. Your Grid or List choice carries over between the two.
 
 <img src="/assets/android-15-related-sites.png" style="width: 45%;margin: 24px auto;display: block;">
 
@@ -68,7 +62,7 @@ Wide article images now run edge to edge, in both portrait and landscape. Tap an
 
 ### Gestures, your way
 
-There's a new Gestures section in Preferences. Choose what swiping left and right does on feeds and on stories, what a long press does (saving a story is a new option), and what double tap and two finger double tap do while reading a story. Rows now follow your finger as you swipe and show an icon for the action you're about to trigger. Swiping from the left edge of the story list always takes you back to your feeds, even if you turn story swipes off.
+There's a new Gestures section in Preferences. Choose what swiping left and right does on feeds and on stories, what a long press does (saving a story is a new option), and what a double tap does in the reader. Rows now follow your finger as you swipe and show an icon for the action you're about to trigger.
 
 <img src="/assets/android-15-gestures.png" style="width: 45%;margin: 24px auto;display: block;">
 
@@ -101,6 +95,5 @@ Beyond the headline features, this release includes a long list of improvements 
 - Fixed the Previous button sometimes being disabled.
 - Fixed dark bands appearing during folder animations.
 - Fixed an older bulk mark read overriding stories you had since marked unread.
-- Fixed folders with similar names colliding during a database upgrade.
 
 NewsBlur v15 for Android is available now on the [Google Play Store](https://play.google.com/store/apps/details?id=com.newsblur). The same performance and discovery work also shipped in [NewsBlur v15 for iOS and Mac](/2026/09/23/newsblur-v15-for-ios-and-mac/). If you have feedback or run into issues, I'd love to hear about it on the [NewsBlur forum](https://forum.newsblur.com).
