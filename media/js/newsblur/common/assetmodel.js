@@ -1164,19 +1164,51 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     fetch_trending_stories: function (feed_id, page, options, callback, error_callback, first_load) {
         var self = this;
+        if (first_load) {
+            this.discovery_snapshot = null;
+            this.discovery_cursor = 0;
+            this.discovery_preview = null;
+            this.trending_request_generation = (this.trending_request_generation || 0) + 1;
+        }
+        var user_id = NEWSBLUR.Globals.user_id;
+        var generation = this.trending_request_generation;
 
         var pre_callback = function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id ||
+                generation !== self.trending_request_generation) return;
+            var first_new_story = 0;
+            if (options.trending_type === 'discovery') {
+                self.discovery_snapshot = data.discovery_snapshot;
+                self.discovery_cursor = data.discovery_next_cursor;
+                self.discovery_preview = data.discovery_preview;
+                if (!first_load) first_new_story = self.stories.length;
+                _.each(data.feeds, function (feed) { feed.temp = true; });
+            }
             self.load_feed_precallback(data, feed_id, callback, first_load);
+            if (options.trending_type === 'discovery') {
+                if (data.discovery_preview && data.discovery_next_cursor === null) {
+                    self.stories.no_more_stories = true;
+                    self.stories.trigger('no_more_stories');
+                }
+                NEWSBLUR.reveal_discovery_stories(first_new_story);
+            }
         };
 
         this.feed_id = feed_id;
 
         this.make_request('/reader/trending_stories', {
             trending_type: options.trending_type,
+            discovery_snapshot: this.discovery_snapshot,
+            discovery_cursor: this.discovery_cursor,
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter')
-        }, pre_callback, error_callback, {
+        }, pre_callback, function () {
+            if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id ||
+                generation !== self.trending_request_generation) return;
+            $('.NB-discovery-loading').remove();
+            if (error_callback) error_callback.apply(null, arguments);
+        }, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });
@@ -1544,6 +1576,88 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return user;
     },
 
+    save_recommendation_feedback: function (story_hash, value, callback, error_callback) {
+        var self = this;
+        var user_id = NEWSBLUR.Globals.user_id;
+        if (!NEWSBLUR.Globals.is_authenticated) {
+            error_callback();
+            return;
+        }
+        this.make_request('/recommendations/story_feedback', {
+            story_hash: story_hash,
+            value: value,
+            csrfmiddlewaretoken: $.cookie('csrftoken'),
+            surface: 'discovery'
+        }, function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            var story = self.stories.get_by_story_hash(story_hash);
+            if (story) story.set({ recommendation_feedback: data.value, recommendation_feedback_state: {} });
+            callback(data);
+            self.trigger('recommendation:updated');
+        }, function () {
+            if (NEWSBLUR.Globals.user_id === user_id) error_callback();
+        }, { retry: false });
+    },
+
+    load_recommendation_feedback: function (params, callback, error_callback) {
+        var user_id = NEWSBLUR.Globals.user_id;
+        this.make_request('/recommendations/feedback_history', params, function (data) {
+            if (NEWSBLUR.Globals.user_id === user_id) callback(data);
+        }, function () {
+            if (NEWSBLUR.Globals.user_id === user_id) error_callback();
+        }, { request_type: 'GET', retry: false });
+    },
+
+    discovery_taste_request: function (action, params, callback, error_callback) {
+        var self = this, user_id = NEWSBLUR.Globals.user_id;
+        params = _.extend({}, params);
+        if (action !== 'taste_profile') params.csrfmiddlewaretoken = $.cookie('csrftoken');
+        this.make_request('/recommendations/' + action, params, function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            if (self.discovery_taste && self.discovery_taste.revision > data.profile.revision) {
+                data.profile = self.discovery_taste;
+            }
+            self.discovery_taste = data.profile;
+            self.discovery_taste_error = null;
+            self.trigger('recommendation:taste', data.profile);
+            if (callback) callback(data);
+        }, function (data) {
+            if (NEWSBLUR.Globals.user_id !== user_id) return;
+            self.discovery_taste_error = data && data.message || 'Couldn’t update your interests. Please try again.';
+            self.trigger('recommendation:taste-error', self.discovery_taste_error);
+            if (error_callback) error_callback(data);
+        }, {
+            request_type: action === 'taste_profile' ? 'GET' : 'POST',
+            // assetmodel.js: Background learning must not hold up queued reading and feedback writes.
+            ajax_group: 'rapid', timeout: 27000, retry: false
+        });
+    },
+
+    ensure_discovery_taste: function (signature) {
+        var self = this, user_id = NEWSBLUR.Globals.user_id;
+        if (this.discovery_taste_user !== user_id) {
+            this.discovery_taste_user = user_id;
+            this.discovery_taste = null;
+            this.discovery_taste_error = null;
+            this.discovery_taste_pending = false;
+            this.discovery_taste_checked = 0;
+        }
+        if (this.discovery_taste_pending || (this.discovery_taste_signature === signature &&
+            Date.now() - this.discovery_taste_checked < 30000)) return;
+        this.discovery_taste_signature = signature;
+        this.discovery_taste_checked = Date.now();
+        this.discovery_taste_pending = true;
+        var done = function () { if (NEWSBLUR.Globals.user_id === user_id) self.discovery_taste_pending = false; };
+        this.discovery_taste_request('taste_profile', {}, function (data) {
+            if (data.profile.stale && data.profile.can_learn && !data.profile.learning) {
+                self.trigger('recommendation:taste-learning');
+                self.discovery_taste_request('learn_taste', {}, done, done);
+            } else {
+                done();
+            }
+        }, done);
+    },
+
     save_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);
@@ -1836,13 +1950,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (NEWSBLUR.reader.flags['feed_list_showing_starred'] &&
             setting == 'read_filter') return "starred";
         if (feed_id == "river:global" && setting == "order") return "newest";
+        if (feed_id == "trending:discovery" && setting == "order") return "recommended";
+        if (feed_id == "trending:discovery" && setting == "read_filter" &&
+            !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) return "all";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
             var s = setting.substr(0, 1);
             var feed = NEWSBLUR.Preferences.view_settings[feed_id + ''];
             var default_setting = NEWSBLUR.Preferences['default_' + setting];
             if (setting == 'layout') default_setting = NEWSBLUR.Preferences['story_layout'];
-            if (setting == 'read_filter' && _.string.contains(feed_id, 'river:')) {
+            if (setting == 'read_filter' && (_.string.contains(feed_id, 'river:') || feed_id == 'trending:discovery')) {
                 default_setting = 'unread';
             }
             var view_setting = feed && feed[s] || default_setting;
