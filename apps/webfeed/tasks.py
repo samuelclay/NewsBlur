@@ -401,6 +401,15 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
                 logging.user(
                     user, f"~BB~FWWeb Feed: ~FR~SBPublish failure~SN~FW for event ~SB{event_type}~SN"
                 )
+            # Match the account-scoped polling keys in apps/webfeed/views.py.
+            try:
+                status_key = f"webfeed:status:{user.pk}:{request_token}"
+                r.set(status_key, json.dumps(payload, ensure_ascii=False), ex=300)
+                if event_type == "variants" and extra and "variants" in extra:
+                    results_key = f"webfeed:results:{user.pk}:{request_token}"
+                    r.set(results_key, json.dumps(extra, ensure_ascii=False), ex=600)
+            except redis.RedisError:
+                pass
 
         publish_event = publish
         publish_event("start")

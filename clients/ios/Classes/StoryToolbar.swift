@@ -65,6 +65,8 @@ class StoryToolbar: UIView {
 
     private func buildBackButton() {
         backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.accessibilityIdentifier = "story-reader-back"
+        backButton.accessibilityLabel = "Back to story titles"
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
         addSubview(backButton)
 

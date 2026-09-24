@@ -30,12 +30,14 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.network.UserApi
+import com.newsblur.preference.ClusterMarkReadPreference
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
 import com.newsblur.util.FeedUtils.Companion.triggerSync
+import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.StoryClusterDisplayDecision
@@ -64,6 +66,8 @@ class SettingsFragment : Fragment() {
     lateinit var userApi: UserApi
 
     private var uiState by mutableStateOf(SettingsUiState())
+    private var clusterMarkReadSaving = false
+    private val clusterMarkReadPreference by lazy { ClusterMarkReadPreference(prefsRepo, userApi) }
 
     private val preferenceChangeListener =
         OnSharedPreferenceChangeListener { _, _ ->
@@ -123,13 +127,17 @@ class SettingsFragment : Fragment() {
 
     private fun refreshUiState() {
         val context = context ?: return
-        uiState = buildSettingsUiState(context, prefsRepo, sharedPreferences)
+        uiState = buildSettingsUiState(context, prefsRepo, sharedPreferences).copy(clusterMarkReadSaving = clusterMarkReadSaving)
     }
 
     private fun updateBooleanPreference(
         key: String,
         value: Boolean,
     ) {
+        if (key == PrefConstants.CLUSTER_MARK_READ) {
+            updateClusterMarkReadPreference(value)
+            return
+        }
         if (key == PrefConstants.ENABLE_NOTIFICATIONS) {
             handleNotificationsPreferenceChange(value)
             return
@@ -142,7 +150,11 @@ class SettingsFragment : Fragment() {
         key: String,
         value: String,
     ) {
-        sharedPreferences.edit { putString(key, value) }
+        if (key == PrefConstants.STORY_MARK_READ_BEHAVIOR) {
+            prefsRepo.setMarkStoryReadBehavior(MarkStoryReadBehavior.valueOf(value))
+        } else {
+            sharedPreferences.edit { putString(key, value) }
+        }
         refreshUiState()
     }
 
@@ -153,6 +165,28 @@ class SettingsFragment : Fragment() {
 
     private fun updateClusterMode(clusterMode: String) {
         updateStoryClusteringPreference(true, clusterMode)
+    }
+
+    private fun updateClusterMarkReadPreference(enabled: Boolean) {
+        if (clusterMarkReadSaving || !prefsRepo.getIsArchive()) return
+        clusterMarkReadSaving = true
+        refreshUiState()
+        lifecycleScope.launch {
+            try {
+                val saved = withContext(Dispatchers.IO) { clusterMarkReadPreference.setEnabled(enabled) }
+                if (saved) {
+                    syncServiceState.forceFeedsFolders()
+                    context?.let { triggerSync(it) }
+                } else {
+                    context?.let {
+                        Toast.makeText(it, R.string.settings_cluster_mark_read_save_failed, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } finally {
+                clusterMarkReadSaving = false
+                refreshUiState()
+            }
+        }
     }
 
     private fun updateAppIcon(

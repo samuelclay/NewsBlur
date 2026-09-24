@@ -47,6 +47,7 @@ public class FeedFolderResponse {
 	public int starredCount;
     public Boolean storyClustering;
     public String clusterMode;
+    public boolean clusterMarkRead;
 
     public String shareExtToken;
 	
@@ -56,6 +57,8 @@ public class FeedFolderResponse {
 		JsonObject asJsonObject = JsonParser.parseString(json).getAsJsonObject();
 
         this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
+        com.newsblur.network.FolderPath.setSupported(asJsonObject.has("folder_paths_supported") &&
+                asJsonObject.get("folder_paths_supported").getAsBoolean());
         if (asJsonObject.has("is_staff")) {
             this.isStaff = asJsonObject.get("is_staff").getAsBoolean();
         }
@@ -81,6 +84,10 @@ public class FeedFolderResponse {
                 }
                 if (preferences != null && preferences.has("cluster_mode")) {
                     this.clusterMode = preferences.get("cluster_mode").getAsString();
+                }
+                if (preferences != null && preferences.has("cluster_mark_read") &&
+                        !preferences.get("cluster_mark_read").isJsonNull()) {
+                    this.clusterMarkRead = preferences.get("cluster_mark_read").getAsBoolean();
                 }
             }
         }
@@ -178,6 +185,7 @@ public class FeedFolderResponse {
         }
 
         parseTime = System.currentTimeMillis() - startTime;
+        com.newsblur.network.FolderPath.setFolders(folders);
 	}
 
     private JsonObject parsePreferences(JsonElement preferencesElement) {

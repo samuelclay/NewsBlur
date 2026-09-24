@@ -1,0 +1,20 @@
+PASS: plus opens the compact Add Site sheet with inputs and discovery shortcuts, keyboard closed
+PASS: Trending opens Search, and Back returns directly to feeds
+PASS: Web Feed opens Web Feed, and Back returns directly to feeds
+PASS: Popular opens Popular, and Back returns directly to feeds
+PASS: YouTube opens YouTube, and Back returns directly to feeds
+PASS: Reddit opens Reddit, and Back returns directly to feeds
+PASS: Newsletters opens Newsletters, and Back returns directly to feeds
+PASS: Podcasts opens Podcasts, and Back returns directly to feeds
+PASS: Google News opens Google News, and Back returns directly to feeds
+
+PASS: plus opens the compact Add Site sheet with inputs and discovery shortcuts, keyboard closed
+PASS: LIGHT portrait/landscape and lower tiles
+PASS: plus opens the compact Add Site sheet with inputs and discovery shortcuts, keyboard closed
+PASS: DARK portrait/landscape and lower tiles
+PASS: plus opens the compact Add Site sheet with inputs and discovery shortcuts, keyboard closed
+PASS: BLACK portrait/landscape and lower tiles
+PASS: plus opens the compact Add Site sheet with inputs and discovery shortcuts, keyboard closed
+PASS: SEPIA portrait/landscape and lower tiles
+
+PASS: selected folder carried into Reddit; tab/folder survived rotations; Quick Add inherited folder and switched in place; one Back returns to feeds

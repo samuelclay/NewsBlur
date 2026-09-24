@@ -337,14 +337,23 @@ struct PreferenceSection: Identifiable {
     let iconColor: Color
     let footerText: String?
     var items: [PreferenceItem]
+    let groups: [PreferenceGroup]
 
-    init(title: String, icon: String, iconColor: Color, footerText: String? = nil, items: [PreferenceItem]) {
+    init(title: String, icon: String, iconColor: Color, footerText: String? = nil, items: [PreferenceItem] = [], groups: [PreferenceGroup] = []) {
         self.title = title
         self.icon = icon
         self.iconColor = iconColor
         self.footerText = footerText
-        self.items = items
+        self.items = groups.isEmpty ? items : groups.flatMap { $0.items }
+        self.groups = groups
     }
+}
+
+struct PreferenceGroup: Identifiable {
+    var id: String { title }
+    let title: String
+    let footer: String?
+    let items: [PreferenceItem]
 }
 
 // MARK: - Preference Item Model
@@ -369,8 +378,9 @@ struct PreferenceItem: Identifiable {
     let subtitle: String?
     let footerText: String?
     let isCritical: Bool
+    let pickerTitle: String?
 
-    init(title: String, icon: String, iconColor: Color, type: PreferenceItemType, subtitle: String? = nil, footerText: String? = nil, isCritical: Bool = false) {
+    init(title: String, icon: String, iconColor: Color, type: PreferenceItemType, subtitle: String? = nil, footerText: String? = nil, isCritical: Bool = false, pickerTitle: String? = nil) {
         self.title = title
         self.icon = icon
         self.iconColor = iconColor
@@ -378,6 +388,7 @@ struct PreferenceItem: Identifiable {
         self.subtitle = subtitle
         self.footerText = footerText
         self.isCritical = isCritical
+        self.pickerTitle = pickerTitle
     }
 }
 
@@ -438,6 +449,13 @@ class PreferencesViewModel: ObservableObject {
 
         if !defaults.bool(forKey: "story_clustering") {
             hidden.insert("cluster_mode")
+        }
+
+        if !GesturePreferences.feedsEnabled {
+            hidden.formUnion(["feed_title_swipe_left", "feed_title_swipe_right"])
+        }
+        if !GesturePreferences.storiesEnabled {
+            hidden.formUnion(["story_title_swipe_left", "story_title_swipe_right"])
         }
 
         hiddenKeys = hidden
@@ -574,7 +592,20 @@ class PreferencesViewModel: ObservableObject {
                 iconColor: .purple,
                 items: [
                     PreferenceItem(
+                        title: "Story list toolbar position",
+                        icon: "rectangle.bottomthird.inset.filled",
+                        iconColor: .blue,
+                        type: .multiValue(
+                            key: "story_toolbar_position",
+                            titles: ["Top", "Bottom"],
+                            values: ["top", "bottom"],
+                            defaultValue: "bottom"
+                        ),
+                        subtitle: "Place the story list controls above or below the stories"
+                    ),
+                    PreferenceItem(
                         title: "Story titles layout",
+
                         icon: "rectangle.split.3x1",
                         iconColor: .purple,
                         type: .multiValue(
@@ -892,85 +923,7 @@ class PreferencesViewModel: ObservableObject {
             ),
 
             // MARK: Gestures Section
-            PreferenceSection(
-                title: "Gestures",
-                icon: "hand.tap",
-                iconColor: .indigo,
-                items: [
-                    PreferenceItem(
-                        title: "Swipe feed and story titles",
-                        icon: "arrow.left.arrow.right",
-                        iconColor: .indigo,
-                        type: .toggle(key: "enable_feed_cell_swipe", defaultValue: true)
-                    ),
-                    PreferenceItem(
-                        title: "Double tap story",
-                        icon: "hand.tap",
-                        iconColor: .blue,
-                        type: .multiValue(
-                            key: "double_tap_story",
-                            titles: ["Open original story", "Show original text", "Mark as unread", "Save story", "Do nothing"],
-                            values: ["open_original_story", "show_original_text", "mark_unread", "save_story", "nothing"],
-                            defaultValue: "open_original_story"
-                        )
-                    ),
-                    PreferenceItem(
-                        title: "Two finger double tap",
-                        icon: "hand.point.up.braille",
-                        iconColor: .purple,
-                        type: .multiValue(
-                            key: "two_finger_double_tap",
-                            titles: ["Open original story", "Show original text", "Mark as unread", "Save story", "Do nothing"],
-                            values: ["open_original_story", "show_original_text", "mark_unread", "save_story", "nothing"],
-                            defaultValue: "show_original_text"
-                        )
-                    ),
-                    PreferenceItem(
-                        title: "Long press feed/folder",
-                        icon: "hand.raised",
-                        iconColor: .orange,
-                        type: .multiValue(
-                            key: "long_press_feed_title",
-                            titles: ["Mark read X days back...", "Mark everything read", "Do nothing"],
-                            values: ["mark_read_choose_days", "mark_read_immediate", "nothing"],
-                            defaultValue: "mark_read_choose_days"
-                        )
-                    ),
-                    PreferenceItem(
-                        title: "Long press story title",
-                        icon: "text.line.first.and.arrowtriangle.forward",
-                        iconColor: .green,
-                        type: .multiValue(
-                            key: "long_press_story_title",
-                            titles: ["Ask", "Send to third-party", "Mark as unread", "Save story", "Train story", "Do nothing"],
-                            values: ["ask", "open_send_to", "mark_unread", "save_story", "train_story", "nothing"],
-                            defaultValue: "ask"
-                        )
-                    ),
-                    PreferenceItem(
-                        title: "Swipe left edge",
-                        icon: "arrow.backward.to.line",
-                        iconColor: .cyan,
-                        type: .multiValue(
-                            key: "story_detail_swipe_left_edge",
-                            titles: ["Go back to story list", "Previous story"],
-                            values: ["pop_to_story_list", "previous_story"],
-                            defaultValue: "pop_to_story_list"
-                        )
-                    ),
-                    PreferenceItem(
-                        title: "Swipe left on feed",
-                        icon: "arrow.left.to.line",
-                        iconColor: .pink,
-                        type: .multiValue(
-                            key: "feed_swipe_left",
-                            titles: ["Train intelligence", "Notifications", "Statistics"],
-                            values: ["trainer", "notifications", "statistics"],
-                            defaultValue: "notifications"
-                        )
-                    )
-                ]
-            ),
+            gestureSection(),
 
             // MARK: Reading Stories Section
             PreferenceSection(
@@ -1138,6 +1091,61 @@ class PreferencesViewModel: ObservableObject {
         ]
     }
 
+    private func gestureSection() -> PreferenceSection {
+        func swipe(_ direction: String, onFeeds: Bool) -> PreferenceItem {
+            let right = direction == "right"
+            return PreferenceItem(
+                title: "Swipe \(direction)", icon: "arrow.\(direction)", iconColor: .indigo,
+                type: .multiValue(
+                    key: "\(onFeeds ? "feed" : "story")_title_swipe_\(direction)",
+                    titles: onFeeds ? GesturePreferences.feedActionTitles : StoryTitleSwipePreference.actions.map { $0.title },
+                    values: onFeeds ? GesturePreferences.feedActions : StoryTitleSwipePreference.actions.map { $0.value },
+                    defaultValue: onFeeds ? (right ? "notifications" : "read") : (right ? "back" : "read")
+                ), pickerTitle: "Swipe \(direction) on \(onFeeds ? "feeds" : "story titles")"
+            )
+        }
+        let tapTitles = ["Open original story", "Show original text", "Mark as unread", "Save story", "Do nothing"]
+        let tapValues = ["open_original_story", "show_original_text", "mark_unread", "save_story", "nothing"]
+        return PreferenceSection(title: "Gestures", icon: "hand.tap", iconColor: .indigo, groups: [
+            PreferenceGroup(title: "Feed list", footer: nil, items: [
+                PreferenceItem(title: "Swipe on feeds", icon: "arrow.left.arrow.right", iconColor: .indigo,
+                               type: .toggle(key: "enable_feed_swipes", defaultValue: true)),
+                swipe("left", onFeeds: true),
+                swipe("right", onFeeds: true),
+                PreferenceItem(title: "Long press", icon: "hand.raised", iconColor: .orange,
+                               type: .multiValue(key: "long_press_feed_title",
+                                                 titles: ["Show actions", "Choose how far back to mark read", "Mark all stories read", "Do nothing"],
+                                                 values: ["show_actions", "mark_read_choose_days", "mark_read_immediate", "nothing"],
+                                                 defaultValue: "show_actions"),
+                               pickerTitle: "Long press on feeds and folders")
+            ]),
+            PreferenceGroup(title: "Story titles", footer: "Swiping from the left edge always returns to feeds, even when story swipes are off.", items: [
+                PreferenceItem(title: "Swipe on stories", icon: "arrow.left.arrow.right", iconColor: .indigo,
+                               type: .toggle(key: "enable_story_swipes", defaultValue: true)),
+                swipe("left", onFeeds: false),
+                swipe("right", onFeeds: false),
+                PreferenceItem(title: "Long press", icon: "hand.raised", iconColor: .orange,
+                               type: .multiValue(key: "long_press_story_title",
+                                                 titles: ["Show actions", "Mark older or newer stories read", "Share", "Mark as unread", "Save story", "Train intelligence", "Do nothing"],
+                                                 values: ["show_actions", "ask", "open_send_to", "mark_unread", "save_story", "train_story", "nothing"],
+                                                 defaultValue: "show_actions"), pickerTitle: "Long press on story titles")
+            ]),
+            PreferenceGroup(title: "Reading a story", footer: nil, items: [
+                PreferenceItem(title: "Double tap", icon: "hand.tap", iconColor: .blue,
+                               type: .multiValue(key: "double_tap_story", titles: tapTitles, values: tapValues,
+                                                 defaultValue: "open_original_story"), pickerTitle: "Double tap a story"),
+                PreferenceItem(title: "Two finger double tap", icon: "hand.point.up.braille", iconColor: .purple,
+                               type: .multiValue(key: "two_finger_double_tap", titles: tapTitles, values: tapValues,
+                                                 defaultValue: "show_original_text")),
+                PreferenceItem(title: "Swipe from left edge", icon: "arrow.backward.to.line", iconColor: .cyan,
+                               type: .multiValue(key: "story_detail_swipe_left_edge",
+                                                 titles: ["Back to story titles", "Previous story"],
+                                                 values: ["pop_to_story_list", "previous_story"], defaultValue: "pop_to_story_list"),
+                               pickerTitle: "Swipe from the left edge while reading")
+            ])
+        ])
+    }
+
     private func getAppVersion() -> String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
@@ -1149,6 +1157,11 @@ class PreferencesViewModel: ObservableObject {
     }
 
     func valueChanged(key: String, value: Any) {
+        if key == "enable_feed_swipes" || key == "enable_story_swipes" {
+            withAnimation(.easeInOut(duration: 0.2)) { updateHiddenKeys() }
+        } else {
+            updateHiddenKeys()
+        }
         delegate?.preferenceValueChanged(key: key, value: value)
     }
 }
@@ -1245,10 +1258,29 @@ struct PreferenceSectionView: View {
             .padding(.bottom, 10)
             .padding(.top, 4)
 
-            // Card containing items
-            VStack(spacing: 0) {
+            if section.groups.isEmpty {
+                itemCard(section.items, footer: section.footerText)
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(section.groups) { group in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(group.title)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(PreferencesColors.textPrimary)
+                                .padding(.horizontal, 4)
+                                .accessibilityAddTraits(.isHeader)
+                            itemCard(group.items, footer: group.footer)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func itemCard(_ items: [PreferenceItem], footer: String?) -> some View {
+        VStack(spacing: 0) {
                 // Section Items
-                let visibleItems = section.items.filter { item in
+                let visibleItems = items.filter { item in
                     if case .toggle(let key, _) = item.type {
                         return viewModel.shouldShow(key: key)
                     } else if case .multiValue(let key, _, _, _) = item.type {
@@ -1260,7 +1292,7 @@ struct PreferenceSectionView: View {
                 }
 
                 ForEach(Array(visibleItems.enumerated()), id: \.element.id) { index, item in
-                    PreferenceItemView(item: item, viewModel: viewModel)
+                    PreferenceItemView(item: item, viewModel: viewModel, fullRowHitArea: section.title == "Gestures")
 
                     if index < visibleItems.count - 1 {
                         Divider()
@@ -1270,7 +1302,7 @@ struct PreferenceSectionView: View {
                 }
 
                 // Footer
-                if let footer = section.footerText {
+                if let footer {
                     Text(footer)
                         .font(.system(size: 12))
                         .foregroundColor(PreferencesColors.textSecondary)
@@ -1283,7 +1315,6 @@ struct PreferenceSectionView: View {
             .background(PreferencesColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .shadow(color: Color.black.opacity(0.08), radius: 3, x: 0, y: 1)
-        }
     }
 }
 
@@ -1392,6 +1423,7 @@ struct ClusterSettingStateView: View {
 struct PreferenceItemView: View {
     let item: PreferenceItem
     @ObservedObject var viewModel: PreferencesViewModel
+    var fullRowHitArea = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -1400,7 +1432,8 @@ struct PreferenceItemView: View {
                 ToggleItemView(item: item, key: key, defaultValue: defaultValue, viewModel: viewModel)
 
             case .multiValue(let key, let titles, let values, let defaultValue):
-                MultiValueItemView(item: item, key: key, titles: titles, values: values, defaultValue: defaultValue, viewModel: viewModel)
+                MultiValueItemView(item: item, key: key, titles: titles, values: values, defaultValue: defaultValue,
+                                   viewModel: viewModel, fullRowHitArea: fullRowHitArea)
 
             case .slider(let key, let minValue, let maxValue, let defaultValue, let minImage, let maxImage):
                 SliderItemView(item: item, key: key, minValue: minValue, maxValue: maxValue, defaultValue: defaultValue, minImage: minImage, maxImage: maxImage, viewModel: viewModel)
@@ -1481,6 +1514,8 @@ struct ToggleItemView: View {
 
             Toggle("", isOn: $isOn)
                 .labelsHidden()
+                .accessibilityLabel(item.title)
+                .accessibilityIdentifier(key)
                 .tint(PreferencesColors.newsblurGreen)
                 .onChange(of: isOn) { newValue in
                     viewModel.valueChanged(key: key, value: newValue)
@@ -1501,6 +1536,7 @@ struct MultiValueItemView: View {
     let values: [Any]
     let defaultValue: Any
     @ObservedObject var viewModel: PreferencesViewModel
+    var fullRowHitArea = false
 
     @State private var selectedIndex: Int = 0
     @State private var showPicker = false
@@ -1509,18 +1545,22 @@ struct MultiValueItemView: View {
         Button(action: { showPicker = true }) {
             if key == "cluster_mode" {
                 clusterModeRow
+            } else if fullRowHitArea {
+                // PreferencesView.swift includes the spacer and padding in gesture picker buttons' tap targets.
+                standardRow.contentShape(Rectangle())
             } else {
                 standardRow
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier(key)
         .onAppear {
             loadCurrentValue()
         }
         .sheet(isPresented: $showPicker) {
             PickerSheet(
                 key: key,
-                title: item.title,
+                title: item.pickerTitle ?? item.title,
                 titles: titles,
                 values: values,
                 selectedIndex: $selectedIndex,
@@ -1717,7 +1757,10 @@ struct PickerSheet: View {
 
                                 Spacer()
 
-                                if index == selectedIndex {
+                                if key == "story_toolbar_position" {
+                                    Image(systemName: index == selectedIndex ? "largecircle.fill.circle" : "circle")
+                                        .foregroundColor(PreferencesColors.newsblurGreen)
+                                } else if index == selectedIndex {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(PreferencesColors.newsblurGreen)
                                         .font(.body.bold())

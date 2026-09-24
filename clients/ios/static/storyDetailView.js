@@ -1,3 +1,16 @@
+// StoryDetailObjCViewController.m must receive readiness even if optional media or touch setup fails.
+function notifyStoryDOMReady() {
+    if (!window.sampleText) {
+        notifyLoaded();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', notifyStoryDOMReady, { once: true });
+} else {
+    setTimeout(notifyStoryDOMReady, 0);
+}
+
 var loadImages = function() {
     
     $('.NB-story img, .NB-story video').each(function () {
@@ -22,6 +35,49 @@ var linkAt = function(x, y, attribute) {
     var el = document.elementFromPoint(x, y);
     return el && el[attribute];
 };
+
+// StoryImageViewerController.swift uses viewport coordinates, including after rotation.
+var newsblur_image_sequence = 0;
+function newsblurImageRect(token, load_id) {
+    var load = document.querySelector('meta[name="newsblur-story-load"]');
+    if (!load || load.content !== load_id) return null;
+    var image = document.querySelector('img[data-newsblur-image-token="' + token + '"]');
+    if (!image) return null;
+    var rect = image.getBoundingClientRect();
+    return {x: rect.left, y: rect.top, width: rect.width, height: rect.height,
+            viewportWidth: window.innerWidth};
+}
+
+function newsblurOpenImage(image) {
+    var bridge = window.webkit && window.webkit.messageHandlers.newsblurStoryImage;
+    var load = document.querySelector('meta[name="newsblur-story-load"]');
+    if (!bridge || !load || !image || image.tagName !== 'IMG' || !image.closest('.NB-story') ||
+        !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
+    var token = image.getAttribute('data-newsblur-image-token');
+    if (!token) {
+        token = String(++newsblur_image_sequence);
+        image.setAttribute('data-newsblur-image-token', token);
+    }
+    var link = image.closest('a[href]');
+    bridge.postMessage({loadID: load.content, token: token,
+        src: image.currentSrc || image.src,
+        originalURL: image.getAttribute('data-newsblur-original-src') || image.currentSrc || image.src,
+        link: link ? link.href : '', title: image.alt || image.title || 'Story image',
+        naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
+        rect: newsblurImageRect(token, load.content)});
+    return true;
+}
+
+function newsblurOpenImageAt(x, y) {
+    return newsblurOpenImage(document.elementFromPoint(x, y));
+}
+
+document.addEventListener('click', function(event) {
+    if (newsblurOpenImage(event.target)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    }
+}, true);
 
 $('a.NB-show-profile').live('click', function () {
     var offset = $('img', this).offset();
@@ -87,19 +143,19 @@ $('.NB-button').live('touchend', function (e) {
 
 function setImage(img) {
     var $img = $(img);
-    var width = $(img).width();
-    var height = $(img).height();
-//    console.log("img load", img.src, width, height);
+    var width = img.naturalWidth || $(img).width();
+    var height = img.naturalHeight || $(img).height();
+//    console.log("img load", img.src, width, height, img.naturalWidth, img.naturalHeight);
     if ($img.prop('tagName') == 'VIDEO') {
         $img.attr('class', 'NB-large-image');
-    } else if ($img.attr('src').indexOf('feedburner') != - 1) {
+    } else if (($img.attr('src') || '').indexOf('feedburner') != - 1) {
         $img.attr('class', 'NB-feedburner');
-    } else if (width >= (320-24) && height >= 50) {
+    } else if (width >= 300 && height >= 50) {
         $img.attr('class', 'NB-large-image');
         if ($img.parent().attr('href')) {
             $img.parent().addClass('NB-contains-image')
         }
-    } else if (width > 30 && height > 30) {
+    } else if (width >= 300 && height > 30) {
         $img.attr('class', 'NB-medium-image');
         if ($img.parent().attr('href')) {
             $img.parent().addClass('NB-contains-image')
@@ -236,8 +292,10 @@ function attachFastClick() {
 }
 
 function notifyLoaded() {
-    var url = "http://ios.newsblur.com/notify-loaded";
-    window.location = url;
+    var load = document.querySelector('meta[name="newsblur-story-load"]');
+    if (load && window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.newsblurStoryReady) {
+        window.webkit.messageHandlers.newsblurStoryReady.postMessage(load.getAttribute("content"));
+    }
 }
 
 function scoreIconHtml(score) {
@@ -328,7 +386,4 @@ fitVideos();
 
 Zepto(function($) {
       attachFastClick();
-      if (!window.sampleText) {
-        notifyLoaded();
-      }
 });

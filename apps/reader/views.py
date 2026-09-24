@@ -136,6 +136,13 @@ from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
+from utils.folder_paths import (
+    InvalidFolderPath,
+    folder_path_errors,
+    parse_folder_path,
+    parse_folder_paths,
+    resolve_folder_path,
+)
 from utils.ratelimit import ratelimit, ratelimit_by_url_user
 from utils.story_functions import (
     format_story_link_date__long,
@@ -731,6 +738,7 @@ def load_feeds(request):
         "is_staff": user.is_staff,
         "user_id": user.pk,
         "folders": json.decode(folders.folders),
+        "folder_paths_supported": True,
         "starred_count": starred_count,
         "starred_counts": starred_counts,
         "saved_searches": saved_searches,
@@ -3972,6 +3980,7 @@ def _parse_user_info(user):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def add_url(request):
     code = 0
     url = request.POST.get("url", "")
@@ -3980,6 +3989,11 @@ def add_url(request):
     auto_active = is_true(request.POST.get("auto_active", 1))
     skip_fetch = is_true(request.POST.get("skip_fetch", False))
     feed = None
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        subscription_folders, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
+        resolve_folder_path(json.decode(subscription_folders.folders or "[]"), folder_path)
+        folder = folder_path
 
     if not url:
         code = -1
@@ -4015,7 +4029,7 @@ def add_url(request):
     if new_folder:
         usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
         usf.add_folder(folder, new_folder)
-        folder = new_folder
+        folder = folder + [new_folder] if isinstance(folder, list) else new_folder
 
     code, message, us = UserSubscription.add_subscription(
         user=request.user, feed_address=url, folder=folder, auto_active=auto_active, skip_fetch=skip_fetch
@@ -4031,9 +4045,13 @@ def add_url(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def add_folder(request):
     folder = request.POST["folder"].replace("river:", "")
     parent_folder = request.POST.get("parent_folder", "").replace("river:", "")
+    parent_path = parse_folder_path(request, "parent_folder_path")
+    if parent_path is not None:
+        parent_folder = parent_path
     folders = None
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
 
@@ -4054,11 +4072,16 @@ def add_folder(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def delete_feed(request):
     feed_id = int(request.POST["feed_id"])
     in_folder = request.POST.get("in_folder", "").replace("river:", "")
     if not in_folder or in_folder == " ":
         in_folder = ""
+
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        in_folder = folder_path
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_feed(feed_id, in_folder)
@@ -4101,9 +4124,18 @@ def delete_feed_by_url(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def delete_folder(request):
     folder_to_delete = request.POST.get("folder_name") or request.POST.get("folder_to_delete")
     in_folder = request.POST.get("in_folder", None)
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        if not folder_path:
+            raise InvalidFolderPath("Choose a folder, not Top Level.")
+        folder_to_delete = folder_path[-1]
+        in_folder = folder_path[:-1]
+        folder_tree = UserSubscriptionFolders.objects.get(user=request.user)
+        resolve_folder_path(json.decode(folder_tree.folders), folder_path)
     feed_ids_in_folder = request.POST.getlist("feed_id") or request.POST.getlist("feed_id[]")
     feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 
@@ -4118,7 +4150,9 @@ def delete_folder(request):
     folders = json.decode(user_sub_folders.folders)
 
     # Clean up folder icon when folder is deleted
-    MFolderIcon.delete_folder_icon(request.user.pk, folder_to_delete)
+    MFolderIcon.delete_folder_icon(
+        request.user.pk, " - ".join(folder_path) if folder_path else folder_to_delete
+    )
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
@@ -4177,6 +4211,10 @@ def _find_full_folder_path(flat_folders, folder_leaf_name, parent_leaf_name):
     full paths like "Parent - Child - Grandchild". parent_leaf_name is the immediate parent's
     leaf name (empty string for top-level folders).
     """
+    if isinstance(parent_leaf_name, list):
+        candidate = " - ".join(parent_leaf_name + [folder_leaf_name])
+        return candidate if candidate in flat_folders else None
+
     for path in flat_folders:
         parts = path.split(" - ")
         if parts[-1] != folder_leaf_name:
@@ -4212,12 +4250,21 @@ def _update_classifiers_for_folder_path_change(user_id, old_path, new_path):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def rename_folder(request):
     folder_to_rename = request.POST.get("folder_name") or request.POST.get("folder_to_rename")
     new_folder_name = request.POST["new_folder_name"]
     in_folder = request.POST.get("in_folder", "").replace("river:", "")
     if "Top Level" in in_folder:
         in_folder = ""
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        if not folder_path:
+            raise InvalidFolderPath("Choose a folder, not Top Level.")
+        folder_to_rename = folder_path[-1]
+        in_folder = folder_path[:-1]
+        folder_tree = UserSubscriptionFolders.objects.get(user=request.user)
+        resolve_folder_path(json.decode(folder_tree.folders), folder_path)
     code = 0
 
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
@@ -4230,10 +4277,12 @@ def rename_folder(request):
 
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
         # Update folder icon when folder is renamed
-        MFolderIcon.rename_folder_icon(request.user.pk, folder_to_rename, new_folder_name)
+        icon_old_name = " - ".join(folder_path) if folder_path else folder_to_rename
+        icon_new_name = " - ".join(folder_path[:-1] + [new_folder_name]) if folder_path else new_folder_name
+        MFolderIcon.rename_folder_icon(request.user.pk, icon_old_name, icon_new_name)
         # Update folder-scoped classifiers using full flattened paths
         if old_path:
-            parts = old_path.split(" - ")
+            parts = list(folder_path) if folder_path else old_path.split(" - ")
             parts[-1] = new_folder_name
             new_path = " - ".join(parts)
             _update_classifiers_for_folder_path_change(request.user.pk, old_path, new_path)
@@ -4246,10 +4295,18 @@ def rename_folder(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def move_feed_to_folders(request):
     feed_id = int(request.POST["feed_id"])
     in_folders = request.POST.getlist("in_folders", "") or request.POST.getlist("in_folders[]", "")
     to_folders = request.POST.getlist("to_folders", "") or request.POST.getlist("to_folders[]", "")
+
+    in_paths = parse_folder_paths(request, "in_folder_paths")
+    to_paths = parse_folder_paths(request, "to_folder_paths")
+    if in_paths is not None or to_paths is not None:
+        if in_paths is None or to_paths is None:
+            raise InvalidFolderPath("Supply both source and destination folder paths.")
+        in_folders, to_folders = in_paths, to_paths
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_feed_to_folders(

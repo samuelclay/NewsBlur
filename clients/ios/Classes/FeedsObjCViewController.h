@@ -19,13 +19,14 @@
 // keep in sync with NewsBlurTopSectionNames
 static enum {
     NewsBlurTopSectionDashboard = 0,
-    NewsBlurTopSectionDailyBriefing = 1,
-    NewsBlurTopSectionInfrequentSiteStories = 2,
-    NewsBlurTopSectionAllStories = 3
+    NewsBlurTopSectionDiscoverSites = 1,
+    NewsBlurTopSectionDailyBriefing = 2,
+    NewsBlurTopSectionInfrequentSiteStories = 3,
+    NewsBlurTopSectionAllStories = 4
 } NewsBlurTopSection;
 
 @interface FeedsObjCViewController : BaseViewController
-<UITableViewDelegate, UITableViewDataSource,
+<UITableViewDelegate, UITableViewDataSource, UITableViewDataSourcePrefetching,
 NSCacheDelegate,
 UIPopoverControllerDelegate,
 MCSwipeTableViewCellDelegate,
@@ -102,6 +103,7 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
+- (void)resetForAccountChange;
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
@@ -155,6 +157,7 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (IBAction)tapAddSite:(id)sender;
 
 - (void)reloadFeedTitlesTable;
+- (void)refreshVisibleFeedCounts;
 - (void)refreshFolderCounts;
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
@@ -177,4 +180,5 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)showDoneNotifier;
 - (void)hideNotifier;
 
+- (void)highlightDiscoverySelection;
 @end

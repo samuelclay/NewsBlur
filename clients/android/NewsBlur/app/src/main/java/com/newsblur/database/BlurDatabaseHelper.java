@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import com.newsblur.domain.CustomIcon;
 
@@ -116,7 +118,8 @@ public class BlurDatabaseHelper {
      */
     @Nullable
     public static CustomIcon getFolderIcon(String folderName) {
-        return folderIcons.get(folderName);
+        CustomIcon icon = folderIcons.get(folderName);
+        return icon != null ? icon : folderIcons.get(com.newsblur.network.FolderPath.serverName(folderName));
     }
 
     /**
@@ -279,6 +282,7 @@ public class BlurDatabaseHelper {
                             "( SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")",
                     new String[]{Long.toString(cutoffDate.getTime().getTime())});
             com.newsblur.util.Log.d(this, "cleaned up ancient stories: " + count);
+            new ClusterReadStore(dbRW).cleanup();
         }
     }
 
@@ -294,6 +298,7 @@ public class BlurDatabaseHelper {
                             "( SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")",
                     null);
             com.newsblur.util.Log.d(this, "cleaned up read stories: " + count);
+            new ClusterReadStore(dbRW).cleanup();
         }
     }
 
@@ -318,6 +323,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {
             dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);
             dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);
+            new ClusterReadStore(dbRW).cleanup();
         }
     }
 
@@ -327,6 +333,7 @@ public class BlurDatabaseHelper {
             dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, DatabaseConstants.SOCIAL_FEED_ID + " = ?", selArgs);
             dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);
             dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?", selArgs);
+            new ClusterReadStore(dbRW).cleanup();
         }
     }
 
@@ -342,6 +349,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {
             dbRW.delete(DatabaseConstants.STORY_TABLE, null, null);
             dbRW.delete(DatabaseConstants.STORY_TEXT_TABLE, null, null);
+            new ClusterReadStore(dbRW).cleanup();
         }
         vacuum();
     }
@@ -414,20 +422,17 @@ public class BlurDatabaseHelper {
         }
     }
 
-    // note method name: this gets a set rather than a list, in case the caller wants to
-    // spend the up-front cost of hashing for better lookup speed rather than iteration!
+    /** UnreadsSubService.kt needs story ages to interpret capped unread-hash responses safely. */
     @NonNull
-    public Set<String> getUnreadStoryHashesAsSet() {
-        String q = "SELECT " + DatabaseConstants.STORY_HASH +
+    public Map<String, Long> getUnreadStoryTimestamps() {
+        String query = "SELECT " + DatabaseConstants.STORY_HASH + ", " + DatabaseConstants.STORY_TIMESTAMP +
                 " FROM " + DatabaseConstants.STORY_TABLE +
                 " WHERE " + DatabaseConstants.STORY_READ + " = 0";
-        Cursor c = dbRO.rawQuery(q, null);
-        Set<String> hashes = new HashSet<>();
-        while (c.moveToNext()) {
-            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
+        Map<String, Long> timestamps = new HashMap<>();
+        try (Cursor cursor = dbRO.rawQuery(query, null)) {
+            while (cursor.moveToNext()) timestamps.put(cursor.getString(0), cursor.getLong(1));
         }
-        c.close();
-        return hashes;
+        return timestamps;
     }
 
     @NonNull
@@ -508,7 +513,7 @@ public class BlurDatabaseHelper {
                             com.newsblur.util.Log.e(this, "story received without story hash: " + story.id);
                             continue storiesloop;
                         }
-                        insertSingleStoryExtSync(story);
+                        insertSingleStoryExtSync(story, apiResponse.readStatusAuthoritative);
                         // if the story is being fetched for the immediate session, also add the hash to the session table
                         if (forImmediateReading && story.isStoryVisibleInState(stateFilter)) {
                             ContentValues sessionHashValues = new ContentValues();
@@ -523,7 +528,7 @@ public class BlurDatabaseHelper {
                         com.newsblur.util.Log.e(this, "story received without story hash: " + apiResponse.story.id);
                         return;
                     }
-                    insertSingleStoryExtSync(apiResponse.story);
+                    insertSingleStoryExtSync(apiResponse.story, apiResponse.readStatusAuthoritative);
                     impliedFeedId = apiResponse.story.feedId;
                 }
 
@@ -592,12 +597,15 @@ public class BlurDatabaseHelper {
         }
     }
 
-    private void insertSingleStoryExtSync(@NonNull Story story) {
+    private void insertSingleStoryExtSync(@NonNull Story story, boolean readStatusAuthoritative) {
+        ClusterReadStore clusters = new ClusterReadStore(dbRW);
+        clusters.normalizeStory(story, readStatusAuthoritative);
         // pick a thumbnail for the story
         story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
         // insert the story data
         ContentValues values = story.getValues();
         dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        clusters.registerStory(story);
         // if a story was shared by a user, also insert it into the social table under their userid, too
         if (story.sharedUserIds != null) {
             for (String sharedUserId : story.sharedUserIds) {
@@ -739,7 +747,7 @@ public class BlurDatabaseHelper {
 
     public Folder getFolder(@NonNull String folderName) {
         String[] selArgs = new String[]{folderName};
-        String selection = DatabaseConstants.FOLDER_NAME + " = ?";
+        String selection = DatabaseConstants.FOLDER_PATH + " = ?";
         Cursor c = dbRO.query(DatabaseConstants.FOLDER_TABLE, null, selection, selArgs, null, null, null);
         if (c.moveToFirst()) {
             Folder folder = Folder.fromCursor(c);
@@ -747,7 +755,11 @@ public class BlurDatabaseHelper {
             return folder;
         } else {
             closeQuietly(c);
-            return null;
+            // BlurDatabaseHelper.java resolves old saved sessions only when their leaf name is unique.
+            try (Cursor legacy = dbRO.query(DatabaseConstants.FOLDER_TABLE, null,
+                    DatabaseConstants.FOLDER_NAME + " = ?", selArgs, null, null, null)) {
+                return legacy.getCount() == 1 && legacy.moveToFirst() ? Folder.fromCursor(legacy) : null;
+            }
         }
     }
 
@@ -759,15 +771,11 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void markStoryHashesRead(@NonNull Collection<String> hashes) {
+    public void markStoryHashesRead(@NonNull Collection<String> hashes, long requestStartedAt) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                ContentValues values = new ContentValues();
-                values.put(DatabaseConstants.STORY_READ, true);
-                for (String hash : hashes) {
-                    dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
-                }
+                new ClusterReadStore(dbRW).reconcileServerReadState(hashes, true, requestStartedAt);
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
@@ -836,99 +844,57 @@ public class BlurDatabaseHelper {
      * Marks a story (un)read but does not adjust counts. Must stay idempotent an time-insensitive.
      */
     public void setStoryReadState(@Nullable String hash, boolean read) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_READ, read);
-        synchronized (RW_MUTEX) {
-            dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
-        }
+        if (hash != null) applyStoryReadHashes(Collections.singleton(hash), read, false);
     }
 
-    /**
-     * Marks a story (un)read and also adjusts unread counts for it. Non-idempotent by design.
-     *
-     * @return the set of feed IDs that potentially have counts impacted by the mark.
-     */
+    /** ClusterReadStore.kt updates standalone and embedded copies atomically, with idempotent counts. */
     @NonNull
-    public Set<FeedSet> setStoryReadState(@NonNull Story story, boolean read) {
-        // calculate the impact surface so the caller can re-check counts if needed
-        Set<FeedSet> impactedFeeds = new HashSet<FeedSet>();
-        impactedFeeds.add(FeedSet.singleFeed(story.feedId));
-        Set<String> socialIds = new HashSet<String>();
-        if (!TextUtils.isEmpty(story.socialUserId)) {
-            socialIds.add(story.socialUserId);
-        }
-        if (story.friendUserIds != null) {
-            socialIds.addAll(Arrays.asList(story.friendUserIds));
-        }
-        if (socialIds.size() > 0) {
-            impactedFeeds.add(FeedSet.multipleSocialFeeds(socialIds));
-        }
-        // check the story's starting state and the desired state and adjust it as an atom so we
-        // know if it truly changed or not
+    public Set<FeedSet> applyStoryReadHashes(@NonNull Collection<String> hashes, boolean read, boolean adjustCounts) {
+        return applyStoryReadHashes(hashes, read, adjustCounts, null);
+    }
+
+    @NonNull
+    public Set<FeedSet> applyStoryReadHashes(@NonNull Collection<String> hashes, boolean read, boolean adjustCounts, @Nullable Long actionTime) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                // get a fresh copy of the story from the DB so we know if it changed
-                Cursor c = dbRW.query(DatabaseConstants.STORY_TABLE,
-                        new String[]{DatabaseConstants.STORY_READ},
-                        DatabaseConstants.STORY_HASH + " = ?",
-                        new String[]{story.storyHash},
-                        null, null, null);
-                if (!c.moveToFirst()) {
-                    Log.w(this.getClass().getName(), "story removed before finishing mark-read");
-                    return impactedFeeds;
-                }
-                boolean origState = (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.STORY_READ)) > 0);
-                c.close();
-                // if there is nothing to be done, halt
-                if (origState == read) {
-                    dbRW.setTransactionSuccessful();
-                    return impactedFeeds;
-                }
-                // update the story's read state
-                ContentValues values = new ContentValues();
-                values.put(DatabaseConstants.STORY_READ, read);
-                dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{story.storyHash});
-                // which column to inc/dec depends on story intel
-                String impactedCol;
-                String impactedSocialCol;
-                if (story.intelligence.calcTotalIntel() < 0) {
-                    // negative stories don't affect counts
-                    dbRW.setTransactionSuccessful();
-                    return impactedFeeds;
-                } else if (story.intelligence.calcTotalIntel() == 0) {
-                    impactedCol = DatabaseConstants.FEED_NEUTRAL_COUNT;
-                    impactedSocialCol = DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT;
-                } else {
-                    impactedCol = DatabaseConstants.FEED_POSITIVE_COUNT;
-                    impactedSocialCol = DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT;
-                }
-                String operator = (read ? " - 1" : " + 1");
-                StringBuilder q = new StringBuilder("UPDATE " + DatabaseConstants.FEED_TABLE);
-                q.append(" SET ").append(impactedCol).append(" = ").append(impactedCol).append(operator);
-                q.append(" WHERE " + DatabaseConstants.FEED_ID + " = ").append(story.feedId);
-                dbRW.execSQL(q.toString());
-                for (String socialId : socialIds) {
-                    q = new StringBuilder("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE);
-                    q.append(" SET ").append(impactedSocialCol).append(" = ").append(impactedSocialCol).append(operator);
-                    q.append(" WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = ").append(socialId);
-                    dbRW.execSQL(q.toString());
-                }
+                Set<FeedSet> impacted = new ClusterReadStore(dbRW).apply(hashes, read, adjustCounts, actionTime);
+                dbRW.setTransactionSuccessful();
+                return impacted;
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
+    public void reconcileServerUnreadHashes(@NonNull Collection<String> hashes, long requestStartedAt,
+                                           @NonNull Predicate<String> isFeedEligible,
+                                           @NonNull BiPredicate<String, Long> isTimestampEligible) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                ClusterReadStore.UnreadReconciliationStats stats =
+                        new ClusterReadStore(dbRW).reconcileServerUnread(hashes, requestStartedAt, isFeedEligible, isTimestampEligible);
+                com.newsblur.util.Log.i(getClass().getName(), "embedded unread candidates inspected: " + stats.getInspectedChildCount()
+                        + ", retirement candidates: " + stats.getRetirementCandidateCount());
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
             }
         }
-        return impactedFeeds;
+    }
+
+    /** ClusterReadStore.kt keeps both overloads consistent with embedded read state. */
+    @NonNull
+    public Set<FeedSet> setStoryReadState(@NonNull Story story, boolean read) {
+        return applyStoryReadHashes(Collections.singleton(story.storyHash), read, true);
     }
 
     /**
      * Marks a range of stories in a subset of feeds as read. Does not update unread counts;
      * the caller must use updateLocalFeedCounts() or the /reader/feed_unread_count API.
      */
-    public void markStoriesRead(@NonNull FeedSet fs, @Nullable Long olderThan, @Nullable Long newerThan) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.STORY_READ, true);
+    public void markStoriesRead(@NonNull FeedSet fs, @Nullable Long olderThan, @Nullable Long newerThan, long actionTime) {
         String rangeSelection = null;
         if (olderThan != null)
             rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " <= " + olderThan;
@@ -953,7 +919,13 @@ public class BlurDatabaseHelper {
             throw new IllegalStateException("Asked to mark stories for FeedSet of unknown type.");
         }
         synchronized (RW_MUTEX) {
-            dbRW.update(DatabaseConstants.STORY_TABLE, values, conjoinSelections(feedSelection, rangeSelection), null);
+            dbRW.beginTransaction();
+            try {
+                new ClusterReadStore(dbRW).applyBulkRead(conjoinSelections(feedSelection, rangeSelection), actionTime);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
         }
     }
 
@@ -1263,6 +1235,18 @@ public class BlurDatabaseHelper {
         }
     }
 
+    @NonNull
+    public Story.ClusterStory[] getStoryClusterStories(@NonNull String hash) {
+        // ReadingItemFragment.kt restores omitted Bundle metadata off the main thread.
+        String q = "SELECT " + DatabaseConstants.STORY_CLUSTER_STORIES +
+                " FROM " + DatabaseConstants.STORY_TABLE +
+                " WHERE " + DatabaseConstants.STORY_HASH + " = ? LIMIT 1";
+        try (Cursor cursor = dbRO.rawQuery(q, new String[]{hash})) {
+            if (!cursor.moveToFirst()) return new Story.ClusterStory[]{};
+            return Story.ClusterStory.fromJson(cursor.getString(0));
+        }
+    }
+
     @Nullable
     public String getStoryThumbnailUrl(@Nullable String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_THUMBNAIL_URL +
@@ -1413,7 +1397,9 @@ public class BlurDatabaseHelper {
             return rawQuery(DatabaseConstants.DAILY_BRIEFING_SESSION_STORY_QUERY, null, cancellationSignal);
         }
 
-        StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
+        StringBuilder q = new StringBuilder(fs.getSingleFeed() != null
+                ? DatabaseConstants.SINGLE_FEED_SESSION_STORY_QUERY
+                : DatabaseConstants.SESSION_STORY_QUERY_BASE);
 
         if (fs.isAllRead()) {
             q.append(" ORDER BY ").append(DatabaseConstants.READ_STORY_ORDER);
@@ -1913,7 +1899,7 @@ public class BlurDatabaseHelper {
         Folder folder = getFolder(folderName);
         if (folder == null) return emptySet();
         Set<String> feedIds = new HashSet<>(folder.feedIds);
-        for (String child : folder.children) feedIds.addAll(getFeedIdsRecursive(child));
+        for (String child : folder.children) feedIds.addAll(getFeedIdsRecursive(folder.childPath(child)));
         return feedIds;
     }
 }
