@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-09-15T11:03:20-04:00</updated>
+  <updated>2026-09-23T23:19:01-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,258 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur 15 for iOS: smoother reading, floating toolbars, and Add + Discover Sites</title>
+    <link href="https://blog.newsblur.com/2026/09/23/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS: smoother reading, floating toolbars, and Add + Discover Sites" />
+    <published>2026-09-23T00:00:00-04:00</published>
+    <updated>2026-09-23T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/09/23/newsblur-15-for-ios</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/09/23/newsblur-15-for-ios/">
+      <![CDATA[<p>Scrolling through your news should feel effortless. So should opening a story, going back to the list, and picking up where you left off. NewsBlur 15 for iOS puts a lot of work into those small, repeated motions: faster story lists, smoother scrolling, more reliable reading positions, and controls that are easier to reach.</p>
+
+<p>I’ve also brought the full Add + Discover Sites experience to the app. You can explore new sources, read their stories, and decide whether to subscribe without leaving NewsBlur. But first, the part you’ll feel every time you open it.</p>
+
+<h3 id="the-reader-gets-out-of-your-way">The reader gets out of your way</h3>
+
+<p>Story lists scroll more smoothly, even with thumbnails and long titles. Returning to a feed can show its cached stories while fresh ones load. Opening an article brings up the reading controls right away, then fades in the article once its layout and reading position are ready. The aim is simple: less waiting and less jumping around on the way to the words.</p>
+
+<p>The story list now has a floating glass toolbar at the bottom, with search, display options, and settings within reach. Its controls fit into smaller groups when there’s room, leaving the stories visible between them. Prefer your toolbar at the top? There’s a Top or Bottom choice in Preferences.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-story-list.webp" aria-label="iPhone story list with the floating glass toolbar at the bottom">
+        <source src="/assets/ios-15-reader.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-story-list.webp" alt="iPhone story list with the floating glass toolbar at the bottom" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Scroll through stories, open an article, and return to your place.<br /><a class="mobile-release-phone__download" href="/assets/ios-15-reader.mp4">Open video</a></figcaption>
+</figure>
+
+<p>Feed and story gestures have separate preferences, including independent left and right swipe actions for story titles. If you like swiping right to save a story, you can choose that. If you prefer swiping back to your feeds, you can keep that instead. Long press a feed, folder, or story for a native action menu, or keep a custom long press shortcut.</p>
+
+<p>Menus have been reorganized with quieter icons and clearer groups, and appearance controls are available inline. Common actions such as saving, sharing, training, and marking older or newer stories read are easier to find.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-reader.webp" aria-label="Scrolling an article on iPhone as its floating controls hide and return">
+        <source src="/assets/ios-15-article-scroll.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-reader.webp" alt="Scrolling an article on iPhone as its floating controls hide and return" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>The controls move out of the way as you read and return when you scroll back.<br /><a class="mobile-release-phone__download" href="/assets/ios-15-article-scroll.mp4">Open video</a></figcaption>
+</figure>
+
+<h3 id="images-deserve-a-little-more-room">Images deserve a little more room</h3>
+
+<p>Tap an article image to open the new viewer. Pinch or double tap to zoom, and pan around when you’re zoomed in. At its fitted size, tap or swipe to return to the article. You can also save an image to Photos, copy it, share it, or open it in your browser from the image menu.</p>
+
+<p>On iPad, the viewer opens across the whole app, giving the image room beyond the article column. Dismissing it returns you to your place in the reader.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-image-viewer.webp" aria-label="An article image opening in the iPhone image viewer and returning to the article">
+        <source src="/assets/ios-15-image-viewer.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-image-viewer.webp" alt="An article image opening in the iPhone image viewer and returning to the article" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Open an image, then swipe back to the article.<br /><a class="mobile-release-phone__download" href="/assets/ios-15-image-viewer.mp4">Open video</a></figcaption>
+</figure>
+
+<h3 id="add-an-address-or-find-something-new">Add an address, or find something new</h3>
+
+<p>The plus button opens a compact panel for adding a site and choosing its folder. It also gives you shortcuts into discovery. If you have something in mind, paste its address. If you don’t, start exploring.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-add-site.webp" aria-label="The iPhone Add Site sheet with an address field and discovery source shortcuts">
+        <source src="/assets/ios-15-add-site.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-add-site.webp" alt="The iPhone Add Site sheet with an address field and discovery source shortcuts" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Quick Add is also a starting point for discovery.<br /><a class="mobile-release-phone__download" href="/assets/ios-15-add-site.mp4">Open video</a></figcaption>
+</figure>
+
+<p><strong>Add + Discover Sites</strong> brings together search, popular sites, YouTube, Reddit, newsletters, podcasts, Google News, and Web Feeds. Swipe between sources to find a channel, a subreddit, or a podcast, or build a feed from a page that doesn’t have RSS. Each source keeps its scroll position when you move to another and come back.</p>
+
+<p>Site previews show recent story titles, images, and excerpts, with publishing activity to help you judge a feed. Tap an article to read that exact story, or use <strong>Try</strong> to browse the feed before subscribing. Returning to discovery brings you back to your place, with the preview you opened highlighted.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-discover.webp" aria-label="Opening a story from iPhone discovery results and returning to its highlighted preview">
+        <source src="/assets/ios-15-discover.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-discover.webp" alt="Opening a story from iPhone discovery results and returning to its highlighted preview" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Read a story, then pick up where you left off in discovery.<br /><a class="mobile-release-phone__download" href="/assets/ios-15-discover.mp4">Open video</a></figcaption>
+</figure>
+
+<p>Choose a folder beside <strong>Add</strong> and the site goes straight into it. The folder choice is remembered, and you can switch between List and Grid views. Related Sites now uses the same previews and controls. On iPad, trying a feed keeps the three column reader available, so you can browse discovery, scan titles, and read an article together.</p>
+
+<h3 id="offline-storage-that-cleans-up-after-itself">Offline storage that cleans up after itself</h3>
+
+<p>This release also fixes offline cache cleanup. NewsBlur keeps recent stories within your chosen limit and clears unused article text and images. <strong>Delete offline stories</strong> now clears cached article content more thoroughly and reclaims database space, while keeping your subscriptions and pending read and save actions.</p>
+
+<p>NewsBlur 15 for iOS is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a>. I’ve written separately about the <a href="/2026/09/23/newsblur-15-for-android/">Android release</a>.</p>
+
+<p>If you have feedback on the new controls, scrolling, or discovery, I’d love to hear it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[Scrolling through your news should feel effortless. So should opening a story, going back to the list, and picking up where you left off. NewsBlur 15 for iOS puts a lot of work into those small, repeated motions: faster story lists, smoother scrolling, more reliable reading positions, and controls that...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur 15 for Android: smoother scrolling, a better reader, and more to discover</title>
+    <link href="https://blog.newsblur.com/2026/09/23/newsblur-15-for-android/" rel="alternate" type="text/html" title="NewsBlur 15 for Android: smoother scrolling, a better reader, and more to discover" />
+    <published>2026-09-23T00:00:00-04:00</published>
+    <updated>2026-09-23T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/09/23/newsblur-15-for-android</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/09/23/newsblur-15-for-android/">
+      <![CDATA[<p>The part of a news reader you use most is the part that’s easiest to take for granted. Scroll through a folder, open a story, read a little, go back, open the next one. A small delay or a lost reading position interrupts that rhythm every time. For NewsBlur 15 on Android, I spent a lot of time on that loop.</p>
+
+<p>This release brings faster startup, smoother feed and story lists, floating reading controls, and more control over gestures. It also brings the full Add + Discover Sites experience to Android, so finding something new to read is as comfortable as reading the sites you already follow.</p>
+
+<h3 id="a-smoother-path-through-your-stories">A smoother path through your stories</h3>
+
+<p>Feed and story scrolling has been reworked, along with the transitions into and out of the reader. Returning from an article highlights the story you just left, making it easier to keep your place in a long list. Folder navigation and nested folder pickers have had attention too.</p>
+
+<p>The floating controls put the things you reach for near your thumb. In the story list, search, display options, and settings sit together in the toolbar. In the reader, the controls sit in smaller groups that leave more of the article visible and move out of the way as you scroll. You can choose whether the story list toolbar lives at the top or bottom in Preferences.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-story-list.webp" aria-label="Android story list with thumbnails and the floating toolbar at the bottom">
+        <source src="/assets/android-15-reader.mp4" type="video/mp4" />
+        <img src="/assets/android-15-story-list.webp" alt="Android story list with thumbnails and the floating toolbar at the bottom" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Scroll through stories, open an article, and return to your place.<br /><a class="mobile-release-phone__download" href="/assets/android-15-reader.mp4">Open video</a></figcaption>
+</figure>
+
+<p>Gestures are configurable, with separate choices for feeds and stories. Set the swipe, tap, and long press actions to suit how you read. If you prefer to see your options, long press a story to open its action menu. The menus have clearer groups and open from the control you tapped, and appearance controls let you adjust the view without digging through a separate settings screen.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-article-scroll.webp" aria-label="Scrolling a full article on Android as the floating reading controls hide and return">
+        <source src="/assets/android-15-article-scroll.mp4" type="video/mp4" />
+        <img src="/assets/android-15-article-scroll.webp" alt="Scrolling a full article on Android as the floating reading controls hide and return" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>The controls move out of the way as you read and return when you scroll back.<br /><a class="mobile-release-phone__download" href="/assets/android-15-article-scroll.mp4">Open video</a></figcaption>
+</figure>
+
+<h3 id="take-a-closer-look">Take a closer look</h3>
+
+<p>Article images now have their own viewer. Tap an image, pinch or double tap to zoom, then swipe to dismiss it and return to your article. The status and navigation bars stay in place when the viewer opens, so the page behind it doesn’t jump to a different height.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-image-viewer.webp" aria-label="An article image open in the Android image viewer with the phone status and navigation bars visible">
+        <source src="/assets/android-15-image-viewer.mp4" type="video/mp4" />
+        <img src="/assets/android-15-image-viewer.webp" alt="An article image open in the Android image viewer with the phone status and navigation bars visible" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Open an image, double tap to zoom, and swipe back to your article.<br /><a class="mobile-release-phone__download" href="/assets/android-15-image-viewer.mp4">Open video</a></figcaption>
+</figure>
+
+<h3 id="find-your-next-favorite-site">Find your next favorite site</h3>
+
+<p>The plus button opens a compact Add Site panel. If you already have an address, paste it and choose a folder. If you’re looking for something new, the shortcuts take you into discovery, including Popular and Trending sites.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-add-site.webp" aria-label="Android Add Site panel with an address field, folder picker, and discovery shortcuts">
+        <source src="/assets/android-15-add-site.mp4" type="video/mp4" />
+        <img src="/assets/android-15-add-site.webp" alt="Android Add Site panel with an address field, folder picker, and discovery shortcuts" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Open Quick Add and jump into discovery.<br /><a class="mobile-release-phone__download" href="/assets/android-15-add-site.mp4">Open video</a></figcaption>
+</figure>
+
+<p>Add + Discover Sites brings together site search, popular feeds, YouTube, Reddit, newsletters, podcasts, Google News, and Web Feeds. Search for a YouTube channel, find a subreddit, or browse for a podcast without having to track down its RSS address yourself. Web Feeds can help you follow a page that doesn’t publish an RSS feed.</p>
+
+<p>Results show recent story titles, images, and excerpts, along with publishing activity. Tap a story preview to read that exact article, or tap <strong>Try</strong> to look through the feed before subscribing. When you return, the loaded previews are still there. If a feed needs fetching, NewsBlur shows progress and gives you a way to retry.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-discover.webp" aria-label="Android discovery results showing recent stories, images, and subscription controls">
+        <source src="/assets/android-15-discover.mp4" type="video/mp4" />
+        <img src="/assets/android-15-discover.webp" alt="Android discovery results showing recent stories, images, and subscription controls" />
+      </video>
+      
+    </div>
+  </div>
+  <figcaption>Open a story preview, then return to discovery where you left off.<br /><a class="mobile-release-phone__download" href="/assets/android-15-discover.mp4">Open video</a></figcaption>
+</figure>
+
+<p>The folder picker sits beside <strong>Add</strong>, so a new site goes straight where you want it. Discovery remembers your folder and your List or Grid view. Related Sites uses the same rich previews and controls, so you can explore outward from a site you already like in the same way.</p>
+
+<h3 id="the-smaller-things-add-up">The smaller things add up</h3>
+
+<p>There are also improvements to related stories, unread state syncing, offline reading, and opening older stories directly. Nested folders keep their identities even when names overlap. These are less visible than a new toolbar, but they matter when you’re moving through a lot of reading on your phone.</p>
+
+<p>NewsBlur 15 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. The <a href="/2026/09/23/newsblur-15-for-ios/">iOS release</a> has its own reader and discovery overhaul too.</p>
+
+<p>If a gesture doesn’t feel right or you have an idea for making reading more comfortable, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[The part of a news reader you use most is the part that’s easiest to take for granted. Scroll through a folder, open a story, read a little, go back, open the next one. A small delay or a lost reading position interrupts that rhythm every time. For NewsBlur 15...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Matching Stories: see every story behind a tag, author, or classifier</title>
@@ -1924,92 +2176,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Custom icons for folders and feeds</title>
-    <link href="https://blog.newsblur.com/2026/01/07/custom-icons/" rel="alternate" type="text/html" title="Custom icons for folders and feeds" />
-    <published>2026-01-07T00:00:00-05:00</published>
-    <updated>2026-01-07T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/01/07/custom-icons</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/01/07/custom-icons/">
-      <![CDATA[<p>I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance, especially the ones I check most often.</p>
-
-<p>That’s why I built custom icons for both folders and feeds. You can now personalize any folder or feed with an emoji, a preset icon in any color, or even upload your own image.</p>
-
-<p><img src="/assets/custom-icons-folder-list.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Right-click on any folder or feed in your feed list and select “Folder settings” or “Site settings”. You’ll see a new “Folder Icon” or “Feed Icon” tab where you can customize the icon.</p>
-
-<p><img src="/assets/custom-icons-colors.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>There are three ways to set a custom icon:</p>
-
-<p><strong>Preset icons</strong>: Pick from over 240 icons (a mix of outline and filled styles) and colorize them with any of 84 colors organized by hue. Want a red heart for your favorites folder? A blue code bracket for programming feeds? It’s all there.</p>
-
-<p><img src="/assets/custom-icons-preset.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" />
-<img src="/assets/custom-icons-preset2.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Emoji</strong>: Choose from 180 emojis organized by category. A basketball for sports feeds, a fork and knife for cooking, a newspaper for news—you get the idea.</p>
-
-<p><img src="/assets/custom-icons-emoji.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Upload your own</strong>: Have a specific image in mind? Upload any image and it will be automatically resized to fit perfectly in your feed list.</p>
-
-<p><img src="/assets/custom-icons-upload.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="great-for-feeds-without-icons">Great for feeds without icons</h3>
-
-<p>Many feeds don’t have favicons, or they have generic RSS icons that all look the same. Custom feed icons let you give these feeds distinctive icons so you can spot them instantly. I’ve been using this to add icons to older blogs and newsletters that never bothered setting up a proper favicon.</p>
-
-<p>Custom icons are available now on the web for all NewsBlur users. Folders and feeds both support the same icon options of emoji, preset icons with colors, or uploaded images.</p>
-
-<p>If you have feedback or ideas for additional icon options, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance,...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Auto-enable captions on YouTube videos</title>
-    <link href="https://blog.newsblur.com/2025/12/22/youtube-captions/" rel="alternate" type="text/html" title="Auto-enable captions on YouTube videos" />
-    <published>2025-12-22T00:00:00-05:00</published>
-    <updated>2025-12-22T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2025/12/22/youtube-captions</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2025/12/22/youtube-captions/">
-      <![CDATA[<p>You can now automatically enable captions on YouTube videos embedded in your feeds. Head to Preferences &gt; Stories and check the new “YouTube Captions” option.</p>
-
-<p><img src="/assets/youtube-captions-preference.png" style="border: 1px solid rgba(0,0,0,0.1);" /></p>
-
-<p>When enabled, any YouTube video in any story will automatically show captions when you start playing it (assuming the video has captions available). This is great for watching videos in noisy environments, for accessibility, or for following along in a language you’re learning.</p>
-
-<p><img src="/assets/youtube-captions-video.png" style="border: 1px solid rgba(0,0,0,0.1);" /></p>
-
-<p>This works by adding the <code class="language-plaintext highlighter-rouge">cc_load_policy=1</code> parameter to YouTube embed URLs on-the-fly, so it applies to all your feeds without modifying the original content. The preference is off by default, so existing behavior is unchanged unless you opt in.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[You can now automatically enable captions on YouTube videos embedded in your feeds. Head to Preferences &gt; Stories and check the new “YouTube Captions” option.
 ]]>
     </summary>
     
