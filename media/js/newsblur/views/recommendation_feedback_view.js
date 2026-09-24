@@ -78,14 +78,21 @@ NEWSBLUR.discovery_loading = function () {
         .append('<div class="NB-discovery-loading-lines"><i></i><i></i><i></i></div>');
 };
 
-NEWSBLUR.reveal_discovery_stories = function () {
-    NEWSBLUR.assets.stories.each(function (story, index) {
-        if (index >= 12) return;
+// recommendation_feedback_view.js: Each page continues the cascade on the beat after the page before it.
+NEWSBLUR.reveal_discovery_stories = function (first_new_story) {
+    var now = Date.now();
+    var assets = NEWSBLUR.assets;
+    var queued_delay = first_new_story ? Math.max(0, (assets.discovery_reveal_next_at || 0) - now) : 0;
+    _.each(assets.stories.models.slice(first_new_story), function (story, index) {
+        var delay = queued_delay + index * 70;
+        assets.discovery_reveal_next_at = now + delay + 70;
         _.each([story.story_title_view, story.story_view], function (view) {
             if (!view) return;
-            view.$el.css('--discovery-reveal-delay', Math.min(index * 110, 770) + 'ms')
-                .addClass('NB-discovery-reveal').one('animationend', function () {
-                    $(this).removeClass('NB-discovery-reveal');
+            view.$el.css('--discovery-reveal-delay', delay + 'ms')
+                .addClass('NB-discovery-reveal').on('animationend.discovery_reveal', function (e) {
+                    // recommendation_feedback_view.js: A child's animation must not end a queued reveal early.
+                    if (e.target !== this) return;
+                    $(this).off('animationend.discovery_reveal').removeClass('NB-discovery-reveal');
                 });
         });
     });
