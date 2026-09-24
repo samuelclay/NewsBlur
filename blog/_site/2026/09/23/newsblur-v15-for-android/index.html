@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="For a while now, NewsBlur on Android hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at." />
+<meta property="og:description" content="For a while now, NewsBlur on Android hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at." />
+<link rel="canonical" href="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/" />
+<meta property="og:url" content="https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:image" content="https://blog.newsblur.com/assets/android-15-related-sites.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-09-23T00:00:00-04:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://blog.newsblur.com/assets/android-15-related-sites.png" />
+<meta property="twitter:title" content="NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-09-23T00:00:00-04:00","datePublished":"2026-09-23T00:00:00-04:00","description":"For a while now, NewsBlur on Android hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.","headline":"NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer","image":"https://blog.newsblur.com/assets/android-15-related-sites.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2026/09/23/newsblur-v15-for-android/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+  </header>
+
+  <div class="post-header-sticky">
+    <p class="post-meta">
+      <time class="dt-published" datetime="2026-09-23T00:00:00-04:00" itemprop="datePublished">Sep 23, 2026
+      </time></p>
+    <h1 class="post-title p-name" itemprop="name headline">NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floating toolbars, and a new image viewer</h1>
+  </div>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>For a while now, NewsBlur on Android hasn’t felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.</p>
+
+<p>With that foundation in place, v15 also brings the Add + Discover Sites experience from the web to Android, along with floating toolbars, full bleed images with a new image viewer, and gestures you can configure.</p>
+
+<h3 id="smoother-scrolling-and-faster-story-opens">Smoother scrolling and faster story opens</h3>
+
+<p>Most of the slowness came from the app doing far more work than it needed to:</p>
+
+<ul>
+  <li>Marking a story read used to rebuild its entire row, parsing the title again and reloading the thumbnail. Now only the read styling changes, with a short fade.</li>
+  <li>Background syncs could overlap, with a canceled sync still doing network work while its replacement started. Syncs now run one at a time.</li>
+  <li>The feed list waited for the sync service before showing anything. It now loads straight from the local cache, so your feeds show up right away and work fully offline.</li>
+  <li>The reader waited for the article to finish rendering before appearing. Now it slides in immediately with the title, and the article fades in a moment later.</li>
+</ul>
+
+<p>The difference is easy to feel, and it shows up in the measurements too:</p>
+
+<ul>
+  <li>Janky frames while scrolling the feed list dropped from 32% to 15%.</li>
+  <li>Janky frames while scrolling the story list dropped from 14% to 7%.</li>
+  <li>The worst stall while scrolling a long article went from 152ms to 88ms.</li>
+  <li>Opening a story you’ve opened before went from 889ms to 189ms.</li>
+</ul>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-scroll.mp4" type="video/mp4" />
+</video>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>The + button in the feed list now opens a compact Add Site sheet. Paste a URL or search for a site, pick a folder, and add it. Below that are eight shortcuts into discovery: Web Feed, Popular, Trending, YouTube, Reddit, Newsletters, Podcasts, and Google News.</p>
+
+<p>Each shortcut opens the full Add + Discover Sites screen, the same one I launched <a href="/2026/03/04/add-and-discover-sites/">on the web</a> earlier this year. Browse by category, search within a source, and add a site straight into the folder you want. Folder pickers remember the last folder you chose, and Web Feed turns any website into a feed.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-discover.mp4" type="video/mp4" />
+</video>
+
+<p>Every site has a Try button that previews its stories without subscribing. If a feed hasn’t been fetched in a while, the preview fetches fresh stories automatically and shows you its progress. Tap a story in a discovery card and it opens that exact story, with the rest of the site’s stories loaded behind it.</p>
+
+<p>Related Sites uses the same cards. Tap the Related Sites button on the left side of the story list toolbar, or pick it from the feed menu, to see similar sites along with their latest stories, images, and excerpts. Your Grid or List choice carries over between the two.</p>
+
+<p><img src="/assets/android-15-related-sites.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="floating-toolbars">Floating toolbars</h3>
+
+<p>The story list controls now float at the bottom of the screen, so stories scroll right behind them and you get more room to read. If you’d rather have them at the top, there’s a Story list toolbar position setting under Story Layout in Preferences. The feed list has a single floating capsule too, with Add on the left, the All, Unread, Focus, and Saved filter in the middle, and settings on the right.</p>
+
+<p>In the reader, the toolbar hides as you scroll down and comes back the moment you scroll up.</p>
+
+<p><img src="/assets/android-15-story-list.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="full-bleed-images-and-a-new-image-viewer">Full bleed images and a new image viewer</h3>
+
+<p>Wide article images now run edge to edge, in both portrait and landscape. Tap any image to open it full screen. Double tap to zoom in, pinch to zoom further, drag to pan around, and swipe in any direction to dismiss it and go right back to the article.</p>
+
+<video autoplay="" loop="" muted="" playsinline="" width="720" height="1466" style="width: 45%;height: auto;margin: 24px auto;display: block;">
+<source src="/assets/android-15-reader.mp4" type="video/mp4" />
+</video>
+
+<h3 id="gestures-your-way">Gestures, your way</h3>
+
+<p>There’s a new Gestures section in Preferences. Choose what swiping left and right does on feeds and on stories, what a long press does (saving a story is a new option), and what a double tap does in the reader. Rows now follow your finger as you swipe and show an icon for the action you’re about to trigger.</p>
+
+<p><img src="/assets/android-15-gestures.png" style="width: 45%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="menus-that-stay-out-of-the-way">Menus that stay out of the way</h3>
+
+<p>Menus now fade in and grow out of the button you tapped. Long press a feed or a story and you get a grouped menu with icons, including Mark newer as read and Mark older as read. Font size, list density, and theme are right in the settings menu, so changing them doesn’t mean digging through Preferences.</p>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
+<img src="/assets/android-15-story-menu.png" style="width: 45%;" />
+<img src="/assets/android-15-appearance-menu.png" style="width: 45%;" />
+</div>
+
+<h3 id="everything-else">Everything else</h3>
+
+<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
+
+<h4 id="improvements">Improvements</h4>
+
+<ul>
+  <li>Nested folders show up as an indented tree, and folder pickers can choose subfolders and create new folders inside them.</li>
+  <li>A single Mark stories read setting covers on scroll or selection, on selection only, after a delay of 1 to 60 seconds, or manually.</li>
+  <li>Matching stories from other sites are marked read along with the story they match, following your web preference.</li>
+  <li>The story you tapped stays highlighted while the reader opens. When you go back, the list scrolls to the last story you read and fades its highlight.</li>
+  <li>Next and Previous prepare the next story before it animates in, so you never see a blank page.</li>
+  <li>Story rows use Whitney to match iOS, and long headlines wrap in balanced lines.</li>
+  <li>Folders animate smoothly as they expand and collapse.</li>
+</ul>
+
+<h4 id="fixes">Fixes</h4>
+
+<ul>
+  <li>Fixed the next folder search looping forever when nothing was unread.</li>
+  <li>Fixed the Previous button sometimes being disabled.</li>
+  <li>Fixed dark bands appearing during folder animations.</li>
+  <li>Fixed an older bulk mark read overriding stories you had since marked unread.</li>
+</ul>
+
+<p>NewsBlur v15 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. The same performance and discovery work also shipped in <a href="/2026/09/23/newsblur-v15-for-ios-and-mac/">NewsBlur v15 for iOS and Mac</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+  </div><a class="u-url" href="/2026/09/23/newsblur-v15-for-android/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function system_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      var current_theme = system_theme();
+
+      function apply(theme) {
+        current_theme = theme;
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(current_theme);
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(current_theme === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(system_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
+
+</html>
