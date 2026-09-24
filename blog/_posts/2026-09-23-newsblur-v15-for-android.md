@@ -4,7 +4,7 @@ title: "NewsBlur v15 for Android: Smoother scrolling, Add + Discover Sites, floa
 tags: ["android"]
 ---
 
-I read NewsBlur on my Android phone every day, and for a while now it hasn't felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.
+For a while now, NewsBlur on Android hasn't felt as quick as it should. The feed list would hitch while scrolling, opening a story took a beat too long, and marking a story read made the whole list stutter. So for v15 I started with performance. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at.
 
 With that foundation in place, v15 also brings the Add + Discover Sites experience from the web to Android, along with floating toolbars, full bleed images with a new image viewer, and gestures you can configure.
 
