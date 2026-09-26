@@ -33,10 +33,10 @@ candidate pool does not consume a preview; concurrent first opens use the same
 atomic selection. Weekly records expire two weeks after their reset date and
 are removed when the account is deleted.
 
-While the first response is pending, a small constellation animates above a
-loading state. New picks enter in a short stagger without delaying the request
-or changing read state. Returning to a saved preview skips the entrance motion.
-All motion respects reduced-motion preferences. A callout beneath the preview
+While a page is pending, Discovery shows the same loading bar as every other
+feed. Each page's stories enter in a 70ms stagger that continues where the
+previous page's cascade left off, without delaying the request or changing read
+state. All motion respects reduced-motion preferences. A callout beneath the preview
 opens the upgrade dialog with personalized Discovery highlighted in Archive.
 
 ## Ranking and data

@@ -360,9 +360,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
-        if (this.collection === NEWSBLUR.assets.stories && NEWSBLUR.reader.active_feed === 'trending:discovery' && !this.collection.length) {
-            $endline = NEWSBLUR.discovery_loading();
-        }
         $feed_scroll.append($endline);
     },
 

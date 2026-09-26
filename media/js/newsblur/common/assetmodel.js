@@ -1206,7 +1206,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback, function () {
             if (NEWSBLUR.Globals.user_id !== user_id || NEWSBLUR.reader.active_feed !== feed_id ||
                 generation !== self.trending_request_generation) return;
-            $('.NB-discovery-loading').remove();
             if (error_callback) error_callback.apply(null, arguments);
         }, {
             'ajax_group': (page ? 'feed_page' : 'feed'),

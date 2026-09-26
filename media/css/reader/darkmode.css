@@ -43,8 +43,7 @@ body.NB-dark {
 .NB-dark .NB-recommendation-feedback,
 .NB-dark .NB-feedback-summary,
 .NB-dark .NB-feedback-history,
-.NB-dark .NB-discovery-preview-end,
-.NB-dark .NB-discovery-loading {
+.NB-dark .NB-discovery-preview-end {
     --feedback-text: #bdc7b8;
     --feedback-border: #67735f;
     --feedback-selected: #2d3c2a;

@@ -2,8 +2,7 @@
 .NB-recommendation-feedback,
 .NB-feedback-summary,
 .NB-feedback-history,
-.NB-discovery-preview-end,
-.NB-discovery-loading {
+.NB-discovery-preview-end {
     --feedback-text: #535b50;
     --feedback-border: #c7cdbf;
     --feedback-selected: #e4eddb;
@@ -204,18 +203,7 @@
     background-image: url('/media/img/icons/phosphor-fill/sparkle-fill.svg');
     filter: invert(40%) sepia(50%) saturate(1100%) hue-rotate(95deg) brightness(90%) contrast(100%);
 }
-.NB-discovery-loading { grid-column: 1 / -1; padding: 56px 28px; text-align: center; }
-.NB-discovery-loading > svg { display: block; width: 160px; height: 56px; margin: 0 auto 18px; overflow: visible; }
-.NB-discovery-loading span { display: block; font-size: 13px; letter-spacing: .02em; }
-.NB-discovery-loading .NB-feedback-constellation-star { animation: NB-discovery-twinkle 1.6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
-.NB-discovery-loading .NB-feedback-constellation-star:nth-child(2n) { animation-delay: .45s; }
-.NB-discovery-loading .NB-feedback-constellation-star:nth-child(3n) { animation-delay: .85s; }
-.NB-discovery-loading-lines { max-width: 250px; margin: 26px auto 0; }
-.NB-discovery-loading-lines i { display: block; height: 5px; margin: 9px 0; border-radius: 4px; background: var(--feedback-border); opacity: .22; }
-.NB-discovery-loading-lines i:nth-child(2) { width: 85%; }
-.NB-discovery-loading-lines i:nth-child(3) { width: 62%; }
 .NB-discovery-reveal { animation: NB-discovery-arrive .55s var(--discovery-reveal-delay, 0ms) cubic-bezier(.2,.7,.2,1) backwards; }
-@keyframes NB-discovery-twinkle { from { opacity: .3; transform: scale(.8); } to { opacity: 1; transform: scale(1.35); } }
 @keyframes NB-discovery-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
 .NB-feedback-history { box-sizing: border-box; padding: 24px; }
@@ -292,7 +280,7 @@
 @media (prefers-reduced-motion: reduce) {
     .NB-recommendation-feedback-vote { transition: none; }
     .NB-feedback-sparkles { display: none; }
-    .NB-discovery-reveal, .NB-discovery-loading .NB-feedback-constellation-star { animation: none; }
+    .NB-discovery-reveal { animation: none; }
 }
 
 @media (max-width: 1000px) {

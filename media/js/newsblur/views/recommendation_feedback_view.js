@@ -71,13 +71,6 @@ NEWSBLUR.discovery_preview_callout = function () {
     return $callout;
 };
 
-NEWSBLUR.discovery_loading = function () {
-    return $('<div class="NB-end-line NB-discovery-loading" role="status">')
-        .append(NEWSBLUR.recommendation_feedback_chart([], 160, 56, true))
-        .append($('<span>').text('Finding stories for you…'))
-        .append('<div class="NB-discovery-loading-lines"><i></i><i></i><i></i></div>');
-};
-
 // recommendation_feedback_view.js: Each page continues the cascade on the beat after the page before it.
 NEWSBLUR.reveal_discovery_stories = function (first_new_story) {
     var now = Date.now();
