@@ -118,6 +118,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
     public static final String EXTRA_SESSION_DATA_KEY = "session_data_key";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
+    private static final String BUNDLE_SPLIT_READING_STORY_HASH = "splitReadingStoryHash";
     private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
     private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
     private static final long STORY_STATUS_HIDE_DURATION_MS = 250L;
@@ -169,6 +170,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean storyToolbarAtBottom;
     @Nullable
     private String preparedReturnStoryHash;
+    // The story the reader beside this list was showing before a rotation recreated the list.
+    @Nullable
+    private String restoredSplitReadingStoryHash;
     private boolean fetchingBannerDelayElapsed = false;
     @Nullable
     private ImageView interactiveSwipeUnderlay;
@@ -248,6 +252,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         String activeSearchQuery;
         if (bundle != null) {
             activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+            restoredSplitReadingStoryHash = bundle.getString(BUNDLE_SPLIT_READING_STORY_HASH);
         } else {
             activeSearchQuery = fs.getSearchQuery();
         }
@@ -282,6 +287,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (!q.isEmpty()) {
             savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
+        }
+        if (preparedReturnStoryHash != null && StorySplitView.isInSplit(this)) {
+            savedInstanceState.putString(BUNDLE_SPLIT_READING_STORY_HASH, preparedReturnStoryHash);
         }
     }
 
@@ -320,6 +328,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         updateStatusIndicators();
         if (itemSetFragment != null) {
             itemSetFragment.refreshLoadingIndicators();
+        }
+        if (StorySplitView.isInSplit(this)) {
+            // A rotation recreates this list but not the reader beside it, which still reports
+            // back through peekReadingLaunchParent, so claim that role and restore its highlight.
+            readingLaunchParentRef = new WeakReference<>(this);
+            if (restoredSplitReadingStoryHash != null) {
+                prepareReturnToStory(restoredSplitReadingStoryHash);
+                restoredSplitReadingStoryHash = null;
+            }
         }
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
