@@ -1862,8 +1862,7 @@ abstract class Reading :
     private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
 
     // The swipe back reveals the story list underneath, but in a tablet split the list is its own pane.
-    private fun isInteractiveReaderBackEnabled(): Boolean =
-        this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this)
+    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this)
 
     private fun supportsPredictiveReaderBack(): Boolean {
         val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())

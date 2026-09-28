@@ -77,7 +77,7 @@ object StorySplitView {
     // tablets in either orientation, but never a phone held sideways.
     const val MIN_SPLIT_WIDTH_DP = 600
 
-    private val STORY_LIST_ACTIVITIES =
+    internal val STORY_LIST_ACTIVITIES =
         listOf(
             AllSharedStoriesItemsList::class.java,
             AllStoriesItemsList::class.java,
@@ -93,7 +93,7 @@ object StorySplitView {
             WidelyReadStoriesItemsList::class.java,
         )
 
-    private val READING_ACTIVITIES =
+    internal val READING_ACTIVITIES =
         listOf(
             AllSharedStoriesReading::class.java,
             AllStoriesReading::class.java,
