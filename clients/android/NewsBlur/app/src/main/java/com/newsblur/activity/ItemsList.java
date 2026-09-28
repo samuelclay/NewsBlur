@@ -76,6 +76,7 @@ import com.newsblur.util.StoryHeaderPillAppearanceResolver;
 import com.newsblur.util.StoryHeaderOptionsTitleFormatter;
 import com.newsblur.util.StoryHeaderPillLayoutDecider;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StorySplitView;
 import com.newsblur.util.TryFeedSessionResetter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.viewModel.ItemListViewModel;
@@ -1158,6 +1159,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     public void animateBackToFeedListFromReading() {
+        // The slide away reveals the feed list underneath, but in a tablet split
+        // (StorySplitView.kt) this story list is one pane, so just close it and its reader.
+        if (StorySplitView.isInSplit(this)) {
+            finish();
+            return;
+        }
         beginInteractiveStoryListSwipe();
         completeInteractiveStoryListSwipe();
     }
@@ -1415,7 +1422,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private boolean isInteractiveStoryListBackEnabled() {
-        return binding != null && !isTaskRoot() && !isFinishing();
+        // The swipe back draws a full screen feed list snapshot, which doesn't fit a split pane.
+        return binding != null && !isTaskRoot() && !isFinishing() && !StorySplitView.isInSplit(this);
     }
 
     @Override
