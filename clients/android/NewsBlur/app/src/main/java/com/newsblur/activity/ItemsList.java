@@ -198,6 +198,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
+        StorySplitView.keepOpaqueWhileInSplit(this);
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);

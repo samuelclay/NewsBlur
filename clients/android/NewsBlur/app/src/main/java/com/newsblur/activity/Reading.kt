@@ -311,6 +311,7 @@ abstract class Reading :
             PendingTransitionUtils.overrideEnterTransition(this)
         }
         window.setBackgroundDrawableResource(android.R.color.transparent)
+        StorySplitView.keepOpaqueWhileInSplit(this)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
