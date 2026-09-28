@@ -517,13 +517,46 @@ final class Test_DuoLiveUI: XCTestCase {
 
         // DuoLiveUITests.swift uses actual gestures in the left table to prove its native header can minimize and restore independently.
         let visibleWeb = try XCTUnwrap(app.webViews.allElementsBoundByIndex.first { $0.isHittable })
-        let protectedTop = visibleWeb.frame.minY
+        let webFrameBeforeCollapse = visibleWeb.frame
+        let protectedTop = webFrameBeforeCollapse.minY
         list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8))
             .press(forDuration: 0.05, thenDragTo: list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25)))
         let collapsed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             !self.app.buttons["expanded-feeds-back"].isHittable && abs(list.frame.minY - protectedTop) <= 1
         }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [collapsed], timeout: 15), .completed,
+        let collapseResult = XCTWaiter.wait(for: [collapsed], timeout: 15)
+        if collapseResult != .completed {
+            // DuoLiveUITests.swift records both displays before the failure assertion can abort and cleanup changes the layout.
+            capture("duo-live-reading-title-collapse-failed")
+            let header = app.buttons["expanded-feeds-back"]
+            let headerExists = header.exists
+            let headerHittable = headerExists && header.isHittable
+            let headerSnapshot = headerExists ? try? header.snapshot() : nil
+            let listSnapshot = try? list.snapshot()
+            let webSnapshot = try? visibleWeb.snapshot()
+            let listFrame = list.exists ? list.frame : CGRect.null
+            let webFrame = visibleWeb.exists ? visibleWeb.frame : CGRect.null
+            let rows = listSnapshot.map { snapshot in
+                flattened(snapshot).filter { $0.elementType == .cell && $0.identifier.hasPrefix("story-row-") }
+                    .prefix(8).map { "\($0.identifier): \($0.frame)" }
+            } ?? []
+            let report = [
+                "protectedTop=\(protectedTop) tableTopDelta=\(listFrame.minY - protectedTop)",
+                "headerExists=\(headerExists) headerHittable=\(headerHittable) headerSnapshotFrame=\(String(describing: headerSnapshot?.frame))",
+                "tableAfter=\(listFrame) tableSnapshotFrame=\(String(describing: listSnapshot?.frame))",
+                "webBefore=\(webFrameBeforeCollapse) webAfter=\(webFrame) webSnapshotFrame=\(String(describing: webSnapshot?.frame))",
+                "storyRows:\n" + rows.joined(separator: "\n")
+            ].joined(separator: "\n")
+            let geometry = XCTAttachment(string: report)
+            geometry.name = "duo-live-reading-title-collapse-geometry"
+            geometry.lifetime = .keepAlways
+            add(geometry)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "duo-live-reading-title-collapse-hierarchy"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+        }
+        XCTAssertEqual(collapseResult, .completed,
                        "Scrolling story titles must hide their header and reclaim the whole protected top without a status strip")
         XCTAssertEqual(probe.value as? String, finalHash, "Scrolling titles must not change the selected article")
         capture("duo-live-reading-title-minimized")
@@ -1275,11 +1308,15 @@ final class Test_DuoLiveUI: XCTestCase {
             clear.tap()
         }
         field.typeText(text + "\n")
+        // DuoLiveUITests.swift gives each AX condition its own wait because Duo's absent-keyboard lookup can consume a combined timeout.
         let restored = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            self.feedSearchText(field) == text && !self.app.keyboards.firstMatch.exists
+            self.feedSearchText(field) == text
         }, object: nil)
-        guard XCTWaiter.wait(for: [restored], timeout: 5) == .completed else {
+        guard XCTWaiter.wait(for: [restored], timeout: 10) == .completed else {
             throw AuditCleanupError.unavailable("The feed search did not settle on the requested text")
+        }
+        guard app.keyboards.firstMatch.waitForNonExistence(timeout: 10) else {
+            throw AuditCleanupError.unavailable("The keyboard did not dismiss after submitting the feed search")
         }
     }
 
