@@ -63,12 +63,71 @@ struct StoryImageSource {
 
 // StoryDetailObjCViewController.m calls this after substituting each offline image URL.
 @objc(StoryImageOfflineSource) final class StoryImageOfflineSource: NSObject {
+    private static let imageStarts = try? NSRegularExpression(pattern: #"<img\b"#, options: .caseInsensitive)
+
+    private static func isWhitespace(_ character: unichar) -> Bool {
+        character == 32 || character == 9 || character == 10 || character == 12 || character == 13
+    }
+
     @objc static func annotate(_ html: String, cachedURL: String, originalURL: String) -> String {
-        let pattern = "(<img\\b[^>]*?\\s)src\\s*=\\s*([\"'])" + NSRegularExpression.escapedPattern(for: cachedURL) + "\\2"
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return html }
+        guard let imageStarts else { return html }
+        let document = html as NSString
+        var insertionLocations: [Int] = []
+        var previousTagEnd = 0
+        // StoryImageViewerController.swift scans attributes linearly; image bytes never enter a regex or a replacement template.
+        for image in imageStarts.matches(in: html, range: NSRange(location: 0, length: document.length)) {
+            if image.range.location < previousTagEnd { continue }
+            var cursor = NSMaxRange(image.range)
+            var sourceLocation: Int?
+            var alreadyAnnotated = false
+            while cursor < document.length {
+                let character = document.character(at: cursor)
+                if character == 62 {
+                    previousTagEnd = cursor + 1
+                    if !alreadyAnnotated, let sourceLocation { insertionLocations.append(sourceLocation) }
+                    break
+                }
+                if character == 60 { break }
+                if isWhitespace(character) || character == 47 { cursor += 1; continue }
+                let nameStart = cursor
+                while cursor < document.length {
+                    let character = document.character(at: cursor)
+                    if isWhitespace(character) || [61, 47, 62, 60, 34, 39].contains(character) { break }
+                    cursor += 1
+                }
+                if cursor == nameStart { break }
+                let name = document.substring(with: NSRange(location: nameStart, length: cursor - nameStart)).lowercased()
+                if name == "data-newsblur-original-src" { alreadyAnnotated = true }
+                while cursor < document.length && isWhitespace(document.character(at: cursor)) { cursor += 1 }
+                guard cursor < document.length, document.character(at: cursor) == 61 else { continue }
+                cursor += 1
+                while cursor < document.length && isWhitespace(document.character(at: cursor)) { cursor += 1 }
+                guard cursor < document.length else { break }
+                let quote = document.character(at: cursor)
+                if quote == 34 || quote == 39 {
+                    cursor += 1
+                    let end = document.range(of: quote == 34 ? "\"" : "'", options: .literal,
+                                             range: NSRange(location: cursor, length: document.length - cursor))
+                    guard end.location != NSNotFound else { break }
+                    let valueRange = NSRange(location: cursor, length: end.location - cursor)
+                    // StoryDetailObjCViewController.m supplies case-sensitive data URLs; keep original quoting and surrounding markup intact.
+                    if name == "src", sourceLocation == nil,
+                       document.compare(cachedURL, options: .literal, range: valueRange) == .orderedSame {
+                        sourceLocation = nameStart
+                    }
+                    cursor = NSMaxRange(end)
+                } else {
+                    while cursor < document.length && !isWhitespace(document.character(at: cursor)) &&
+                        document.character(at: cursor) != 62 && document.character(at: cursor) != 60 { cursor += 1 }
+                }
+            }
+        }
+        guard !insertionLocations.isEmpty else { return html }
         let escaped = originalURL.replacingOccurrences(of: "&", with: "&amp;").replacingOccurrences(of: "\"", with: "&quot;")
-        let replacement = "$1data-newsblur-original-src=\"" + NSRegularExpression.escapedTemplate(for: escaped) + "\" src=$2" + NSRegularExpression.escapedTemplate(for: cachedURL) + "$2"
-        return regex.stringByReplacingMatches(in: html, range: NSRange(html.startIndex..., in: html), withTemplate: replacement)
+        let annotation = "data-newsblur-original-src=\"\(escaped)\" "
+        let result = NSMutableString(string: html)
+        for location in insertionLocations.reversed() { result.insert(annotation, at: location) }
+        return result as String
     }
 }
 

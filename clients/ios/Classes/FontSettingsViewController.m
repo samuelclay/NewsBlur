@@ -383,6 +383,9 @@
                 reuseIdentifier:CellIndentifier];
     }
 
+    // FontSettingsViewController.m reuses font-preview cells for actions, so reset both text and font.
+    cell.textLabel.attributedText = nil;
+    cell.textLabel.font = MenuTableViewCell.menuFont;
     cell.textLabel.textColor = UIColorFromRGB(0x303030);
     cell.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
     cell.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
@@ -441,7 +444,12 @@
         if (idx != NSNotFound) {
             NSDictionary *font = self.fonts[idx];
             NSAttributedString *name = font[@"name"];
-            cell.textLabel.attributedText = name;
+            cell.textLabel.text = name.string;
+            UIFont *previewFont = name.length ? [name attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL] : nil;
+            if (previewFont) {
+                cell.textLabel.font = [[UIFontMetrics metricsForTextStyle:UIFontTextStyleBody]
+                                      scaledFontForFont:previewFont];
+            }
         } else {
             cell.textLabel.text = @"Font...";
         }

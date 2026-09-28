@@ -4,6 +4,42 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_RowActionMenus: XCTestCase {
+    func test_storyOptionsKeepTheSameFontAfterReusingFontPickerRow() throws {
+        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
+        let controller = controllerType.init(nibName: "FontSettingsViewController", bundle: nil)
+        controller.loadViewIfNeeded()
+        let app = GoToFeedMenuApp()
+        app.dictFeeds = [:]
+        app.storiesCollection = StoriesCollection()
+        app.activeStory = ["story_feed_id": 42, "read_status": 1, "starred": false]
+        controller.setValue(app, forKey: "appDelegate")
+        let style = UserDefaults.standard.string(forKey: "fontStyle") ?? "GothamNarrow-Book"
+        controller.setValue([["style": style, "name": NSAttributedString(string: "Gotham Narrow",
+            attributes: [.font: UIFont(name: "GothamNarrow-Book", size: 16)!])]], forKey: "fonts")
+        let source = try XCTUnwrap(controller as? UITableViewDataSource)
+        let table = StoryOptionsReuseTable(frame: CGRect(x: 0, y: 0, width: 300, height: 700), style: .plain)
+        let expectedSize = UIFontMetrics(forTextStyle: .body).scaledValue(for: 16)
+        print("Story menu Dynamic Type: \(UIApplication.shared.preferredContentSizeCategory.rawValue), \(expectedSize)pt")
+        table.reusedCell = source.tableView(table, cellForRowAt: IndexPath(row: 0, section: 0))
+        // RowActionMenuTests.swift sends the font-preview cell through the real action-row reuse path twice.
+        for _ in 0..<2 {
+            let preview = source.tableView(table, cellForRowAt: IndexPath(row: 0, section: 3))
+            XCTAssertEqual(preview.textLabel!.font.pointSize, expectedSize, accuracy: 0.01,
+                           "The font preview must scale with the action labels")
+            XCTAssertEqual(preview.textLabel!.font.fontName, "GothamNarrow-Book",
+                           "The font preview must retain the selected typeface")
+            for section in 0..<3 {
+                for row in 0..<source.tableView(table, numberOfRowsInSection: section) {
+                    let cell = source.tableView(table, cellForRowAt: IndexPath(row: row, section: section))
+                    XCTAssertEqual(cell.textLabel!.font.pointSize, expectedSize, accuracy: 0.01,
+                                   "\(cell.textLabel!.text ?? "") must retain the menu's Dynamic Type size")
+                    XCTAssertEqual(cell.textLabel!.font.fontName, "WhitneySSm-Medium",
+                                   "The font preview must not change the font of reused action rows")
+                }
+            }
+        }
+    }
+
     func test_storySettingsMenuRowsAnchorToVisibleNativeReaderBar() throws {
         try verifyStorySettingsMenuAnchors(vertical: true)
     }
@@ -641,6 +677,11 @@ import UIKit
     override func showSend(to controller: UIViewController!, sender: Any!) {
         presentedAnchor = sender as AnyObject?
     }
+}
+
+@MainActor private final class StoryOptionsReuseTable: UITableView {
+    var reusedCell: UITableViewCell?
+    override func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? { reusedCell }
 }
 
 @MainActor private final class GoToFeedMenuApp: NewsBlurAppDelegate {

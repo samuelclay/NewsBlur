@@ -199,6 +199,20 @@
       "reply": "Found it. You have 745 saved stories, and every ReadKit sync walks the whole saved list 10 stories at a time, about 75 requests. NewsBlur was allowing 50 requests to the saved stories endpoint in a rolling window of about five minutes, so each sync got cut off with a 429, and ReadKit then retried a minute or two later, which kept you pinned at the limit. Your 30 minute setting is fine, the retries are what made it look constant. I've raised that limit to 100 so a full sync fits, and 429s now say how long to wait, so this should stop with the next sync. I've also written to the ReadKit developer, since fetching 100 saved stories per request on their end would make this go away for larger libraries too.",
       "email": "Subject: NewsBlur 429s in ReadKit saved stories sync\n\nHi,\n\nI run NewsBlur. A ReadKit user with 745 saved stories posted on our forum about getting 429s on every sync, and I traced it to the saved stories sync. Here is what we see from the server for that account.\n\nEach sync makes about 75 requests to /reader/starred_stories, each returning 10 stories, which is one full pass over the saved list 10 stories at a time. That endpoint was limited to 50 requests per 5 minutes per session, so the pass got cut off around request 50 with a 429. The client then started a new sync 60 to 90 seconds later, which burned whatever budget had freed up, so the account stayed pinned at the limit indefinitely. Over six hours we logged 1,200 saved story requests from this one account, with the feed list and story hash calls every couple of minutes rather than the 30 minutes the user configured.\n\nOn our side I've raised that limit to 100 per 5 minutes and the 429 now carries a Retry-After header. Three changes on your side would make this solid for larger libraries, and any one of them would help a lot:\n\n1. Use /reader/starred_story_hashes (with include_timestamps=true) to diff against what you already have, then fetch only the new or changed stories with /reader/starred_stories?h=HASH&h=HASH, up to 100 hashes per request. That is what the hashes endpoint is for and it makes a routine sync a single request.\n\n2. If you keep walking pages, pass limit=100 on /reader/starred_stories. The default is 10. With 100 per page the 745 story library is 8 requests instead of 75.\n\n3. Honor Retry-After on a 429. It says how many seconds until the window frees up, so waiting that long instead of retrying within a minute is enough.\n\nThe API docs for both endpoints are at https://newsblur.com/api. Happy to answer questions or test a build against a heavy account.\n\nSam",
       "question": null
+    },
+    "13857": {
+      "title": "Font size issue in iOS gear menu",
+      "url": "https://forum.newsblur.com/t/font-size-issue-in-ios-gear-menu/13857",
+      "status": "merged",
+      "tier": 1,
+      "handled_at": "2026-09-28T14:13:15Z",
+      "last_posted_at": "2026-09-28T12:43:18.469Z",
+      "pr": null,
+      "branch": "main",
+      "worktree": null,
+      "note": "Requested direct local commit to main for a later iOS release. Font preview shares reusable table cells with story actions; action configuration retained the preview font. Reset attributed text and menu font on reuse, and scale the selected font preview with Body Dynamic Type. Regression reproduced before fix; all 21 RowActionMenu tests pass afterward. Not released or posted. Enlarged system text also passed the regression at 21pt versus baseline 16pt.",
+      "reply": "Found it. Some menu options were picking up the font from the font preview. Fixed for a future update, including consistent sizing with larger system text.",
+      "question": null
     }
   }
 }

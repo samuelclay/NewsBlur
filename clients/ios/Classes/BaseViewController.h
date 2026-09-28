@@ -21,6 +21,7 @@
 @property (nonatomic, readonly) BOOL fromDashboardStory;
 @property (nonatomic, readonly) BOOL isFeedShown;
 @property (nonatomic, readonly) BOOL isStoryShown;
+- (BOOL)readerKeyboardContextAvailable;
 
 - (void)informError:(id)error;
 - (void)informError:(id)error statusCode:(NSInteger)statusCode;

@@ -305,7 +305,9 @@ final class NewsBlurUITestHarness {
         precondition(remainingRetries > 0, "NewsBlurUITestHarness.swift timed out waiting for the fixture feed list")
         prepareFixtureFeedSidebar(on: appDelegate)
         guard let feedsNavigationController = appDelegate.feedsNavigationController else { return }
-        guard feedsNavigationController.viewIfLoaded?.window != nil else {
+        // NewsBlurUITestHarness.swift can select a reader fixture while the iPad feed sidebar is hidden.
+        guard feedsNavigationController.viewIfLoaded?.window != nil ||
+              appDelegate.detailViewController.viewIfLoaded?.window != nil else {
             retryConfiguringReader(on: appDelegate, scenario: scenario, remainingRetries: remainingRetries)
             return
         }
@@ -482,6 +484,8 @@ private enum ReaderUITestFixtures {
     static let swiftClusterMatchStoryHash = "ui-story-swift-cluster-match"
     static let swiftClusterRelatedStoryHash = "ui-story-swift-cluster-related"
     private static let bulkReadEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-bulk-read")
+    private static let cachedImagePaging = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-cached-image-paging")
+    private static let cachedPagingImageURLs = (0..<3).map { "https://ui-test.newsblur.example/paging-cache-\($0).jpg" }
     private static let bulkReadLock = NSLock()
     private static var bulkReadCutoff: Int?
 
@@ -496,6 +500,10 @@ private enum ReaderUITestFixtures {
             var item = story(hash: "ui-bulk-\(index)", feedID: swiftFeedId,
                              title: "Bulk story \(index + 1)", content: "<p>Mark older stories read fixture.</p>",
                              date: "\(index + 1)m", timestamp: timestamp, author: "Reader Fixtures")
+            if cachedImagePaging, index >= 3, index.isMultiple(of: 3) {
+                item["story_content"] = "<p>Cached image paging fixture, story \(index + 1).</p>" +
+                    cachedPagingImageURLs.enumerated().map { "<p><img alt='Cached picture \($0.offset + 1)' src='\($0.element)'></p>" }.joined()
+            }
             item["read_status"] = index == 0 || cutoff.map { timestamp <= $0 } == true ? 1 : 0
             return item
         }
@@ -561,6 +569,43 @@ private enum ReaderUITestFixtures {
         appDelegate.storiesCollection.reset()
 
         cacheFixtureImages(on: appDelegate)
+        cachePagingImages(on: appDelegate)
+    }
+
+    private static func cachePagingImages(on appDelegate: NewsBlurAppDelegate) {
+        guard cachedImagePaging else { return }
+        // NewsBlurUITestHarness.swift uses valid JPEGs with trailing padding to reproduce large offline cache entries deterministically.
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 320, height: 240), format: format).image { context in
+            UIColor.systemTeal.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 320, height: 240))
+            UIColor.systemOrange.setFill()
+            context.fill(CGRect(x: 30, y: 30, width: 260, height: 180))
+        }
+        guard var data = image.jpegData(compressionQuality: 0.9) else { return }
+        data.append(Data(repeating: 0x41, count: max(0, 1_048_576 - data.count)))
+        let directory = appDelegate.documentsURL.appendingPathComponent("story_images", isDirectory: true)
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            for (index, url) in cachedPagingImageURLs.enumerated() {
+                let file = directory.appendingPathComponent(Utilities.md5(url) + ".jpeg")
+                var imageData = data
+                imageData.append(UInt8(index))
+                try imageData.write(to: file, options: .atomic)
+            }
+        } catch {
+            preconditionFailure("NewsBlurUITestHarness.swift could not prepare cached paging images: \(error)")
+        }
+        // NewsBlurUITestHarness.swift inserts only into the isolated in-memory fixture database.
+        appDelegate.database.inDatabase { database in
+            for index in 3..<70 where index.isMultiple(of: 3) {
+                for url in cachedPagingImageURLs {
+                    _ = database?.executeUpdate("INSERT INTO cached_images (story_feed_id, story_hash, image_url, image_cached, failed) VALUES (?, ?, ?, 1, 0)",
+                                                withArgumentsIn: [swiftFeedId, "ui-bulk-\(index)", url])
+                }
+            }
+        }
     }
 
     static func unreadCountRows() -> [[String: Any]] {

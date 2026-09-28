@@ -512,7 +512,7 @@
     [self addKeyCommandWithInput:@"n" modifierFlags:0 action:@selector(doNextUnreadStory:) discoverabilityTitle:@"Next Unread Story"];
     [self addKeyCommandWithInput:@"u" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
     [self addKeyCommandWithInput:@"m" modifierFlags:0 action:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
-    [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(toggleStorySaved:) discoverabilityTitle:@"Save/Unsave Story"];
+    [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(toggleStorySaved:) discoverabilityTitle:@"Save/Unsave Story" wantPriority:YES];
     [self addKeyCommandWithInput:@"o" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
     [self addKeyCommandWithInput:@"v" modifierFlags:0 action:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
@@ -2325,6 +2325,10 @@
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    if (self.pendingPresentationOpenedEarly && self.pendingPresentationPage == currentPage) {
+        // StoryPagesObjCViewController.m keeps the visible article's document alive when a short swipe interrupts its entrance fade.
+        [currentPage cancelStoryPresentationFadePreservingStory];
+    }
     [self cancelPendingStoryPresentationForNavigation];
     self.isDraggingScrollview = YES;
     // Prevent diagonal scrolling: disable web view scroll and cancel in-progress gestures
@@ -2382,10 +2386,10 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
-    if (self.storySelectionTransitionHost) return;
-    [self lockScrollViewToNearestPage];
     self.isDraggingScrollview = NO;
     [self setWebViewsScrollEnabled:YES];
+    if (self.storySelectionTransitionHost) return;
+    [self lockScrollViewToNearestPage];
     if (appDelegate.feedDetailViewController.suppressMarkAsRead) {
         return;
     }
@@ -2399,16 +2403,15 @@
 }
 
 - (void)setWebViewsScrollEnabled:(BOOL)enabled {
-    for (StoryDetailViewController *page in @[currentPage, nextPage, previousPage]) {
+    BOOL allowsArticleScrolling = appDelegate.detailViewController.isPhoneOrCompact ||
+        !appDelegate.detailViewController.storyTitlesInGridView;
+    StoryDetailViewController *pages[] = {currentPage, nextPage, previousPage};
+    for (NSInteger index = 0; index < 3; index++) {
+        StoryDetailViewController *page = pages[index];
         if (!page) continue;
         UIScrollView *sv = page.webView.scrollView;
-        sv.scrollEnabled = enabled;
-        if (!enabled) {
-            // Force-cancel any in-progress pan gesture by toggling enabled.
-            // This transitions the gesture to .cancelled then back to .possible.
-            sv.panGestureRecognizer.enabled = NO;
-            sv.panGestureRecognizer.enabled = YES;
-        }
+        // StoryPagesObjCViewController.m lets UIScrollView cancel its pan and keeps it disabled for the whole page gesture.
+        sv.scrollEnabled = enabled && allowsArticleScrolling;
     }
 }
 
@@ -3590,6 +3593,9 @@
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    if (action == @selector(toggleStorySaved:)) {
+        return currentPage.pageIndex >= 0 && [self readerKeyboardContextAvailable];
+    }
     if (action == @selector(toggleTextView:) ||
         action == @selector(scrollPageDown:) ||
         action == @selector(scrollPageUp:) ||
@@ -3677,6 +3683,9 @@
 
 - (void)changedScrollOrientation {
     [self setNextPreviousButtons];
+    // StoryPagesObjCViewController.m restores article interaction when changing the paging axis interrupts deceleration.
+    self.isDraggingScrollview = NO;
+    [self setWebViewsScrollEnabled:YES];
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     [self reorientPages];
