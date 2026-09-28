@@ -1198,6 +1198,11 @@ abstract class Reading :
             }
             traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
             beginReadTimeTracking(story.storyHash)
+            // In a tablet split (StorySplitView.kt) the story list stays visible, so move its
+            // highlight to the story being read instead of waiting for the reader to close.
+            if (StorySplitView.isInSplit(this)) {
+                ItemsList.peekReadingLaunchParent()?.prepareReturnToStory(story.storyHash)
+            }
             // Reading.kt schedules dwell synchronously with selection; old IO callbacks cannot replace its timer.
             if (!isRestoringSelection) triggerMarkStoryReadBehavior(story)
         }
