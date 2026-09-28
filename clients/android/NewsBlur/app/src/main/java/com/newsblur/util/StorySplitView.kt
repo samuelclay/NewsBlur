@@ -146,7 +146,11 @@ object StorySplitView {
      * which assume the list sits underneath the reader.
      */
     @JvmStatic
-    fun isInSplit(activity: Activity): Boolean = ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
+    fun isInSplit(activity: Activity): Boolean =
+        // Activities in an always expanded container (FULL_WINDOW_ACTIVITIES, and anything they
+        // open, like Daily Briefing's reader) are embedded too, even on phones, but fill the window.
+        // Only split panes are in multi-window mode.
+        activity.isInMultiWindowMode && ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
 
     /**
      * ItemsList.java and Reading.kt are declared with Theme.Translucent in AndroidManifest.xml so
