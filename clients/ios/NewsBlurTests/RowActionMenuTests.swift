@@ -92,8 +92,11 @@ import UIKit
         XCTAssertNil(detached.customView?.window)
 
         let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
-        let menu = controllerType.init(nibName: nil, bundle: nil)
+        let menu = controllerType.init(nibName: "FontSettingsViewController", bundle: nil)
+        // FontSettingsViewController.m installs the shared app in viewDidLoad, before this fixture injects its app.
+        menu.loadViewIfNeeded()
         menu.setValue(app, forKey: "appDelegate")
+        defer { menu.setValue(nil, forKey: "appDelegate") }
         let groups = try XCTUnwrap(menu.value(forKey: "menuGroups") as? [[NSNumber]])
         let source = try XCTUnwrap(menu as? UITableViewDataSource)
         let delegate = try XCTUnwrap(menu as? UITableViewDelegate)
@@ -105,11 +108,14 @@ import UIKit
             XCTAssertEqual(source.tableView(table, cellForRowAt: path).textLabel?.text, label)
             app.presentedAnchor = nil
             delegate.tableView?(table, didSelectRowAt: path)
+            XCTAssertTrue((menu.value(forKey: "appDelegate") as? NewsBlurAppDelegate) === app,
+                          "\(label) must retain the menu's fixture app through dismissal")
+            XCTAssertTrue(pages.appDelegate === app,
+                          "\(label) must retain the reader's fixture app")
             XCTAssertTrue(app.presentedAnchor === expected, "\(label) must use the currently mounted settings item")
             XCTAssertTrue((app.presentedAnchor as? UIBarButtonItem)?.customView?.window === window,
                           "\(label) must retain a visible presentation anchor after leaving Story Options")
         }
-        menu.setValue(nil, forKey: "appDelegate")
     }
 
     func test_goToFeedFromUnsubscribedSharedStoryOpensFeedPreview() throws {
