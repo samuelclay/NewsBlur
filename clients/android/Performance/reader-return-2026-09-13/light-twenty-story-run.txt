@@ -1,0 +1,21 @@
+light advance 1: Is there any benefit to restarting your gaming handheld regularly? read=1
+light advance 2: One problem with Android Auto can be fixed with a simple update read=1
+light advance 3: What's the difference between your iPhone's Do Not Disturb and Focus modes? read=1
+light advance 4: How to change Amazon Alexa's voice and personality read=1
+light advance 5: Blizzard is reviving StarCraft as an open-world shooter, but it'll be a long wait read=1
+light advance 6: Why is the internet so upset about NVIDIA's DLSS 5? read=1
+light advance 7: OpenAI agents hacked a software service before the Hugging Face incident read=1
+light advance 8: Lenovo's Googlebook 15 seems decidedly premium based on a new leak read=1
+light advance 9: iPhone 18 Pro vs Pixel 11 Pro: How Apple and Google's flagships stack up read=1
+light advance 10: New images show a detailed view of Meta's upcoming mixed reality headset read=1
+light advance 11: Nintendo just announced two Direct livestream events for next week read=1
+light advance 12: Rogue OpenAI agents took over a German coding forum in a previously undisclosed hijacking read=1
+light advance 13: Tesla's Cybercab is under federal investigation almost immediately after hitting the streets read=1
+light advance 14: Microsoft announces Project Zenith, a clutter-free Windows experience meant to entice developers read=1
+light advance 15: Boox Go 6 (Gen II) review: A worthy Android ereader, with some tradeoffs read=1
+light advance 16: How to edit Claude's memory read=1
+light advance 17: I flossed fake teeth with Dyson's tech-riddled CameraJet toothbrush read=1
+light advance 18: Volkswagen confirms cutting 50,000 jobs as part of its survival plan read=1
+light advance 19: This rugged smartphone's camera is a removable action cam read=1
+light advance 20: Tesla starts offering Cybercab robotaxi rides read=1
+light returned last title visible at [64,454][500,529]: Tesla starts offering Cybercab robotaxi rides

@@ -1,5 +1,6 @@
 package com.newsblur.util
 
+import com.newsblur.BuildConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -8,7 +9,7 @@ class AppIconManagerTest {
     @Test
     fun appIconFlavors_matchIosChooserOrder() {
         assertEquals(
-            listOf(
+            (if (BuildConfig.BUILD_TYPE == "alpha") listOf("alpha") else emptyList()) + listOf(
                 "sunrise-gold",
                 "meadow-sage",
                 "atlantic-blue",

@@ -24,7 +24,7 @@ public class WidgetConfigAdapter extends FeedChooserAdapter {
         View groupView = super.getGroupView(groupPosition, isExpanded, convertView, parent);
 
         groupView.setOnClickListener(v -> {
-            ArrayList<Feed> folderChild = WidgetConfigAdapter.this.folderChildren.get(groupPosition);
+            ArrayList<Feed> folderChild = getSubtreeFeeds(groupPosition);
             // check all is selected
             boolean allSelected = true;
             for (Feed feed : folderChild) {

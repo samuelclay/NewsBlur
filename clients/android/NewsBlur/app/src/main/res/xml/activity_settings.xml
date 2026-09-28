@@ -108,11 +108,6 @@
             android:title="@string/settings_auto_open_first_unread"
             android:summary="@string/settings_auto_open_first_unread_sum" />
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="pref_mark_read_on_scroll"
-            android:title="@string/settings_mark_read_on_feed_scroll"
-            android:summary="@string/settings_mark_read_on_feed_scroll_sum" />
-        <CheckBoxPreference
             android:defaultValue="true"
             android:key="story_clustering"
             android:title="@string/settings_story_clustering"

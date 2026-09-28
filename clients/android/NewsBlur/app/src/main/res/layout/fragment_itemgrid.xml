@@ -18,7 +18,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="50dp"
             android:gravity="center_horizontal"
-            android:text="@string/empty_list_view_loading"
+            android:visibility="gone"
             android:textSize="16sp" />
 
         <ImageView
@@ -36,11 +36,10 @@
     </RelativeLayout>
 
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
+    <com.newsblur.view.StoryLoadingBar
         android:id="@+id/top_loading_indicator"
-        style="?linearProgressIndicator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="76dp"
         android:layout_alignParentTop="true" />
 
     <androidx.recyclerview.widget.RecyclerView

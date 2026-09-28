@@ -114,4 +114,21 @@ class ReadingConfigChangeRestoreTest {
         assertEquals("marked-read-story", restore?.story?.storyHash)
         assertEquals(true, restore?.story?.read)
     }
+
+    @Test
+    fun restoreStateDoesNotReplaceANewVisibleStoryWithAnOlderReadPin() {
+        val visibleStory = Story().apply { storyHash = "visible-story" }
+        val previousStory = Story().apply { storyHash = "previous-story"; read = true }
+
+        val restore = createReadingConfigChangeRestore(
+            visibleStory = visibleStory,
+            pagerStory = visibleStory,
+            fallbackStoryHash = null,
+            scrollPosRel = 0.42f,
+            recentlyMarkedReadStory = previousStory,
+        )
+
+        assertEquals("visible-story", restore?.storyHash)
+        assertEquals(0.42f, restore?.scrollPosRel)
+    }
 }

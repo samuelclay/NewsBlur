@@ -41,7 +41,7 @@
                                 <segments>
                                     <segment title="Save This Story"/>
                                     <segment title="Share This Story"/>
-                                    <segment title="Add This Site"/>
+                                    <segment title="Subscribe"/>
                                 </segments>
                                 <connections>
                                     <action selector="changedMode:" destination="j1y-V4-xli" eventType="valueChanged" id="UPm-xD-bxX"/>

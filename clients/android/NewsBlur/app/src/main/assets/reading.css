@@ -19,8 +19,12 @@ body {
 }
 
 .NB-story .NB-large-image {
-    margin-left: -12px !important;
-    max-width: calc(100% + 24px) !important;
+    display: block !important;
+    box-sizing: border-box;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: var(--NB-image-offset, 0px) !important;
+    margin-right: 0 !important;
     height: auto !important;
     margin-bottom: 8px !important;
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="story_title_mark_story_read">Mark story read…</string>
+    <string name="story_title_list_font_size">Feed &amp; story title font size</string>
+    <item type="id" name="menu_mark_story_read" />
+    <item type="id" name="menu_mark_story_read_scroll" />
+    <item type="id" name="menu_mark_story_read_selection" />
+    <item type="id" name="menu_mark_story_read_after_1" />
+    <item type="id" name="menu_mark_story_read_after_2" />
+    <item type="id" name="menu_mark_story_read_after_3" />
+    <item type="id" name="menu_mark_story_read_after_5" />
+    <item type="id" name="menu_mark_story_read_after_10" />
+    <item type="id" name="menu_mark_story_read_after_20" />
+    <item type="id" name="menu_mark_story_read_after_30" />
+    <item type="id" name="menu_mark_story_read_after_45" />
+    <item type="id" name="menu_mark_story_read_after_60" />
+    <item type="id" name="menu_mark_story_read_manually" />
+</resources>

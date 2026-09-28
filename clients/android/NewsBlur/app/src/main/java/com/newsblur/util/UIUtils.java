@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -30,6 +28,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -44,7 +43,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.snackbar.Snackbar;
@@ -54,6 +52,8 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.PrefConstants;
+
+import dagger.hilt.android.internal.managers.FragmentComponentManager;
 
 public class UIUtils {
 
@@ -204,13 +204,6 @@ public class UIUtils {
             return new ImageView(activity);
         }
 
-        // enabled scrolling app bar only for reading
-        if (activity instanceof Reading) {
-            AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_SNAP);
-            toolbar.setLayoutParams(p);
-        }
-
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -253,6 +246,16 @@ public class UIUtils {
     }
 
     public static void startReadingActivity(Context context, FeedSet fs, String startingHash, @Nullable ActivityResultLauncher<Intent> readingActivityLauncher) {
+        startReadingActivity(context, fs, startingHash, readingActivityLauncher, isReaderToolbarHidden(context));
+    }
+
+    public static boolean isReaderToolbarHidden(Context context) {
+        // UIUtils.java receives Hilt-wrapped fragment contexts as well as activity contexts.
+        Context activity = FragmentComponentManager.findActivity(context);
+        return activity instanceof Reading && ((Reading) activity).isToolbarHidden();
+    }
+
+    public static void startReadingActivity(Context context, FeedSet fs, String startingHash, @Nullable ActivityResultLauncher<Intent> readingActivityLauncher, boolean toolbarHidden) {
         Class activityClass;
 		if (fs.isAllSaved()) {
             activityClass = SavedStoriesReading.class;
@@ -289,6 +292,7 @@ public class UIUtils {
         Intent i = new Intent(context, activityClass);
         i.putExtra(Reading.EXTRA_FEEDSET, fs);
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
+        i.putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, toolbarHidden);
         if (readingActivityLauncher != null) readingActivityLauncher.launch(i);
         else context.startActivity(i);
     }
@@ -581,11 +585,15 @@ public class UIUtils {
         }
     }
 
-    public static void inflateStoryContextMenu(ContextMenu menu, MenuInflater inflater, FeedSet fs, Story story, StoryOrder storyOrder) {
+    public static void inflateStoryContextMenu(Menu menu, MenuInflater inflater, FeedSet fs, Story story, StoryOrder storyOrder) {
         if (storyOrder == StoryOrder.NEWEST) {
             inflater.inflate(R.menu.context_story_newest, menu);
         } else {
             inflater.inflate(R.menu.context_story_oldest, menu);
+        }
+
+        if ((!fs.isFolder() && !fs.isAllNormal()) || fs.isFilterSaved() || fs.isForWidget()) {
+            menu.removeItem(R.id.menu_go_to_feed);
         }
 
         if (story.starred) {

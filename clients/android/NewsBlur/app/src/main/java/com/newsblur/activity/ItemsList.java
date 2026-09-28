@@ -101,6 +101,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Inject
     SyncServiceState syncServiceState;
 
+    @Inject @com.newsblur.di.IconLoader
+    com.newsblur.util.ImageLoader relatedIconLoader;
+
+    @Inject @com.newsblur.di.ThumbnailLoader
+    com.newsblur.util.ImageLoader relatedThumbnailLoader;
+
+    @Inject
+    com.newsblur.util.TryFeedStore relatedTryFeedStore;
+
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
@@ -148,10 +157,17 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Nullable
     private StoryHeaderPillAppearanceResolver.Appearance searchPillExpandedAppearance;
     private boolean updatingStoryHeaderPillLabels = false;
+    private String expandedOptionsPillTitle = "";
+    private String compactOptionsPillTitle = "";
     private boolean storySearchRefreshInFlight = false;
     private boolean predictiveBackInProgress = false;
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
+    private boolean readerToolbarHidden = false;
+    private com.newsblur.view.FloatingStoryToolbar floatingStoryToolbar;
+    private boolean storyToolbarAtBottom;
+    @Nullable
+    private String preparedReturnStoryHash;
     private boolean fetchingBannerDelayElapsed = false;
     @Nullable
     private ImageView interactiveSwipeUnderlay;
@@ -175,6 +191,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onCreate(Bundle bundle) {
         Trace.beginSection("ItemsListOnCreate");
         super.onCreate(bundle);
+        readerToolbarHidden = bundle != null
+                ? bundle.getBoolean(Reading.EXTRA_TOOLBAR_HIDDEN, false)
+                : getIntent().getBooleanExtra(Reading.EXTRA_TOOLBAR_HIDDEN, false);
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
@@ -257,6 +276,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onSaveInstanceState(@NotNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(Reading.EXTRA_TOOLBAR_HIDDEN, readerToolbarHidden);
         String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (!q.isEmpty()) {
             savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
@@ -288,6 +308,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onResume() {
         super.onResume();
+        if (binding != null && storyToolbarAtBottom != prefsRepo.isStoryToolbarAtBottom()) {
+            recreate();
+            return;
+        }
         if (syncServiceState.isHousekeepingRunning()) finish();
         applyStoryHeaderTheme();
         refreshStoryHeaderControls();
@@ -331,7 +355,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         cancelPendingFetchingBanner();
         cancelStoryStatusBannerAnimation();
         dismissItemListMenuPopup();
-        resetInteractiveStoryListSwipe(true);
+        // ItemsList.java keeps the completed swipe offscreen until Android removes its window.
+        if (!isFinishing()) {
+            resetInteractiveStoryListSwipe(true);
+        }
         super.onPause();
         syncServiceState.addRecountCandidate(fs);
     }
@@ -454,6 +481,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             return;
         }
 
+        if (syncServiceState.getTryFeedRefreshStatus(fs) == com.newsblur.service.TryFeedRefreshStatus.FETCHING) {
+            showStoryStatusBanner(getString(R.string.try_feed_instafetching), StoryStatusBannerStyle.FETCHING);
+            return;
+        }
+
         boolean isInitialFetchPending = awaitingInitialFetchingBanner && syncServiceState.isFeedSetSyncing(fs);
         if (isInitialFetchPending && fetchingBannerDelayElapsed && itemSetFragment != null && itemSetFragment.hasStories()) {
             showStoryStatusBanner("Fetching recent stories...", StoryStatusBannerStyle.FETCHING);
@@ -484,6 +516,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void setupStoryHeader() {
+        storyToolbarAtBottom = prefsRepo.isStoryToolbarAtBottom();
+        if (storyToolbarAtBottom) floatingStoryToolbar = new com.newsblur.view.FloatingStoryToolbar(binding, prefsRepo.getResolvedTheme(this));
         discoverPillExpandedAppearance = captureStoryHeaderPillAppearance(binding.itemlistDiscoverPill);
         searchPillExpandedAppearance = captureStoryHeaderPillAppearance(binding.itemlistSearchPill);
         binding.itemlistDiscoverPill.setOnClickListener(view -> openDiscoverFeeds());
@@ -547,6 +581,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         updateStorySearchPillState();
         if (requestFocus) {
             binding.itemlistSearchQuery.requestFocus();
+            if (storyToolbarAtBottom) binding.itemlistSearchQuery.post(() -> {
+                InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                keyboard.showSoftInput(binding.itemlistSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+            });
         }
     }
 
@@ -556,6 +594,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         binding.itemlistSearchContainer.setVisibility(View.GONE);
         binding.itemlistSearchQuery.clearFocus();
+        if (storyToolbarAtBottom) {
+            InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.hideSoftInputFromWindow(binding.itemlistSearchQuery.getWindowToken(), 0);
+        }
         updateStorySearchLoadingIndicator();
         updateStorySearchPillState();
         runStorySearchNow();
@@ -574,9 +616,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 isActive ? palette.selectedBorderColor : palette.pillBorderColor,
                 isActive ? palette.selectedTextColor : palette.pillTextColor
         );
+        if (floatingStoryToolbar != null) floatingStoryToolbar.applyTheme(isActive);
     }
 
     private void updateStoryHeaderPillLabels() {
+        if (floatingStoryToolbar != null) {
+            floatingStoryToolbar.update(expandedOptionsPillTitle, compactOptionsPillTitle, binding.itemlistSearchContainer.getVisibility() == View.VISIBLE);
+            return;
+        }
         if (updatingStoryHeaderPillLabels) return;
         if (binding.itemlistStoryHeaderBar.getWidth() <= 0) return;
         updatingStoryHeaderPillLabels = true;
@@ -590,7 +637,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
 
         int optionsWidth = binding.itemlistOptionsPill.getVisibility() == View.VISIBLE
-                ? measureDesiredWidth(binding.itemlistOptionsPill)
+                ? measureOptionsPillWidth(expandedOptionsPillTitle)
+                : 0;
+        int compactOptionsWidth = binding.itemlistOptionsPill.getVisibility() == View.VISIBLE
+                ? measureOptionsPillWidth(compactOptionsPillTitle)
                 : 0;
         StoryHeaderPillAppearanceResolver.Appearance discoverExpandedAppearance = getDiscoverPillExpandedAppearance();
         StoryHeaderPillAppearanceResolver.Appearance searchExpandedAppearance = getSearchPillExpandedAppearance();
@@ -623,6 +673,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         StoryHeaderPillLayoutDecider.Decision decision = StoryHeaderPillLayoutDecider.decide(
                 availableWidth,
                 optionsWidth,
+                compactOptionsWidth,
                 markReadWidth,
                 discoverFullWidth,
                 discoverCompactWidth,
@@ -635,6 +686,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 binding.itemlistSearchPill.getVisibility() == View.VISIBLE
         );
 
+        binding.itemlistOptionsPill.setText(decision.showFullOptionsTitle() ? expandedOptionsPillTitle : compactOptionsPillTitle);
+        binding.itemlistOptionsPill.setMaxWidth(decision.optionsWidth());
         if (binding.itemlistDiscoverPill.getVisibility() == View.VISIBLE) {
             applyStoryHeaderPillLabel(
                     binding.itemlistDiscoverPill,
@@ -662,6 +715,17 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance expandedAppearance
     ) {
         return measureStoryHeaderPillWidth(binding.itemlistSearchPill, title, showText, expandedAppearance);
+    }
+
+    private int measureOptionsPillWidth(CharSequence title) {
+        CharSequence previousTitle = binding.itemlistOptionsPill.getText();
+        int previousMaxWidth = binding.itemlistOptionsPill.getMaxWidth();
+        binding.itemlistOptionsPill.setMaxWidth(Integer.MAX_VALUE);
+        binding.itemlistOptionsPill.setText(title);
+        int width = measureDesiredWidth(binding.itemlistOptionsPill);
+        binding.itemlistOptionsPill.setText(previousTitle);
+        binding.itemlistOptionsPill.setMaxWidth(previousMaxWidth);
+        return width;
     }
 
     private int measureDiscoverPillWidth(
@@ -694,13 +758,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance expandedAppearance
     ) {
         button.setText(showText ? title : "");
-        if (showText) {
-            button.setIconPadding(expandedAppearance.iconPadding());
-        } else {
-            button.setIconPadding(0);
-            int compactPadding = UIUtils.dp2px(this, STORY_HEADER_COMPACT_PILL_HORIZONTAL_PADDING_DP);
-            button.setPaddingRelative(compactPadding, 0, compactPadding, 0);
-        }
+        applyStoryHeaderPillAppearance(button, StoryHeaderPillAppearanceResolver.resolve(
+                showText, expandedAppearance.paddingStart(), expandedAppearance.paddingTop(),
+                expandedAppearance.paddingEnd(), expandedAppearance.paddingBottom(), expandedAppearance.iconPadding(),
+                UIUtils.dp2px(this, STORY_HEADER_COMPACT_PILL_HORIZONTAL_PADDING_DP)));
     }
 
     private void applyStoryHeaderPillAppearance(
@@ -708,6 +769,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             StoryHeaderPillAppearanceResolver.Appearance appearance
     ) {
         button.setIconPadding(appearance.iconPadding());
+        button.setPaddingRelative(appearance.paddingStart(), appearance.paddingTop(), appearance.paddingEnd(), appearance.paddingBottom());
     }
 
     private StoryHeaderPillAppearanceResolver.Appearance captureStoryHeaderPillAppearance(MaterialButton button) {
@@ -755,12 +817,22 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         String orderText = storyOrder == StoryOrder.OLDEST ? getString(R.string.oldest) : getString(R.string.newest);
         String filterText = readFilter == ReadFilter.UNREAD ? getString(R.string.state_unread) : getString(R.string.state_all);
-        String title = StoryHeaderOptionsTitleFormatter.INSTANCE.format(filterText, orderText, getString(R.string.story_header_options), showReadFilter, showOrder);
-        binding.itemlistOptionsPill.setText(title);
+        expandedOptionsPillTitle = StoryHeaderOptionsTitleFormatter.INSTANCE.format(filterText, orderText, getString(R.string.story_header_options), showReadFilter, showOrder);
+        compactOptionsPillTitle = StoryHeaderOptionsTitleFormatter.INSTANCE.format(filterText, orderText, getString(R.string.story_header_options), showReadFilter, showOrder && !showReadFilter);
+        binding.itemlistOptionsPill.setText(expandedOptionsPillTitle);
+        binding.itemlistOptionsPill.setContentDescription(expandedOptionsPillTitle);
         applyPillStyle(binding.itemlistOptionsPill, storyHeaderPalette().pillBackgroundColor, storyHeaderPalette().pillBorderColor, storyHeaderPalette().pillTextColor);
     }
 
     private void showMarkReadCutoffMenu(View anchor) {
+        if (storyToolbarAtBottom) {
+            dismissItemListMenuPopup();
+            itemListMenuPopup = com.newsblur.delegate.MarkReadCutoffPopover.show(this, anchor, MARK_READ_CUTOFF_DAYS, days -> {
+                long olderThan = System.currentTimeMillis() - (days * MILLIS_PER_DAY);
+                feedUtils.markRead(this, fs, olderThan, null, R.array.mark_older_read_options, this);
+            });
+            return;
+        }
         PopupMenu popupMenu = new PopupMenu(this, anchor);
         for (int i = 0; i < MARK_READ_CUTOFF_DAYS.length; i++) {
             int days = MARK_READ_CUTOFF_DAYS[i];
@@ -863,6 +935,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistMarkReadContainer.setBackground(markReadBackground);
         binding.itemlistMarkReadMoreButton.setColorFilter(palette.pillTextColor);
         binding.itemlistMarkReadButton.setColorFilter(palette.pillTextColor);
+        if (floatingStoryToolbar != null) floatingStoryToolbar.applyTheme(binding.itemlistSearchContainer.getVisibility() == View.VISIBLE);
     }
 
     public boolean shouldShowDiscoverAction() {
@@ -875,6 +948,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     public void openDiscoverFeeds() {
         if (!shouldShowDiscoverAction()) return;
+        if (storyToolbarAtBottom) {
+            dismissItemListMenuPopup();
+            itemListMenuPopup = RelatedSitesPopover.show(this, binding.itemlistDiscoverPill, fs, relatedIconLoader, relatedThumbnailLoader, relatedTryFeedStore);
+            return;
+        }
 
         if (fs.isSingleNormal()) {
             String feedId = fs.getSingleFeed();
@@ -1090,8 +1168,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void launchReadingActivity(FeedSet feedSet, String storyHash) {
+        preparedReturnStoryHash = null;
         readingLaunchParentRef = new WeakReference<>(this);
-        UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch);
+        UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch, readerToolbarHidden);
     }
 
     public void beginInteractiveStoryListSwipe() {
@@ -1131,8 +1210,16 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         return true;
     }
 
+    public void prepareReturnToStory(@Nullable String storyHash) {
+        if (storyHash == null || storyHash.equals(preparedReturnStoryHash) || itemSetFragment == null) return;
+        preparedReturnStoryHash = storyHash;
+        itemSetFragment.prepareReturnToStory(storyHash);
+    }
+
     private void handleReadingActivityResult(ActivityResult result) {
+
         if (result.getData() != null) {
+            readerToolbarHidden = result.getData().getBooleanExtra(Reading.EXTRA_TOOLBAR_HIDDEN, readerToolbarHidden);
             String lastReadingStoryHash = result.getData().getStringExtra(Reading.LAST_READING_STORY_HASH);
             if (lastReadingStoryHash != null) {
                 Log.d(this.getClass().getName(), "Checking returned story position for " + lastReadingStoryHash);
@@ -1333,6 +1420,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     @Override
     protected void onDestroy() {
+        if (interactiveSwipeSurface != null) {
+            interactiveSwipeSurface.animate().cancel();
+        }
+        hideInteractiveSwipeUnderlay();
         if (readingLaunchParentRef.get() == this) {
             readingLaunchParentRef.clear();
         }

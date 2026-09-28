@@ -19,8 +19,11 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 
 import com.newsblur.R;
+import com.newsblur.BuildConfig;
 import com.newsblur.activity.Reading;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.preference.PrefsRepo;
@@ -34,6 +37,8 @@ public class NewsblurWebview extends WebView {
     private boolean isCustomViewShowing;
     private long activeVisualStateRequestId;
     private long completedVisualStateRequestId = -1L;
+    private long pendingVisualStateRequestId = -1L;
+    private boolean hasCommittedDocument;
 
     public ReadingItemFragment fragment;
     // we need the less-abstract activity class in order to manipulate the overlay widgets
@@ -70,6 +75,15 @@ public class NewsblurWebview extends WebView {
         // do the minimum handling of view swapping so that fullscreen HTML5 works, for videos.
         webChromeClient = new NewsblurWebChromeClient();
         setWebChromeClient(webChromeClient);
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            WebViewCompat.addWebMessageListener(this, "NewsBlurImages",
+                    java.util.Collections.singleton("https://appassets.androidplatform.net"),
+                    (view, message, origin, mainFrame, reply) -> {
+                        if (mainFrame && fragment != null && message.getData() != null) {
+                            fragment.openStoryImage(this, message.getData());
+                        }
+                    });
+        }
     }
 
     public void setWebviewActionDelegate(@NonNull WebviewActionDelegate webviewActionDelegate) {
@@ -132,10 +146,61 @@ public class NewsblurWebview extends WebView {
     public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
         activeVisualStateRequestId++;
         completedVisualStateRequestId = -1L;
-        super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+        pendingVisualStateRequestId = -1L;
+        hasCommittedDocument = false;
+        if (BuildConfig.DEBUG) {
+            android.util.Log.d("NB.Reader", "load_html view=" + System.identityHashCode(this)
+                    + " request=" + activeVisualStateRequestId + " chars=" + data.length());
+        }
+        // NewsblurWebview.java rejects image messages from an article replaced during asynchronous loading.
+        String tagged = data.replaceFirst("<head>", "<head><meta name=\"newsblur-image-generation\" content=\""
+                + activeVisualStateRequestId + "\">");
+        super.loadDataWithBaseURL(baseUrl, tagged, mimeType, encoding, historyUrl);
+    }
+
+    public long getDocumentGeneration() { return activeVisualStateRequestId; }
+
+    private void requestVisualState() {
+        if (activeVisualStateRequestId == 0L) return;
+        hasCommittedDocument = true;
+        final long requestId = activeVisualStateRequestId;
+        if (completedVisualStateRequestId == requestId || pendingVisualStateRequestId == requestId) return;
+        // NewsblurWebview.java's wrap-content height can still be zero when WebKit commits the document.
+        // Wait for Android layout, then ask the compositor for a frame with that usable geometry.
+        if (getWidth() <= 0 || getHeight() <= 0 || !isLaidOut() || isLayoutRequested()) return;
+        pendingVisualStateRequestId = requestId;
+        postVisualStateCallback(requestId, new VisualStateCallback() {
+            @Override
+            public void onComplete(long completedRequestId) {
+                if (completedRequestId != activeVisualStateRequestId) return;
+                pendingVisualStateRequestId = -1L;
+                if (completedVisualStateRequestId == completedRequestId) return;
+                if (getWidth() <= 0 || getHeight() <= 0 || !isLaidOut() || isLayoutRequested()) return;
+                completedVisualStateRequestId = completedRequestId;
+                if (BuildConfig.DEBUG) {
+                    android.util.Log.d("NB.Reader", "visual_callback view=" + System.identityHashCode(NewsblurWebview.this)
+                            + " request=" + completedRequestId + " width=" + getWidth() + " height=" + getHeight());
+                }
+                if (fragment != null) fragment.onWebVisualStateReady();
+            }
+        });
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (hasCommittedDocument && completedVisualStateRequestId != activeVisualStateRequestId) {
+            post(this::requestVisualState);
+        }
     }
 
     class NewsblurWebViewClient extends WebViewClient {
+
+        @Override
+        public void onPageCommitVisible(WebView view, String url) {
+            // NewsblurWebview.java can reveal the local article without waiting for every remote image.
+            requestVisualState();
+        }
 
         @Nullable
         @Override
@@ -225,19 +290,7 @@ public class NewsblurWebview extends WebView {
                     fragment.onWebLoadFinished();
                 }
 
-                final long requestId = activeVisualStateRequestId;
-                postVisualStateCallback(requestId, new VisualStateCallback() {
-                    @Override
-                    public void onComplete(long completedRequestId) {
-                        if (completedRequestId != activeVisualStateRequestId) return;
-                        if (completedVisualStateRequestId == completedRequestId) return;
-
-                        completedVisualStateRequestId = completedRequestId;
-                        if (fragment != null) {
-                            fragment.onWebVisualStateReady();
-                        }
-                    }
-                });
+                requestVisualState();
             }
         }
     }

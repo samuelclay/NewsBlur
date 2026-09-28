@@ -194,6 +194,21 @@ def format_relative_date(date, future=False):
 
 
 def add_object_to_folder(obj, in_folder, folders, parent="", added=False):
+    if isinstance(in_folder, list):
+        # folder_paths.py resolves only this branch, even when leaf names repeat elsewhere.
+        from utils.folder_paths import resolve_folder_path
+
+        destination = resolve_folder_path(folders, in_folder)
+        if isinstance(obj, dict):
+            name = next(iter(obj))
+            if not any(
+                isinstance(item, dict) and any(key.lower() == name.lower() for key in item)
+                for item in destination
+            ):
+                destination.append(obj)
+        elif obj not in destination:
+            destination.append(obj)
+        return folders
     if parent.startswith("river:"):
         parent = parent.replace("river:", "")
     if in_folder.startswith("river:"):

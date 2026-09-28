@@ -1,0 +1,5 @@
+light: visible Next, hidden Next/Previous/swipe/title selection, pull-down reveal, visible title selection passed
+dark: visible Next, hidden Next/Previous/swipe/title selection, pull-down reveal, visible title selection passed
+black: visible Next, hidden Next/Previous/title selection, pull-down reveal, visible title selection passed
+sepia: horizontal swipe did not advance; toolbar remained hidden
+sepia: visible Next, hidden Next/Previous/title selection, pull-down reveal, visible title selection passed

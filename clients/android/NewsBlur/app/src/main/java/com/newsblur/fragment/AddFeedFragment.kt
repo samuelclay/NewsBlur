@@ -1,207 +1,161 @@
 package com.newsblur.fragment
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.newsblur.R
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.newsblur.activity.AddFeedExternal
+import com.newsblur.activity.DiscoverSitesActivity
+import com.newsblur.activity.FeedSearchActivity
 import com.newsblur.activity.Main
+import com.newsblur.addsite.AddSiteSheet
+import com.newsblur.addsite.AddSiteViewModel
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.databinding.DialogAddFeedBinding
-import com.newsblur.databinding.RowAddFeedFolderBinding
-import com.newsblur.domain.Folder
-import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
-import com.newsblur.network.FeedApi
-import com.newsblur.network.FolderApi
+import com.newsblur.design.NewsBlurTheme
+import com.newsblur.design.toVariant
+import com.newsblur.di.IconLoader
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.NewsBlurBottomSheet
 import com.newsblur.util.TryFeedStore
-import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Collections
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddFeedFragment : DialogFragment() {
-    @Inject
-    lateinit var folderApi: FolderApi
+class AddFeedFragment : BottomSheetDialogFragment() {
+    @Inject lateinit var dbHelper: BlurDatabaseHelper
 
-    @Inject
-    lateinit var feedApi: FeedApi
+    @Inject lateinit var syncServiceState: SyncServiceState
 
-    @Inject
-    lateinit var dbHelper: BlurDatabaseHelper
+    @Inject lateinit var tryFeedStore: TryFeedStore
 
-    @Inject
-    lateinit var syncServiceState: SyncServiceState
+    @Inject lateinit var prefsRepo: PrefsRepo
 
-    @Inject
-    lateinit var tryFeedStore: TryFeedStore
+    @Inject @IconLoader
+    lateinit var iconLoader: ImageLoader
 
-    private lateinit var binding: DialogAddFeedBinding
+    private val viewModel: AddSiteViewModel by viewModels()
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogAddFeedBinding.inflate(layoutInflater)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog = NewsBlurBottomSheet.createDialog(this)
 
-        val builder = AlertDialog.Builder(requireActivity())
-        builder.setTitle("Choose folder for " + requireArguments().getString(FEED_NAME))
-        builder.setView(binding.root)
-        val adapter =
-            AddFeedAdapter(
-                object : OnFolderClickListener {
-                    override fun onItemClick(folder: Folder) {
-                        addFeed(folder.name)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            val folders = withContext(Dispatchers.IO) { dbHelper.folders }
+            viewModel.setFolders(folders)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.let {
+            NewsBlurBottomSheet.expandWithTheme(it, prefsRepo.getResolvedTheme(requireContext()))
+            it
+                .findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                ?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                NewsBlurTheme(variant = prefsRepo.getSelectedTheme().toVariant(), dynamic = false) {
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    LaunchedEffect(state.submitting) { isCancelable = !state.submitting }
+                    LaunchedEffect(state.folderRevision) {
+                        if (state.folderRevision > 0) {
+                            syncServiceState.forceFeedsFolders()
+                            FeedUtils.triggerSync(requireContext())
+                        }
                     }
-                },
-            )
-        binding.textAddFolderTitle.setOnClickListener {
-            if (binding.containerAddFolder.visibility == View.GONE) {
-                binding.containerAddFolder.visibility = View.VISIBLE
-            } else {
-                binding.containerAddFolder.visibility = View.GONE
-            }
-        }
-        binding.icCreateFolder.setOnClickListener {
-            if (binding.inputFolderName.text.isEmpty()) {
-                Toast.makeText(requireContext(), R.string.add_folder_name, Toast.LENGTH_SHORT).show()
-            } else {
-                addFeedToNewFolder(binding.inputFolderName.text.toString())
-            }
-        }
-        binding.recyclerViewFolders.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
-        binding.recyclerViewFolders.adapter = adapter
-        adapter.setFolders(dbHelper.folders)
-        return builder.create()
-    }
-
-    private fun addFeedToNewFolder(folderName: String) {
-        binding.icCreateFolder.visibility = View.GONE
-        binding.progressBar.visibility = View.VISIBLE
-        binding.inputFolderName.isEnabled = false
-
-        lifecycleScope.executeAsyncTask(
-            doInBackground = {
-                folderApi.addFolder(folderName)
-            },
-            onPostExecute = {
-                binding.inputFolderName.isEnabled = true
-                if (!it.isError) {
-                    binding.containerAddFolder.visibility = View.GONE
-                    binding.inputFolderName.text.clear()
-                    addFeed(folderName)
-                } else {
-                    Toast.makeText(activity, R.string.add_folder_error, Toast.LENGTH_SHORT).show()
-                }
-            },
-        )
-    }
-
-    private fun addFeed(folderName: String?) {
-        binding.containerSyncStatus.visibility = View.VISIBLE
-        lifecycleScope.executeAsyncTask(
-            doInBackground = {
-                (activity as? AddFeedProgressListener)?.addFeedStarted()
-                val feedUrl = requireArguments().getString(FEED_URI)
-                feedApi.addFeed(feedUrl, folderName)
-            },
-            onPostExecute = {
-                binding.containerSyncStatus.visibility = View.GONE
-                val intent = Intent(activity, Main::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                if (it != null && !it.isError) {
-                    if (requireArguments().getBoolean(CLEAR_TRY_FEED_ON_SUCCESS, false)) {
-                        tryFeedStore.clear()
+                    LaunchedEffect(state.completedFeedId) {
+                        state.completedFeedId?.let { feedId ->
+                            if (arguments?.getBoolean(CLEAR_TRY_FEED_ON_SUCCESS) == true) tryFeedStore.clear()
+                            syncServiceState.forceFeedsFolders()
+                            FeedUtils.triggerSync(requireContext())
+                            val host = requireActivity()
+                            host.startActivity(
+                                Intent(host, Main::class.java).apply {
+                                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, feedId)
+                                },
+                            )
+                            dismiss()
+                            if (host !is Main) host.finish()
+                        }
                     }
-                    // trigger a sync when we return to Main so that the new feed will show up
-                    syncServiceState.forceFeedsFolders()
-                    intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, it.feed.feedId)
-                } else {
-                    Toast.makeText(activity, R.string.add_feed_error, Toast.LENGTH_SHORT).show()
+                    AddSiteSheet(
+                        state = state,
+                        theme = prefsRepo.getResolvedTheme(requireContext()),
+                        iconLoader = iconLoader,
+                        onQueryChanged = viewModel::queryChanged,
+                        onFolderNameChanged = viewModel::folderNameChanged,
+                        onChooseFolder = viewModel::chooseFolder,
+                        onToggleFolder = viewModel::toggleNewFolder,
+                        onSubmit = viewModel::submit,
+                        onDiscover = { tab ->
+                            val host = requireActivity()
+                            if (host is DiscoverSitesActivity) {
+                                host.showDiscovery(tab, state.parent)
+                            } else {
+                                startActivity(DiscoverSitesActivity.intent(host, tab, state.parent))
+                            }
+                            dismiss()
+                        },
+                    )
                 }
-                activity?.startActivity(intent)
-                activity?.finish()
-            },
-        )
-    }
-
-    private class AddFeedAdapter(
-        private val listener: OnFolderClickListener,
-    ) : RecyclerView.Adapter<FolderViewHolder>() {
-        private val folders: MutableList<Folder> = ArrayList()
-
-        override fun onCreateViewHolder(
-            viewGroup: ViewGroup,
-            position: Int,
-        ): FolderViewHolder {
-            val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.row_add_feed_folder, viewGroup, false)
-            return FolderViewHolder(view)
-        }
-
-        override fun onBindViewHolder(
-            viewHolder: FolderViewHolder,
-            position: Int,
-        ) {
-            val folder = folders[position]
-            if (folder.name == AppConstants.ROOT_FOLDER) {
-                viewHolder.binding.textFolderTitle.setText(R.string.top_level)
-            } else {
-                viewHolder.binding.textFolderTitle.text = folder.flatName()
             }
-            viewHolder.itemView.setOnClickListener { listener.onItemClick(folder) }
         }
 
-        override fun getItemCount(): Int = folders.size
-
-        fun setFolders(folders: List<Folder>) {
-            Collections.sort(folders, Folder.FolderComparator)
-            this.folders.clear()
-            this.folders.addAll(folders)
-            this.notifyDataSetChanged()
-        }
-
-        class FolderViewHolder(
-            itemView: View,
-        ) : RecyclerView.ViewHolder(itemView) {
-            val binding: RowAddFeedFolderBinding = RowAddFeedFolderBinding.bind(itemView)
-        }
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (activity is FeedSearchActivity || activity is AddFeedExternal) activity?.finish()
     }
 
     interface AddFeedProgressListener {
         fun addFeedStarted()
     }
 
-    interface OnFolderClickListener {
-        fun onItemClick(folder: Folder)
-    }
-
     companion object {
-        private const val FEED_URI = "feed_url"
-        private const val FEED_NAME = "feed_name"
         private const val CLEAR_TRY_FEED_ON_SUCCESS = "clear_try_feed_on_success"
 
         @JvmStatic
         @JvmOverloads
         fun newInstance(
-            feedUri: String,
-            feedName: String,
+            feedUri: String = "",
+            feedName: String = "",
             clearTryFeedOnSuccess: Boolean = false,
-        ): AddFeedFragment {
-            val frag = AddFeedFragment()
-            val args = Bundle()
-            args.putString(FEED_URI, feedUri)
-            args.putString(FEED_NAME, feedName)
-            args.putBoolean(CLEAR_TRY_FEED_ON_SUCCESS, clearTryFeedOnSuccess)
-            frag.arguments = args
-            return frag
+            parent: String = AppConstants.ROOT_FOLDER,
+        ) = AddFeedFragment().apply {
+            arguments =
+                Bundle().apply {
+                    putString("feed_url", feedUri)
+                    putString("feed_name", feedName)
+                    putString("parent", parent)
+                    putBoolean(CLEAR_TRY_FEED_ON_SUCCESS, clearTryFeedOnSuccess)
+                }
         }
     }
 }

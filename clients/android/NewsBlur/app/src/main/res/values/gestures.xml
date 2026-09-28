@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">Do nothing</string>
+    <string name="gesture_back">Back to feeds</string>
+    <string name="gesture_toggle_read">Read / unread</string>
+    <string name="gesture_markread">Mark read</string>
+    <string name="gesture_markunread">Mark unread</string>
+    <string name="gesture_save">Save story</string>
+    <string name="gesture_unsave">Unsave story</string>
+    <string name="gesture_statistics">Statistics</string>
+    <string name="gesture_menu">Show actions</string>
+    <string name="gesture_share">Share</string>
+    <string name="gesture_toggle_save">Save / unsave</string>
+    <string name="gesture_ask_ai">Ask AI</string>
+    <string name="gesture_train">Train intelligence</string>
+    <string name="gesture_notifications">Notifications</string>
+    <string name="gesture_read_range">Choose how far back to mark read</string>
+    <string name="gesture_feed_list">Feed list</string>
+    <string name="gesture_story_titles">Story titles</string>
+    <string name="gesture_reading_story">Reading a story</string>
+    <string name="gesture_swipe_feeds">Swipe on feeds</string>
+    <string name="gesture_swipe_stories">Swipe on stories</string>
+    <string name="gesture_left">Swipe left</string>
+    <string name="gesture_right">Swipe right</string>
+    <string name="gesture_long_press">Long press</string>
+    <string name="gesture_double_tap">Double tap</string>
+    <string name="gesture_two_finger_double_tap">Two finger double tap</string>
+    <string name="gesture_left_edge">Swipe from left edge</string>
+    <string name="gesture_edge_footer">Swiping from the left edge always returns to feeds, even when story swipes are off.</string>
+    <string name="gesture_mark_all">Mark all stories read</string>
+    <string name="gesture_original">Open original story</string>
+    <string name="gesture_text">Show original text</string>
+    <string name="gesture_unread">Mark as unread</string>
+    <string name="gesture_back_titles">Back to story titles</string>
+    <string name="gesture_previous">Previous story</string>
+    <string name="gesture_off">Off</string>
+    <string name="gesture_unread_stories">Unread stories</string>
+    <string name="gesture_focus_stories">Focus stories</string>
+</resources>

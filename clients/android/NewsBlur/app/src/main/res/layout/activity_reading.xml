@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,62 +8,48 @@
     <include
         android:id="@+id/include_toolbar"
         layout="@layout/toolbar_newsblur"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="com.newsblur.view.ReaderToolbarBehavior" />
 
     <View
         android:id="@+id/reading_surface_background"
         style="?readingBackground"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/reading_empty_view_text"
         style="?circleProgressIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:indeterminate="true"
         app:indicatorSize="32dp"
-        app:trackThickness="3dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_toolbar"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:trackThickness="3dp" />
 
     <FrameLayout
         android:id="@+id/content"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+    <!-- activity_reading.xml keeps edge-back active even when the app bar is collapsed. -->
     <View
         android:id="@+id/reading_back_swipe_edge"
         android:layout_width="24dp"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:background="@android:color/transparent"
-        android:importantForAccessibility="no"
-        app:layout_constraintBottom_toBottomOf="@id/content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+        android:importantForAccessibility="no" />
 
     <FrameLayout
         android:id="@+id/content_bottom_overlay"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:layout_marginBottom="12dp"
-        app:layout_constraintBottom_toBottomOf="@id/content"
-        app:layout_constraintEnd_toEndOf="@id/content"
-        app:layout_constraintStart_toStartOf="@id/content">
+        android:layout_marginBottom="12dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_bottom_overlay_inner"
@@ -240,4 +226,4 @@
             android:visibility="gone" />
 
     </FrameLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
