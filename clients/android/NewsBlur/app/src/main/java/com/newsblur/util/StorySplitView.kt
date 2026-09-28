@@ -4,6 +4,11 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import androidx.activity.ComponentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.window.embedding.ActivityEmbeddingController
 import androidx.window.embedding.ActivityFilter
 import androidx.window.embedding.ActivityRule
@@ -53,6 +58,7 @@ import com.newsblur.activity.SocialFeedReading
 import com.newsblur.activity.SubscriptionActivity
 import com.newsblur.activity.WidelyReadStoriesItemsList
 import com.newsblur.activity.WidelyReadStoriesReading
+import kotlinx.coroutines.launch
 
 /**
  * Puts the story list and the reader side by side on tablets and unfolded foldables.
@@ -141,6 +147,33 @@ object StorySplitView {
      */
     @JvmStatic
     fun isInSplit(activity: Activity): Boolean = ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
+
+    /**
+     * ItemsList.java and Reading.kt are declared with Theme.Translucent in AndroidManifest.xml so
+     * their phone transitions can show the screen underneath. In a split that translucency lets
+     * Main.java count as visible behind the panes, so Android resumes it (on rotation, say), and
+     * Main.java's onResume resets the reading session the story list and reader share, which
+     * empties the list. This keeps the window opaque while it sits in a split and translucent
+     * again when the split goes away, such as a foldable closing.
+     */
+    @JvmStatic
+    fun keepOpaqueWhileInSplit(activity: ComponentActivity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+        // The manifest theme decides translucency when the activity starts, whatever theme
+        // onCreate applies, so every story list and reader starts out translucent.
+        var isOpaque = false
+        activity.lifecycleScope.launch {
+            activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                SplitController.getInstance(activity).splitInfoList(activity).collect { splits ->
+                    val shouldBeOpaque = splits.isNotEmpty()
+                    if (shouldBeOpaque != isOpaque) {
+                        isOpaque = shouldBeOpaque
+                        activity.setTranslucent(!shouldBeOpaque)
+                    }
+                }
+            }
+        }
+    }
 
     internal fun buildRules(context: Context): Set<EmbeddingRule> {
         val splitAttributes =
