@@ -39,7 +39,6 @@ import com.newsblur.activity.InfrequentItemsList
 import com.newsblur.activity.InfrequentReading
 import com.newsblur.activity.LongReadsItemsList
 import com.newsblur.activity.LongReadsReading
-import com.newsblur.activity.Main
 import com.newsblur.activity.MuteConfig
 import com.newsblur.activity.NotificationsActivity
 import com.newsblur.activity.Profile
@@ -106,6 +105,8 @@ object StorySplitView {
         )
 
     // Screens opened from inside a split that need the whole window rather than one pane.
+    // Main.java is deliberately absent: an always expanded Main would host the story list in
+    // its own container, so closing the list would leave Main beside an orphaned reader.
     private val FULL_WINDOW_ACTIVITIES =
         listOf(
             ContactActivity::class.java,
@@ -114,7 +115,6 @@ object StorySplitView {
             DiscoverSitesActivity::class.java,
             FeedSearchActivity::class.java,
             ImportExportActivity::class.java,
-            Main::class.java,
             MuteConfig::class.java,
             NotificationsActivity::class.java,
             Profile::class.java,
