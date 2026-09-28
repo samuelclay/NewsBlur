@@ -134,11 +134,20 @@ object StorySplitView {
      */
     @JvmStatic
     fun install(context: Context) {
+        if (!canEverSplit(context)) return
         if (SplitController.getInstance(context).splitSupportStatus != SplitController.SplitSupportStatus.SPLIT_AVAILABLE) {
             return
         }
         RuleController.getInstance(context).setRules(buildRules(context))
     }
+
+    // With rules installed, Activity Embedding moves matching activities into embedded containers
+    // even while the window is too narrow to split, which also changes their transitions. Phones
+    // never reach split width, so they skip the rules and keep their full screen flow untouched.
+    // Tablets qualify by size, and foldables by their hinge since they may start out folded.
+    private fun canEverSplit(context: Context): Boolean =
+        context.resources.configuration.smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP ||
+            context.packageManager.hasSystemFeature(FEATURE_SENSOR_HINGE_ANGLE)
 
     /**
      * True when this activity is currently showing in one pane of a split. Reading.kt and
@@ -239,6 +248,9 @@ object StorySplitView {
 
         return setOf(storyListToReader, emptyReaderPane, fullWindow)
     }
+
+    // PackageManager.FEATURE_SENSOR_HINGE_ANGLE, spelled out because it is API 30 and minSdk is 26.
+    private const val FEATURE_SENSOR_HINGE_ANGLE = "android.hardware.sensor.hinge_angle"
 
     private const val TAG_STORY_LIST_READER = "story_list_reader"
     private const val TAG_EMPTY_READER = "empty_reader"
