@@ -1365,6 +1365,16 @@ class Profile(models.Model):
         recent_payment_dates = []
         latest_annual_payment_date = None
         free_lifetime_premium = False
+        verified_apple_expiration = None
+        verified_apple_count = 0
+        payments = list(payments)
+        verified_apple_periods = {}
+        for payment in payments:
+            if payment.apple_original_transaction_id and payment.apple_expires_date and not payment.refunded:
+                key = (payment.payment_provider, payment.apple_original_transaction_id)
+                verified_apple_periods[key] = max(
+                    verified_apple_periods.get(key, payment.apple_expires_date), payment.apple_expires_date
+                )
 
         for payment in payments:
             # Don't use free gift premiums in calculation for expiration
@@ -1376,6 +1386,21 @@ class Profile(models.Model):
             # user's premium expiration.
             if payment.payment_amount < 0 or payment.refunded:
                 continue
+            # Signed Apple periods from apps/profile/apple_subscriptions.py are
+            # exact; do not turn monthly renewals into inferred extra days.
+            if payment.apple_expires_date:
+                if payment.apple_expires_date > datetime.datetime.now():
+                    verified_apple_expiration = max(
+                        verified_apple_expiration or payment.apple_expires_date,
+                        payment.apple_expires_date,
+                    )
+                    verified_apple_count += 1
+                continue
+            # Older original-ID receipts in apps/profile/models.py belong to the
+            # same signed subscription period, not another inferred entitlement.
+            covered_until = verified_apple_periods.get((payment.payment_provider, payment.payment_identifier))
+            if covered_until and payment.payment_date < covered_until:
+                continue
             # Only update expiration if payment in the last year
             if payment.payment_date > last_year:
                 recent_payment_dates.append(payment.payment_date)
@@ -1385,7 +1410,7 @@ class Profile(models.Model):
                     latest_annual_payment_date = payment.payment_date
 
         if not recent_payment_dates:
-            return None, free_lifetime_premium, 0
+            return verified_apple_expiration, free_lifetime_premium, verified_apple_count
 
         period_days = cls.billing_period_days(recent_payment_dates)
         expiration = min(recent_payment_dates) + datetime.timedelta(
@@ -1396,7 +1421,9 @@ class Profile(models.Model):
                 expiration,
                 latest_annual_payment_date + datetime.timedelta(days=cls.ANNUAL_PERIOD_DAYS),
             )
-        return expiration, free_lifetime_premium, len(recent_payment_dates)
+        if verified_apple_expiration:
+            expiration = max(expiration, verified_apple_expiration)
+        return expiration, free_lifetime_premium, len(recent_payment_dates) + verified_apple_count
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         # Deduplicate payments: keep only one per provider per identifier, then per day.
@@ -1423,7 +1450,7 @@ class Profile(models.Model):
                 renewal_window = datetime.timedelta(days=self.MONTHLY_RENEWAL_WINDOW_DAYS)
             else:
                 renewal_window = datetime.timedelta(days=self.ANNUAL_RENEWAL_WINDOW_DAYS)
-            last_kept_identifier_dates = {}
+            last_kept_identifier_payments = {}
             for payment in list(
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(payment_identifier__isnull=True)
@@ -1431,23 +1458,30 @@ class Profile(models.Model):
                 .exclude(refunded=True)
                 .order_by("payment_date")
             ):
-                last_kept_date = last_kept_identifier_dates.get(payment.payment_identifier)
-                if last_kept_date and (
-                    renewal_window is None or payment.payment_date - last_kept_date < renewal_window
+                last_kept = last_kept_identifier_payments.get(payment.payment_identifier)
+                if last_kept and (
+                    renewal_window is None or payment.payment_date - last_kept.payment_date < renewal_window
                 ):
-                    payment.delete()
+                    # Prefer signed dates from apps/profile/apple_subscriptions.py
+                    # over a legacy client receipt for the same transaction.
+                    if payment.apple_expires_date and not last_kept.apple_expires_date:
+                        last_kept.delete()
+                        last_kept_identifier_payments[payment.payment_identifier] = payment
+                    else:
+                        payment.delete()
                     deleted_count += 1
                 else:
-                    last_kept_identifier_dates[payment.payment_identifier] = payment.payment_date
+                    last_kept_identifier_payments[payment.payment_identifier] = payment
             # Second pass: dedup by date (race condition duplicates on same day)
             seen_dates = set()
-            for payment in list(
+            for payment in sorted(
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(refunded=True)
-                .order_by("payment_date")
+                .order_by("payment_date"),
+                key=lambda payment: (payment.apple_expires_date is None, payment.payment_date),
             ):
                 payment_day = payment.payment_date.date()
-                if payment_day in seen_dates:
+                if payment_day in seen_dates and not payment.apple_expires_date:
                     payment.delete()
                     deleted_count += 1
                 else:
@@ -2667,9 +2701,21 @@ class Profile(models.Model):
         now = datetime.datetime.now()
         real_identifier = payment_identifier and payment_identifier not in self.STORE_PLACEHOLDER_IDENTIFIERS
         if real_identifier:
-            same_txn = PaymentHistory.objects.filter(
+            # A signed actual transaction is unique forever; an original ID is
+            # already covered while its verified period is still active.
+            verified_txn = PaymentHistory.objects.filter(
+                Q(payment_identifier=payment_identifier)
+                | Q(apple_original_transaction_id=payment_identifier, apple_expires_date__gt=now),
                 user=self.user,
-                payment_identifier=payment_identifier,
+                payment_provider=payment_provider,
+                apple_expires_date__isnull=False,
+            ).exists()
+            if verified_txn:
+                return "verified txn"
+            same_txn = PaymentHistory.objects.filter(
+                Q(payment_identifier=payment_identifier)
+                | Q(apple_original_transaction_id=payment_identifier),
+                user=self.user,
                 payment_provider=payment_provider,
                 payment_date__gte=now - datetime.timedelta(days=renewal_window_days),
             ).exists()
@@ -5205,6 +5251,8 @@ class PaymentHistory(models.Model):
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=32)
     payment_identifier = models.CharField(max_length=100, null=True)
+    apple_original_transaction_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    apple_expires_date = models.DateTimeField(blank=True, null=True)
     refunded = models.BooleanField(blank=True, null=True)
 
     def __str__(self):

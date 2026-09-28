@@ -174,6 +174,7 @@ final class ReaderPerformance: NSObject {
         let now = CACurrentMediaTime()
         if let app = NewsBlurAppDelegate.shared {
             let surfaces: [(String, UIScrollView?)] = [
+                ("pager", app.storyPagesViewController?.scrollView),
                 ("feeds", app.feedsViewController?.feedTitlesTable),
                 ("titles", app.feedDetailViewController?.storyTitlesTable),
                 ("detail", app.storyPagesViewController?.currentPage?.webView?.scrollView)
@@ -203,6 +204,16 @@ final class ReaderPerformance: NSObject {
                     state["content_height"] = table.contentSize.height
                     state["viewport_height"] = table.bounds.height
                     state["top_inset"] = table.adjustedContentInset.top
+                }
+                if let pages = NewsBlurAppDelegate.shared?.storyPagesViewController, let pager = pages.scrollView {
+                    // ReaderPerformance.swift distinguishes stalled paging from slow article rendering without logging story content.
+                    state["page_index"] = pages.currentPage?.pageIndex ?? -1
+                    state["pager_offset_x"] = pager.contentOffset.x
+                    state["pager_offset_y"] = pager.contentOffset.y
+                    state["pager_dragging"] = pager.isDragging
+                    state["pager_decelerating"] = pager.isDecelerating
+                    state["paging_active"] = pages.isDraggingScrollview
+                    state["article_scroll_enabled"] = pages.currentPage?.webView?.scrollView.isScrollEnabled ?? false
                 }
                 events.append(state)
             }
