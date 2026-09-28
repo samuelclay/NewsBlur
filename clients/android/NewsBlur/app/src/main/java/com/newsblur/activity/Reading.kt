@@ -62,6 +62,7 @@ import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.ReaderTargetLoader
 import com.newsblur.util.StateFilter
 import com.newsblur.util.StoryOrder
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
 import com.newsblur.util.VolumeKeyNavigation
@@ -300,7 +301,9 @@ abstract class Reading :
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
-        waitingForPreparedEntrance = savedInstanceBundle == null && !isTaskRoot
+        // Reading.kt's prepared entrance slides the reader over its story list, which is
+        // already visible beside the reader in a tablet split (StorySplitView.kt).
+        waitingForPreparedEntrance = savedInstanceBundle == null && !isTaskRoot && !StorySplitView.isInSplit(this)
         waitingForInitialArticle = waitingForPreparedEntrance
         if (waitingForPreparedEntrance) {
             PendingTransitionUtils.overrideNoEnterTransition(this)
@@ -1852,7 +1855,9 @@ abstract class Reading :
 
     private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
 
-    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot
+    // The swipe back reveals the story list underneath, but in a tablet split the list is its own pane.
+    private fun isInteractiveReaderBackEnabled(): Boolean =
+        this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this)
 
     private fun supportsPredictiveReaderBack(): Boolean {
         val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())
