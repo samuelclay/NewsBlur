@@ -1893,14 +1893,36 @@ def email_optout_token(request, username, secret):
     }
 
 
+@csrf_exempt
+@require_POST
 @json.json_view
 def ios_subscription_status(request):
-    logging.debug(" ---> iOS Subscription Status: %s" % request.body)
-    data = json.decode(request.body)
-    subject = "iOS Subscription Status: %s" % data.get("notification_type", "[missing]")
-    message = """%s""" % (request.body)
-    mail_admins(subject, message)
+    from appstoreserverlibrary.signed_data_verifier import (
+        VerificationException,
+        VerificationStatus,
+    )
 
+    from apps.profile.apple_notifications import process_apple_notification
+
+    try:
+        if len(request.body) > 128 * 1024:
+            raise ValueError("Oversized notification")
+        data = json.decode(request.body)
+        if not isinstance(data, dict) or not isinstance(data.get("signedPayload"), str):
+            raise ValueError("Missing signed payload")
+        result = process_apple_notification(data["signedPayload"])
+    except VerificationException as exc:
+        # Never log signed receipts or secrets from requests in apps/profile/views.py.
+        logging.debug(" ---> Apple notification verification failed: %s" % exc.status.name)
+        status = 503 if exc.status == VerificationStatus.RETRYABLE_VERIFICATION_FAILURE else 400
+        return HttpResponse(status=status)
+    except (ValueError, TypeError, UnicodeDecodeError):
+        return HttpResponse(status=400)
+
+    logging.debug(" ---> Apple notification processed: %s" % result)
+    if result["status"] in ("unmatched", "ambiguous"):
+        # Apple retries while a newly purchased subscription reaches save_ios_receipt.
+        return HttpResponse(status=503)
     return {"code": 1}
 
 

@@ -1,8 +1,9 @@
 amqp==2.6.1
 appdirs==1.4.4
+app-store-server-library==3.1.2
 anthropic==0.75.0
 asgiref==3.3.4
-attrs==21.1.0
+attrs==26.1.0
 beautifulsoup4==4.9.3
 billiard==3.6.4.0
 bleach==3.2.1
@@ -11,10 +12,10 @@ botocore==1.34.153
 black~=23.1.0
 celery==4.4.7
 certifi==2020.12.5
-cffi==1.14.5
+cffi==2.0.0
 chardet==3.0.4
 ConfigArgParse==1.4
-cryptography==3.4.7
+cryptography==50.0.1
 cssutils==1.0.2
 distlib==0.3.1
 Django==3.1.10
@@ -87,7 +88,7 @@ pycparser==2.20
 pymongo>=3,<4
 PyMySQL==0.10.1
 pynliner==0.8.0
-pyOpenSSL==20.0.1
+pyOpenSSL==26.4.0
 pyparsing==2.4.7
 PySocks==1.7.1
 pytest==6.1.2
