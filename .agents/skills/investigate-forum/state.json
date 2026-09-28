@@ -230,6 +230,20 @@
       "note": "Requested direct local commit to main for a later iOS release. Font preview shares reusable table cells with story actions; action configuration retained the preview font. Reset attributed text and menu font on reuse, and scale the selected font preview with Body Dynamic Type. Regression reproduced before fix; all 21 RowActionMenu tests pass afterward. Not released or posted. Enlarged system text also passed the regression at 21pt versus baseline 16pt.",
       "reply": "Found it. Some menu options were picking up the font from the font preview. Fixed for a future update, including consistent sizing with larger system text.",
       "question": null
+    },
+    "13853": {
+      "title": "Before I suscribe - updates requested on some really old questions?",
+      "url": "https://forum.newsblur.com/t/before-i-suscribe-updates-requested-on-some-really-old-questions/13853",
+      "status": "reply-drafted",
+      "tier": 2,
+      "handled_at": "2026-09-28T15:30:00Z",
+      "last_posted_at": "2026-09-26T06:12:20.042Z",
+      "pr": null,
+      "branch": "forum-13853-android-split-view",
+      "worktree": ".worktree/forum-13853-android-split-view",
+      "note": "Facebook: 5,257 facebook.com/<page> feeds in prod, Graph API fetcher (utils/facebook_fetcher.py) has produced nothing in years (VH1 newest story 2015); the one Web Feed pointed at a Facebook page has 0 stories (login wall). Sam chose: dead, offer Web Feeds (Premium Archive) and newsletter alternatives. Android split view: no two-pane layout exists. Play Console (last 28 days, rounded, diagnostics-sharing users only) shows ~56 daily tablet users vs ~385 phone (~13%), ~99 LARGE screen (~25%). Sam chose to build it: two pane at 600dp+, three pane at 840dp+. Staged: PR 1 Jetpack Activity Embedding (ItemsList | Reading), PR 2+ move Reading.kt into ReadingPagerFragment and add the feeds column. Test by resizing the existing emulator with wm size. Reply is accurate to post now (says building, no date).",
+      "reply": "Facebook is still a dead end, unfortunately. I built a Facebook page fetcher years ago, but Facebook bans that kind of access and now hides public pages behind a login, so NewsBlur can't read them. The best workaround is to follow the company somewhere else. If they post news on their own website, Web Feeds (Premium Archive) can turn that page into a feed, and if they send an email newsletter you can forward it to your NewsBlur newsletter address.\n\nAndroid split view is worth revisiting. A lot more Android readers are on tablets and foldables than when that decision was made, so I'm building it now. The first version puts the story list next to the story on wide screens, and a later version adds the feed list as a third column in landscape. It's the same app, so offline downloads keep working.",
+      "question": null
     }
   }
 }
