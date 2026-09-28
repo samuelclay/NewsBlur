@@ -345,6 +345,8 @@ import XCTest
 
 @MainActor private final class NotificationSceneConnectionOptions: NSObject {
     @objc var notificationResponse: UNNotificationResponse?
+    // NotificationNavigationTests.swift mirrors UIKit's empty URL-context set for notification-only scene connections.
+    @objc(URLContexts) var urlContexts: Set<UIOpenURLContext> { [] }
 }
 
 @MainActor private final class NotificationNavigationScreen: UIViewController {

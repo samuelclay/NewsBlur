@@ -1227,6 +1227,52 @@ import XCTest
         XCTAssertNil(fixture.pages.value(forKey: "pendingPresentationPage"))
     }
 
+    func test_abortedSwipeDuringEarlyEntranceStillRevealsTheCurrentArticle() async throws {
+        let defaults = UserDefaults.standard
+        let previousOrientation = defaults.object(forKey: "scroll_stories_horizontally")
+        defaults.set(true, forKey: "scroll_stories_horizontally")
+        defer {
+            if let previousOrientation { defaults.set(previousOrientation, forKey: "scroll_stories_horizontally") }
+            else { defaults.removeObject(forKey: "scroll_stories_horizontally") }
+        }
+        for documentReadyBeforeSwipe in [false, true] {
+            let fixture = makePresentationFixture()
+            fixture.app.compactWidthOverride = true
+            fixture.app.feedsNavigationController = UINavigationController(rootViewController: UIViewController())
+            fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+            fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": true])
+            await drainMainQueue()
+            let selected = try XCTUnwrap(fixture.pages.currentPage as? StoryLoadPage)
+            let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+            let token = try tokenFromHTML(XCTUnwrap(web.loads.last).html)
+            web.defersAsyncJavaScript = true
+            if documentReadyBeforeSwipe {
+                sendReady(to: selected, token: token, mainFrame: true)
+                await drainMainQueue()
+            }
+
+            // StoryDetailLoadingTests.swift starts and releases a short swipe before the article's entrance fade is ready.
+            fixture.pages.scrollViewWillBeginDragging(fixture.pages.scrollView)
+            fixture.pages.scrollViewDidEndDragging(fixture.pages.scrollView, willDecelerate: false)
+            XCTAssertTrue(fixture.pages.currentPage === selected)
+            XCTAssertEqual(selected.activeStoryId, "item-3")
+            XCTAssertTrue(selected.hasStory, "An aborted page swipe must not discard the current article's pending document")
+            if !documentReadyBeforeSwipe {
+                sendReady(to: selected, token: token, mainFrame: true)
+                await drainMainQueue()
+            }
+            for _ in 0..<4 where !web.asyncCompletions.isEmpty {
+                web.asyncCompletions.removeFirst()(true, nil)
+                await drainMainQueue()
+            }
+            await delay(0.2)
+            XCTAssertFalse(web.isHidden, "The same article must become visible after the interrupted entrance completes")
+            XCTAssertEqual(web.alpha, 1)
+            XCTAssertFalse(web.accessibilityElementsHidden)
+            XCTAssertEqual(fixture.app.presentations, 1, "Completing the article must not reopen the reader")
+        }
+    }
+
     func test_backDuringEarlyEntranceRejectsLateReadiness() async throws {
         let fixture = makePresentationFixture()
         fixture.app.compactWidthOverride = true

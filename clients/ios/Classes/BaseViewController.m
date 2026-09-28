@@ -2,6 +2,23 @@
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlur-Swift.h"
 
+static BOOL NBHasKeyboardTextInput(UIView *view) {
+    if (view.isFirstResponder &&
+        ([view isKindOfClass:UITextField.class] || [view isKindOfClass:UITextView.class])) return YES;
+    for (UIView *child in view.subviews) {
+        if (NBHasKeyboardTextInput(child)) return YES;
+    }
+    return NO;
+}
+
+static BOOL NBReaderViewIsVisible(UIView *view, UIWindow *window) {
+    if (!window || view.window != window) return NO;
+    for (UIView *ancestor = view; ancestor; ancestor = ancestor.superview) {
+        if (ancestor.hidden || ancestor.alpha == 0) return NO;
+    }
+    return YES;
+}
+
 static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplitPreferredBehavior behavior) {
     switch (behavior) {
         case StorySplitPreferredBehaviorTile:
@@ -215,6 +232,17 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
 
     [self addKeyCommandWithInput:@"/" modifierFlags:UIKeyModifierShift action:@selector(showKeyboardShortcuts:) discoverabilityTitle:@"Keyboard Shortcuts"];
+
+    // BaseViewController.m keeps reader shortcuts available when UIKit focuses another split-view pane.
+    if ([self isKindOfClass:FeedsObjCViewController.class] ||
+        [self isKindOfClass:FeedDetailObjCViewController.class] ||
+        [self isKindOfClass:DetailViewController.class]) {
+        if (![self isKindOfClass:FeedDetailObjCViewController.class]) {
+            [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
+            [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
+        }
+        [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(saveStoryFromKeyboard:) discoverabilityTitle:@"Save/Unsave Story" wantPriority:YES];
+    }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -318,8 +346,28 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [super buildMenuWithBuilder:builder];
 }
 
+- (BOOL)readerKeyboardContextAvailable {
+    // BaseViewController.m ignores cached readers after Back and leaves search fields and dialogs in charge of input.
+    UIWindow *window = self.viewIfLoaded.window;
+    if (self.presentingViewController || self.presentedViewController ||
+        self.navigationController.presentedViewController ||
+        appDelegate.splitViewController.presentedViewController ||
+        appDelegate.feedsNavigationController.presentedViewController || NBHasKeyboardTextInput(window)) return NO;
+    return NBReaderViewIsVisible(appDelegate.storyPagesViewController.viewIfLoaded, window) ||
+        NBReaderViewIsVisible(appDelegate.feedDetailViewController.viewIfLoaded, window);
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     [AppMenuHelper.shared prepareIfNeeded];
+
+    if (action == @selector(nextStory:) || action == @selector(previousStory:) ||
+        action == @selector(saveStoryFromKeyboard:)) {
+        if (![self readerKeyboardContextAvailable]) return NO;
+        if (action == @selector(saveStoryFromKeyboard:)) {
+            return self.isStoryShown && NBReaderViewIsVisible(appDelegate.storyPagesViewController.viewIfLoaded, self.viewIfLoaded.window);
+        }
+        return self.isStoryShown || (self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0);
+    }
     
     if (action == @selector(chooseLayout:) || action == @selector(findInFeedDetail:)) {
         return self.isFeedShown;
@@ -793,6 +841,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 
 - (IBAction)nextStory:(id)sender {
     [self.appDelegate.storyPagesViewController changeToNextPage:sender];
+}
+
+- (IBAction)saveStoryFromKeyboard:(id)sender {
+    [self.appDelegate.storyPagesViewController toggleStorySaved:sender];
 }
 
 - (IBAction)previousStory:(id)sender {

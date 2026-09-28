@@ -68,6 +68,78 @@ final class Test_StoryImageViewer: XCTestCase {
         XCTAssertTrue(annotated.contains("href='https://example.com/article'"))
     }
 
+    @MainActor func test_largeCachedImagesDoNotBlockStoryPaging() {
+        // StoryImageViewerTests.swift models StoryDetailObjCViewController.m annotating three cached photos while preparing the next page.
+        let originalURLs = (0..<3).map { "https://example.com/photo-\($0).jpg?size=large&crop=1" }
+        let cachedURLs = (0..<3).map { index in
+            "data:image/jpeg;base64," + String(repeating: "AbC123+\(index)", count: 131_072)
+        }
+        var html = originalURLs.map { "<img src='\($0)'>" }.joined()
+        let started = CACurrentMediaTime()
+        for (original, cached) in zip(originalURLs, cachedURLs) {
+            html = html.replacingOccurrences(of: original, with: cached)
+            html = StoryImageOfflineSource.annotate(html, cachedURL: cached, originalURL: original)
+        }
+        let elapsed = CACurrentMediaTime() - started
+        print("OFFLINE_IMAGE_ANNOTATION three_1MiB_images_seconds=\(elapsed)")
+        XCTAssertLessThan(elapsed, 2, "Cached photo annotation runs on the paging main thread and must not cause a multi-second freeze")
+        XCTAssertEqual(html.components(separatedBy: "data-newsblur-original-src=").count - 1, 3)
+        for original in originalURLs {
+            XCTAssertTrue(html.contains("data-newsblur-original-src=\"\(original.replacingOccurrences(of: "&", with: "&amp;"))\""))
+        }
+        for cached in cachedURLs { XCTAssertTrue(html.contains("src='\(cached)'")) }
+    }
+
+    func test_largeNearlyIdenticalCachedSourcesRemainDistinct() {
+        let prefix = "data:image/jpeg;base64," + String(repeating: "AbC123+4", count: 65_536)
+        let cached = prefix + "AA=="
+        let other = prefix + "Aa=="
+        let unaffected = "<img src='\(other)' srcset='\(cached) 1x'>"
+        let annotated = StoryImageOfflineSource.annotate(unaffected + "<img src=\"\(cached)\">",
+                                                       cachedURL: cached, originalURL: "https://example.com/exact.jpg")
+        XCTAssertTrue(annotated.hasPrefix(unaffected))
+        XCTAssertEqual(annotated.components(separatedBy: "data-newsblur-original-src=").count - 1, 1)
+    }
+
+    func test_cachedImageAnnotationPreservesQuotedAttributesAndOnlyMatchesTheExactSource() {
+        let cached = "data:image/jpeg;base64,AbC+/="
+        let original = "https://example.com/photo.jpg?a=1&label=\"quote\"&price=$5"
+        let unaffected = "<a href='\(cached)'>Link</a><img src='data:image/jpeg;base64,abc+/='>"
+        let html = unaffected + "<IMG alt=\"A > B and src='unrelated'\" SRC = '\(cached)' data-caption='Photo'>"
+        let annotated = StoryImageOfflineSource.annotate(html, cachedURL: cached, originalURL: original)
+        XCTAssertTrue(annotated.hasPrefix(unaffected), "Base64 image bytes are case-sensitive; links and other sources must remain untouched")
+        XCTAssertTrue(annotated.contains("alt=\"A > B and src='unrelated'\""))
+        XCTAssertTrue(annotated.contains("data-caption='Photo'"))
+        XCTAssertTrue(annotated.contains("data-newsblur-original-src=\"https://example.com/photo.jpg?a=1&amp;label=&quot;quote&quot;&amp;price=$5\""))
+        XCTAssertEqual(annotated.components(separatedBy: "data-newsblur-original-src=").count - 1, 1)
+    }
+
+    func test_identicalCachedImageBytesRetainEachImagesOriginalAddress() {
+        let cached = "data:image/jpeg;base64,AbC+/="
+        let first = "https://example.com/first.jpg"
+        let second = "https://example.com/second.jpg"
+        let firstImage = StoryImageOfflineSource.annotate("<img src='\(cached)'>", cachedURL: cached, originalURL: first)
+        let annotated = StoryImageOfflineSource.annotate(firstImage + "<img src='\(cached)'>", cachedURL: cached, originalURL: second)
+        XCTAssertTrue(annotated.hasPrefix(firstImage), "An already annotated image must keep the address assigned when its own URL was replaced")
+        XCTAssertEqual(annotated.components(separatedBy: "data-newsblur-original-src=").count - 1, 2)
+        XCTAssertTrue(annotated.contains("data-newsblur-original-src=\"\(second)\""))
+    }
+
+    @MainActor func test_largeMalformedImageTagsDoNotBlockStoryPaging() {
+        let cached = "data:image/jpeg;base64,AbC+/="
+        let padding = String(repeating: "a", count: 1_048_576)
+        let malformed = "<img alt=" + padding
+        let unclosedQuote = "<img alt='" + padding
+        let whitespaceOnly = "<img " + String(repeating: " ", count: 1_048_576) + ">"
+        let started = CACurrentMediaTime()
+        for html in [malformed, unclosedQuote, whitespaceOnly] {
+            let annotated = StoryImageOfflineSource.annotate(html, cachedURL: cached, originalURL: "https://example.com/photo.jpg")
+            XCTAssertEqual(annotated.count, html.count)
+            XCTAssertFalse(annotated.contains("data-newsblur-original-src="))
+        }
+        XCTAssertLessThan(CACurrentMediaTime() - started, 2, "Malformed article HTML must not trigger regex backtracking on the paging main thread")
+    }
+
     private var payload: [String: Any] {
         ["loadID": "3", "token": "1", "src": "https://example.com/image.png",
          "originalURL": "https://example.com/image.png", "link": "https://example.com/article",

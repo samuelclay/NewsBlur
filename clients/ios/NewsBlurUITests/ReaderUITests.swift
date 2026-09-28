@@ -1289,6 +1289,58 @@ final class ReaderUITests: XCTestCase {
         XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
     }
 
+    func test_iPadKeyboardDownOpensFirstStoryFromStoryList() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Keyboard regression uses isolated simulator stories")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires the iPad split reader") }
+        app.launchArguments += ["-newsblur-ui-test-theme", "sepia", "-feed_opening", "list"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 15))
+        XCTAssertEqual(currentStoryProbe().label, "No story selected", "The list-only preference must leave the reader empty before the first key")
+        attachScreenshot(named: "ipad-keyboard-before-first-story")
+        // ReaderUITests.swift sends actual hardware-key events while the feed selection still owns focus.
+        app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
+        let openedFirstStory = waitForLabel("Swift Fixture Story One", on: currentStoryProbe())
+        if !openedFirstStory {
+            print("KEYBOARD_FIRST_STORY_FAILURE \(app.debugDescription)")
+            let screenshotPath = NSTemporaryDirectory() + "newsblur-keyboard-first-story-failure.png"
+            try app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: screenshotPath))
+            print("KEYBOARD_FIRST_STORY_SCREENSHOT \(screenshotPath)")
+        }
+        XCTAssertTrue(openedFirstStory)
+        attachScreenshot(named: "ipad-keyboard-first-story")
+        #endif
+    }
+
+    func test_iPadKeyboardArrowsNavigateStoriesAndSSavesAndUnsaves() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Keyboard regression uses isolated simulator stories")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires the iPad split reader") }
+        app.launchArguments += ["-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 15))
+        tapElementCenter(storyRow("ui-story-swift-1"))
+        expectation(for: NSPredicate(format: "label == %@", "Swift Fixture Story One"), evaluatedWith: currentStoryProbe())
+        waitForExpectations(timeout: 10)
+        app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
+        expectation(for: NSPredicate(format: "label == %@", "Swift Fixture Story Two"), evaluatedWith: currentStoryProbe())
+        waitForExpectations(timeout: 10)
+        app.typeKey(XCUIKeyboardKey.upArrow.rawValue, modifierFlags: [])
+        expectation(for: NSPredicate(format: "label == %@", "Swift Fixture Story One"), evaluatedWith: currentStoryProbe())
+        waitForExpectations(timeout: 10)
+        app.typeKey("s", modifierFlags: [])
+        assertFirstStoryState("Read, Saved")
+        attachScreenshot(named: "ipad-keyboard-s-saved")
+        app.typeKey("s", modifierFlags: [])
+        assertFirstStoryState("Read, Unsaved")
+        attachScreenshot(named: "ipad-keyboard-s-unsaved")
+        #endif
+    }
+
     func test_rotatingFromStoryDetailKeepsStoryVisibleWhenReturningToPortrait() {
         launch(on: "reader-feed-swift")
 

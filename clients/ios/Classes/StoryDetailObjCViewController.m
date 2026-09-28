@@ -319,7 +319,11 @@
 }
 
 - (void)deferredEnableScrolling {
-    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView;
+    StoryPagesViewController *pages = self.appDelegate.storyPagesViewController;
+    BOOL horizontalPaging = pages.isHorizontal && pages.isDraggingScrollview;
+    // StoryDetailObjCViewController.m keeps asynchronous article loading and double-tap callbacks from interrupting a page swipe.
+    self.webView.scrollView.scrollEnabled = !horizontalPaging &&
+        (self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView);
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -2935,7 +2939,7 @@
     
     [self.activityIndicator stopAnimating];
     
-    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView;
+    [self deferredEnableScrolling];
 
     self.lastWidthClassKey = nil; // Force viewport update after full HTML load
     NSString *html = self.fullStoryHTML;
@@ -3038,9 +3042,14 @@
 
 - (void)cancelStoryPresentationFade {
     if (!self.fadesPreparedStory) return;
-    self.fadesPreparedStory = NO;
     self.webView.hidden = YES;
     [self invalidateStoryLoad];
+    [self cancelStoryPresentationFadePreservingStory];
+}
+
+- (void)cancelStoryPresentationFadePreservingStory {
+    // StoryDetailObjCViewController.m cancels only the entrance animation for a page swipe; its pending document still becomes readable.
+    self.fadesPreparedStory = NO;
     [self.webView.layer removeAllAnimations];
     self.webView.alpha = 1;
     self.webView.accessibilityElementsHidden = NO;

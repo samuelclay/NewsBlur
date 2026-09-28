@@ -22,6 +22,7 @@ Actions:
     coldcapture:<directory> - Record an app restart, preserving its data and login
     checkpoint:<name>     - Timestamp a navigation/load event in the current capture
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
+    pagerfuzz:<seed>,<count>[,forward] - Consecutive swipes over one HID connection; forward advances steadily
     describe              - Print simulator accessibility elements
     crashes               - Show recent app exception messages from the simulator
     logs                  - Show recent NewsBlur logs from the simulator
@@ -30,6 +31,7 @@ Actions:
     launch                - Launch the NewsBlur app
     terminate             - Terminate the NewsBlur app
     install               - Install the app from DerivedData
+    restoreprefs:<path>   - Restore app preferences from a plist after fixture testing
 
 Examples:
     python3 run_ios.py list
@@ -216,6 +218,53 @@ def do_fuzz(arguments):
         time.sleep(0.25)
 
 
+def do_pager_fuzz(arguments):
+    """run_ios.py sends consecutive finger gestures without per-command process delays."""
+    parts = arguments.split(",")
+    seed, count = map(int, parts[:2])
+    forward_only = len(parts) == 3 and parts[2] == "forward"
+    if len(parts) != 2 and not forward_only:
+        raise ValueError("pagerfuzz requires seed,count[,forward]")
+    if not 1 <= count <= 200:
+        raise ValueError("pagerfuzz count must be between 1 and 200")
+    rng = random.Random(seed)
+    gestures = []
+    for index in range(count):
+        start, end = ((60, 345) if not forward_only and index % 4 == 3 else (345, 60))
+        gesture = {"start": [start, 450], "end": [end, 450 + rng.choice([-60, 0, 60])],
+                   "duration": rng.choice([0.10, 0.15, 0.25]), "delay": 0.025}
+        if forward_only:
+            gesture.update(end=[60, 450], duration=0.25, delay=0.25)
+        elif index % 7 == 6:
+            gesture.update(start=[195, 650], end=[195, 250])
+        gesture["interrupt"] = not forward_only and index % 5 == 4
+        gestures.append(gesture)
+    sequence = {"seed": seed, "gestures": gestures}
+    for directory in CAPTURE_DIRECTORIES:
+        with open(os.path.join(directory, "gestures.json"), "w") as file:
+            json.dump(sequence, file, indent=2)
+    print(f"  Rapid paging: seed={seed}, gestures={count}, forward={forward_only}", flush=True)
+    script = """
+import asyncio, json, logging, shutil, sys
+from idb.grpc.management import ClientManager
+from idb.common.hid import swipe_to_events
+from idb.common.types import HIDDelay
+async def main():
+    events = []
+    for gesture in json.loads(sys.argv[2]):
+        events.extend(swipe_to_events(tuple(gesture['start']), tuple(gesture['end']), gesture['duration']))
+        events.append(HIDDelay(duration=gesture['delay']))
+        if gesture['interrupt']:
+            events.extend(swipe_to_events((195, 450), (225, 450), duration=0.08))
+    manager = ClientManager(logger=logging.getLogger('pagerfuzz'), companion_path=shutil.which('idb_companion'))
+    async with manager.from_udid(udid=sys.argv[1]) as client:
+        await client.send_events(events)
+asyncio.run(main())
+"""
+    interpreter = os.environ.get("IOS_IDB_PYTHON", shutil.which("python3.11") or sys.executable)
+    subprocess.run([interpreter, "-c", script, UDID, json.dumps(gestures)], check=True)
+
+
 def do_checkpoint(name):
     """Record a named timestamp for matching navigation with app measurements."""
     event = {"checkpoint": name, "at": time.time()}
@@ -276,6 +325,23 @@ def do_terminate():
     run_cmd(f"xcrun simctl terminate {UDID} {BUNDLE_ID} 2>/dev/null")
 
 
+def do_restore_preferences(path):
+    """run_ios.py restores the selected simulator app's preferences without changing its account data."""
+    import plistlib
+    with open(path, "rb") as file:
+        preferences = plistlib.load(file)
+    if not isinstance(preferences, dict):
+        raise ValueError("App preferences must be a plist dictionary")
+    do_terminate()
+    container = subprocess.check_output(
+        ["xcrun", "simctl", "get_app_container", UDID, BUNDLE_ID, "data"], text=True
+    ).strip()
+    domain = os.path.join(container, "Library", "Preferences", BUNDLE_ID)
+    subprocess.run(["xcrun", "simctl", "spawn", UDID, "defaults", "import", domain,
+                    os.path.abspath(path)], check=True)
+    print("  Restored app preferences")
+
+
 def do_install():
     """Install the app from DerivedData."""
     print("  Installing NewsBlur...")
@@ -314,6 +380,8 @@ def parse_and_execute(action):
         do_checkpoint(arg)
     elif cmd == "fuzz":
         do_fuzz(arg)
+    elif cmd == "pagerfuzz":
+        do_pager_fuzz(arg)
     elif cmd == "describe":
         subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
     elif cmd == "push":
@@ -333,6 +401,8 @@ def parse_and_execute(action):
         do_terminate()
     elif cmd == "install":
         do_install()
+    elif cmd == "restoreprefs":
+        do_restore_preferences(arg)
     elif cmd == "list":
         do_list()
     else:
