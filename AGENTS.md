@@ -38,6 +38,13 @@ For debugging sessions: always take a screenshot first, reproduce the issue, the
 ## Bug Fixing Workflow
 When I report a bug, don't start by trying to fix it. Instead, start by writing a test that reproduces the bug. Then, have subagents try to fix the bug and prove it with a passing test.
 
+## NewsBlur Forum Investigations
+- When I provide one or more `forum.newsblur.com` URLs, investigate each topic and implement the appropriate fixes.
+- Ask before deploying any forum fix. Prepare and test the changes first so I can review the concrete result before approving deployment.
+- Always write a short, concise reply for each topic, with enough detail to explain what happened and what happens next. Match the natural language and style of my previous forum replies.
+- Present reply drafts as plain text, never block quotes, so they are easy to copy and paste. Do not post them to the forum unless I explicitly ask.
+- Follow the Writing Forum Replies guidelines in AGENTS.md, and describe deployment status accurately.
+
 ## Git Branching
 - **Do not automatically create branches**: Work on the current branch unless I explicitly ask you to create or switch to a branch. If you think a branch would help, ask first.
 
