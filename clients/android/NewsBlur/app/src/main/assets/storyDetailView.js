@@ -1,7 +1,8 @@
 function loadImages() {
     var imgs = document.images;
+    var inline_contexts = new WeakMap();
     for (var i = 0, len = imgs.length; i < len; i++) {
-        setImage(imgs[i])
+        setImage(imgs[i], inline_contexts);
     }
 }
 
@@ -16,6 +17,46 @@ function hasProtectedImageClass(img) {
         hasClass(img, 'NB-classifier-icon-dislike') ||
         hasClass(img, 'NB-classifier-icon-dislike-inner');
 }
+
+// storyDetailView.js sends only article images to the origin-scoped native viewer bridge.
+var NB_story_image_sequence = 0;
+function NB_story_image_rect(token, generation) {
+    var load = document.querySelector('meta[name="newsblur-image-generation"]');
+    if (!load || load.content !== String(generation) || !/^\d+$/.test(token)) return null;
+    var image = document.querySelector('img[data-nb-viewer-token="' + token + '"]');
+    if (!image) return null;
+    var rect = image.getBoundingClientRect();
+    return {x: rect.left, y: rect.top, width: rect.width, height: rect.height,
+        viewportWidth: document.documentElement.clientWidth};
+}
+
+function NB_open_story_image(image) {
+    var load = document.querySelector('meta[name="newsblur-image-generation"]');
+    if (!window.NewsBlurImages || !load || !image || image.tagName !== 'IMG' ||
+        !image.closest('.NB-story') || hasProtectedImageClass(image) ||
+        image.closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet') ||
+        !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
+    var src = image.currentSrc || image.src;
+    if (!/^(https?:|data:image\/)/i.test(src)) return false;
+    var token = image.getAttribute('data-nb-viewer-token');
+    if (!token) {
+        token = String(++NB_story_image_sequence);
+        image.setAttribute('data-nb-viewer-token', token);
+    }
+    window.NewsBlurImages.postMessage(JSON.stringify({
+        generation: load.content, token: token, src: src, title: image.alt || image.title || 'Story image',
+        naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
+        rect: NB_story_image_rect(token, load.content)
+    }));
+    return true;
+}
+
+document.addEventListener('click', function(event) {
+    if (NB_open_story_image(event.target)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    }
+}, true);
 
 function setImageClass(img, className) {
     if (img.classList) {
@@ -37,17 +78,116 @@ function setImageClass(img, className) {
     img.setAttribute('class', filtered.join(' '));
 }
 
-function setImage(img) {
+function setImage(img, inline_contexts) {
     if (hasProtectedImageClass(img)) {
         return;
     }
 
-    if (img.querySelector('tagName') == 'VIDEO') {
+    var pane_width = document.documentElement.clientWidth;
+    var body_style = window.getComputedStyle(document.body);
+    // storyDetailView.js permits only the body gutters' enlargement, never a narrower nested wrapper's.
+    var content_width = pane_width - (parseFloat(body_style.paddingLeft) || 0) - (parseFloat(body_style.paddingRight) || 0);
+    img.style.removeProperty('--NB-image-offset');
+    if (img.complete && pane_width > 0 && img.naturalWidth >= content_width &&
+        img.naturalHeight >= 50 && !NB_is_deliberately_small_image(img) &&
+        NB_is_standalone_image(img, inline_contexts || new WeakMap())) {
         setImageClass(img, 'NB-large-image');
-    } else if (img.width >= 320 && img.height >= 50) {
-        setImageClass(img, 'NB-large-image');
+        // storyDetailView.js measures the image's actual inset, including nested wrapper padding.
+        img.style.setProperty('--NB-image-offset', -img.getBoundingClientRect().left + 'px');
     } else {
         setImageClass(img, 'NB-small-image');
+    }
+}
+
+function NB_is_deliberately_small_image(img) {
+    var story = img.closest('.NB-story');
+    if (!story) {
+        return true;
+    }
+    var fixed_width = /^\d+(\.\d+)?(px)?$/i;
+    var declared_width = img.style.width || img.getAttribute('width') || '';
+    return fixed_width.test(declared_width) && parseFloat(declared_width) < story.clientWidth;
+}
+
+function NB_is_standalone_image(img, inline_contexts) {
+    if (window.getComputedStyle(img).cssFloat !== 'none') {
+        return false;
+    }
+    var branch = img;
+    var parent = img.parentElement;
+    while (parent) {
+        if (/^(UL|OL|LI|DL|DT|DD|TABLE|THEAD|TBODY|TFOOT|TR|TD|TH|BLOCKQUOTE|PRE)$/.test(parent.tagName)) {
+            return false;
+        }
+        var parent_context = inline_contexts.get(parent);
+        if (!parent_context) {
+            var parent_style = window.getComputedStyle(parent);
+            parent_context = {
+                blocked: parent_style.overflowX !== 'visible' || parent_style.cssFloat !== 'none',
+                inline_content: []
+            };
+            if (!parent_context.blocked) {
+                for (var sibling = parent.firstChild; sibling; sibling = sibling.nextSibling) {
+                    if (sibling.nodeType === 3 && sibling.textContent.trim()) {
+                        parent_context.inline_content.push(sibling);
+                    } else if (sibling.nodeType === 1 &&
+                        !/^(IMG|PICTURE|SOURCE|BR|FIGCAPTION)$/.test(sibling.tagName) &&
+                        window.getComputedStyle(sibling).display.indexOf('inline') === 0 && sibling.textContent.trim()) {
+                        parent_context.inline_content.push(sibling);
+                    }
+                }
+            }
+            inline_contexts.set(parent, parent_context);
+        }
+        if (parent_context.blocked) {
+            return false;
+        }
+        var inline_content = parent_context.inline_content;
+        if (inline_content.length > 1 || (inline_content.length === 1 && inline_content[0] !== branch)) {
+            return false;
+        }
+        if (hasClass(parent, 'NB-story')) {
+            return true;
+        }
+        branch = parent;
+        parent = parent.parentElement;
+    }
+    return false;
+}
+
+// storyDetailView.js also handles cached images and images arriving after WebView.onPageFinished.
+if (!window.NB_image_listeners_installed) {
+    window.NB_image_listeners_installed = true;
+    document.addEventListener('load', function(event) {
+        if (event.target.tagName === 'IMG') {
+            setImage(event.target);
+        }
+    }, true);
+    document.addEventListener('error', function(event) {
+        if (event.target.tagName === 'IMG') {
+            setImage(event.target);
+        }
+    }, true);
+    var NB_image_resize_pending = false;
+    var NB_image_pane_width = document.documentElement.clientWidth;
+    window.addEventListener('resize', function() {
+        var pane_width = document.documentElement.clientWidth;
+        if (pane_width === NB_image_pane_width) {
+            return;
+        }
+        NB_image_pane_width = pane_width;
+        if (NB_image_resize_pending) {
+            return;
+        }
+        NB_image_resize_pending = true;
+        window.setTimeout(function() {
+            NB_image_resize_pending = false;
+            loadImages();
+        }, 0);
+    });
+    loadImages();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadImages, { once: true });
     }
 }
 

@@ -29,6 +29,17 @@ public class APIResponse {
     public long connectTime;
     public long readTime;
 
+    // APIResponse.java also accepts responses from NetworkClientImpl.kt's cancellable request path.
+    public APIResponse(Response response, long connectTime) throws IOException {
+        this.connectTime = connectTime;
+        this.isError = response.code() != HttpURLConnection.HTTP_OK;
+        if (this.isError) return;
+        this.cookie = response.header("Set-Cookie");
+        long started = System.currentTimeMillis();
+        this.responseBody = response.body().string();
+        this.readTime = System.currentTimeMillis() - started;
+    }
+
     /**
      * Construct an online response.  Will test the response for errors and extract all the
      * info we might need.

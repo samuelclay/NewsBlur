@@ -23,6 +23,7 @@ import com.newsblur.databinding.PopupReadingMenuBinding
 import com.newsblur.databinding.ViewMainMenuRowBinding
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.PopoverEntranceAnimation
 import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.UIUtils
 import kotlin.math.min
@@ -492,8 +493,10 @@ class ReadingStoryMenuPopup(
         if (isShowing) {
             popupWindow.update(x, y, popupWidth, popupHeight)
         } else {
-            popupWindow.height = popupHeight
-            popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
+            PopoverEntranceAnimation.show(
+                anchor, popupWindow, Gravity.NO_GRAVITY, x, y, popupWidth, popupHeight,
+                location[0] + anchor.width / 2f, location[1] + anchor.height / 2f,
+            )
         }
     }
 

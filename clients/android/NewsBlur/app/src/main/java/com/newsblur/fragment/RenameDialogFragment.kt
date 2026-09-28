@@ -38,6 +38,7 @@ import com.newsblur.R
 import com.newsblur.design.LocalNbColors
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
+import com.newsblur.network.FolderPath
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.viewModel.RenameDialogViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -153,13 +154,13 @@ fun RenameDialogContent(
     val entityTitle =
         when (type) {
             is RenameType.Feed -> type.currentTitle
-            is RenameType.Folder -> type.currentName
+            is RenameType.Folder -> FolderPath.leaf(type.currentName)
         }
 
     LaunchedEffect(type) {
         when (type) {
             is RenameType.Feed -> viewModel.setInitialText(type.currentTitle)
-            is RenameType.Folder -> viewModel.setInitialText(type.currentName)
+            is RenameType.Folder -> viewModel.setInitialText(FolderPath.leaf(type.currentName))
         }
     }
 

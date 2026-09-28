@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="150"
+    android:viewportHeight="150">
+    <!-- ic_unsaved.xml outlines the clock silhouette and preserves the hands from ic_saved.xml. -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#95968E"
+        android:strokeWidth="8"
+        android:pathData="M74.24,22.37A52.06,52.63 0,1 1,74.24,127.63A52.06,52.63 0,1 1,74.24,22.37Z" />
+    <path
+        android:fillColor="#95968E"
+        android:pathData="M92.66,93.57C91.14,95.15 88.67,95.15 87.15,93.57L71.5,77.33C70.76,76.57 70.34,75.54 70.33,74.45L70.33,50.09C70.33,47.84 72.08,46.03 74.24,46.03C76.4,46.03 78.15,47.84 78.15,50.09L78.15,72.78L92.66,87.85C94.18,89.43 94.18,91.99 92.66,93.57Z" />
+</vector>

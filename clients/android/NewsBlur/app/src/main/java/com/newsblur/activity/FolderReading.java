@@ -21,11 +21,11 @@ public class FolderReading extends Reading {
             int iconSize = UIUtils.dp2px(this, 24);
             Bitmap iconBitmap = CustomIconRenderer.renderIcon(this, customIcon, iconSize);
             if (iconBitmap != null) {
-                UIUtils.setupToolbar(this, iconBitmap, folderName, false);
+                UIUtils.setupToolbar(this, iconBitmap, com.newsblur.network.FolderPath.leaf(folderName), false);
                 return;
             }
         }
-        UIUtils.setupToolbar(this, R.drawable.ic_folder_closed, folderName, false);
+        UIUtils.setupToolbar(this, R.drawable.ic_folder_closed, com.newsblur.network.FolderPath.leaf(folderName), false);
     }
 
 }

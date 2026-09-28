@@ -357,6 +357,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    [self resumeFeedSubscription];
     (void)StoryFirstPageCache.shared;
     if (self.launchedShortcutItem) {
         [self handleShortcutItem:self.launchedShortcutItem];
@@ -744,6 +745,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (BOOL)openURL:(NSURL *)url {
+    if ([self handleFeedSubscriptionURL:url]) return YES;
     if (self.activeUsername && [url.scheme isEqualToString:@"newsblurwidget"]) {
         NSMutableDictionary *query = [NSMutableDictionary dictionary];
         
@@ -1494,6 +1496,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showLogin {
+    [self resetFeedSubscriptionForAccountChange];
     [self.detailViewController resetDiscoveryForAccountChange];
     if (self.loginViewController.view.window != nil) {
         return;
