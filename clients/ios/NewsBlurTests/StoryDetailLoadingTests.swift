@@ -508,8 +508,9 @@ import XCTest
         page.didMove(toParent: fixture.pages)
         web.navigationDelegate = page
         page.perform(NSSelectorFromString("clearWebView"))
-        for _ in 0..<60 where page.value(forKey: "preparedWebViewFonts") as? Bool != true { await delay(0.05) }
-        XCTAssertEqual(page.value(forKey: "preparedWebViewFonts") as? Bool, true)
+        try await requireState("The notification WebKit fixture finishes its bundled-font bootstrap before initial pager layout") {
+            page.value(forKey: "preparedWebViewFonts") as? Bool == true
+        }
 
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
