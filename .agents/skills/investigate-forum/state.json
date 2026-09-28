@@ -1,5 +1,33 @@
 {
   "topics": {
+    "13848": {
+      "title": "Android app not correctly wrapping titles",
+      "url": "https://forum.newsblur.com/t/android-app-not-correctly-wrapping-titles/13848",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-09-23T13:55:09.084Z",
+      "last_posted_at": "2026-09-23T01:58:36.683Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2147",
+      "branch": "forum-13847-dimmer-read-titles",
+      "worktree": ".worktree/android-scroll-performance",
+      "note": "Sam requested balanced wrapping for both the main Android article headline and related-story titles in the reader, in the same PR as the approved read-title colors. The native main headline uses balanced line breaks; related titles remove the one-line override and ellipsis and grow with balanced wrapping and vertical spacing. Tests, Samsung NB Alpha evidence, CI and review results are tracked on the PR. Planned for the v15.0.5 follow-up from main; no version bump, release or forum post.",
+      "reply": "I've added balanced wrapping to the article headline and related-story titles inside the reader. This is planned for Android 15.0.5.",
+      "question": null
+    },
+    "13847": {
+      "title": "Read and Unread Titles Hard to Differentiate",
+      "url": "https://forum.newsblur.com/t/read-and-unread-titles-hard-to-differentiate/13847",
+      "status": "pr-open",
+      "tier": 2,
+      "handled_at": "2026-09-23T03:41:47.839Z",
+      "last_posted_at": "2026-09-22T22:03:06.976Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2147",
+      "branch": "forum-13847-dimmer-read-titles",
+      "worktree": ".worktree/android-scroll-performance",
+      "note": "Sam requested softer Android read titles for regular and related stories and approved a fresh branch from main for the v15.0.5 follow-up. Light and sepia read titles are lighter; dark and black are dimmer. NB Alpha verified on the emulator and Samsung across all four themes. 688 local unit tests pass; hosted CI and review results are tracked on the PR. No release or forum post.",
+      "reply": "I've made read titles lighter so they're easier to tell apart from unread stories, including related stories. This is planned for Android 15.0.5.",
+      "question": null
+    },
     "13833": {
       "title": "WIRED Newsletters blocked as spam",
       "url": "https://forum.newsblur.com/t/wired-newsletters-blocked-as-spam/13833",

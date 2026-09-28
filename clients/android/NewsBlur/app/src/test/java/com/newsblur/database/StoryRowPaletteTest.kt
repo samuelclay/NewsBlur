@@ -7,12 +7,12 @@ import org.junit.Test
 
 class StoryRowPaletteTest {
     @Test
-    fun feedNamesAndHeadlinesMatchTheIosThemeHierarchy() {
+    fun feedNamesAndHeadlinesUseTheirReadAndUnreadThemeColors() {
         val expected = mapOf(
-            ThemeValue.LIGHT to listOf(0x606060, 0x808080, 0x111111, 0x585858),
-            ThemeValue.SEPIA to listOf(0x606060, 0x808080, 0x333333, 0x585858),
-            ThemeValue.DARK to listOf(0xD0D0D0, 0xB0B0B0, 0xD0D0D0, 0x989898),
-            ThemeValue.BLACK to listOf(0x909090, 0x707070, 0xCCCCCC, 0x888888),
+            ThemeValue.LIGHT to listOf(0x606060, 0x808080, 0x111111, 0xB0B0B0),
+            ThemeValue.SEPIA to listOf(0x606060, 0x808080, 0x333333, 0xA8A8A8),
+            ThemeValue.DARK to listOf(0xD0D0D0, 0xB0B0B0, 0xD0D0D0, 0x909090),
+            ThemeValue.BLACK to listOf(0x909090, 0x707070, 0xCCCCCC, 0x808080),
         )
         expected.forEach { (theme, colors) ->
             assertEquals(colors[0] or 0xFF000000.toInt(), StoryRowPalette.feedTitleArgb(theme, false))

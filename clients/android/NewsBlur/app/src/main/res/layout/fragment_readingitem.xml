@@ -92,6 +92,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="16dp"
                         android:layout_toLeftOf="@id/story_context_menu_button"
+                        android:breakStrategy="balanced"
                         android:textSize="17sp" />
 
                     <TextView
