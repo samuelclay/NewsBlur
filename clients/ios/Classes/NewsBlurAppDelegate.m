@@ -4138,8 +4138,18 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [self.storyPagesViewController refreshHeaders];
         }
     }
-    [self.storyPagesViewController setNextPreviousButtons];
-    originalStoryCount += 1;
+    BOOL storyIsInCurrentCollection = self.storiesCollection == nil;
+    for (NSDictionary *listedStory in self.storiesCollection.activeFeedStories) {
+        if ([[listedStory objectForKey:@"story_hash"] isEqualToString:[story objectForKey:@"story_hash"]]) {
+            storyIsInCurrentCollection = YES;
+            break;
+        }
+    }
+    // NewsBlurAppDelegate.m must not change source progress for an article retained outside the browsed collection.
+    if (storyIsInCurrentCollection) {
+        [self.storyPagesViewController setNextPreviousButtons];
+        originalStoryCount += 1;
+    }
     
     [self.feedsViewController reloadFeedTitlesTable];
 }
