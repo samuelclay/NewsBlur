@@ -132,6 +132,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
         binding.bottomToolbar.setBackground(com.newsblur.view.FloatingToolbarSurface.background(this, prefsRepo.getResolvedTheme(this)));
+        fitBottomToolbarToContentOnTablets();
         binding.bottomToolbar.bringToFront();
         binding.bottomToolbar.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
             View list = findViewById(R.id.folderfeed_list);
@@ -221,6 +222,24 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             visibleMainRef.clear();
         }
         super.onDestroy();
+    }
+
+    // Main.java's floating toolbar spans a phone's width, but on a tablet that stretches the add
+    // button, filter, and settings button across the screen, so there it hugs its contents, centered.
+    private void fitBottomToolbarToContentOnTablets() {
+        if (getResources().getConfiguration().smallestScreenWidthDp < StorySplitView.MIN_SPLIT_WIDTH_DP) return;
+        android.view.ViewGroup.LayoutParams toolbarParams = binding.bottomToolbar.getLayoutParams();
+        toolbarParams.width = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+        binding.bottomToolbar.setLayoutParams(toolbarParams);
+        View selector = feedSelectorFragment.getView();
+        if (selector != null && selector.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+            android.widget.LinearLayout.LayoutParams selectorParams = (android.widget.LinearLayout.LayoutParams) selector.getLayoutParams();
+            selectorParams.width = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+            selectorParams.weight = 0f;
+            selectorParams.setMarginStart(UIUtils.dp2px(this, 12));
+            selectorParams.setMarginEnd(UIUtils.dp2px(this, 12));
+            selector.setLayoutParams(selectorParams);
+        }
     }
 
     // StorySplitView.kt only hands story lists to a live Main.java in the same task, never one in
