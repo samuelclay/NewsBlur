@@ -99,7 +99,9 @@ def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
     over HTTP/2 (forum #13858). Every hop is checked with validate_public_url exactly like
     safe_requests_request, and the answer comes back as a requests.Response so callers
     read it the same way. httpx errors are raised as their requests equivalents because
-    callers catch requests.RequestException. utils/url_safety.py
+    callers catch requests.RequestException. FetchFeed.fetch swaps this in for
+    safe_requests_get with the same call (url, headers=, timeout=), so any new keyword
+    passed there has to be accepted here too. utils/url_safety.py
     """
     url = validate_public_url(url)
     history = []

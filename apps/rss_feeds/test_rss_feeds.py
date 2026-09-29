@@ -634,6 +634,12 @@ class Test_SafeHttp2Get(TestCase):
             response = safe_http2_get(self.ADDRESS, **kwargs)
         return response, client_kwargs
 
+    def test_http2_transport_is_available(self):
+        # The other tests hand httpx a mock transport, which skips its h2 import check. In
+        # production a missing h2 package is swallowed as requests.ConnectionError and the
+        # 426 stays, so check the image can really build an HTTP/2 transport.
+        httpx.HTTPTransport(http2=True)
+
     @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
     def test_safe_http2_get__returns_a_requests_response(self, mock_getaddrinfo):
         requests_seen = []
