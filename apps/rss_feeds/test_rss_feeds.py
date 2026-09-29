@@ -749,6 +749,16 @@ class Test_SafeHttp2Get(TestCase):
         with self.assertRaises(requests.ConnectionError):
             self._get(bad_url)
 
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__non_ascii_validator_is_a_requests_error(self, mock_getaddrinfo):
+        # httpx encodes header values as ASCII where requests uses latin-1, so an odd ETag a
+        # feed once sent must fail as a requests error, not escape the fetcher.
+        def handler(request):
+            raise AssertionError("a header httpx can't encode was sent")
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(handler, headers={"If-None-Match": 'W/"café"'})
+
 
 class Test_ProcessFeedQueries(TestCase):
     @patch("utils.feed_fetcher.MStory.objects")
@@ -7440,10 +7450,43 @@ class Test_Http2RetryOnUpgradeRequired(TestCase):
         )
 
         self.assertEqual(result, FEED_ERRHTTP)
-        self.assertEqual(mock_http2.call_args.args[0], self.ADDRESS)
-        # The 426 is kept, so the fake header retry of the http address still runs.
-        self.assertEqual(mock_http1.call_count, 2)
-        self.assertEqual(mock_http1.call_args.args[0], self.HTTP_ADDRESS)
+        self.assertEqual(mock_http2.call_args_list[0].args[0], self.ADDRESS)
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        # The 426 is kept, so the fake header retry of the http address still runs, over
+        # HTTP/2 since the site answered there.
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual(mock_http2.call_count, 2)
+        self.assertEqual(mock_http2.call_args.args[0], self.HTTP_ADDRESS)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_426_that_refuses_browser_user_agents_gets_the_http2_ua_retries(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        # The https probe is refused for the browser UA, so it is not adopted, but the site
+        # did answer over HTTP/2: the fake and plain UA retries go there too.
+        from utils.feed_fetcher import FEED_OK
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        def refuses_browser_user_agents(url, headers=None, **kwargs):
+            if "Mozilla/" in (headers or {}).get("User-Agent", ""):
+                return self._response(403, b"<html>Forbidden</html>", "text/html")
+            return self._response(200, self.RSS, "application/rss+xml; charset=UTF-8")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(self._upgrade_required, refuses_browser_user_agents)
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertEqual(mock_http1.call_count, 1)
+        # https probe, then the fake and plain UA retries of the http address
+        self.assertEqual(
+            [call.args[0] for call in mock_http2.call_args_list],
+            [self.ADDRESS, self.HTTP_ADDRESS, self.HTTP_ADDRESS],
+        )
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.plain_user_agent)
 
 
 @override_settings(SCRAPINGBEE_API_KEY="test-scrapingbee-key")

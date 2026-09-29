@@ -120,8 +120,10 @@ def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
                 history.append(response)
     except httpx.TimeoutException as e:
         raise requests.Timeout(str(e)) from e
-    except (httpx.HTTPError, httpx.InvalidURL, ImportError) as e:
+    except (httpx.HTTPError, httpx.InvalidURL, ImportError, UnicodeEncodeError) as e:
         # ImportError is httpx refusing http2=True when the h2 package is missing.
+        # UnicodeEncodeError is httpx rejecting a non-ASCII header value, such as an odd
+        # ETag a feed once sent that requests would have passed through as latin-1.
         raise requests.ConnectionError(str(e)) from e
 
     raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
