@@ -215,6 +215,21 @@ def PushFeeds(feed_id, xml):
         feed.update(options=options)
 
 
+@app.task(name="merge-feeds", time_limit=65 * 60, soft_time_limit=60 * 60, ignore_result=True)
+def MergeFeeds(original_feed_id, duplicate_feed_id):
+    """merge_feeds off the fetch queue. check_feed_link_for_feed_address hands a merge here
+    when it would move MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS or more subscriptions: run inline,
+    a merge that size (Hacker News moved 15,492 in 13 minutes, forum #13860) outlasts the
+    fetch task's 9 minute soft limit and stalls the rest of its batch. merge_feeds decides the
+    survivor itself, exactly as the save collision would have, and a merge cut short here is
+    finished by running this task or merge_feeds again with the same pair.
+    apps/rss_feeds/tasks.py
+    """
+    from apps.rss_feeds.models import merge_feeds
+
+    merge_feeds(original_feed_id, duplicate_feed_id)
+
+
 @app.task()
 def ScheduleImmediateFetches(feed_ids, user_id=None):
     from apps.rss_feeds.models import Feed

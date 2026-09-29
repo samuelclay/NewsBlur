@@ -5649,6 +5649,52 @@ class Test_AddressCheckMergesOnTheCallingThread(TransactionTestCase):
         self.assertTrue(fixed)
         self.assertEqual(feed.pk, real.pk)
 
+    def test_a_merge_that_would_move_many_subscriptions_is_queued_as_its_own_task(self):
+        """Hacker News moved 15,492 readers in 13 minutes, longer than a fetch task's 9 minute
+        soft limit. A merge that big goes to MergeFeeds and the fetch moves on, with this feed
+        left at its old address until the merge settles which feed survives."""
+        from apps.rss_feeds import models as feed_models
+
+        real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=100)
+        Feed.objects.filter(pk=copy.pk).update(num_subscribers=3)
+        copy.refresh_from_db()
+        for index in range(3):
+            UserSubscription.objects.create(
+                user=User.objects.create_user(username="copy-%s" % index), feed=copy
+            )
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS", 3):
+                with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
+                    with patch.object(feed_models, "merge_feeds") as inline_merge:
+                        fixed, feed = copy.check_feed_link_for_feed_address()
+
+        queued.assert_called_once_with(args=(real.pk, copy.pk))
+        inline_merge.assert_not_called()
+        self.assertFalse(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+        copy.refresh_from_db()
+        self.assertEqual(copy.feed_address, "https://rsshub.example.com/hackernews/index")
+
+    def test_the_merge_task_runs_merge_feeds_on_the_work_queue(self):
+        from apps.rss_feeds.tasks import MergeFeeds
+
+        with patch("apps.rss_feeds.models.merge_feeds") as merge:
+            MergeFeeds(11, 12)
+
+        merge.assert_called_once_with(11, 12)
+        self.assertTrue(settings.CELERY_TASK_ROUTES["merge-feeds"]["queue"].endswith("work_queue"))
+
     def test_a_feed_whose_row_vanished_during_the_check_reports_no_fix(self):
         """Feed.save returns None when the row was deleted and nothing replaced it; the check
         runs on the fetcher's thread now, so that must not raise into the fetch."""
