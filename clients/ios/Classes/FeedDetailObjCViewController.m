@@ -3469,7 +3469,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             }
         }
     }
-    if (!self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory] && !appDelegate.storyPagesViewController.retainsDuoSourceArticle) [appDelegate.storyPagesViewController advanceToNextUnread];
+    // FeedDetailObjCViewController.m keeps source browsing passive while allowing an explicit Next request to finish after pagination.
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    if (!self.reconcilingFirstPageArticle && ![self hasRetainedFirstPageStory] &&
+        (!pages.retainsDuoSourceArticle || pages.waitingForNextUnreadFromServer)) {
+        [pages advanceToNextUnread];
+    }
 
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
