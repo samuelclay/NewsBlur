@@ -48,6 +48,7 @@ from redis.exceptions import LockError
 
 from apps.rss_feeds.tasks import (
     IndexDiscoverStories,
+    MergeFeeds,
     PushFeeds,
     ScheduleCountTagsForUser,
     UpdateFeeds,
@@ -1183,10 +1184,27 @@ class Feed(models.Model):
             logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
             return False, self
 
+        feed_address = strip_underscore_from_feed_address(feed_address)
         # Feed.save merges into a feed that already holds this address rather than raising.
-        # A merge cut short by the fetch task's own time limit leaves this feed's row with its
-        # old address, so its next failing fetch lands here again and the merge carries on.
-        self.feed_address = strip_underscore_from_feed_address(feed_address)
+        # A merge that would move MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS or more readers goes to
+        # its own task instead, so it gets a time limit it can finish in and this fetch batch
+        # moves on; this feed keeps its old address until the merge settles which feed
+        # survives. A smaller merge cut short leaves this feed's row with its old address too,
+        # so its next failing fetch lands here again and the merge carries on.
+        holder = Feed.feed_holding_address(feed_address, self.feed_link, exclude_ids=[self.pk])
+        if holder:
+            from apps.reader.models import UserSubscription
+
+            _, losing_feed, _, _, _, _ = merge_feeds_orientation(holder, self)
+            moving = UserSubscription.objects.filter(feed_id=losing_feed.pk).count()
+            if moving >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
+                logging.debug(
+                    "   ---> [%-30s] ~FRAddress belongs to feed %s, queueing a merge that moves %s "
+                    "subscriptions" % (self.log_title[:30], holder.pk, moving)
+                )
+                MergeFeeds.apply_async(args=(holder.pk, self.pk))
+                return False, self
+        self.feed_address = feed_address
         feed = self.save()
         if not feed:
             # The row was deleted while this check ran and nothing took its place.
@@ -5832,9 +5850,9 @@ MERGE_FEEDS_MAX_LOCKS = 6
 # maybe a few; 12,170 branches on production had exactly one reader in September 2026. A feed wrongly
 # re-parented under a copy has hundreds or thousands. apps/rss_feeds/models.py
 MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS = 10
-# A merge moving at least this many subscriptions says so in the log, so one cut short by its
-# process's time limit (it resumes on the duplicate's next collision) is easy to find.
-# apps/rss_feeds/models.py
+# A merge that would move at least this many subscriptions is too big for a fetch task: the
+# address check queues it as its own task (apps/rss_feeds/tasks.py MergeFeeds), and
+# merge_feeds_locked logs the call that finishes it if it is cut short. apps/rss_feeds/models.py
 MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS = 1000
 # The merge locks this thread holds, by feed id. merge_feeds_locked ends with a full
 # Feed.save of the survivor, which merges again on a hash collision; that nested merge must
@@ -6181,9 +6199,16 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
     moving_subscriptions = user_subs.count()
     if moving_subscriptions >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
         logging.info(
-            " ---> merge_feeds(%s, %s) is moving %s subscriptions; if this process is stopped "
-            "partway, the next collision of feed %s resumes the merge"
-            % (original_feed.pk, duplicate_feed.pk, moving_subscriptions, duplicate_feed.pk)
+            " ---> merge_feeds is moving %s subscriptions from %s to %s; if it is stopped partway, "
+            "rerun merge_feeds(%s, %s, force=%s) to finish it"
+            % (
+                moving_subscriptions,
+                duplicate_feed.pk,
+                original_feed.pk,
+                original_feed.pk,
+                duplicate_feed.pk,
+                force,
+            )
         )
     for user_sub in user_subs:
         renew_merge_feeds_locks()
