@@ -5826,6 +5826,16 @@ FETCH_DEFERRAL_KEY = "fetch_deferred:%s"
 # A merge that keeps finding yet another feed for the survivor's final save to collide with
 # stops widening its lock set here. apps/rss_feeds/models.py
 MERGE_FEEDS_MAX_LOCKS = 6
+# A branch needs at least this many subscriptions before it can outlive the feed it is branched
+# from in a merge (merge_feeds_inverted_branch). Surviving clears its parent and makes its
+# address public, and a reader's private URL (a token in the address) is read by one account,
+# maybe a few; 12,170 branches on production had exactly one reader in September 2026. A feed wrongly
+# re-parented under a copy has hundreds or thousands. apps/rss_feeds/models.py
+MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS = 10
+# A merge moving at least this many subscriptions says so in the log, so one cut short by its
+# process's time limit (it resumes on the duplicate's next collision) is easy to find.
+# apps/rss_feeds/models.py
+MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS = 1000
 # The merge locks this thread holds, by feed id. merge_feeds_locked ends with a full
 # Feed.save of the survivor, which merges again on a hash collision; that nested merge must
 # not wait on locks its own caller holds, and a long merge renews the leases of all of them.
@@ -5972,8 +5982,9 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     merge runs with. A feed parked by restore_merged_feed always folds into the other one
     with the other one's parent kept; otherwise the feed with more readers survives, and a
     feed branched from another gives way to the unbranched one and lends it its address
-    without the underscore, unless the branch has more subscriptions than the unbranched
-    feed (see merge_feeds_inverted_branch). merge_feeds_locked applies the result;
+    without the underscore, unless the unbranched feed is the branch's own parent and the
+    branch has more subscriptions and at least MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS of
+    them (see merge_feeds_inverted_branch). merge_feeds_locked applies the result;
     merge_feeds uses it to find the third feed the survivor's final save would merge with.
     apps/rss_feeds/models.py
     """
@@ -6005,16 +6016,16 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
 
 
 def merge_feeds_inverted_branch(original_feed, duplicate_feed):
-    """The branched one of the two feeds when it is branched from the other one, is older than
-    it, and has more subscriptions, or None. A reader's private branch is normally the smaller
-    feed and gives way in a merge, but Change Feed Address used to re-parent an existing feed
+    """The branched one of the two feeds when it is branched from the other one, the other one
+    is unbranched, and the branch has more subscriptions than the other one and at least
+    MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS of them, or None. A reader's private branch
+    normally gives way in a merge, but Change Feed Address used to re-parent an existing feed
     under the reader's copy, which left popular feeds branched from small or empty ones;
-    Hacker News was one, and it lost a merge to an empty RSSHub copy (forum #13860).
-    A branch Change Feed Address creates is always newer than its parent, so an older branch
-    is the mark of that re-parenting; a real private branch never qualifies, whatever its
-    reader count, and never turns public here. num_subscribers is summed over the whole branch
-    family, so it reads the same on both feeds; the subscription rows tell them apart.
-    apps/rss_feeds/models.py
+    Hacker News was one, and it lost a merge to an empty RSSHub copy (forum #13860). Which of
+    the two was created first says nothing either way (a merge re-parents branches onto a
+    newer survivor, and the bug re-parented feeds under older copies too), so the readers
+    decide. num_subscribers is summed over the whole branch family, so it reads the same on
+    both feeds; the subscription rows tell them apart. apps/rss_feeds/models.py
     """
     from apps.reader.models import UserSubscription
 
@@ -6024,9 +6035,11 @@ def merge_feeds_inverted_branch(original_feed, duplicate_feed):
         branch, trunk = duplicate_feed, original_feed
     else:
         return None
-    if trunk.branch_from_feed_id or branch.pk > trunk.pk:
+    if trunk.branch_from_feed_id:
         return None
     branch_readers = UserSubscription.objects.filter(feed_id=branch.pk).count()
+    if branch_readers < MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS:
+        return None
     trunk_readers = UserSubscription.objects.filter(feed_id=trunk.pk).count()
     if branch_readers > trunk_readers:
         return branch
@@ -6165,6 +6178,13 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         original_feed.branch_from_feed = None
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by("-pk")
+    moving_subscriptions = user_subs.count()
+    if moving_subscriptions >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
+        logging.info(
+            " ---> merge_feeds(%s, %s) is moving %s subscriptions; if this process is stopped "
+            "partway, the next collision of feed %s resumes the merge"
+            % (original_feed.pk, duplicate_feed.pk, moving_subscriptions, duplicate_feed.pk)
+        )
     for user_sub in user_subs:
         renew_merge_feeds_locks()
         user_sub.switch_feed(original_feed, duplicate_feed)

@@ -422,6 +422,7 @@ def exception_change_feed_address(request):
             request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address)
         )
         created_branch = False
+        left_in_place = False
         try:
             feed = Feed.objects.get(
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
@@ -431,20 +432,24 @@ def exception_change_feed_address(request):
                 new_feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
                 # Feed.save folds a new row into a feed another request created at this address
                 # in the meantime and leaves the instance without an id; that feed is not ours.
+                # When it found nothing to fold into either, the reader stays on their feed.
                 created_branch = new_feed.pk is not None
                 if created_branch:
                     feed = new_feed
                 else:
-                    feed = Feed.objects.get(
+                    feed = Feed.objects.filter(
                         hash_address_and_link=Feed.generate_hash_address_and_link(
                             feed_address, feed.feed_link
                         )
-                    )
+                    ).first()
+                    if not feed:
+                        feed = original_feed
+                        left_in_place = True
             except IntegrityError:
                 feed = Feed.objects.get(
                     hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
                 )
-        code = 1
+        code = -1 if left_in_place else 1
         # Only a feed made here for this reader becomes a branch. A feed that already holds the
         # address has readers of its own: re-parenting it under this one hid it from search and
         # let it lose a merge to this feed, moving all of them (forum #13860). The reader is
@@ -541,6 +546,7 @@ def exception_change_feed_link(request):
         # Branch good feed
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
         created_branch = False
+        left_in_place = False
         try:
             feed = Feed.objects.get(
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
@@ -548,21 +554,25 @@ def exception_change_feed_link(request):
         except Feed.DoesNotExist:
             try:
                 new_feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
-                # See exception_change_feed_address: no id means another request's feed won.
+                # See exception_change_feed_address: no id means another request's feed won, or
+                # nothing did and the reader stays on their feed.
                 created_branch = new_feed.pk is not None
                 if created_branch:
                     feed = new_feed
                 else:
-                    feed = Feed.objects.get(
+                    feed = Feed.objects.filter(
                         hash_address_and_link=Feed.generate_hash_address_and_link(
                             feed.feed_address, feed_link
                         )
-                    )
+                    ).first()
+                    if not feed:
+                        feed = original_feed
+                        left_in_place = True
             except IntegrityError:
                 feed = Feed.objects.get(
                     hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
                 )
-        code = 1
+        code = -1 if left_in_place else 1
         # As in exception_change_feed_address: an existing feed at this link is never
         # re-parented or locked, only switched to (forum #13860). apps/rss_feeds/views.py
         if created_branch and feed.pk != original_feed.pk:

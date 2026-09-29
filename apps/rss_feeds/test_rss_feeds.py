@@ -5569,6 +5569,22 @@ class Test_ChangeAddressLeavesExistingFeedsAlone(TestCase):
         self.assertIsNone(self.real.branch_from_feed_id)
         self.assertFalse(self.real.feed_address_locked)
 
+    def test_a_create_that_lands_nowhere_leaves_the_reader_on_their_feed(self):
+        """Feed.save can also come back without an id when its collision found no feed to fold
+        into. The view must answer that nothing changed instead of failing the request."""
+        unsaved = Feed(feed_address="https://news.example.com/rss?points=50", feed_link=self.copy.feed_link)
+
+        with patch.object(Feed.objects, "create", return_value=unsaved):
+            response = self.client.post(
+                reverse("exception-change-feed-address"),
+                {"feed_id": self.copy.pk, "feed_address": "https://news.example.com/rss?points=50"},
+            )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["code"], -1)
+        self.assertEqual(content["new_feed_id"], self.copy.pk)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=self.copy).exists())
+
     def test_changing_the_address_to_a_new_url_still_branches_a_private_copy(self):
         response = self.client.post(
             reverse("exception-change-feed-address"),
@@ -5659,10 +5675,14 @@ class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
     reader's private copy. When the branch link is inverted (the real feed marked as a
     branch of a small copy, forum #13860), that rule made the empty copy the survivor and
     moved every reader onto it. num_subscribers is summed over the whole branch family, so
-    it cannot tell the two apart; the real subscription counts can."""
+    it cannot tell the two apart; the real subscription counts can, and a private copy is
+    read by too few accounts to be mistaken for the real feed."""
 
     def setUp(self):
-        from apps.rss_feeds.models import MFetchHistory
+        from apps.rss_feeds.models import (
+            MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS,
+            MFetchHistory,
+        )
 
         for patcher in (
             patch("apps.rss_feeds.models.redis"),
@@ -5686,11 +5706,14 @@ class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
         )
         Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=self.copy)
         # The family total, the same on both feeds, as count_subscribers leaves it.
-        Feed.objects.filter(pk__in=[self.copy.pk, self.real.pk]).update(num_subscribers=4)
+        Feed.objects.filter(pk__in=[self.copy.pk, self.real.pk]).update(num_subscribers=20)
         self.copy.refresh_from_db()
         self.real.refresh_from_db()
-        for index in range(3):
-            reader = User.objects.create_user(username="hn-reader-%s" % index)
+        self.real_readers = MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS + 2
+        self.readers = [
+            User.objects.create_user(username="hn-reader-%s" % index) for index in range(self.real_readers)
+        ]
+        for reader in self.readers:
             UserSubscription.objects.create(user=reader, feed=self.real)
         self.copy_reader = User.objects.create_user(username="rsshub-reader")
         UserSubscription.objects.create(user=self.copy_reader, feed=self.copy)
@@ -5711,6 +5734,28 @@ class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
         self.assertEqual((original.pk, duplicate.pk), (self.real.pk, self.copy.pk))
         self.assertEqual(address, "https://news.example.com/rss")
 
+    def test_an_inverted_branch_newer_than_its_copy_also_keeps_its_readers(self):
+        """The old view re-parented feeds under older copies too (Ars Technica, Wired and
+        Lifehacker on production), so creation order cannot be the test."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        older_copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/ars/index",
+            feed_link="https://ars.example.com/",
+            feed_title="Ars (RSSHub)",
+        )
+        newer_real = Feed.objects.create(
+            feed_address="https://ars.example.com/feed",
+            feed_link="https://ars.example.com/",
+            feed_title="Ars",
+            branch_from_feed=older_copy,
+        )
+        UserSubscription.objects.filter(feed=self.real).update(feed=newer_real)
+
+        for pair in ((newer_real, older_copy), (older_copy, newer_real)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (newer_real.pk, older_copy.pk))
+
     def test_a_private_branch_with_fewer_readers_still_gives_way(self):
         from apps.rss_feeds.models import merge_feeds_orientation
 
@@ -5730,9 +5775,9 @@ class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
         self.assertEqual(address, "https://news.example.com/rss")
 
     def test_a_private_branch_with_more_readers_than_its_parent_still_gives_way(self):
-        """A reader's private branch is created after its parent. However many readers it
-        gathers, it must not survive a merge with that parent: the survivor loses its parent
-        and a private address would turn public."""
+        """A private branch shared by a few accounts can outnumber a parent that lost its
+        readers. It must not survive a merge with that parent: the survivor loses its parent
+        and the private address would turn public."""
         from apps.rss_feeds.models import merge_feeds_orientation
 
         Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=None)
@@ -5743,13 +5788,36 @@ class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
             feed_title="Hacker News (private)",
             branch_from_feed=self.real,
         )
-        Feed.objects.filter(pk=private.pk).update(num_subscribers=4)
-        private.refresh_from_db()
-        UserSubscription.objects.filter(feed=self.real).update(feed=private)
+        UserSubscription.objects.filter(user__in=self.readers[:3]).update(feed=private)
+        UserSubscription.objects.filter(feed=self.real).delete()
 
         for pair in ((private, self.real), (self.real, private)):
             original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
             self.assertEqual((original.pk, duplicate.pk), (self.real.pk, private.pk))
+
+    def test_a_re_parented_private_branch_older_than_its_parent_still_gives_way(self):
+        """merge_feeds re-parents a deleted feed's branches onto the survivor, which can be
+        newer than they are. Being the older feed must not let a private branch survive."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        private = Feed.objects.create(
+            feed_address="https://news.example.com/rss?token=SECRET-TOKEN",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News (private)",
+        )
+        survivor = Feed.objects.create(
+            feed_address="https://news.example.com/rss?survivor=1",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News",
+        )
+        Feed.objects.filter(pk=private.pk).update(branch_from_feed=survivor)
+        private.refresh_from_db()
+        UserSubscription.objects.filter(user__in=self.readers[:3]).update(feed=private)
+        UserSubscription.objects.create(user=self.copy_reader, feed=survivor)
+
+        for pair in ((private, survivor), (survivor, private)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (survivor.pk, private.pk))
 
     def test_the_copy_colliding_with_the_real_feed_folds_into_the_real_feed(self):
         """The incident end to end: the copy's address check finds the real feed's URL and
@@ -5762,7 +5830,7 @@ class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
         self.real.refresh_from_db()
         self.assertIsNone(self.real.branch_from_feed_id)
         self.assertEqual(self.real.feed_address, "https://news.example.com/rss")
-        self.assertEqual(UserSubscription.objects.filter(feed=self.real).count(), 4)
+        self.assertEqual(UserSubscription.objects.filter(feed=self.real).count(), self.real_readers + 1)
 
 
 class Test_YouTubeFavicons(TestCase):
