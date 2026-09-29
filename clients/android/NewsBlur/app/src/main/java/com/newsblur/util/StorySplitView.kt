@@ -281,7 +281,7 @@ object StorySplitView {
     // panes are recreated, so Main.java can be the task's root with no live instance. The task
     // record knows either way.
     private fun isMainInTask(activity: Activity): Boolean {
-        if (Main.isAlive()) return true
+        if (Main.isAliveInTask(activity.taskId)) return true
         val activityManager = activity.getSystemService(ActivityManager::class.java) ?: return false
         return activityManager.appTasks.any { task ->
             val info = runCatching { task.taskInfo }.getOrNull()

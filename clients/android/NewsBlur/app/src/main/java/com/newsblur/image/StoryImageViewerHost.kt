@@ -2,6 +2,7 @@ package com.newsblur.image
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.newsblur.util.PendingTransitionUtils
@@ -63,7 +64,11 @@ class StoryImageViewerHost : ComponentActivity() {
                 pendingOpen = null
                 throw failure
             }
-            PendingTransitionUtils.overrideNoEnterTransition(from)
+            // On API 34+ that call would store an override on the reader itself, and onCreate
+            // already turns off the host's own open animation there.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                PendingTransitionUtils.overrideNoEnterTransition(from)
+            }
         }
 
         /** Drops a photo whose host never started, so nothing holds on to the reader that asked for it. */
