@@ -26,7 +26,7 @@ class ReadingPlaceholder : NbActivity() {
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val storyList = ItemsList.peekReadingLaunchParent()?.takeIf { it.taskId == taskId && !it.isFinishing }
+                    val storyList = ItemsList.peekReadingLaunchParent(taskId)?.takeIf { !it.isFinishing }
                     if (storyList != null) storyList.backToFeedList() else finish()
                 }
             },

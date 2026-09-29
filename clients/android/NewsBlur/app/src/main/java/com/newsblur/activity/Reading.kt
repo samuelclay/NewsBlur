@@ -1205,10 +1205,7 @@ abstract class Reading :
             // In a tablet split (StorySplitView.kt) the story list stays visible, so move its
             // highlight to the story being read instead of waiting for the reader to close.
             if (StorySplitView.isInSplit(this)) {
-                ItemsList
-                    .peekReadingLaunchParent()
-                    ?.takeIf { parent -> parent.taskId == taskId }
-                    ?.prepareReturnToStory(story.storyHash)
+                ItemsList.peekReadingLaunchParent(taskId)?.prepareReturnToStory(story.storyHash)
             }
             // Reading.kt schedules dwell synchronously with selection; old IO callbacks cannot replace its timer.
             if (!isRestoringSelection) triggerMarkStoryReadBehavior(story)
@@ -1372,7 +1369,7 @@ abstract class Reading :
      * Click handler for the righthand overlay nav button.
      */
     private fun overlayRightClick() {
-        val readingLaunchParent = ItemsList.peekReadingLaunchParent()
+        val readingLaunchParent = ItemsList.peekReadingLaunchParent(taskId)
         when (
             resolveOverlayRightAction(
                 unreadCount = unreadCount,
@@ -1887,7 +1884,7 @@ abstract class Reading :
 
     private fun prepareStoryListForReturn() {
         currentReadingStory()?.storyHash?.let { storyHash ->
-            ItemsList.peekReadingLaunchParent()?.prepareReturnToStory(storyHash)
+            ItemsList.peekReadingLaunchParent(taskId)?.prepareReturnToStory(storyHash)
         }
     }
 

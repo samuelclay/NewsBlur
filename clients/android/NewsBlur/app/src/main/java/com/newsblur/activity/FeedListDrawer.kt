@@ -64,10 +64,11 @@ class FeedListDrawer : Main() {
                 override fun handleOnBackPressed() = close()
             },
         )
-        if (openGesture != null && savedInstanceState == null) {
-            followOpenGesture()
-        } else {
-            animateTo(open = true)
+        when {
+            // A rotation recreates the panel already open, so it stays put instead of sliding in again.
+            savedInstanceState != null -> setOpenFraction(1f)
+            openGesture?.taskId == taskId -> followOpenGesture()
+            else -> animateTo(open = true)
         }
     }
 
@@ -176,7 +177,7 @@ class FeedListDrawer : Main() {
     }
 
     private fun followOpenGesture() {
-        val gesture = openGesture ?: return
+        val gesture = openGesture?.takeIf { it.taskId == taskId } ?: return
         if (gesture.released) {
             openGesture = null
             if (gesture.releasedOpen) animateTo(open = true) else close()
@@ -187,7 +188,7 @@ class FeedListDrawer : Main() {
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        if (closing || openGesture != null) return super.dispatchTouchEvent(event)
+        if (closing || openGesture?.taskId == taskId) return super.dispatchTouchEvent(event)
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 downRawX = event.rawX
@@ -237,8 +238,11 @@ class FeedListDrawer : Main() {
         return super.dispatchTouchEvent(event)
     }
 
-    // A swipe on the story list that is opening the panel, tracked before the panel exists.
-    private class OpenGesture {
+    // A swipe on the story list that is opening the panel, tracked before the panel exists. The task
+    // keeps a second NewsBlur window (desktop mode) from following another window's swipe.
+    private class OpenGesture(
+        val taskId: Int,
+    ) {
         var offsetPx = 0f
         var released = false
         var releasedOpen = false
@@ -275,7 +279,7 @@ class FeedListDrawer : Main() {
         /** ItemsList.java starts opening the panel under a swipe; updates follow with the finger's offset. */
         @JvmStatic
         fun beginOpenGesture(from: Activity) {
-            openGesture = OpenGesture()
+            openGesture = OpenGesture(from.taskId)
             launch(from)
         }
 
@@ -300,7 +304,7 @@ class FeedListDrawer : Main() {
             forceShowFeedId: String? = null,
         ) {
             val showing = activeDrawer.get()
-            if (showing != null && !showing.isFinishing) {
+            if (showing != null && !showing.isFinishing && showing.taskId == from.taskId) {
                 showing.followOpenGesture()
                 return
             }
