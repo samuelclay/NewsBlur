@@ -832,6 +832,11 @@
         <activity android:name=".activity.ReadingPlaceholder" />
 
         <activity
+            android:name=".image.StoryImageViewerHost"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
             android:name=".activity.SocialFeedReading"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />

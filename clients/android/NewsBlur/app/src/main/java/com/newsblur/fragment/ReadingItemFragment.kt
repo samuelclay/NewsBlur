@@ -76,6 +76,7 @@ import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryClusterNavigationDecision
 import com.newsblur.util.StoryClusterNavigationTarget
 import com.newsblur.util.StoryClusterThemeStyle
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.StoryUtil
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.UIUtils
@@ -2154,30 +2155,76 @@ class ReadingItemFragment :
                 webview.draw(canvas)
             }
         }.getOrNull()
-        storyImageViewer = com.newsblur.image.StoryImageViewer(host, source, preview, origin, storyImageCache, imageViewerClient,
+
+        // ReadingItemFragment.kt builds the viewer against whichever activity hosts its window.
+        fun createViewer(
+            viewerActivity: android.app.Activity,
+            onClosed: () -> Unit,
+        ) = com.newsblur.image.StoryImageViewer(
+            viewerActivity,
+            source,
+            preview,
+            origin,
+            storyImageCache,
+            imageViewerClient,
             returnRect = { finish ->
                 if (readingWebview !== webview || view == null || source.generation != webview.documentGeneration) {
                     finish(null)
                 } else {
                     webview.evaluateJavascript("NB_story_image_rect('${source.token}', ${source.generation});") { result ->
-                        val rect = runCatching {
-                            if (readingWebview !== webview || source.generation != webview.documentGeneration) return@runCatching null
-                            val data = com.google.gson.JsonParser.parseString(result).asJsonObject
-                            val ratio = webview.width / data["viewportWidth"].asFloat
-                            val position = IntArray(2)
-                            webview.getLocationOnScreen(position)
-                            android.graphics.RectF(position[0] + data["x"].asFloat * ratio,
-                                position[1] + data["y"].asFloat * ratio,
-                                position[0] + (data["x"].asFloat + data["width"].asFloat) * ratio,
-                                position[1] + (data["y"].asFloat + data["height"].asFloat) * ratio)
-                                .takeIf { it.left.isFinite() && it.top.isFinite() && it.right.isFinite() && it.bottom.isFinite() &&
-                                    webview.getGlobalVisibleRect(visible) && android.graphics.RectF.intersects(it, android.graphics.RectF(visible)) }
-                        }.getOrNull()
-                        finish(rect)
+                        finish(storyImageReturnRect(webview, source, visible, result))
                     }
                 }
-            }, onClosed = { storyImageViewer = null }).also { it.show() }
+            },
+            onClosed = onClosed,
+        )
+        // In a tablet split a Dialog is clipped to the reader pane, so the photo opens on
+        // StoryImageViewerHost.kt, which always fills the window (StorySplitView.kt).
+        if (StorySplitView.isInSplit(host)) {
+            com.newsblur.image.StoryImageViewerHost.show(host) { viewerHost ->
+                createViewer(viewerHost) {
+                    storyImageViewer = null
+                    viewerHost.onViewerClosed()
+                }.also { viewer ->
+                    storyImageViewer = viewer
+                    viewer.show()
+                }
+            }
+        } else {
+            storyImageViewer = createViewer(host) { storyImageViewer = null }.also { it.show() }
+        }
     }
+
+    // ReadingItemFragment.kt turns the page's reported image rect back into screen coordinates for the viewer's close animation.
+    private fun storyImageReturnRect(
+        webview: NewsblurWebview,
+        source: com.newsblur.image.StoryImageSource,
+        visible: android.graphics.Rect,
+        result: String?,
+    ): android.graphics.RectF? =
+        runCatching {
+            if (readingWebview !== webview || source.generation != webview.documentGeneration) return@runCatching null
+            val data =
+                com.google.gson.JsonParser
+                    .parseString(result)
+                    .asJsonObject
+            val ratio = webview.width / data["viewportWidth"].asFloat
+            val position = IntArray(2)
+            webview.getLocationOnScreen(position)
+            val rect =
+                android.graphics.RectF(
+                    position[0] + data["x"].asFloat * ratio,
+                    position[1] + data["y"].asFloat * ratio,
+                    position[0] + (data["x"].asFloat + data["width"].asFloat) * ratio,
+                    position[1] + (data["y"].asFloat + data["height"].asFloat) * ratio,
+                )
+            val isFinite = rect.left.isFinite() && rect.top.isFinite() && rect.right.isFinite() && rect.bottom.isFinite()
+            rect.takeIf {
+                isFinite &&
+                    webview.getGlobalVisibleRect(visible) &&
+                    android.graphics.RectF.intersects(it, android.graphics.RectF(visible))
+            }
+        }.getOrNull()
 
     private fun ensureReadingWebview(): NewsblurWebview {
         readingWebview?.let { return it }
