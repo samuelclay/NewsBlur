@@ -7215,6 +7215,7 @@ class Test_Http2RetryOnUpgradeRequired(TestCase):
     304 or 200 is handled like any other fetch. utils/feed_fetcher.py"""
 
     ADDRESS = "https://www.comic.example.com/feed/"
+    HTTP_ADDRESS = "http://www.comic.example.com/feed/"
     RSS = (
         b'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Comic</title>'
         b"<link>https://www.comic.example.com/</link>"
@@ -7244,7 +7245,9 @@ class Test_Http2RetryOnUpgradeRequired(TestCase):
         return response
 
     def _upgrade_required(self, url, headers=None, **kwargs):
-        return self._response(426, self.UPGRADE_REQUIRED, "text/html; charset=iso-8859-1")
+        response = self._response(426, self.UPGRADE_REQUIRED, "text/html; charset=iso-8859-1")
+        response.url = url
+        return response
 
     def _fetch(self, http1, http2):
         from utils.feed_fetcher import FetchFeed
@@ -7338,7 +7341,54 @@ class Test_Http2RetryOnUpgradeRequired(TestCase):
 
         self.assertEqual(mock_http2.call_count, 0)
 
-    HTTP_ADDRESS = "http://www.comic.example.com/feed/"
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_retries_after_an_http2_answer_stay_on_http2(self, mock_skip, mock_random, mock_validate):
+        # A site that refuses HTTP/1.1 and also refuses browser UAs (forum #13835) needs the
+        # fake and plain UA retries over HTTP/2 too, or each one gets the 426 again.
+        from utils.feed_fetcher import FEED_OK
+
+        def refuses_browser_user_agents(url, headers=None, **kwargs):
+            if "Mozilla/" in (headers or {}).get("User-Agent", ""):
+                return self._response(403, b"<html>Forbidden</html>", "text/html")
+            return self._response(200, self.RSS, "application/rss+xml; charset=UTF-8")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(self._upgrade_required, refuses_browser_user_agents)
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertEqual(mock_http1.call_count, 1)
+        # default UA, fake UA, then the plain UA that worked, all over HTTP/2
+        self.assertEqual(mock_http2.call_count, 3)
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.plain_user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_426_over_plain_http_gets_no_http2_retry(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        # An archive fetch skips the https probe, and httpx can't speak HTTP/2 without TLS,
+        # so an HTTP/2 retry of a 426 served over plain http would just repeat HTTP/1.1.
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+        options = {
+            "verbose": False,
+            "force": True,
+            "archive_page": "rfc5005",
+            "archive_page_link": self.HTTP_ADDRESS + "?page=2",
+        }
+        fetcher = FetchFeed(self.feed.pk, options)
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=self._upgrade_required), patch(
+            "utils.feed_fetcher.safe_http2_get", side_effect=AssertionError("HTTP/2 needs TLS")
+        ) as mock_http2:
+            fetcher.fetch()
+
+        self.assertEqual(mock_http2.call_count, 0)
 
     @patch("utils.feed_fetcher.validate_public_url")
     @patch("utils.feed_fetcher.random.random", return_value=0.5)
