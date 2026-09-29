@@ -92,7 +92,12 @@ from utils.story_functions import (
     strip_tags,
 )
 from utils.twitter_fetcher import TwitterFetcher
-from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
+from utils.url_safety import (
+    UnsafeUrlError,
+    safe_http2_get,
+    safe_requests_get,
+    validate_public_url,
+)
 from utils.youtube_fetcher import YoutubeFetcher, YoutubeQuotaError
 
 
@@ -571,6 +576,24 @@ class FetchFeed:
                     raw_feed = safe_requests_get(address, headers=headers, timeout=15)
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
+                if raw_feed is not None and raw_feed.status_code == 426:
+                    # Forum #13858: dumbingofage.com answers every HTTP/1.1 request with 426
+                    # Upgrade Required and serves the feed only over HTTP/2, which requests
+                    # can't speak. Retry the same request once over HTTP/2 with the same
+                    # headers, so a 304 or a 200 there is handled like any other fetch. If the
+                    # HTTP/2 retry fails too, the 426 stays and the usual retries run.
+                    # utils/feed_fetcher.py
+                    try:
+                        raw_feed = safe_http2_get(address, headers=headers, timeout=15)
+                        logging.debug(
+                            "   ---> [%-30s] ~FBHTTP/1.1 refused with 426, HTTP/2 answered %s"
+                            % (self.feed.log_title[:30], raw_feed.status_code)
+                        )
+                    except (UnsafeUrlError, requests.RequestException, TimeoutError) as e:
+                        logging.debug(
+                            "   ***> [%-30s] ~FRHTTP/1.1 refused with 426 and HTTP/2 failed: %s"
+                            % (self.feed.log_title[:30], e)
+                        )
                 if (
                     raw_feed is None
                     and address.startswith("http://")
