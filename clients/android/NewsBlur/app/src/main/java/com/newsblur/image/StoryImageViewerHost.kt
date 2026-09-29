@@ -57,8 +57,19 @@ class StoryImageViewerHost : ComponentActivity() {
             open: (StoryImageViewerHost) -> StoryImageViewer,
         ) {
             pendingOpen = open
-            from.startActivity(Intent(from, StoryImageViewerHost::class.java))
+            try {
+                from.startActivity(Intent(from, StoryImageViewerHost::class.java))
+            } catch (failure: RuntimeException) {
+                pendingOpen = null
+                throw failure
+            }
             PendingTransitionUtils.overrideNoEnterTransition(from)
+        }
+
+        /** Drops a photo whose host never started, so nothing holds on to the reader that asked for it. */
+        @JvmStatic
+        fun cancelPending() {
+            pendingOpen = null
         }
     }
 }
