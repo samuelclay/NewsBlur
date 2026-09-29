@@ -577,12 +577,14 @@ class FetchFeed:
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
                 refused_http1 = raw_feed is not None and raw_feed.status_code == 426
-                probe_https = address.startswith("http://") and not self.options.get("archive_page")
+                # A plain http feed address, the kind the https probe below can upgrade. Archive
+                # fetches are left out: their address is a history page, not the feed.
+                plain_http_address = address.startswith("http://") and not self.options.get("archive_page")
                 # The direct retries further down switch to HTTP/2 once the site has answered
                 # over it, or each of them would get the same 426 and hide the real status.
                 direct_get = safe_requests_get
                 retry_address = self.feed.feed_address
-                if refused_http1 and not probe_https and raw_feed.url.startswith("https://"):
+                if refused_http1 and not plain_http_address and raw_feed.url.startswith("https://"):
                     # Forum #13858: dumbingofage.com answers every HTTP/1.1 request with 426
                     # Upgrade Required and serves the feed only over HTTP/2, which requests
                     # can't speak. Retry the same request once over HTTP/2 with the same
@@ -608,7 +610,7 @@ class FetchFeed:
                             "   ***> [%-30s] ~FRHTTP/1.1 refused with 426 and HTTP/2 failed: %s"
                             % (self.feed.log_title[:30], e)
                         )
-                if (raw_feed is None or refused_http1) and probe_https:
+                if (raw_feed is None or refused_http1) and plain_http_address:
                     # Forum #13830: rss.cbc.ca dropped port 80 with no redirect, so every
                     # http:// subscription went quiet. When the http address won't connect at
                     # all, try the same path over https before the fake-header retry. A live

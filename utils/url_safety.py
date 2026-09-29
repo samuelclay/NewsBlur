@@ -101,14 +101,22 @@ def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
     read it the same way. httpx errors are raised as their requests equivalents because
     callers catch requests.RequestException. FetchFeed.fetch swaps this in for
     safe_requests_get with the same call (url, headers=, timeout=), so any new keyword
-    passed there has to be accepted here too. utils/url_safety.py
+    passed there has to be accepted here too. The returned response carries status, headers,
+    body, url, encoding, history, and http_version; request and raw are left unset.
+    utils/url_safety.py
     """
     url = validate_public_url(url)
     history = []
     current_url = url
 
     try:
-        with httpx.Client(http2=True, timeout=timeout, follow_redirects=False) as client:
+        client = httpx.Client(http2=True, timeout=timeout, follow_redirects=False)
+    except ImportError as e:
+        # httpx refuses http2=True when the h2 package is missing.
+        raise requests.ConnectionError(str(e)) from e
+
+    try:
+        with client:
             for _ in range(max_redirects + 1):
                 response = _requests_response_from_httpx(client.get(current_url, headers=headers))
                 if not response.is_redirect:
@@ -122,8 +130,7 @@ def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
                 history.append(response)
     except httpx.TimeoutException as e:
         raise requests.Timeout(str(e)) from e
-    except (httpx.HTTPError, httpx.InvalidURL, ImportError, UnicodeEncodeError) as e:
-        # ImportError is httpx refusing http2=True when the h2 package is missing.
+    except (httpx.HTTPError, httpx.InvalidURL, UnicodeEncodeError) as e:
         # UnicodeEncodeError is httpx rejecting a non-ASCII header value, such as an odd
         # ETag a feed once sent that requests would have passed through as latin-1.
         raise requests.ConnectionError(str(e)) from e
