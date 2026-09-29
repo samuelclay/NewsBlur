@@ -732,6 +732,23 @@ class Test_SafeHttp2Get(TestCase):
         with self.assertRaises(requests.Timeout):
             self._get(stall)
 
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__missing_h2_and_bad_urls_are_requests_errors(self, mock_getaddrinfo):
+        # Neither is an httpx.HTTPError, and both must still reach the fetcher as a
+        # requests.RequestException so its usual retries run.
+        from utils.url_safety import safe_http2_get
+
+        missing_h2 = ImportError("Using http2=True, but the 'h2' package is not installed.")
+        with patch("utils.url_safety.httpx.Client", side_effect=missing_h2):
+            with self.assertRaises(requests.ConnectionError):
+                safe_http2_get(self.ADDRESS)
+
+        def bad_url(request):
+            raise httpx.InvalidURL("Invalid non-printable ASCII character in URL")
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(bad_url)
+
 
 class Test_ProcessFeedQueries(TestCase):
     @patch("utils.feed_fetcher.MStory.objects")
@@ -7320,6 +7337,63 @@ class Test_Http2RetryOnUpgradeRequired(TestCase):
         )
 
         self.assertEqual(mock_http2.call_count, 0)
+
+    HTTP_ADDRESS = "http://www.comic.example.com/feed/"
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_address_refused_with_426_is_fetched_from_https(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        # httpx speaks HTTP/2 only over TLS, so retrying the http address itself would just
+        # repeat HTTP/1.1. The https copy is probed over HTTP/2 without validators, the way
+        # the dead port 80 probe works, and tagged for migration once it parses to a feed.
+        from utils.feed_fetcher import FEED_OK
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.etag = '"f79cc06dfefde930693fd77636f13d57"'
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            lambda url, **kwargs: self._response(200, self.RSS, "application/rss+xml; charset=UTF-8"),
+        )
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.ADDRESS)
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual(mock_http1.call_args.args[0], self.HTTP_ADDRESS)
+        self.assertEqual(mock_http2.call_count, 1)
+        self.assertEqual(mock_http2.call_args.args[0], self.ADDRESS)
+        self.assertNotIn("If-None-Match", mock_http2.call_args.kwargs["headers"])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_plain_http_426_whose_https_copy_is_not_a_feed_is_not_adopted(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            lambda url, **kwargs: self._response(200, b"<html><body>Parked</body></html>", "text/html"),
+        )
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertEqual(mock_http2.call_args.args[0], self.ADDRESS)
+        # The 426 is kept, so the fake header retry of the http address still runs.
+        self.assertEqual(mock_http1.call_count, 2)
+        self.assertEqual(mock_http1.call_args.args[0], self.HTTP_ADDRESS)
 
 
 @override_settings(SCRAPINGBEE_API_KEY="test-scrapingbee-key")
