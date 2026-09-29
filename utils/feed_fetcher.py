@@ -581,6 +581,7 @@ class FetchFeed:
                 # The direct retries further down switch to HTTP/2 once the site has answered
                 # over it, or each of them would get the same 426 and hide the real status.
                 direct_get = safe_requests_get
+                retry_address = self.feed.feed_address
                 if refused_http1 and not probe_https and raw_feed.url.startswith("https://"):
                     # Forum #13858: dumbingofage.com answers every HTTP/1.1 request with 426
                     # Upgrade Required and serves the feed only over HTTP/2, which requests
@@ -641,10 +642,16 @@ class FetchFeed:
                             % (self.feed.log_title[:30], https_address)
                         )
                         if refused_http1:
-                            # The site answered over HTTP/2 (a 403 for the browser UA, say), so
-                            # the UA retries go over it too. httpx follows the http address's
-                            # redirect onto TLS, where HTTP/2 can be negotiated.
+                            # The http address refused HTTP/1.1 and the https copy answered over
+                            # HTTP/2, just not with a feed (a 403 for the browser UA, say). The
+                            # http address can only ever answer 426, so the UA retries go to the
+                            # https copy over HTTP/2. Its address is saved only when a retry
+                            # there parses to a feed with stories, see the upgraded_to_https
+                            # gate below.
                             direct_get = safe_http2_get
+                            retry_address = https_address
+                            address = https_address
+                            upgraded_to_https = True
                 if raw_feed and raw_feed.status_code == 304:
                     logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
@@ -674,7 +681,7 @@ class FetchFeed:
                                 % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
                             )
                             raw_feed = direct_get(
-                                self.feed.feed_address,
+                                retry_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
                             )
@@ -690,7 +697,7 @@ class FetchFeed:
                                 % (self.feed.log_title[:30], address)
                             )
                             raw_feed = direct_get(
-                                self.feed.feed_address,
+                                retry_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
                             )
@@ -712,7 +719,7 @@ class FetchFeed:
                             % (self.feed.log_title[:30], raw_feed.status_code)
                         )
                         raw_feed = direct_get(
-                            self.feed.feed_address,
+                            retry_address,
                             headers=self.feed.fetch_headers(plain=True),
                             timeout=15,
                         )
@@ -736,7 +743,7 @@ class FetchFeed:
                                 % (self.feed.log_title[:30])
                             )
                             raw_feed = direct_get(
-                                self.feed.feed_address,
+                                retry_address,
                                 headers=self.feed.fetch_headers(plain=True),
                                 timeout=15,
                             )

@@ -130,12 +130,15 @@ def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
 
 
 def _requests_response_from_httpx(httpx_response):
-    # The body is already read and decompressed by httpx, the same as requests does.
+    # The body is already read and decompressed by httpx, the same as requests does, so the
+    # response is marked consumed: iter_content() then serves _content instead of streaming
+    # from raw, which is None here. utils/url_safety.py
     response = requests.Response()
     response.status_code = httpx_response.status_code
     response.reason = httpx_response.reason_phrase
     response.headers = CaseInsensitiveDict(httpx_response.headers.items())
     response._content = httpx_response.content
+    response._content_consumed = True
     response.url = str(httpx_response.url)
     response.encoding = get_encoding_from_headers(response.headers)
     return response
