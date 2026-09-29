@@ -3,9 +3,11 @@ package com.newsblur.util
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -44,6 +46,7 @@ import com.newsblur.activity.InfrequentItemsList
 import com.newsblur.activity.InfrequentReading
 import com.newsblur.activity.LongReadsItemsList
 import com.newsblur.activity.LongReadsReading
+import com.newsblur.activity.Main
 import com.newsblur.activity.MuteConfig
 import com.newsblur.activity.NotificationsActivity
 import com.newsblur.activity.Profile
@@ -197,6 +200,55 @@ object StorySplitView {
         }
     }
 
+    /**
+     * Starts a story list. Launched from inside a split pane or an always expanded screen (a
+     * reader's Go to feed, the next folder, Discover), a story list would land wherever Activity
+     * Embedding's defaults put it: beside the old list in the reader pane, or in an expanded
+     * container that never splits. So those launches go back to Main.java, which closes
+     * everything above it and opens the list itself (openHandedOffStoryList), giving the list a
+     * fresh split with the placeholder pane. Phones never embed anything and start the list
+     * directly, as does Main.java itself.
+     */
+    @JvmStatic
+    fun startStoryList(
+        context: Context,
+        storyList: Intent,
+    ) {
+        // Without rules (every phone) nothing is ever embedded, so skip the embedding controller.
+        val activity = if (rulesInstalled) findActivity(context) else null
+        if (activity == null || activity is Main || !ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)) {
+            context.startActivity(storyList)
+            return
+        }
+        val viaMain =
+            Intent(activity, Main::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra(EXTRA_STORY_LIST_INTENT, storyList)
+        activity.startActivity(viaMain)
+    }
+
+    /** Main.java calls this from onCreate and onNewIntent to open a story list handed over by startStoryList. */
+    @JvmStatic
+    fun openHandedOffStoryList(
+        main: Activity,
+        intent: Intent?,
+    ) {
+        val storyList = intent?.let { IntentCompat.getParcelableExtra(it, EXTRA_STORY_LIST_INTENT, Intent::class.java) } ?: return
+        // Main.java keeps this intent, so drop the hand-off before a recreation could replay it.
+        intent.removeExtra(EXTRA_STORY_LIST_INTENT)
+        main.startActivity(storyList)
+    }
+
+    // Unwraps Hilt's fragment context wrappers to the hosting activity.
+    private fun findActivity(context: Context): Activity? {
+        var current: Context? = context
+        while (current is ContextWrapper) {
+            if (current is Activity) return current
+            current = current.baseContext
+        }
+        return null
+    }
+
     internal fun buildRules(context: Context): Set<EmbeddingRule> {
         val splitAttributes =
             SplitAttributes
@@ -257,6 +309,8 @@ object StorySplitView {
 
         return setOf(storyListToReader, emptyReaderPane, fullWindow)
     }
+
+    private const val EXTRA_STORY_LIST_INTENT = "story_split_view_story_list"
 
     private const val TAG_STORY_LIST_READER = "story_list_reader"
     private const val TAG_EMPTY_READER = "empty_reader"

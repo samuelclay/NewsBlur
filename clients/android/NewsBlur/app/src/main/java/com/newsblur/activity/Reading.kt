@@ -412,7 +412,7 @@ abstract class Reading :
     override fun onResume() {
         super.onResume()
         readerIsPaused = false
-        if (StorySplitView.isInSplit(this)) splitReaderRef = WeakReference(this)
+        latestReaderRef = WeakReference(this)
         if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
         stopLoading = false
@@ -473,7 +473,7 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
-        if (splitReaderRef.get() === this) splitReaderRef.clear()
+        if (latestReaderRef.get() === this) latestReaderRef.clear()
         cancelStoryDwell(clearStory = true)
         preparedPageNavigation?.cancel()
         readerPageSnapshot = null
@@ -2150,11 +2150,19 @@ abstract class Reading :
         private const val READING_BACK_SWIPE_SETTLE_DURATION_MS = 180L
         private val READING_BACK_SWIPE_INTERPOLATOR = DecelerateInterpolator()
 
-        // The reader in a tablet split's reader pane (StorySplitView.kt). It outlives the story
-        // list beside it across rotation, so ItemsList.java asks here rather than keeping its own.
-        private var splitReaderRef = WeakReference<Reading>(null)
+        // The most recently resumed reader. It outlives the story list beside it in a tablet split
+        // across rotation, so ItemsList.java asks here rather than keeping its own reference.
+        private var latestReaderRef = WeakReference<Reading>(null)
 
+        /**
+         * The reader showing in a tablet split's reader pane (StorySplitView.kt), if any. Split
+         * state is checked on each call because a reader can enter or leave a split without
+         * being resumed again, such as when a foldable opens with a story on screen.
+         */
         @JvmStatic
-        fun peekSplitReader(): Reading? = splitReaderRef.get()?.takeIf { reader -> !reader.isFinishing && !reader.isDestroyed }
+        fun peekSplitReader(): Reading? =
+            latestReaderRef.get()?.takeIf { reader ->
+                !reader.isFinishing && !reader.isDestroyed && StorySplitView.isInSplit(reader)
+            }
     }
 }

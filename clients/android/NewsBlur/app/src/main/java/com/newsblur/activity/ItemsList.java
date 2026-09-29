@@ -461,7 +461,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             intent.putExtra(EXTRA_FEED_SET, session.getFeedSet());
             intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, session.getFolderName());
             putSessionDataKeyExtra(intent, sessionDataSource, storyListSessionDataSource);
-            startActivity(intent);
+            StorySplitView.startStoryList(this, intent);
             finish();
             return true;
         }
@@ -1164,6 +1164,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     public void restartReadingSession() {
+        closeSplitReader();
         syncServiceState.resetFetchState(fs);
         feedUtils.prepareReadingSession(fs, true);
         triggerSync();
@@ -1238,9 +1239,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     // A reader beside this list in a tablet split shows a story from the list's current reading
-    // session. Close it before the list switches sessions (search, next feed), so the list and
-    // the reader never fight over the one shared session. StorySplitView.kt brings back the
-    // placeholder pane.
+    // session. Close it before the list switches or resets sessions (search, next feed, story
+    // order and read filter changes, retry), so the list and the reader never fight over the one
+    // shared session. StorySplitView.kt brings back the placeholder pane.
     private void closeSplitReader() {
         Reading reader = Reading.peekSplitReader();
         if (reader != null && StorySplitView.isInSplit(this)) {

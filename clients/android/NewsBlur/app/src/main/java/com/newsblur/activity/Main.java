@@ -40,6 +40,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StorySplitView;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
@@ -141,6 +142,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
         });
 
+        StorySplitView.openHandedOffStoryList(this, getIntent());
+
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
         if (shortcutExtra != null && shortcutExtra.startsWith(ShortcutUtils.SHORTCUT_ALL_STORIES)) {
@@ -156,6 +159,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        // A story list opened from inside a tablet split comes back through Main.java (StorySplitView.kt).
+        StorySplitView.openHandedOffStoryList(this, intent);
     }
 
     @Override
