@@ -421,6 +421,7 @@ def exception_change_feed_address(request):
         logging.user(
             request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address)
         )
+        created_branch = False
         try:
             feed = Feed.objects.get(
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
@@ -428,12 +429,17 @@ def exception_change_feed_address(request):
         except Feed.DoesNotExist:
             try:
                 feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
+                created_branch = True
             except IntegrityError:
                 feed = Feed.objects.get(
                     hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
                 )
         code = 1
-        if feed.pk != original_feed.pk:
+        # Only a feed made here for this reader becomes a branch. A feed that already holds the
+        # address has readers of its own: re-parenting it under this one hid it from search and
+        # let it lose a merge to this feed, moving all of them (forum #13860). The reader is
+        # switched onto it below either way. apps/rss_feeds/views.py
+        if created_branch and feed.pk != original_feed.pk:
             try:
                 feed.branch_from_feed = original_feed.branch_from_feed or original_feed
             except Feed.DoesNotExist:
@@ -524,6 +530,7 @@ def exception_change_feed_link(request):
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
+        created_branch = False
         try:
             feed = Feed.objects.get(
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
@@ -531,12 +538,15 @@ def exception_change_feed_link(request):
         except Feed.DoesNotExist:
             try:
                 feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
+                created_branch = True
             except IntegrityError:
                 feed = Feed.objects.get(
                     hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
                 )
         code = 1
-        if feed.pk != original_feed.pk:
+        # As in exception_change_feed_address: an existing feed at this link is never
+        # re-parented or locked, only switched to (forum #13860). apps/rss_feeds/views.py
+        if created_branch and feed.pk != original_feed.pk:
             try:
                 feed.branch_from_feed = original_feed.branch_from_feed or original_feed
             except Feed.DoesNotExist:

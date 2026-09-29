@@ -1134,10 +1134,13 @@ class Feed(models.Model):
         if "%(NEWSBLUR_DIR)s" in self.feed_address:
             return False, self
 
+        # Only the network lookup runs under the time limit. The save below can merge this
+        # feed into another one that already holds the discovered address, and a merge run
+        # inside the timelimit thread was abandoned when the limit passed and died partway
+        # through moving a popular feed's readers (forum #13860). apps/rss_feeds/models.py
         @timelimit(10)
         def _1():
             feed_address = None
-            feed = self
             found_feed_urls = []
             try:
                 logging.debug(" ---> Checking: %s" % self.feed_address)
@@ -1155,46 +1158,47 @@ class Feed(models.Model):
                     found_feed_urls = []
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
                     feed_address = found_feed_urls[0]
-
-            if feed_address:
-                if any(
-                    ignored_domain in feed_address
-                    for ignored_domain in [
-                        "feedburner.com/atom.xml",
-                        "feedburner.com/feed/",
-                        "feedsportal.com",
-                    ]
-                ):
-                    logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
-                    return False, self
-                try:
-                    self.feed_address = strip_underscore_from_feed_address(feed_address)
-                    feed = self.save()
-                    feed.count_subscribers()
-                    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
-                    feed.has_feed_exception = False
-                    feed.active = True
-                    feed = feed.save()
-                except IntegrityError:
-                    original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
-                    original_feed.has_feed_exception = False
-                    original_feed.active = True
-                    original_feed.save()
-                    merge_feeds(original_feed.pk, self.pk)
-            return feed_address, feed
+            return feed_address
 
         if self.feed_address_locked:
             return False, self
 
         try:
-            feed_address, feed = _1()
+            feed_address = _1()
         except TimeoutError as e:
             logging.debug("   ---> [%-30s] Feed address check timed out..." % (self.log_title[:30]))
             self.save_feed_history(505, "Timeout", e)
-            feed = self
-            feed_address = None
+            return False, self
 
-        return bool(feed_address), feed
+        if not feed_address:
+            return False, self
+        if any(
+            ignored_domain in feed_address
+            for ignored_domain in [
+                "feedburner.com/atom.xml",
+                "feedburner.com/feed/",
+                "feedsportal.com",
+            ]
+        ):
+            logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
+            return False, self
+
+        feed = self
+        try:
+            self.feed_address = strip_underscore_from_feed_address(feed_address)
+            feed = self.save()
+            feed.count_subscribers()
+            # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
+            feed.has_feed_exception = False
+            feed.active = True
+            feed = feed.save()
+        except IntegrityError:
+            original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
+            original_feed.has_feed_exception = False
+            original_feed.active = True
+            original_feed.save()
+            merge_feeds(original_feed.pk, self.pk)
+        return True, feed
 
     def save_feed_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(
@@ -5970,8 +5974,10 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     merge runs with. A feed parked by restore_merged_feed always folds into the other one
     with the other one's parent kept; otherwise the feed with more readers survives, and a
     feed branched from another gives way to the unbranched one and lends it its address
-    without the underscore. merge_feeds_locked applies the result; merge_feeds uses it to find
-    the third feed the survivor's final save would merge with. apps/rss_feeds/models.py
+    without the underscore, unless the branch has more subscriptions than the unbranched
+    feed (see merge_feeds_inverted_branch). merge_feeds_locked applies the result;
+    merge_feeds uses it to find the third feed the survivor's final save would merge with.
+    apps/rss_feeds/models.py
     """
     # A feed parked by restore_merged_feed carries a placeholder hash while the original row
     # comes back; Feed.save keeps that hash and folds the row into the restored feed on any
@@ -5985,12 +5991,43 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
     branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
     survivor_address = original_feed.feed_address
-    if (heavier_dupe or branched_original) and not force:
+    inverted_branch = None if force else merge_feeds_inverted_branch(original_feed, duplicate_feed)
+    if inverted_branch:
+        # The branch is the feed people actually read, so it survives with its own address;
+        # merge_feeds_locked clears its parent, which is the duplicate being folded in.
+        if inverted_branch.pk == duplicate_feed.pk:
+            original_feed, duplicate_feed = duplicate_feed, original_feed
+        survivor_address = original_feed.feed_address
+    elif (heavier_dupe or branched_original) and not force:
         original_feed, duplicate_feed = duplicate_feed, original_feed
         survivor_address = original_feed.feed_address
         if branched_original:
             survivor_address = strip_underscore_from_feed_address(duplicate_feed.feed_address)
     return original_feed, duplicate_feed, survivor_address, force, preserve_branch_from_feed, parked_duplicate
+
+
+def merge_feeds_inverted_branch(original_feed, duplicate_feed):
+    """The branched one of the two feeds when exactly one of them is a branch and it has more
+    subscriptions than the unbranched one, or None. A reader's private branch is normally the
+    smaller feed and gives way in a merge, but Change Feed Address used to re-parent an
+    existing feed under the reader's copy, which left popular feeds branched from small or
+    empty ones; Hacker News was one, and it lost a merge to an empty RSSHub copy (forum
+    #13860). num_subscribers is summed over the whole branch family, so it reads the same on
+    both feeds; the subscription rows tell them apart. apps/rss_feeds/models.py
+    """
+    from apps.reader.models import UserSubscription
+
+    if bool(original_feed.branch_from_feed_id) == bool(duplicate_feed.branch_from_feed_id):
+        return None
+    if original_feed.branch_from_feed_id:
+        branch, trunk = original_feed, duplicate_feed
+    else:
+        branch, trunk = duplicate_feed, original_feed
+    branch_readers = UserSubscription.objects.filter(feed_id=branch.pk).count()
+    trunk_readers = UserSubscription.objects.filter(feed_id=trunk.pk).count()
+    if branch_readers > trunk_readers:
+        return branch
+    return None
 
 
 def merge_feeds_collision_id(
