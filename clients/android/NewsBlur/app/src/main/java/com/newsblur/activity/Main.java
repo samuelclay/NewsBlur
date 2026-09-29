@@ -60,6 +60,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private static final long SYNC_STATUS_DONE_DURATION_MS = 5000L;
     private static final DecelerateInterpolator SYNC_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateInterpolator SYNC_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
+    // Main.java's bottom toolbar hugs its contents on screens at least this wide (tablets).
+    private static final int COMPACT_TOOLBAR_MIN_WIDTH_DP = 600;
     private static WeakReference<Main> visibleMainRef = new WeakReference<>(null);
 
     private enum SyncStatusAccessory {
@@ -230,7 +232,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     // Main.java's floating toolbar spans a phone's width, but on a tablet that stretches the add
     // button, filter, and settings button across the screen, so there it hugs its contents, centered.
     private void fitBottomToolbarToContentOnTablets() {
-        if (getResources().getConfiguration().smallestScreenWidthDp < StorySplitView.MIN_SPLIT_WIDTH_DP) return;
+        if (getResources().getConfiguration().smallestScreenWidthDp < COMPACT_TOOLBAR_MIN_WIDTH_DP) return;
         android.view.ViewGroup.LayoutParams toolbarParams = binding.bottomToolbar.getLayoutParams();
         toolbarParams.width = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
         binding.bottomToolbar.setLayoutParams(toolbarParams);

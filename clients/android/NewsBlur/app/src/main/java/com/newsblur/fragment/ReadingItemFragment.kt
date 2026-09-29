@@ -2193,6 +2193,8 @@ class ReadingItemFragment :
         // In a tablet split a Dialog is clipped to the reader pane, so the photo opens on
         // StoryImageViewerHost.kt, which always fills the window (StorySplitView.kt).
         if (StorySplitView.isInSplit(host)) {
+            // A host that never arrived still holds the last photo's bitmap, so drop it first.
+            storyImageHostToken?.let(StoryImageViewerHost::cancelPending)
             storyImageHostLaunchedAt = android.os.SystemClock.uptimeMillis()
             storyImageHostToken =
                 StoryImageViewerHost.show(host) { viewerHost ->
