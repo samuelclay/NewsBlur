@@ -345,7 +345,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         if (feedDrawerPending) {
             feedDrawerPending = false;
-            FeedListDrawer.open(this);
+            FeedListDrawer.open(this, getIntent().getStringExtra(Main.EXTRA_FORCE_SHOW_FEED_ID));
         }
         if (slidesOverFeedDrawer() || StorySplitView.isInSplit(this)) {
             // A rotation recreates this list but not the reader beside it, which still reports
