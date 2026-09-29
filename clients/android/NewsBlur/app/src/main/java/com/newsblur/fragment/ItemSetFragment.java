@@ -1072,8 +1072,9 @@ public class ItemSetFragment extends NbFragment {
 
     private boolean isInteractiveStoryListSwipeEnabled() {
         ItemsList activity = (ItemsList) getActivity();
+        // A tablet's root story list swipes the feed list over it instead (FeedListDrawer.kt).
         return activity != null &&
-                !activity.isTaskRoot() &&
+                (!activity.isTaskRoot() || activity.slidesOverFeedDrawer()) &&
                 prefsRepo.getLeftToRightGestureAction() == GestureAction.GEST_ACTION_BACK;
     }
 
@@ -1128,7 +1129,8 @@ public class ItemSetFragment extends NbFragment {
         public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    gestureEligible = (getActivity() != null && !getActivity().isTaskRoot()) &&
+                    ItemsList storyList = (ItemsList) getActivity();
+                    gestureEligible = (storyList != null && (!storyList.isTaskRoot() || storyList.slidesOverFeedDrawer())) &&
                             (event.getX() < UIUtils.dp2px(requireContext(), 24) ||
                              (prefsRepo.isStorySwipesEnabled() && isInteractiveStoryListSwipeEnabled()));
 
