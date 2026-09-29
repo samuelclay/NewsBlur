@@ -244,6 +244,20 @@
       "note": "Facebook: 5,257 facebook.com/<page> feeds in prod, Graph API fetcher (utils/facebook_fetcher.py) has produced nothing in years (VH1 newest story 2015); the one Web Feed pointed at a Facebook page has 0 stories (login wall). Sam chose: dead, offer Web Feeds (Premium Archive) and newsletter alternatives. Android split view: no two-pane layout exists. Play Console (last 28 days, rounded, diagnostics-sharing users only) shows ~56 daily tablet users vs ~385 phone (~13%), ~99 LARGE screen (~25%). Sam chose to build it: two pane at 600dp+, three pane at 840dp+. Staged: PR 1 Jetpack Activity Embedding (ItemsList | Reading), PR 2+ move Reading.kt into ReadingPagerFragment and add the feeds column. Test by resizing the existing emulator with wm size. Reply is accurate to post now (says building, no date). PR #2156 (Activity Embedding, two pane at 600dp+) verified on a Pixel Tablet API 35 AVD in landscape, portrait and all four themes; phones skip embedding entirely. Reply assumes the next Android release ships it. Docker Desktop was stopped (with Sam's OK) to free CPU for the emulator and needs restarting.",
       "reply": "Facebook is still a dead end, unfortunately. I built a Facebook page fetcher years ago, but Facebook bans that kind of access and now hides public pages behind a login, so NewsBlur can't read them. The best workaround is to follow the company somewhere else. If they post news on their own website, Web Feeds (Premium Archive) can turn that page into a feed, and if they send an email newsletter you can forward it to your NewsBlur newsletter address.\n\nAndroid split view was worth revisiting, since a lot more Android readers are on tablets and foldables than when that decision was made. So I built it. On a tablet or an unfolded foldable, the story list now sits next to the story you're reading, in both orientations. It'll be in the next Android update. A later version will add the feed list as a third column in landscape. It's the same app, so offline downloads keep working.",
       "question": null
+    },
+    "13858": {
+      "title": "HTTP 2.0 support",
+      "url": "https://forum.newsblur.com/t/http-2-0-support/13858",
+      "status": "pr-open",
+      "tier": 2,
+      "handled_at": "2026-09-29T04:40:00Z",
+      "last_posted_at": "2026-09-28T14:21:09.733Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2157",
+      "branch": "forum-13858-http2-feed-fallback",
+      "worktree": ".worktree/forum-13858-http2-feed-fallback",
+      "note": "dumbingofage.com and itswalky.com answer HTTP/1.1 with 426 and serve feeds only over HTTP/2; requests is HTTP/1.1 only. Prod feeds 450746 and 10319206 (same address, ~495 subs each) stuck on 426; 12 active feeds on 426. Sam chose an HTTP/2 retry on 426 via httpx (already installed through pyapns-client, verified on happ-web-01, htask-celery-01, htask-work-1). PR clean after 8 review rounds (20 threads resolved); Django and Android green; iOS Tests red on main too. Reply assumes merge plus make celery. Follow-up idea: remember per feed that it needs HTTP/2.",
+      "reply": "NewsBlur only spoke HTTP/1.1 when fetching feeds, and Dumbing of Age's server started refusing HTTP/1.1 with that 426 a few days ago. The error page is misleading since it has nothing to do with SSL, and the missing Upgrade header didn't matter because NewsBlur never looked at it. HTTP/2 works fine, so I added a fallback: when a feed answers with a 426, NewsBlur now retries it over HTTP/2. That fixes Dumbing of Age and It's Walky, which has the same setup, plus a few other feeds doing the same thing. It'll be live in the next deploy and the feed will catch up on its next fetch. Still worth letting the author know, since other readers will hit the same wall.",
+      "question": null
     }
   }
 }
