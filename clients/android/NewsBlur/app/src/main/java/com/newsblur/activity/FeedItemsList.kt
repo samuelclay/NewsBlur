@@ -54,7 +54,7 @@ class FeedItemsList : ItemsList() {
     }
 
     override fun interceptBackPress(isGestureNavigation: Boolean): Boolean =
-        reviewHelper.interceptBackPress(isGestureNavigation) { finish() }
+        reviewHelper.interceptBackPress(isGestureNavigation) { backToFeedList() }
 
     override fun shouldResetReadingSessionOnCreate(): Boolean =
         intent?.getBooleanExtra(EXTRA_IS_TRY_FEED, false) == true
