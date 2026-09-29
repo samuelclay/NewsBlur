@@ -128,8 +128,10 @@ object LastStoryList {
             }
 
             FeedItemsList::class.java -> {
+                // FeedItemsList.kt can't open without its folder (a saved search on a feed has none).
+                val folderName = saved.folderName ?: return null
                 val feed = findFeed(feedSet.singleFeed ?: return null) ?: return null
-                Destination(storyListClass, feedSet, folderName = saved.folderName, feed = feed)
+                Destination(storyListClass, feedSet, folderName = folderName, feed = feed)
             }
 
             SocialFeedItemsList::class.java -> {

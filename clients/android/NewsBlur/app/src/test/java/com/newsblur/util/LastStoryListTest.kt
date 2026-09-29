@@ -44,6 +44,11 @@ class LastStoryListTest {
     }
 
     @Test
+    fun test_feedListWithoutAFolderName_fallsBack() {
+        assertNull(roundTrip(FeedItemsList::class.java, FeedSet.singleFeed("42"), folderName = null) { technology })
+    }
+
+    @Test
     fun test_folderList_keepsTheFolderItAdvancedTo() {
         // ItemsList.java passes the next session's folder name, not the launch intent's.
         val destination = roundTrip(FolderItemsList::class.java, FeedSet.folder("News", setOf("1", "2")), folderName = "News")!!
