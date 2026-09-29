@@ -223,10 +223,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         super.onDestroy();
     }
 
-    // StorySplitView.kt only hands story lists to a Main.java that is still in the task.
-    public static boolean isAlive() {
+    // StorySplitView.kt only hands story lists to a live Main.java in the same task, never one in
+    // another NewsBlur window (desktop mode, or a task started from the widget or a notification).
+    public static boolean isAliveInTask(int taskId) {
         Main main = visibleMainRef.get();
-        return main != null && !main.isFinishing() && !main.isDestroyed();
+        return main != null && !main.isFinishing() && !main.isDestroyed() && main.getTaskId() == taskId;
     }
 
     public static Bitmap createVisibleFeedListSnapshot() {

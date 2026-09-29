@@ -126,5 +126,9 @@ class StorySplitViewTest {
             "ReadingPlaceholder must be declared for the empty reader pane",
             manifestActivityClasses().any { it.simpleName == "ReadingPlaceholder" },
         )
+        assertTrue(
+            "StoryImageViewerHost must be declared so a photo tapped in a split can open full window",
+            manifestActivityClasses().any { it.simpleName == "StoryImageViewerHost" },
+        )
     }
 }
