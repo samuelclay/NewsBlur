@@ -61,6 +61,7 @@ import com.newsblur.activity.SocialFeedReading
 import com.newsblur.activity.SubscriptionActivity
 import com.newsblur.activity.WidelyReadStoriesItemsList
 import com.newsblur.activity.WidelyReadStoriesReading
+import com.newsblur.image.StoryImageViewerHost
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -130,6 +131,8 @@ object StorySplitView {
             Profile::class.java,
             Settings::class.java,
             SubscriptionActivity::class.java,
+            // A photo opened from the reader pane covers the story list too.
+            StoryImageViewerHost::class.java,
         )
 
     private var rulesInstalled = false
