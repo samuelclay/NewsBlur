@@ -110,7 +110,7 @@ class StorySplitViewTest {
     fun rootStoryListsOnTablets_slideTheFeedListOver() {
         // A tablet's story list is the task root, with no feed list underneath, whatever its pane width.
         assertTrue(StorySplitView.shouldSlideOverFeedDrawer(rulesInstalled = true, isTaskRoot = true))
-        // A list opened on top of another one (Related Sites) goes back to the list beneath it.
+        // A list opened on top of Main.java, in a window too narrow to split, goes back to it.
         assertFalse(StorySplitView.shouldSlideOverFeedDrawer(rulesInstalled = true, isTaskRoot = false))
         // Phones keep going back to Main.java.
         assertFalse(StorySplitView.shouldSlideOverFeedDrawer(rulesInstalled = false, isTaskRoot = true))
