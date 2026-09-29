@@ -38,6 +38,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.LastStoryList;
 import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StorySplitView;
@@ -94,6 +95,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         Trace.beginSection("MainOnCreate");
 
         super.onCreate(savedInstanceState);
+        // On tablets the feed list slides over the last story list instead of filling the screen
+        // (FeedListDrawer.kt), so Main.java hands off to that story list and steps aside.
+        if (!isFeedDrawer() && StorySplitView.usesTabletNavigation(this)) {
+            openStoryListUnderFeedDrawer();
+            Trace.endSection();
+            return;
+        }
         visibleMainRef = new WeakReference<>(this);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -143,12 +151,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
         });
 
-        // A restored Main.java still holds its original launch intent in the system, so only a
-        // fresh creation opens a story list handed over from a tablet split (StorySplitView.kt).
-        if (savedInstanceState == null) {
-            StorySplitView.openHandedOffStoryList(this, getIntent());
-        }
-
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
         if (shortcutExtra != null && shortcutExtra.startsWith(ShortcutUtils.SHORTCUT_ALL_STORIES)) {
@@ -164,8 +166,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        // A story list opened from inside a tablet split comes back through Main.java (StorySplitView.kt).
-        StorySplitView.openHandedOffStoryList(this, intent);
     }
 
     @Override
@@ -194,7 +194,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // will be required, however inefficient
         folderFeedList.hasUpdated();
 
-        syncServiceState.resetReadingSession(dbHelper); // TODO suspend
+        // As the tablet slide-over (FeedListDrawer.kt), the story list beneath still owns the reading session.
+        if (!isFeedDrawer()) {
+            syncServiceState.resetReadingSession(dbHelper); // TODO suspend
+        }
         syncServiceState.flushRecounts();
 
         updateStatusIndicators();
@@ -242,11 +245,28 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-    // StorySplitView.kt only hands story lists to a live Main.java in the same task, never one in
-    // another NewsBlur window (desktop mode, or a task started from the widget or a notification).
-    public static boolean isAliveInTask(int taskId) {
-        Main main = visibleMainRef.get();
-        return main != null && !main.isFinishing() && !main.isDestroyed() && main.getTaskId() == taskId;
+    // FeedListDrawer.kt runs Main.java as a slide-over panel on top of a tablet's story list and reader.
+    protected boolean isFeedDrawer() {
+        return false;
+    }
+
+    // Opens the last story list as the root of a fresh task, with the feed list slid over it, or
+    // All Site Stories directly from the launcher shortcut.
+    private void openStoryListUnderFeedDrawer() {
+        BootReceiver.scheduleSyncService(this);
+        Intent storyList;
+        String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
+        if (shortcutExtra != null && shortcutExtra.startsWith(ShortcutUtils.SHORTCUT_ALL_STORIES)) {
+            storyList = new Intent(this, AllStoriesItemsList.class);
+            storyList.putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds());
+            storyList.putExtra(ItemsList.EXTRA_VISIBLE_SEARCH, shortcutExtra.equals(ShortcutUtils.SHORTCUT_ALL_STORIES_SEARCH));
+        } else {
+            storyList = LastStoryList.intent(this, dbHelper);
+            storyList.putExtra(ItemsList.EXTRA_OPEN_FEED_DRAWER, true);
+        }
+        storyList.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(storyList);
+        finish();
     }
 
     public static Bitmap createVisibleFeedListSnapshot() {

@@ -831,6 +831,12 @@
 
         <activity android:name=".activity.ReadingPlaceholder" />
 
+        <!-- FeedListDrawer.kt slides the feed list over a tablet's story list and reader. -->
+        <activity
+            android:name=".activity.FeedListDrawer"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Translucent" />
+
         <activity
             android:name=".image.StoryImageViewerHost"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"

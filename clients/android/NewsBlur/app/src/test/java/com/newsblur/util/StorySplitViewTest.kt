@@ -93,22 +93,27 @@ class StorySplitViewTest {
     }
 
     @Test
-    fun storyListLaunches_handOffToMainOnlyFromEmbeddedScreensAboveMain() {
-        // A story list, reader, or Discover in a split with Main beneath it restarts the split from Main,
-        // including after process death when Main is in the task but not yet recreated.
-        assertTrue(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsInTask = true) { true })
+    fun storyListLaunches_restartTheTaskOnlyFromEmbeddedScreens() {
+        // A story list, reader, Discover, or the feed list slide-over opens the new list as a fresh task.
+        assertTrue(StorySplitView.shouldRestartTaskForStoryList(rulesInstalled = true) { true })
         // Phones have no rules and never ask the embedding controller.
         assertFalse(
-            StorySplitView.shouldHandOffToMain(rulesInstalled = false, isMain = false, mainIsInTask = true) {
+            StorySplitView.shouldRestartTaskForStoryList(rulesInstalled = false) {
                 error("embedding checked on a phone")
             },
         )
-        // Main opening a list starts it directly.
-        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = true, mainIsInTask = true) { false })
-        // A task started from the widget has no Main beneath the split.
-        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsInTask = false) { true })
         // A full screen activity that is not embedded launches directly.
-        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsInTask = true) { false })
+        assertFalse(StorySplitView.shouldRestartTaskForStoryList(rulesInstalled = true) { false })
+    }
+
+    @Test
+    fun rootStoryListsOnTablets_slideTheFeedListOver() {
+        // A tablet's story list is the task root, with no feed list underneath, whatever its pane width.
+        assertTrue(StorySplitView.shouldSlideOverFeedDrawer(rulesInstalled = true, isTaskRoot = true))
+        // A list opened on top of another one (Related Sites) goes back to the list beneath it.
+        assertFalse(StorySplitView.shouldSlideOverFeedDrawer(rulesInstalled = true, isTaskRoot = false))
+        // Phones keep going back to Main.java.
+        assertFalse(StorySplitView.shouldSlideOverFeedDrawer(rulesInstalled = false, isTaskRoot = true))
     }
 
     @Test
@@ -129,6 +134,10 @@ class StorySplitViewTest {
         assertTrue(
             "StoryImageViewerHost must be declared so a photo tapped in a split can open full window",
             manifestActivityClasses().any { it.simpleName == "StoryImageViewerHost" },
+        )
+        assertTrue(
+            "FeedListDrawer must be declared so the feed list can slide over a tablet's split",
+            manifestActivityClasses().any { it.simpleName == "FeedListDrawer" },
         )
     }
 }

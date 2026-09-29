@@ -1,14 +1,12 @@
 package com.newsblur.util
 
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
-import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -34,6 +32,7 @@ import com.newsblur.activity.DailyBriefingReading
 import com.newsblur.activity.DiscoverFeedsActivity
 import com.newsblur.activity.DiscoverSitesActivity
 import com.newsblur.activity.FeedItemsList
+import com.newsblur.activity.FeedListDrawer
 import com.newsblur.activity.FeedReading
 import com.newsblur.activity.FeedSearchActivity
 import com.newsblur.activity.FolderItemsList
@@ -47,7 +46,6 @@ import com.newsblur.activity.InfrequentItemsList
 import com.newsblur.activity.InfrequentReading
 import com.newsblur.activity.LongReadsItemsList
 import com.newsblur.activity.LongReadsReading
-import com.newsblur.activity.Main
 import com.newsblur.activity.MuteConfig
 import com.newsblur.activity.NotificationsActivity
 import com.newsblur.activity.Profile
@@ -134,6 +132,8 @@ object StorySplitView {
             SubscriptionActivity::class.java,
             // A photo opened from the reader pane covers the story list too.
             StoryImageViewerHost::class.java,
+            // The feed list slides over both panes.
+            FeedListDrawer::class.java,
         )
 
     private var rulesInstalled = false
@@ -235,13 +235,13 @@ object StorySplitView {
     }
 
     /**
-     * Starts a story list. Launched from inside a split pane or an always expanded screen (a
-     * reader's Go to feed, the next folder, Discover), a story list would land wherever Activity
-     * Embedding's defaults put it: beside the old list in the reader pane, or in an expanded
-     * container that never splits. So those launches go back to Main.java, which closes
-     * everything above it and opens the list itself (openHandedOffStoryList), giving the list a
-     * fresh split with the placeholder pane. Phones never embed anything and start the list
-     * directly, as does Main.java itself.
+     * Starts a story list. On a tablet, a story list opened from inside the split or an always
+     * expanded screen (a reader's Go to feed, the next folder, Discover, the feed list slide-over)
+     * would land wherever Activity Embedding's defaults put it: beside the old list in the reader
+     * pane, or in an expanded container that never splits. So those launches start the story list
+     * as the root of a fresh task instead, which gives it a new split with the placeholder pane;
+     * Back from it slides the feed list over (FeedListDrawer.kt). Phones never embed anything and
+     * start the list directly.
      */
     @JvmStatic
     fun startStoryList(
@@ -249,59 +249,57 @@ object StorySplitView {
         storyList: Intent,
     ) {
         val activity = if (rulesInstalled) findActivity(context) else null
-        val handOff =
+        val restartTask =
             activity != null &&
-                shouldHandOffToMain(rulesInstalled, isMain = activity is Main, mainIsInTask = isMainInTask(activity)) {
+                shouldRestartTaskForStoryList(rulesInstalled) {
                     ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
                 }
-        if (!handOff) {
-            context.startActivity(storyList)
-            return
+        if (restartTask) {
+            storyList.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
-        val viaMain =
-            Intent(activity, Main::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .putExtra(EXTRA_STORY_LIST_INTENT, storyList)
-        activity.startActivity(viaMain)
+        context.startActivity(storyList)
     }
 
-    // Hand off only when the launch comes from an embedded screen with Main.java beneath it in
-    // the task. Without rules (every phone) nothing is ever embedded, so the embedding controller
-    // is never asked. A task started from the widget has no Main.java under the split, and
-    // launching Main.java from an embedded pane would put the feed list inside that pane, so
-    // those launches go direct.
-    internal fun shouldHandOffToMain(
+    // Without rules (every phone) nothing is ever embedded, so the embedding controller is never asked.
+    internal fun shouldRestartTaskForStoryList(
         rulesInstalled: Boolean,
-        isMain: Boolean,
-        mainIsInTask: Boolean,
         isEmbedded: () -> Boolean,
-    ): Boolean = rulesInstalled && !isMain && mainIsInTask && isEmbedded()
+    ): Boolean = rulesInstalled && isEmbedded()
 
-    // After Android kills the process and the split is restored from Recents, only the visible
-    // panes are recreated, so Main.java can be the task's root with no live instance. The task
-    // record knows either way.
-    private fun isMainInTask(activity: Activity): Boolean {
-        if (Main.isAliveInTask(activity.taskId)) return true
-        val activityManager = activity.getSystemService(ActivityManager::class.java) ?: return false
-        return activityManager.appTasks.any { task ->
-            val info = runCatching { task.taskInfo }.getOrNull()
-            info != null && info.taskId == activity.taskId && info.baseActivity?.className == Main::class.java.name
-        }
+    /**
+     * True when this window uses tablet navigation: story list and reader side by side, with the
+     * feed list sliding over them (FeedListDrawer.kt) instead of filling the screen. Matches the
+     * split rules' own width checks, so a narrow window (system split screen, a folded foldable)
+     * keeps the phone flow.
+     */
+    @JvmStatic
+    fun usesTabletNavigation(context: Context): Boolean {
+        if (!rulesInstalled) return false
+        val configuration = context.resources.configuration
+        return configuration.screenWidthDp >= MIN_SPLIT_WIDTH_DP && configuration.smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
     }
 
     /**
-     * Main.java calls this from onCreate (first creation only, never a restore after process
-     * death) and from onNewIntent to open a story list handed over by startStoryList.
+     * True when going back from this story list slides the feed list over it (FeedListDrawer.kt)
+     * instead of closing it. With tablet navigation, Main.java and FeedListDrawer.kt start every
+     * story list as the root of its task, so there is no feed list underneath to return to. The
+     * list's own width can't decide this: in a pane it is narrower than a phone, and its first
+     * resume comes before the split is reported. Phones never install the rules and keep going
+     * back to Main.java.
      */
     @JvmStatic
-    fun openHandedOffStoryList(
-        main: Activity,
-        intent: Intent?,
-    ) {
-        val storyList = intent?.let { IntentCompat.getParcelableExtra(it, EXTRA_STORY_LIST_INTENT, Intent::class.java) } ?: return
-        // Main.java keeps this intent, so drop the hand-off before a recreation could replay it.
-        intent.removeExtra(EXTRA_STORY_LIST_INTENT)
-        main.startActivity(storyList)
+    fun slidesOverFeedDrawer(storyList: Activity): Boolean = shouldSlideOverFeedDrawer(rulesInstalled, storyList.isTaskRoot)
+
+    internal fun shouldSlideOverFeedDrawer(
+        rulesInstalled: Boolean,
+        isTaskRoot: Boolean,
+    ): Boolean = rulesInstalled && isTaskRoot
+
+    /** True when [intent] opens one of the story lists in the split rules. */
+    @JvmStatic
+    fun isStoryList(intent: Intent): Boolean {
+        val className = intent.component?.className ?: return false
+        return STORY_LIST_ACTIVITIES.any { storyList -> storyList.name == className }
     }
 
     // Unwraps Hilt's fragment context wrappers to the hosting activity.
@@ -374,8 +372,6 @@ object StorySplitView {
 
         return setOf(storyListToReader, emptyReaderPane, fullWindow)
     }
-
-    private const val EXTRA_STORY_LIST_INTENT = "story_split_view_story_list"
 
     private const val TAG_STORY_LIST_READER = "story_list_reader"
     private const val TAG_EMPTY_READER = "empty_reader"
