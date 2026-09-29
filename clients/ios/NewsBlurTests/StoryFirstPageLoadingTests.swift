@@ -1495,6 +1495,62 @@ import XCTest
         XCTAssertEqual(pages.advances, 0, "Only an explicit reader navigation action may leave the retained article")
     }
 
+    func test_explicitNextUnreadCompletesAfterPagingWhileDuoRetainsAnotherSourcesArticle() async throws {
+        for explicitNext in [false, true] {
+            let fixture = makeFixture()
+            fixture.app.dictUnreadCounts = ["1": ["nt": 1, "ps": 0, "ng": 0]]
+            let detail = DetailViewController()
+            detail.appDelegate = fixture.app
+            detail.isCompact = false
+            if #available(iOS 17.0, *) { detail.traitOverrides.verticalSizeClass = .regular }
+            fixture.app.detailViewController = detail
+            let pages = FirstPageLoadingPages()
+            pages.appDelegate = fixture.app
+            pages.usesProductionUnreadAdvance = true
+            pages.currentPage = StoryDetailViewController()
+            pages.nextPage = StoryDetailViewController()
+            pages.previousPage = StoryDetailViewController()
+            fixture.app.testPages = pages
+            defer {
+                fixture.app.testPages = nil
+                fixture.app.detailViewController = nil
+            }
+            fixture.open()
+            fixture.app.activeStory = ["story_hash": "outgoing-source:2", "story_feed_id": 99]
+            pages.currentPage.activeStoryId = "outgoing-source:2"
+            pages.currentPage.pageIndex = 2
+            pages.setValue(true, forKey: "retainsDuoSourceArticle")
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            let readStories = makeStories(0..<4).map { story -> [String: Any] in
+                var readStory = story
+                readStory["read_status"] = 1
+                return readStory
+            }
+            fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: readStories))
+            await settle()
+            XCTAssertEqual(fixture.stories.locationOfNextUnreadStory(), -1)
+            XCTAssertEqual(fixture.app.unreadCount(), 1)
+            XCTAssertFalse(fixture.controller.pageFinished)
+            XCTAssertTrue(pages.pageChanges.isEmpty, "Loading the new source must retain the displayed article")
+            XCTAssertEqual(pages.advances, 0)
+
+            // StoryFirstPageLoadingTests.swift exercises the real Next action and its real page-2 callback;
+            // ordinary title-list pagination must not replace the retained article without that action.
+            if explicitNext { pages.doNextUnreadStory(nil) }
+            else { fixture.controller.fetchNextPage(nil) }
+            XCTAssertEqual(pages.waitingForNextUnreadFromServer, explicitNext)
+            fixture.app.reply(to: try feedPageRequest(2, in: fixture), with: response(stories: makeStories(4..<5)))
+            await settle()
+
+            XCTAssertEqual(fixture.hashes, (0..<5).map { "first-page-\($0)" })
+            XCTAssertEqual(pages.pageChanges, explicitNext ? [4] : [], "Only the pending explicit Next action may select the newly arrived unread story")
+            XCTAssertEqual(pages.advances, explicitNext ? 1 : 0)
+            XCTAssertFalse(pages.waitingForNextUnreadFromServer, "An unread response must complete the pending navigation")
+        }
+    }
+
     func test_cachedArticleMissingFromUnreadRefreshStaysOpenUntilExplicitNextOrPrevious() async throws {
         for direction in [-1, 1] {
             let fixture = makeFixture()
@@ -2516,11 +2572,15 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
 @MainActor private final class FirstPageLoadingPages: StoryPagesViewController {
     var pageChanges: [Int] = []
     var advances = 0
+    var usesProductionUnreadAdvance = false
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
     override func changePage(_ pageIndex: Int, animated: Bool) { pageChanges.append(pageIndex) }
     override func resizeScrollView() {}
-    override func advanceToNextUnread() { advances += 1 }
+    override func advanceToNextUnread() {
+        advances += 1
+        if usesProductionUnreadAdvance { super.advanceToNextUnread() }
+    }
     override func resetPages() {}
     override func hidePages() {}
 }
