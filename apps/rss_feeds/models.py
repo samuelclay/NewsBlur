@@ -1183,21 +1183,19 @@ class Feed(models.Model):
             logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
             return False, self
 
-        feed = self
-        try:
-            self.feed_address = strip_underscore_from_feed_address(feed_address)
-            feed = self.save()
-            feed.count_subscribers()
-            # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
-            feed.has_feed_exception = False
-            feed.active = True
-            feed = feed.save()
-        except IntegrityError:
-            original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
-            original_feed.has_feed_exception = False
-            original_feed.active = True
-            original_feed.save()
-            merge_feeds(original_feed.pk, self.pk)
+        # Feed.save merges into a feed that already holds this address rather than raising.
+        # A merge cut short by the fetch task's own time limit leaves this feed's row with its
+        # old address, so its next failing fetch lands here again and the merge carries on.
+        self.feed_address = strip_underscore_from_feed_address(feed_address)
+        feed = self.save()
+        if not feed:
+            # The row was deleted while this check ran and nothing took its place.
+            return False, self
+        feed.count_subscribers()
+        # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
+        feed.has_feed_exception = False
+        feed.active = True
+        feed = feed.save() or feed
         return True, feed
 
     def save_feed_history(self, status_code, message, exception=None, date=None):
@@ -5994,7 +5992,7 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     inverted_branch = None if force else merge_feeds_inverted_branch(original_feed, duplicate_feed)
     if inverted_branch:
         # The branch is the feed people actually read, so it survives with its own address;
-        # merge_feeds_locked clears its parent, which is the duplicate being folded in.
+        # merge_feeds_locked clears its parent, which is the other feed being folded in.
         if inverted_branch.pk == duplicate_feed.pk:
             original_feed, duplicate_feed = duplicate_feed, original_feed
         survivor_address = original_feed.feed_address
@@ -6007,22 +6005,27 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
 
 
 def merge_feeds_inverted_branch(original_feed, duplicate_feed):
-    """The branched one of the two feeds when exactly one of them is a branch and it has more
-    subscriptions than the unbranched one, or None. A reader's private branch is normally the
-    smaller feed and gives way in a merge, but Change Feed Address used to re-parent an
-    existing feed under the reader's copy, which left popular feeds branched from small or
-    empty ones; Hacker News was one, and it lost a merge to an empty RSSHub copy (forum
-    #13860). num_subscribers is summed over the whole branch family, so it reads the same on
-    both feeds; the subscription rows tell them apart. apps/rss_feeds/models.py
+    """The branched one of the two feeds when it is branched from the other one, is older than
+    it, and has more subscriptions, or None. A reader's private branch is normally the smaller
+    feed and gives way in a merge, but Change Feed Address used to re-parent an existing feed
+    under the reader's copy, which left popular feeds branched from small or empty ones;
+    Hacker News was one, and it lost a merge to an empty RSSHub copy (forum #13860).
+    A branch Change Feed Address creates is always newer than its parent, so an older branch
+    is the mark of that re-parenting; a real private branch never qualifies, whatever its
+    reader count, and never turns public here. num_subscribers is summed over the whole branch
+    family, so it reads the same on both feeds; the subscription rows tell them apart.
+    apps/rss_feeds/models.py
     """
     from apps.reader.models import UserSubscription
 
-    if bool(original_feed.branch_from_feed_id) == bool(duplicate_feed.branch_from_feed_id):
-        return None
-    if original_feed.branch_from_feed_id:
+    if original_feed.branch_from_feed_id == duplicate_feed.pk:
         branch, trunk = original_feed, duplicate_feed
-    else:
+    elif duplicate_feed.branch_from_feed_id == original_feed.pk:
         branch, trunk = duplicate_feed, original_feed
+    else:
+        return None
+    if trunk.branch_from_feed_id or branch.pk > trunk.pk:
+        return None
     branch_readers = UserSubscription.objects.filter(feed_id=branch.pk).count()
     trunk_readers = UserSubscription.objects.filter(feed_id=trunk.pk).count()
     if branch_readers > trunk_readers:
