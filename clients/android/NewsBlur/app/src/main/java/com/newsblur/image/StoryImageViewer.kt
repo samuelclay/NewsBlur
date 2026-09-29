@@ -79,6 +79,9 @@ class StoryImageViewer(
     private var closing = false
     private var entered = false
 
+    // True once the enter zoom has landed and the photo can be dragged to dismiss.
+    private var settled = false
+
     init {
         window?.apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -111,6 +114,14 @@ class StoryImageViewer(
             setOnClickListener { closeAnimated() }
         }
         root.addView(close, FrameLayout.LayoutParams(dp(48), dp(48), Gravity.TOP or Gravity.START))
+        // StoryImageViewer.kt starts hidden, because its first frame can draw before enter() runs,
+        // and would flash the finished viewer full screen before zooming up from the story's photo.
+        // image.onDrag below stays quiet until then for the same reason.
+        backdrop.alpha = 0f
+        close.alpha = 0f
+        status.alpha = 0f
+        retry.visibility = View.GONE
+        image.visibility = View.INVISIBLE
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val safe = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
             (close.layoutParams as FrameLayout.LayoutParams).apply {
@@ -126,13 +137,18 @@ class StoryImageViewer(
         }
         image.onDismiss = { closeAnimated() }
         image.onDrag = { fraction ->
-            backdrop.alpha = 1f - fraction
-            close.alpha = (1f - fraction * 3.2f).coerceAtLeast(0f)
-            status.alpha = close.alpha
+            // StoryImageView.kt reports a zero drag on every layout, including the first one before
+            // the enter zoom, which would show the backdrop and controls ahead of the photo.
+            if (settled && !closing) {
+                backdrop.alpha = 1f - fraction
+                close.alpha = (1f - fraction * 3.2f).coerceAtLeast(0f)
+                status.alpha = close.alpha
+            }
         }
         image.onGeometryChanged = {
             if (entered && !closing) {
                 animation?.cancel()
+                settled = true
                 transition.visibility = View.GONE
                 image.visibility = View.VISIBLE
                 backdrop.alpha = 1f
@@ -176,6 +192,7 @@ class StoryImageViewer(
     private fun enter() {
         entered = true
         animateImage(origin, image.imageRect(), true) {
+            settled = true
             image.visibility = View.VISIBLE
             image.sendAccessibilityEvent(android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED)
         }
