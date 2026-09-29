@@ -49,7 +49,7 @@ class NbApplication :
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         Log.offerContext(this)
         // Split rules must exist before the first story list or reader launches.
-        StorySplitView.install(this)
+        StorySplitView.installIfWideEnough(this)
 
         // warm up most of the dependencies that would block the UI thread
         CoroutineScope(Dispatchers.IO).launch {

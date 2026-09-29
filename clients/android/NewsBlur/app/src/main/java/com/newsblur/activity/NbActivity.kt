@@ -17,6 +17,7 @@ import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,6 +42,8 @@ open class NbActivity : AppCompatActivity() {
     private var lastTheme: ThemeValue? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // A foldable that started folded gets its split rules once any window opens up wide.
+        StorySplitView.installIfWideEnough(this)
         applyTheme(readStartupTheme(), shouldUseTranslucentTheme())
         super.onCreate(savedInstanceState)
         Log.d(this, "onCreate")

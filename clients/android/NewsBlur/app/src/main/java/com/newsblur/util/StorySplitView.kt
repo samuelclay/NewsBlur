@@ -58,6 +58,7 @@ import com.newsblur.activity.SocialFeedReading
 import com.newsblur.activity.SubscriptionActivity
 import com.newsblur.activity.WidelyReadStoriesItemsList
 import com.newsblur.activity.WidelyReadStoriesReading
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -128,26 +129,29 @@ object StorySplitView {
             SubscriptionActivity::class.java,
         )
 
+    private var rulesInstalled = false
+
     /**
-     * Registers the split rules once per process from NbApplication.kt. Devices without
-     * Activity Embedding support (most phones, Android before 12L) skip this entirely.
+     * Registers the split rules the first time a window is wide enough to split: from
+     * NbApplication.kt at startup, and from NbActivity.kt for every activity after that, so a
+     * foldable that starts out folded picks them up once it opens (opening recreates its
+     * activities). Phones, flip phones included, never reach split width and never get the rules.
+     * That matters because with rules installed, Activity Embedding moves matching activities
+     * into embedded containers even while too narrow to split, which also changes their
+     * transitions. Rules apply to activities launched after they are set.
      */
     @JvmStatic
-    fun install(context: Context) {
-        if (!canEverSplit(context)) return
+    fun installIfWideEnough(context: Context) {
+        if (rulesInstalled) return
+        if (!shouldInstallRules(context.resources.configuration.smallestScreenWidthDp)) return
         if (SplitController.getInstance(context).splitSupportStatus != SplitController.SplitSupportStatus.SPLIT_AVAILABLE) {
             return
         }
         RuleController.getInstance(context).setRules(buildRules(context))
+        rulesInstalled = true
     }
 
-    // With rules installed, Activity Embedding moves matching activities into embedded containers
-    // even while the window is too narrow to split, which also changes their transitions. Phones
-    // never reach split width, so they skip the rules and keep their full screen flow untouched.
-    // Tablets qualify by size, and foldables by their hinge since they may start out folded.
-    private fun canEverSplit(context: Context): Boolean =
-        context.resources.configuration.smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP ||
-            context.packageManager.hasSystemFeature(FEATURE_SENSOR_HINGE_ANGLE)
+    internal fun shouldInstallRules(smallestScreenWidthDp: Int): Boolean = smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
 
     /**
      * True when this activity is currently showing in one pane of a split. Reading.kt and
@@ -156,34 +160,39 @@ object StorySplitView {
      */
     @JvmStatic
     fun isInSplit(activity: Activity): Boolean =
-        // Activities in an always expanded container (FULL_WINDOW_ACTIVITIES, and anything they
-        // open, like Daily Briefing's reader) are embedded too, even on phones, but fill the window.
-        // Only split panes are in multi-window mode.
-        activity.isInMultiWindowMode && ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
+        isSplitPane(activity.isInMultiWindowMode) {
+            ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
+        }
+
+    // Activities in an always expanded container (FULL_WINDOW_ACTIVITIES, and anything they
+    // open, like Daily Briefing's reader) are embedded too, but fill the window. Only split
+    // panes are in multi-window mode, which is checked first so full screen activities never
+    // reach the embedding controller.
+    internal fun isSplitPane(
+        isInMultiWindowMode: Boolean,
+        isEmbedded: () -> Boolean,
+    ): Boolean = isInMultiWindowMode && isEmbedded()
 
     /**
      * ItemsList.java and Reading.kt are declared with Theme.Translucent in AndroidManifest.xml so
      * their phone transitions can show the screen underneath. In a split that translucency lets
      * Main.java count as visible behind the panes, so Android resumes it (on rotation, say), and
      * Main.java's onResume resets the reading session the story list and reader share, which
-     * empties the list. This keeps the window opaque while it sits in a split and translucent
-     * again when the split goes away, such as a foldable closing.
+     * empties the list. This makes the window opaque once it lands in a split and keeps it opaque
+     * for the rest of its life. Turning translucent again when a foldable closes would reopen the
+     * same window while Main relaunches, and the only cost of staying opaque is that this one
+     * activity's phone swipe back shows no screen behind it until it is reopened.
      */
     @JvmStatic
-    fun keepOpaqueWhileInSplit(activity: ComponentActivity) {
+    fun goOpaqueInSplit(activity: ComponentActivity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
-        // The manifest theme decides translucency when the activity starts, whatever theme
-        // onCreate applies, so every story list and reader starts out translucent.
         var isOpaque = false
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                SplitController.getInstance(activity).splitInfoList(activity).collect { splits ->
-                    val shouldBeOpaque = splits.isNotEmpty()
-                    if (shouldBeOpaque != isOpaque) {
-                        isOpaque = shouldBeOpaque
-                        activity.setTranslucent(!shouldBeOpaque)
-                    }
-                }
+                if (isOpaque) return@repeatOnLifecycle
+                SplitController.getInstance(activity).splitInfoList(activity).first { splits -> splits.isNotEmpty() }
+                isOpaque = true
+                activity.setTranslucent(false)
             }
         }
     }
@@ -248,9 +257,6 @@ object StorySplitView {
 
         return setOf(storyListToReader, emptyReaderPane, fullWindow)
     }
-
-    // PackageManager.FEATURE_SENSOR_HINGE_ANGLE, spelled out because it is API 30 and minSdk is 26.
-    private const val FEATURE_SENSOR_HINGE_ANGLE = "android.hardware.sensor.hinge_angle"
 
     private const val TAG_STORY_LIST_READER = "story_list_reader"
     private const val TAG_EMPTY_READER = "empty_reader"
