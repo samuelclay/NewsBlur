@@ -54,6 +54,13 @@ struct StoryImageSource {
         return (CGRect(x: x, y: y, width: width, height: height), CGFloat(viewport))
     }
 
+    @MainActor static func viewRect(_ rect: CGRect, viewportWidth: CGFloat, in webView: WKWebView) -> CGRect {
+        let scale = webView.bounds.width / viewportWidth
+        let offset = webView.scrollView.contentOffset
+        return rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+            .offsetBy(dx: -offset.x, dy: -offset.y)
+    }
+
     static func fittedSize(_ size: CGSize, in bounds: CGSize) -> CGSize {
         guard size.width > 0, size.height > 0 else { return .zero }
         let scale = min(1, bounds.width / size.width, bounds.height / size.height)
@@ -133,14 +140,16 @@ struct StoryImageSource {
 
 extension StoryDetailViewController {
     func receiveImageMessage(_ message: WKScriptMessage) {
+        let accessibility = (message.body as? [String: Any])?["accessibilityActivation"] as? Bool == true
         guard message.frameInfo.isMainFrame, message.webView === webView,
               let source = StoryImageSource(message.body), isCurrentStoryImageLoad(source.loadID),
+              canOpenStoryImage(accessibility: accessibility),
               appDelegate.storyPagesViewController.currentPage === self,
               let window = webView.window, let presenter = window.rootViewController,
               presenter.presentedViewController == nil, !openingImage else { return }
         openingImage = true
-        let scale = webView.bounds.width / source.viewportWidth
-        let localRect = source.rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+        let scrollOffset = webView.scrollView.contentOffset
+        let localRect = StoryImageSource.viewRect(source.rect, viewportWidth: source.viewportWidth, in: webView)
         let sourceRect = webView.convert(localRect, to: window)
         let configuration = WKSnapshotConfiguration()
         configuration.rect = localRect.intersection(webView.bounds)
@@ -149,6 +158,8 @@ extension StoryDetailViewController {
             guard let self else { return }
             self.openingImage = false
             guard let presenter, self.isCurrentStoryImageLoad(source.loadID),
+                  self.canOpenStoryImage(accessibility: accessibility),
+                  self.webView.scrollView.contentOffset == scrollOffset,
                   self.appDelegate.storyPagesViewController.currentPage === self,
                   self.webView.window === window, presenter.presentedViewController == nil else { return }
             let viewer = StoryImageViewerController(source: source, preview: snapshot, origin: sourceRect)
@@ -162,8 +173,7 @@ extension StoryDetailViewController {
                 self.webView.evaluateJavaScript("newsblurImageRect.apply(null, \(arguments))") { [weak self] result, _ in
                     guard let self, self.isCurrentStoryImageLoad(source.loadID),
                           let (rect, viewport) = StoryImageSource.geometry(result) else { completion(nil); return }
-                    let scale = self.webView.bounds.width / viewport
-                    let local = rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+                    let local = StoryImageSource.viewRect(rect, viewportWidth: viewport, in: self.webView)
                     completion(local.intersects(self.webView.bounds) ? self.webView.convert(local, to: window) : nil)
                 }
             }

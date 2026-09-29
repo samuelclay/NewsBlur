@@ -226,6 +226,58 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_slowArticleImageScrollDoesNotOpenViewerThenSingleTapDoes() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image scroll regression uses isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        let initialY = articleImage.frame.minY
+        let close = app.buttons["Close image"]
+        attachScreenshot(named: "image-scroll-before")
+        // ReaderUITests.swift exercises slow, short drags ending on the photo rather than a separate text area.
+        for distance: CGFloat in [12, 24, 48] {
+            let previousY = articleImage.frame.minY
+            let start = articleImage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
+            start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: -distance)),
+                        withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0)
+            XCTAssertFalse(close.waitForExistence(timeout: 1), "A slow upward drag must only scroll the article")
+            XCTAssertLessThan(articleImage.frame.minY, previousY, "Each gesture must move the article, not count as tap jitter")
+        }
+        XCTAssertLessThan(articleImage.frame.minY, initialY, "The gestures must actually scroll the article")
+        attachScreenshot(named: "image-scroll-stays-in-reader")
+        articleImage.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5), "A stationary single tap must still open the image")
+        attachScreenshot(named: "image-scroll-single-tap-opens")
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        #endif
+    }
+
+    func test_articleImageDoubleTapAndPinchDoNotOpenViewer() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image tap regression uses isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-double_tap_story", "nothing"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        articleImage.doubleTap()
+        XCTAssertFalse(app.buttons["Close image"].waitForExistence(timeout: 1),
+                       "Only a single tap should open an article photo")
+        articleImage.pinch(withScale: 1.5, velocity: 1)
+        XCTAssertFalse(app.buttons["Close image"].waitForExistence(timeout: 1),
+                       "Pinching the article must not open the photo viewer")
+        attachScreenshot(named: "image-double-tap-stays-in-reader")
+        articleImage.tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        app.buttons["Close image"].tap()
+        #endif
+    }
+
     func test_storyImageKeepsStatusBarAndReaderGeometry() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Image viewer uses isolated simulator fixtures")

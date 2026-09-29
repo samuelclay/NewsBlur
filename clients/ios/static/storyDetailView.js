@@ -36,7 +36,7 @@ var linkAt = function(x, y, attribute) {
     return el && el[attribute];
 };
 
-// StoryImageViewerController.swift uses viewport coordinates, including after rotation.
+// StoryImageViewerController.swift converts document coordinates through the native scroll offset.
 var newsblur_image_sequence = 0;
 function newsblurImageRect(token, load_id) {
     var load = document.querySelector('meta[name="newsblur-story-load"]');
@@ -44,15 +44,19 @@ function newsblurImageRect(token, load_id) {
     var image = document.querySelector('img[data-newsblur-image-token="' + token + '"]');
     if (!image) return null;
     var rect = image.getBoundingClientRect();
-    return {x: rect.left, y: rect.top, width: rect.width, height: rect.height,
+    return {x: rect.left + window.scrollX, y: rect.top + window.scrollY, width: rect.width, height: rect.height,
             viewportWidth: window.innerWidth};
 }
 
-function newsblurOpenImage(image) {
+function newsblurIsStoryImage(image) {
+    return image && image.tagName === 'IMG' && image.closest('.NB-story') &&
+        image.complete && image.naturalWidth > 1 && image.naturalHeight > 1;
+}
+
+function newsblurOpenImage(image, accessibility_activation) {
     var bridge = window.webkit && window.webkit.messageHandlers.newsblurStoryImage;
     var load = document.querySelector('meta[name="newsblur-story-load"]');
-    if (!bridge || !load || !image || image.tagName !== 'IMG' || !image.closest('.NB-story') ||
-        !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
+    if (!bridge || !load || !newsblurIsStoryImage(image)) return false;
     var token = image.getAttribute('data-newsblur-image-token');
     if (!token) {
         token = String(++newsblur_image_sequence);
@@ -60,6 +64,7 @@ function newsblurOpenImage(image) {
     }
     var link = image.closest('a[href]');
     bridge.postMessage({loadID: load.content, token: token,
+        accessibilityActivation: accessibility_activation === true,
         src: image.currentSrc || image.src,
         originalURL: image.getAttribute('data-newsblur-original-src') || image.currentSrc || image.src,
         link: link ? link.href : '', title: image.alt || image.title || 'Story image',
@@ -68,14 +73,19 @@ function newsblurOpenImage(image) {
     return true;
 }
 
-function newsblurOpenImageAt(x, y) {
-    return newsblurOpenImage(document.elementFromPoint(x, y));
+function newsblurOpenImageAt(x, y, offset_x, offset_y, view_width) {
+    var scale = window.innerWidth / view_width;
+    return newsblurOpenImage(document.elementFromPoint(
+        (x + offset_x) * scale - window.scrollX,
+        (y + offset_y) * scale - window.scrollY));
 }
 
 document.addEventListener('click', function(event) {
-    if (newsblurOpenImage(event.target)) {
+    if (newsblurIsStoryImage(event.target)) {
         event.preventDefault();
         event.stopImmediatePropagation();
+        // StoryDetailObjCViewController.m owns pointer taps after scroll and double-tap recognition.
+        if (event.detail === 0) newsblurOpenImage(event.target, true);
     }
 }, true);
 
