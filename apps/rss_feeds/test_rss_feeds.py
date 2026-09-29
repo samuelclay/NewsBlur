@@ -5649,12 +5649,9 @@ class Test_AddressCheckMergesOnTheCallingThread(TransactionTestCase):
         self.assertTrue(fixed)
         self.assertEqual(feed.pk, real.pk)
 
-    def test_a_merge_that_would_move_many_subscriptions_is_queued_as_its_own_task(self):
-        """Hacker News moved 15,492 readers in 13 minutes, longer than a fetch task's 9 minute
-        soft limit. A merge that big goes to MergeFeeds and the fetch moves on, with this feed
-        left at its old address until the merge settles which feed survives."""
-        from apps.rss_feeds import models as feed_models
-
+    def make_heavier_copy(self, readers):
+        """The real feed at the address the check discovers, and a copy with `readers`
+        subscriptions and more family readers, so the copy is the heavier feed."""
         real = Feed.objects.create(
             feed_address="https://news.example.com/rss",
             feed_link="https://news.example.com/",
@@ -5665,34 +5662,108 @@ class Test_AddressCheckMergesOnTheCallingThread(TransactionTestCase):
             feed_link="https://news.example.com/",
             feed_title="Hacker News (RSSHub)",
         )
-        Feed.objects.filter(pk=real.pk).update(num_subscribers=100)
-        Feed.objects.filter(pk=copy.pk).update(num_subscribers=3)
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=0)
+        Feed.objects.filter(pk=copy.pk).update(num_subscribers=100)
+        real.refresh_from_db()
         copy.refresh_from_db()
-        for index in range(3):
+        for index in range(readers):
             UserSubscription.objects.create(
                 user=User.objects.create_user(username="copy-%s" % index), feed=copy
             )
+        return real, copy
+
+    def test_a_merge_that_would_move_many_subscriptions_is_queued_as_its_own_task(self):
+        """Hacker News moved 15,492 readers in 13 minutes, longer than a fetch task's 9 minute
+        soft limit. A merge that big goes to MergeFeeds and the fetch moves on, with this feed
+        left at its old address until the merge settles which feed survives."""
+        from apps.rss_feeds import models as feed_models
+
+        real, copy = self.make_heavier_copy(readers=3)
+        # The real feed is the heavier one here, so the copy's 3 readers are the ones to move.
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=1000)
 
         with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
             with patch.object(feed_models, "MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS", 3):
-                with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
-                    with patch.object(feed_models, "merge_feeds") as inline_merge:
-                        fixed, feed = copy.check_feed_link_for_feed_address()
+                with patch("apps.rss_feeds.models.redis") as mock_redis:
+                    mock_redis.Redis.return_value.set.return_value = True
+                    with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
+                        with patch.object(feed_models, "merge_feeds") as inline_merge:
+                            fixed, feed = copy.check_feed_link_for_feed_address()
 
-        queued.assert_called_once_with(args=(real.pk, copy.pk))
+        queued.assert_called_once_with(args=(real.pk, copy.pk, "https://news.example.com/rss"))
         inline_merge.assert_not_called()
         self.assertFalse(fixed)
         self.assertEqual(feed.pk, copy.pk)
         copy.refresh_from_db()
         self.assertEqual(copy.feed_address, "https://rsshub.example.com/hackernews/index")
 
-    def test_the_merge_task_runs_merge_feeds_on_the_work_queue(self):
+    def test_a_merge_already_queued_for_the_pair_is_not_queued_again(self):
+        """The feed keeps failing while its merge runs, and each failing fetch comes back here.
+        Only the first one queues MergeFeeds."""
+        from apps.rss_feeds import models as feed_models
+
+        real, copy = self.make_heavier_copy(readers=3)
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=1000)
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS", 3):
+                with patch("apps.rss_feeds.models.redis") as mock_redis:
+                    mock_redis.Redis.return_value.set.side_effect = [True, False]
+                    with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
+                        copy.check_feed_link_for_feed_address()
+                        copy.check_feed_link_for_feed_address()
+
+        self.assertEqual(queued.call_count, 1)
+        key, _ = mock_redis.Redis.return_value.set.call_args_list[0][0]
+        self.assertEqual(key, "merge_feeds_queued:%s:%s" % tuple(sorted([real.pk, copy.pk])))
+
+    def test_this_feed_winning_the_merge_takes_the_discovered_address(self):
+        """A merge keeps the heavier feed's own address. When that is this failing feed, the
+        address the check discovered is free once the other feed is folded in, and the check
+        must move this feed onto it rather than report a fix it did not make."""
+        from apps.rss_feeds.models import MFetchHistory
+
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(MFetchHistory, "delete_for_feed", return_value=0),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        real, copy = self.make_heavier_copy(readers=2)
+
+        with patch("apps.rss_feeds.models.feedfinder_forman.find_feeds", return_value=[real.feed_address]):
+            fixed, feed = copy.check_feed_link_for_feed_address()
+
+        self.assertTrue(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+        self.assertFalse(Feed.objects.filter(pk=real.pk).exists())
+        copy.refresh_from_db()
+        self.assertEqual(copy.feed_address, "https://news.example.com/rss")
+        self.assertFalse(copy.has_feed_exception)
+
+    def test_the_merge_task_settles_the_survivor_and_releases_the_pair(self):
+        """MergeFeeds finishes the way the inline check does: the survivor is at the discovered
+        address and marked healthy. It releases the pair's queued key however it ends."""
+        from redis.exceptions import LockError
+
         from apps.rss_feeds.tasks import MergeFeeds
 
-        with patch("apps.rss_feeds.models.merge_feeds") as merge:
-            MergeFeeds(11, 12)
+        real, copy = self.make_heavier_copy(readers=0)
+        Feed.objects.filter(pk=real.pk).update(has_feed_exception=True, active=False)
+        key = "merge_feeds_queued:%s:%s" % tuple(sorted([real.pk, copy.pk]))
 
-        merge.assert_called_once_with(11, 12)
+        with patch("apps.rss_feeds.models.redis") as mock_redis:
+            with patch("apps.rss_feeds.models.merge_feeds", return_value=real.pk) as merge:
+                MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss")
+            with patch("apps.rss_feeds.models.merge_feeds", side_effect=LockError("held")):
+                MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss")
+
+        merge.assert_called_once_with(real.pk, copy.pk)
+        real.refresh_from_db()
+        self.assertFalse(real.has_feed_exception)
+        self.assertTrue(real.active)
+        self.assertEqual([c.args[0] for c in mock_redis.Redis.return_value.delete.call_args_list], [key, key])
         self.assertTrue(settings.CELERY_TASK_ROUTES["merge-feeds"]["queue"].endswith("work_queue"))
 
     def test_a_feed_whose_row_vanished_during_the_check_reports_no_fix(self):

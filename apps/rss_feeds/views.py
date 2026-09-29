@@ -18,7 +18,6 @@ import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db import IntegrityError
 from django.http import (
     Http404,
     HttpResponse,
@@ -383,7 +382,7 @@ def find_or_create_feed_for_branch(original_feed, feed_address, feed_link):
     original_feed. A feed that already holds the address has readers of its own and is never
     re-parented under the reader's feed (forum #13860). Feed.save folds a new row into a feed
     another request created at this address meanwhile and leaves the instance without an id,
-    so the id, not the absence of an exception, is what says the row is ours.
+    so the id is what says the row is ours (Feed.save handles the IntegrityError itself).
     apps/rss_feeds/views.py
     """
     hash_address_and_link = Feed.generate_hash_address_and_link(feed_address, feed_link)
@@ -391,10 +390,7 @@ def find_or_create_feed_for_branch(original_feed, feed_address, feed_link):
         return Feed.objects.get(hash_address_and_link=hash_address_and_link), False, False
     except Feed.DoesNotExist:
         pass
-    try:
-        new_feed = Feed.objects.create(feed_address=feed_address, feed_link=feed_link)
-    except IntegrityError:
-        return Feed.objects.get(hash_address_and_link=hash_address_and_link), False, False
+    new_feed = Feed.objects.create(feed_address=feed_address, feed_link=feed_link)
     if new_feed.pk is not None:
         return new_feed, True, False
     existing_feed = Feed.objects.filter(hash_address_and_link=hash_address_and_link).first()
