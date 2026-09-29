@@ -92,10 +92,10 @@ public class DeleteFeedFragment extends DialogFragment {
             } else {
                 viewModel.deleteSocialFeed(getArguments().getString(FEED_ID));
             }
-            // if called from a feed view, end it
+            // if called from a feed view, end it (a tablet's story list is replaced, ItemsList.java)
             Activity activity = DeleteFeedFragment.this.getActivity();
             if (activity instanceof ItemsList) {
-                activity.finish();
+                ((ItemsList) activity).replaceWithFeedList();
             }
             DeleteFeedFragment.this.dismiss();
         });
