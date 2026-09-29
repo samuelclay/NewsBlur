@@ -189,6 +189,8 @@ object StorySplitView {
     @JvmStatic
     fun goOpaqueInSplit(activity: ComponentActivity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+        // Without rules (every phone) nothing can land in a split, so skip the subscription.
+        if (!rulesInstalled) return
         var isOpaque = false
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -214,9 +216,13 @@ object StorySplitView {
         context: Context,
         storyList: Intent,
     ) {
-        // Without rules (every phone) nothing is ever embedded, so skip the embedding controller.
         val activity = if (rulesInstalled) findActivity(context) else null
-        if (activity == null || activity is Main || !ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)) {
+        val handOff =
+            activity != null &&
+                shouldHandOffToMain(rulesInstalled, isMain = activity is Main, mainIsAlive = Main.isAlive()) {
+                    ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
+                }
+        if (!handOff) {
             context.startActivity(storyList)
             return
         }
@@ -227,7 +233,22 @@ object StorySplitView {
         activity.startActivity(viaMain)
     }
 
-    /** Main.java calls this from onCreate and onNewIntent to open a story list handed over by startStoryList. */
+    // Hand off only when the launch comes from an embedded screen and a live Main.java sits
+    // beneath it. Without rules (every phone) nothing is ever embedded, so the embedding
+    // controller is never asked. A task started from the widget has no Main.java under the split,
+    // and launching Main.java from an embedded pane would put the feed list inside that pane, so
+    // those launches go direct.
+    internal fun shouldHandOffToMain(
+        rulesInstalled: Boolean,
+        isMain: Boolean,
+        mainIsAlive: Boolean,
+        isEmbedded: () -> Boolean,
+    ): Boolean = rulesInstalled && !isMain && mainIsAlive && isEmbedded()
+
+    /**
+     * Main.java calls this from onCreate (first creation only, never a restore after process
+     * death) and from onNewIntent to open a story list handed over by startStoryList.
+     */
     @JvmStatic
     fun openHandedOffStoryList(
         main: Activity,

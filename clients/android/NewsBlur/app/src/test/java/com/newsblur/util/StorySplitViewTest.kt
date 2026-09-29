@@ -72,6 +72,24 @@ class StorySplitViewTest {
     }
 
     @Test
+    fun storyListLaunches_handOffToMainOnlyFromEmbeddedScreensAboveALiveMain() {
+        // A story list, reader, or Discover in a split with Main beneath it restarts the split from Main.
+        assertTrue(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsAlive = true) { true })
+        // Phones have no rules and never ask the embedding controller.
+        assertFalse(
+            StorySplitView.shouldHandOffToMain(rulesInstalled = false, isMain = false, mainIsAlive = true) {
+                error("embedding checked on a phone")
+            },
+        )
+        // Main opening a list starts it directly.
+        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = true, mainIsAlive = true) { false })
+        // A task started from the widget has no Main beneath the split.
+        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsAlive = false) { true })
+        // A full screen activity that is not embedded launches directly.
+        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsAlive = true) { false })
+    }
+
+    @Test
     fun manifest_enablesSplitsAndDeclaresThePlaceholder() {
         val properties = manifest.getElementsByTagName("property")
         val splitsEnabled =

@@ -142,7 +142,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
         });
 
-        StorySplitView.openHandedOffStoryList(this, getIntent());
+        // A restored Main.java still holds its original launch intent in the system, so only a
+        // fresh creation opens a story list handed over from a tablet split (StorySplitView.kt).
+        if (savedInstanceState == null) {
+            StorySplitView.openHandedOffStoryList(this, getIntent());
+        }
 
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
@@ -217,6 +221,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             visibleMainRef.clear();
         }
         super.onDestroy();
+    }
+
+    // StorySplitView.kt only hands story lists to a Main.java that is still in the task.
+    public static boolean isAlive() {
+        Main main = visibleMainRef.get();
+        return main != null && !main.isFinishing() && !main.isDestroyed();
     }
 
     public static Bitmap createVisibleFeedListSnapshot() {
