@@ -596,8 +596,12 @@ class FetchFeed:
                         raw_feed = safe_http2_get(address, headers=headers, timeout=15)
                         direct_get = safe_http2_get
                         logging.debug(
-                            "   ---> [%-30s] ~FBHTTP/1.1 refused with 426, HTTP/2 answered %s"
-                            % (self.feed.log_title[:30], raw_feed.status_code)
+                            "   ---> [%-30s] ~FBHTTP/1.1 refused with 426, retry over %s answered %s"
+                            % (
+                                self.feed.log_title[:30],
+                                getattr(raw_feed, "http_version", "HTTP/2"),
+                                raw_feed.status_code,
+                            )
                         )
                     except (UnsafeUrlError, requests.RequestException, TimeoutError) as e:
                         logging.debug(

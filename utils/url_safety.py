@@ -143,6 +143,9 @@ def _requests_response_from_httpx(httpx_response):
     response._content_consumed = True
     response.url = str(httpx_response.url)
     response.encoding = get_encoding_from_headers(response.headers)
+    # httpx quietly speaks HTTP/1.1 over TLS when the server's ALPN picks it, so keep the
+    # protocol it really used for the fetch log in utils/feed_fetcher.py.
+    response.http_version = httpx_response.http_version
     return response
 
 

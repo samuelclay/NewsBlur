@@ -638,7 +638,8 @@ class Test_SafeHttp2Get(TestCase):
         # The other tests hand httpx a mock transport, which skips its h2 import check. In
         # production a missing h2 package is swallowed as requests.ConnectionError and the
         # 426 stays, so check the image can really build an HTTP/2 transport.
-        httpx.HTTPTransport(http2=True)
+        with httpx.HTTPTransport(http2=True):
+            pass
 
     @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
     def test_safe_http2_get__returns_a_requests_response(self, mock_getaddrinfo):
@@ -650,6 +651,7 @@ class Test_SafeHttp2Get(TestCase):
                 200,
                 headers={"Content-Type": "application/rss+xml; charset=UTF-8", "ETag": '"f79cc06d"'},
                 content=b"<rss><channel><title>Comic</title></channel></rss>",
+                extensions={"http_version": b"HTTP/2"},
             )
 
         response, client_kwargs = self._get(
@@ -658,6 +660,8 @@ class Test_SafeHttp2Get(TestCase):
 
         self.assertIsInstance(response, requests.Response)
         self.assertEqual(response.status_code, 200)
+        # The protocol httpx really spoke is kept for the fetch log.
+        self.assertEqual(response.http_version, "HTTP/2")
         self.assertEqual(response.content, b"<rss><channel><title>Comic</title></channel></rss>")
         # Fully read like a requests response: streaming serves the body instead of raw.
         self.assertEqual(
