@@ -335,7 +335,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             recreate();
             return;
         }
-        if (syncServiceState.isHousekeepingRunning()) finish();
+        if (syncServiceState.isHousekeepingRunning()) leaveForRebuild();
         applyStoryHeaderTheme();
         refreshStoryHeaderControls();
         updateStatusIndicators();
@@ -431,7 +431,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
-            finish();
+            leaveForRebuild();
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
@@ -452,8 +452,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             Session session = sessionDataSource.getNextSession();
             if (session != null) {
                 applyNextSession(session);
-            } else finish();
-        } else finish();
+            } else backToFeedList();
+        } else backToFeedList();
     }
 
     @Nullable
@@ -1239,6 +1239,38 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         } else {
             finish();
         }
+    }
+
+    /**
+     * A deleted or missing feed leaves this story list with nothing to show. A phone finishes back
+     * to Main.java. A tablet's root story list has no feed list underneath, so All Site Stories
+     * takes its place with the feed list slid over it (FeedListDrawer.kt).
+     */
+    public void replaceWithFeedList() {
+        if (!slidesOverFeedDrawer()) {
+            finish();
+            return;
+        }
+        Intent allStories = new Intent(this, AllStoriesItemsList.class);
+        allStories.putExtra(EXTRA_FEED_SET, FeedSet.allFeeds());
+        allStories.putExtra(EXTRA_OPEN_FEED_DRAWER, true);
+        allStories.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(allStories);
+    }
+
+    /**
+     * Sync housekeeping cleans up the stories under this list (UPDATE_REBUILD). A phone finishes back
+     * to Main.java. A tablet's root story list reloads in place instead, because a replacement would
+     * close again while housekeeping runs, and slides the feed list over it as Main.java would show.
+     */
+    private void leaveForRebuild() {
+        if (!slidesOverFeedDrawer()) {
+            finish();
+            return;
+        }
+        feedDrawerPending = false;
+        restartReadingSession();
+        FeedListDrawer.open(this);
     }
 
     public void beginInteractiveStoryListSwipe() {

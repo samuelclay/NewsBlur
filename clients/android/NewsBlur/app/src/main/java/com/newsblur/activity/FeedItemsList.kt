@@ -114,7 +114,8 @@ class FeedItemsList : ItemsList() {
                     if (syncServiceState.getTryFeedRefreshStatus(fs) != com.newsblur.service.TryFeedRefreshStatus.FETCHING) restartReadingSession()
                 } else {
                     feedUtils.instaFetchFeed(this, feed.feedId)
-                    finish()
+                    // Back to the feed list, where the refresh shows.
+                    backToFeedList()
                 }
                 true
             }
@@ -177,7 +178,7 @@ class FeedItemsList : ItemsList() {
         if (feed != null && folderName != null) {
             setupFeedItems(feed, folderName)
         } else {
-            finish()
+            replaceWithFeedList()
         }
     }
 
@@ -189,7 +190,7 @@ class FeedItemsList : ItemsList() {
         if (feed != null && folderName != null) {
             setupFeedItems(feed, folderName)
         } else {
-            finish()
+            replaceWithFeedList()
         }
     }
 
