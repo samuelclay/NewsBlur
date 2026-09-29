@@ -98,8 +98,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         super.onCreate(savedInstanceState);
         // On tablets the feed list slides over the last story list instead of filling the screen
-        // (FeedListDrawer.kt), so Main.java hands off to that story list and steps aside.
-        if (!isFeedDrawer() && StorySplitView.usesTabletNavigation(this)) {
+        // (FeedListDrawer.kt), so Main.java hands off to that story list and steps aside. Only a
+        // fresh launch does: a Main recreated under an open story list and reader (a foldable
+        // unfolding, a window widening) stays the feed list rather than clearing what's being read,
+        // and one already finishing (NbActivity.kt found no login) leaves the login screen alone.
+        if (!isFinishing() && savedInstanceState == null && !isFeedDrawer() && StorySplitView.usesTabletNavigation(this)) {
             openStoryListUnderFeedDrawer();
             Trace.endSection();
             return;
