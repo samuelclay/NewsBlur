@@ -202,7 +202,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
-        StorySplitView.keepOpaqueWhileInSplit(this);
+        StorySplitView.goOpaqueInSplit(this);
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
@@ -288,7 +288,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (!q.isEmpty()) {
             savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
         }
-        if (preparedReturnStoryHash != null && StorySplitView.isInSplit(this)) {
+        if (preparedReturnStoryHash != null && Reading.peekSplitReader() != null && StorySplitView.isInSplit(this)) {
             savedInstanceState.putString(BUNDLE_SPLIT_READING_STORY_HASH, preparedReturnStoryHash);
         }
     }
@@ -469,6 +469,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void applyNextSession(@NonNull Session session) {
+        closeSplitReader();
         // set the next session on the parent activity
         fs = session.getFeedSet();
         feedUtils.prepareReadingSession(fs, false);
@@ -1126,6 +1127,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         fs.setSearchQuery(q);
         boolean queryChanged = !TextUtils.equals(q, oldQuery);
         if (queryChanged) {
+            closeSplitReader();
             feedUtils.prepareReadingSession(fs, true);
             triggerSync();
             scheduleInitialFetchingBanner();
@@ -1233,6 +1235,17 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     protected boolean shouldHandlePredictiveBack() {
         return true;
+    }
+
+    // A reader beside this list in a tablet split shows a story from the list's current reading
+    // session. Close it before the list switches sessions (search, next feed), so the list and
+    // the reader never fight over the one shared session. StorySplitView.kt brings back the
+    // placeholder pane.
+    private void closeSplitReader() {
+        Reading reader = Reading.peekSplitReader();
+        if (reader != null && StorySplitView.isInSplit(this)) {
+            reader.finish();
+        }
     }
 
     public void prepareReturnToStory(@Nullable String storyHash) {
