@@ -92,7 +92,12 @@ from utils.story_functions import (
     strip_tags,
 )
 from utils.twitter_fetcher import TwitterFetcher
-from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
+from utils.url_safety import (
+    UnsafeUrlError,
+    safe_http2_get,
+    safe_requests_get,
+    validate_public_url,
+)
 from utils.youtube_fetcher import YoutubeFetcher, YoutubeQuotaError
 
 
@@ -571,11 +576,41 @@ class FetchFeed:
                     raw_feed = safe_requests_get(address, headers=headers, timeout=15)
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
-                if (
-                    raw_feed is None
-                    and address.startswith("http://")
-                    and not self.options.get("archive_page")
-                ):
+                refused_http1 = raw_feed is not None and raw_feed.status_code == 426
+                # A plain http feed address, the kind the https probe below can upgrade. Archive
+                # fetches are left out: their address is a history page, not the feed.
+                plain_http_address = address.startswith("http://") and not self.options.get("archive_page")
+                # The direct retries further down switch to HTTP/2 once the site has answered
+                # over it, or each of them would get the same 426 and hide the real status.
+                direct_get = safe_requests_get
+                retry_address = self.feed.feed_address
+                if refused_http1 and not plain_http_address and raw_feed.url.startswith("https://"):
+                    # Forum #13858: dumbingofage.com answers every HTTP/1.1 request with 426
+                    # Upgrade Required and serves the feed only over HTTP/2, which requests
+                    # can't speak. Retry the same request once over HTTP/2 with the same
+                    # headers, so a 304 or a 200 there is handled like any other fetch. If the
+                    # HTTP/2 retry fails too, the 426 stays and the usual retries run. httpx
+                    # speaks HTTP/2 only over TLS, so this needs the 426 to have come over
+                    # https; a plain http address goes to the https probe below instead,
+                    # since a 426 on plain http is the server asking for TLS.
+                    # utils/feed_fetcher.py
+                    try:
+                        raw_feed = safe_http2_get(address, headers=headers, timeout=15)
+                        direct_get = safe_http2_get
+                        logging.debug(
+                            "   ---> [%-30s] ~FBHTTP/1.1 refused with 426, retry over %s answered %s"
+                            % (
+                                self.feed.log_title[:30],
+                                getattr(raw_feed, "http_version", "HTTP/2"),
+                                raw_feed.status_code,
+                            )
+                        )
+                    except (UnsafeUrlError, requests.RequestException, TimeoutError) as e:
+                        logging.debug(
+                            "   ***> [%-30s] ~FRHTTP/1.1 refused with 426 and HTTP/2 failed: %s"
+                            % (self.feed.log_title[:30], e)
+                        )
+                if (raw_feed is None or refused_http1) and plain_http_address:
                     # Forum #13830: rss.cbc.ca dropped port 80 with no redirect, so every
                     # http:// subscription went quiet. When the http address won't connect at
                     # all, try the same path over https before the fake-header retry. A live
@@ -583,15 +618,18 @@ class FetchFeed:
                     # ProcessFeed.migrate_https_feed_address persists the https address.
                     # Archive fetches are skipped: their address is a history page, not the
                     # feed. The probe is unconditional so a healthy https copy can't answer
-                    # 304 and look dead. utils/feed_fetcher.py
+                    # 304 and look dead. An http address refused with 426 (forum #13858) gets
+                    # the same probe over HTTP/2, since the site already refused HTTP/1.1.
+                    # utils/feed_fetcher.py
                     https_address = "https://" + address[len("http://") :]
                     probe_headers = {
                         name: value
                         for name, value in headers.items()
                         if name not in ("If-None-Match", "If-Modified-Since", "A-IM")
                     }
+                    fetch_https = safe_http2_get if refused_http1 else safe_requests_get
                     try:
-                        https_feed = safe_requests_get(https_address, headers=probe_headers, timeout=15)
+                        https_feed = fetch_https(https_address, headers=probe_headers, timeout=15)
                     except (UnsafeUrlError, requests.RequestException, TimeoutError):
                         # Any failure of the optional probe (connection refused, read timeout,
                         # redirect loop) just means the usual http retries run as before.
@@ -609,6 +647,17 @@ class FetchFeed:
                             "   ---> [%-30s] ~FYhttps answered without a feed, keeping the usual retries: %s"
                             % (self.feed.log_title[:30], https_address)
                         )
+                        if refused_http1:
+                            # The http address refused HTTP/1.1 and the https copy answered over
+                            # HTTP/2, just not with a feed (a 403 for the browser UA, say). The
+                            # http address can only ever answer 426, so the UA retries go to the
+                            # https copy over HTTP/2. Its address is saved only when a retry
+                            # there parses to a feed with stories, see the upgraded_to_https
+                            # gate below.
+                            direct_get = safe_http2_get
+                            retry_address = https_address
+                            address = https_address
+                            upgraded_to_https = True
                 if raw_feed and raw_feed.status_code == 304:
                     logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
@@ -637,8 +686,8 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
                                 % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
                             )
-                            raw_feed = safe_requests_get(
-                                self.feed.feed_address,
+                            raw_feed = direct_get(
+                                retry_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
                             )
@@ -653,8 +702,8 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s"
                                 % (self.feed.log_title[:30], address)
                             )
-                            raw_feed = safe_requests_get(
-                                self.feed.feed_address,
+                            raw_feed = direct_get(
+                                retry_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
                             )
@@ -675,8 +724,8 @@ class FetchFeed:
                             "   ***> [%-30s] ~FRFeed fetch was %s with a browser UA too, trying the plain one"
                             % (self.feed.log_title[:30], raw_feed.status_code)
                         )
-                        raw_feed = safe_requests_get(
-                            self.feed.feed_address,
+                        raw_feed = direct_get(
+                            retry_address,
                             headers=self.feed.fetch_headers(plain=True),
                             timeout=15,
                         )
@@ -699,8 +748,8 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRBot challenge page detected, retrying without browser UA suffix"
                                 % (self.feed.log_title[:30])
                             )
-                            raw_feed = safe_requests_get(
-                                self.feed.feed_address,
+                            raw_feed = direct_get(
+                                retry_address,
                                 headers=self.feed.fetch_headers(plain=True),
                                 timeout=15,
                             )

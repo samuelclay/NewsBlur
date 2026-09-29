@@ -5,6 +5,7 @@ import sys
 import zlib
 from unittest.mock import MagicMock, patch
 
+import httpx
 import redis
 import requests
 from django.conf import settings
@@ -604,6 +605,189 @@ class Test_PublicUrlSafety(TestCase):
             safe_requests_get("http://example.com/start")
 
         mock_request.assert_called_once()
+
+
+class Test_SafeHttp2Get(TestCase):
+    """dumbingofage.com answers every HTTP/1.1 request with 426 Upgrade Required and only
+    serves the feed over HTTP/2 (forum #13858). requests speaks HTTP/1.1 and nothing else,
+    so utils/url_safety.py has an httpx GET over HTTP/2 with the same public address and
+    per redirect checks as safe_requests_get, handed back as a plain requests.Response so
+    the feed fetcher reads it exactly like any other fetch."""
+
+    PUBLIC_DNS = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))]
+    ADDRESS = "https://comic.example.com/feed/"
+
+    def _client_factory(self, handler, client_kwargs):
+        real_client = httpx.Client
+
+        def factory(**kwargs):
+            client_kwargs.append(kwargs)
+            return real_client(transport=httpx.MockTransport(handler), **kwargs)
+
+        return factory
+
+    def _get(self, handler, **kwargs):
+        from utils.url_safety import safe_http2_get
+
+        client_kwargs = []
+        with patch("utils.url_safety.httpx.Client", side_effect=self._client_factory(handler, client_kwargs)):
+            response = safe_http2_get(self.ADDRESS, **kwargs)
+        return response, client_kwargs
+
+    def test_http2_transport_is_available(self):
+        # The other tests hand httpx a mock transport, which skips its h2 import check. In
+        # production a missing h2 package is swallowed as requests.ConnectionError and the
+        # 426 stays, so check the image can really build an HTTP/2 transport.
+        with httpx.HTTPTransport(http2=True):
+            pass
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__returns_a_requests_response(self, mock_getaddrinfo):
+        requests_seen = []
+
+        def handler(request):
+            requests_seen.append(request)
+            return httpx.Response(
+                200,
+                headers={"Content-Type": "application/rss+xml; charset=UTF-8", "ETag": '"f79cc06d"'},
+                content=b"<rss><channel><title>Comic</title></channel></rss>",
+                extensions={"http_version": b"HTTP/2"},
+            )
+
+        response, client_kwargs = self._get(
+            handler, headers={"User-Agent": "NewsBlur Feed Fetcher", "If-None-Match": '"old"'}, timeout=15
+        )
+
+        self.assertIsInstance(response, requests.Response)
+        self.assertEqual(response.status_code, 200)
+        # The protocol httpx really spoke is kept for the fetch log.
+        self.assertEqual(response.http_version, "HTTP/2")
+        self.assertEqual(response.content, b"<rss><channel><title>Comic</title></channel></rss>")
+        # Fully read like a requests response: streaming serves the body instead of raw.
+        self.assertEqual(
+            b"".join(response.iter_content(8)), b"<rss><channel><title>Comic</title></channel></rss>"
+        )
+        self.assertEqual(response.headers["content-type"], "application/rss+xml; charset=UTF-8")
+        self.assertEqual(response.headers["ETag"], '"f79cc06d"')
+        self.assertEqual(response.url, self.ADDRESS)
+        self.assertEqual(response.encoding, "UTF-8")
+        self.assertTrue(client_kwargs[0]["http2"])
+        self.assertFalse(client_kwargs[0]["follow_redirects"])
+        self.assertEqual(client_kwargs[0]["timeout"], 15)
+        self.assertEqual(requests_seen[0].headers["User-Agent"], "NewsBlur Feed Fetcher")
+        self.assertEqual(requests_seen[0].headers["If-None-Match"], '"old"')
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__decodes_gzip_like_requests(self, mock_getaddrinfo):
+        body = b"<rss><channel><title>Comic</title></channel></rss>"
+        compressor = zlib.compressobj(wbits=16 + zlib.MAX_WBITS)
+        gzipped = compressor.compress(body) + compressor.flush()
+
+        def handler(request):
+            return httpx.Response(
+                200,
+                headers={"Content-Type": "application/rss+xml", "Content-Encoding": "gzip"},
+                content=gzipped,
+            )
+
+        response, client_kwargs = self._get(handler)
+
+        self.assertEqual(response.content, body)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__follows_a_public_redirect(self, mock_getaddrinfo):
+        def handler(request):
+            if request.url.path == "/feed/":
+                return httpx.Response(301, headers={"Location": "/comic/feed/"})
+            return httpx.Response(200, headers={"Content-Type": "application/rss+xml"}, content=b"<rss/>")
+
+        response, client_kwargs = self._get(handler)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.url, "https://comic.example.com/comic/feed/")
+        self.assertEqual([hop.status_code for hop in response.history], [301])
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__stops_after_max_redirects(self, mock_getaddrinfo):
+        # A feed that bounces forever is cut off at the same cap as safe_requests_get,
+        # not left to a 15 second timeout per hop inside the Celery worker.
+        from utils.url_safety import MAX_REDIRECTS
+
+        requests_seen = []
+
+        def loop(request):
+            requests_seen.append(request)
+            return httpx.Response(302, headers={"Location": "/feed/?hop=%d" % len(requests_seen)})
+
+        with self.assertRaises(requests.TooManyRedirects):
+            self._get(loop)
+        self.assertEqual(len(requests_seen), MAX_REDIRECTS + 1)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__rejects_private_redirect(self, mock_getaddrinfo):
+        requests_seen = []
+
+        def handler(request):
+            requests_seen.append(request)
+            return httpx.Response(302, headers={"Location": "http://127.0.0.1:9966/secret"})
+
+        with self.assertRaises(UnsafeUrlError):
+            self._get(handler)
+
+        self.assertEqual(len(requests_seen), 1)
+
+    @patch(
+        "utils.url_safety.socket.getaddrinfo",
+        return_value=[(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("10.0.0.5", 443))],
+    )
+    def test_safe_http2_get__rejects_a_private_address_before_connecting(self, mock_getaddrinfo):
+        def handler(request):
+            raise AssertionError("a private address was requested")
+
+        with self.assertRaises(UnsafeUrlError):
+            self._get(handler)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__network_errors_are_requests_errors(self, mock_getaddrinfo):
+        # utils/feed_fetcher.py catches requests.RequestException around every fetch, so an
+        # httpx failure has to look like one or it escapes the fallback.
+        def refuse(request):
+            raise httpx.ConnectError("connection refused", request=request)
+
+        def stall(request):
+            raise httpx.ReadTimeout("read timed out", request=request)
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(refuse)
+        with self.assertRaises(requests.Timeout):
+            self._get(stall)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__missing_h2_and_bad_urls_are_requests_errors(self, mock_getaddrinfo):
+        # Neither is an httpx.HTTPError, and both must still reach the fetcher as a
+        # requests.RequestException so its usual retries run.
+        from utils.url_safety import safe_http2_get
+
+        missing_h2 = ImportError("Using http2=True, but the 'h2' package is not installed.")
+        with patch("utils.url_safety.httpx.Client", side_effect=missing_h2):
+            with self.assertRaises(requests.ConnectionError):
+                safe_http2_get(self.ADDRESS)
+
+        def bad_url(request):
+            raise httpx.InvalidURL("Invalid non-printable ASCII character in URL")
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(bad_url)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__non_ascii_validator_is_a_requests_error(self, mock_getaddrinfo):
+        # httpx encodes header values as ASCII where requests uses latin-1, so an odd ETag a
+        # feed once sent must fail as a requests error, not escape the fetcher.
+        def handler(request):
+            raise AssertionError("a header httpx can't encode was sent")
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(handler, headers={"If-None-Match": 'W/"café"'})
 
 
 class Test_ProcessFeedQueries(TestCase):
@@ -7061,6 +7245,316 @@ class Test_PlainUserAgentRetryOnBlockedFetch(TestCase):
         result, fpf, mock_get = self._fetch(self._blocks_browser_user_agents(blocked_status=404))
 
         self.assertEqual(len(self.user_agents), 2)
+
+
+class Test_Http2RetryOnUpgradeRequired(TestCase):
+    """dumbingofage.com started answering every HTTP/1.1 request with 426 Upgrade Required
+    and serves the feed only over HTTP/2 (forum #13858). The fetcher's requests client
+    speaks HTTP/1.1 only, so ~990 subscribers across two feeds saw nothing but HTTP errors.
+    FetchFeed.fetch now retries a 426 once over HTTP/2 with the same headers, so an HTTP/2
+    304 or 200 is handled like any other fetch. utils/feed_fetcher.py"""
+
+    ADDRESS = "https://www.comic.example.com/feed/"
+    HTTP_ADDRESS = "http://www.comic.example.com/feed/"
+    RSS = (
+        b'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Comic</title>'
+        b"<link>https://www.comic.example.com/</link>"
+        b"<item><title>Only over HTTP/2</title><link>https://www.comic.example.com/comic/1/</link>"
+        b"<guid>https://www.comic.example.com/?p=1</guid></item></channel></rss>"
+    )
+    UPGRADE_REQUIRED = (
+        b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>426 Upgrade Required'
+        b"</title></head><body><h1>Upgrade Required</h1><p>The requested resource can only be "
+        b"retrieved using SSL.</p></body></html>"
+    )
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address=self.ADDRESS, feed_link="https://www.comic.example.com/", feed_title="Comic"
+        )
+        self.feed.num_subscribers = 495
+        self.feed.save()
+
+    def _response(self, status_code, content, content_type):
+        response = requests.Response()
+        response.status_code = status_code
+        response._content = content
+        response.encoding = "utf-8"
+        response.url = self.ADDRESS
+        response.headers["Content-Type"] = content_type
+        return response
+
+    def _upgrade_required(self, url, headers=None, **kwargs):
+        response = self._response(426, self.UPGRADE_REQUIRED, "text/html; charset=iso-8859-1")
+        response.url = url
+        return response
+
+    def _fetch(self, http1, http2):
+        from utils.feed_fetcher import FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http1) as mock_http1, patch(
+            "utils.feed_fetcher.safe_http2_get", side_effect=http2
+        ) as mock_http2, patch(
+            "utils.feed_fetcher.FetchFeed.fetch_scrapingbee", side_effect=AssertionError("paid proxy used")
+        ):
+            result, fpf = fetcher.fetch()
+        return result, fpf, mock_http1, mock_http2
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_site_that_refuses_http1_is_fetched_over_http2(self, mock_skip, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            lambda url, **kwargs: self._response(200, self.RSS, "application/rss+xml; charset=UTF-8"),
+        )
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(len(fpf.entries), 1)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        # One HTTP/1.1 request, one HTTP/2 retry of the same address with the same headers,
+        # and none of the fake header retries that only make sense for a refused UA.
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual(mock_http2.call_count, 1)
+        self.assertEqual(mock_http2.call_args.args[0], self.ADDRESS)
+        self.assertEqual(mock_http2.call_args.kwargs["headers"], mock_http1.call_args.kwargs["headers"])
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_an_unchanged_feed_over_http2_is_not_modified(self, mock_skip, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_SAME
+
+        # Validators are only sent for a feed that has fetched cleanly before.
+        self.feed.etag = '"f79cc06dfefde930693fd77636f13d57"'
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        # fetch() runs in a @timelimit thread with its own DB connection, so a real save
+        # there can't see this test's uncommitted feed row. Stub the save and the history.
+        with patch.object(
+            Feed, "save", autospec=True, side_effect=lambda feed, *args, **kwargs: feed
+        ), patch.object(Feed, "save_feed_history") as mock_history:
+            result, fpf, mock_http1, mock_http2 = self._fetch(
+                self._upgrade_required, lambda url, **kwargs: self._response(304, b"", "application/rss+xml")
+            )
+
+        self.assertEqual(result, FEED_SAME)
+        mock_history.assert_called_once_with(304, "Not modified")
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["If-None-Match"], self.feed.etag)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_failed_http2_retry_keeps_the_usual_error_path(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP
+
+        def refuse(url, **kwargs):
+            raise requests.ConnectionError("HTTP/2 connection refused")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(self._upgrade_required, refuse)
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertEqual(mock_http2.call_count, 1)
+        # The 426 is kept, so the fake header retry still runs as it did before.
+        self.assertEqual(mock_http1.call_count, 2)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_other_errors_never_try_http2(self, mock_parse, mock_skip, mock_random, mock_validate):
+        def missing(url, **kwargs):
+            return self._response(404, b"<html>Not Found</html>", "text/html")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            missing, AssertionError("HTTP/2 is only for 426 Upgrade Required")
+        )
+
+        self.assertEqual(mock_http2.call_count, 0)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_retries_after_an_http2_answer_stay_on_http2(self, mock_skip, mock_random, mock_validate):
+        # A site that refuses HTTP/1.1 and also refuses browser UAs (forum #13835) needs the
+        # fake and plain UA retries over HTTP/2 too, or each one gets the 426 again.
+        from utils.feed_fetcher import FEED_OK
+
+        def refuses_browser_user_agents(url, headers=None, **kwargs):
+            if "Mozilla/" in (headers or {}).get("User-Agent", ""):
+                return self._response(403, b"<html>Forbidden</html>", "text/html")
+            return self._response(200, self.RSS, "application/rss+xml; charset=UTF-8")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(self._upgrade_required, refuses_browser_user_agents)
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertEqual(mock_http1.call_count, 1)
+        # default UA, fake UA, then the plain UA that worked, all over HTTP/2
+        self.assertEqual(mock_http2.call_count, 3)
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.plain_user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_426_over_plain_http_gets_no_http2_retry(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        # An archive fetch skips the https probe, and httpx can't speak HTTP/2 without TLS,
+        # so an HTTP/2 retry of a 426 served over plain http would just repeat HTTP/1.1.
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+        options = {
+            "verbose": False,
+            "force": True,
+            "archive_page": "rfc5005",
+            "archive_page_link": self.HTTP_ADDRESS + "?page=2",
+        }
+        fetcher = FetchFeed(self.feed.pk, options)
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=self._upgrade_required), patch(
+            "utils.feed_fetcher.safe_http2_get", side_effect=AssertionError("HTTP/2 needs TLS")
+        ) as mock_http2:
+            fetcher.fetch()
+
+        self.assertEqual(mock_http2.call_count, 0)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_address_refused_with_426_is_fetched_from_https(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        # httpx speaks HTTP/2 only over TLS, so retrying the http address itself would just
+        # repeat HTTP/1.1. The https copy is probed over HTTP/2 without validators, the way
+        # the dead port 80 probe works, and tagged for migration once it parses to a feed.
+        from utils.feed_fetcher import FEED_OK
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.etag = '"f79cc06dfefde930693fd77636f13d57"'
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            lambda url, **kwargs: self._response(200, self.RSS, "application/rss+xml; charset=UTF-8"),
+        )
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.ADDRESS)
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual(mock_http1.call_args.args[0], self.HTTP_ADDRESS)
+        self.assertEqual(mock_http2.call_count, 1)
+        self.assertEqual(mock_http2.call_args.args[0], self.ADDRESS)
+        self.assertNotIn("If-None-Match", mock_http2.call_args.kwargs["headers"])
+
+    def _plain_http_always_426(self, https_handler):
+        """HTTP/2 needs TLS, so the plain http address answers 426 whatever the transport;
+        only the https copy is served, by https_handler."""
+
+        def get(url, headers=None, **kwargs):
+            if url.startswith("http://"):
+                return self._upgrade_required(url)
+            return https_handler(url, headers=headers or {})
+
+        return get
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_426_whose_https_copy_is_not_a_feed_is_not_adopted(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            self._plain_http_always_426(
+                lambda url, headers: self._response(200, b"<html><body>Parked</body></html>", "text/html")
+            ),
+        )
+
+        # A landing page parses to no stories, so the https address is never saved.
+        self.assertFalse(fpf and fpf.entries)
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        # The 426 is kept, so the fake header retry still runs, against the https copy over
+        # HTTP/2 since the http address can only answer 426.
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual([call.args[0] for call in mock_http2.call_args_list], [self.ADDRESS, self.ADDRESS])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_426_that_refuses_browser_user_agents_gets_the_http2_ua_retries(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        # The https probe is refused for the browser UA, so it is not adopted, but the site
+        # did answer over HTTP/2: the fake and plain UA retries go to the https copy there,
+        # and the plain UA's feed earns the https address.
+        from utils.feed_fetcher import FEED_OK
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        def refuses_browser_user_agents(url, headers):
+            if "Mozilla/" in headers.get("User-Agent", ""):
+                return self._response(403, b"<html>Forbidden</html>", "text/html")
+            return self._response(200, self.RSS, "application/rss+xml; charset=UTF-8")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required, self._plain_http_always_426(refuses_browser_user_agents)
+        )
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.ADDRESS)
+        self.assertEqual(mock_http1.call_count, 1)
+        # https probe, then the fake and plain UA retries, all against the https copy
+        self.assertEqual(
+            [call.args[0] for call in mock_http2.call_args_list], [self.ADDRESS, self.ADDRESS, self.ADDRESS]
+        )
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.plain_user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_plain_http_426_whose_https_copy_refuses_everyone_is_not_adopted(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            self._plain_http_always_426(
+                lambda url, headers: self._response(403, b"<html>Forbidden</html>", "text/html")
+            ),
+        )
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertFalse(fpf)
+        self.assertEqual(
+            [call.args[0] for call in mock_http2.call_args_list], [self.ADDRESS, self.ADDRESS, self.ADDRESS]
+        )
 
 
 @override_settings(SCRAPINGBEE_API_KEY="test-scrapingbee-key")
