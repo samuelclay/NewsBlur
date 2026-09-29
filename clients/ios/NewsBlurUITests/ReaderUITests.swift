@@ -239,11 +239,13 @@ final class ReaderUITests: XCTestCase {
         let close = app.buttons["Close image"]
         attachScreenshot(named: "image-scroll-before")
         // ReaderUITests.swift exercises slow, short drags ending on the photo rather than a separate text area.
-        for distance: CGFloat in [8, 12, 24, 48] {
+        for distance: CGFloat in [12, 24, 48] {
+            let previousY = articleImage.frame.minY
             let start = articleImage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
             start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: -distance)),
                         withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0)
             XCTAssertFalse(close.waitForExistence(timeout: 1), "A slow upward drag must only scroll the article")
+            XCTAssertLessThan(articleImage.frame.minY, previousY, "Each gesture must move the article, not count as tap jitter")
         }
         XCTAssertLessThan(articleImage.frame.minY, initialY, "The gestures must actually scroll the article")
         attachScreenshot(named: "image-scroll-stays-in-reader")

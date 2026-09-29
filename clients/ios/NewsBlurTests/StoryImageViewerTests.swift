@@ -4,6 +4,64 @@ import WebKit
 @testable import NewsBlur
 
 final class Test_StoryImageViewer: XCTestCase {
+    @MainActor func test_nativeImageHitTestingMatchesInsetWebViewBeforeAndAfterScrolling() async throws {
+        let web = WKWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
+        web.scrollView.contentInsetAdjustmentBehavior = .never
+        web.scrollView.contentInset = UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        let root = UIViewController()
+        window.rootViewController = root
+        window.makeKeyAndVisible()
+        root.view.addSubview(web)
+        defer {
+            web.stopLoading()
+            window.isHidden = true
+            previousWindow?.makeKey()
+        }
+        let scriptURL = try XCTUnwrap(Bundle.main.url(forResource: "storyDetailView", withExtension: "js"))
+        let script = try String(contentsOf: scriptURL, encoding: .utf8)
+        let start = try XCTUnwrap(script.range(of: "var newsblur_image_sequence"))
+        let end = try XCTUnwrap(script.range(of: "document.addEventListener('click'", range: start.lowerBound..<script.endIndex))
+        let hitTestScript = String(script[start.lowerBound..<end.lowerBound])
+        web.loadHTMLString("""
+        <html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="newsblur-story-load" content="1"></head>
+        <body style="margin:0"><div style="height:200px"></div>
+        <img id="photo" data-newsblur-image-token="1" width="120" height="80" style="display:block;margin-left:40px;background:orange">
+        <div style="height:2000px"></div><script>
+        \(hitTestScript)
+        function newsblurOpenImage(image) { return image && image.id === 'photo'; }
+        </script></body></html>
+        """, baseURL: nil)
+        var ready = false
+        for _ in 0..<200 {
+            ready = (try? await web.evaluateJavaScript("document.readyState === 'complete' && typeof newsblurOpenImageAt === 'function'")) as? Bool == true
+            if ready { break }
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+        XCTAssertTrue(ready)
+        for offsetY: CGFloat in [-100, 80] {
+            web.scrollView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+            try await Task.sleep(nanoseconds: 100_000_000)
+            // StoryImageViewerTests.swift uses the known CSS fixture position through UIKit's content coordinates.
+            let point = web.scrollView.convert(CGPoint(x: 100, y: 240), to: web)
+            let offset = web.scrollView.contentOffset
+            let hit = try await web.evaluateJavaScript("newsblurOpenImageAt(\(point.x), \(point.y), \(offset.x), \(offset.y), \(web.bounds.width))") as? Bool
+            XCTAssertEqual(hit, true, "The stationary native tap must hit the small photo at native offset \(offsetY)")
+            let result = try await web.evaluateJavaScript("newsblurImageRect('1', '1')")
+            let (rect, viewport) = try XCTUnwrap(StoryImageSource.geometry(result))
+            let nativeRect = StoryImageSource.viewRect(rect, viewportWidth: viewport, in: web)
+            let expectedOrigin = web.scrollView.convert(CGPoint(x: 40, y: 200), to: web)
+            XCTAssertEqual(nativeRect.origin.x, expectedOrigin.x, accuracy: 0.5)
+            XCTAssertEqual(nativeRect.origin.y, expectedOrigin.y, accuracy: 0.5)
+            XCTAssertEqual(nativeRect.width, 120, accuracy: 0.5)
+            XCTAssertEqual(nativeRect.height, 80, accuracy: 0.5)
+            XCTAssertTrue(nativeRect.contains(point), "Snapshot and return geometry must contain the native image tap")
+        }
+    }
+
     @MainActor func test_scrollMomentumDoesNotOpenImageFromTapCallback() {
         let page = ImageScrollTapPage()
         page.probe.trackedScroll.simulatedDecelerating = true
@@ -16,6 +74,21 @@ final class Test_StoryImageViewer: XCTestCase {
         let page = ImageScrollTapPage()
         page.perform(NSSelectorFromString("tap:"), with: ImageScrollTapGesture())
         XCTAssertTrue(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") })
+    }
+
+    @MainActor func test_imageTapDoesNotAlsoToggleReaderChrome() {
+        let page = ImageScrollTapPage()
+        page.probe.imageHitResult = true
+        page.perform(NSSelectorFromString("tap:"), with: ImageScrollTapGesture())
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("linkAt") },
+                       "Reader chrome must not shift the scroll inset while the photo snapshot is pending")
+    }
+
+    @MainActor func test_nonImageTapStillChecksReaderChrome() {
+        let page = ImageScrollTapPage()
+        page.probe.imageHitResult = false
+        page.perform(NSSelectorFromString("tap:"), with: ImageScrollTapGesture())
+        XCTAssertTrue(page.probe.scripts.contains { $0.contains("linkAt") })
     }
 
     @MainActor func test_touchStoppingMomentumDoesNotBecomeAnImageTap() {
@@ -244,9 +317,13 @@ final class Test_StoryImageViewer: XCTestCase {
 @MainActor private final class ImageScrollTapWebView: WKWebView {
     let trackedScroll = ImageScrollTapScrollView()
     var scripts: [String] = []
+    var imageHitResult: Bool?
     override var scrollView: UIScrollView { trackedScroll }
     override func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)? = nil) {
         scripts.append(javaScriptString)
+        if javaScriptString.hasPrefix("newsblurOpenImageAt"), let imageHitResult {
+            completionHandler?(imageHitResult, nil)
+        }
     }
 }
 

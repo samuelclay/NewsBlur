@@ -54,6 +54,13 @@ struct StoryImageSource {
         return (CGRect(x: x, y: y, width: width, height: height), CGFloat(viewport))
     }
 
+    @MainActor static func viewRect(_ rect: CGRect, viewportWidth: CGFloat, in webView: WKWebView) -> CGRect {
+        let scale = webView.bounds.width / viewportWidth
+        let offset = webView.scrollView.contentOffset
+        return rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+            .offsetBy(dx: -offset.x, dy: -offset.y)
+    }
+
     static func fittedSize(_ size: CGSize, in bounds: CGSize) -> CGSize {
         guard size.width > 0, size.height > 0 else { return .zero }
         let scale = min(1, bounds.width / size.width, bounds.height / size.height)
@@ -142,8 +149,7 @@ extension StoryDetailViewController {
               presenter.presentedViewController == nil, !openingImage else { return }
         openingImage = true
         let scrollOffset = webView.scrollView.contentOffset
-        let scale = webView.bounds.width / source.viewportWidth
-        let localRect = source.rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+        let localRect = StoryImageSource.viewRect(source.rect, viewportWidth: source.viewportWidth, in: webView)
         let sourceRect = webView.convert(localRect, to: window)
         let configuration = WKSnapshotConfiguration()
         configuration.rect = localRect.intersection(webView.bounds)
@@ -167,8 +173,7 @@ extension StoryDetailViewController {
                 self.webView.evaluateJavaScript("newsblurImageRect.apply(null, \(arguments))") { [weak self] result, _ in
                     guard let self, self.isCurrentStoryImageLoad(source.loadID),
                           let (rect, viewport) = StoryImageSource.geometry(result) else { completion(nil); return }
-                    let scale = self.webView.bounds.width / viewport
-                    let local = rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+                    let local = StoryImageSource.viewRect(rect, viewportWidth: viewport, in: self.webView)
                     completion(local.intersects(self.webView.bounds) ? self.webView.convert(local, to: window) : nil)
                 }
             }
