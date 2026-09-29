@@ -29,7 +29,9 @@ class StorySplitViewTest {
         return (0 until activities.length)
             .mapNotNull { index -> activities.item(index) as? Element }
             .map { activity -> activity.getAttribute("android:name") }
-            .map { name -> Class.forName("com.newsblur$name", false, javaClass.classLoader) }
+            // StorySplitViewTest.kt resolves manifest shorthand (".activity.Foo") against the app package.
+            .map { name -> if (name.startsWith(".")) "com.newsblur$name" else name }
+            .map { name -> Class.forName(name, false, javaClass.classLoader) }
     }
 
     private fun concreteSubclassesOf(base: Class<*>): Set<Class<*>> =
@@ -72,21 +74,32 @@ class StorySplitViewTest {
     }
 
     @Test
-    fun storyListLaunches_handOffToMainOnlyFromEmbeddedScreensAboveALiveMain() {
-        // A story list, reader, or Discover in a split with Main beneath it restarts the split from Main.
-        assertTrue(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsAlive = true) { true })
+    fun splitMembership_trustsSplitInfoOverWindowingMode() {
+        // System split screen beside another app: multi-window and embedded, but no NewsBlur split.
+        assertFalse(StorySplitView.resolveInSplit(reportedInSplit = false) { true })
+        assertTrue(StorySplitView.resolveInSplit(reportedInSplit = true) { false })
+        // Before splitInfoList first reports, the windowing check decides.
+        assertTrue(StorySplitView.resolveInSplit(reportedInSplit = null) { true })
+        assertFalse(StorySplitView.resolveInSplit(reportedInSplit = null) { false })
+    }
+
+    @Test
+    fun storyListLaunches_handOffToMainOnlyFromEmbeddedScreensAboveMain() {
+        // A story list, reader, or Discover in a split with Main beneath it restarts the split from Main,
+        // including after process death when Main is in the task but not yet recreated.
+        assertTrue(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsInTask = true) { true })
         // Phones have no rules and never ask the embedding controller.
         assertFalse(
-            StorySplitView.shouldHandOffToMain(rulesInstalled = false, isMain = false, mainIsAlive = true) {
+            StorySplitView.shouldHandOffToMain(rulesInstalled = false, isMain = false, mainIsInTask = true) {
                 error("embedding checked on a phone")
             },
         )
         // Main opening a list starts it directly.
-        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = true, mainIsAlive = true) { false })
+        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = true, mainIsInTask = true) { false })
         // A task started from the widget has no Main beneath the split.
-        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsAlive = false) { true })
+        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsInTask = false) { true })
         // A full screen activity that is not embedded launches directly.
-        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsAlive = true) { false })
+        assertFalse(StorySplitView.shouldHandOffToMain(rulesInstalled = true, isMain = false, mainIsInTask = true) { false })
     }
 
     @Test

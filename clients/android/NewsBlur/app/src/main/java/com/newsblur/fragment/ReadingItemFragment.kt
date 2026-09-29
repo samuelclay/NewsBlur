@@ -48,6 +48,7 @@ import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.image.StoryImageViewerHost
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.StoryApi
@@ -127,6 +128,9 @@ class ReadingItemFragment :
     lateinit var imageViewerClient: okhttp3.OkHttpClient
 
     private var storyImageViewer: com.newsblur.image.StoryImageViewer? = null
+
+    // When a photo started opening on StoryImageViewerHost.kt, which holds off a second tap until the host shows it.
+    private var storyImageHostLaunchedAt = 0L
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
@@ -349,6 +353,11 @@ class ReadingItemFragment :
     }
 
     override fun onDestroyView() {
+        // A photo host that never started must not keep this fragment, its WebView, or the preview alive.
+        if (storyImageHostLaunchedAt != 0L) {
+            StoryImageViewerHost.cancelPending()
+            storyImageHostLaunchedAt = 0L
+        }
         cancelPendingConfigurationChangeRestore()
         invalidateReaderAnchorCapture()
         destroyReadingWebviewForBackground()
@@ -2134,6 +2143,7 @@ class ReadingItemFragment :
     fun openStoryImage(webview: NewsblurWebview, json: String) {
         val host = activity ?: return
         if (view == null || readingWebview !== webview || !isResumed || storyImageViewer != null || host.isFinishing) return
+        if (android.os.SystemClock.uptimeMillis() - storyImageHostLaunchedAt < STORY_IMAGE_HOST_LAUNCH_GUARD_MS) return
         val visible = android.graphics.Rect()
         if (!webview.getGlobalVisibleRect(visible)) return
         val source = com.newsblur.image.StoryImageSource.parse(json) ?: return
@@ -2181,7 +2191,9 @@ class ReadingItemFragment :
         // In a tablet split a Dialog is clipped to the reader pane, so the photo opens on
         // StoryImageViewerHost.kt, which always fills the window (StorySplitView.kt).
         if (StorySplitView.isInSplit(host)) {
-            com.newsblur.image.StoryImageViewerHost.show(host) { viewerHost ->
+            storyImageHostLaunchedAt = android.os.SystemClock.uptimeMillis()
+            StoryImageViewerHost.show(host) { viewerHost ->
+                storyImageHostLaunchedAt = 0L
                 createViewer(viewerHost) {
                     storyImageViewer = null
                     viewerHost.onViewerClosed()
@@ -2285,6 +2297,9 @@ class ReadingItemFragment :
     }
 
     companion object {
+        // How long ReadingItemFragment.kt ignores photo taps while StoryImageViewerHost.kt starts.
+        private const val STORY_IMAGE_HOST_LAUNCH_GUARD_MS = 2_000L
+
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
         private const val BUNDLE_SCROLL_POS_PX = "scrollStatePx"
         private const val BUNDLE_SCROLL_POS_PREFER_ABSOLUTE = "scrollStatePreferAbsolute"

@@ -1,6 +1,7 @@
 package com.newsblur.util
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
@@ -62,8 +63,8 @@ import com.newsblur.activity.SubscriptionActivity
 import com.newsblur.activity.WidelyReadStoriesItemsList
 import com.newsblur.activity.WidelyReadStoriesReading
 import com.newsblur.image.StoryImageViewerHost
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.WeakHashMap
 
 /**
  * Puts the story list and the reader side by side on tablets and unfolded foldables.
@@ -159,16 +160,33 @@ object StorySplitView {
 
     internal fun shouldInstallRules(smallestScreenWidthDp: Int): Boolean = smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
 
+    // Split membership for each story list and reader, as last reported by splitInfoList (trackSplit).
+    private val reportedSplitMembership = WeakHashMap<Activity, Boolean>()
+
     /**
      * True when this activity is currently showing in one pane of a split. Reading.kt and
      * ItemsList.java use this to turn off the full screen slide and swipe back animations,
      * which assume the list sits underneath the reader.
      */
     @JvmStatic
-    fun isInSplit(activity: Activity): Boolean =
-        isSplitPane(activity.isInMultiWindowMode) {
-            ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
+    fun isInSplit(activity: Activity): Boolean {
+        // Without rules (every phone) nothing is ever embedded, so skip the embedding controller.
+        if (!rulesInstalled) return false
+        return resolveInSplit(reportedSplitMembership[activity]) {
+            isSplitPane(activity.isInMultiWindowMode) {
+                ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
+            }
         }
+    }
+
+    // splitInfoList is the only reliable answer: in system split screen beside another app, or a
+    // desktop window, every activity is in multi-window mode, including story lists stacked in
+    // expanded containers with no NewsBlur split showing. The windowing check only covers the
+    // moment before splitInfoList first reports, such as Reading.kt's onCreate.
+    internal fun resolveInSplit(
+        reportedInSplit: Boolean?,
+        beforeFirstReport: () -> Boolean,
+    ): Boolean = reportedInSplit ?: beforeFirstReport()
 
     // Activities in an always expanded container (FULL_WINDOW_ACTIVITIES, and anything they
     // open, like Daily Briefing's reader) are embedded too, but fill the window. Only split
@@ -180,27 +198,33 @@ object StorySplitView {
     ): Boolean = isInMultiWindowMode && isEmbedded()
 
     /**
-     * ItemsList.java and Reading.kt are declared with Theme.Translucent in AndroidManifest.xml so
-     * their phone transitions can show the screen underneath. In a split that translucency lets
-     * Main.java count as visible behind the panes, so Android resumes it (on rotation, say), and
-     * Main.java's onResume resets the reading session the story list and reader share, which
-     * empties the list. This makes the window opaque once it lands in a split and keeps it opaque
-     * for the rest of its life. Turning translucent again when a foldable closes would reopen the
-     * same window while Main relaunches, and the only cost of staying opaque is that this one
-     * activity's phone swipe back shows no screen behind it until it is reopened.
+     * Follows a story list or reader in and out of splits, recording its membership for isInSplit.
+     *
+     * ItemsList.java and Reading.kt are also declared with Theme.Translucent in
+     * AndroidManifest.xml so their phone transitions can show the screen underneath. In a split
+     * that translucency lets Main.java count as visible behind the panes, so Android resumes it
+     * (on rotation, say), and Main.java's onResume resets the reading session the story list and
+     * reader share, which empties the list. So the window turns opaque once it lands in a split
+     * and stays opaque for the rest of its life. Turning translucent again when a foldable closes
+     * would reopen the same window while Main relaunches, and the only cost of staying opaque is
+     * that this one activity's phone swipe back shows no screen behind it until it is reopened.
      */
     @JvmStatic
-    fun goOpaqueInSplit(activity: ComponentActivity) {
+    fun trackSplit(activity: ComponentActivity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
         // Without rules (every phone) nothing can land in a split, so skip the subscription.
         if (!rulesInstalled) return
         var isOpaque = false
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                if (isOpaque) return@repeatOnLifecycle
-                SplitController.getInstance(activity).splitInfoList(activity).first { splits -> splits.isNotEmpty() }
-                isOpaque = true
-                activity.setTranslucent(false)
+                SplitController.getInstance(activity).splitInfoList(activity).collect { splits ->
+                    val inSplit = splits.isNotEmpty()
+                    reportedSplitMembership[activity] = inSplit
+                    if (inSplit && !isOpaque) {
+                        isOpaque = true
+                        activity.setTranslucent(false)
+                    }
+                }
             }
         }
     }
@@ -222,7 +246,7 @@ object StorySplitView {
         val activity = if (rulesInstalled) findActivity(context) else null
         val handOff =
             activity != null &&
-                shouldHandOffToMain(rulesInstalled, isMain = activity is Main, mainIsAlive = Main.isAlive()) {
+                shouldHandOffToMain(rulesInstalled, isMain = activity is Main, mainIsInTask = isMainInTask(activity)) {
                     ActivityEmbeddingController.getInstance(activity).isActivityEmbedded(activity)
                 }
         if (!handOff) {
@@ -236,17 +260,29 @@ object StorySplitView {
         activity.startActivity(viaMain)
     }
 
-    // Hand off only when the launch comes from an embedded screen and a live Main.java sits
-    // beneath it. Without rules (every phone) nothing is ever embedded, so the embedding
-    // controller is never asked. A task started from the widget has no Main.java under the split,
-    // and launching Main.java from an embedded pane would put the feed list inside that pane, so
+    // Hand off only when the launch comes from an embedded screen with Main.java beneath it in
+    // the task. Without rules (every phone) nothing is ever embedded, so the embedding controller
+    // is never asked. A task started from the widget has no Main.java under the split, and
+    // launching Main.java from an embedded pane would put the feed list inside that pane, so
     // those launches go direct.
     internal fun shouldHandOffToMain(
         rulesInstalled: Boolean,
         isMain: Boolean,
-        mainIsAlive: Boolean,
+        mainIsInTask: Boolean,
         isEmbedded: () -> Boolean,
-    ): Boolean = rulesInstalled && !isMain && mainIsAlive && isEmbedded()
+    ): Boolean = rulesInstalled && !isMain && mainIsInTask && isEmbedded()
+
+    // After Android kills the process and the split is restored from Recents, only the visible
+    // panes are recreated, so Main.java can be the task's root with no live instance. The task
+    // record knows either way.
+    private fun isMainInTask(activity: Activity): Boolean {
+        if (Main.isAlive()) return true
+        val activityManager = activity.getSystemService(ActivityManager::class.java) ?: return false
+        return activityManager.appTasks.any { task ->
+            val info = runCatching { task.taskInfo }.getOrNull()
+            info != null && info.taskId == activity.taskId && info.baseActivity?.className == Main::class.java.name
+        }
+    }
 
     /**
      * Main.java calls this from onCreate (first creation only, never a restore after process
