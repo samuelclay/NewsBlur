@@ -1,5 +1,6 @@
 package com.newsblur.util
 
+import androidx.window.embedding.SplitAttributes
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.Reading
 import org.junit.Assert.assertEquals
@@ -71,6 +72,14 @@ class StorySplitViewTest {
         assertFalse(StorySplitView.isSplitPane(isInMultiWindowMode = true) { false })
         // Full screen activities never ask the embedding controller at all.
         assertFalse(StorySplitView.isSplitPane(isInMultiWindowMode = false) { error("embedding checked for a full screen activity") })
+    }
+
+    @Test
+    fun splitMembership_countsOnlySideBySidePanes() {
+        assertTrue(StorySplitView.isSideBySide(listOf(SplitAttributes.SplitType.ratio(StorySplitView.STORY_LIST_SPLIT_RATIO))))
+        // A folded or narrowed window can keep the split with its containers stacked.
+        assertFalse(StorySplitView.isSideBySide(listOf(SplitAttributes.SplitType.SPLIT_TYPE_EXPAND)))
+        assertFalse(StorySplitView.isSideBySide(emptyList()))
     }
 
     @Test
