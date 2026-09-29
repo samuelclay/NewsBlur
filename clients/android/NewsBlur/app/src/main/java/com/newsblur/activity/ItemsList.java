@@ -89,10 +89,15 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
+
 @AndroidEntryPoint
 public abstract class ItemsList extends NbActivity implements ReadingActionListener {
 
-    private static WeakReference<ItemsList> readingLaunchParentRef = new WeakReference<>(null);
+    // The story list each task's reader belongs to, keyed by task so two NewsBlur windows (desktop
+    // mode, system split screen) each keep their own.
+    private static final Map<Integer, WeakReference<ItemsList>> readingLaunchParents = new HashMap<>();
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -352,7 +357,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             // back through peekReadingLaunchParent, so claim that role and restore its highlight.
             // ReadingPlaceholder.kt also finds this list there to hand it Back. The first resume can
             // come before the split is reported, so a root list claims it without waiting for that.
-            readingLaunchParentRef = new WeakReference<>(this);
+            claimReadingLaunchParent();
             if (restoredSplitReadingStoryHash != null) {
                 prepareReturnToStory(restoredSplitReadingStoryHash);
                 restoredSplitReadingStoryHash = null;
@@ -1217,13 +1222,18 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     @Nullable
-    public static ItemsList peekReadingLaunchParent() {
-        return readingLaunchParentRef.get();
+    public static ItemsList peekReadingLaunchParent(int taskId) {
+        WeakReference<ItemsList> parent = readingLaunchParents.get(taskId);
+        return parent != null ? parent.get() : null;
+    }
+
+    private void claimReadingLaunchParent() {
+        readingLaunchParents.put(getTaskId(), new WeakReference<>(this));
     }
 
     private void launchReadingActivity(FeedSet feedSet, String storyHash) {
         preparedReturnStoryHash = null;
-        readingLaunchParentRef = new WeakReference<>(this);
+        claimReadingLaunchParent();
         UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch, readerToolbarHidden);
     }
 
@@ -1554,9 +1564,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             interactiveSwipeSurface.animate().cancel();
         }
         hideInteractiveSwipeUnderlay();
-        if (readingLaunchParentRef.get() == this) {
-            readingLaunchParentRef.clear();
-        }
+        // A finishing activity can already be out of its task, so match by list rather than task id.
+        readingLaunchParents.values().removeIf(parent -> parent.get() == null || parent.get() == this);
         if (!isChangingConfigurations()) {
             SessionDataSourceRegistry.remove(sessionDataKey);
         }
