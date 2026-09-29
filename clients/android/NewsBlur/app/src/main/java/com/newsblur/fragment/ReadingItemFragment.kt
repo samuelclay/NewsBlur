@@ -132,6 +132,9 @@ class ReadingItemFragment :
     // When a photo started opening on StoryImageViewerHost.kt, which holds off a second tap until the host shows it.
     private var storyImageHostLaunchedAt = 0L
 
+    // The StoryImageViewerHost.kt hand-off this reader is waiting on, if any.
+    private var storyImageHostToken: String? = null
+
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
@@ -354,10 +357,9 @@ class ReadingItemFragment :
 
     override fun onDestroyView() {
         // A photo host that never started must not keep this fragment, its WebView, or the preview alive.
-        if (storyImageHostLaunchedAt != 0L) {
-            StoryImageViewerHost.cancelPending()
-            storyImageHostLaunchedAt = 0L
-        }
+        storyImageHostToken?.let(StoryImageViewerHost::cancelPending)
+        storyImageHostToken = null
+        storyImageHostLaunchedAt = 0L
         cancelPendingConfigurationChangeRestore()
         invalidateReaderAnchorCapture()
         destroyReadingWebviewForBackground()
@@ -2192,16 +2194,18 @@ class ReadingItemFragment :
         // StoryImageViewerHost.kt, which always fills the window (StorySplitView.kt).
         if (StorySplitView.isInSplit(host)) {
             storyImageHostLaunchedAt = android.os.SystemClock.uptimeMillis()
-            StoryImageViewerHost.show(host) { viewerHost ->
-                storyImageHostLaunchedAt = 0L
-                createViewer(viewerHost) {
-                    storyImageViewer = null
-                    viewerHost.onViewerClosed()
-                }.also { viewer ->
-                    storyImageViewer = viewer
-                    viewer.show()
+            storyImageHostToken =
+                StoryImageViewerHost.show(host) { viewerHost ->
+                    storyImageHostLaunchedAt = 0L
+                    storyImageHostToken = null
+                    createViewer(viewerHost) {
+                        storyImageViewer = null
+                        viewerHost.onViewerClosed()
+                    }.also { viewer ->
+                        storyImageViewer = viewer
+                        viewer.show()
+                    }
                 }
-            }
         } else {
             storyImageViewer = createViewer(host) { storyImageViewer = null }.also { it.show() }
         }
