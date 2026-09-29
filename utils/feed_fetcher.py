@@ -578,17 +578,22 @@ class FetchFeed:
                     raw_feed = None
                 refused_http1 = raw_feed is not None and raw_feed.status_code == 426
                 probe_https = address.startswith("http://") and not self.options.get("archive_page")
-                if refused_http1 and not probe_https:
+                # The direct retries further down switch to HTTP/2 once the site has answered
+                # over it, or each of them would get the same 426 and hide the real status.
+                direct_get = safe_requests_get
+                if refused_http1 and not probe_https and raw_feed.url.startswith("https://"):
                     # Forum #13858: dumbingofage.com answers every HTTP/1.1 request with 426
                     # Upgrade Required and serves the feed only over HTTP/2, which requests
                     # can't speak. Retry the same request once over HTTP/2 with the same
                     # headers, so a 304 or a 200 there is handled like any other fetch. If the
-                    # HTTP/2 retry fails too, the 426 stays and the usual retries run. A plain
-                    # http address goes to the https probe below instead: httpx speaks HTTP/2
-                    # only over TLS, and a 426 on plain http is the server asking for TLS.
+                    # HTTP/2 retry fails too, the 426 stays and the usual retries run. httpx
+                    # speaks HTTP/2 only over TLS, so this needs the 426 to have come over
+                    # https; a plain http address goes to the https probe below instead,
+                    # since a 426 on plain http is the server asking for TLS.
                     # utils/feed_fetcher.py
                     try:
                         raw_feed = safe_http2_get(address, headers=headers, timeout=15)
+                        direct_get = safe_http2_get
                         logging.debug(
                             "   ---> [%-30s] ~FBHTTP/1.1 refused with 426, HTTP/2 answered %s"
                             % (self.feed.log_title[:30], raw_feed.status_code)
@@ -663,7 +668,7 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
                                 % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
                             )
-                            raw_feed = safe_requests_get(
+                            raw_feed = direct_get(
                                 self.feed.feed_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
@@ -679,7 +684,7 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s"
                                 % (self.feed.log_title[:30], address)
                             )
-                            raw_feed = safe_requests_get(
+                            raw_feed = direct_get(
                                 self.feed.feed_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
@@ -701,7 +706,7 @@ class FetchFeed:
                             "   ***> [%-30s] ~FRFeed fetch was %s with a browser UA too, trying the plain one"
                             % (self.feed.log_title[:30], raw_feed.status_code)
                         )
-                        raw_feed = safe_requests_get(
+                        raw_feed = direct_get(
                             self.feed.feed_address,
                             headers=self.feed.fetch_headers(plain=True),
                             timeout=15,
@@ -725,7 +730,7 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRBot challenge page detected, retrying without browser UA suffix"
                                 % (self.feed.log_title[:30])
                             )
-                            raw_feed = safe_requests_get(
+                            raw_feed = direct_get(
                                 self.feed.feed_address,
                                 headers=self.feed.fetch_headers(plain=True),
                                 timeout=15,
