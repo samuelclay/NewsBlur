@@ -227,7 +227,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         feedUtils.prepareReadingSession(fs, false);
-        LastStoryList.remember(this, this, fs);
+        // FolderItemsList.java and FeedItemsList.kt share the "folderName" extra.
+        LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false) ||
             getIntent().getBooleanExtra(EXTRA_AUTO_OPEN_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
@@ -492,7 +493,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         // set the next session on the parent activity
         fs = session.getFeedSet();
         feedUtils.prepareReadingSession(fs, false);
-        LastStoryList.remember(this, this, fs);
+        LastStoryList.remember(this, this, fs, session.getFolderName() != null ? session.getFolderName() : fs.getFolderName());
         triggerSync();
         scheduleInitialFetchingBanner();
 

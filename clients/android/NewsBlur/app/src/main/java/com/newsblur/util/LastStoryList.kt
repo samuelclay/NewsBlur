@@ -2,24 +2,23 @@ package com.newsblur.util
 
 import android.content.Context
 import android.content.Intent
-import android.util.Base64
+import com.google.gson.Gson
 import com.newsblur.activity.AllStoriesItemsList
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.FolderItemsList
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.SocialFeedItemsList
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.domain.Feed
 import com.newsblur.domain.SocialFeed
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.io.Serializable
 
 /**
  * Remembers the last story list opened so a tablet can reopen it at launch, with the feed list
  * slid over it (FeedListDrawer.kt). Phones never read it. Anything that can't be rebuilt, such
  * as a feed that has since been removed, falls back to All Site Stories.
+ *
+ * The feed set and social feed are kept as JSON rather than Java serialization, so a field added
+ * to either later still restores instead of silently falling back.
  */
 object LastStoryList {
     private const val KEY_CLASS = "last_story_list_class"
@@ -27,81 +26,151 @@ object LastStoryList {
     private const val KEY_FOLDER_NAME = "last_story_list_folder_name"
     private const val KEY_SOCIAL_FEED = "last_story_list_social_feed"
 
-    /** ItemsList.java calls this whenever it shows a story list, including advancing to the next feed. */
+    private val gson = Gson()
+
+    /** What LastStoryList.kt keeps in preferences, as plain strings. */
+    internal data class Saved(
+        val storyListClass: String?,
+        val feedSet: String?,
+        val folderName: String?,
+        val socialFeed: String?,
+    )
+
+    /** The story list launch reopens, with the extras that story list needs. */
+    internal data class Destination(
+        val storyListClass: Class<*>,
+        val feedSet: FeedSet,
+        val folderName: String? = null,
+        val feed: Feed? = null,
+        val socialFeed: SocialFeed? = null,
+    )
+
+    /**
+     * ItemsList.java calls this whenever it shows a story list, including advancing to the next
+     * feed or folder, with that session's folder name (the launch intent's goes stale).
+     */
     @JvmStatic
     fun remember(
         context: Context,
         storyList: ItemsList,
         feedSet: FeedSet,
+        folderName: String?,
     ) {
-        // A feed preview (Discover, Related Sites) isn't a subscription to come back to.
-        if (storyList.intent.getBooleanExtra(FeedItemsList.EXTRA_IS_TRY_FEED, false)) return
-        val encodedFeedSet = encode(feedSet) ?: return
-        val folderName =
-            storyList.intent.getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME)
-                ?: storyList.intent.getStringExtra(FeedItemsList.EXTRA_FOLDER_NAME)
-        val socialFeed =
-            (storyList.intent.getSerializableExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED) as? SocialFeed)?.let(::encode)
+        val saved =
+            save(
+                storyListClass = storyList.javaClass,
+                feedSet = feedSet,
+                folderName = folderName,
+                socialFeed = storyList.intent.getSerializableExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED) as? SocialFeed,
+                isTryFeed = storyList.intent.getBooleanExtra(FeedItemsList.EXTRA_IS_TRY_FEED, false),
+            ) ?: return
         preferences(context)
             .edit()
-            .putString(KEY_CLASS, storyList.javaClass.name)
-            .putString(KEY_FEED_SET, encodedFeedSet)
-            .putString(KEY_FOLDER_NAME, folderName)
-            .putString(KEY_SOCIAL_FEED, socialFeed)
+            .putString(KEY_CLASS, saved.storyListClass)
+            .putString(KEY_FEED_SET, saved.feedSet)
+            .putString(KEY_FOLDER_NAME, saved.folderName)
+            .putString(KEY_SOCIAL_FEED, saved.socialFeed)
             .apply()
     }
 
-    /** The intent that reopens the last story list, or All Site Stories when there isn't one to rebuild. */
+    /**
+     * The intent that reopens the last story list, or All Site Stories when there isn't one to
+     * rebuild. Main.java calls this while it starts, so the one database read is a single feed row.
+     */
     @JvmStatic
     fun intent(
         context: Context,
         dbHelper: BlurDatabaseHelper,
-    ): Intent = runCatching { rebuild(context, dbHelper) }.getOrNull() ?: allSiteStories(context)
-
-    private fun rebuild(
-        context: Context,
-        dbHelper: BlurDatabaseHelper,
-    ): Intent? {
+    ): Intent {
         val preferences = preferences(context)
-        val storyListClass = Class.forName(preferences.getString(KEY_CLASS, null) ?: return null)
+        val saved =
+            Saved(
+                storyListClass = preferences.getString(KEY_CLASS, null),
+                feedSet = preferences.getString(KEY_FEED_SET, null),
+                folderName = preferences.getString(KEY_FOLDER_NAME, null),
+                socialFeed = preferences.getString(KEY_SOCIAL_FEED, null),
+            )
+        val destination = runCatching { restore(saved) { feedId -> dbHelper.getFeed(feedId) } }.getOrNull()
+        return destination?.let { toIntent(context, it) } ?: toIntent(context, allSiteStories())
+    }
+
+    // A feed preview (Discover, Related Sites) isn't a subscription to come back to.
+    internal fun save(
+        storyListClass: Class<*>,
+        feedSet: FeedSet,
+        folderName: String?,
+        socialFeed: SocialFeed?,
+        isTryFeed: Boolean,
+    ): Saved? {
+        if (isTryFeed) return null
+        // A social feed list advanced to another feed set no longer matches its launch extra.
+        val matchingSocialFeed = socialFeed?.takeIf { it.userId == feedSet.singleSocialFeed?.key }
+        return Saved(
+            storyListClass = storyListClass.name,
+            feedSet = runCatching { gson.toJson(feedSet) }.getOrNull() ?: return null,
+            folderName = folderName,
+            socialFeed = matchingSocialFeed?.let { runCatching { gson.toJson(it) }.getOrNull() },
+        )
+    }
+
+    internal fun restore(
+        saved: Saved,
+        findFeed: (String) -> Feed?,
+    ): Destination? {
+        val storyListClass = runCatching { Class.forName(saved.storyListClass ?: return null) }.getOrNull() ?: return null
         if (!ItemsList::class.java.isAssignableFrom(storyListClass)) return null
-        val feedSet = decode<FeedSet>(preferences.getString(KEY_FEED_SET, null)) ?: return null
+        val feedSet = runCatching { gson.fromJson(saved.feedSet ?: return null, FeedSet::class.java) }.getOrNull() ?: return null
         // A search is a moment, not a place to reopen.
-        feedSet.setSearchQuery(null)
-        val folderName = preferences.getString(KEY_FOLDER_NAME, null)
-        val intent =
-            Intent(context, storyListClass)
-                .putExtra(ItemsList.EXTRA_FEED_SET, feedSet)
-        when (storyListClass) {
-            FolderItemsList::class.java -> intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, folderName ?: return null)
-            FeedItemsList::class.java -> {
-                val feed = dbHelper.getFeed(feedSet.singleFeed ?: return null) ?: return null
-                intent.putExtra(FeedItemsList.EXTRA_FEED, feed).putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName)
+        feedSet.searchQuery = null
+        return when (storyListClass) {
+            FolderItemsList::class.java -> {
+                Destination(storyListClass, feedSet, folderName = saved.folderName ?: return null)
             }
+
+            FeedItemsList::class.java -> {
+                val feed = findFeed(feedSet.singleFeed ?: return null) ?: return null
+                Destination(storyListClass, feedSet, folderName = saved.folderName, feed = feed)
+            }
+
             SocialFeedItemsList::class.java -> {
-                val socialFeed = decode<SocialFeed>(preferences.getString(KEY_SOCIAL_FEED, null)) ?: return null
-                intent.putExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED, socialFeed)
+                val socialFeed =
+                    runCatching { gson.fromJson(saved.socialFeed ?: return null, SocialFeed::class.java) }.getOrNull()
+                        ?: return null
+                Destination(storyListClass, feedSet, socialFeed = socialFeed)
+            }
+
+            else -> {
+                Destination(storyListClass, feedSet)
+            }
+        }
+    }
+
+    internal fun allSiteStories(): Destination = Destination(AllStoriesItemsList::class.java, FeedSet.allFeeds())
+
+    private fun toIntent(
+        context: Context,
+        destination: Destination,
+    ): Intent {
+        val intent =
+            Intent(context, destination.storyListClass)
+                .putExtra(ItemsList.EXTRA_FEED_SET, destination.feedSet)
+        when (destination.storyListClass) {
+            FolderItemsList::class.java -> {
+                intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, destination.folderName)
+            }
+
+            FeedItemsList::class.java -> {
+                intent
+                    .putExtra(FeedItemsList.EXTRA_FEED, destination.feed)
+                    .putExtra(FeedItemsList.EXTRA_FOLDER_NAME, destination.folderName)
+            }
+
+            SocialFeedItemsList::class.java -> {
+                intent.putExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED, destination.socialFeed)
             }
         }
         return intent
     }
 
-    private fun allSiteStories(context: Context): Intent =
-        Intent(context, AllStoriesItemsList::class.java).putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds())
-
     private fun preferences(context: Context) = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
-
-    private fun encode(value: Serializable): String? =
-        runCatching {
-            val bytes = ByteArrayOutputStream()
-            ObjectOutputStream(bytes).use { it.writeObject(value) }
-            Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP)
-        }.getOrNull()
-
-    private inline fun <reified T> decode(encoded: String?): T? =
-        encoded?.let {
-            runCatching {
-                ObjectInputStream(ByteArrayInputStream(Base64.decode(it, Base64.NO_WRAP))).use { input -> input.readObject() as? T }
-            }.getOrNull()
-        }
 }
