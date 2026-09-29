@@ -63,7 +63,7 @@ class StorySplitViewTest {
     @Test
     fun splitPane_requiresAnEmbeddedMultiWindowActivity() {
         assertTrue(StorySplitView.isSplitPane(isInMultiWindowMode = true) { true })
-        // An always expanded screen (Daily Briefing's reader on a phone) is embedded but fills the window.
+        // An always expanded screen (Daily Briefing's reader on a tablet) is embedded but fills the window.
         assertFalse(StorySplitView.isSplitPane(isInMultiWindowMode = false) { true })
         // System split screen beside another app is multi-window but not embedded.
         assertFalse(StorySplitView.isSplitPane(isInMultiWindowMode = true) { false })

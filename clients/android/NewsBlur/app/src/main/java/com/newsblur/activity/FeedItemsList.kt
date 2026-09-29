@@ -23,6 +23,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.Session
 import com.newsblur.util.SessionDataSource
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -272,7 +273,7 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FEED_SET, feedSet)
                     putSessionDataKeyExtra(this, sessionDataSource, storyListSessionDataSource)
                 }.also { intent ->
-                    context.startActivity(intent)
+                    StorySplitView.startStoryList(context, intent)
                 }
         }
 
@@ -293,7 +294,7 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_AUTO_OPEN_STORY, true)
                     putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
                 }.also { intent ->
-                    context.startActivity(intent)
+                    StorySplitView.startStoryList(context, intent)
                 }
         }
 
@@ -317,7 +318,7 @@ class FeedItemsList : ItemsList() {
                         putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
                     }
                 }.also { intent ->
-                    context.startActivity(intent)
+                    StorySplitView.startStoryList(context, intent)
                 }
         }
     }
