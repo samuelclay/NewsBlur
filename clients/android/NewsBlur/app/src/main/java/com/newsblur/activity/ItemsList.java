@@ -288,7 +288,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (!q.isEmpty()) {
             savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
         }
-        if (preparedReturnStoryHash != null && Reading.peekSplitReader() != null && StorySplitView.isInSplit(this)) {
+        if (preparedReturnStoryHash != null && Reading.peekSplitReader(getTaskId()) != null && StorySplitView.isInSplit(this)) {
             savedInstanceState.putString(BUNDLE_SPLIT_READING_STORY_HASH, preparedReturnStoryHash);
         }
     }
@@ -1243,7 +1243,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     // order and read filter changes, retry), so the list and the reader never fight over the one
     // shared session. StorySplitView.kt brings back the placeholder pane.
     private void closeSplitReader() {
-        Reading reader = Reading.peekSplitReader();
+        Reading reader = Reading.peekSplitReader(getTaskId());
         if (reader != null && StorySplitView.isInSplit(this)) {
             reader.finish();
         }

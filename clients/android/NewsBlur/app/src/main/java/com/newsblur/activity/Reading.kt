@@ -1205,7 +1205,10 @@ abstract class Reading :
             // In a tablet split (StorySplitView.kt) the story list stays visible, so move its
             // highlight to the story being read instead of waiting for the reader to close.
             if (StorySplitView.isInSplit(this)) {
-                ItemsList.peekReadingLaunchParent()?.prepareReturnToStory(story.storyHash)
+                ItemsList
+                    .peekReadingLaunchParent()
+                    ?.takeIf { parent -> parent.taskId == taskId }
+                    ?.prepareReturnToStory(story.storyHash)
             }
             // Reading.kt schedules dwell synchronously with selection; old IO callbacks cannot replace its timer.
             if (!isRestoringSelection) triggerMarkStoryReadBehavior(story)
@@ -2155,14 +2158,15 @@ abstract class Reading :
         private var latestReaderRef = WeakReference<Reading>(null)
 
         /**
-         * The reader showing in a tablet split's reader pane (StorySplitView.kt), if any. Split
-         * state is checked on each call because a reader can enter or leave a split without
-         * being resumed again, such as when a foldable opens with a story on screen.
+         * The reader showing in the reader pane of a tablet split in [taskId] (StorySplitView.kt),
+         * if any, never one in another NewsBlur window. Split state is checked on each call
+         * because a reader can enter or leave a split without being resumed again, such as when a
+         * foldable opens with a story on screen.
          */
         @JvmStatic
-        fun peekSplitReader(): Reading? =
+        fun peekSplitReader(taskId: Int): Reading? =
             latestReaderRef.get()?.takeIf { reader ->
-                !reader.isFinishing && !reader.isDestroyed && StorySplitView.isInSplit(reader)
+                !reader.isFinishing && !reader.isDestroyed && reader.taskId == taskId && StorySplitView.isInSplit(reader)
             }
     }
 }
