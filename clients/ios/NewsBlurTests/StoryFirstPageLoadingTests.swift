@@ -1551,6 +1551,78 @@ import XCTest
         }
     }
 
+    func test_switchingSourcesCancelsPendingNextUnreadWhileDuoRetainsArticle() async throws {
+        let fixture = makeFixture()
+        fixture.app.dictUnreadCounts = ["1": ["nt": 1, "ps": 0, "ng": 0], "2": ["nt": 1, "ps": 0, "ng": 0]]
+        let detail = DetailViewController()
+        detail.appDelegate = fixture.app
+        detail.isCompact = false
+        if #available(iOS 17.0, *) { detail.traitOverrides.verticalSizeClass = .regular }
+        fixture.app.detailViewController = detail
+        let pages = FirstPageLoadingPages()
+        pages.appDelegate = fixture.app
+        pages.usesProductionUnreadAdvance = true
+        pages.loadingIndicator = UIActivityIndicatorView(style: .medium)
+        pages.buttonNext = UIButton(type: .system)
+        pages.circularProgressView = THCircularProgressView()
+        pages.currentPage = StoryDetailViewController()
+        pages.nextPage = StoryDetailViewController()
+        pages.previousPage = StoryDetailViewController()
+        fixture.app.testPages = pages
+        defer {
+            fixture.app.testPages = nil
+            fixture.app.detailViewController = nil
+        }
+        fixture.open()
+        let retainedStory: [AnyHashable: Any] = ["story_hash": "outgoing-source:2", "story_feed_id": 99]
+        fixture.app.activeStory = retainedStory
+        pages.currentPage.activeStoryId = "outgoing-source:2"
+        pages.currentPage.pageIndex = 2
+        pages.setValue(true, forKey: "retainsDuoSourceArticle")
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        var readStory = makeStories(0..<1)[0]
+        readStory["read_status"] = 1
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: [readStory]))
+        await settle()
+        pages.doNextUnreadStory(nil)
+        let stalePageRequest = try feedPageRequest(2, in: fixture)
+        XCTAssertTrue(pages.waitingForNextUnreadFromServer)
+        XCTAssertTrue(pages.loadingIndicator.isAnimating)
+        XCTAssertFalse(pages.buttonNext.isEnabled)
+        XCTAssertTrue(pages.circularProgressView.isHidden)
+
+        fixture.stories.activeFeed = ["id": 2, "feed_title": "Another feed", "active": 1]
+        fixture.open()
+        // StoryFirstPageLoadingTests.swift restores the mounted article as the production Duo resetPages path does;
+        // the real feed reset and network generation handling remain active in this fixture.
+        fixture.app.activeStory = retainedStory
+        XCTAssertFalse(pages.waitingForNextUnreadFromServer, "Changing source must cancel the previous source's pending Next action")
+        XCTAssertFalse(pages.loadingIndicator.isAnimating, "Source changes must stop the canceled Next request's spinner")
+        XCTAssertTrue(pages.buttonNext.isEnabled)
+        XCTAssertFalse(pages.circularProgressView.isHidden)
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: stalePageRequest, with: response(stories: makeStories(1..<2)))
+        XCTAssertTrue(fixture.hashes.isEmpty, "The prior source's late pagination cannot populate the new source")
+        let sourceRequest = try XCTUnwrap(fixture.app.requests.firstIndex {
+            URLComponents(string: $0.url)?.path == "/reader/feed/2/" && query("page", in: $0.url) == "1"
+        })
+        var unreadStory = makeStories(10..<11)[0]
+        unreadStory["story_feed_id"] = 2
+        var newSourceResponse = response(stories: [unreadStory])
+        newSourceResponse["feed_id"] = 2
+        fixture.app.reply(to: sourceRequest, with: newSourceResponse)
+        await settle()
+
+        XCTAssertEqual(fixture.hashes, ["first-page-10"])
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "outgoing-source:2")
+        XCTAssertTrue(pages.pageChanges.isEmpty, "The prior source's Next action cannot select an unread article from the new source")
+        XCTAssertEqual(pages.advances, 0)
+    }
+
     func test_cachedArticleMissingFromUnreadRefreshStaysOpenUntilExplicitNextOrPrevious() async throws {
         for direction in [-1, 1] {
             let fixture = makeFixture()

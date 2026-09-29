@@ -1903,6 +1903,14 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [self.currentFetchTask cancel];
     self.currentFetchTask = nil;
     self.fetchRequestId++;
+    // FeedDetailObjCViewController.m cancels the old source's pending Next action with its page request.
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    if (pages.waitingForNextUnreadFromServer) {
+        pages.waitingForNextUnreadFromServer = NO;
+        [pages.loadingIndicator stopAnimating];
+        pages.circularProgressView.hidden = NO;
+        pages.buttonNext.enabled = YES;
+    }
     appDelegate.activeStory = nil;
     self.visibleStoryRows = nil;
     if ([self respondsToSelector:@selector(resetPendingReloadsForFeedChange)]) {
