@@ -36,7 +36,7 @@ var linkAt = function(x, y, attribute) {
     return el && el[attribute];
 };
 
-// StoryImageViewerController.swift uses viewport coordinates, including after rotation.
+// StoryImageViewerController.swift converts document coordinates through the native scroll offset.
 var newsblur_image_sequence = 0;
 function newsblurImageRect(token, load_id) {
     var load = document.querySelector('meta[name="newsblur-story-load"]');
@@ -44,7 +44,7 @@ function newsblurImageRect(token, load_id) {
     var image = document.querySelector('img[data-newsblur-image-token="' + token + '"]');
     if (!image) return null;
     var rect = image.getBoundingClientRect();
-    return {x: rect.left, y: rect.top, width: rect.width, height: rect.height,
+    return {x: rect.left + window.scrollX, y: rect.top + window.scrollY, width: rect.width, height: rect.height,
             viewportWidth: window.innerWidth};
 }
 
@@ -73,8 +73,11 @@ function newsblurOpenImage(image, accessibility_activation) {
     return true;
 }
 
-function newsblurOpenImageAt(x, y) {
-    return newsblurOpenImage(document.elementFromPoint(x, y));
+function newsblurOpenImageAt(x, y, offset_x, offset_y, view_width) {
+    var scale = window.innerWidth / view_width;
+    return newsblurOpenImage(document.elementFromPoint(
+        (x + offset_x) * scale - window.scrollX,
+        (y + offset_y) * scale - window.scrollY));
 }
 
 document.addEventListener('click', function(event) {
