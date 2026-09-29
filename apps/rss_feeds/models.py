@@ -1198,23 +1198,18 @@ class Feed(models.Model):
             _, losing_feed, _, _, _, _ = merge_feeds_orientation(holder, self)
             moving = UserSubscription.objects.filter(feed_id=losing_feed.pk).count()
             if moving >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
-                logging.debug(
-                    "   ---> [%-30s] ~FRAddress belongs to feed %s, queueing a merge that moves %s "
-                    "subscriptions" % (self.log_title[:30], holder.pk, moving)
-                )
-                MergeFeeds.apply_async(args=(holder.pk, self.pk))
+                if queue_merge_feeds_once(holder.pk, self.pk, feed_address):
+                    logging.debug(
+                        "   ---> [%-30s] ~FRAddress belongs to feed %s, queued a merge that moves %s "
+                        "subscriptions" % (self.log_title[:30], holder.pk, moving)
+                    )
                 return False, self
         self.feed_address = feed_address
         feed = self.save()
         if not feed:
             # The row was deleted while this check ran and nothing took its place.
             return False, self
-        feed.count_subscribers()
-        # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
-        feed.has_feed_exception = False
-        feed.active = True
-        feed = feed.save() or feed
-        return True, feed
+        return settle_address_check_merge(feed, feed_address)
 
     def save_feed_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(
@@ -5854,6 +5849,12 @@ MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS = 10
 # address check queues it as its own task (apps/rss_feeds/tasks.py MergeFeeds), and
 # merge_feeds_locked logs the call that finishes it if it is cut short. apps/rss_feeds/models.py
 MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS = 1000
+# Set while a MergeFeeds for a pair of feeds is queued or running, so each failing fetch of the
+# feed during a long merge does not queue another one (queue_merge_feeds_once). It lives as
+# long as the task's hard time limit, so a merge killed without clearing it can be queued again
+# after that. apps/rss_feeds/models.py
+MERGE_FEEDS_QUEUED_KEY = "merge_feeds_queued:%s:%s"
+MERGE_FEEDS_QUEUED_SECONDS = 65 * 60
 # The merge locks this thread holds, by feed id. merge_feeds_locked ends with a full
 # Feed.save of the survivor, which merges again on a hash collision; that nested merge must
 # not wait on locks its own caller holds, and a long merge renews the leases of all of them.
@@ -6031,6 +6032,48 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
         if branched_original:
             survivor_address = strip_underscore_from_feed_address(duplicate_feed.feed_address)
     return original_feed, duplicate_feed, survivor_address, force, preserve_branch_from_feed, parked_duplicate
+
+
+def queue_merge_feeds_once(original_feed_id, duplicate_feed_id, feed_address=None):
+    """Queue MergeFeeds for this pair unless one is already queued or running, and say whether
+    this call queued it. The key is the same whichever way round the pair is given.
+    apps/rss_feeds/models.py
+    """
+    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    key = MERGE_FEEDS_QUEUED_KEY % tuple(sorted([original_feed_id, duplicate_feed_id]))
+    if not r.set(key, 1, nx=True, ex=MERGE_FEEDS_QUEUED_SECONDS):
+        return False
+    MergeFeeds.apply_async(args=(original_feed_id, duplicate_feed_id, feed_address))
+    return True
+
+
+def clear_merge_feeds_queued(original_feed_id, duplicate_feed_id):
+    """Let the next collision of this pair queue a merge again (MergeFeeds calls this when it
+    ends, however it ends). apps/rss_feeds/models.py"""
+    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    r.delete(MERGE_FEEDS_QUEUED_KEY % tuple(sorted([original_feed_id, duplicate_feed_id])))
+
+
+def settle_address_check_merge(feed, feed_address):
+    """Finish check_feed_link_for_feed_address once its save, and any merge that save set off
+    inline or through MergeFeeds, is done: the surviving feed takes the discovered address
+    when it does not already have it (a merge keeps the heavier feed's own address, and the
+    feed that held the discovered one is gone now) and is marked healthy only if it did.
+    Returns (fixed, feed) for the fetcher, which records an error when nothing was fixed.
+    apps/rss_feeds/models.py
+    """
+    if feed.feed_address != feed_address:
+        if Feed.feed_holding_address(feed_address, feed.feed_link, exclude_ids=[feed.pk]):
+            # A merge cut short left the other feed in place; the next collision resumes it.
+            return False, feed
+        feed.feed_address = feed_address
+        feed = feed.save() or feed
+    feed.count_subscribers()
+    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
+    feed.has_feed_exception = False
+    feed.active = True
+    feed = feed.save() or feed
+    return True, feed
 
 
 def merge_feeds_inverted_branch(original_feed, duplicate_feed):
