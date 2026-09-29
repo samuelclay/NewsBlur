@@ -181,6 +181,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private String preparedReturnStoryHash;
     // Whether FeedListDrawer.kt still has to slide over this story list after launch.
     private boolean feedDrawerPending = false;
+    // Whether this tablet story list already reloaded for the sync housekeeping now running.
+    private boolean rebuildHandled = false;
     // The story the reader beside this list was showing before a rotation recreated the list.
     @Nullable
     private String restoredSplitReadingStoryHash;
@@ -341,7 +343,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             recreate();
             return;
         }
-        if (syncServiceState.isHousekeepingRunning()) leaveForRebuild();
+        if (!syncServiceState.isHousekeepingRunning()) {
+            rebuildHandled = false;
+        } else if (!rebuildHandled) {
+            // The UPDATE_REBUILD broadcast only reaches a resumed list, so one paused under the
+            // reader or feed list catches up here, once per housekeeping run.
+            leaveForRebuild();
+        }
         applyStoryHeaderTheme();
         refreshStoryHeaderControls();
         updateStatusIndicators();
@@ -1280,6 +1288,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             return;
         }
         feedDrawerPending = false;
+        rebuildHandled = true;
         restartReadingSession();
         FeedListDrawer.open(this);
     }
