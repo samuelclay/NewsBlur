@@ -120,7 +120,8 @@ def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
                 history.append(response)
     except httpx.TimeoutException as e:
         raise requests.Timeout(str(e)) from e
-    except httpx.HTTPError as e:
+    except (httpx.HTTPError, httpx.InvalidURL, ImportError) as e:
+        # ImportError is httpx refusing http2=True when the h2 package is missing.
         raise requests.ConnectionError(str(e)) from e
 
     raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))

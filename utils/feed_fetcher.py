@@ -576,12 +576,16 @@ class FetchFeed:
                     raw_feed = safe_requests_get(address, headers=headers, timeout=15)
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
-                if raw_feed is not None and raw_feed.status_code == 426:
+                refused_http1 = raw_feed is not None and raw_feed.status_code == 426
+                probe_https = address.startswith("http://") and not self.options.get("archive_page")
+                if refused_http1 and not probe_https:
                     # Forum #13858: dumbingofage.com answers every HTTP/1.1 request with 426
                     # Upgrade Required and serves the feed only over HTTP/2, which requests
                     # can't speak. Retry the same request once over HTTP/2 with the same
                     # headers, so a 304 or a 200 there is handled like any other fetch. If the
-                    # HTTP/2 retry fails too, the 426 stays and the usual retries run.
+                    # HTTP/2 retry fails too, the 426 stays and the usual retries run. A plain
+                    # http address goes to the https probe below instead: httpx speaks HTTP/2
+                    # only over TLS, and a 426 on plain http is the server asking for TLS.
                     # utils/feed_fetcher.py
                     try:
                         raw_feed = safe_http2_get(address, headers=headers, timeout=15)
@@ -594,11 +598,7 @@ class FetchFeed:
                             "   ***> [%-30s] ~FRHTTP/1.1 refused with 426 and HTTP/2 failed: %s"
                             % (self.feed.log_title[:30], e)
                         )
-                if (
-                    raw_feed is None
-                    and address.startswith("http://")
-                    and not self.options.get("archive_page")
-                ):
+                if (raw_feed is None or refused_http1) and probe_https:
                     # Forum #13830: rss.cbc.ca dropped port 80 with no redirect, so every
                     # http:// subscription went quiet. When the http address won't connect at
                     # all, try the same path over https before the fake-header retry. A live
@@ -606,15 +606,18 @@ class FetchFeed:
                     # ProcessFeed.migrate_https_feed_address persists the https address.
                     # Archive fetches are skipped: their address is a history page, not the
                     # feed. The probe is unconditional so a healthy https copy can't answer
-                    # 304 and look dead. utils/feed_fetcher.py
+                    # 304 and look dead. An http address refused with 426 (forum #13858) gets
+                    # the same probe over HTTP/2, since the site already refused HTTP/1.1.
+                    # utils/feed_fetcher.py
                     https_address = "https://" + address[len("http://") :]
                     probe_headers = {
                         name: value
                         for name, value in headers.items()
                         if name not in ("If-None-Match", "If-Modified-Since", "A-IM")
                     }
+                    fetch_https = safe_http2_get if refused_http1 else safe_requests_get
                     try:
-                        https_feed = safe_requests_get(https_address, headers=probe_headers, timeout=15)
+                        https_feed = fetch_https(https_address, headers=probe_headers, timeout=15)
                     except (UnsafeUrlError, requests.RequestException, TimeoutError):
                         # Any failure of the optional probe (connection refused, read timeout,
                         # redirect loop) just means the usual http retries run as before.
