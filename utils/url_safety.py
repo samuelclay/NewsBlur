@@ -2,7 +2,10 @@ import ipaddress
 import socket
 from urllib.parse import urljoin, urlparse
 
+import httpx
 import requests
+from requests.structures import CaseInsensitiveDict
+from requests.utils import get_encoding_from_headers
 
 BLOCKED_PRIVATE_URL_MESSAGE = "This address points to a private or reserved network."
 HTTP_SCHEMES = ("http", "https")
@@ -88,6 +91,51 @@ def safe_requests_request(method, url, **kwargs):
             request_kwargs.pop("json", None)
 
     raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
+
+
+def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
+    """GET over HTTP/2, for sites that refuse HTTP/1.1, the only version requests speaks.
+    dumbingofage.com answers HTTP/1.1 with 426 Upgrade Required and serves its feed only
+    over HTTP/2 (forum #13858). Every hop is checked with validate_public_url exactly like
+    safe_requests_request, and the answer comes back as a requests.Response so callers
+    read it the same way. httpx errors are raised as their requests equivalents because
+    callers catch requests.RequestException. utils/url_safety.py
+    """
+    url = validate_public_url(url)
+    history = []
+    current_url = url
+
+    try:
+        with httpx.Client(http2=True, timeout=timeout, follow_redirects=False) as client:
+            for _ in range(max_redirects + 1):
+                response = _requests_response_from_httpx(client.get(current_url, headers=headers))
+                if not response.is_redirect:
+                    response.history = history
+                    return response
+
+                if len(history) >= max_redirects:
+                    raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
+
+                current_url = validate_public_url(urljoin(response.url, response.headers["Location"]))
+                history.append(response)
+    except httpx.TimeoutException as e:
+        raise requests.Timeout(str(e)) from e
+    except httpx.HTTPError as e:
+        raise requests.ConnectionError(str(e)) from e
+
+    raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
+
+
+def _requests_response_from_httpx(httpx_response):
+    # The body is already read and decompressed by httpx, the same as requests does.
+    response = requests.Response()
+    response.status_code = httpx_response.status_code
+    response.reason = httpx_response.reason_phrase
+    response.headers = CaseInsensitiveDict(httpx_response.headers.items())
+    response._content = httpx_response.content
+    response.url = str(httpx_response.url)
+    response.encoding = get_encoding_from_headers(response.headers)
+    return response
 
 
 def _port_or_default(parsed):
