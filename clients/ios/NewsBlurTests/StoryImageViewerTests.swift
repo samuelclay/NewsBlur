@@ -1,8 +1,82 @@
 import XCTest
 import UIKit
+import WebKit
 @testable import NewsBlur
 
 final class Test_StoryImageViewer: XCTestCase {
+    @MainActor func test_scrollMomentumDoesNotOpenImageFromTapCallback() {
+        let page = ImageScrollTapPage()
+        page.probe.trackedScroll.simulatedDecelerating = true
+        page.perform(NSSelectorFromString("tap:"), with: ImageScrollTapGesture())
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") },
+                       "A touch during article momentum must stop scrolling without opening the photo")
+    }
+
+    @MainActor func test_stationarySingleTapStillRequestsImage() {
+        let page = ImageScrollTapPage()
+        page.perform(NSSelectorFromString("tap:"), with: ImageScrollTapGesture())
+        XCTAssertTrue(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") })
+    }
+
+    @MainActor func test_touchStoppingMomentumDoesNotBecomeAnImageTap() {
+        let page = ImageScrollTapPage()
+        let gesture = ImageScrollTapGesture()
+        page.probe.trackedScroll.simulatedDecelerating = true
+        page.beginTouch(gesture)
+        // StoryImageViewerTests.swift models UIKit stopping momentum before delivering the tap callback.
+        page.probe.trackedScroll.simulatedDecelerating = false
+        page.perform(NSSelectorFromString("tap:"), with: gesture)
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") })
+    }
+
+    @MainActor func test_activeArticleDragDoesNotOpenImageFromTapCallback() {
+        let page = ImageScrollTapPage()
+        let gesture = ImageScrollTapGesture()
+        page.beginTouch(gesture)
+        page.probe.trackedScroll.simulatedDragging = true
+        page.perform(NSSelectorFromString("tap:"), with: gesture)
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") })
+    }
+
+    @MainActor func test_stationaryTapAfterStoppingMomentumCanOpenImage() {
+        let page = ImageScrollTapPage()
+        let gesture = ImageScrollTapGesture()
+        page.probe.trackedScroll.simulatedDecelerating = true
+        page.beginTouch(gesture)
+        page.probe.trackedScroll.simulatedDecelerating = false
+        page.perform(NSSelectorFromString("tap:"), with: gesture)
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") })
+
+        page.probe.scripts.removeAll()
+        page.beginTouch(gesture)
+        page.perform(NSSelectorFromString("tap:"), with: gesture)
+        XCTAssertTrue(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") },
+                      "A fresh stationary tap must work immediately after the touch that stopped scrolling")
+    }
+
+    @MainActor func test_completedArticleDragDoesNotBecomeAnImageTap() {
+        let page = ImageScrollTapPage()
+        let gesture = ImageScrollTapGesture()
+        page.beginTouch(gesture)
+        let delegate: UIScrollViewDelegate = page
+        page.probe.trackedScroll.simulatedDragging = true
+        delegate.scrollViewWillBeginDragging?(page.probe.trackedScroll)
+        page.probe.trackedScroll.simulatedDragging = false
+        page.perform(NSSelectorFromString("tap:"), with: gesture)
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") })
+    }
+
+    @MainActor func test_accessibilityImageActivationWorksAfterScrollingButNotDuringMomentum() {
+        let page = ImageScrollTapPage()
+        page.probe.trackedScroll.simulatedDecelerating = true
+        page.beginTouch(ImageScrollTapGesture())
+        XCTAssertFalse(page.canOpenStoryImage(accessibility: true))
+        page.probe.trackedScroll.simulatedDecelerating = false
+        XCTAssertFalse(page.canOpenStoryImage(accessibility: false))
+        XCTAssertTrue(page.canOpenStoryImage(accessibility: true),
+                      "Keyboard and VoiceOver activation do not require a fresh native touch after scrolling")
+    }
+
     @MainActor func test_tallImageFitsBelowStatusBarWhenSafeAreaChanges() throws {
         let preview = UIGraphicsImageRenderer(size: CGSize(width: 60, height: 240)).image { context in
             UIColor.blue.setFill()
@@ -146,6 +220,50 @@ final class Test_StoryImageViewer: XCTestCase {
          "title": "An image", "naturalWidth": 1200, "naturalHeight": 800,
          "rect": ["x": 10, "y": 50, "width": 300, "height": 200, "viewportWidth": 375]]
     }
+}
+
+// StoryImageViewerTests.swift replays the native tap callback while the article still has momentum.
+@MainActor private final class ImageScrollTapPage: StoryDetailViewController {
+    let probe = ImageScrollTapWebView(frame: .zero, configuration: WKWebViewConfiguration())
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        view = UIView()
+        webView = probe
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) is not used by StoryImageViewerTests.swift") }
+    deinit { webView = nil }
+    override func point(forGesture gestureRecognizer: UIGestureRecognizer!) -> CGPoint {
+        CGPoint(x: 100, y: 200)
+    }
+    func beginTouch(_ gesture: UITapGestureRecognizer) {
+        let delegate: UIGestureRecognizerDelegate = self
+        _ = delegate.gestureRecognizer?(gesture, shouldReceive: ImageScrollTapTouch())
+    }
+}
+
+@MainActor private final class ImageScrollTapWebView: WKWebView {
+    let trackedScroll = ImageScrollTapScrollView()
+    var scripts: [String] = []
+    override var scrollView: UIScrollView { trackedScroll }
+    override func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)? = nil) {
+        scripts.append(javaScriptString)
+    }
+}
+
+@MainActor private final class ImageScrollTapScrollView: UIScrollView {
+    var simulatedDecelerating = false
+    var simulatedDragging = false
+    override var isDecelerating: Bool { simulatedDecelerating }
+    override var isDragging: Bool { simulatedDragging }
+}
+
+@MainActor private final class ImageScrollTapTouch: UITouch {
+    override var tapCount: Int { 1 }
+}
+
+@MainActor private final class ImageScrollTapGesture: UITapGestureRecognizer {
+    override var state: UIGestureRecognizer.State { get { .ended } set {} }
+    override var numberOfTouches: Int { 1 }
 }
 
 // StoryImageViewerTests.swift exercises iPad-sized layout and inset changes on the shared simulator.

@@ -49,6 +49,7 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)cancelStoryPresentationFadePreservingStory;
 - (void)receiveStoryReadyMessage:(WKScriptMessage *)message;
 - (BOOL)isCurrentStoryImageLoad:(NSString *)loadID;
+- (BOOL)canOpenStoryImageForAccessibility:(BOOL)accessibility NS_SWIFT_NAME(canOpenStoryImage(accessibility:));
 @property (nonatomic) BOOL lastDragDirectionDown;
 @property (nonatomic,  readonly) BOOL isSinglePage;
 
