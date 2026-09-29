@@ -640,6 +640,11 @@ class FetchFeed:
                             "   ---> [%-30s] ~FYhttps answered without a feed, keeping the usual retries: %s"
                             % (self.feed.log_title[:30], https_address)
                         )
+                        if refused_http1:
+                            # The site answered over HTTP/2 (a 403 for the browser UA, say), so
+                            # the UA retries go over it too. httpx follows the http address's
+                            # redirect onto TLS, where HTTP/2 can be negotiated.
+                            direct_get = safe_http2_get
                 if raw_feed and raw_feed.status_code == 304:
                     logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
