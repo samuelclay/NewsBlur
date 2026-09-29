@@ -188,6 +188,11 @@ object StorySplitView {
         beforeFirstReport: () -> Boolean,
     ): Boolean = reportedInSplit ?: beforeFirstReport()
 
+    // Jetpack keeps a SplitInfo with its containers stacked (expanded) when the window gets too
+    // narrow, such as a foldable closing, so only a split whose panes sit side by side counts.
+    internal fun isSideBySide(splitTypes: List<SplitAttributes.SplitType>): Boolean =
+        splitTypes.any { splitType -> splitType != SplitAttributes.SplitType.SPLIT_TYPE_EXPAND }
+
     // Activities in an always expanded container (FULL_WINDOW_ACTIVITIES, and anything they
     // open, like Daily Briefing's reader) are embedded too, but fill the window. Only split
     // panes are in multi-window mode, which is checked first so full screen activities never
@@ -218,7 +223,7 @@ object StorySplitView {
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 SplitController.getInstance(activity).splitInfoList(activity).collect { splits ->
-                    val inSplit = splits.isNotEmpty()
+                    val inSplit = isSideBySide(splits.map { split -> split.splitAttributes.splitType })
                     reportedSplitMembership[activity] = inSplit
                     if (inSplit && !isOpaque) {
                         isOpaque = true
