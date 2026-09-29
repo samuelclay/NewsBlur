@@ -258,11 +258,18 @@ class FeedListDrawer : Main() {
         private var activeDrawer = WeakReference<FeedListDrawer>(null)
         private var openGesture: OpenGesture? = null
 
-        /** Slides the feed list over the story list and reader. */
+        /**
+         * Slides the feed list over the story list and reader. [forceShowFeedId] keeps a feed just
+         * added visible in the list, as Main.java's EXTRA_FORCE_SHOW_FEED_ID does.
+         */
         @JvmStatic
-        fun open(from: Activity) {
+        @JvmOverloads
+        fun open(
+            from: Activity,
+            forceShowFeedId: String? = null,
+        ) {
             openGesture = null
-            launch(from)
+            launch(from, forceShowFeedId)
         }
 
         /** ItemsList.java starts opening the panel under a swipe; updates follow with the finger's offset. */
@@ -288,13 +295,16 @@ class FeedListDrawer : Main() {
             activeDrawer.get()?.followOpenGesture()
         }
 
-        private fun launch(from: Activity) {
+        private fun launch(
+            from: Activity,
+            forceShowFeedId: String? = null,
+        ) {
             val showing = activeDrawer.get()
             if (showing != null && !showing.isFinishing) {
                 showing.followOpenGesture()
                 return
             }
-            from.startActivity(Intent(from, FeedListDrawer::class.java))
+            from.startActivity(Intent(from, FeedListDrawer::class.java).putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, forceShowFeedId))
             // On API 34+ the drawer turns off its own open animation in onCreate.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 PendingTransitionUtils.overrideNoEnterTransition(from)

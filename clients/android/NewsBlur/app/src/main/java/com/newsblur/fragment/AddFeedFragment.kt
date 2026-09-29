@@ -96,8 +96,10 @@ class AddFeedFragment : BottomSheetDialogFragment() {
                             syncServiceState.forceFeedsFolders()
                             FeedUtils.triggerSync(requireContext())
                             val host = requireActivity()
+                            // A tablet's feed list slide-over (FeedListDrawer.kt) is a Main that takes the intent itself.
+                            val feedList = if (host is Main) host.javaClass else Main::class.java
                             host.startActivity(
-                                Intent(host, Main::class.java).apply {
+                                Intent(host, feedList).apply {
                                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                                     putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, feedId)
                                 },
