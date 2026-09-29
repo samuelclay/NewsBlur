@@ -428,8 +428,18 @@ def exception_change_feed_address(request):
             )
         except Feed.DoesNotExist:
             try:
-                feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
-                created_branch = True
+                new_feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
+                # Feed.save folds a new row into a feed another request created at this address
+                # in the meantime and leaves the instance without an id; that feed is not ours.
+                created_branch = new_feed.pk is not None
+                if created_branch:
+                    feed = new_feed
+                else:
+                    feed = Feed.objects.get(
+                        hash_address_and_link=Feed.generate_hash_address_and_link(
+                            feed_address, feed.feed_link
+                        )
+                    )
             except IntegrityError:
                 feed = Feed.objects.get(
                     hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
@@ -537,8 +547,17 @@ def exception_change_feed_link(request):
             )
         except Feed.DoesNotExist:
             try:
-                feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
-                created_branch = True
+                new_feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
+                # See exception_change_feed_address: no id means another request's feed won.
+                created_branch = new_feed.pk is not None
+                if created_branch:
+                    feed = new_feed
+                else:
+                    feed = Feed.objects.get(
+                        hash_address_and_link=Feed.generate_hash_address_and_link(
+                            feed.feed_address, feed_link
+                        )
+                    )
             except IntegrityError:
                 feed = Feed.objects.get(
                     hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
