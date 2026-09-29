@@ -53,6 +53,13 @@ img {
     max-height: none !important;
 }
 
+/* reading.css: a tapped photo zooms into StoryImageViewer.kt, which takes its opening frame
+   from the page, so the tap highlight would tint the photo through the whole zoom. */
+.NB-story img,
+.NB-story a:has(img) {
+    -webkit-tap-highlight-color: transparent;
+}
+
 .NB-story img.NB-briefing-section-icon {
     display: inline-block !important;
     width: 1em !important;
