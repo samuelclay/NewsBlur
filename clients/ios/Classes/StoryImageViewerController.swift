@@ -133,12 +133,15 @@ struct StoryImageSource {
 
 extension StoryDetailViewController {
     func receiveImageMessage(_ message: WKScriptMessage) {
+        let accessibility = (message.body as? [String: Any])?["accessibilityActivation"] as? Bool == true
         guard message.frameInfo.isMainFrame, message.webView === webView,
               let source = StoryImageSource(message.body), isCurrentStoryImageLoad(source.loadID),
+              canOpenStoryImage(accessibility: accessibility),
               appDelegate.storyPagesViewController.currentPage === self,
               let window = webView.window, let presenter = window.rootViewController,
               presenter.presentedViewController == nil, !openingImage else { return }
         openingImage = true
+        let scrollOffset = webView.scrollView.contentOffset
         let scale = webView.bounds.width / source.viewportWidth
         let localRect = source.rect.applying(CGAffineTransform(scaleX: scale, y: scale))
         let sourceRect = webView.convert(localRect, to: window)
@@ -149,6 +152,8 @@ extension StoryDetailViewController {
             guard let self else { return }
             self.openingImage = false
             guard let presenter, self.isCurrentStoryImageLoad(source.loadID),
+                  self.canOpenStoryImage(accessibility: accessibility),
+                  self.webView.scrollView.contentOffset == scrollOffset,
                   self.appDelegate.storyPagesViewController.currentPage === self,
                   self.webView.window === window, presenter.presentedViewController == nil else { return }
             let viewer = StoryImageViewerController(source: source, preview: snapshot, origin: sourceRect)
