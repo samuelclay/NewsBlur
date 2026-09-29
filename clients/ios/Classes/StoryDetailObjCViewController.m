@@ -55,6 +55,7 @@
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic) BOOL hasScrolledAwayFromTop;
 @property (nonatomic) BOOL hasLiveScrollFraction;
+@property (nonatomic) BOOL suppressStoryImageTap;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -161,6 +162,8 @@
     tapGesture.numberOfTapsRequired = 1;
     tapGesture.delegate = self;
     [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
+    // StoryDetailObjCViewController.m lets article scrolling win over a short image tap.
+    [tapGesture requireGestureRecognizerToFail:self.webView.scrollView.panGestureRecognizer];
     [self.webView addGestureRecognizer:tapGesture];
     
     UITapGestureRecognizer *doubleDoubleTapGesture = [[UITapGestureRecognizer alloc]
@@ -186,6 +189,11 @@
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
 //    NSLog(@"%@: taps: %@, state: %@", gestureRecognizer.class, @(touch.tapCount), @(gestureRecognizer.state));
     inDoubleTap = (touch.tapCount == 2);
+    if ([gestureRecognizer isKindOfClass:UITapGestureRecognizer.class] &&
+        ((UITapGestureRecognizer *)gestureRecognizer).numberOfTapsRequired == 1) {
+        // StoryDetailObjCViewController.m remembers momentum before this touch can stop it.
+        self.suppressStoryImageTap = self.webView.scrollView.isDragging || self.webView.scrollView.isDecelerating;
+    }
     
     CGPoint pt = [self pointForGesture:gestureRecognizer];
     if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return YES;
@@ -205,35 +213,45 @@
     return YES;
 }
 
+- (BOOL)canOpenStoryImageForAccessibility:(BOOL)accessibility {
+    UIScrollView *scrollView = self.webView.scrollView;
+    return !scrollView.isDragging && !scrollView.isDecelerating &&
+        (accessibility || (!self.suppressStoryImageTap && !inDoubleTap));
+}
+
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
 //    NSLog(@"Gesture tap: %ld (%ld) - %d", (long)gestureRecognizer.state, (long)UIGestureRecognizerStateEnded, inDoubleTap);
     [[ReadTimeTracker shared] recordActivity];
 
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && self.presentedViewController == nil) {
+        if (![self canOpenStoryImageForAccessibility:NO]) return;
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
         if (inDoubleTap) return;
         // storyDetailView.js opens article images without triggering the reader's chrome gesture.
-        [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f)", pt.x, pt.y] completionHandler:nil];
-//        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
-        [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-            // Special case to handle the story title, Train, Save, and Share buttons.
-            if ([self isTag:tagName equalTo:@"DIV"]) {
-                [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
-                    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
-                        if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
-                            [self.appDelegate.storyPagesViewController tappedStory];
-                        }
+        CGPoint offset = self.webView.scrollView.contentOffset;
+        [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f, %f, %f, %f)",
+                                         pt.x, pt.y, offset.x, offset.y, self.webView.bounds.size.width] completionHandler:^(id openedImage, NSError *error) {
+            if ([openedImage isKindOfClass:NSNumber.class] && [openedImage boolValue]) return;
+            [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
+                // Special case to handle the story title, Train, Save, and Share buttons.
+                if ([self isTag:tagName equalTo:@"DIV"]) {
+                    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
+                        [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
+                            if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
+                                [self.appDelegate.storyPagesViewController tappedStory];
+                            }
+                        }];
                     }];
-                }];
-                
-                return;
-            }
-            
-            // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
-            if (![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
-                [self.appDelegate.storyPagesViewController tappedStory];
-            }
+
+                    return;
+                }
+
+                // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
+                if (![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+                    [self.appDelegate.storyPagesViewController tappedStory];
+                }
+            }];
         }];
     }
 }
@@ -287,19 +305,6 @@
 }
 
 - (void)pinchGesture:(UIPinchGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state == UIGestureRecognizerStateBegan && gestureRecognizer.scale > 1.0) {
-        CGPoint pt = [self pointForGesture:gestureRecognizer];
-        if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
-        if (inDoubleTap) return;
-        
-        [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-            if ([self isTag:tagName equalTo:@"IMG"]) {
-                [self showImageMenu:pt];
-                gestureRecognizer.state = UIGestureRecognizerStateCancelled;
-            }
-        }];
-    }
-    
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
@@ -2121,6 +2126,13 @@
 
 #pragma mark - Scrolling
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    if (scrollView == self.webView.scrollView) {
+        // StoryDetailObjCViewController.m keeps this touch suppressed even if the drag ends before image delivery.
+        self.suppressStoryImageTap = YES;
+    }
+}
+
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView {
     if (scrollView != self.webView.scrollView) return NO;
     // StoryDetailObjCViewController.m treats the native status-bar action as an explicit new reading position.
@@ -3463,11 +3475,6 @@
 
 - (BOOL)isTag:(NSString *)tagName equalTo:(NSString *)tagValue {
     return [tagName isKindOfClass:[NSString class]] && [tagName isEqualToString:tagValue];
-}
-
-- (void)showImageMenu:(CGPoint)pt {
-    // StoryImageViewerController.swift also handles the reader's existing pinch-to-preview gesture.
-    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f)", pt.x, pt.y] completionHandler:nil];
 }
 
 - (void)showLinkContextMenu:(CGPoint)pt {
