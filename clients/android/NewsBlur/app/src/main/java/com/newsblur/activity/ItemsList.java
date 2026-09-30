@@ -1242,6 +1242,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private void launchReadingActivity(FeedSet feedSet, String storyHash) {
         preparedReturnStoryHash = null;
         claimReadingLaunchParent();
+        // In a tablet split the reader already beside this list pages over to the tapped story,
+        // as the iPad does, instead of a new reader replacing it (Reading.kt).
+        Reading splitReader = Reading.peekSplitReader(getTaskId());
+        if (splitReader != null && StorySplitView.isInSplit(this) && splitReader.showStoryFromStoryList(feedSet, storyHash)) {
+            return;
+        }
         UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch, readerToolbarHidden);
     }
 
