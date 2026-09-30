@@ -123,7 +123,7 @@ class StoryViewAdapter(
     private val storyBookTypeface by lazy { ResourcesCompat.getFont(context, R.font.whitney_ssm_book_bas) }
     private var thumbnailStyle: ThumbnailStyle
     private var spacingStyle: SpacingStyle
-    private val storyOrder: StoryOrder
+    private lateinit var storyOrder: StoryOrder
     private val prefsRepo: PrefsRepo
     private var activeFeedIds: Set<String>? = null
     private val clusterThumbnailUrls = mutableMapOf<String, String?>()
@@ -152,6 +152,22 @@ class StoryViewAdapter(
         this.prefsRepo = prefsRepo
         useHardwareRowLayers = !BuildConfig.DEBUG || prefsRepo.getBoolean("debug_story_row_hardware_layers", true)
 
+        applyFeedSetFlags(fs)
+
+        textSize = prefsRepo.getListTextSize()
+        userId = prefsRepo.getUserDetails().id
+        thumbnailStyle = prefsRepo.getThumbnailStyle()
+        spacingStyle = prefsRepo.getSpacingStyle()
+
+        setHasStableIds(true)
+    }
+
+    // StoryViewAdapter.kt: how rows show read state, intelligence and feed names depends on the
+    // feed set, so a list that switches feed sets in place (ItemsList.switchStoryList) redoes it.
+    private fun applyFeedSetFlags(fs: FeedSet) {
+        ignoreReadStatus = false
+        ignoreIntel = false
+        singleFeed = false
         if (fs.isGlobalShared) {
             ignoreReadStatus = false
             ignoreIntel = true
@@ -207,14 +223,7 @@ class StoryViewAdapter(
             ignoreIntel = true
             singleFeed = false
         }
-
-        textSize = prefsRepo.getListTextSize()
-        userId = prefsRepo.getUserDetails().id
-        thumbnailStyle = prefsRepo.getThumbnailStyle()
-        spacingStyle = prefsRepo.getSpacingStyle()
         storyOrder = prefsRepo.getStoryOrder(fs)
-
-        setHasStableIds(true)
     }
 
     fun updateFeedSet(fs: FeedSet?) {
@@ -226,6 +235,7 @@ class StoryViewAdapter(
             returnHighlight?.cancel()
             returnHighlight = null
             diffFeedSet = fs?.let { FeedSet.fromCompactSerial(it.toCompactSerial()) }
+            fs?.let(::applyFeedSetFlags)
         }
         this.fs = fs
     }
