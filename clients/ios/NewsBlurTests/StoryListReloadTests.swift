@@ -570,6 +570,7 @@ import WebKit
             let browsedClassifiers: [String: Any] = ["authors": ["Other": -1], "tags": ["other": 0]]
             collection.activeClassifiers = ["2": browsedClassifiers]
             XCTAssertFalse(trainer.isViewLoaded)
+            XCTAssertFalse(trainer.isStoryTrainer)
             XCTAssertEqual(trainer.reloadCount, 0, "The inline action must work before any trainer dialog reload")
             let page = StoryDetailViewController()
             page.appDelegate = appDelegate
@@ -580,6 +581,12 @@ import WebKit
             let url = try XCTUnwrap(URL(string: "http://ios.newsblur.com/classify-\(kind)/\(value)"))
             let action = InlineClassifierNavigationAction(url: url)
             for expectedScore in [-1, 0] {
+                let browsedFeedID = expectedScore < 0 ? 2 : 3
+                if expectedScore == 0 {
+                    // StoryListReloadTests.swift replaces the source response again between inline taps, while A stays mounted.
+                    collection.activeFeed = ["id": browsedFeedID]
+                    collection.activeClassifiers = ["\(browsedFeedID)": browsedClassifiers]
+                }
                 // StoryListReloadTests.swift exercises the exact author/tag link handler without presenting the trainer.
                 page.webView(webView, decidePolicyFor: unsafeBitCast(action, to: WKNavigationAction.self)) { policy in
                     XCTAssertEqual(policy, .cancel)
@@ -589,8 +596,8 @@ import WebKit
                 XCTAssertEqual(appDelegate.savedClassifierParameters?[parameter] as? String, value)
                 XCTAssertEqual(appDelegate.savedClassifierParameters?["feed_id"] as? String, "1")
                 XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "titles", value: "Retained"), -1)
-                XCTAssertEqual(collection.activeClassifiers["2"] as? NSDictionary, browsedClassifiers as NSDictionary)
-                XCTAssertEqual(collection.activeFeed?["id"] as? Int, 2)
+                XCTAssertEqual(collection.activeClassifiers["\(browsedFeedID)"] as? NSDictionary, browsedClassifiers as NSDictionary)
+                XCTAssertEqual(collection.activeFeed?["id"] as? Int, browsedFeedID)
                 XCTAssertFalse(trainer.isViewLoaded)
             }
         }
