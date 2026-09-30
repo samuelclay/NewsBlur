@@ -1,5 +1,6 @@
 package com.newsblur.activity;
 
+import static com.newsblur.service.NbSyncManager.UPDATE_METADATA;
 import static com.newsblur.service.NbSyncManager.UPDATE_REBUILD;
 import static com.newsblur.service.NbSyncManager.UPDATE_STATUS;
 import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
@@ -93,7 +94,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @AndroidEntryPoint
-public abstract class ItemsList extends NbActivity implements ReadingActionListener {
+public abstract class ItemsList extends NbActivity implements ReadingActionListener,
+        com.newsblur.fragment.InfrequentCutoffDialogFragment.InfrequentCutoffChangedListener {
 
     // The story list each task's reader belongs to, keyed by task so two NewsBlur windows (desktop
     // mode, system split screen) each keep their own.
@@ -125,6 +127,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_SESSION_DATA_KEY = "session_data_key";
     // Slide the feed list over this story list as soon as it opens (tablet launch, FeedListDrawer.kt).
     public static final String EXTRA_OPEN_FEED_DRAWER = "open_feed_drawer";
+    // The tablet's launch story list waits under the feed list slide-over without loading
+    // anything (FeedListDrawer.kt) until a feed is picked or the slide-over closes.
+    public static final String EXTRA_DEFER_STORIES = "defer_stories";
+    private static final String BUNDLE_STORIES_DEFERRED = "storiesDeferred";
+    private static final String BUNDLE_STORY_LIST_INTENT = "storyListIntent";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private static final String BUNDLE_SPLIT_READING_STORY_HASH = "splitReadingStoryHash";
     private static final String BUNDLE_FEED_DRAWER_PENDING = "feedDrawerPending";
@@ -143,6 +150,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     protected ItemListViewModel viewModel;
     protected FeedSet fs;
+    // What this list shows: its toolbar, its own menu items, its saved search id (StoryListKind.kt).
+    protected StoryListKind kind;
+    private boolean storiesDeferred = false;
+    // Set once switchStoryList shows another feed here, so a rotation reopens that one.
+    private boolean switchedStoryList = false;
+    // The load a switchStoryList holds back until the feed list has slid away.
+    @Nullable
+    private Runnable pendingSwitchLoad;
 
     private ItemSetFragment itemSetFragment;
     protected ActivityItemslistBinding binding;
@@ -209,6 +224,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onCreate(Bundle bundle) {
         Trace.beginSection("ItemsListOnCreate");
         super.onCreate(bundle);
+        Intent switchedIntent = bundle != null ? androidx.core.os.BundleCompat.getParcelable(bundle, BUNDLE_STORY_LIST_INTENT, Intent.class) : null;
+        if (switchedIntent != null) {
+            setIntent(switchedIntent);
+            switchedStoryList = true;
+        }
+        storiesDeferred = bundle != null
+                ? bundle.getBoolean(BUNDLE_STORIES_DEFERRED, false)
+                : getIntent().getBooleanExtra(EXTRA_DEFER_STORIES, false);
         readerToolbarHidden = bundle != null
                 ? bundle.getBoolean(Reading.EXTRA_TOOLBAR_HIDDEN, false)
                 : getIntent().getBooleanExtra(Reading.EXTRA_TOOLBAR_HIDDEN, false);
@@ -219,6 +242,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
+        kind = StoryListKind.fromIntent(getIntent(), fs);
         sessionDataKey = getIntent().getStringExtra(EXTRA_SESSION_DATA_KEY);
         SessionDataSourceRegistry.Entry sessionDataEntry = SessionDataSourceRegistry.get(sessionDataKey);
         if (sessionDataEntry != null) {
@@ -230,21 +254,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             TryFeedSessionResetter.INSTANCE.reset(syncServiceState, dbHelper, fs);
         }
 
-        // this is not strictly necessary, since our first refresh with the fs will swap in
-        // the correct session, but that can be delayed by sync backup, so we try here to
-        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        feedUtils.prepareReadingSession(fs, false);
-        // FolderItemsList.java and FeedItemsList.kt share the "folderName" extra.
-        LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
-        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false) ||
-            getIntent().getBooleanExtra(EXTRA_AUTO_OPEN_STORY, false)) {
-            String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
-            launchReadingActivity(fs, hash);
-        } else if (prefsRepo.isAutoOpenFirstUnread()) {
-            StateFilter intelState = prefsRepo.getStateFilter();
-            if (dbHelper.getUnreadCount(fs, intelState) > 0) {
-                launchReadingActivity(fs, Reading.FIND_FIRST_UNREAD);
-            }
+        if (!storiesDeferred) {
+            // this is not strictly necessary, since our first refresh with the fs will swap in
+            // the correct session, but that can be delayed by sync backup, so we try here to
+            // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
+            feedUtils.prepareReadingSession(fs, false);
+            // FolderItemsList.java and FeedItemsList.kt share the "folderName" extra.
+            LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
+            openLaunchStory();
         }
 
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
@@ -297,6 +314,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         feedDrawerPending = bundle != null
                 ? bundle.getBoolean(BUNDLE_FEED_DRAWER_PENDING, false)
                 : getIntent().getBooleanExtra(EXTRA_OPEN_FEED_DRAWER, false);
+        kind.setupToolbar(this);
+        viewModel.getNextSession().observe(this, session -> kind.onNextSession(this, session));
+        if (storiesDeferred) showDeferredContent(false);
         Trace.endSection();
     }
 
@@ -309,6 +329,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
         }
         savedInstanceState.putBoolean(BUNDLE_FEED_DRAWER_PENDING, feedDrawerPending);
+        savedInstanceState.putBoolean(BUNDLE_STORIES_DEFERRED, storiesDeferred);
+        if (switchedStoryList) {
+            savedInstanceState.putParcelable(BUNDLE_STORY_LIST_INTENT, getIntent());
+        }
         if (preparedReturnStoryHash != null && Reading.peekSplitReader(getTaskId()) != null && StorySplitView.isInSplit(this)) {
             savedInstanceState.putString(BUNDLE_SPLIT_READING_STORY_HASH, preparedReturnStoryHash);
         }
@@ -356,9 +380,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (itemSetFragment != null) {
             itemSetFragment.refreshLoadingIndicators();
         }
+        // Resumed means no feed list slide-over is on top, so no picture of one belongs here.
+        FeedListDrawer.removeSnapshot();
         if (feedDrawerPending) {
             feedDrawerPending = false;
-            FeedListDrawer.open(this, getIntent().getStringExtra(Main.EXTRA_FORCE_SHOW_FEED_ID));
+            // At launch the feed list is the first screen, already open over the waiting list.
+            FeedListDrawer.open(this, getIntent().getStringExtra(Main.EXTRA_FORCE_SHOW_FEED_ID), storiesDeferred);
         }
         if (slidesOverFeedDrawer() || StorySplitView.isInSplit(this)) {
             // A rotation recreates this list but not the reader beside it, which still reports
@@ -433,12 +460,23 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             showItemListSettingsPopup(findViewById(R.id.toolbar));
             return true;
         }
-        return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
+        if (contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId())) {
+            return true;
+        }
+        return kind.onOptionsItemSelected(this, item);
     }
 
     protected boolean prepareItemListMenuModel(Menu menu) {
         boolean showSavedSearch = !TextUtils.isEmpty(binding.itemlistSearchQuery.getText());
-        return contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
+        boolean prepared = contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
+        return kind.prepareMenu(this, menu) || prepared;
+    }
+
+    @Override
+    public void infrequentCutoffChanged(int newValue) {
+        prefsRepo.setInfrequentCutoff(newValue);
+        dbHelper.clearInfrequentSession();
+        restartReadingSession();
     }
 
     // infix fun Int.has(flag: Int) = (this and flag) != 0
@@ -457,6 +495,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             if (itemSetFragment != null) {
                 itemSetFragment.hasUpdated();
             }
+        }
+        if ((updateType & UPDATE_METADATA) != 0) {
+            kind.onMetadataUpdated(this);
         }
     }
 
@@ -486,7 +527,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private boolean openDifferentStoryListActivity(@NonNull Session session) {
-        if (session.getFeedSet().isFolder() && !(this instanceof FolderItemsList)) {
+        if (session.getFeedSet().isFolder() && !(kind instanceof StoryListKind.Folder)) {
             if (sessionDataSource != null) {
                 sessionDataSource.setSession(session);
             }
@@ -1209,6 +1250,104 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         refreshStoryHeaderControls();
     }
 
+    // A list waiting under the feed list slide-over shows only its background, so no toolbar or
+    // empty list flashes in the pane before the slide-over covers it (ItemsList.java).
+    private void showDeferredContent(boolean show) {
+        ViewGroup root = (ViewGroup) binding.getRoot();
+        for (int i = 0; i < root.getChildCount(); i++) {
+            root.getChildAt(i).setAlpha(show ? 1f : 0f);
+        }
+    }
+
+    // A story the launch intent asks for (a widget tap, a notification), or the first unread one.
+    private void openLaunchStory() {
+        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false) ||
+            getIntent().getBooleanExtra(EXTRA_AUTO_OPEN_STORY, false)) {
+            String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
+            launchReadingActivity(fs, hash);
+        } else if (prefsRepo.isAutoOpenFirstUnread()) {
+            StateFilter intelState = prefsRepo.getStateFilter();
+            if (dbHelper.getUnreadCount(fs, intelState) > 0) {
+                launchReadingActivity(fs, Reading.FIND_FIRST_UNREAD);
+            }
+        }
+    }
+
+    /** True while this list waits under the feed list slide-over without loading (EXTRA_DEFER_STORIES). */
+    public boolean areStoriesDeferred() {
+        // Also while a switch to a picked feed waits for the feed list to slide away.
+        return storiesDeferred || pendingSwitchLoad != null;
+    }
+
+    /** The feed list slide-over closed without a pick, so load the stories this list waited on. */
+    public void startDeferredStories() {
+        if (!storiesDeferred) return;
+        storiesDeferred = false;
+        showDeferredContent(true);
+        feedUtils.prepareReadingSession(fs, false);
+        LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
+        triggerSync();
+        scheduleInitialFetchingBanner();
+        itemSetFragment.hasUpdated();
+        refreshStoryHeaderControls();
+        openLaunchStory();
+    }
+
+    /**
+     * Shows another feed, folder or river in this story list instead of opening a new one. The
+     * tablet's feed list slide-over (FeedListDrawer.kt) hands its picks here, so the story list
+     * pane stays in place as the feed list slides away and only its stories change, the way the
+     * iPad reloads its story titles. [next] is the intent that would have opened the pick.
+     */
+    public void switchStoryList(Intent next) {
+        FeedSet nextFs = (FeedSet) next.getSerializableExtra(EXTRA_FEED_SET);
+        if (nextFs == null) return;
+        // The reader beside this list fades to the empty pane's look alongside the slide and parks,
+        // leaving the reading session, which switches to the pick, alone (Reading.park).
+        Reading splitReader = Reading.peekSplitReader(getTaskId());
+        if (splitReader != null && StorySplitView.isInSplit(this)) {
+            splitReader.fadeToPlaceholder(FeedListDrawer.SLIDE_DURATION_MS);
+            splitReader.park();
+        }
+        setIntent(next);
+        switchedStoryList = true;
+        if (storiesDeferred) showDeferredContent(true);
+        storiesDeferred = false;
+        fs = nextFs;
+        kind = StoryListKind.fromIntent(next, fs);
+        sessionDataKey = next.getStringExtra(EXTRA_SESSION_DATA_KEY);
+        SessionDataSourceRegistry.Entry sessionDataEntry = SessionDataSourceRegistry.get(sessionDataKey);
+        sessionDataSource = sessionDataEntry != null ? sessionDataEntry.getSessionDataSource() : null;
+        storyListSessionDataSource = sessionDataEntry != null ? sessionDataEntry.getStoryListSessionDataSource() : null;
+        if (isStorySearchVisible() || !TextUtils.isEmpty(binding.itemlistSearchQuery.getText())) {
+            hideStorySearch(true);
+        }
+        String folderName = next.getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME);
+        LastStoryList.remember(this, this, fs, folderName);
+        kind.setupToolbar(this);
+        // A rotation replays the view model's last session into the kind, so keep it on this pick.
+        viewModel.updateSession(new Session(fs, folderName, (com.newsblur.domain.Feed) next.getSerializableExtra(FeedItemsList.EXTRA_FEED)));
+        itemSetFragment.resetEmptyState();
+        // Each feed set keeps its own list, grid or magazine style.
+        itemSetFragment.updateListStyle();
+        itemSetFragment.scrollToTop();
+        refreshStoryHeaderControls();
+        // The feed list slides away over this list on the same main thread, so the reading session
+        // switches and the stories load once it is gone rather than stalling its slide.
+        View root = binding.getRoot();
+        if (pendingSwitchLoad != null) root.removeCallbacks(pendingSwitchLoad);
+        pendingSwitchLoad = () -> {
+            pendingSwitchLoad = null;
+            if (isFinishing() || isDestroyed()) return;
+            feedUtils.prepareReadingSession(fs, false);
+            triggerSync();
+            scheduleInitialFetchingBanner();
+            itemSetFragment.hasUpdated();
+            openLaunchStory();
+        };
+        root.postDelayed(pendingSwitchLoad, FeedListDrawer.SLIDE_DURATION_MS);
+    }
+
     public void startReadingActivity(FeedSet feedSet, String storyHash) {
         launchReadingActivity(feedSet, storyHash);
     }
@@ -1702,6 +1841,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
     }
 
-    abstract String getSaveSearchFeedId();
+    String getSaveSearchFeedId() {
+        return kind.saveSearchFeedId();
+    }
 
 }
