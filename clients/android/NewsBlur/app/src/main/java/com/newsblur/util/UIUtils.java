@@ -226,9 +226,13 @@ public class UIUtils {
         }
         // using a custom view breaks the system-standard ability to tap the icon or title to return
         // to the previous activity. Re-implement that here.
-        arrowView.setOnClickListener(v0 -> activity.finish());
-        titleView.setOnClickListener(v1 -> activity.finish());
-        iconView.setOnClickListener(v12 -> activity.finish());
+        // UIUtils.java lets a tablet's root story list slide the feed list over instead of closing.
+        View.OnClickListener onBack = activity instanceof ItemsList
+                ? v -> ((ItemsList) activity).backToFeedList()
+                : v -> activity.finish();
+        arrowView.setOnClickListener(onBack);
+        titleView.setOnClickListener(onBack);
+        iconView.setOnClickListener(onBack);
         return iconView;
     }
 

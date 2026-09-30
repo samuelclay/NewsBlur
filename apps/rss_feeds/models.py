@@ -48,6 +48,7 @@ from redis.exceptions import LockError
 
 from apps.rss_feeds.tasks import (
     IndexDiscoverStories,
+    MergeFeeds,
     PushFeeds,
     ScheduleCountTagsForUser,
     UpdateFeeds,
@@ -1134,10 +1135,13 @@ class Feed(models.Model):
         if "%(NEWSBLUR_DIR)s" in self.feed_address:
             return False, self
 
+        # Only the network lookup runs under the time limit. The save below can merge this
+        # feed into another one that already holds the discovered address, and a merge run
+        # inside the timelimit thread was abandoned when the limit passed and died partway
+        # through moving a popular feed's readers (forum #13860). apps/rss_feeds/models.py
         @timelimit(10)
         def _1():
             feed_address = None
-            feed = self
             found_feed_urls = []
             try:
                 logging.debug(" ---> Checking: %s" % self.feed_address)
@@ -1155,46 +1159,57 @@ class Feed(models.Model):
                     found_feed_urls = []
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
                     feed_address = found_feed_urls[0]
-
-            if feed_address:
-                if any(
-                    ignored_domain in feed_address
-                    for ignored_domain in [
-                        "feedburner.com/atom.xml",
-                        "feedburner.com/feed/",
-                        "feedsportal.com",
-                    ]
-                ):
-                    logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
-                    return False, self
-                try:
-                    self.feed_address = strip_underscore_from_feed_address(feed_address)
-                    feed = self.save()
-                    feed.count_subscribers()
-                    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
-                    feed.has_feed_exception = False
-                    feed.active = True
-                    feed = feed.save()
-                except IntegrityError:
-                    original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
-                    original_feed.has_feed_exception = False
-                    original_feed.active = True
-                    original_feed.save()
-                    merge_feeds(original_feed.pk, self.pk)
-            return feed_address, feed
+            return feed_address
 
         if self.feed_address_locked:
             return False, self
 
         try:
-            feed_address, feed = _1()
+            feed_address = _1()
         except TimeoutError as e:
             logging.debug("   ---> [%-30s] Feed address check timed out..." % (self.log_title[:30]))
             self.save_feed_history(505, "Timeout", e)
-            feed = self
-            feed_address = None
+            return False, self
 
-        return bool(feed_address), feed
+        if not feed_address:
+            return False, self
+        if any(
+            ignored_domain in feed_address
+            for ignored_domain in [
+                "feedburner.com/atom.xml",
+                "feedburner.com/feed/",
+                "feedsportal.com",
+            ]
+        ):
+            logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
+            return False, self
+
+        feed_address = strip_underscore_from_feed_address(feed_address)
+        # Feed.save merges into a feed that already holds this address rather than raising.
+        # A merge that would move MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS or more readers goes to
+        # its own task instead, so it gets a time limit it can finish in and this fetch batch
+        # moves on; this feed keeps its old address until the merge settles which feed
+        # survives. A smaller merge cut short leaves this feed's row with its old address too,
+        # so its next failing fetch lands here again and the merge carries on.
+        holder = Feed.feed_holding_address(feed_address, self.feed_link, exclude_ids=[self.pk])
+        if holder:
+            from apps.reader.models import UserSubscription
+
+            _, losing_feed, _, _, _, _ = merge_feeds_orientation(holder, self)
+            moving = UserSubscription.objects.filter(feed_id=losing_feed.pk).count()
+            if moving >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
+                if queue_merge_feeds_once(holder.pk, self.pk, feed_address):
+                    logging.debug(
+                        "   ---> [%-30s] ~FRAddress belongs to feed %s, queued a merge that moves %s "
+                        "subscriptions" % (self.log_title[:30], holder.pk, moving)
+                    )
+                return False, self
+        self.feed_address = feed_address
+        feed = self.save()
+        if not feed:
+            # The row was deleted while this check ran and nothing took its place.
+            return False, self
+        return settle_address_check_merge(feed, feed_address)
 
     def save_feed_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(
@@ -5824,6 +5839,22 @@ FETCH_DEFERRAL_KEY = "fetch_deferred:%s"
 # A merge that keeps finding yet another feed for the survivor's final save to collide with
 # stops widening its lock set here. apps/rss_feeds/models.py
 MERGE_FEEDS_MAX_LOCKS = 6
+# A branch needs at least this many subscriptions before it can outlive the feed it is branched
+# from in a merge (merge_feeds_inverted_branch). Surviving clears its parent and makes its
+# address public, and a reader's private URL (a token in the address) is read by one account,
+# maybe a few; 12,170 branches on production had exactly one reader in September 2026. A feed wrongly
+# re-parented under a copy has hundreds or thousands. apps/rss_feeds/models.py
+MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS = 10
+# A merge that would move at least this many subscriptions is too big for a fetch task: the
+# address check queues it as its own task (apps/rss_feeds/tasks.py MergeFeeds), and
+# merge_feeds_locked logs the call that finishes it if it is cut short. apps/rss_feeds/models.py
+MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS = 1000
+# Set while a MergeFeeds for a pair of feeds is queued or running, so each failing fetch of the
+# feed during a long merge does not queue another one (queue_merge_feeds_once). It lives as
+# long as the task's hard time limit, so a merge killed without clearing it can be queued again
+# after that. apps/rss_feeds/models.py
+MERGE_FEEDS_QUEUED_KEY = "merge_feeds_queued:%s:%s"
+MERGE_FEEDS_QUEUED_SECONDS = 65 * 60
 # The merge locks this thread holds, by feed id. merge_feeds_locked ends with a full
 # Feed.save of the survivor, which merges again on a hash collision; that nested merge must
 # not wait on locks its own caller holds, and a long merge renews the leases of all of them.
@@ -5970,8 +6001,11 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     merge runs with. A feed parked by restore_merged_feed always folds into the other one
     with the other one's parent kept; otherwise the feed with more readers survives, and a
     feed branched from another gives way to the unbranched one and lends it its address
-    without the underscore. merge_feeds_locked applies the result; merge_feeds uses it to find
-    the third feed the survivor's final save would merge with. apps/rss_feeds/models.py
+    without the underscore, unless the unbranched feed is the branch's own parent and the
+    branch has more subscriptions and at least MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS of
+    them (see merge_feeds_inverted_branch). merge_feeds_locked applies the result;
+    merge_feeds uses it to find the third feed the survivor's final save would merge with.
+    apps/rss_feeds/models.py
     """
     # A feed parked by restore_merged_feed carries a placeholder hash while the original row
     # comes back; Feed.save keeps that hash and folds the row into the restored feed on any
@@ -5985,12 +6019,92 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
     branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
     survivor_address = original_feed.feed_address
-    if (heavier_dupe or branched_original) and not force:
+    inverted_branch = None if force else merge_feeds_inverted_branch(original_feed, duplicate_feed)
+    if inverted_branch:
+        # The branch is the feed people actually read, so it survives with its own address;
+        # merge_feeds_locked clears its parent, which is the other feed being folded in.
+        if inverted_branch.pk == duplicate_feed.pk:
+            original_feed, duplicate_feed = duplicate_feed, original_feed
+        survivor_address = original_feed.feed_address
+    elif (heavier_dupe or branched_original) and not force:
         original_feed, duplicate_feed = duplicate_feed, original_feed
         survivor_address = original_feed.feed_address
         if branched_original:
             survivor_address = strip_underscore_from_feed_address(duplicate_feed.feed_address)
     return original_feed, duplicate_feed, survivor_address, force, preserve_branch_from_feed, parked_duplicate
+
+
+def queue_merge_feeds_once(original_feed_id, duplicate_feed_id, feed_address=None):
+    """Queue MergeFeeds for this pair unless one is already queued or running, and say whether
+    this call queued it. The key is the same whichever way round the pair is given.
+    apps/rss_feeds/models.py
+    """
+    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    key = MERGE_FEEDS_QUEUED_KEY % tuple(sorted([original_feed_id, duplicate_feed_id]))
+    if not r.set(key, 1, nx=True, ex=MERGE_FEEDS_QUEUED_SECONDS):
+        return False
+    MergeFeeds.apply_async(args=(original_feed_id, duplicate_feed_id, feed_address))
+    return True
+
+
+def clear_merge_feeds_queued(original_feed_id, duplicate_feed_id):
+    """Let the next collision of this pair queue a merge again (MergeFeeds calls this when it
+    ends, however it ends). apps/rss_feeds/models.py"""
+    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    r.delete(MERGE_FEEDS_QUEUED_KEY % tuple(sorted([original_feed_id, duplicate_feed_id])))
+
+
+def settle_address_check_merge(feed, feed_address):
+    """Finish check_feed_link_for_feed_address once its save, and any merge that save set off
+    inline or through MergeFeeds, is done: the surviving feed takes the discovered address
+    when it does not already have it (a merge keeps the heavier feed's own address, and the
+    feed that held the discovered one is gone now) and is marked healthy only if it did.
+    Returns (fixed, feed) for the fetcher, which records an error when nothing was fixed.
+    apps/rss_feeds/models.py
+    """
+    if feed.feed_address != feed_address:
+        if Feed.feed_holding_address(feed_address, feed.feed_link, exclude_ids=[feed.pk]):
+            # A merge cut short left the other feed in place; the next collision resumes it.
+            return False, feed
+        feed.feed_address = feed_address
+        feed = feed.save() or feed
+    feed.count_subscribers()
+    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
+    feed.has_feed_exception = False
+    feed.active = True
+    feed = feed.save() or feed
+    return True, feed
+
+
+def merge_feeds_inverted_branch(original_feed, duplicate_feed):
+    """The branched one of the two feeds when it is branched from the other one, the other one
+    is unbranched, and the branch has more subscriptions than the other one and at least
+    MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS of them, or None. A reader's private branch
+    normally gives way in a merge, but Change Feed Address used to re-parent an existing feed
+    under the reader's copy, which left popular feeds branched from small or empty ones;
+    Hacker News was one, and it lost a merge to an empty RSSHub copy (forum #13860). Which of
+    the two was created first says nothing either way (a merge re-parents branches onto a
+    newer survivor, and the bug re-parented feeds under older copies too), so the readers
+    decide. num_subscribers is summed over the whole branch family, so it reads the same on
+    both feeds; the subscription rows tell them apart. apps/rss_feeds/models.py
+    """
+    from apps.reader.models import UserSubscription
+
+    if original_feed.branch_from_feed_id == duplicate_feed.pk:
+        branch, trunk = original_feed, duplicate_feed
+    elif duplicate_feed.branch_from_feed_id == original_feed.pk:
+        branch, trunk = duplicate_feed, original_feed
+    else:
+        return None
+    if trunk.branch_from_feed_id:
+        return None
+    branch_readers = UserSubscription.objects.filter(feed_id=branch.pk).count()
+    if branch_readers < MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS:
+        return None
+    trunk_readers = UserSubscription.objects.filter(feed_id=trunk.pk).count()
+    if branch_readers > trunk_readers:
+        return branch
+    return None
 
 
 def merge_feeds_collision_id(
@@ -6125,6 +6239,20 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         original_feed.branch_from_feed = None
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by("-pk")
+    moving_subscriptions = user_subs.count()
+    if moving_subscriptions >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
+        logging.info(
+            " ---> merge_feeds is moving %s subscriptions from %s to %s; if it is stopped partway, "
+            "rerun merge_feeds(%s, %s, force=%s) to finish it"
+            % (
+                moving_subscriptions,
+                duplicate_feed.pk,
+                original_feed.pk,
+                original_feed.pk,
+                duplicate_feed.pk,
+                force,
+            )
+        )
     for user_sub in user_subs:
         renew_merge_feeds_locks()
         user_sub.switch_feed(original_feed, duplicate_feed)

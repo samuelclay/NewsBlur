@@ -19,6 +19,16 @@ Run tests:
 xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' test
 ```
 
+## App Store Releases
+
+- **Always release automatically after Apple approves the submission.** Select "Automatically release this version" in App Store Connect. This is Sam's standing preference; do not ask again unless he explicitly requests a manual hold for a particular release.
+- A request to release authorizes uploading the build and submitting it for App Review. Continue through submission and verify the App Review record says "Waiting for Review" or "In Review". An uploaded or processed build alone is not a submitted release.
+- Before bumping versions, check the live App Store version, App Store Connect build numbers, and changes since the previous release. For a patch release, increment the patch version and build number consistently across the app and extensions in `NewsBlur.xcodeproj/project.pbxproj`.
+- Write release notes from the actual included iOS changes. Commit the version bump and release instructions on `main` when requested, then push the release commit and an `iOS_<version>` tag for the exact source used to build.
+- Use a public, App Store-supported Xcode toolchain. Check `xcodebuild -version`; if the selected toolchain is a beta, use `DEVELOPER_DIR` for the installed public Xcode without changing the global selection. The current public installation is `~/Applications/Xcode-27.0.app`; verify that path/version before reuse.
+- Use the `NewsBlur` scheme, Release configuration, and `generic/platform=iOS` destination to archive. Validate the archive's version/build and signing, upload it, wait for processing, attach the matching build to the new iOS version, and submit it with automatic release after approval selected.
+- Report source commit/tag, version/build, and the verified App Store submission state separately. Do not describe a build awaiting Apple review as already available to users.
+
 ## Architecture Overview
 
 ### Language Mix
