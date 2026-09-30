@@ -19,6 +19,9 @@
 @property (nonatomic, strong) NSMutableDictionary *recentlyReadHashes;
 
 - (BOOL)isClusterMarkReadEnabledForStory:(NSDictionary *)story;
+- (NSDictionary *)activeFeedStoryWithHash:(NSString *)storyHash;
+- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId fallbackStory:(NSDictionary *)fallbackStory;
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId fallbackStory:(NSDictionary *)fallbackStory;
 
 @end
 
@@ -619,19 +622,29 @@
 }
 
 - (void)markStoryRead:(NSDictionary *)story {
-    [self markStoryRead:[story objectForKey:@"story_hash"] feedId:[story objectForKey:@"story_feed_id"]];
+    [self markStoryRead:[story objectForKey:@"story_hash"]
+                 feedId:[story objectForKey:@"story_feed_id"]
+          fallbackStory:story];
 }
 
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId {
+    NSDictionary *retainedStory = [[appDelegate.activeStory objectForKey:@"story_hash"] isEqualToString:storyId] ?
+        appDelegate.activeStory : nil;
+    [self markStoryRead:storyId feedId:feedId fallbackStory:retainedStory];
+}
+
+- (NSDictionary *)activeFeedStoryWithHash:(NSString *)storyHash {
+    for (NSDictionary *story in self.activeFeedStories) {
+        if ([[story objectForKey:@"story_hash"] isEqualToString:storyHash]) return story;
+    }
+    return nil;
+}
+
+- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId fallbackStory:(NSDictionary *)fallbackStory {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
-    NSDictionary *story = nil;
-    for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
-            story = s;
-            break;
-        }
-    }
+    // StoriesCollection.m keeps the retained reader's story available while Duo browses another source.
+    NSDictionary *story = [self activeFeedStoryWithHash:storyId] ?: fallbackStory;
     [self markStoryRead:story feed:feed];
     
     NSArray *otherFriendShares = [story objectForKey:@"shared_by_friends"];
@@ -651,6 +664,9 @@
 }
 
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
+    NSString *storyHash = [story objectForKey:@"story_hash"];
+    if (!storyHash.length) return;
+    BOOL storyIsInActiveFeed = [self activeFeedStoryWithHash:storyHash] != nil;
     NSString *feedIdStr;
     if (feed) {
         feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
@@ -678,7 +694,7 @@
 
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
-    [self replaceStory:newStory withId:newStoryIdStr];
+    if (storyIsInActiveFeed) [self replaceStory:newStory withId:newStoryIdStr];
     if (appDelegate.activeUsername.length) {
         [StoryFirstPageCache.shared recordStory:newStory fields:@[@"read_status"] account:appDelegate.activeUsername host:appDelegate.url];
         if ([self isClusterMarkReadEnabledForStory:story]) {
@@ -694,7 +710,7 @@
     // If not a feed, then don't bother updating local feed
     if (!feed || !storyFeedId) return;
     
-    self.visibleUnreadCount -= 1;
+    if (storyIsInActiveFeed) self.visibleUnreadCount -= 1;
     if (![appDelegate.recentlyReadFeeds containsObject:storyFeedId]) {
         [appDelegate.recentlyReadFeeds addObject:storyFeedId];
     }
@@ -764,19 +780,20 @@
 
 - (void)markStoryUnread:(NSDictionary *)story {
     [self markStoryUnread:[story objectForKey:@"story_hash"]
-                   feedId:[story objectForKey:@"story_feed_id"]];
+                   feedId:[story objectForKey:@"story_feed_id"]
+            fallbackStory:story];
 }
 
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId {
+    NSDictionary *retainedStory = [[appDelegate.activeStory objectForKey:@"story_hash"] isEqualToString:storyId] ?
+        appDelegate.activeStory : nil;
+    [self markStoryUnread:storyId feedId:feedId fallbackStory:retainedStory];
+}
+
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId fallbackStory:(NSDictionary *)fallbackStory {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
-    NSDictionary *story = nil;
-    for (NSDictionary *s in self.activeFeedStories) {
-        if ([[s objectForKey:@"story_hash"] isEqualToString:storyId]) {
-            story = s;
-            break;
-        }
-    }
+    NSDictionary *story = [self activeFeedStoryWithHash:storyId] ?: fallbackStory;
     [self markStoryUnread:story feed:feed];
     
     NSArray *otherFriendShares = [story objectForKey:@"shared_by_friends"];
@@ -796,6 +813,9 @@
 }
 
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed {
+    NSString *storyHash = [story objectForKey:@"story_hash"];
+    if (!storyHash.length) return;
+    BOOL storyIsInActiveFeed = [self activeFeedStoryWithHash:storyHash] != nil;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     if (!feed) {
         feedIdStr = @"0";
@@ -811,14 +831,14 @@
     
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
-    [self replaceStory:newStory withId:newStoryIdStr];
+    if (storyIsInActiveFeed) [self replaceStory:newStory withId:newStoryIdStr];
     if (appDelegate.activeUsername.length) [StoryFirstPageCache.shared recordStory:newStory fields:@[@"read_status"] account:appDelegate.activeUsername host:appDelegate.url];
 
 
     // If not a feed, then don't bother updating local feed.
     if (!feed) return;
     
-    self.visibleUnreadCount += 1;
+    if (storyIsInActiveFeed) self.visibleUnreadCount += 1;
     //    if ([self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
     [appDelegate.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
     //    }

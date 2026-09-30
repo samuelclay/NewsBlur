@@ -27,7 +27,7 @@ import XCTest
         fixture.app.releaseSavedFlush()
         await settle()
         fixture.controller.messageView.isHidden = false
-        fixture.controller.messageLabel.text = "Select a feed to read"
+        fixture.controller.messageLabel.text = "Select a feed or folder"
         fixture.controller.reloadImmediately()
         XCTAssertEqual(fixture.table.numberOfSections, 0)
 
@@ -1459,6 +1459,170 @@ import XCTest
         XCTAssertFalse(fixture.stories.isStoryUnread(story), "Authoritative rows resume the existing global read resolver")
     }
 
+    func test_incomingSourceResponseCannotReplaceDuoFullscreenRetainedArticle() async throws {
+        let fixture = makeFixture()
+        let detail = DetailViewController()
+        detail.appDelegate = fixture.app
+        detail.isCompact = false
+        if #available(iOS 17.0, *) { detail.traitOverrides.verticalSizeClass = .regular }
+        fixture.app.detailViewController = detail
+        let pages = FirstPageLoadingPages()
+        pages.appDelegate = fixture.app
+        pages.currentPage = StoryDetailViewController()
+        pages.nextPage = StoryDetailViewController()
+        pages.previousPage = StoryDetailViewController()
+        fixture.app.testPages = pages
+        defer {
+            fixture.app.testPages = nil
+            fixture.app.detailViewController = nil
+        }
+        fixture.open()
+        fixture.app.activeStory = ["story_hash": "outgoing-source:2", "story_feed_id": 99]
+        pages.currentPage.activeStoryId = "outgoing-source:2"
+        pages.currentPage.pageIndex = 2
+        // StoryFirstPageLoadingTests.swift feeds the same retained state created by StoryPages.resetPages during Duo source browsing.
+        pages.setValue(true, forKey: "retainsDuoSourceArticle")
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: makeStories(0..<4)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, ["first-page-0", "first-page-1", "first-page-2", "first-page-3"])
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "outgoing-source:2")
+        XCTAssertEqual(pages.currentPage.activeStoryId, "outgoing-source:2")
+        XCTAssertEqual(pages.currentPage.pageIndex, 2)
+        XCTAssertTrue(pages.pageChanges.isEmpty, "Loading titles must not select the new source's first article")
+        XCTAssertEqual(pages.advances, 0, "Only an explicit reader navigation action may leave the retained article")
+    }
+
+    func test_explicitNextUnreadCompletesAfterPagingWhileDuoRetainsAnotherSourcesArticle() async throws {
+        for explicitNext in [false, true] {
+            let fixture = makeFixture()
+            fixture.app.dictUnreadCounts = ["1": ["nt": 1, "ps": 0, "ng": 0]]
+            let detail = DetailViewController()
+            detail.appDelegate = fixture.app
+            detail.isCompact = false
+            if #available(iOS 17.0, *) { detail.traitOverrides.verticalSizeClass = .regular }
+            fixture.app.detailViewController = detail
+            let pages = FirstPageLoadingPages()
+            pages.appDelegate = fixture.app
+            pages.usesProductionUnreadAdvance = true
+            pages.currentPage = StoryDetailViewController()
+            pages.nextPage = StoryDetailViewController()
+            pages.previousPage = StoryDetailViewController()
+            fixture.app.testPages = pages
+            defer {
+                fixture.app.testPages = nil
+                fixture.app.detailViewController = nil
+            }
+            fixture.open()
+            fixture.app.activeStory = ["story_hash": "outgoing-source:2", "story_feed_id": 99]
+            pages.currentPage.activeStoryId = "outgoing-source:2"
+            pages.currentPage.pageIndex = 2
+            pages.setValue(true, forKey: "retainsDuoSourceArticle")
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            let readStories = makeStories(0..<4).map { story -> [String: Any] in
+                var readStory = story
+                readStory["read_status"] = 1
+                return readStory
+            }
+            fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: readStories))
+            await settle()
+            XCTAssertEqual(fixture.stories.locationOfNextUnreadStory(), -1)
+            XCTAssertEqual(fixture.app.unreadCount(), 1)
+            XCTAssertFalse(fixture.controller.pageFinished)
+            XCTAssertTrue(pages.pageChanges.isEmpty, "Loading the new source must retain the displayed article")
+            XCTAssertEqual(pages.advances, 0)
+
+            // StoryFirstPageLoadingTests.swift exercises the real Next action and its real page-2 callback;
+            // ordinary title-list pagination must not replace the retained article without that action.
+            if explicitNext { pages.doNextUnreadStory(nil) }
+            else { fixture.controller.fetchNextPage(nil) }
+            XCTAssertEqual(pages.waitingForNextUnreadFromServer, explicitNext)
+            fixture.app.reply(to: try feedPageRequest(2, in: fixture), with: response(stories: makeStories(4..<5)))
+            await settle()
+
+            XCTAssertEqual(fixture.hashes, (0..<5).map { "first-page-\($0)" })
+            XCTAssertEqual(pages.pageChanges, explicitNext ? [4] : [], "Only the pending explicit Next action may select the newly arrived unread story")
+            XCTAssertEqual(pages.advances, explicitNext ? 1 : 0)
+            XCTAssertFalse(pages.waitingForNextUnreadFromServer, "An unread response must complete the pending navigation")
+        }
+    }
+
+    func test_switchingSourcesCancelsPendingNextUnreadWhileDuoRetainsArticle() async throws {
+        let fixture = makeFixture()
+        fixture.app.dictUnreadCounts = ["1": ["nt": 1, "ps": 0, "ng": 0], "2": ["nt": 1, "ps": 0, "ng": 0]]
+        let detail = DetailViewController()
+        detail.appDelegate = fixture.app
+        detail.isCompact = false
+        if #available(iOS 17.0, *) { detail.traitOverrides.verticalSizeClass = .regular }
+        fixture.app.detailViewController = detail
+        let pages = FirstPageLoadingPages()
+        pages.appDelegate = fixture.app
+        pages.usesProductionUnreadAdvance = true
+        pages.loadingIndicator = UIActivityIndicatorView(style: .medium)
+        pages.buttonNext = UIButton(type: .system)
+        pages.circularProgressView = THCircularProgressView()
+        pages.currentPage = StoryDetailViewController()
+        pages.nextPage = StoryDetailViewController()
+        pages.previousPage = StoryDetailViewController()
+        fixture.app.testPages = pages
+        defer {
+            fixture.app.testPages = nil
+            fixture.app.detailViewController = nil
+        }
+        fixture.open()
+        let retainedStory: [AnyHashable: Any] = ["story_hash": "outgoing-source:2", "story_feed_id": 99]
+        fixture.app.activeStory = retainedStory
+        pages.currentPage.activeStoryId = "outgoing-source:2"
+        pages.currentPage.pageIndex = 2
+        pages.setValue(true, forKey: "retainsDuoSourceArticle")
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        var readStory = makeStories(0..<1)[0]
+        readStory["read_status"] = 1
+        fixture.app.reply(to: try feedPageRequest(1, in: fixture), with: response(stories: [readStory]))
+        await settle()
+        pages.doNextUnreadStory(nil)
+        let stalePageRequest = try feedPageRequest(2, in: fixture)
+        XCTAssertTrue(pages.waitingForNextUnreadFromServer)
+        XCTAssertTrue(pages.loadingIndicator.isAnimating)
+        XCTAssertFalse(pages.buttonNext.isEnabled)
+        XCTAssertTrue(pages.circularProgressView.isHidden)
+
+        fixture.stories.activeFeed = ["id": 2, "feed_title": "Another feed", "active": 1]
+        fixture.open()
+        // StoryFirstPageLoadingTests.swift restores the mounted article as the production Duo resetPages path does;
+        // the real feed reset and network generation handling remain active in this fixture.
+        fixture.app.activeStory = retainedStory
+        XCTAssertFalse(pages.waitingForNextUnreadFromServer, "Changing source must cancel the previous source's pending Next action")
+        XCTAssertFalse(pages.loadingIndicator.isAnimating, "Source changes must stop the canceled Next request's spinner")
+        XCTAssertTrue(pages.buttonNext.isEnabled)
+        XCTAssertFalse(pages.circularProgressView.isHidden)
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: stalePageRequest, with: response(stories: makeStories(1..<2)))
+        XCTAssertTrue(fixture.hashes.isEmpty, "The prior source's late pagination cannot populate the new source")
+        let sourceRequest = try XCTUnwrap(fixture.app.requests.firstIndex {
+            URLComponents(string: $0.url)?.path == "/reader/feed/2/" && query("page", in: $0.url) == "1"
+        })
+        var unreadStory = makeStories(10..<11)[0]
+        unreadStory["story_feed_id"] = 2
+        var newSourceResponse = response(stories: [unreadStory])
+        newSourceResponse["feed_id"] = 2
+        fixture.app.reply(to: sourceRequest, with: newSourceResponse)
+        await settle()
+
+        XCTAssertEqual(fixture.hashes, ["first-page-10"])
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "outgoing-source:2")
+        XCTAssertTrue(pages.pageChanges.isEmpty, "The prior source's Next action cannot select an unread article from the new source")
+        XCTAssertEqual(pages.advances, 0)
+    }
+
     func test_cachedArticleMissingFromUnreadRefreshStaysOpenUntilExplicitNextOrPrevious() async throws {
         for direction in [-1, 1] {
             let fixture = makeFixture()
@@ -2418,7 +2582,7 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     }
     override func cleanUpTryFeed() {}
     override func adjustStoryDetailWebView() {}
-    @objc(updateFeedDetailTitleView) func suppressTitleView() {}
+    override func updateFeedDetailTitleView() {}
 
     var testURL = "https://example.test"
     override var url: String! { testURL }
@@ -2480,11 +2644,15 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
 @MainActor private final class FirstPageLoadingPages: StoryPagesViewController {
     var pageChanges: [Int] = []
     var advances = 0
+    var usesProductionUnreadAdvance = false
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
     override func changePage(_ pageIndex: Int, animated: Bool) { pageChanges.append(pageIndex) }
     override func resizeScrollView() {}
-    override func advanceToNextUnread() { advances += 1 }
+    override func advanceToNextUnread() {
+        advances += 1
+        if usesProductionUnreadAdvance { super.advanceToNextUnread() }
+    }
     override func resetPages() {}
     override func hidePages() {}
 }

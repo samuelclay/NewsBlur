@@ -1588,6 +1588,12 @@
 		PREF5V1EW5W1FT000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */; };
 		PREM1EW5W1FT000000000002 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
 		PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PREM1EW5W1FT000000000001 /* PremiumView.swift */; };
+		F519D0A10516273849A00011 /* DuoLiveUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F519D0A10516273849A00002 /* DuoLiveUITests.swift */; };
+		F519D0A10516273849A00015 /* ReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00016 /* ReaderUITests.swift */; };
+		F519D0A10516273849A00012 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0007 /* XCTest.framework */; };
+		F519D0A10516273849A00013 /* AddSiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00002 /* AddSiteUITests.swift */; };
+		E91820260918000100000001 /* DuoPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91820260918000100000002 /* DuoPresentationTests.swift */; };
+		F519D0A10516273849A00016 /* LoginViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0004 /* LoginViewControllerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1653,6 +1659,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = FF8A94961DE3BB77000A4C31;
 			remoteInfo = "Story Notification Service Extension";
+		};
+		F519D0A10516273849A00005 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 175790592930605500490924;
+			remoteInfo = "NewsBlur Alpha";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2671,6 +2684,9 @@
 		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 		KBSH0RTC1E2B069B65F53900 /* KeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		PREM1EW5W1FT000000000001 /* PremiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumView.swift; sourceTree = "<group>"; };
+		F519D0A10516273849A00001 /* NewsBlurAlphaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewsBlurAlphaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E91820260918000100000002 /* DuoPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoPresentationTests.swift; sourceTree = "<group>"; };
+		F519D0A10516273849A00002 /* DuoLiveUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoLiveUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2811,6 +2827,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				17BD3BA52271102500F615ED /* Intents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F519D0A10516273849A0000B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F519D0A10516273849A00012 /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3005,6 +3029,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				F519D0A10516273849A00001 /* NewsBlurAlphaUITests.xctest */,
 				1D6058910D05DD3D006BFB54 /* NewsBlur.app */,
 				174939101C251BFE003D98AA /* Share Extension.appex */,
 				A9220000000000000000000F /* Subscribe Extension.appex */,
@@ -3023,6 +3048,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F519D0A10516273849A00004 /* NewsBlurAlphaUITests */,
 				17D669B82CE444390093C995 /* Releases */,
 				17D669B62CE444260093C995 /* TestFlight */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -3857,6 +3883,7 @@
 		C1D2E3F40516273849A00001 /* NewsBlurTests */ = {
 			isa = PBXGroup;
 			children = (
+				E91820260918000100000002 /* DuoPresentationTests.swift */,
 				E91620260916000200000002 /* ShareStoryUpdateTests.swift */,
 				E91620260916000300000002 /* StoryURLContrastTests.swift */,
 				E91620260916000100000002 /* FeedToolbarLayoutTests.swift */,
@@ -4268,6 +4295,14 @@
 			path = "cocoa-oauth";
 			sourceTree = "<group>";
 		};
+		F519D0A10516273849A00004 /* NewsBlurAlphaUITests */ = {
+			isa = PBXGroup;
+			children = (
+				F519D0A10516273849A00002 /* DuoLiveUITests.swift */,
+			);
+			path = NewsBlurAlphaUITests;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4470,6 +4505,24 @@
 			productReference = FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		F519D0A10516273849A00007 /* NewsBlurAlphaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F519D0A10516273849A00008 /* Build configuration list for PBXNativeTarget "NewsBlurAlphaUITests" */;
+			buildPhases = (
+				F519D0A10516273849A0000C /* Sources */,
+				F519D0A10516273849A0000B /* Frameworks */,
+				F519D0A10516273849A0000D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F519D0A10516273849A00006 /* PBXTargetDependency */,
+			);
+			name = NewsBlurAlphaUITests;
+			productName = NewsBlurAlphaUITests;
+			productReference = F519D0A10516273849A00001 /* NewsBlurAlphaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4481,6 +4534,10 @@
 				LastUpgradeCheck = 2620;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
+					F519D0A10516273849A00007 = {
+						CreatedOnToolsVersion = 27.1;
+						TestTargetID = 175790592930605500490924;
+					};
 					173CB30C26BCE94700BA872A = {
 						CreatedOnToolsVersion = 12.5.1;
 					};
@@ -4574,6 +4631,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				F519D0A10516273849A00007 /* NewsBlurAlphaUITests */,
 				1D6058900D05DD3D006BFB54 /* NewsBlur */,
 				175790592930605500490924 /* NewsBlur Alpha */,
 				1749390F1C251BFE003D98AA /* Share Extension */,
@@ -5615,6 +5673,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F519D0A10516273849A0000D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -6220,6 +6285,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E91820260918000100000001 /* DuoPresentationTests.swift in Sources */,
+				F519D0A10516273849A00016 /* LoginViewControllerTests.swift in Sources */,
 				FF1A84C8306AA52A00D68616 /* ShareStoryUpdateTests.swift in Sources */,
 				FF1A84C9306AA52A00D68616 /* StoryURLContrastTests.swift in Sources */,
 				FF1A84CA306AA52A00D68616 /* FeedToolbarLayoutTests.swift in Sources */,
@@ -6260,6 +6327,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF8A949B1DE3BB77000A4C31 /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F519D0A10516273849A0000C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F519D0A10516273849A00011 /* DuoLiveUITests.swift in Sources */,
+				F519D0A10516273849A00013 /* AddSiteUITests.swift in Sources */,
+				F519D0A10516273849A00015 /* ReaderUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6314,6 +6391,11 @@
 			platformFilter = ios;
 			target = FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */;
 			targetProxy = FF8A949D1DE3BB77000A4C31 /* PBXContainerItemProxy */;
+		};
+		F519D0A10516273849A00006 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 175790592930605500490924 /* NewsBlur Alpha */;
+			targetProxy = F519D0A10516273849A00005 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -7448,6 +7530,49 @@
 			};
 			name = Release;
 		};
+		F519D0A10516273849A0000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "NewsBlur Alpha";
+			};
+			name = Release;
+		};
+		F519D0A10516273849A00009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlurAlphaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "NewsBlur Alpha";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -7555,6 +7680,15 @@
 			buildConfigurations = (
 				FF8A94A01DE3BB77000A4C31 /* Debug */,
 				FF8A94A11DE3BB77000A4C31 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F519D0A10516273849A00008 /* Build configuration list for PBXNativeTarget "NewsBlurAlphaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F519D0A10516273849A00009 /* Debug */,
+				F519D0A10516273849A0000A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
