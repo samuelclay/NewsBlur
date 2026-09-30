@@ -64,7 +64,7 @@ import SwiftUI
         retainedStoryCache?.reloadForTraining(story: nil)
     }
 
-    private func restoreRetainedStoryClassifiers() {
+    @objc func restoreRetainedStoryClassifiers() {
         captureRetainedStoryContext()
         guard let context = retainedStoryContext,
               appDelegate.storiesCollection.activeClassifiers[context.feedID] == nil else { return }
