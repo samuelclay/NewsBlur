@@ -477,6 +477,8 @@ GOOGLE_PLAY_SERVICE_ACCOUNT_INFO = None
 
 CELERY_TASK_ROUTES = {
     "work-queue": {"queue": "work_queue", "binding_key": "work_queue"},
+    # Long merges run on the work servers, off the fetch queues (apps/rss_feeds/tasks.py MergeFeeds).
+    "merge-feeds": {"queue": "work_queue", "binding_key": "work_queue"},
     "new-feeds": {"queue": "new_feeds", "binding_key": "new_feeds"},
     "push-feeds": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "update-feeds": {"queue": "update_feeds", "binding_key": "update_feeds"},
