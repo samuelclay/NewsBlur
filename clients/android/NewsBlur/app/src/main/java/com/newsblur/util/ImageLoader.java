@@ -56,6 +56,21 @@ public class ImageLoader {
     }
 	
     public PhotoToLoad displayImage(String url, ImageView imageView) {
+        // ImageLoader.java shows an icon already in memory at once. A list that rebinds its rows,
+        // like the tablet's feed list swapping its remembered folders for fresh ones, would
+        // otherwise blank every icon for a moment while each one is posted back.
+        if (url != null && !(imageView instanceof StoryThumbnailView)) {
+            String fullUrl = buildUrlIfNeeded(url);
+            Bitmap cached = memoryCache.get(fullUrl);
+            if (cached != null && cached.getHeight() >= minImgHeight) {
+                imageViewMappings.put(imageView, fullUrl);
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setImageBitmap(cached);
+                PhotoToLoad shown = new PhotoToLoad(fullUrl, imageView, imageView.getHeight(), false);
+                shown.cancel = true;
+                return shown;
+            }
+        }
         return displayImage(url, imageView, imageView.getHeight(), false);
     }
 
