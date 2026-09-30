@@ -10,6 +10,7 @@ import com.newsblur.domain.SocialFeed
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LastStoryListTest {
@@ -72,6 +73,18 @@ class LastStoryListTest {
                 FeedSet.folder(name, setOf("1", "2", "3"))
             })!!
         assertEquals(FeedSet.folder("News", setOf("1", "2", "3")), destination.feedSet)
+    }
+
+    @Test
+    fun test_folderOpenedInSavedView_keepsItsSavedFilter() {
+        // FolderListAdapter.java sets isFilterSaved on a folder opened while the Saved filter is on.
+        val savedView = FeedSet.folder("News", setOf("1")).apply { isFilterSaved = true }
+        val destination =
+            roundTrip(FolderItemsList::class.java, savedView, folderName = "News", findFolder = { name ->
+                FeedSet.folder(name, setOf("1", "2"))
+            })!!
+        assertTrue(destination.feedSet.isFilterSaved)
+        assertEquals(setOf("1", "2"), destination.feedSet.allFeeds)
     }
 
     @Test

@@ -140,6 +140,12 @@ object LastStoryList {
                 // folder is rebuilt by name. A folder that has since been deleted comes back empty.
                 val folderName = saved.folderName ?: return null
                 val folderSet = findFolder(folderName)?.takeIf { !it.allFeeds.isNullOrEmpty() } ?: return null
+                // Only the membership is refreshed. How the list was being read comes along, such
+                // as the Saved view FolderListAdapter.java turns on with isFilterSaved.
+                folderSet.isFilterSaved = feedSet.isFilterSaved
+                folderSet.isMuted = feedSet.isMuted
+                folderSet.stateFilterOverride = feedSet.stateFilterOverride
+                folderSet.readFilterOverride = feedSet.readFilterOverride
                 Destination(storyListClass, folderSet, folderName = folderName)
             }
 
