@@ -1136,7 +1136,7 @@ private enum ReaderUITestFixtures {
             context.fill(CGRect(x: 0, y: 0, width: 120, height: 80))
         }.pngData()!.base64EncodedString()
         return """
-        <p><a href="https://example.com/linked-story"><img alt="Image viewer landscape fixture" data-newsblur-original-src="https://example.com/landscape.png" src="data:image/png;base64,\(data)"></a></p>
+        <p><a href="https://example.com/linked-story"><img alt="Image viewer landscape fixture" title="The mountain looks smaller from the summit. This is the hover text, not the image description." data-newsblur-original-src="https://example.com/landscape.png" src="data:image/png;base64,\(data)"></a></p>
         <p><img alt="Small image fixture" width="120" height="80" src="data:image/png;base64,\(small)"></p>
         """
     }
