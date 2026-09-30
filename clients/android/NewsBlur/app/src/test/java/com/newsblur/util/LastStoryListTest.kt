@@ -20,11 +20,15 @@ class LastStoryListTest {
         feedSet: FeedSet,
         folderName: String? = null,
         socialFeed: SocialFeed? = null,
+        findFolder: (String) -> FeedSet? = { null },
         findFeed: (String) -> Feed? = { null },
     ): LastStoryList.Destination? {
         val saved = LastStoryList.save(storyListClass, feedSet, folderName, socialFeed, isTryFeed = false)!!
-        return LastStoryList.restore(saved, findFeed)
+        return LastStoryList.restore(saved, findFolder = findFolder, findFeed = findFeed)
     }
+
+    private fun restore(saved: LastStoryList.Saved): LastStoryList.Destination? =
+        LastStoryList.restore(saved, findFolder = { null }, findFeed = { null })
 
     @Test
     fun test_feedList_reopensWithItsFeedAndFolder() {
@@ -51,10 +55,33 @@ class LastStoryListTest {
     @Test
     fun test_folderList_keepsTheFolderItAdvancedTo() {
         // ItemsList.java passes the next session's folder name, not the launch intent's.
-        val destination = roundTrip(FolderItemsList::class.java, FeedSet.folder("News", setOf("1", "2")), folderName = "News")!!
+        val destination =
+            roundTrip(FolderItemsList::class.java, FeedSet.folder("News", setOf("1", "2")), folderName = "News", findFolder = { name ->
+                FeedSet.folder(name, setOf("1", "2")).takeIf { name == "News" }
+            })!!
         assertEquals(FolderItemsList::class.java, destination.storyListClass)
         assertEquals("News", destination.folderName)
         assertEquals(FeedSet.folder("News", setOf("1", "2")), destination.feedSet)
+    }
+
+    @Test
+    fun test_folderList_reopensWithTheFeedsTheFolderHasNow() {
+        // A feed added to the folder on the web since the list was saved shows up at launch.
+        val destination =
+            roundTrip(FolderItemsList::class.java, FeedSet.folder("News", setOf("1", "2")), folderName = "News", findFolder = { name ->
+                FeedSet.folder(name, setOf("1", "2", "3"))
+            })!!
+        assertEquals(FeedSet.folder("News", setOf("1", "2", "3")), destination.feedSet)
+    }
+
+    @Test
+    fun test_deletedFolder_fallsBack() {
+        // BlurDatabaseHelper.feedSetFromFolderName returns an empty set for a folder that is gone.
+        assertNull(
+            roundTrip(FolderItemsList::class.java, FeedSet.folder("News", setOf("1")), folderName = "News", findFolder = { name ->
+                FeedSet.folder(name, emptySet())
+            }),
+        )
     }
 
     @Test
@@ -100,14 +127,22 @@ class LastStoryListTest {
     fun test_classesThatAreNotStoryLists_fallBack() {
         assertNull(roundTrip(Main::class.java, FeedSet.allFeeds()))
         val unknown = LastStoryList.Saved("com.newsblur.activity.Gone", "{}", null, null)
-        assertNull(LastStoryList.restore(unknown) { null })
+        assertNull(restore(unknown))
     }
 
     @Test
     fun test_unreadableFeedSet_fallsBack() {
         val javaSerialized = LastStoryList.Saved(AllStoriesItemsList::class.java.name, "rO0ABXNyABtjb20ubmV3c2JsdXI=", null, null)
-        assertNull(LastStoryList.restore(javaSerialized) { null })
-        assertNull(LastStoryList.restore(LastStoryList.Saved(null, null, null, null)) { null })
+        assertNull(restore(javaSerialized))
+        assertNull(restore(LastStoryList.Saved(null, null, null, null)))
+    }
+
+    @Test
+    fun test_feedSetSavedUnderOtherFieldNames_fallsBack() {
+        // A release build written before R8 renamed FeedSet's fields: Gson skips the unknown keys
+        // and hands back a set that matches no story list type.
+        val renamed = LastStoryList.Saved(AllStoriesItemsList::class.java.name, """{"a":[],"b":null}""", null, null)
+        assertNull(restore(renamed))
     }
 
     @Test

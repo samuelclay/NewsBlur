@@ -75,7 +75,8 @@ object LastStoryList {
 
     /**
      * The intent that reopens the last story list, or All Site Stories when there isn't one to
-     * rebuild. Main.java calls this while it starts, so the one database read is a single feed row.
+     * rebuild. Main.java calls this while it starts, so the database reads are kept to one feed
+     * row or one folder's feed IDs.
      */
     @JvmStatic
     fun intent(
@@ -90,7 +91,14 @@ object LastStoryList {
                 folderName = preferences.getString(KEY_FOLDER_NAME, null),
                 socialFeed = preferences.getString(KEY_SOCIAL_FEED, null),
             )
-        val destination = runCatching { restore(saved) { feedId -> dbHelper.getFeed(feedId) } }.getOrNull()
+        val destination =
+            runCatching {
+                restore(
+                    saved,
+                    findFolder = { folderName -> dbHelper.feedSetFromFolderName(folderName) },
+                    findFeed = { feedId -> dbHelper.getFeed(feedId) },
+                )
+            }.getOrNull()
         return destination?.let { toIntent(context, it) } ?: toIntent(context, allSiteStories())
     }
 
@@ -115,16 +123,24 @@ object LastStoryList {
 
     internal fun restore(
         saved: Saved,
+        findFolder: (String) -> FeedSet?,
         findFeed: (String) -> Feed?,
     ): Destination? {
         val storyListClass = runCatching { Class.forName(saved.storyListClass ?: return null) }.getOrNull() ?: return null
         if (!ItemsList::class.java.isAssignableFrom(storyListClass)) return null
         val feedSet = runCatching { gson.fromJson(saved.feedSet ?: return null, FeedSet::class.java) }.getOrNull() ?: return null
+        // Gson skips keys it doesn't know instead of failing, so JSON written under other field
+        // names comes back as a set no story list can load.
+        if (!feedSet.loadsStories()) return null
         // A search is a moment, not a place to reopen.
         feedSet.searchQuery = null
         return when (storyListClass) {
             FolderItemsList::class.java -> {
-                Destination(storyListClass, feedSet, folderName = saved.folderName ?: return null)
+                // The saved feed IDs go stale when the folder changes on another device, so the
+                // folder is rebuilt by name. A folder that has since been deleted comes back empty.
+                val folderName = saved.folderName ?: return null
+                val folderSet = findFolder(folderName)?.takeIf { !it.allFeeds.isNullOrEmpty() } ?: return null
+                Destination(storyListClass, folderSet, folderName = folderName)
             }
 
             FeedItemsList::class.java -> {
@@ -148,6 +164,21 @@ object LastStoryList {
     }
 
     internal fun allSiteStories(): Destination = Destination(AllStoriesItemsList::class.java, FeedSet.allFeeds())
+
+    /** The same types BlurDatabaseHelper.getLocalStorySelectionAndArgs knows how to load. */
+    private fun FeedSet.loadsStories(): Boolean =
+        isDailyBriefing ||
+            isTrending ||
+            singleFeed != null ||
+            multipleFeeds != null ||
+            singleSocialFeed != null ||
+            isAllNormal ||
+            isAllSocial ||
+            isAllRead ||
+            isAllSaved ||
+            isInfrequent ||
+            singleSavedTag != null ||
+            isGlobalShared
 
     private fun toIntent(
         context: Context,
