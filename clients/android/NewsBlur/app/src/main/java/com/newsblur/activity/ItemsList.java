@@ -382,6 +382,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
         // Resumed means no feed list slide-over is on top, so no picture of one belongs here.
         FeedListDrawer.removeSnapshot();
+        // The first story tapped beside this list shouldn't wait for WebView to start up.
+        if (slidesOverFeedDrawer() || StorySplitView.isInSplit(this)) {
+            com.newsblur.util.WebViewPrewarm.startWhenIdle(this);
+        }
         if (feedDrawerPending) {
             feedDrawerPending = false;
             // At launch the feed list is the first screen, already open over the waiting list.
