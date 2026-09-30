@@ -44,6 +44,7 @@ espressoCore = "3.7.0"
 composeMaterial3 = "1.5.3"
 composeMaterialIcons = "1.7.8"
 webkit = "1.14.0"
+window = "1.4.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -91,6 +92,7 @@ ui-automator = { module = "androidx.test.uiautomator:uiautomator", version.ref =
 benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "window" }
 
 #room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 #room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

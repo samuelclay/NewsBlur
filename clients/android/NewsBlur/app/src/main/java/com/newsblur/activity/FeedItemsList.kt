@@ -23,6 +23,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.Session
 import com.newsblur.util.SessionDataSource
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -53,7 +54,7 @@ class FeedItemsList : ItemsList() {
     }
 
     override fun interceptBackPress(isGestureNavigation: Boolean): Boolean =
-        reviewHelper.interceptBackPress(isGestureNavigation) { finish() }
+        reviewHelper.interceptBackPress(isGestureNavigation) { backToFeedList() }
 
     override fun shouldResetReadingSessionOnCreate(): Boolean =
         intent?.getBooleanExtra(EXTRA_IS_TRY_FEED, false) == true
@@ -113,7 +114,8 @@ class FeedItemsList : ItemsList() {
                     if (syncServiceState.getTryFeedRefreshStatus(fs) != com.newsblur.service.TryFeedRefreshStatus.FETCHING) restartReadingSession()
                 } else {
                     feedUtils.instaFetchFeed(this, feed.feedId)
-                    finish()
+                    // Back to the feed list, where the refresh shows.
+                    backToFeedList()
                 }
                 true
             }
@@ -176,7 +178,7 @@ class FeedItemsList : ItemsList() {
         if (feed != null && folderName != null) {
             setupFeedItems(feed, folderName)
         } else {
-            finish()
+            replaceWithFeedList()
         }
     }
 
@@ -188,7 +190,7 @@ class FeedItemsList : ItemsList() {
         if (feed != null && folderName != null) {
             setupFeedItems(feed, folderName)
         } else {
-            finish()
+            replaceWithFeedList()
         }
     }
 
@@ -272,7 +274,7 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_FEED_SET, feedSet)
                     putSessionDataKeyExtra(this, sessionDataSource, storyListSessionDataSource)
                 }.also { intent ->
-                    context.startActivity(intent)
+                    StorySplitView.startStoryList(context, intent)
                 }
         }
 
@@ -293,7 +295,7 @@ class FeedItemsList : ItemsList() {
                     putExtra(EXTRA_AUTO_OPEN_STORY, true)
                     putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
                 }.also { intent ->
-                    context.startActivity(intent)
+                    StorySplitView.startStoryList(context, intent)
                 }
         }
 
@@ -317,7 +319,7 @@ class FeedItemsList : ItemsList() {
                         putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, UIUtils.isReaderToolbarHidden(context))
                     }
                 }.also { intent ->
-                    context.startActivity(intent)
+                    StorySplitView.startStoryList(context, intent)
                 }
         }
     }

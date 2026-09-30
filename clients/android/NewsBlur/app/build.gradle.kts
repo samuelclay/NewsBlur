@@ -102,6 +102,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.webkit)
+    implementation(libs.androidx.window)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.profileinstaller)
 

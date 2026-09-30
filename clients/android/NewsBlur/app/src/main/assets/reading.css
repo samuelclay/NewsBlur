@@ -53,6 +53,18 @@ img {
     max-height: none !important;
 }
 
+/* reading.css: a tapped photo zooms into StoryImageViewer.kt, which takes its opening frame
+   from the page, so the tap highlight would tint the photo through the whole zoom. The linked
+   photo rule stands alone because a WebView older than Chromium 105 can't parse :has() and
+   would drop the plain img rule along with it. */
+.NB-story img {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.NB-story a:has(img) {
+    -webkit-tap-highlight-color: transparent;
+}
+
 .NB-story img.NB-briefing-section-icon {
     display: inline-block !important;
     width: 1em !important;

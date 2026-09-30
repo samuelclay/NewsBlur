@@ -62,6 +62,7 @@ import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.ReaderTargetLoader
 import com.newsblur.util.StateFilter
 import com.newsblur.util.StoryOrder
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
 import com.newsblur.util.VolumeKeyNavigation
@@ -77,6 +78,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -300,7 +302,9 @@ abstract class Reading :
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
-        waitingForPreparedEntrance = savedInstanceBundle == null && !isTaskRoot
+        // Reading.kt's prepared entrance slides the reader over its story list, which is
+        // already visible beside the reader in a tablet split (StorySplitView.kt).
+        waitingForPreparedEntrance = savedInstanceBundle == null && !isTaskRoot && !StorySplitView.isInSplit(this)
         waitingForInitialArticle = waitingForPreparedEntrance
         if (waitingForPreparedEntrance) {
             PendingTransitionUtils.overrideNoEnterTransition(this)
@@ -308,6 +312,7 @@ abstract class Reading :
             PendingTransitionUtils.overrideEnterTransition(this)
         }
         window.setBackgroundDrawableResource(android.R.color.transparent)
+        StorySplitView.trackSplit(this)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
@@ -407,6 +412,7 @@ abstract class Reading :
     override fun onResume() {
         super.onResume()
         readerIsPaused = false
+        latestReaderRef = WeakReference(this)
         if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
         stopLoading = false
@@ -467,6 +473,7 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
+        if (latestReaderRef.get() === this) latestReaderRef.clear()
         cancelStoryDwell(clearStory = true)
         preparedPageNavigation?.cancel()
         readerPageSnapshot = null
@@ -1195,6 +1202,11 @@ abstract class Reading :
             }
             traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
             beginReadTimeTracking(story.storyHash)
+            // In a tablet split (StorySplitView.kt) the story list stays visible, so move its
+            // highlight to the story being read instead of waiting for the reader to close.
+            if (StorySplitView.isInSplit(this)) {
+                ItemsList.peekReadingLaunchParent(taskId)?.prepareReturnToStory(story.storyHash)
+            }
             // Reading.kt schedules dwell synchronously with selection; old IO callbacks cannot replace its timer.
             if (!isRestoringSelection) triggerMarkStoryReadBehavior(story)
         }
@@ -1357,7 +1369,7 @@ abstract class Reading :
      * Click handler for the righthand overlay nav button.
      */
     private fun overlayRightClick() {
-        val readingLaunchParent = ItemsList.peekReadingLaunchParent()
+        val readingLaunchParent = ItemsList.peekReadingLaunchParent(taskId)
         when (
             resolveOverlayRightAction(
                 unreadCount = unreadCount,
@@ -1781,7 +1793,11 @@ abstract class Reading :
             completeInteractiveReaderBackSwipe()
             return
         }
-        prepareStoryListForReturn()
+        // In a tablet split the story list already follows this reader (onPageSelected), and
+        // another story replacing this one finishes it too, so skip the return bookkeeping that
+        // would scroll the list back to this story.
+        val isInSplit = StorySplitView.isInSplit(this)
+        if (!isInSplit) prepareStoryListForReturn()
         flushAndStopReadTimeTracking()
         setResult(
             RESULT_OK,
@@ -1795,7 +1811,7 @@ abstract class Reading :
                         .d(this@Reading.javaClass.name, "Finish reading at position $position")
                     putExtra(LAST_READING_POS, position)
                     (visibleStory ?: readingAdapter?.getStory(position))?.storyHash?.let { storyHash ->
-                        putExtra(LAST_READING_STORY_HASH, storyHash)
+                        if (!isInSplit) putExtra(LAST_READING_STORY_HASH, storyHash)
                     }
                 }
             },
@@ -1852,7 +1868,8 @@ abstract class Reading :
 
     private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
 
-    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot
+    // The swipe back reveals the story list underneath, but in a tablet split the list is its own pane.
+    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this)
 
     private fun supportsPredictiveReaderBack(): Boolean {
         val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())
@@ -1867,7 +1884,7 @@ abstract class Reading :
 
     private fun prepareStoryListForReturn() {
         currentReadingStory()?.storyHash?.let { storyHash ->
-            ItemsList.peekReadingLaunchParent()?.prepareReturnToStory(storyHash)
+            ItemsList.peekReadingLaunchParent(taskId)?.prepareReturnToStory(storyHash)
         }
     }
 
@@ -2132,5 +2149,21 @@ abstract class Reading :
         private const val READING_BACK_SWIPE_DIRECTION_RATIO = 1.2f
         private const val READING_BACK_SWIPE_SETTLE_DURATION_MS = 180L
         private val READING_BACK_SWIPE_INTERPOLATOR = DecelerateInterpolator()
+
+        // The most recently resumed reader. It outlives the story list beside it in a tablet split
+        // across rotation, so ItemsList.java asks here rather than keeping its own reference.
+        private var latestReaderRef = WeakReference<Reading>(null)
+
+        /**
+         * The reader showing in the reader pane of a tablet split in [taskId] (StorySplitView.kt),
+         * if any, never one in another NewsBlur window. Split state is checked on each call
+         * because a reader can enter or leave a split without being resumed again, such as when a
+         * foldable opens with a story on screen.
+         */
+        @JvmStatic
+        fun peekSplitReader(taskId: Int): Reading? =
+            latestReaderRef.get()?.takeIf { reader ->
+                !reader.isFinishing && !reader.isDestroyed && reader.taskId == taskId && StorySplitView.isInSplit(reader)
+            }
     }
 }
