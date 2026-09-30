@@ -226,7 +226,15 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     }
 
     required init?(coder: NSCoder) { fatalError("StoryImageViewerController.swift uses init(source:preview:origin:)") }
-    override var prefersStatusBarHidden: Bool { false }
+    private var usesEdgeToEdgePresentation: Bool {
+        // StoryImageViewerController.swift reads the presenting window before attachment so Duo's status rail is hidden from the first frame.
+        let traits = viewIfLoaded?.window?.traitCollection
+            ?? presentingViewController?.viewIfLoaded?.window?.traitCollection
+            ?? traitCollection
+        return Utilities.usesSystemVerticalBar(traits)
+    }
+
+    override var prefersStatusBarHidden: Bool { usesEdgeToEdgePresentation }
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .allButUpsideDown }
@@ -368,11 +376,11 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
                                 width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right - 32, height: 48)
         status.frame = CGRect(x: 30, y: view.bounds.height - view.safeAreaInsets.bottom - 72, width: view.bounds.width - 60, height: 44)
         spinner.center = CGPoint(x: view.bounds.midX, y: status.frame.minY - 16)
-        var viewport = view.bounds.inset(by: view.safeAreaInsets)
+        var viewport = usesEdgeToEdgePresentation ? view.bounds : view.bounds.inset(by: view.safeAreaInsets)
         hoverDisclosure.isHidden = !disclosuresVisible || source.hoverText == nil
         actionDisclosure.isHidden = !disclosuresVisible
         if disclosuresVisible {
-            viewport = viewport.insetBy(dx: 16, dy: 0)
+            viewport = view.bounds.inset(by: view.safeAreaInsets).insetBy(dx: 16, dy: 0)
             viewport.origin.y = controls.frame.maxY + 12
             viewport.size.height = max(1, view.bounds.height - view.safeAreaInsets.bottom - viewport.minY - 44)
             let rowHeight = max(44, UIFont.preferredFont(forTextStyle: .body).lineHeight + 22)
@@ -403,7 +411,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         }
         guard laidOutViewport != viewport, !closing else { return }
         laidOutViewport = viewport
-        // StoryImageViewerController.swift keeps zoomed content below the status bar and respects a live dismissal transform.
+        // StoryImageViewerController.swift fills Duo's display beneath its cutout while retaining ordinary status-bar protection and live dismissal transforms.
         scroll.bounds.size = viewport.size
         scroll.center = CGPoint(x: viewport.midX, y: viewport.midY)
         layoutImage()

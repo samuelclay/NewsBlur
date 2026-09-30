@@ -182,9 +182,13 @@ final class Test_StoryImageViewer: XCTestCase {
         body["naturalHeight"] = 2400
         body["src"] = "data:image/png;base64," + (try XCTUnwrap(preview.pngData())).base64EncodedString()
         let viewer = StoryImageViewerController(source: try XCTUnwrap(StoryImageSource(body)), preview: preview, origin: .zero)
+        guard !Utilities.usesSystemVerticalBar(viewer.traitCollection) else {
+            throw XCTSkip("Conventional status-bar protection is checked on iPhone and iPad; Duo uses the full display")
+        }
         let canvas = ImageViewerSafeAreaView(frame: CGRect(x: 0, y: 0, width: 1024, height: 768))
         viewer.view = canvas
         viewer.viewDidLoad()
+        XCTAssertFalse(viewer.prefersStatusBarHidden, "Conventional iPhone and iPad images retain their status bar")
         for topInset: CGFloat in [24, 48] {
             canvas.topInset = topInset
             viewer.viewDidLayoutSubviews()
@@ -197,6 +201,49 @@ final class Test_StoryImageViewer: XCTestCase {
             XCTAssertEqual(imageFrame.height, canvas.bounds.height - topInset, accuracy: 0.5)
             XCTAssertEqual(imageFrame.width / imageFrame.height, 0.25, accuracy: 0.001)
         }
+    }
+
+    @MainActor func test_duoImagePresentationCoversTheSideRailAndSafeArea() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo image presentation does not apply to Catalyst")
+        #else
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        let root = UIViewController()
+        window.rootViewController = root
+        window.makeKeyAndVisible()
+        defer {
+            root.dismiss(animated: false)
+            window.isHidden = true
+            previousWindow?.makeKey()
+        }
+        guard Utilities.usesSystemVerticalBar(window.traitCollection) else {
+            throw XCTSkip("Requires a Duo pose with the system side rail")
+        }
+        let preview = UIGraphicsImageRenderer(size: CGSize(width: 120, height: 80)).image { context in
+            UIColor.blue.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 120, height: 80))
+        }
+        var body = payload
+        body["naturalWidth"] = 2400
+        body["naturalHeight"] = 1600
+        body["src"] = "data:image/png;base64," + (try XCTUnwrap(preview.pngData())).base64EncodedString()
+        let viewer = StoryImageViewerController(source: try XCTUnwrap(StoryImageSource(body)), preview: preview, origin: .zero)
+        root.present(viewer, animated: false)
+        try await Task.sleep(nanoseconds: 500_000_000)
+        viewer.view.layoutIfNeeded()
+        let scroll = try XCTUnwrap(viewer.view.subviews.compactMap { $0 as? UIScrollView }.first)
+        let image = try XCTUnwrap(scroll.subviews.compactMap { $0 as? UIImageView }.first)
+        XCTAssertTrue(viewer.prefersStatusBarHidden, "Fullscreen photos must hide Duo's status rail")
+        XCTAssertEqual(scroll.frame, viewer.view.bounds, "Image panning must reach every screen edge, including the cutout")
+        XCTAssertEqual(image.frame.width, viewer.view.bounds.width, accuracy: 0.5,
+                       "A landscape photo must fit the full closed-display width, not stop at the old rail")
+        let close = try XCTUnwrap(viewer.view.subviews.flatMap(\.subviews).compactMap { $0 as? UIButton }
+            .first { $0.accessibilityLabel == "Close image" })
+        XCTAssertTrue(viewer.view.safeAreaLayoutGuide.layoutFrame.contains(close.convert(close.bounds, to: viewer.view)),
+                      "StoryImageViewerController.swift must keep dismissal accessible outside the cutout")
+        #endif
     }
 
     func test_fittedImageNeverUpscalesAndPreservesAspectRatio() {

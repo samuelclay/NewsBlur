@@ -6,7 +6,16 @@ import ObjectiveC.runtime
 @objcMembers
 final class ReaderPerformance: NSObject {
     // ReaderPerformance.swift records presentation gates only for the isolated UI fixture process.
-    static let recordsUITestPresentation = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-testing")
+    static let recordsUITestPresentation = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-testing") || recordsStorySelection
+
+    private static var recordsStorySelection: Bool {
+#if targetEnvironment(simulator)
+        ProcessInfo.processInfo.arguments.contains("-newsblur-story-selection-trace")
+#else
+        false
+#endif
+    }
+    private static var storySelectionObservation: NSKeyValueObservation?
 
     private static var recorder: ReaderPerformance?
     private var displayLink: CADisplayLink?
@@ -19,6 +28,7 @@ final class ReaderPerformance: NSObject {
         .appendingPathComponent("scroll-performance.jsonl")
 
     static func install() {
+        installStorySelectionTraceIfRequested()
         guard ProcessInfo.processInfo.environment["NB_SCROLL_PERFORMANCE"] == "1", recorder == nil else { return }
         let instance = ReaderPerformance()
         recorder = instance
@@ -29,6 +39,35 @@ final class ReaderPerformance: NSObject {
         instance.displayLink = link
         instance.events.append(["metric": "launch.probes_ready", "ms": 0,
                                 "at": instance.epoch + CACurrentMediaTime()])
+    }
+
+    private static func installStorySelectionTraceIfRequested() {
+#if targetEnvironment(simulator)
+        guard recordsStorySelection, storySelectionObservation == nil,
+              let app = NewsBlurAppDelegate.shared else { return }
+        // ReaderPerformance.swift observes the real setter without replacing it or installing account fixtures.
+        storySelectionObservation = app.observe(\.activeStory, options: [.old, .new]) { app, change in
+            let oldHash = (change.oldValue ?? nil)?["story_hash"] as? String
+            let newHash = (change.newValue ?? nil)?["story_hash"] as? String
+            guard oldHash != newHash else { return }
+            let stack = Thread.callStackSymbols.prefix(20).joined(separator: "\n")
+            guard Thread.isMainThread else {
+                NSLog("[ReaderSelection] background hash=%@ -> %@\n%@", oldHash ?? "nil", newHash ?? "nil", stack)
+                return
+            }
+            let pages = app.storyPagesViewController
+            let page = pages?.currentPage
+            let pager = pages?.scrollView
+            NSLog("[ReaderSelection] hash=%@ -> %@ current=%@ index=%ld next=%@/%ld previous=%@/%ld pager=%@ offset=%@ insets=%@ dragging=%d target=%ld fetch=%lu\n%@",
+                  oldHash ?? "nil", newHash ?? "nil", page?.activeStoryId ?? "nil", page?.pageIndex ?? -2,
+                  pages?.nextPage?.activeStoryId ?? "nil", pages?.nextPage?.pageIndex ?? -2,
+                  pages?.previousPage?.activeStoryId ?? "nil", pages?.previousPage?.pageIndex ?? -2,
+                  NSCoder.string(for: pager?.bounds ?? .zero), NSCoder.string(for: pager?.contentOffset ?? .zero),
+                  NSCoder.string(for: pager?.adjustedContentInset ?? .zero), pages?.isDraggingScrollview ?? false,
+                  pages?.scrollingToPage ?? -2, app.feedDetailViewController?.fetchRequestId ?? 0, stack)
+        }
+        NSLog("[ReaderSelection] opt-in hash assignment trace installed")
+#endif
     }
 
     static func start() -> Double {

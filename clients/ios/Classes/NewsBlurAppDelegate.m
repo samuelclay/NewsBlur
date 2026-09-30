@@ -141,7 +141,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
 
 - (void)presentFeedDetailAfterFeedSelection;
-- (void)updateFeedDetailTitleView;
 
 @end
 
@@ -1036,13 +1035,28 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)updateSplitBehavior:(BOOL)refresh {
+    if (self.detailViewController.isDuoFullscreenReader) {
+        [self.detailViewController updateDuoFullscreenSplitBehavior];
+        return;
+    }
+    if (self.detailViewController.isBrowsingDuoSources) {
+        // NewsBlurAppDelegate.m reserves the second Duo column for titles until an explicit story selection needs the reader.
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+        if (refresh) [self.storyPagesViewController refreshPages];
+        return;
+    }
+    if (self.detailViewController.preservesExpandedFeedsReveal) {
+        // NewsBlurAppDelegate.m refreshes source content without superseding the user's newer Feeds navigation.
+        if (refresh) [self.storyPagesViewController refreshPages];
+        return;
+    }
     if (self.detailViewController.isDiscoverSitesVisible && !self.detailViewController.isPhoneOrCompact) {
         self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
         self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         return;
     }
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *behavior = [preferences stringForKey:@"split_behavior"] ?: @"auto";
+    NSString *behavior = self.detailViewController.behaviorString;
     
     if (self.detailViewController.storyTitlesOnLeft) {
         CGSize screenSize = self.splitViewController.view.bounds.size;
@@ -1058,8 +1072,17 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                                                                                                              width:screenSize.width
                                                                                                             height:screenSize.height
                                                                                                              isMac:detailViewController.isMac];
-        self.splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
-        self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
+        if (self.detailViewController.isPhone && !self.detailViewController.isPhoneOrCompact &&
+            self.splitViewController.style == UISplitViewControllerStyleDoubleColumn &&
+            (self.storiesCollection.activeFeed != nil || self.storiesCollection.activeFolder != nil) &&
+            preferredBehavior == StorySplitPreferredBehaviorDisplace) {
+            // NewsBlurAppDelegate.m preserves DetailViewController.swift's native Duo overlay for selected sources, leaving the empty launch layout unchanged.
+            self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+        } else {
+            self.splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
+            self.splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(preferredDisplayMode);
+        }
 
         if (preferredDisplayMode == StorySplitPreferredDisplayModeTwoBesideSecondary &&
             !self.splitViewController.isCollapsed) {
@@ -1304,7 +1327,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }];
     
-    if (!self.isPhone) {
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
         BOOL fromPopover = [self hidePopoverAnimated:NO];
         // Configure popover BEFORE presenting so the anchor is applied on Catalyst
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
@@ -1439,6 +1463,15 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
+
+    NSUserDefaults *preferences = NSUserDefaults.standardUserDefaults;
+    BOOL restoredDuoFullscreen = [self.detailViewController restoreDuoFullscreenReaderForAccount:[preferences stringForKey:@"active_username"]];
+    if (restoredDuoFullscreen && !self.pendingNotificationStory && !self.pendingDailyBriefingStoryHash &&
+        !self.inFindingStoryMode && !self.tryFeedFeedId &&
+        [self.pendingFolder isEqualToString:[preferences stringForKey:@"app_opening"]]) {
+        // NewsBlurAppDelegate.m starts restored fullscreen at Feeds, while explicit notification and deep-link requests keep their destinations.
+        self.pendingFolder = nil;
+    }
     
     [self updateSplitBehavior:NO];
     
@@ -1550,10 +1583,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     trainerViewController.isFeedLoaded = feedLoaded;
     [trainerViewController reload];
     
-    if (!self.isPhone) {
-        //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        //        [navController presentViewController:trainerViewController animated:YES completion:nil];
-        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
+        // NewsBlurAppDelegate.m preserves a trainer's existing navigation parent when reopening after a fold.
+        UIViewController *presentation = self.trainNavigationController ?: self.trainerViewController;
+        [self showPopoverWithViewController:presentation contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]
@@ -1578,8 +1612,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     trainerViewController.isFeedLoaded = YES;
     [trainerViewController reload];
 
-    if (!self.isPhone) {
-        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
+        UIViewController *presentation = self.trainNavigationController ?: self.trainerViewController;
+        [self showPopoverWithViewController:presentation contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
         // Dismiss any existing presented controller (e.g. font settings popover adapted to modal on iPhone)
         void (^presentTrainer)(void) = ^{
@@ -1821,8 +1857,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     UINavigationController *navController = self.feedsNavigationController;
     self.notificationsViewController.feedId = feedId;
     
-    if (!self.isPhone) {
-        [self showPopoverWithViewController:self.notificationsViewController contentSize:CGSizeMake(420, 382) sender:sender];
+    BOOL usesCompactPhonePresentation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhonePresentation) {
+        // NewsBlurAppDelegate.m reuses a compact notification sheet's wrapper as the expanded popover owner.
+        UIViewController *presentation = self.notificationsNavigationController ?: self.notificationsViewController;
+        [self showPopoverWithViewController:presentation contentSize:CGSizeMake(420, 382) sender:sender];
     } else {
         if (self.notificationsNavigationController == nil) {
             self.notificationsNavigationController = [[UINavigationController alloc]
@@ -2254,6 +2293,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (void)updateFeedDetailTitleView {
     detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     self.feedDetailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
+    // NewsBlurAppDelegate.m updates the visible Duo overlay immediately when a source or favicon changes without a navigation layout pass.
+    if ([self.feedsNavigationController isKindOfClass:CompactPhoneNavigationController.class]) {
+        [(CompactPhoneNavigationController *)self.feedsNavigationController updateFullscreenTitleRendering];
+    }
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
@@ -2288,7 +2331,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController loadingFeed];
         
-        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView" animated:YES];
+        if (!self.detailViewController.isBrowsingDuoSources) {
+            [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView" animated:YES];
+        }
         [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     }
     
@@ -2383,7 +2428,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)presentFeedDetailAfterFeedSelection {
-    FeedSelectionPresentation presentation = [FeedSelectionPresentationDecision presentationWithIsPhone:self.isPhone
+    // NewsBlurAppDelegate.m keeps the regular-width phone reader in its split columns when selecting a feed.
+    BOOL usesPhoneNavigation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    FeedSelectionPresentation presentation = [FeedSelectionPresentationDecision presentationWithIsPhone:usesPhoneNavigation
                                                                                   userInterfaceIdiomPhone:[[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone];
 
     if (presentation == FeedSelectionPresentationLoadFeedDetail) {
@@ -2456,8 +2503,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                     if (favicon) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [self saveFavicon:favicon feedId:feedIdStr];
-                            self.feedDetailViewController.navigationItem.titleView =
-                                [self makeFeedTitle:self.storiesCollection.activeFeed];
+                            [self updateFeedDetailTitleView];
                             [self.feedsViewController reloadFeedTitlesTable];
                             // Update the try-feed subscribe banner favicon
                             UIImageView *bannerFavicon = [self.feedDetailViewController.tryFeedBannerView viewWithTag:1001];
@@ -2982,7 +3028,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
     
-    [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
+    if (!self.detailViewController.isBrowsingDuoSources) {
+        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
+    }
     [self.detailViewController dismissFullscreenSidebarOverlayAfterFeedSelection];
     
     StoryFirstPageLoad *firstPageLoad = [feedDetailView prepareCachedFirstPage];
@@ -3148,7 +3196,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         if (!strongSelf) return;
         [strongSelf.storyPagesViewController changePage:location animated:[params[@"animated"] boolValue]];
         [strongSelf.storyPagesViewController animateIntoPlace:YES];
-        [strongSelf showDetailViewController:strongSelf.detailViewController sender:strongSelf];
+        // NewsBlurAppDelegate.m keeps the loaded article behind an explicitly reopened Duo feed sidebar.
+        if (!strongSelf.detailViewController.preservesExpandedFeedsReveal) {
+            [strongSelf showDetailViewController:strongSelf.detailViewController sender:strongSelf];
+        }
         [strongSelf.detailViewController collapseFeedListIfNeededForStory];
     }];
 }
@@ -3261,7 +3312,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.activeOriginalStoryURL = url;
     originalStoryViewController.customPageTitle = customTitle;
     
-    if (!self.isPhone) {
+    BOOL usesCompactPhoneNavigation = self.isPhone && (!self.detailViewController || self.detailViewController.isPhoneOrCompact);
+    if (!usesCompactPhoneNavigation) {
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [originalStoryViewController view]; // Force viewDidLoad
             [originalStoryViewController loadInitialStory];
@@ -3356,9 +3408,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)closeOriginalStory {
-    if (!self.isPhone) {
-        //        [self.masterContainerViewController transitionFromOriginalView];
-    } else {
+    if (self.originalStoryViewController.presentingViewController) {
+        [self.originalStoryViewController dismissViewControllerAnimated:YES completion:nil];
+    } else if (self.isPhone) {
         if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
             [feedsNavigationController popToViewController:self.storyPagesViewController animated:YES];
         }
@@ -3370,11 +3422,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showFeedsListAnimated:(BOOL)animated {
+    [self.detailViewController cancelCompactNavigationRestoration];
     [self.storyPagesViewController cancelPendingStoryPresentation];
     if (self.splitViewController.isCollapsed) {
-        [self.feedsNavigationController popToRootViewControllerAnimated:YES];
+        [self.feedsNavigationController popToRootViewControllerAnimated:animated];
     } else {
-        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated" animated:YES];
+        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated" animated:animated];
     }
 }
 
@@ -4085,8 +4138,18 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [self.storyPagesViewController refreshHeaders];
         }
     }
-    [self.storyPagesViewController setNextPreviousButtons];
-    originalStoryCount += 1;
+    BOOL storyIsInCurrentCollection = self.storiesCollection == nil;
+    for (NSDictionary *listedStory in self.storiesCollection.activeFeedStories) {
+        if ([[listedStory objectForKey:@"story_hash"] isEqualToString:[story objectForKey:@"story_hash"]]) {
+            storyIsInCurrentCollection = YES;
+            break;
+        }
+    }
+    // NewsBlurAppDelegate.m must not change source progress for an article retained outside the browsed collection.
+    if (storyIsInCurrentCollection) {
+        [self.storyPagesViewController setNextPreviousButtons];
+        originalStoryCount += 1;
+    }
     
     [self.feedsViewController reloadFeedTitlesTable];
 }
@@ -5183,6 +5246,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    [self.trainerViewController restoreRetainedStoryClassifiers];
     int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
                         objectForKey:author] intValue];
@@ -5208,6 +5272,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
     [feedClassifiers setObject:authors forKey:@"authors"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.trainerViewController captureRetainedStoryContext];
     [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController reload];
 
@@ -5329,6 +5394,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    [self.trainerViewController restoreRetainedStoryClassifiers];
     int tagScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                       objectForKey:@"tags"]
                      objectForKey:tag] intValue];
@@ -5354,6 +5420,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
     [feedClassifiers setObject:tags forKey:@"tags"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.trainerViewController captureRetainedStoryContext];
     [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController reload];
 

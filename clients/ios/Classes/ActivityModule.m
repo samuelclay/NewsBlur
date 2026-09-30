@@ -37,6 +37,8 @@
         self.activitiesTable = [[UITableView alloc] init];
         self.activitiesTable.dataSource = self;
         self.activitiesTable.delegate = self;
+        self.activitiesTable.rowHeight = UITableViewAutomaticDimension;
+        self.activitiesTable.estimatedRowHeight = MINIMUM_ACTIVITY_HEIGHT_IPAD;
         self.activitiesTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.activitiesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
         [self addSubview:self.activitiesTable];
@@ -179,24 +181,21 @@
         return minimumHeight;
     }
 
-    id activityCell;
-    if (!appDelegate.isPhone) {
-        activityCell = [[ActivityCell alloc] init];
-    } else {
-        activityCell = [[SmallActivityCell alloc] init];
+    if ([ActivityCell shouldCollapseActivity:appDelegate.userActivitiesArray[indexPath.row]]) {
+        return 1;
     }
-
-    NSMutableDictionary *userProfile = [appDelegate.dictSocialProfile  mutableCopy];
-    [userProfile setValue:@"You" forKey:@"username"];
-    NSDictionary *activity = [appDelegate.userActivitiesArray
-                              objectAtIndex:(indexPath.row)];
-    int height = [activityCell setActivity:activity
-                           withUserProfile:userProfile
-                                 withWidth:self.frame.size.width - 20];
-    return height;
+    return UITableViewAutomaticDimension;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row < appDelegate.userActivitiesArray.count &&
+        [ActivityCell shouldCollapseActivity:appDelegate.userActivitiesArray[indexPath.row]]) {
+        // ActivityModule.m keeps missing-author activity collapsed without constraining a normal label into a one-point row.
+        UITableViewCell *collapsedCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+        collapsedCell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+        collapsedCell.userInteractionEnabled = NO;
+        return collapsedCell;
+    }
     ActivityCell *cell = [tableView
                           dequeueReusableCellWithIdentifier:@"ActivityCell"];
     if (cell == nil) {
@@ -222,8 +221,7 @@
                                    objectAtIndex:(indexPath.row)];
 
         [cell setActivity:activity
-          withUserProfile:userProfile
-                withWidth:self.frame.size.width - 20];
+          withUserProfile:userProfile];
 
         NSString *category = [activity objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {

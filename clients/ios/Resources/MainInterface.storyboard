@@ -916,7 +916,7 @@
         <!--Navigation Controller-->
         <scene sceneID="Oy2-yv-bsg">
             <objects>
-                <navigationController storyboardIdentifier="DetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HsP-cn-nIY" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="DetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HsP-cn-nIY" customClass="DetailNavigationController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Noh-2M-34G">
                         <rect key="frame" x="0.0" y="32" width="889.5" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>

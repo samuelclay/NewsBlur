@@ -8,10 +8,117 @@
 
 import UIKit
 
+/// SplitViewController.swift absorbs background touches while a full-screen reader still needs a story selection.
+private final class DuoEmptyReaderInteractionShield: UIControl {
+    weak var splitController: SplitViewController?
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        guard super.point(inside: point, with: event), let splitController else { return false }
+        return splitController.blocksEmptyReaderInteraction(at: convert(point, to: splitController.view))
+    }
+}
+
+/// SplitViewController.swift records the original touch before UIPanGestureRecognizer consumes its recognition threshold.
+class FeedsSidebarResizePanGestureRecognizer: UIPanGestureRecognizer {
+    private weak var touchCoordinateView: UIView?
+    private var initialTouchLocation: CGPoint?
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        if initialTouchLocation == nil, let touch = touches.first, let coordinates = view?.superview {
+            touchCoordinateView = coordinates
+            initialTouchLocation = touch.location(in: coordinates)
+        }
+        super.touchesBegan(touches, with: event)
+    }
+
+    func touchDownLocation(in view: UIView) -> CGPoint? {
+        guard let coordinates = touchCoordinateView, let location = initialTouchLocation else { return nil }
+        return view.convert(location, from: coordinates)
+    }
+
+    override func reset() {
+        super.reset()
+        touchCoordinateView = nil
+        initialTouchLocation = nil
+    }
+}
+
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
+    private var ownsCompactPhoneWidth = false
+    private var previousPhoneWidthOverride: UIUserInterfaceSizeClass?
+    private var isUpdatingPhoneWidthPolicy = false
+    private let emptyReaderInteractionShield = DuoEmptyReaderInteractionShield()
+    private weak var emptyReaderProtectionDetail: DetailViewController?
+
+    func updateDuoEmptyReaderProtection(for detail: DetailViewController) {
+        emptyReaderProtectionDetail = detail
+        updateDuoEmptyReaderProtection()
+    }
+
+    private func updateDuoEmptyReaderProtection() {
+        guard isViewLoaded else { return }
+        guard !isCollapsed, emptyReaderProtectionDetail?.appDelegate?.splitViewController === self,
+              emptyReaderProtectionDetail?.requiresDuoFullscreenSidebar == true else {
+            emptyReaderInteractionShield.removeFromSuperview()
+            return
+        }
+        emptyReaderInteractionShield.splitController = self
+        emptyReaderInteractionShield.accessibilityIdentifier = "duo-empty-reader-interaction-shield"
+        emptyReaderInteractionShield.isAccessibilityElement = false
+        emptyReaderInteractionShield.frame = view.bounds
+        if emptyReaderInteractionShield.superview !== view {
+            view.addSubview(emptyReaderInteractionShield)
+        }
+        view.bringSubviewToFront(emptyReaderInteractionShield)
+        if feedsDividerView.superview === view { view.bringSubviewToFront(feedsDividerView) }
+    }
+
+    fileprivate func blocksEmptyReaderInteraction(at point: CGPoint) -> Bool {
+        guard !isCollapsed, displayMode == .oneOverSecondary,
+              emptyReaderProtectionDetail?.appDelegate?.splitViewController === self,
+              emptyReaderProtectionDetail?.requiresDuoFullscreenSidebar == true,
+              !hasPresentedController(in: self),
+              let primaryFrame = primaryColumnFrame else { return false }
+        if primaryFrame.contains(point) { return false }
+        return view.bounds.contains(point)
+    }
+
+    private func hasPresentedController(in controller: UIViewController) -> Bool {
+        controller.presentedViewController != nil || controller.children.contains { hasPresentedController(in: $0) }
+    }
+
+    func updatePhoneWidthPolicy(for traits: UITraitCollection) {
+        guard !isUpdatingPhoneWidthPolicy else { return }
+        isUpdatingPhoneWidthPolicy = true
+        defer { isUpdatingPhoneWidthPolicy = false }
+
+        let needsCompactWidth = traits.userInterfaceIdiom == .phone && traits.verticalSizeClass == .compact &&
+            !Utilities.usesSystemVerticalBar(traits)
+        if needsCompactWidth {
+            guard !ownsCompactPhoneWidth else { return }
+            previousPhoneWidthOverride = traitOverrides.contains(UITraitHorizontalSizeClass.self)
+                ? traitOverrides.horizontalSizeClass : nil
+            ownsCompactPhoneWidth = true
+            // SplitViewController.swift keeps conventional landscape phones in UIKit's real collapsed navigation, not a squeezed expanded reader.
+            traitOverrides.horizontalSizeClass = .compact
+        } else if ownsCompactPhoneWidth {
+            ownsCompactPhoneWidth = false
+            if let previousPhoneWidthOverride {
+                traitOverrides.horizontalSizeClass = previousPhoneWidthOverride
+            } else {
+                traitOverrides.remove(UITraitHorizontalSizeClass.self)
+            }
+            previousPhoneWidthOverride = nil
+        }
+    }
+
     @objc var isFeedsListHidden: Bool {
-        return [.oneOverSecondary, .secondaryOnly].contains(displayMode)
+        // SplitViewController.swift distinguishes a primary overlay from a triple split's supplementary column.
+        if style == .tripleColumn {
+            return [.secondaryOnly, .oneBesideSecondary, .oneOverSecondary].contains(displayMode)
+        }
+        return displayMode == .secondaryOnly
     }
 
     /// Draggable divider between the feeds list and detail columns.
@@ -19,6 +126,16 @@ class SplitViewController: UISplitViewController {
 
     /// Whether the user is currently dragging the feeds divider.
     private var isDraggingFeedsDivider = false
+    private var feedsDividerDragStart = CGPoint.zero
+    private var feedsDividerInitialWidth: CGFloat = 0
+    private var duoPrimaryWidthLimits: (minimum: CGFloat, maximum: CGFloat)?
+    private var hasManagedDuoSidebarWidth = false
+    private var isUpdatingDuoSidebarWidth = false
+
+    /// A folded Duo must retain the user's width instead of persisting a transient native column width.
+    var preservesDuoSidebarWidth: Bool {
+        hasManagedDuoSidebarWidth && traitCollection.userInterfaceIdiom == .phone
+    }
 
     /// Preference key for the feeds column width.
     private static let feedsWidthKey = "split_primary_width"
@@ -42,6 +159,12 @@ class SplitViewController: UISplitViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        registerForTraitChanges([UITraitUserInterfaceIdiom.self, UITraitVerticalSizeClass.self,
+                                UITraitHorizontalSizeClass.self]) { (controller: SplitViewController, _) in
+            controller.updatePhoneWidthPolicy(for: controller.traitCollection)
+        }
+        updatePhoneWidthPolicy(for: traitCollection)
 
         headerView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -68,18 +191,34 @@ class SplitViewController: UISplitViewController {
         // Hide the drawn line since UISplitViewController already draws a column separator.
         feedsDividerView.showsLine = false
         feedsDividerView.handleOffset = 8
+        feedsDividerView.isAccessibilityElement = true
+        feedsDividerView.accessibilityIdentifier = "feeds-sidebar-resize-handle"
+        feedsDividerView.accessibilityLabel = "Resize sidebar"
+        feedsDividerView.accessibilityHint = "Drag to change the feed and story list width."
         view.addSubview(feedsDividerView)
 
         // Use a pan gesture on the divider view itself so it captures the drag
         // before the system's NSSplitView (on Catalyst) can intercept it.
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(handleFeedsDividerPan(_:)))
+        let pan = FeedsSidebarResizePanGestureRecognizer(target: self, action: #selector(handleFeedsDividerPan(_:)))
         feedsDividerView.addGestureRecognizer(pan)
+    }
+
+    override func viewWillLayoutSubviews() {
+        // SplitViewController.swift also observes native side-bar capability changes when a fold keeps the same size classes.
+        updatePhoneWidthPolicy(for: traitCollection)
+        super.viewWillLayoutSubviews()
+        updateDuoSidebarWidthPolicy()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        updateDuoSidebarWidthPolicy()
 
+        // SplitViewController.swift reconciles embedded panes after UIKit resolves the actual fold-dependent display mode.
+        let detailNavigation = viewController(for: .secondary) as? UINavigationController
+        (detailNavigation?.viewControllers.first as? DetailViewController)?.updateResolvedFeedSidebarLayout()
         updateFeedsDividerPosition()
+        updateDuoEmptyReaderProtection()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -96,6 +235,63 @@ class SplitViewController: UISplitViewController {
 
     // MARK: - Feeds divider
 
+    private var isExpandedDuoSplit: Bool {
+        !isCollapsed && style == .doubleColumn && traitCollection.userInterfaceIdiom == .phone &&
+            (Utilities.usesSystemVerticalBar(traitCollection) ||
+             (traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass != .compact))
+    }
+
+    private func updateDuoSidebarWidthPolicy() {
+        guard !isUpdatingDuoSidebarWidth else { return }
+        isUpdatingDuoSidebarWidth = true
+        defer { isUpdatingDuoSidebarWidth = false }
+
+        guard isExpandedDuoSplit else {
+            if let limits = duoPrimaryWidthLimits {
+                duoPrimaryWidthLimits = nil
+                setPrimaryWidthLimits(minimum: limits.minimum, maximum: limits.maximum)
+            }
+            return
+        }
+
+        hasManagedDuoSidebarWidth = true
+        if duoPrimaryWidthLimits == nil {
+            duoPrimaryWidthLimits = (minimumPrimaryColumnWidth, maximumPrimaryColumnWidth)
+        }
+        guard let limits = duoPrimaryWidthLimits else { return }
+        let maximumWidth = min(limits.maximum, view.bounds.width - 200)
+        guard maximumWidth > 0 else { return }
+        let savedWidth = CGFloat(UserDefaults.standard.float(forKey: Self.feedsWidthKey))
+        let requestedWidth = savedWidth > 0 ? savedWidth : 320
+        let width = min(max(requestedWidth, limits.minimum), maximumWidth)
+
+        // SplitViewController.swift uses public bounds because Duo retains its default width when only the preferred width changes.
+        // Keep the original drag limits separately, and reread the shared preference so folds and test cleanup cannot leave a stale request.
+        if preferredPrimaryColumnWidth != width { preferredPrimaryColumnWidth = width }
+        setPrimaryWidthLimits(minimum: width, maximum: width)
+    }
+
+    private func setPrimaryWidthLimits(minimum: CGFloat, maximum: CGFloat) {
+        // SplitViewController.swift avoids an intermediate minimum greater than the maximum when shrinking.
+        if minimumPrimaryColumnWidth > minimum { minimumPrimaryColumnWidth = minimum }
+        if maximumPrimaryColumnWidth != maximum { maximumPrimaryColumnWidth = maximum }
+        if minimumPrimaryColumnWidth != minimum { minimumPrimaryColumnWidth = minimum }
+    }
+
+    private var resizesDuoPrimaryOverlay: Bool {
+        isExpandedDuoSplit && displayMode == .oneOverSecondary
+    }
+
+    private var primaryColumnFrame: CGRect? {
+        guard let primary = viewController(for: .primary)?.viewIfLoaded,
+              primary.window === view.window, !primary.isHidden, primary.bounds.width > 0 else { return nil }
+        return primary.convert(primary.bounds, to: view)
+    }
+
+    private var primaryColumnIsOnLeft: Bool {
+        (primaryEdge == .leading) == (view.effectiveUserInterfaceLayoutDirection == .leftToRight)
+    }
+
     private func updateFeedsDividerPosition() {
         let shouldShow: Bool
         if isCollapsed {
@@ -104,35 +300,34 @@ class SplitViewController: UISplitViewController {
             switch displayMode {
             case .oneBesideSecondary, .twoBesideSecondary:
                 shouldShow = true
+            case .oneOverSecondary:
+                // SplitViewController.swift enables the native primary handle for expanded Duo overlays without changing iPad overlay behavior.
+                shouldShow = resizesDuoPrimaryOverlay
             default:
                 shouldShow = false
             }
         }
         feedsDividerView.isHidden = !shouldShow
 
-        guard shouldShow else { return }
-
-        let safeTop = view.safeAreaInsets.top
-        let dividerWidth: CGFloat = 5
-        let xPosition: CGFloat
-
-        if isDraggingFeedsDivider {
-            xPosition = feedsDividerView.frame.origin.x
-        } else {
-            let columnWidth = primaryColumnWidth
-            guard columnWidth > 0 else {
-                feedsDividerView.isHidden = true
-                return
-            }
-            xPosition = columnWidth - dividerWidth / 2
+        guard shouldShow, let primaryFrame = primaryColumnFrame,
+              view.bounds.intersects(primaryFrame) else {
+            feedsDividerView.isHidden = true
+            return
         }
 
+        let safeTop = max(view.safeAreaInsets.top, primaryFrame.minY)
+        let dividerWidth: CGFloat = 5
+        let edge = primaryColumnIsOnLeft ? primaryFrame.maxX : primaryFrame.minX
+
+        // SplitViewController.swift follows UIKit's rendered column, including during a drag that UIKit clamps.
         feedsDividerView.frame = CGRect(
-            x: xPosition,
+            x: edge - dividerWidth / 2,
             y: safeTop,
             width: dividerWidth,
-            height: view.bounds.height - safeTop
+            height: max(0, min(view.bounds.maxY, primaryFrame.maxY) - safeTop)
         )
+        feedsDividerView.handleOffset = resizesDuoPrimaryOverlay ? 0 : 8
+        feedsDividerView.setNeedsLayout()
 
         view.bringSubviewToFront(feedsDividerView)
     }
@@ -142,34 +337,61 @@ class SplitViewController: UISplitViewController {
     @objc private func handleFeedsDividerPan(_ gesture: UIPanGestureRecognizer) {
         switch gesture.state {
         case .began:
+            guard !feedsDividerView.isHidden, let primaryFrame = primaryColumnFrame else { return }
             isDraggingFeedsDivider = true
+            let location = gesture.location(in: view)
+            let translation = gesture.translation(in: view)
+            // SplitViewController.swift keeps touch-down in the stationary split view, rather than the moving divider.
+            feedsDividerDragStart = (gesture as? FeedsSidebarResizePanGestureRecognizer)?.touchDownLocation(in: view)
+                ?? CGPoint(x: location.x - translation.x, y: location.y - translation.y)
+            feedsDividerInitialWidth = primaryFrame.width
             feedsDividerView.isHighlighted = true
+            applyFeedsDividerWidth(at: location)
 
         case .changed:
-            let point = gesture.location(in: view)
-            let newWidth = point.x
-
-            guard newWidth >= minimumPrimaryColumnWidth,
-                  newWidth <= min(maximumPrimaryColumnWidth, view.bounds.width - 200) else {
-                return
-            }
-
-            preferredPrimaryColumnWidth = newWidth
-
-            let dividerWidth: CGFloat = 5
-            feedsDividerView.frame.origin.x = newWidth - dividerWidth / 2
-
-            view.layoutIfNeeded()
-
-            UserDefaults.standard.set(Float(newWidth), forKey: Self.feedsWidthKey)
+            guard isDraggingFeedsDivider else { return }
+            applyFeedsDividerWidth(at: gesture.location(in: view))
 
         case .ended, .cancelled, .failed:
+            guard isDraggingFeedsDivider else { return }
+            if gesture.state == .ended { applyFeedsDividerWidth(at: gesture.location(in: view)) }
             isDraggingFeedsDivider = false
             feedsDividerView.isHighlighted = false
+            view.setNeedsLayout()
+            view.layoutIfNeeded()
+            updateFeedsDividerPosition()
+            persistRenderedPrimaryWidth()
 
         default:
             break
         }
+    }
+
+    private func applyFeedsDividerWidth(at point: CGPoint) {
+        let direction: CGFloat = primaryColumnIsOnLeft ? 1 : -1
+        let requestedWidth = feedsDividerInitialWidth + (point.x - feedsDividerDragStart.x) * direction
+        let limits = duoPrimaryWidthLimits ?? (minimum: minimumPrimaryColumnWidth, maximum: maximumPrimaryColumnWidth)
+        let maximumWidth = min(limits.maximum, view.bounds.width - 200)
+        guard maximumWidth >= limits.minimum else { return }
+        let newWidth = min(max(requestedWidth, limits.minimum), maximumWidth)
+
+        UIView.performWithoutAnimation {
+            if isExpandedDuoSplit {
+                UserDefaults.standard.set(Float(newWidth), forKey: Self.feedsWidthKey)
+                updateDuoSidebarWidthPolicy()
+            } else {
+                preferredPrimaryColumnWidth = newWidth
+            }
+            view.setNeedsLayout()
+            view.layoutIfNeeded()
+        }
+        updateFeedsDividerPosition()
+        persistRenderedPrimaryWidth()
+    }
+
+    private func persistRenderedPrimaryWidth() {
+        guard let primaryFrame = primaryColumnFrame else { return }
+        UserDefaults.standard.set(Float(primaryFrame.width), forKey: Self.feedsWidthKey)
     }
 
     // Can do menu validation here.

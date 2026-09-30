@@ -4,6 +4,36 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_AuthenticationReset: XCTestCase {
+    func test_closedAuthenticationFixtureReleasesItsReaderAndWebView() async throws {
+        weak var releasedApp: AuthenticationAppDelegate?
+        weak var releasedReader: AuthenticationPagesController?
+        weak var releasedArticle: StoryDetailViewController?
+        weak var releasedWebView: WKWebView?
+        try autoreleasepool {
+            let fixture = AuthenticationFixture(compact: false)
+            try fixture.configure()
+            releasedApp = fixture.app
+            releasedReader = fixture.pages
+            releasedArticle = fixture.pages.currentPage
+            releasedWebView = fixture.pages.currentPage.webView
+            XCTAssertNotNil(releasedWebView)
+            fixture.close()
+        }
+        // AuthenticationResetTests.swift waits for queued layout and animation completions to release their captures, while keeping ownership cycles a failure.
+        let releaseStarted = ProcessInfo.processInfo.systemUptime
+        let releaseDeadline = releaseStarted + 2
+        while (releasedApp != nil || releasedReader != nil || releasedArticle != nil || releasedWebView != nil),
+              ProcessInfo.processInfo.systemUptime < releaseDeadline {
+            await settle(0.01)
+        }
+        let releaseElapsed = ProcessInfo.processInfo.systemUptime - releaseStarted
+        print("AUTH_FIXTURE_RELEASE elapsed=\(String(format: "%.3f", releaseElapsed)) app=\(releasedApp == nil) reader=\(releasedReader == nil) article=\(releasedArticle == nil) web=\(releasedWebView == nil)")
+        XCTAssertNil(releasedApp, "Closing the fixture must break its app/controller ownership cycles")
+        XCTAssertNil(releasedReader, "Closed authentication fixtures must not retain their reader")
+        XCTAssertNil(releasedArticle, "Closed authentication fixtures must release their article controllers")
+        XCTAssertNil(releasedWebView, "Each fixture's nonpersistent WebKit store must be released after the test")
+    }
+
     func test_showLoginClearsMountedDiscoveryBeforeAnotherAccountSignsIn() async throws {
         try await assertDiscoveryCleared(showLogin: true, preview: false)
     }
@@ -95,6 +125,103 @@ import WebKit
         assertAnonymousBrowsing(fixture)
     }
 
+    func test_reauthenticationRestoresOnlyTheConfirmedAccountsDuoFullscreenPreference() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo account restoration uses the iOS expanded-phone layout")
+        #else
+        let savedAccount = "duo-auth-saved-fixture"
+        let otherAccount = "duo-auth-other-fixture"
+        for confirmedAccount in [savedAccount, otherAccount] {
+            let fixture = try await makeFixture(compact: false)
+            defer { fixture.close() }
+            let split = fixture.configureExpandedDuo()
+            let defaults = UserDefaults.standard
+            defaults.set(true, forKey: DetailViewController.Key.duoFullscreenReader(forAccount: savedAccount))
+            defaults.set(false, forKey: DetailViewController.Key.duoFullscreenReader(forAccount: otherAccount))
+            fixture.app.activeUsername = savedAccount
+            defaults.set(savedAccount, forKey: "active_username")
+
+            fixture.login.checkPassword()
+            try fixture.app.completePOST(["code": 1])
+            XCTAssertNil(fixture.app.activeUsername)
+            XCTAssertFalse(fixture.detail.isDuoFullscreenReader,
+                           "Pending authentication must not apply the previous account's saved mode")
+            assertClearedBrowsing(fixture)
+
+            let request = try XCTUnwrap(fixture.app.getRequests.last)
+            XCTAssertTrue(request.url.contains("/reader/feeds?"))
+            let published = expectation(forNotification: NSNotification.Name("FinishedLoadingFeedsNotification"), object: nil) { _ in
+                fixture.app.activeUsername == confirmedAccount && fixture.feeds.userLabel.text == confirmedAccount
+            }
+            // AuthenticationResetTests.swift drives the real authenticated response and its queued publication, never the restore helper directly.
+            request.success(nil, feedResponse(username: confirmedAccount, feedID: "2"))
+            await fulfillment(of: [published], timeout: 5)
+
+            XCTAssertEqual(fixture.app.activeUsername, confirmedAccount)
+            XCTAssertNil(fixture.app.activeStory)
+            XCTAssertNil(fixture.pages.currentPage.activeStory)
+            XCTAssertTrue((fixture.stories.activeFeedStories ?? []).isEmpty)
+            XCTAssertNil(fixture.stories.activeFeed)
+            XCTAssertNil(fixture.stories.activeFolder)
+            XCTAssertEqual(fixture.detail.isDuoFullscreenReader, confirmedAccount == savedAccount)
+            if confirmedAccount == savedAccount {
+                XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, .feeds)
+                XCTAssertEqual(split.preferredDisplayMode, .oneOverSecondary)
+                XCTAssertEqual(split.preferredSplitBehavior, .overlay)
+            }
+            XCTAssertTrue(defaults.bool(forKey: DetailViewController.Key.duoFullscreenReader(forAccount: savedAccount)))
+            XCTAssertFalse(defaults.bool(forKey: DetailViewController.Key.duoFullscreenReader(forAccount: otherAccount)))
+        }
+        #endif
+    }
+
+    func test_ordinaryDuoFeedResponseDoesNotRestoreFullscreenOverTheCurrentArticle() async throws {
+        #if targetEnvironment(macCatalyst)
+        throw XCTSkip("Duo account restoration uses the iOS expanded-phone layout")
+        #else
+        let fixture = try await makeFixture(compact: false)
+        defer { fixture.close() }
+        let split = fixture.configureExpandedDuo()
+        let username = "duo-refresh-mode-fixture"
+        fixture.app.activeUsername = username
+        UserDefaults.standard.set(true, forKey: DetailViewController.Key.duoFullscreenReader(forAccount: username))
+        UserDefaults.standard.set("overlay", forKey: "split_behavior")
+        // AuthenticationResetTests.swift removes unrelated deep-link work before exercising an ordinary subscription refresh.
+        fixture.app.pendingFolder = nil
+        fixture.app.pendingDailyBriefingStoryHash = nil
+        fixture.app.inFindingStoryMode = false
+        fixture.app.isTryFeedView = false
+        fixture.app.tryFeedFeedId = nil
+        fixture.app.tryFeedStoryId = nil
+        fixture.detail.show(column: .primary, animated: false)
+        let sidebar = fixture.detail.fullscreenSidebarPresentation
+        let displayMode = split.preferredDisplayMode
+        let splitBehavior = split.preferredSplitBehavior
+        let page = fixture.pages.currentPage
+        let webView = page?.webView
+        XCTAssertTrue(fixture.detail.preservesExpandedFeedsReveal)
+        XCTAssertFalse(fixture.detail.isDuoFullscreenReader)
+
+        fixture.app.reloadFeedsView(false)
+        let request = try XCTUnwrap(fixture.app.getRequests.last)
+        let published = expectation(forNotification: NSNotification.Name("FinishedLoadingFeedsNotification"), object: nil) { _ in
+            fixture.feeds.userLabel.text == username
+        }
+        request.success(nil, feedResponse(username: username, feedID: "1"))
+        await fulfillment(of: [published], timeout: 5)
+
+        XCTAssertFalse(fixture.detail.isDuoFullscreenReader, "Only a new authenticated identity may restore its saved mode")
+        XCTAssertEqual(fixture.detail.fullscreenSidebarPresentation, sidebar)
+        XCTAssertEqual(split.preferredDisplayMode, displayMode)
+        XCTAssertEqual(split.preferredSplitBehavior, splitBehavior)
+        XCTAssertTrue(fixture.detail.preservesExpandedFeedsReveal)
+        XCTAssertTrue(fixture.pages.currentPage === page)
+        XCTAssertTrue(fixture.pages.currentPage.webView === webView)
+        XCTAssertEqual(fixture.app.activeStory?["story_hash"] as? String, "anonymous-story")
+        XCTAssertEqual(fixture.pages.currentPage.activeStory?["story_hash"] as? String, "anonymous-story")
+        #endif
+    }
+
     func test_oldSubscriptionResponseCannotRestoreAnEarlierIdentityAfterSuccessfulLogin() async throws {
         let fixture = try await makeFixture(compact: false)
         defer { fixture.close() }
@@ -178,6 +305,40 @@ import WebKit
         assertClearedBrowsing(fixture)
         XCTAssertFalse(fixture.titles.isShowingFetching)
         XCTAssertEqual(fixture.app.getRequests.count, 1)
+    }
+
+    func test_headerRelayoutWhileAuthenticatedSubscriptionsArePendingKeepsIdentityCleared() async throws {
+        let fixture = try await makeFixture(compact: true)
+        defer { fixture.close() }
+        fixture.feeds.userAvatarButton = UIButton(type: .system)
+        fixture.feeds.userInfoView.addSubview(fixture.feeds.userAvatarButton)
+        fixture.login.checkPassword()
+        try fixture.app.completePOST(["code": 1])
+        XCTAssertNil(fixture.app.activeUsername)
+        XCTAssertEqual(fixture.app.getRequests.count, 1)
+
+        // AuthenticationResetTests.swift reproduces header reconstruction after the authentication pop or a rotation, before subscriptions return.
+        for orientation in [UIInterfaceOrientation.portrait, .landscapeLeft] {
+            fixture.feeds.layoutHeaderCounts(orientation)
+            fixture.feeds.refreshHeaderCounts()
+            assertClearedBrowsing(fixture)
+            XCTAssertNil(fixture.feeds.userLabel.accessibilityLabel,
+                         "An unconfirmed identity must not become a Logged in as (null) accessibility label")
+            XCTAssertTrue(fixture.feeds.userAvatarButton.isHidden,
+                          "Header reconstruction must not expose the pending account avatar")
+        }
+
+        try XCTUnwrap(fixture.app.getRequests.last).success(nil,
+            feedResponse(username: "authenticated-relayout-fixture", feedID: "2"))
+        await settle()
+        XCTAssertEqual(fixture.feeds.userLabel.text, "authenticated-relayout-fixture")
+        XCTAssertEqual(fixture.feeds.userLabel.accessibilityLabel, "Logged in as authenticated-relayout-fixture")
+        XCTAssertFalse(fixture.feeds.userLabel.isHidden)
+        XCTAssertFalse(fixture.feeds.neutralCount.isHidden)
+        XCTAssertFalse(fixture.feeds.positiveCount.isHidden)
+        XCTAssertFalse(fixture.feeds.userAvatarButton.isHidden)
+        XCTAssertNil(fixture.app.activeStory)
+        XCTAssertTrue((fixture.stories.activeFeedStories ?? []).isEmpty)
     }
 
     func test_priorAccountUnreadRefreshCannotReplaceCurrentAccountCounts() async throws {
@@ -326,7 +487,7 @@ import WebKit
         XCTAssertFalse(fixture.stories.inSearch, file: file, line: line)
         XCTAssertNil(fixture.stories.searchQuery, file: file, line: line)
         XCTAssertFalse(fixture.titles.messageView.isHidden, "The unselected title pane uses its normal empty state", file: file, line: line)
-        XCTAssertEqual(fixture.titles.messageLabel.text, "Select a feed to read", file: file, line: line)
+        XCTAssertEqual(fixture.titles.messageLabel.text, "Select a feed or folder", file: file, line: line)
         XCTAssertEqual(fixture.titles.storyTitlesTable.numberOfSections, 0, "Do not display the finished-feed mark-all footer without a selected feed", file: file, line: line)
         XCTAssertTrue((fixture.app.dictFeeds?.count ?? 0) == 0, "Old subscriptions must disappear while loading", file: file, line: line)
         XCTAssertNil(fixture.app.tryFeedFeedId, file: file, line: line)
@@ -335,18 +496,18 @@ import WebKit
         XCTAssertFalse(fixture.app.inFindingStoryMode, file: file, line: line)
         XCTAssertNil(fixture.app.pendingFolder, file: file, line: line)
         XCTAssertNil(fixture.app.pendingDailyBriefingStoryHash, file: file, line: line)
-        for label in [fixture.feeds.userLabel, fixture.feeds.neutralCount, fixture.feeds.positiveCount].compactMap({ $0 }) {
+        for (index, label) in [fixture.feeds.userLabel, fixture.feeds.neutralCount, fixture.feeds.positiveCount].compactMap({ $0 }).enumerated() {
             XCTAssertTrue((label.text ?? "").isEmpty, "Remove earlier header identity and counts", file: file, line: line)
-            XCTAssertTrue(label.isHidden, file: file, line: line)
+            XCTAssertTrue(label.isHidden, "Cleared header label \(["username", "unread count", "focus count"][index]) must stay hidden", file: file, line: line)
         }
         XCTAssertTrue(fixture.feeds.yellowIcon.isHidden, file: file, line: line)
         XCTAssertTrue(fixture.feeds.greenIcon.isHidden, file: file, line: line)
         XCTAssertFalse(fixture.titles.pageFetching, file: file, line: line)
-        for page in [fixture.pages.currentPage, fixture.pages.nextPage, fixture.pages.previousPage].compactMap({ $0 }) {
+        for (index, page) in [fixture.pages.currentPage, fixture.pages.nextPage, fixture.pages.previousPage].compactMap({ $0 }).enumerated() {
             XCTAssertNil(page.activeStory, file: file, line: line)
             XCTAssertNil(page.activeStoryId, file: file, line: line)
             XCTAssertFalse(page.hasStory, file: file, line: line)
-            XCTAssertTrue(page.webView.isHidden, file: file, line: line)
+            XCTAssertTrue(page.webView.isHidden, "Cleared reader page \(index) must stay hidden", file: file, line: line)
         }
         let visibleRows = fixture.titles.value(forKey: "visibleStoryRows") as? [[String: Any]] ?? []
         XCTAssertTrue(visibleRows.isEmpty, "Rendered title rows must be invalidated too", file: file, line: line)
@@ -427,6 +588,19 @@ import WebKit
         window = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first.map(UIWindow.init(windowScene:)) ?? UIWindow(frame: UIScreen.main.bounds)
         preferences = UserDefaults.standard.persistentDomain(forName: preferenceDomain) ?? [:]
         sharedPreferences = UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.persistentDomain(forName: "group.com.newsblur.NewsBlur-Group") ?? [:]
+    }
+
+    func configureExpandedDuo() -> AuthenticationDuoSplitController {
+        detail.simulatesPhone = true
+        detail.traitOverrides.horizontalSizeClass = .regular
+        detail.traitOverrides.verticalSizeClass = .regular
+        detail.isCompact = false
+        let split = AuthenticationDuoSplitController(style: .doubleColumn)
+        app.splitViewController = split
+        if let key = stories.storyTitlesPositionKey {
+            UserDefaults.standard.set("titles_on_left", forKey: key)
+        }
+        return split
     }
 
     func configure() throws {
@@ -580,8 +754,8 @@ import WebKit
         let generation = (feeds.value(forKey: "feedListAccountGeneration") as? NSNumber)?.uintValue ?? 0
         feeds.setValue(NSNumber(value: generation &+ 1), forKey: "feedListAccountGeneration")
         login.beforeDismissal = nil
-        feeds.loadWorkItem?.cancel()
-        feeds.reloadWorkItem?.cancel()
+        feeds.cancelPendingFeedListWorkForAccountChange()
+        NSObject.cancelPreviousPerformRequests(withTarget: feeds)
         titles.resetPendingReloadsForFeedChange()
         NSObject.cancelPreviousPerformRequests(withTarget: titles)
         for page in [pages.currentPage, pages.nextPage, pages.previousPage].compactMap({ $0 }) {
@@ -589,8 +763,16 @@ import WebKit
         }
         window.isHidden = true
         window.rootViewController = nil
+        feeds.cancelFixtureAvatarRequests()
         app.getRequests.removeAll()
         app.postRequests.removeAll()
+        // AuthenticationResetTests.swift breaks fixture ownership cycles after disappearance, keeping each controller's app valid during teardown.
+        navigation.setViewControllers([], animated: false)
+        app.detailViewController = nil
+        app.feedsViewController = nil
+        app.feedsNavigationController = nil
+        app.splitViewController = nil
+        app.storiesCollection = nil
         UserDefaults.standard.setPersistentDomain(preferences, forName: preferenceDomain)
         UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.setPersistentDomain(sharedPreferences, forName: "group.com.newsblur.NewsBlur-Group")
     }
@@ -639,8 +821,23 @@ private final class AuthenticationAppDelegate: NewsBlurAppDelegate {
 
 @MainActor private final class AuthenticationFeedsController: FeedsViewController {
     nonisolated let refreshPublication = AuthenticationRefreshPublication()
+    private var fixtureAvatarImageViews: [UIImageView] = []
     var tableReloads = 0
     var requestFailures = 0
+    override func layoutHeaderCounts(_ orientation: UIInterfaceOrientation) {
+        super.layoutHeaderCounts(orientation)
+        // AuthenticationResetTests.swift retains each request owner because real header layout replaces the image view.
+        if let imageView = avatarImageView, fixtureAvatarImageViews.last !== imageView {
+            fixtureAvatarImageViews.append(imageView)
+        }
+    }
+    func cancelFixtureAvatarRequests() {
+        // AuthenticationResetTests.swift cancels only its own AFNetworking requests, whose handlers retain the synthetic app.
+        for imageView in fixtureAvatarImageViews {
+            imageView.perform(NSSelectorFromString("cancelImageDownloadTask"))
+        }
+        fixtureAvatarImageViews.removeAll()
+    }
     override func reloadFeedTitlesTable() { tableReloads += 1; super.reloadFeedTitlesTable() }
     @objc(dispatchFeedRefreshPublication:) nonisolated func scheduleRefreshPublication(_ block: @escaping () -> Void) {
         refreshPublication.schedule(block)
@@ -673,9 +870,27 @@ private final class AuthenticationAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class AuthenticationDetailController: DetailViewController {
+    var simulatesPhone: Bool?
+    override var isPhone: Bool { simulatesPhone ?? super.isPhone }
     override var isPhoneOrCompact: Bool { isCompact }
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 1024, height: 780)) }
     override func viewDidLoad() {}
+}
+
+@MainActor private final class AuthenticationDuoSplitController: SplitViewController {
+    private var shownMode: UISplitViewController.DisplayMode = .secondaryOnly
+    override var displayMode: UISplitViewController.DisplayMode { shownMode }
+    override var splitBehavior: UISplitViewController.SplitBehavior { preferredSplitBehavior }
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 951, height: 669)) }
+    override func viewDidLoad() {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+    override func show(_ column: UISplitViewController.Column) {
+        shownMode = column == .primary ? preferredDisplayMode : .secondaryOnly
+    }
+    override func hide(_ column: UISplitViewController.Column) {
+        if column == .primary { shownMode = .secondaryOnly }
+    }
 }
 
 @MainActor private final class AuthenticationPagesController: StoryPagesViewController {

@@ -55,6 +55,18 @@ public enum StoryAutoCollapseBehavior: String {
 }
 
 @objcMembers public final class StorySplitBehaviorDecision: NSObject {
+    public class func shouldShowStoryTitlesBesideTiledFeeds(
+        isPhone: Bool,
+        isCompact: Bool,
+        isDoubleColumn: Bool,
+        isDiscoverSitesVisible: Bool,
+        storyTitlesOnLeft: Bool,
+        displayMode: StorySplitPreferredDisplayMode
+    ) -> Bool {
+        isPhone && !isCompact && isDoubleColumn && !isDiscoverSitesVisible &&
+            storyTitlesOnLeft && displayMode == .oneBesideSecondary
+    }
+
     public class func preferredBehavior(
         for behaviorValue: String?,
         width: CGFloat,
