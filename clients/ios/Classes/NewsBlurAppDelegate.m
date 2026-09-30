@@ -5272,6 +5272,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
     [feedClassifiers setObject:authors forKey:@"authors"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.trainerViewController captureRetainedStoryContext];
     [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController reload];
 
@@ -5419,6 +5420,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
     [feedClassifiers setObject:tags forKey:@"tags"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.trainerViewController captureRetainedStoryContext];
     [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController reload];
 
