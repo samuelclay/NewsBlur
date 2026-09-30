@@ -58,7 +58,7 @@ object LastStoryList {
     ) {
         val saved =
             save(
-                storyListClass = storyList.javaClass,
+                storyListClass = storyListClass(storyList),
                 feedSet = feedSet,
                 folderName = folderName,
                 socialFeed = storyList.intent.getSerializableExtra(SocialFeedItemsList.EXTRA_SOCIAL_FEED) as? SocialFeed,
@@ -72,6 +72,14 @@ object LastStoryList {
             .putString(KEY_SOCIAL_FEED, saved.socialFeed)
             .apply()
     }
+
+    // A tablet story list that switched feeds in place (ItemsList.switchStoryList) shows what its
+    // current intent names, which can be a different ItemsList.java subclass than its own.
+    private fun storyListClass(storyList: ItemsList): Class<*> =
+        storyList.intent.component
+            ?.className
+            ?.let { className -> runCatching { Class.forName(className) }.getOrNull() }
+            ?: storyList.javaClass
 
     /**
      * The intent that reopens the last story list, or All Site Stories when there isn't one to

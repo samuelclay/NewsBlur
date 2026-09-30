@@ -268,6 +268,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         } else {
             storyList = LastStoryList.intent(this, dbHelper);
             storyList.putExtra(ItemsList.EXTRA_OPEN_FEED_DRAWER, true);
+            // Hidden under the slide-over, the last story list loads nothing until the feed list
+            // closes without a pick; a pick switches it to that feed instead (FeedListDrawer.kt).
+            storyList.putExtra(ItemsList.EXTRA_DEFER_STORIES, true);
             // A feed just added (AddFeedFragment.kt) stays visible in the slide-over's feed list.
             storyList.putExtra(EXTRA_FORCE_SHOW_FEED_ID, getIntent().getStringExtra(EXTRA_FORCE_SHOW_FEED_ID));
         }

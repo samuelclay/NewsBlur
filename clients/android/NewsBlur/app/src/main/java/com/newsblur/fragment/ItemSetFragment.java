@@ -435,6 +435,8 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void hasUpdated() {
+        // A tablet's launch story list loads nothing until a feed is picked (ItemsList.EXTRA_DEFER_STORIES).
+        if (isAdded() && ((ItemsList) requireActivity()).areStoriesDeferred()) return;
         FeedSet fs = getFeedSet();
         if (isAdded() && fs != null) {
             storiesViewModel.loadActiveStories(fs, new CursorFilters(prefsRepo, fs));
