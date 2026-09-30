@@ -5927,16 +5927,38 @@ class Test_MergeFeedsQueuedKey(TestCase):
             release_merge_feeds_queued(self.duplicate_id, self.original_id, "owner")
             self.assertIsNone(self.r.get(self.key))
 
-    def test_a_task_queued_before_tokens_merges_without_touching_the_key(self):
+    def test_a_task_queued_before_tokens_merges_and_clears_its_old_key(self):
+        """A task queued by the previous deploy carries no token and its key holds "1". It
+        still merges and frees the pair when it ends, but never clears a tokened key."""
         from apps.rss_feeds.models import MERGE_FEEDS_QUEUED_SECONDS
         from apps.rss_feeds.tasks import MergeFeeds
 
         self.r.set(self.key, "1", ex=MERGE_FEEDS_QUEUED_SECONDS)
         with patch("apps.rss_feeds.models.merge_feeds", return_value=None) as merge:
             MergeFeeds(self.original_id, self.duplicate_id, None)
-
         merge.assert_called_once_with(self.original_id, self.duplicate_id)
-        self.assertEqual(self.r.get(self.key), "1")
+        self.assertIsNone(self.r.get(self.key))
+
+        self.r.set(self.key, "running:new-task", ex=MERGE_FEEDS_QUEUED_SECONDS)
+        with patch("apps.rss_feeds.models.merge_feeds", return_value=None):
+            MergeFeeds(self.original_id, self.duplicate_id, None)
+        self.assertEqual(self.r.get(self.key), "running:new-task")
+
+    def test_the_broker_error_surfaces_even_if_redis_is_down_too(self):
+        """Freeing the key after a failed publish needs Redis. If Redis is down as well, the
+        fetch must still see the broker's error, not the Redis one from the cleanup."""
+        from kombu.exceptions import OperationalError
+
+        from apps.rss_feeds import models as feed_models
+
+        with patch.object(feed_models.MergeFeeds, "apply_async", side_effect=OperationalError("broker down")):
+            with patch.object(
+                feed_models,
+                "release_merge_feeds_queued",
+                side_effect=redis.exceptions.ConnectionError("redis down"),
+            ):
+                with self.assertRaisesRegex(OperationalError, "broker down"):
+                    feed_models.queue_merge_feeds_once(self.original_id, self.duplicate_id)
 
     def test_the_key_lives_exactly_as_long_as_the_task_may_run(self):
         from apps.rss_feeds.models import MERGE_FEEDS_QUEUED_SECONDS

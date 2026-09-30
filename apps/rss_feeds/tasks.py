@@ -241,7 +241,8 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None, queued_to
     the key when it starts (a fresh lifetime, however long it waited in the queue), taking it
     from a task that is still queued but leaving the merge to one that is already running, and
     releases only its own token when it ends.
-    A task queued before tokens existed carries none and merges without touching the key.
+    A task queued before tokens existed carries none; it merges without claiming the key and
+    clears the old "1" value it was queued with when it ends.
     apps/rss_feeds/tasks.py
     """
     from redis.exceptions import LockError
@@ -270,8 +271,7 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None, queued_to
             " ---> MergeFeeds(%s, %s) found the feeds locked: %s" % (original_feed_id, duplicate_feed_id, e)
         )
     finally:
-        if queued_token:
-            release_merge_feeds_queued(original_feed_id, duplicate_feed_id, queued_token)
+        release_merge_feeds_queued(original_feed_id, duplicate_feed_id, queued_token)
 
 
 @app.task()

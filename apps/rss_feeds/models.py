@@ -45,7 +45,7 @@ from django.urls import reverse
 from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_str
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
-from redis.exceptions import LockError
+from redis.exceptions import LockError, RedisError
 
 from apps.rss_feeds.tasks import (
     MERGE_FEEDS_TIME_LIMIT_SECONDS,
@@ -5876,15 +5876,20 @@ end
 redis.call('set', KEYS[1], mine, 'EX', ARGV[2])
 return 1
 """
-# Clears the pair's key only while it still holds this task's token, waiting or running, so a
-# task never frees a pair another task owns. apps/rss_feeds/models.py
+# Clears the pair's key only while it still holds one of the given values (this task's token,
+# waiting or running), so a task never frees a pair another task owns. apps/rss_feeds/models.py
 MERGE_FEEDS_RELEASE_SCRIPT = """
 local holder = redis.call('get', KEYS[1])
-if holder == 'queued:' .. ARGV[1] or holder == 'running:' .. ARGV[1] then
-    return redis.call('del', KEYS[1])
+for _, value in ipairs(ARGV) do
+    if holder == value then
+        return redis.call('del', KEYS[1])
+    end
 end
 return 0
 """
+# What the key held before tasks carried tokens; a task queued then carries no token and
+# clears this value when it ends. apps/rss_feeds/models.py
+MERGE_FEEDS_LEGACY_QUEUED_VALUE = "1"
 # The merge locks this thread holds, by feed id. merge_feeds_locked ends with a full
 # Feed.save of the survivor, which merges again on a hash collision; that nested merge must
 # not wait on locks its own caller holds, and a long merge renews the leases of all of them.
@@ -6085,8 +6090,15 @@ def queue_merge_feeds_once(original_feed_id, duplicate_feed_id, feed_address=Non
     except Exception:
         # The task never reached the broker, so nothing would ever clear the key and the pair
         # would sit blocked for its whole lifetime. Free it for the next collision and let the
-        # fetch fail the way it would have without the key.
-        release_merge_feeds_queued(original_feed_id, duplicate_feed_id, token)
+        # fetch fail the way it would have without the key. If Redis is down too, the broker
+        # error is still the one that surfaces.
+        try:
+            release_merge_feeds_queued(original_feed_id, duplicate_feed_id, token)
+        except RedisError as e:
+            logging.debug(
+                " ***> Could not free merge_feeds_queued for %s/%s after a failed publish: %s"
+                % (original_feed_id, duplicate_feed_id, e)
+            )
         raise
     return True
 
@@ -6103,10 +6115,16 @@ def claim_merge_feeds_queued(original_feed_id, duplicate_feed_id, token):
 
 def release_merge_feeds_queued(original_feed_id, duplicate_feed_id, token):
     """Let the next collision of this pair queue a merge again, if this token still owns the
-    pair (MergeFeeds calls this when it ends, however it ends). apps/rss_feeds/models.py"""
+    pair (MergeFeeds calls this when it ends, however it ends). A task queued before tokens
+    existed passes None and clears the old "1" value it was queued with.
+    apps/rss_feeds/models.py"""
     r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
     key = merge_feeds_queued_key(original_feed_id, duplicate_feed_id)
-    r.eval(MERGE_FEEDS_RELEASE_SCRIPT, 1, key, token)
+    if token:
+        values = [MERGE_FEEDS_QUEUED_PREFIX + token, MERGE_FEEDS_RUNNING_PREFIX + token]
+    else:
+        values = [MERGE_FEEDS_LEGACY_QUEUED_VALUE]
+    r.eval(MERGE_FEEDS_RELEASE_SCRIPT, 1, key, *values)
 
 
 def settle_address_check_merge(feed, feed_address):
