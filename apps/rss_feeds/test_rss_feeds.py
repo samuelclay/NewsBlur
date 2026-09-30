@@ -5477,6 +5477,479 @@ class Test_BranchFromFeedDoesNotCascade(TestCase):
         self.assertTrue(Feed.objects.filter(pk=parent.pk).exists())
 
 
+class Test_ChangeAddressLeavesExistingFeedsAlone(TestCase):
+    """A reader on a small copy of a feed (Hacker News through RSSHub) used Change Feed Address
+    to point it at the real feed's URL. The view found the real feed by its hash and made it a
+    branch of the small copy, so the real feed and its 17,000 readers dropped out of search
+    and later lost a merge to the empty copy (forum #13860). Switching a reader onto a feed
+    that already exists must not re-parent or lock that feed."""
+
+    def setUp(self):
+        from apps.rss_feeds.models import MFetchHistory
+
+        self.client = Client()
+        self.user = User.objects.create_user(username="copy-reader", password="testpass")
+        self.client.login(username="copy-reader", password="testpass")
+        self.copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        self.real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        self.real_link = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/best",
+            feed_title="Hacker News (RSSHub) Best",
+        )
+        UserSubscription.objects.create(user=self.user, feed=self.copy)
+        empty_history = {"feed_fetch_history": [], "page_fetch_history": [], "push_history": []}
+        for patcher in (
+            patch.object(Feed, "update", autospec=True, side_effect=lambda feed, *a, **kw: feed),
+            patch.object(Feed, "update_all_statistics"),
+            patch.object(UserSubscription, "calculate_feed_scores"),
+            patch.object(MFetchHistory, "feed", return_value=empty_history),
+            patch("apps.rss_feeds.views.validate_public_url"),
+            patch("apps.reader.models.redis"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_changing_the_address_to_an_existing_feed_does_not_make_it_a_branch(self):
+        response = self.client.post(
+            reverse("exception-change-feed-address"),
+            {"feed_id": self.copy.pk, "feed_address": self.real.feed_address},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["new_feed_id"], self.real.pk)
+        self.real.refresh_from_db()
+        self.assertIsNone(self.real.branch_from_feed_id)
+        self.assertFalse(self.real.feed_address_locked)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=self.real).exists())
+
+    def test_changing_the_link_to_an_existing_feed_does_not_make_it_a_branch(self):
+        response = self.client.post(
+            reverse("exception-change-feed-link"),
+            {"feed_id": self.copy.pk, "feed_link": self.real_link.feed_link},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["new_feed_id"], self.real_link.pk)
+        self.real_link.refresh_from_db()
+        self.assertIsNone(self.real_link.branch_from_feed_id)
+        self.assertFalse(self.real_link.feed_link_locked)
+
+    def test_a_feed_created_at_the_address_meanwhile_is_not_made_a_branch(self):
+        """Another request creates the feed between this request's lookup and its create.
+        Feed.save folds the new row into that feed and leaves the instance without an id; the
+        view must switch the reader onto that feed and leave it alone."""
+        real_get = Feed.objects.get
+        missed = []
+
+        def miss_the_first_hash_lookup(*args, **kwargs):
+            if "hash_address_and_link" in kwargs and not missed:
+                missed.append(kwargs)
+                raise Feed.DoesNotExist
+            return real_get(*args, **kwargs)
+
+        with patch.object(Feed.objects, "get", side_effect=miss_the_first_hash_lookup):
+            response = self.client.post(
+                reverse("exception-change-feed-address"),
+                {"feed_id": self.copy.pk, "feed_address": self.real.feed_address},
+            )
+        content = json.decode(response.content)
+
+        self.assertEqual(len(missed), 1)
+        self.assertEqual(content["new_feed_id"], self.real.pk)
+        self.real.refresh_from_db()
+        self.assertIsNone(self.real.branch_from_feed_id)
+        self.assertFalse(self.real.feed_address_locked)
+
+    def test_a_create_that_lands_nowhere_leaves_the_reader_on_their_feed(self):
+        """Feed.save can also come back without an id when its collision found no feed to fold
+        into. The view must answer that nothing changed instead of failing the request."""
+        unsaved = Feed(feed_address="https://news.example.com/rss?points=50", feed_link=self.copy.feed_link)
+
+        with patch.object(Feed.objects, "create", return_value=unsaved):
+            response = self.client.post(
+                reverse("exception-change-feed-address"),
+                {"feed_id": self.copy.pk, "feed_address": "https://news.example.com/rss?points=50"},
+            )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["code"], -1)
+        self.assertEqual(content["new_feed_id"], self.copy.pk)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=self.copy).exists())
+
+    def test_changing_the_address_to_a_new_url_still_branches_a_private_copy(self):
+        response = self.client.post(
+            reverse("exception-change-feed-address"),
+            {"feed_id": self.copy.pk, "feed_address": "https://news.example.com/rss?points=100"},
+        )
+        content = json.decode(response.content)
+
+        branch = Feed.objects.get(pk=content["new_feed_id"])
+        self.assertNotIn(branch.pk, (self.copy.pk, self.real.pk))
+        self.assertEqual(branch.branch_from_feed_id, self.copy.pk)
+        self.assertTrue(branch.feed_address_locked)
+
+
+class Test_AddressCheckMergesOnTheCallingThread(TransactionTestCase):
+    """check_feed_link_for_feed_address saves the feed with the address it discovered, and
+    that save merges when another feed already holds the address. The save ran inside the
+    10 second timelimit thread, so a merge of a popular feed outlasted the limit, the caller
+    gave up, and the abandoned thread died partway through moving subscriptions (forum
+    #13860). Only discovery belongs under the time limit."""
+
+    def setUp(self):
+        for patcher in (
+            patch("apps.rss_feeds.models.validate_public_url"),
+            patch.object(Feed, "count_subscribers"),
+            patch.object(Feed, "save_feed_history"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_a_merge_that_outlasts_the_discovery_limit_finishes_on_the_callers_thread(self):
+        import threading
+        import time
+
+        from apps.rss_feeds import models as feed_models
+        from utils.feed_functions import timelimit
+
+        real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        caller = threading.get_ident()
+        merges = []
+
+        def slow_merge(original_feed_id, duplicate_feed_id, *args, **kwargs):
+            # Longer than the shortened discovery limit below, as a popular feed's merge is.
+            time.sleep(0.5)
+            merges.append((original_feed_id, duplicate_feed_id, threading.get_ident()))
+            return original_feed_id
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "timelimit", lambda seconds: timelimit(0.2)):
+                with patch.object(feed_models, "merge_feeds", side_effect=slow_merge):
+                    fixed, feed = copy.check_feed_link_for_feed_address()
+
+        self.assertEqual(merges, [(real.pk, copy.pk, caller)])
+        self.assertTrue(fixed)
+        self.assertEqual(feed.pk, real.pk)
+
+    def make_heavier_copy(self, readers):
+        """The real feed at the address the check discovers, and a copy with `readers`
+        subscriptions and more family readers, so the copy is the heavier feed."""
+        real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=0)
+        Feed.objects.filter(pk=copy.pk).update(num_subscribers=100)
+        real.refresh_from_db()
+        copy.refresh_from_db()
+        for index in range(readers):
+            UserSubscription.objects.create(
+                user=User.objects.create_user(username="copy-%s" % index), feed=copy
+            )
+        return real, copy
+
+    def test_a_merge_that_would_move_many_subscriptions_is_queued_as_its_own_task(self):
+        """Hacker News moved 15,492 readers in 13 minutes, longer than a fetch task's 9 minute
+        soft limit. A merge that big goes to MergeFeeds and the fetch moves on, with this feed
+        left at its old address until the merge settles which feed survives."""
+        from apps.rss_feeds import models as feed_models
+
+        real, copy = self.make_heavier_copy(readers=3)
+        # The real feed is the heavier one here, so the copy's 3 readers are the ones to move.
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=1000)
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS", 3):
+                with patch("apps.rss_feeds.models.redis") as mock_redis:
+                    mock_redis.Redis.return_value.set.return_value = True
+                    with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
+                        with patch.object(feed_models, "merge_feeds") as inline_merge:
+                            fixed, feed = copy.check_feed_link_for_feed_address()
+
+        queued.assert_called_once_with(args=(real.pk, copy.pk, "https://news.example.com/rss"))
+        inline_merge.assert_not_called()
+        self.assertFalse(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+        copy.refresh_from_db()
+        self.assertEqual(copy.feed_address, "https://rsshub.example.com/hackernews/index")
+
+    def test_a_merge_already_queued_for_the_pair_is_not_queued_again(self):
+        """The feed keeps failing while its merge runs, and each failing fetch comes back here.
+        Only the first one queues MergeFeeds."""
+        from apps.rss_feeds import models as feed_models
+
+        real, copy = self.make_heavier_copy(readers=3)
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=1000)
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS", 3):
+                with patch("apps.rss_feeds.models.redis") as mock_redis:
+                    mock_redis.Redis.return_value.set.side_effect = [True, False]
+                    with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
+                        copy.check_feed_link_for_feed_address()
+                        copy.check_feed_link_for_feed_address()
+
+        self.assertEqual(queued.call_count, 1)
+        key, _ = mock_redis.Redis.return_value.set.call_args_list[0][0]
+        self.assertEqual(key, "merge_feeds_queued:%s:%s" % tuple(sorted([real.pk, copy.pk])))
+
+    def test_this_feed_winning_the_merge_takes_the_discovered_address(self):
+        """A merge keeps the heavier feed's own address. When that is this failing feed, the
+        address the check discovered is free once the other feed is folded in, and the check
+        must move this feed onto it rather than report a fix it did not make."""
+        from apps.rss_feeds.models import MFetchHistory
+
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(MFetchHistory, "delete_for_feed", return_value=0),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        real, copy = self.make_heavier_copy(readers=2)
+
+        with patch("apps.rss_feeds.models.feedfinder_forman.find_feeds", return_value=[real.feed_address]):
+            fixed, feed = copy.check_feed_link_for_feed_address()
+
+        self.assertTrue(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+        self.assertFalse(Feed.objects.filter(pk=real.pk).exists())
+        copy.refresh_from_db()
+        self.assertEqual(copy.feed_address, "https://news.example.com/rss")
+        self.assertFalse(copy.has_feed_exception)
+
+    def test_the_merge_task_settles_the_survivor_and_releases_the_pair(self):
+        """MergeFeeds finishes the way the inline check does: the survivor is at the discovered
+        address and marked healthy. It releases the pair's queued key however it ends."""
+        from redis.exceptions import LockError
+
+        from apps.rss_feeds.tasks import MergeFeeds
+
+        real, copy = self.make_heavier_copy(readers=0)
+        Feed.objects.filter(pk=real.pk).update(has_feed_exception=True, active=False)
+        key = "merge_feeds_queued:%s:%s" % tuple(sorted([real.pk, copy.pk]))
+
+        with patch("apps.rss_feeds.models.redis") as mock_redis:
+            with patch("apps.rss_feeds.models.merge_feeds", return_value=real.pk) as merge:
+                MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss")
+            with patch("apps.rss_feeds.models.merge_feeds", side_effect=LockError("held")):
+                MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss")
+
+        merge.assert_called_once_with(real.pk, copy.pk)
+        real.refresh_from_db()
+        self.assertFalse(real.has_feed_exception)
+        self.assertTrue(real.active)
+        self.assertEqual([c.args[0] for c in mock_redis.Redis.return_value.delete.call_args_list], [key, key])
+        self.assertTrue(settings.CELERY_TASK_ROUTES["merge-feeds"]["queue"].endswith("work_queue"))
+
+    def test_a_feed_whose_row_vanished_during_the_check_reports_no_fix(self):
+        """Feed.save returns None when the row was deleted and nothing replaced it; the check
+        runs on the fetcher's thread now, so that must not raise into the fetch."""
+        from apps.rss_feeds import models as feed_models
+
+        copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/vanished",
+            feed_link="https://news.example.com/vanished",
+            feed_title="Hacker News (RSSHub)",
+        )
+
+        with patch.object(
+            feed_models.feedfinder_forman, "find_feeds", return_value=["https://news.example.com/rss"]
+        ):
+            with patch.object(Feed, "save", return_value=None):
+                fixed, feed = copy.check_feed_link_for_feed_address()
+
+        self.assertFalse(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+
+
+class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
+    """merge_feeds lets a branched feed give way to the unbranched one, which is right for a
+    reader's private copy. When the branch link is inverted (the real feed marked as a
+    branch of a small copy, forum #13860), that rule made the empty copy the survivor and
+    moved every reader onto it. num_subscribers is summed over the whole branch family, so
+    it cannot tell the two apart; the real subscription counts can, and a private copy is
+    read by too few accounts to be mistaken for the real feed."""
+
+    def setUp(self):
+        from apps.rss_feeds.models import (
+            MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS,
+            MFetchHistory,
+        )
+
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(Feed, "count_subscribers"),
+            patch.object(MFetchHistory, "delete_for_feed", return_value=0),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        # As on production, the real feed is years older than the copy it was re-parented
+        # under (Hacker News 6327282 under RSSHub 10015475).
+        self.real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        self.copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=self.copy)
+        # The family total, the same on both feeds, as count_subscribers leaves it.
+        Feed.objects.filter(pk__in=[self.copy.pk, self.real.pk]).update(num_subscribers=20)
+        self.copy.refresh_from_db()
+        self.real.refresh_from_db()
+        self.real_readers = MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS + 2
+        self.readers = [
+            User.objects.create_user(username="hn-reader-%s" % index) for index in range(self.real_readers)
+        ]
+        for reader in self.readers:
+            UserSubscription.objects.create(user=reader, feed=self.real)
+        self.copy_reader = User.objects.create_user(username="rsshub-reader")
+        UserSubscription.objects.create(user=self.copy_reader, feed=self.copy)
+
+    def test_orientation_keeps_an_inverted_branch_with_more_readers(self):
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        original, duplicate, address, _, _, _ = merge_feeds_orientation(self.real, self.copy)
+
+        self.assertEqual((original.pk, duplicate.pk), (self.real.pk, self.copy.pk))
+        self.assertEqual(address, "https://news.example.com/rss")
+
+    def test_orientation_keeps_an_inverted_branch_passed_as_the_duplicate(self):
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        original, duplicate, address, _, _, _ = merge_feeds_orientation(self.copy, self.real)
+
+        self.assertEqual((original.pk, duplicate.pk), (self.real.pk, self.copy.pk))
+        self.assertEqual(address, "https://news.example.com/rss")
+
+    def test_an_inverted_branch_newer_than_its_copy_also_keeps_its_readers(self):
+        """The old view re-parented feeds under older copies too (Ars Technica, Wired and
+        Lifehacker on production), so creation order cannot be the test."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        older_copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/ars/index",
+            feed_link="https://ars.example.com/",
+            feed_title="Ars (RSSHub)",
+        )
+        newer_real = Feed.objects.create(
+            feed_address="https://ars.example.com/feed",
+            feed_link="https://ars.example.com/",
+            feed_title="Ars",
+            branch_from_feed=older_copy,
+        )
+        UserSubscription.objects.filter(feed=self.real).update(feed=newer_real)
+
+        for pair in ((newer_real, older_copy), (older_copy, newer_real)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (newer_real.pk, older_copy.pk))
+
+    def test_a_private_branch_with_fewer_readers_still_gives_way(self):
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        private = Feed.objects.create(
+            feed_address="https://news.example.com/rss?_=12345",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News (private)",
+            branch_from_feed=self.real,
+        )
+        Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=None)
+        self.real.refresh_from_db()
+        UserSubscription.objects.create(user=self.copy_reader, feed=private)
+
+        original, duplicate, address, _, _, _ = merge_feeds_orientation(private, self.real)
+
+        self.assertEqual((original.pk, duplicate.pk), (self.real.pk, private.pk))
+        self.assertEqual(address, "https://news.example.com/rss")
+
+    def test_a_private_branch_with_more_readers_than_its_parent_still_gives_way(self):
+        """A private branch shared by a few accounts can outnumber a parent that lost its
+        readers. It must not survive a merge with that parent: the survivor loses its parent
+        and the private address would turn public."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=None)
+        self.real.refresh_from_db()
+        private = Feed.objects.create(
+            feed_address="https://news.example.com/rss?token=SECRET-TOKEN",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (private)",
+            branch_from_feed=self.real,
+        )
+        UserSubscription.objects.filter(user__in=self.readers[:3]).update(feed=private)
+        UserSubscription.objects.filter(feed=self.real).delete()
+
+        for pair in ((private, self.real), (self.real, private)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (self.real.pk, private.pk))
+
+    def test_a_re_parented_private_branch_older_than_its_parent_still_gives_way(self):
+        """merge_feeds re-parents a deleted feed's branches onto the survivor, which can be
+        newer than they are. Being the older feed must not let a private branch survive."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        private = Feed.objects.create(
+            feed_address="https://news.example.com/rss?token=SECRET-TOKEN",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News (private)",
+        )
+        survivor = Feed.objects.create(
+            feed_address="https://news.example.com/rss?survivor=1",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News",
+        )
+        Feed.objects.filter(pk=private.pk).update(branch_from_feed=survivor)
+        private.refresh_from_db()
+        UserSubscription.objects.filter(user__in=self.readers[:3]).update(feed=private)
+        UserSubscription.objects.create(user=self.copy_reader, feed=survivor)
+
+        for pair in ((private, survivor), (survivor, private)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (survivor.pk, private.pk))
+
+    def test_the_copy_colliding_with_the_real_feed_folds_into_the_real_feed(self):
+        """The incident end to end: the copy's address check finds the real feed's URL and
+        saves it, the save collides, and the merge must keep the feed with the readers."""
+        self.copy.feed_address = self.real.feed_address
+        survivor = self.copy.save()
+
+        self.assertEqual(survivor.pk, self.real.pk)
+        self.assertFalse(Feed.objects.filter(pk=self.copy.pk).exists())
+        self.real.refresh_from_db()
+        self.assertIsNone(self.real.branch_from_feed_id)
+        self.assertEqual(self.real.feed_address, "https://news.example.com/rss")
+        self.assertEqual(UserSubscription.objects.filter(feed=self.real).count(), self.real_readers + 1)
+
+
 class Test_YouTubeFavicons(TestCase):
     """Tests for YouTube favicon lookup and caching."""
 

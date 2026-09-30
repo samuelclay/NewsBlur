@@ -215,6 +215,39 @@ def PushFeeds(feed_id, xml):
         feed.update(options=options)
 
 
+@app.task(name="merge-feeds", time_limit=65 * 60, soft_time_limit=60 * 60, ignore_result=True)
+def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
+    """merge_feeds off the fetch queue. check_feed_link_for_feed_address hands a merge here
+    when it would move MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS or more subscriptions: run inline,
+    a merge that size (Hacker News moved 15,492 in 13 minutes, forum #13860) outlasts the
+    fetch task's 9 minute soft limit and stalls the rest of its batch. merge_feeds decides the
+    survivor itself, exactly as the save collision would have; with the address the check
+    discovered, the survivor then takes it and is marked healthy, as an inline fix is. A merge
+    cut short here is finished by the pair's next collision or by merge_feeds with the same
+    pair. apps/rss_feeds/tasks.py
+    """
+    from redis.exceptions import LockError
+
+    from apps.rss_feeds.models import (
+        Feed,
+        clear_merge_feeds_queued,
+        merge_feeds,
+        settle_address_check_merge,
+    )
+
+    try:
+        survivor = Feed.get_by_id(merge_feeds(original_feed_id, duplicate_feed_id))
+        if survivor and feed_address:
+            settle_address_check_merge(survivor, feed_address)
+    except LockError as e:
+        # Another merge of these feeds holds their locks and finishes the job.
+        logging.debug(
+            " ---> MergeFeeds(%s, %s) found the feeds locked: %s" % (original_feed_id, duplicate_feed_id, e)
+        )
+    finally:
+        clear_merge_feeds_queued(original_feed_id, duplicate_feed_id)
+
+
 @app.task()
 def ScheduleImmediateFetches(feed_ids, user_id=None):
     from apps.rss_feeds.models import Feed

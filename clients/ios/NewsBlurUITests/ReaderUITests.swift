@@ -181,6 +181,41 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_imageLongPressShowsHoverTextAndActions() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image long press uses isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        articleImage.press(forDuration: 1.2)
+        attachScreenshot(named: "image-long-press")
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        let hoverText = app.staticTexts["The mountain looks smaller from the summit. This is the hover text, not the image description."]
+        XCTAssertTrue(hoverText.waitForExistence(timeout: 5))
+        XCTAssertLessThanOrEqual(hoverText.frame.maxY, app.images["fullscreen-story-image"].frame.minY)
+        for title in ["Copy Image", "Save Image", "Share Image…"] {
+            XCTAssertTrue(app.buttons[title].waitForExistence(timeout: 5), title)
+            XCTAssertTrue(app.buttons[title].isEnabled, title)
+        }
+        app.buttons["Copy Image"].tap()
+        XCTAssertTrue(app.staticTexts["Image copied"].waitForExistence(timeout: 5))
+        app.buttons["Close image"].tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForNonExistence(timeout: 5))
+        articleImage.tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        XCTAssertFalse(hoverText.exists)
+        app.images["fullscreen-story-image"].press(forDuration: 1.2)
+        XCTAssertTrue(hoverText.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Copy Image"].exists)
+        attachScreenshot(named: "preview-long-press-hover-and-actions")
+        app.buttons["Share Image…"].tap()
+        XCTAssertTrue(app.otherElements["ActivityListView"].firstMatch.waitForExistence(timeout: 5))
+        attachScreenshot(named: "image-disclosure-share-sheet")
+        #endif
+    }
+
     func test_storyImageViewerZoomMenuAndReturn() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Image viewer uses isolated simulator fixtures")
@@ -376,7 +411,9 @@ final class ReaderUITests: XCTestCase {
         image.doubleTap()
         expectation(for: NSPredicate(format: "value == 'Fitted'"), evaluatedWith: zoom)
         waitForExpectations(timeout: 5)
-        app.buttons["Image actions"].tap()
+        image.press(forDuration: 1.2)
+        XCTAssertFalse(app.scrollViews["image-hover-disclosure"].exists, "An image without a title must not show its alt description as hover text")
+        XCTAssertTrue(app.buttons["Save Image"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Open Link"].exists)
         XCTAssertFalse(app.buttons["Open Image in Browser"].exists)
         app.buttons["Save Image"].tap()

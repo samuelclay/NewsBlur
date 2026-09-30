@@ -48,6 +48,7 @@ import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.image.StoryImageViewerHost
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.StoryApi
@@ -76,6 +77,7 @@ import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryClusterNavigationDecision
 import com.newsblur.util.StoryClusterNavigationTarget
 import com.newsblur.util.StoryClusterThemeStyle
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.StoryUtil
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.UIUtils
@@ -126,6 +128,12 @@ class ReadingItemFragment :
     lateinit var imageViewerClient: okhttp3.OkHttpClient
 
     private var storyImageViewer: com.newsblur.image.StoryImageViewer? = null
+
+    // When a photo started opening on StoryImageViewerHost.kt, which holds off a second tap until the host shows it.
+    private var storyImageHostLaunchedAt = 0L
+
+    // The StoryImageViewerHost.kt hand-off this reader is waiting on, if any.
+    private var storyImageHostToken: String? = null
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
@@ -348,6 +356,10 @@ class ReadingItemFragment :
     }
 
     override fun onDestroyView() {
+        // A photo host that never started must not keep this fragment, its WebView, or the preview alive.
+        storyImageHostToken?.let(StoryImageViewerHost::cancelPending)
+        storyImageHostToken = null
+        storyImageHostLaunchedAt = 0L
         cancelPendingConfigurationChangeRestore()
         invalidateReaderAnchorCapture()
         destroyReadingWebviewForBackground()
@@ -2133,6 +2145,7 @@ class ReadingItemFragment :
     fun openStoryImage(webview: NewsblurWebview, json: String) {
         val host = activity ?: return
         if (view == null || readingWebview !== webview || !isResumed || storyImageViewer != null || host.isFinishing) return
+        if (android.os.SystemClock.uptimeMillis() - storyImageHostLaunchedAt < STORY_IMAGE_HOST_LAUNCH_GUARD_MS) return
         val visible = android.graphics.Rect()
         if (!webview.getGlobalVisibleRect(visible)) return
         val source = com.newsblur.image.StoryImageSource.parse(json) ?: return
@@ -2154,30 +2167,82 @@ class ReadingItemFragment :
                 webview.draw(canvas)
             }
         }.getOrNull()
-        storyImageViewer = com.newsblur.image.StoryImageViewer(host, source, preview, origin, storyImageCache, imageViewerClient,
+
+        // ReadingItemFragment.kt builds the viewer against whichever activity hosts its window.
+        fun createViewer(
+            viewerActivity: android.app.Activity,
+            onClosed: () -> Unit,
+        ) = com.newsblur.image.StoryImageViewer(
+            viewerActivity,
+            source,
+            preview,
+            origin,
+            storyImageCache,
+            imageViewerClient,
             returnRect = { finish ->
                 if (readingWebview !== webview || view == null || source.generation != webview.documentGeneration) {
                     finish(null)
                 } else {
                     webview.evaluateJavascript("NB_story_image_rect('${source.token}', ${source.generation});") { result ->
-                        val rect = runCatching {
-                            if (readingWebview !== webview || source.generation != webview.documentGeneration) return@runCatching null
-                            val data = com.google.gson.JsonParser.parseString(result).asJsonObject
-                            val ratio = webview.width / data["viewportWidth"].asFloat
-                            val position = IntArray(2)
-                            webview.getLocationOnScreen(position)
-                            android.graphics.RectF(position[0] + data["x"].asFloat * ratio,
-                                position[1] + data["y"].asFloat * ratio,
-                                position[0] + (data["x"].asFloat + data["width"].asFloat) * ratio,
-                                position[1] + (data["y"].asFloat + data["height"].asFloat) * ratio)
-                                .takeIf { it.left.isFinite() && it.top.isFinite() && it.right.isFinite() && it.bottom.isFinite() &&
-                                    webview.getGlobalVisibleRect(visible) && android.graphics.RectF.intersects(it, android.graphics.RectF(visible)) }
-                        }.getOrNull()
-                        finish(rect)
+                        finish(storyImageReturnRect(webview, source, visible, result))
                     }
                 }
-            }, onClosed = { storyImageViewer = null }).also { it.show() }
+            },
+            onClosed = onClosed,
+        )
+        // In a tablet split a Dialog is clipped to the reader pane, so the photo opens on
+        // StoryImageViewerHost.kt, which always fills the window (StorySplitView.kt).
+        if (StorySplitView.isInSplit(host)) {
+            // A host that never arrived still holds the last photo's bitmap, so drop it first.
+            storyImageHostToken?.let(StoryImageViewerHost::cancelPending)
+            storyImageHostLaunchedAt = android.os.SystemClock.uptimeMillis()
+            storyImageHostToken =
+                StoryImageViewerHost.show(host) { viewerHost ->
+                    storyImageHostLaunchedAt = 0L
+                    storyImageHostToken = null
+                    createViewer(viewerHost) {
+                        storyImageViewer = null
+                        viewerHost.onViewerClosed()
+                    }.also { viewer ->
+                        storyImageViewer = viewer
+                        viewer.show()
+                    }
+                }
+        } else {
+            storyImageViewer = createViewer(host) { storyImageViewer = null }.also { it.show() }
+        }
     }
+
+    // ReadingItemFragment.kt turns the page's reported image rect back into screen coordinates for the viewer's close animation.
+    private fun storyImageReturnRect(
+        webview: NewsblurWebview,
+        source: com.newsblur.image.StoryImageSource,
+        visible: android.graphics.Rect,
+        result: String?,
+    ): android.graphics.RectF? =
+        runCatching {
+            if (readingWebview !== webview || source.generation != webview.documentGeneration) return@runCatching null
+            val data =
+                com.google.gson.JsonParser
+                    .parseString(result)
+                    .asJsonObject
+            val ratio = webview.width / data["viewportWidth"].asFloat
+            val position = IntArray(2)
+            webview.getLocationOnScreen(position)
+            val rect =
+                android.graphics.RectF(
+                    position[0] + data["x"].asFloat * ratio,
+                    position[1] + data["y"].asFloat * ratio,
+                    position[0] + (data["x"].asFloat + data["width"].asFloat) * ratio,
+                    position[1] + (data["y"].asFloat + data["height"].asFloat) * ratio,
+                )
+            val isFinite = rect.left.isFinite() && rect.top.isFinite() && rect.right.isFinite() && rect.bottom.isFinite()
+            rect.takeIf {
+                isFinite &&
+                    webview.getGlobalVisibleRect(visible) &&
+                    android.graphics.RectF.intersects(it, android.graphics.RectF(visible))
+            }
+        }.getOrNull()
 
     private fun ensureReadingWebview(): NewsblurWebview {
         readingWebview?.let { return it }
@@ -2238,6 +2303,9 @@ class ReadingItemFragment :
     }
 
     companion object {
+        // How long ReadingItemFragment.kt ignores photo taps while StoryImageViewerHost.kt starts.
+        private const val STORY_IMAGE_HOST_LAUNCH_GUARD_MS = 2_000L
+
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
         private const val BUNDLE_SCROLL_POS_PX = "scrollStatePx"
         private const val BUNDLE_SCROLL_POS_PREFER_ABSOLUTE = "scrollStatePreferAbsolute"
