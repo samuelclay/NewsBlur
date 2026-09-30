@@ -76,6 +76,28 @@ final class Test_StoryImageViewer: XCTestCase {
         XCTAssertTrue(page.probe.scripts.contains { $0.contains("newsblurOpenImageAt") })
     }
 
+    @MainActor func test_stationaryLongPressRequestsActionsWithoutTogglingReaderChrome() {
+        let page = ImageScrollTapPage()
+        let gesture = ImageLongPressGesture()
+        page.beginTouch(gesture)
+        page.longPressImage(gesture)
+        XCTAssertTrue(page.probe.scripts.contains { $0.hasPrefix("newsblurOpenImageAt") && $0.hasSuffix(", true)") })
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("linkAt") })
+    }
+
+    @MainActor func test_longPressStoppingMomentumDoesNotOpenImage() {
+        let page = ImageScrollTapPage()
+        let gesture = ImageLongPressGesture()
+        page.probe.trackedScroll.simulatedDecelerating = true
+        page.beginTouch(gesture)
+        page.probe.trackedScroll.simulatedDecelerating = false
+        page.longPressImage(gesture)
+        XCTAssertTrue(page.probe.scripts.isEmpty)
+        page.beginTouch(gesture)
+        page.longPressImage(gesture)
+        XCTAssertTrue(page.probe.scripts.contains { $0.hasPrefix("newsblurOpenImageAt") })
+    }
+
     @MainActor func test_imageTapDoesNotAlsoToggleReaderChrome() {
         let page = ImageScrollTapPage()
         page.probe.imageHitResult = true
@@ -181,6 +203,61 @@ final class Test_StoryImageViewer: XCTestCase {
         XCTAssertEqual(StoryImageSource.fittedSize(CGSize(width: 120, height: 80), in: CGSize(width: 1024, height: 768)), CGSize(width: 120, height: 80))
         XCTAssertEqual(StoryImageSource.fittedSize(CGSize(width: 2400, height: 1200), in: CGSize(width: 800, height: 600)), CGSize(width: 800, height: 400))
         XCTAssertEqual(StoryImageSource.fittedSize(CGSize(width: 600, height: 2400), in: CGSize(width: 800, height: 600)), CGSize(width: 150, height: 600))
+    }
+
+    func test_hoverTextIsIndependentOfTheAccessibleDescription() throws {
+        var body = payload
+        body["hoverText"] = "  This is the comic’s joke.  "
+        body["showActions"] = true
+        let source = try XCTUnwrap(StoryImageSource(body))
+        XCTAssertEqual(source.title, "An image")
+        XCTAssertEqual(source.hoverText, "This is the comic’s joke.")
+        XCTAssertTrue(source.showActions)
+        body["hoverText"] = " \n "
+        XCTAssertNil(StoryImageSource(body)?.hoverText)
+        XCTAssertNil(StoryImageSource(payload)?.hoverText, "An alt description must not become hover text when the image has no title")
+        XCTAssertEqual(StoryImageSource(payload)?.showActions, false)
+    }
+
+    @MainActor func test_longHoverTextAndActionsLeaveRoomForImageInPortraitAndLandscape() throws {
+        var body = payload
+        body["hoverText"] = String(repeating: "Long comic hover text remains readable. ", count: 80)
+        body["showActions"] = true
+        body["src"] = "data:image/png;base64,AAAA"
+        let viewer = StoryImageViewerController(source: try XCTUnwrap(StoryImageSource(body)), preview: nil, origin: .zero)
+        let canvas = ImageViewerSafeAreaView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        viewer.view = canvas
+        viewer.viewDidLoad()
+        for size in [CGSize(width: 390, height: 844), CGSize(width: 844, height: 390), CGSize(width: 320, height: 568)] {
+            canvas.frame.size = size
+            viewer.viewDidLayoutSubviews()
+            let hover = try XCTUnwrap(canvas.subviews.first { $0.accessibilityIdentifier == "image-hover-disclosure" } as? UIScrollView)
+            let actions = try XCTUnwrap(canvas.subviews.first { $0.accessibilityIdentifier == "image-action-disclosure" } as? UIStackView)
+            let scroll = try XCTUnwrap(canvas.subviews.first { $0.accessibilityIdentifier == "story-image-zoom" } as? UIScrollView)
+            let image = try XCTUnwrap(scroll.subviews.compactMap { $0 as? UIImageView }.first)
+            let imageFrame = image.convert(image.bounds, to: canvas)
+            XCTAssertFalse(hover.isHidden)
+            XCTAssertFalse(actions.isHidden)
+            XCTAssertGreaterThan(hover.contentSize.height, hover.bounds.height, "Long hover text must scroll instead of truncating")
+            XCTAssertLessThanOrEqual(hover.frame.maxY, imageFrame.minY)
+            XCTAssertFalse(actions.frame.intersects(imageFrame))
+            XCTAssertTrue(canvas.bounds.contains(actions.frame))
+            XCTAssertTrue(canvas.bounds.contains(imageFrame))
+            XCTAssertGreaterThan(imageFrame.height, 40)
+            XCTAssertEqual(actions.arrangedSubviews.count, 3)
+        }
+    }
+
+    @MainActor func test_imageWithoutTitleOmitsHoverDisclosure() throws {
+        var body = payload
+        body["showActions"] = true
+        body["src"] = "data:image/png;base64,AAAA"
+        let viewer = StoryImageViewerController(source: try XCTUnwrap(StoryImageSource(body)), preview: nil, origin: .zero)
+        viewer.loadViewIfNeeded()
+        viewer.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+        viewer.viewDidLayoutSubviews()
+        XCTAssertTrue(try XCTUnwrap(viewer.view.subviews.first { $0.accessibilityIdentifier == "image-hover-disclosure" }).isHidden)
+        XCTAssertFalse(try XCTUnwrap(viewer.view.subviews.first { $0.accessibilityIdentifier == "image-action-disclosure" }).isHidden)
     }
 
     func test_bridgeRejectsInvalidGeometryAndNonImageSchemes() throws {
@@ -308,7 +385,7 @@ final class Test_StoryImageViewer: XCTestCase {
     override func point(forGesture gestureRecognizer: UIGestureRecognizer!) -> CGPoint {
         CGPoint(x: 100, y: 200)
     }
-    func beginTouch(_ gesture: UITapGestureRecognizer) {
+    func beginTouch(_ gesture: UIGestureRecognizer) {
         let delegate: UIGestureRecognizerDelegate = self
         _ = delegate.gestureRecognizer?(gesture, shouldReceive: ImageScrollTapTouch())
     }
@@ -341,6 +418,11 @@ final class Test_StoryImageViewer: XCTestCase {
 @MainActor private final class ImageScrollTapGesture: UITapGestureRecognizer {
     override var state: UIGestureRecognizer.State { get { .ended } set {} }
     override var numberOfTouches: Int { 1 }
+}
+
+@MainActor private final class ImageLongPressGesture: UILongPressGestureRecognizer {
+    override var state: UIGestureRecognizer.State { get { .began } set {} }
+    override func location(in view: UIView?) -> CGPoint { CGPoint(x: 100, y: 200) }
 }
 
 // StoryImageViewerTests.swift exercises iPad-sized layout and inset changes on the shared simulator.

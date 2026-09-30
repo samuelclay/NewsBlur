@@ -53,7 +53,7 @@ function newsblurIsStoryImage(image) {
         image.complete && image.naturalWidth > 1 && image.naturalHeight > 1;
 }
 
-function newsblurOpenImage(image, accessibility_activation) {
+function newsblurOpenImage(image, accessibility_activation, show_actions) {
     var bridge = window.webkit && window.webkit.messageHandlers.newsblurStoryImage;
     var load = document.querySelector('meta[name="newsblur-story-load"]');
     if (!bridge || !load || !newsblurIsStoryImage(image)) return false;
@@ -65,19 +65,21 @@ function newsblurOpenImage(image, accessibility_activation) {
     var link = image.closest('a[href]');
     bridge.postMessage({loadID: load.content, token: token,
         accessibilityActivation: accessibility_activation === true,
+        showActions: show_actions === true,
         src: image.currentSrc || image.src,
         originalURL: image.getAttribute('data-newsblur-original-src') || image.currentSrc || image.src,
         link: link ? link.href : '', title: image.alt || image.title || 'Story image',
+        hoverText: image.title || '',
         naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
         rect: newsblurImageRect(token, load.content)});
     return true;
 }
 
-function newsblurOpenImageAt(x, y, offset_x, offset_y, view_width) {
+function newsblurOpenImageAt(x, y, offset_x, offset_y, view_width, show_actions) {
     var scale = window.innerWidth / view_width;
     return newsblurOpenImage(document.elementFromPoint(
         (x + offset_x) * scale - window.scrollX,
-        (y + offset_y) * scale - window.scrollY));
+        (y + offset_y) * scale - window.scrollY), false, show_actions);
 }
 
 document.addEventListener('click', function(event) {

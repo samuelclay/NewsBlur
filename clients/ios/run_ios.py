@@ -13,6 +13,7 @@ Actions:
     list                  - List available simulators with UDIDs
     boot                  - Boot the specified simulator if it is not already booted
     tap:<x>,<y>           - Tap at coordinates
+    tap:<x>,<y>,<seconds> - Long press at coordinates for the given duration
     text:<text>          - Type into the focused field
     key:<code>           - Send a hardware key code (40 is Return)
     sleep:<seconds>       - Wait for specified seconds
@@ -134,10 +135,16 @@ def do_boot():
 
 
 def do_tap(coords):
-    """Tap at x,y coordinates."""
-    x, y = coords.split(",")
-    print(f"  Tap: ({x}, {y})")
-    run_cmd(f"idb ui tap --udid {UDID} {x} {y}")
+    """run_ios.py supports ordinary taps and deliberate image long presses."""
+    parts = coords.split(",")
+    if len(parts) not in (2, 3):
+        raise ValueError("tap requires x,y[,duration]")
+    x, y = parts[:2]
+    command = ["idb", "ui", "tap", "--udid", UDID, x, y]
+    if len(parts) == 3:
+        command += ["--duration", str(float(parts[2]))]
+    print(f"  Tap: ({x}, {y})" + (f" for {parts[2]}s" if len(parts) == 3 else ""))
+    subprocess.run(command, check=True)
 
 
 def do_sleep(seconds):
