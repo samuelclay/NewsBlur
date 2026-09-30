@@ -236,6 +236,10 @@ abstract class Reading :
     private var pager: ViewPager? = null
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
+
+    // A reader opening in a tablet split's reader pane cuts in without a window animation
+    // (UIUtils.java), so Reading.kt fades its first story in once that story has painted.
+    private var fadeInSplitReader = false
     private var unreadSearchActive = false
     private var navigationIntentGeneration = 0L
     private var restoredStoryScrollPosRel = 0f
@@ -306,6 +310,7 @@ abstract class Reading :
         // already visible beside the reader in a tablet split (StorySplitView.kt).
         waitingForPreparedEntrance = savedInstanceBundle == null && !isTaskRoot && !StorySplitView.isInSplit(this)
         waitingForInitialArticle = waitingForPreparedEntrance
+        fadeInSplitReader = savedInstanceBundle == null && StorySplitView.isInSplit(this)
         if (waitingForPreparedEntrance) {
             PendingTransitionUtils.overrideNoEnterTransition(this)
         } else {
@@ -872,6 +877,9 @@ abstract class Reading :
 
     fun onReaderPageVisualReady(readyStoryHash: String) {
         val activeHash = pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }
+        if (fadeInSplitReader && activeHash == readyStoryHash) {
+            binding.content.doOnPreDraw { revealSplitReader() }
+        }
         if (preparedPageNavigation?.isPreparing == true && activeHash == readyStoryHash) {
             binding.content.doOnPreDraw {
                 val position = pager?.currentItem
@@ -890,6 +898,33 @@ abstract class Reading :
                 "visual_ready active=${activeHash == readyStoryHash} waiting=$waitingForPreparedEntrance elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}",
             )
         }
+    }
+
+    private fun revealSplitReader() {
+        if (!fadeInSplitReader) return
+        fadeInSplitReader = false
+        pager?.animate()?.alpha(1f)?.setDuration(SPLIT_READER_FADE_MS)?.start()
+    }
+
+    /**
+     * ItemsList.java hands this reader a story tapped in the list beside it in a tablet split,
+     * so the reader pages over to it, sideways like a swipe, instead of a new reader replacing
+     * this one. Returns false when the story can't be shown in place (another feed set, or a
+     * story this reader hasn't loaded), and the list opens a new reader instead.
+     */
+    fun showStoryFromStoryList(
+        feedSet: FeedSet,
+        hash: String,
+    ): Boolean {
+        if (isFinishing || isDestroyed || stopLoading || feedSet != fs) return false
+        val adapter = readingAdapter ?: return false
+        if (pager == null) return false
+        val position = adapter.findHash(hash)
+        if (position < 0) return false
+        cancelUnreadSearch()
+        clearCurrentStoryPins()
+        if (position != requestedReadingPosition()) navigateToStory(position)
+        return true
     }
 
     fun onReaderPageNativeReady(readyStoryHash: String) {
@@ -1089,6 +1124,11 @@ abstract class Reading :
 
         // since it might start on the wrong story, create the pager as invisible
         pager.visibility = View.INVISIBLE
+        if (fadeInSplitReader) {
+            pager.alpha = 0f
+            // A story that never paints (offline, a failed load) still shows its page.
+            pager.postDelayed({ revealSplitReader() }, SPLIT_READER_FADE_TIMEOUT_MS)
+        }
         pager.pageMargin = UIUtils.dp2px(this, 1)
 
         when (prefsRepo.getResolvedTheme(this)) {
@@ -2139,6 +2179,10 @@ abstract class Reading :
         /** special value for starting story hash that jumps to the first unread.  */
         const val FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD"
         private const val OVERLAY_ELEVATION_DP = 1.5f
+
+        // Reading.kt's fade for a reader opening in a tablet split, as the iPad fades its first story.
+        private const val SPLIT_READER_FADE_MS = 140L
+        private const val SPLIT_READER_FADE_TIMEOUT_MS = 1_500L
 
         /** The minimum screen width (in DP) needed to show all the overlay controls.  */
         private const val OVERLAY_MIN_WIDTH_DP = 355

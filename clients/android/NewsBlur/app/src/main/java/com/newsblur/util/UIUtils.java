@@ -297,6 +297,12 @@ public class UIUtils {
         i.putExtra(Reading.EXTRA_FEEDSET, fs);
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
         i.putExtra(Reading.EXTRA_TOOLBAR_HIDDEN, toolbarHidden);
+        // UIUtils.java: a reader opening in a tablet split's reader pane cuts in and fades its
+        // story in (Reading.kt) instead of rising from the bottom of the pane.
+        Context launchingActivity = FragmentComponentManager.findActivity(context);
+        if (launchingActivity instanceof Activity && StorySplitView.isInSplit((Activity) launchingActivity)) {
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        }
         if (readingActivityLauncher != null) readingActivityLauncher.launch(i);
         else context.startActivity(i);
     }
