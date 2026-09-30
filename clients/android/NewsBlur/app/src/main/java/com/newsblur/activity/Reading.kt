@@ -67,6 +67,7 @@ import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
 import com.newsblur.util.VolumeKeyNavigation
+import com.newsblur.util.WebViewPrewarm
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
 import com.newsblur.view.readerUsesSystemBackGesture
@@ -238,9 +239,14 @@ abstract class Reading :
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
 
-    // A reader opening in a tablet split's reader pane cuts in without a window animation
-    // (UIUtils.java), so Reading.kt fades its first story in once that story has painted.
+    // A reader opening in a tablet split's reader pane starts under a plain cover in the pane's
+    // background color. The system slides this window up into the pane, which nothing here can turn
+    // off, and a plain surface shows no motion. The cover fades away once that slide is over and
+    // the first story has painted.
     private var fadeInSplitReader = false
+    private var splitReaderEntered = false
+    private var splitReaderStoryPainted = false
+    private var splitReaderCover: View? = null
 
     // Parked by a feed switch in the story list beside it (park): showing the empty pane's look and
     // leaving the old feed alone until the next story tapped replaces this reader.
@@ -394,6 +400,14 @@ abstract class Reading :
         setupObservers()
         setupOnBackPressed()
         if (parked) fadeToPlaceholder(0L)
+        if (fadeInSplitReader) {
+            splitReaderCover = addPlaceholderLook(withLogo = false)
+            // onEnterAnimationComplete can come late behind a busy main thread, so the slide also
+            // counts as over a moment after this window's first frame.
+            binding.root.doOnPreDraw { binding.root.postDelayed({ onSplitReaderEntered() }, SPLIT_READER_SLIDE_MS) }
+            // A story that never paints (offline, a failed load) still shows its page.
+            binding.root.postDelayed({ revealSplitReader() }, SPLIT_READER_FADE_TIMEOUT_MS)
+        }
         loadActiveStories(true)
     }
 
@@ -894,9 +908,13 @@ abstract class Reading :
     }
 
     fun onReaderPageVisualReady(readyStoryHash: String) {
+        WebViewPrewarm.release()
         val activeHash = pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }
         if (fadeInSplitReader && activeHash == readyStoryHash) {
-            binding.content.doOnPreDraw { revealSplitReader() }
+            binding.content.doOnPreDraw {
+                splitReaderStoryPainted = true
+                if (splitReaderEntered) revealSplitReader()
+            }
         }
         if (preparedPageNavigation?.isPreparing == true && activeHash == readyStoryHash) {
             binding.content.doOnPreDraw {
@@ -925,26 +943,38 @@ abstract class Reading :
      */
     fun fadeToPlaceholder(durationMs: Long) {
         if (isFinishing || isDestroyed || placeholderLook != null) return
-        val content = findViewById<ViewGroup>(android.R.id.content) ?: return
-        val placeholder = ReadingPlaceholder.inflatePane(layoutInflater, content)
+        val placeholder = addPlaceholderLook() ?: return
         placeholder.alpha = 0f
-        // Taps meant for the old story don't reach it once it has faded out.
-        placeholder.isClickable = true
-        // This reader draws under the status bar and ReadingPlaceholder.kt doesn't, so the copy
-        // starts below the status bar too, keeping its logo exactly where the real pane's will be.
-        val params = android.widget.FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        params.topMargin =
-            ViewCompat
-                .getRootWindowInsets(content)
-                ?.getInsets(WindowInsetsCompat.Type.statusBars())
-                ?.top ?: 0
-        content.addView(placeholder, params)
         placeholderLook = placeholder
         placeholder
             .animate()
             .alpha(1f)
             .setDuration(durationMs)
             .start()
+    }
+
+    // ReadingPlaceholder.kt's look laid over this reader, catching taps meant for the story beneath.
+    // Without its logo it is only the pane's background.
+    private fun addPlaceholderLook(withLogo: Boolean = true): View? {
+        val content = findViewById<ViewGroup>(android.R.id.content) ?: return null
+        val placeholder = ReadingPlaceholder.inflatePane(layoutInflater, content)
+        if (!withLogo) (placeholder as? ViewGroup)?.removeAllViews()
+        placeholder.isClickable = true
+        content.addView(placeholder, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        // This reader draws under the status bar and ReadingPlaceholder.kt doesn't, so the look
+        // starts below the status bar too, keeping its logo exactly where the real pane's is. A
+        // reader that just opened gets its insets after this, so the margin follows them.
+        ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
+            val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            val params = view.layoutParams as ViewGroup.MarginLayoutParams
+            if (params.topMargin != statusBarTop) {
+                params.topMargin = statusBarTop
+                view.layoutParams = params
+            }
+            insets
+        }
+        ViewCompat.requestApplyInsets(placeholder)
+        return placeholder
     }
 
     /**
@@ -963,10 +993,27 @@ abstract class Reading :
         keyboardManager.removeListener()
     }
 
+    override fun onEnterAnimationComplete() {
+        super.onEnterAnimationComplete()
+        onSplitReaderEntered()
+    }
+
+    private fun onSplitReaderEntered() {
+        splitReaderEntered = true
+        if (splitReaderStoryPainted) revealSplitReader()
+    }
+
     private fun revealSplitReader() {
         if (!fadeInSplitReader) return
         fadeInSplitReader = false
-        pager?.animate()?.alpha(1f)?.setDuration(SPLIT_READER_FADE_MS)?.start()
+        val cover = splitReaderCover ?: return
+        splitReaderCover = null
+        cover
+            .animate()
+            .alpha(0f)
+            .setDuration(SPLIT_READER_FADE_MS)
+            .withEndAction { (cover.parent as? ViewGroup)?.removeView(cover) }
+            .start()
     }
 
     /**
@@ -1187,11 +1234,6 @@ abstract class Reading :
 
         // since it might start on the wrong story, create the pager as invisible
         pager.visibility = View.INVISIBLE
-        if (fadeInSplitReader) {
-            pager.alpha = 0f
-            // A story that never paints (offline, a failed load) still shows its page.
-            pager.postDelayed({ revealSplitReader() }, SPLIT_READER_FADE_TIMEOUT_MS)
-        }
         pager.pageMargin = UIUtils.dp2px(this, 1)
 
         when (prefsRepo.getResolvedTheme(this)) {
@@ -2248,6 +2290,9 @@ abstract class Reading :
         // Reading.kt's fade for a reader opening in a tablet split, as the iPad fades its first story.
         private const val SPLIT_READER_FADE_MS = 140L
         private const val SPLIT_READER_FADE_TIMEOUT_MS = 1_500L
+
+        // How long the system's slide of a new reader pane into place takes, give or take.
+        private const val SPLIT_READER_SLIDE_MS = 350L
 
         /** The minimum screen width (in DP) needed to show all the overlay controls.  */
         private const val OVERLAY_MIN_WIDTH_DP = 355
