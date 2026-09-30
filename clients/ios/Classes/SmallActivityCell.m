@@ -16,8 +16,6 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        activityLabel = nil;
-        faviconView = nil;
         self.separatorInset = UIEdgeInsetsMake(0, 52, 0, 0);
         self.backgroundColor = UIColorFromRGB(0xFFFFFF);
         UIView *bgView = [[UIView alloc] init];
@@ -25,21 +23,12 @@
         self.backgroundView = bgView;
 //        self.contentView.backgroundColor = [UIColor clearColor];
 
-        // create favicon and label in view
-        UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];
-        self.faviconView = favicon;
-        [self.contentView addSubview:favicon];
-        
-        UILabel *activity = [[UILabel alloc] initWithFrame:CGRectZero];
-        activity.backgroundColor = UIColorFromRGB(0xffffff);
-        self.activityLabel = activity;
-        [self.contentView addSubview:activity];
-        
         topMargin = 10;
         bottomMargin = 10;
         leftMargin = 10;
         rightMargin = 10;
         avatarSize = 32;
+        [self setNeedsUpdateConstraints];
     }
     
     return self;
@@ -48,20 +37,9 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    // determine outer bounds
-    [self.activityLabel sizeToFit];
-    CGRect contentRect = self.frame;
-    CGRect labelFrame = self.activityLabel.frame;
-    
+    // SmallActivityCell.m inherits ActivityCell.m's content-area label sizing with its smaller margins.
     // position avatar to bounds
     self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
-    
-    // position label to bounds
-    labelFrame.origin.x = leftMargin*2 + avatarSize;
-    labelFrame.origin.y = 0;
-    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
-    labelFrame.size.height = contentRect.size.height;
-    self.activityLabel.frame = labelFrame;
     
     if (!((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xd7dadf);

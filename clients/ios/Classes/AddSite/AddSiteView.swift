@@ -487,6 +487,8 @@ struct AddSiteView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
+            // AddSiteView.swift includes the space between the feed label and statistics in the row's tap target.
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
         .accessibilityIdentifier("add-site-autocomplete-row-\(index)")

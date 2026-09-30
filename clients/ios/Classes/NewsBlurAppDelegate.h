@@ -285,6 +285,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, readonly) NSString *widgetFolder;
 @property (nonatomic, strong) NSString *pendingFolder;
 @property (nonatomic, strong) NSString *pendingDailyBriefingStoryHash;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
@@ -519,6 +520,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
+- (void)updateFeedDetailTitleView;
 - (NSString *)folderTitle:(NSString *)folder;
 - (UIImage *)folderIcon:(NSString *)folder;
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
