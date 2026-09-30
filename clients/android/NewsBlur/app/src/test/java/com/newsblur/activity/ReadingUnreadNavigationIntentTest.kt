@@ -30,7 +30,7 @@ class ReadingUnreadNavigationIntentTest {
         every { SystemClock.uptimeMillis() } returns 1000L
         every { Log.d(any(), any()) } returns 0
         every { Log.e(any(), any()) } returns 0
-        every { ItemsList.peekReadingLaunchParent() } returns null
+        every { ItemsList.peekReadingLaunchParent(any()) } returns null
     }
 
     @After
