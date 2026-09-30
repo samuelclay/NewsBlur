@@ -98,6 +98,15 @@ import SwiftUI
     static var feeds = [String : Feed]()
     
     var currentFeed: Feed?
+
+    func reloadForTraining(story dictionary: AnyDictionary?) {
+        // StoryCache.swift keeps a retained reader's trainer independent of the source list being browsed.
+        before.removeAll()
+        after.removeAll()
+        openSwipeStoryID = nil
+        selected = dictionary.map { Story(index: -1, dictionary: $0) }
+        currentFeed = selected?.feed
+    }
     
     func resetForAccountChange() {
         before.removeAll()

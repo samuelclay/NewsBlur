@@ -51,6 +51,7 @@
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 
 - (void)updateStoryTitleSwipePreference;
+- (void)updateDuoFullscreenSidebarGestures;
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic) NSIndexPath *swipingIndexPath;

@@ -34,6 +34,46 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 
 @implementation Utilities
 
++ (BOOL)usesSystemVerticalBar:(UITraitCollection *)traits {
+    // Utilities.m keeps newer UIKit symbols out of Swift when building with an earlier SDK.
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        return traits.verticalBarEdge != UIVerticalBarEdgeUnspecified;
+    }
+#endif
+    return NO;
+}
+
++ (void)keepBarButtonInHorizontalBar:(UIBarButtonItem *)item {
+    // Utilities.m keeps the native leading title item out of Duo's side rail without requiring newer Swift SDK symbols.
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
+    if (@available(iOS 27.1, *)) {
+        item.axisBehavior = UIBarButtonItemAxisBehaviorHorizontalOnly;
+    }
+#endif
+}
+
++ (dispatch_block_t)beginNavigationBarMinimization:(UINavigationItem *)item {
+    // Utilities.m returns an ownership-aware restore operation while keeping newer UIKit configuration types out of Swift.
+#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270000
+    if (@available(iOS 27.0, *)) {
+        UIBarMinimization *previous = [item.navigationBarMinimization copy];
+        UIBarMinimization *configuration = [previous copy];
+        configuration.minimizationBehavior = UIBarMinimizationBehaviorOnScrollDown;
+        configuration.safeAreaAdjustment = UIBarMinimizationSafeAreaAdjustmentEnabled;
+        configuration.restorationBehavior = UIBarMinimizationRestorationBehaviorAutomatic;
+        item.navigationBarMinimization = configuration;
+        UIBarMinimization *installed = item.navigationBarMinimization;
+        return [^{
+            if (item.navigationBarMinimization == installed) {
+                item.navigationBarMinimization = previous;
+            }
+        } copy];
+    }
+#endif
+    return ^{};
+}
+
 + (void)drawLinearGradientWithRect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor {
     CGContextRef context = UIGraphicsGetCurrentContext(); 
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
