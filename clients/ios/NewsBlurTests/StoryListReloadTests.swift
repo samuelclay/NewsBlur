@@ -1,5 +1,6 @@
 import XCTest
 import SwiftUI
+import WebKit
 
 @testable import NewsBlur
 
@@ -544,6 +545,63 @@ import SwiftUI
         }
     }
 
+    func test_inlineArticleTrainingRestoresRetainedScoresWithoutOpeningTrainer() throws {
+        for kind in ["author", "tag"] {
+            let appDelegate = RetainedInlineClassifierAppDelegate()
+            let collection = StoriesCollection()
+            collection.appDelegate = appDelegate
+            appDelegate.storiesCollection = collection
+            appDelegate.activeUsername = "retained-inline-classifier-test"
+            appDelegate.activeStory = ["story_hash": "1:retained", "story_feed_id": 1]
+            collection.activeFeed = ["id": 1]
+            collection.activeClassifiers = ["1": ["authors": ["Jane": 1], "tags": ["swift": 1], "titles": ["Retained": -1]]]
+            let trainer = InlineClassifierTrainer()
+            trainer.appDelegate = appDelegate
+            appDelegate.trainerViewController = trainer
+            defer {
+                appDelegate.trainerViewController = nil
+                trainer.appDelegate = nil
+                collection.appDelegate = nil
+            }
+            trainer.captureRetainedStoryContext()
+
+            // StoryListReloadTests.swift mirrors browsing source B while the fullscreen reader keeps article A mounted.
+            collection.activeFeed = ["id": 2]
+            let browsedClassifiers: [String: Any] = ["authors": ["Other": -1], "tags": ["other": 0]]
+            collection.activeClassifiers = ["2": browsedClassifiers]
+            XCTAssertFalse(trainer.isViewLoaded)
+            XCTAssertEqual(trainer.reloadCount, 0, "The inline action must work before any trainer dialog reload")
+            let page = StoryDetailViewController()
+            page.appDelegate = appDelegate
+            page.activeStory = NSMutableDictionary(dictionary: appDelegate.activeStory)
+            let webView = WKWebView()
+            let value = kind == "author" ? "Jane" : "swift"
+            let key = kind == "author" ? "authors" : "tags"
+            let url = try XCTUnwrap(URL(string: "http://ios.newsblur.com/classify-\(kind)/\(value)"))
+            let action = InlineClassifierNavigationAction(url: url)
+            for expectedScore in [-1, 0] {
+                // StoryListReloadTests.swift exercises the exact author/tag link handler without presenting the trainer.
+                page.webView(webView, decidePolicyFor: unsafeBitCast(action, to: WKNavigationAction.self)) { policy in
+                    XCTAssertEqual(policy, .cancel)
+                }
+                XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: key, value: value), expectedScore)
+                let parameter = expectedScore < 0 ? "dislike_\(kind)" : "remove_like_\(kind)"
+                XCTAssertEqual(appDelegate.savedClassifierParameters?[parameter] as? String, value)
+                XCTAssertEqual(appDelegate.savedClassifierParameters?["feed_id"] as? String, "1")
+                XCTAssertEqual(classifierScore(appDelegate, feedId: "1", key: "titles", value: "Retained"), -1)
+                XCTAssertEqual(collection.activeClassifiers["2"] as? NSDictionary, browsedClassifiers as NSDictionary)
+                XCTAssertEqual(collection.activeFeed?["id"] as? Int, 2)
+                XCTAssertFalse(trainer.isViewLoaded)
+            }
+        }
+    }
+
+    private func classifierScore(_ appDelegate: NewsBlurAppDelegate, feedId: String, key: String, value: String) -> Int? {
+        let feedClassifiers = appDelegate.storiesCollection.activeClassifiers[feedId] as? [String: Any]
+        let classifiers = feedClassifiers?[key] as? [String: Any]
+        return classifiers?[value] as? Int
+    }
+
     private func withRetainedArticleAndBrowsedFeed(
         _ body: (TrainerViewController, StoryCache, StoriesCollection) throws -> Void
     ) throws {
@@ -617,6 +675,27 @@ import SwiftUI
          "story_timestamp": 1_800_000_000, "read_status": 1,
          "story_permalink": "https://example.invalid/\(suffix)", "story_tags": [],
          "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0]]
+    }
+}
+
+@MainActor private final class InlineClassifierTrainer: TrainerViewController {
+    var reloadCount = 0
+    override func reload() { reloadCount += 1 }
+}
+
+private final class InlineClassifierNavigationAction: NSObject {
+    @objc let request: URLRequest
+    init(url: URL) { request = URLRequest(url: url) }
+}
+
+private final class RetainedInlineClassifierAppDelegate: NewsBlurAppDelegate {
+    var savedClassifierParameters: [String: Any]?
+
+    override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error) -> Void)!) {
+        savedClassifierParameters = parameters as? [String: Any]
+    }
+
+    override func recalculateIntelligenceScores(_ feedId: Any!) {
     }
 }
 
