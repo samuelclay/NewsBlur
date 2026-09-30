@@ -6,6 +6,16 @@
     <string name="image_viewer_loading">Loading image…</string>
     <string name="image_viewer_failed">Could not load the full image.</string>
     <string name="image_viewer_retry">Try again</string>
+    <string name="image_viewer_copy">Copy Image</string>
+    <string name="image_viewer_save">Save Image</string>
+    <string name="image_viewer_share">Share Image…</string>
+    <string name="image_viewer_open_link">Open Link</string>
+    <string name="image_viewer_copied">Image copied</string>
+    <string name="image_viewer_saved">Saved to Pictures</string>
+    <string name="image_viewer_save_failed">Could not save the image.</string>
+    <string name="image_viewer_share_failed">Could not share the image.</string>
+    <string name="image_viewer_storage_permission">Allow storage access to save images, then try again.</string>
+    <string name="image_viewer_show_actions">Show image actions</string>
     <string name="settings_story_toolbar_position">Story list toolbar position</string>
     <string name="settings_story_toolbar_top">Top</string>
     <string name="settings_story_toolbar_bottom">Bottom</string>

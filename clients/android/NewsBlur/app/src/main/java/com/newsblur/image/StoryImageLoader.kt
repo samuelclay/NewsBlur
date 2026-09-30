@@ -21,6 +21,12 @@ import java.io.InputStream
 import java.net.URLDecoder
 import java.nio.ByteBuffer
 
+/** A story photo as the viewer shows it, and the original bytes Copy, Save, and Share hand on. */
+class StoryImage(
+    val bitmap: Bitmap,
+    val data: ByteArray,
+)
+
 class StoryImageLoader(
     private val cache: FileCache,
     private val client: OkHttpClient,
@@ -34,7 +40,7 @@ class StoryImageLoader(
         call?.cancel()
     }
 
-    suspend fun load(source: StoryImageSource): Bitmap =
+    suspend fun load(source: StoryImageSource): StoryImage =
         withContext(Dispatchers.IO) {
             ensureActive()
             val localName = StoryImageSource.cachedFileName(source.url)
@@ -66,7 +72,7 @@ class StoryImageLoader(
                     }
                 }
             ensureActive()
-            decode(data).also { ensureActive() }
+            StoryImage(decode(data), data).also { ensureActive() }
         }
 
     private fun readBounded(input: InputStream): ByteArray {

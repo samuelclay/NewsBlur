@@ -30,7 +30,9 @@ function NB_story_image_rect(token, generation) {
         viewportWidth: document.documentElement.clientWidth};
 }
 
-function NB_open_story_image(image) {
+// A long-press (show_actions) opens the same viewer with the image's title text and its Copy,
+// Save, and Share actions showing, like the iOS app; a linked photo also offers its link.
+function NB_open_story_image(image, show_actions) {
     var load = document.querySelector('meta[name="newsblur-image-generation"]');
     if (!window.NewsBlurImages || !load || !image || image.tagName !== 'IMG' ||
         !image.closest('.NB-story') || hasProtectedImageClass(image) ||
@@ -43,8 +45,11 @@ function NB_open_story_image(image) {
         token = String(++NB_story_image_sequence);
         image.setAttribute('data-nb-viewer-token', token);
     }
+    var link = image.closest('a[href]');
     window.NewsBlurImages.postMessage(JSON.stringify({
         generation: load.content, token: token, src: src, title: image.alt || image.title || 'Story image',
+        hoverText: image.title || '', showActions: show_actions === true,
+        link: show_actions === true && link && /^https?:/i.test(link.href) ? link.href : null,
         naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
         rect: NB_story_image_rect(token, load.content)
     }));
@@ -52,7 +57,16 @@ function NB_open_story_image(image) {
 }
 
 document.addEventListener('click', function(event) {
-    if (NB_open_story_image(event.target)) {
+    if (NB_open_story_image(event.target, false)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    }
+}, true);
+
+// Android WebView turns a long-press into a contextmenu event. Taking it here keeps the native
+// long-press menu (ReadingItemFragment.onCreateContextMenu) for everything that isn't a story photo.
+document.addEventListener('contextmenu', function(event) {
+    if (NB_open_story_image(event.target, true)) {
         event.preventDefault();
         event.stopImmediatePropagation();
     }

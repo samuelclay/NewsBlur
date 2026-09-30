@@ -15,6 +15,12 @@ data class StoryImageSource(
     val width: Float,
     val height: Float,
     val viewportWidth: Float,
+    // A long-press (storyDetailView.js) opens the viewer with the image's title text and its
+    // Copy, Save, and Share actions showing, like the iOS app. A tap opens it with neither.
+    val hoverText: String? = null,
+    val showActions: Boolean = false,
+    // The link a linked photo points to, offered as Open Link beside those actions.
+    val linkUrl: String? = null,
 ) {
     companion object {
         const val READER_ORIGIN = "https://appassets.androidplatform.net"
@@ -39,6 +45,15 @@ data class StoryImageSource(
                     rect["width"].asFloat,
                     rect["height"].asFloat,
                     rect["viewportWidth"].asFloat,
+                    hoverText =
+                        body["hoverText"]
+                            ?.takeUnless { it.isJsonNull }
+                            ?.asString
+                            ?.trim()
+                            ?.take(2_000)
+                            ?.ifBlank { null },
+                    showActions = body["showActions"]?.takeUnless { it.isJsonNull }?.asBoolean == true,
+                    linkUrl = body["link"]?.takeUnless { it.isJsonNull }?.asString?.takeIf(::isWebLink),
                 ).takeIf { source ->
                     source.token.matches(Regex("[0-9]{1,12}")) &&
                         isAllowedUrl(source.url) &&
@@ -58,6 +73,13 @@ data class StoryImageSource(
                         source.viewportWidth > 0
                 }
             }.getOrNull()
+
+        /** Only ordinary web links are offered as Open Link. */
+        fun isWebLink(url: String): Boolean =
+            runCatching {
+                val uri = URI(url)
+                uri.scheme?.lowercase() in setOf("http", "https") && !uri.host.isNullOrBlank()
+            }.getOrDefault(false)
 
         fun isAllowedUrl(url: String): Boolean {
             if (url.startsWith("data:image/", ignoreCase = true)) return url.length <= 44 * 1024 * 1024

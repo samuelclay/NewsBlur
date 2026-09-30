@@ -1,6 +1,5 @@
 package com.newsblur.fragment
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
@@ -22,7 +21,6 @@ import android.webkit.WebView.HitTestResult
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
@@ -167,8 +165,6 @@ class ReadingItemFragment :
 
     /** The text-mode story HTML, as retrieved via the secondary original text API.  */
     private var originalText: String? = null
-    private val imageAltTexts = mutableMapOf<String, String?>()
-    private val imageUrlRemaps = mutableMapOf<String, String?>()
     private var sourceUserId: String? = null
     private val documentRenderer = LatestReaderRender<ReaderHtmlRequest, PreparedReaderDocument>()
     private var lastMetadataSnapshot: ReaderMetadataSnapshot? = null
@@ -499,52 +495,13 @@ class ReadingItemFragment :
         menuInfo: ContextMenuInfo?,
     ) {
         val result = ensureReadingWebview().hitTestResult
-        if (result.type == HitTestResult.IMAGE_TYPE ||
-            result.type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE
-        ) {
-            // if the long-pressed item was an image, see if we can pop up a little dialogue
-            // that presents the alt text.  Note that images wrapped in links tend to get detected
-            // as anchors, not images, and may not point to the corresponding image URL.
-            val imageURL = result.extra
-            val uri = Uri.parse(imageURL)
-            val normalized = uri.path ?: imageURL
-
-            val mappedURL = imageUrlRemaps[normalized] ?: imageUrlRemaps[imageURL]
-            val finalURL: String = mappedURL ?: imageURL.orEmpty()
-            val altText = imageAltTexts[finalURL]
-            val builder = AlertDialog.Builder(requireActivity())
-            builder.setTitle(finalURL)
-            if (altText != null) {
-                builder.setMessage(UIUtils.fromHtml(altText))
-            } else {
-                builder.setMessage(finalURL)
-            }
-            var actionRID = R.string.alert_dialog_openlink
-            if (result.type == HitTestResult.IMAGE_TYPE || result.type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-                actionRID = R.string.alert_dialog_openimage
-            }
-            builder.setPositiveButton(
-                actionRID,
-                object : DialogInterface.OnClickListener {
-                    override fun onClick(
-                        dialog: DialogInterface,
-                        id: Int,
-                    ) {
-                        val i = Intent(Intent.ACTION_VIEW)
-                        i.data = Uri.parse(finalURL)
-                        try {
-                            startActivity(i)
-                        } catch (e: Exception) {
-                            Log.wtf(this.javaClass.name, "device cannot open URLs")
-                        }
-                    }
-                },
-            )
-            builder.setNegativeButton(R.string.alert_dialog_done) { _, _ ->
-                // do nothing
-            }
-            builder.show()
-        } else if (result.type == HitTestResult.SRC_ANCHOR_TYPE) {
+        if (result.type == HitTestResult.IMAGE_TYPE || result.type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+            // A long-pressed story photo opens StoryImageViewer.kt with its title text and Copy,
+            // Save, and Share actions from storyDetailView.js's contextmenu handler, so the native
+            // long-press adds nothing on top of it.
+            return
+        }
+        if (result.type == HitTestResult.SRC_ANCHOR_TYPE) {
             val url = result.extra
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "text/plain"
@@ -1607,8 +1564,7 @@ class ReadingItemFragment :
             prepare = {
                 // ReadingItemFragment.kt keeps image file checks and HTML preparation off the animation thread.
                 withContext(Dispatchers.IO) {
-                    val altTexts = sniffAltTexts(request.content)
-                    val (offlineHtml, remaps) = swapInOfflineImages(request.content)
+                    val offlineHtml = swapInOfflineImages(request.content)
                     val bodyClassifier =
                         Classifier().apply {
                             texts.putAll(request.textClassifiers)
@@ -1624,16 +1580,10 @@ class ReadingItemFragment :
                                 enableHighlights = request.enableHighlights,
                                 classifier = bodyClassifier,
                             ),
-                        altTexts = altTexts,
-                        imageRemaps = remaps,
                     )
                 }
             },
             display = { document ->
-                imageAltTexts.clear()
-                imageAltTexts.putAll(document.altTexts)
-                imageUrlRemaps.clear()
-                imageUrlRemaps.putAll(document.imageRemaps)
                 isWebViewReleasedForBackground = false
                 isRestoringReleasedWebView = false
                 isWebLoadFinished.set(false)
@@ -1654,31 +1604,16 @@ class ReadingItemFragment :
         ensureReadingWebview().evaluateJavascript("NB_applyHighlights($json);", null)
     }
 
-    private fun sniffAltTexts(html: String): Map<String, String?> {
-        val altTexts = mutableMapOf<String, String?>()
-        for (pattern in listOf(altSniff1, altSniff2, altSniff3, altSniff4)) {
-            val matcher = pattern.matcher(html)
-            val urlFirst = pattern === altSniff1 || pattern === altSniff3
-            while (matcher.find()) {
-                val url = matcher.group(if (urlFirst) 2 else 4) ?: continue
-                altTexts[url] = matcher.group(if (urlFirst) 4 else 2)
-            }
-        }
-        return altTexts
-    }
-
-    private fun swapInOfflineImages(htmlString: String): Pair<String, Map<String, String?>> {
+    private fun swapInOfflineImages(htmlString: String): String {
         var html = htmlString
-        val remaps = mutableMapOf<String, String?>()
         val imageTagMatcher = imgSniff.matcher(html)
         while (imageTagMatcher.find()) {
             val url = imageTagMatcher.group(2) ?: continue
             val sourceAttribute = imageTagMatcher.group(1) ?: continue
             val localPath = storyImageCache.getWebViewImageCache(url) ?: continue
             html = html.replace(sourceAttribute + "\"" + url + "\"", "src=\"$localPath\"")
-            remaps[localPath] = url
         }
-        return html to remaps
+        return html
     }
 
     /** We have pushed our desired content into the WebView.  */
@@ -2189,6 +2124,8 @@ class ReadingItemFragment :
                 }
             },
             onClosed = onClosed,
+            // A linked photo's Open Link goes where tapping the photo's link in the story would.
+            onOpenLink = { link -> context?.let { UIUtils.handleUri(it, prefsRepo, Uri.parse(link)) } },
         )
         // In a tablet split a Dialog is clipped to the reader pane, so the photo opens on
         // StoryImageViewerHost.kt, which always fills the window (StorySplitView.kt).
@@ -2351,26 +2288,6 @@ class ReadingItemFragment :
             return readingFragment
         }
 
-        private val altSniff1 =
-            Pattern.compile(
-                "<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*alt=(['\"])((?:(?!\\3).)*)\\3[^>]*>",
-                Pattern.CASE_INSENSITIVE,
-            )
-        private val altSniff2 =
-            Pattern.compile(
-                "<img[^>]*alt=(['\"])((?:(?!\\1).)*)\\1[^>]*src=(['\"])((?:(?!\\3).)*)\\3[^>]*>",
-                Pattern.CASE_INSENSITIVE,
-            )
-        private val altSniff3 =
-            Pattern.compile(
-                "<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*title=(['\"])((?:(?!\\3).)*)\\3[^>]*>",
-                Pattern.CASE_INSENSITIVE,
-            )
-        private val altSniff4 =
-            Pattern.compile(
-                "<img[^>]*title=(['\"])((?:(?!\\1).)*)\\1[^>]*src=(['\"])((?:(?!\\3).)*)\\3[^>]*>",
-                Pattern.CASE_INSENSITIVE,
-            )
         private val imgSniff = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE)
     }
 }
@@ -2503,6 +2420,4 @@ private data class ReaderHtmlRequest(
 
 private data class PreparedReaderDocument(
     val html: String,
-    val altTexts: Map<String, String?>,
-    val imageRemaps: Map<String, String?>,
 )
