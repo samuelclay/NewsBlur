@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.view.GestureDetector
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.VelocityTracker
@@ -29,6 +30,9 @@ class StoryImageView(
     var onDismiss: () -> Unit = {}
     var onDrag: (Float) -> Unit = {}
     var onGeometryChanged: () -> Unit = {}
+
+    // A long press that stayed put, which StoryImageViewer.kt answers with the photo's actions.
+    var onLongPress: () -> Unit = {}
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val density = resources.displayMetrics.density
     private val slop = ViewConfiguration.get(context).scaledTouchSlop
@@ -41,6 +45,10 @@ class StoryImageView(
     private var multiTouch = false
     private var dragging = false
     private var panning = false
+
+    // After a long press the rest of that touch is not a drag: StoryImageViewer.kt moves this view
+    // under the finger to make room for the photo's actions, which would read as a drag to dismiss.
+    private var longPressed = false
     private var velocity: VelocityTracker? = null
     private var animation: ValueAnimator? = null
     private val scaleDetector =
@@ -68,6 +76,13 @@ class StoryImageView(
                 override fun onDoubleTap(e: MotionEvent): Boolean {
                     animateZoom(if (viewport.isZoomed) 1f else minOf(3f, viewport.maxZoom), e.x, e.y)
                     return true
+                }
+
+                override fun onLongPress(e: MotionEvent) {
+                    if (multiTouch || dragging || scaleDetector.isInProgress) return
+                    longPressed = true
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    onLongPress()
                 }
             },
         )
@@ -121,6 +136,7 @@ class StoryImageView(
             lastY = event.y
             multiTouch = false
             dragging = false
+            longPressed = false
             panning = viewport.isZoomed
             velocity?.recycle()
             velocity = VelocityTracker.obtain()
@@ -132,6 +148,13 @@ class StoryImageView(
         }
         scaleDetector.onTouchEvent(event)
         taps.onTouchEvent(event)
+        if (longPressed) {
+            if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_CANCEL) {
+                velocity?.recycle()
+                velocity = null
+            }
+            return true
+        }
         when (event.actionMasked) {
             MotionEvent.ACTION_MOVE ->
                 if (!multiTouch && !scaleDetector.isInProgress && animation?.isRunning != true) {

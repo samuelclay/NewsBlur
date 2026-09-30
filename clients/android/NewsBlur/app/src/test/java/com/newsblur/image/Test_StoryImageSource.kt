@@ -18,6 +18,39 @@ class Test_StoryImageSource {
         assertEquals("An image", image.title)
     }
 
+    @Test fun test_a_tap_opens_without_actions_or_hover_text() {
+        val image = StoryImageSource.parse(json)!!
+        assertFalse(image.showActions)
+        assertNull(image.hoverText)
+        assertNull(image.linkUrl)
+    }
+
+    @Test fun test_a_long_press_carries_hover_text_actions_and_its_link() {
+        val longPress =
+            json.replace(
+                "\"title\":\"An image\"",
+                "\"title\":\"An image\",\"hoverText\":\"  The comic's punchline  \",\"showActions\":true," +
+                    "\"link\":\"https://example.com/story\"",
+            )
+        val image = StoryImageSource.parse(longPress)!!
+        assertTrue(image.showActions)
+        assertEquals("The comic's punchline", image.hoverText)
+        assertEquals("https://example.com/story", image.linkUrl)
+        // The accessibility description stays the alt text, separate from the hover text.
+        assertEquals("An image", image.title)
+    }
+
+    @Test fun test_blank_hover_text_and_non_web_links_are_dropped() {
+        val longPress =
+            json.replace(
+                "\"title\":\"An image\"",
+                "\"title\":\"An image\",\"hoverText\":\"   \",\"showActions\":true,\"link\":\"javascript:alert(1)\"",
+            )
+        val image = StoryImageSource.parse(longPress)!!
+        assertNull(image.hoverText)
+        assertNull(image.linkUrl)
+    }
+
     @Test fun test_rejects_missing_fields_invalid_json_tracking_pixels_and_bad_geometry() {
         assertNull(StoryImageSource.parse("{}"))
         assertNull(StoryImageSource.parse("invalid"))
