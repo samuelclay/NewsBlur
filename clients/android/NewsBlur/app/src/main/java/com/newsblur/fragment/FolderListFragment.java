@@ -203,6 +203,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     public void loadData() {
         if (allFoldersViewModel.getFolders().getValue() == null) {
+            // The tablet's feed list slide-over opens as a new activity each time, so it starts
+            // from the feed list it showed last, then refreshes it (FeedListDrawer.kt).
+            if (getActivity() instanceof com.newsblur.activity.FeedListDrawer) {
+                allFoldersViewModel.showLastPublished();
+            }
             // if the data haven't yet been fetched, do so
             allFoldersViewModel.getData();
         }

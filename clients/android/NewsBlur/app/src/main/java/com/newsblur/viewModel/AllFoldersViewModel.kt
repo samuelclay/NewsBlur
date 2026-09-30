@@ -58,6 +58,18 @@ class AllFoldersViewModel
                 onError = { error -> Log.e(javaClass.name, "Error loading cached feed snapshot", error) },
             )
 
+        /**
+         * Publishes the feed list this process published last, if nothing is showing yet. The
+         * tablet's feed list slide-over (FeedListDrawer.kt) is a new activity every time it opens,
+         * so it shows its folders on its first frame this way instead of an empty list while the
+         * database is read again. getData() replaces it moments later.
+         */
+        @MainThread
+        fun showLastPublished() {
+            if (_folders.value != null) return
+            lastPublished?.let(::publishSnapshot)
+        }
+
         @MainThread
         fun getData() {
             // FolderListFragment.java can receive several metadata/read updates during one cached load.
@@ -77,6 +89,7 @@ class AllFoldersViewModel
         }
 
         private fun publishSnapshot(snapshot: Snapshot) {
+            lastPublished = snapshot
             // FolderListFragment.java receives all cached sections in one Main turn. Publishing social
             // feeds earlier showed a partial feed list and incorrect account totals during cold startup.
             _folders.value = snapshot.folders
@@ -195,4 +208,16 @@ class AllFoldersViewModel
             val savedSearches: List<SavedSearch>,
             val requestedAtNanos: Long,
         )
+
+        companion object {
+            // The last feed list any AllFoldersViewModel.kt published, for showLastPublished().
+            @Volatile
+            private var lastPublished: Snapshot? = null
+
+            /** BlurDatabaseHelper.java wipes the database (logout, account change), so forget the old account's list. */
+            @JvmStatic
+            fun forgetLastPublished() {
+                lastPublished = null
+            }
+        }
     }
