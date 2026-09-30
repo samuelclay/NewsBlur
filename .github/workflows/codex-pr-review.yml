@@ -6,7 +6,7 @@ name: Codex PR Review
 # NewsBlur. .github/workflows/codex-pr-review.yml
 #
 # The first review of a PR reads the whole diff against main. Every later push is
-# reviewed incrementally: .github/scripts/codex-review-scope.sh finds the head the
+# reviewed incrementally: .github/scripts/pr-review-scope.sh finds the head the
 # previous Codex review covered (stamped into the review marker) and hands Codex only
 # the changes since then, so a 100-commit PR is not re-read in full on each push. A
 # `codex-full-review` label on the PR forces a full review.
@@ -47,7 +47,7 @@ jobs:
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
           # Full commit and tree history without blobs (about 16 MB for this repo)
-          # so codex-review-scope.sh can merge the previously reviewed head against
+          # so pr-review-scope.sh can merge the previously reviewed head against
           # the current base. Blobs are fetched on demand when a diff needs them.
           fetch-depth: 0
           filter: blob:none
@@ -66,11 +66,12 @@ jobs:
         # reviewed commit and warms the blobless clone with every blob the diffs need.
         id: scope
         env:
+          REVIEWER: codex
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_LABELS_JSON: ${{ toJSON(github.event.pull_request.labels.*.name) }}
-        run: .github/scripts/codex-review-scope.sh
+        run: .github/scripts/pr-review-scope.sh
 
       - name: Drop persisted git credentials
         # Checkout stores the job token in .git/config; remove it before Codex reads the tree.
@@ -235,7 +236,7 @@ jobs:
             }
 
             // The marker records which head this review covered so the next run of
-            // codex-review-scope.sh can review only the commits pushed after it.
+            // pr-review-scope.sh can review only the commits pushed after it.
             const headSha = process.env.PR_HEAD_SHA;
             const marker = `<!-- codex-pr-review head=${headSha} -->`;
             const scopeLine = (process.env.REVIEW_SCOPE || '').trim();
