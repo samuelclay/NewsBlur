@@ -155,7 +155,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean storiesDeferred = false;
     // Set once switchStoryList shows another feed here, so a rotation reopens that one.
     private boolean switchedStoryList = false;
-    // The load a switchStoryList holds back until the feed list has slid away.
+    // The load held back until the feed list has slid away (loadAfterFeedListSlide).
     @Nullable
     private Runnable pendingSwitchLoad;
 
@@ -1288,13 +1288,34 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (!storiesDeferred) return;
         storiesDeferred = false;
         showDeferredContent(true);
-        feedUtils.prepareReadingSession(fs, false);
-        LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
-        triggerSync();
-        scheduleInitialFetchingBanner();
-        itemSetFragment.hasUpdated();
-        refreshStoryHeaderControls();
-        openLaunchStory();
+        // As after a pick (switchStoryList), the stories load once the feed list has slid away.
+        loadAfterFeedListSlide(() -> {
+            feedUtils.prepareReadingSession(fs, false);
+            LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
+            triggerSync();
+            scheduleInitialFetchingBanner();
+            // While it waited, the empty list laid out just its footer, which the stories would then
+            // load in above, leaving the list scrolled to the end. Start it empty at the top instead.
+            itemSetFragment.resetEmptyState();
+            itemSetFragment.scrollToTop();
+            itemSetFragment.hasUpdated();
+            refreshStoryHeaderControls();
+            openLaunchStory();
+        });
+    }
+
+    // The feed list slides away over this list on the same main thread, so work that would stall
+    // its slide (switching the reading session, loading and laying out stories) waits until it is
+    // gone. Until then areStoriesDeferred() keeps the story list from loading on its own.
+    private void loadAfterFeedListSlide(Runnable load) {
+        View root = binding.getRoot();
+        if (pendingSwitchLoad != null) root.removeCallbacks(pendingSwitchLoad);
+        pendingSwitchLoad = () -> {
+            pendingSwitchLoad = null;
+            if (isFinishing() || isDestroyed()) return;
+            load.run();
+        };
+        root.postDelayed(pendingSwitchLoad, FeedListDrawer.SLIDE_DURATION_MS);
     }
 
     /**
@@ -1336,20 +1357,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         itemSetFragment.updateListStyle();
         itemSetFragment.scrollToTop();
         refreshStoryHeaderControls();
-        // The feed list slides away over this list on the same main thread, so the reading session
-        // switches and the stories load once it is gone rather than stalling its slide.
-        View root = binding.getRoot();
-        if (pendingSwitchLoad != null) root.removeCallbacks(pendingSwitchLoad);
-        pendingSwitchLoad = () -> {
-            pendingSwitchLoad = null;
-            if (isFinishing() || isDestroyed()) return;
+        loadAfterFeedListSlide(() -> {
             feedUtils.prepareReadingSession(fs, false);
             triggerSync();
             scheduleInitialFetchingBanner();
             itemSetFragment.hasUpdated();
             openLaunchStory();
-        };
-        root.postDelayed(pendingSwitchLoad, FeedListDrawer.SLIDE_DURATION_MS);
+        });
     }
 
     public void startReadingActivity(FeedSet feedSet, String storyHash) {
