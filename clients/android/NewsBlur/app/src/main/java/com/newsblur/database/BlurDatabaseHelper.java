@@ -223,6 +223,7 @@ public class BlurDatabaseHelper {
             resetCustomIcons();
             dbWrapper.dropAndRecreateTables();
         }
+        com.newsblur.viewModel.AllFoldersViewModel.forgetLastPublished();
         com.newsblur.util.Log.i(this.getClass().getName(), ". . . tables recreated.");
     }
 
