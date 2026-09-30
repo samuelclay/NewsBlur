@@ -5852,27 +5852,35 @@ MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS = 10
 # merge_feeds_locked logs the call that finishes it if it is cut short. apps/rss_feeds/models.py
 MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS = 1000
 # Set while a MergeFeeds for a pair of feeds is queued or running, so each failing fetch of the
-# feed during a long merge does not queue another one (queue_merge_feeds_once). It holds the
-# token of the one task that owns the pair: that task re-arms it when it starts, so a wait in
-# the queue does not use up its lifetime, and only that task's token clears it when it ends.
-# It lives exactly as long as Celery lets the task run, so a task killed before it could clear
-# it frees the pair when the kill would have landed. apps/rss_feeds/models.py
+# feed during a long merge does not queue another one (queue_merge_feeds_once). Its value says
+# which task owns the pair and whether that task is still waiting in the queue
+# ("queued:<token>") or merging ("running:<token>"). A task that starts takes the pair unless
+# another task is already merging it, then re-arms the key with a full lifetime, so a wait in
+# the queue does not use up that lifetime; only the owner's token clears it when it ends. It
+# lives exactly as long as Celery lets the task run, so a task killed before it could clear it
+# frees the pair when the kill would have landed. apps/rss_feeds/models.py
 MERGE_FEEDS_QUEUED_KEY = "merge_feeds_queued:%s:%s"
 MERGE_FEEDS_QUEUED_SECONDS = MERGE_FEEDS_TIME_LIMIT_SECONDS
-# Takes the pair's key for a starting task when it is free or already that task's, with a fresh
-# lifetime, and says whether it did. apps/rss_feeds/models.py
+MERGE_FEEDS_QUEUED_PREFIX = "queued:"
+MERGE_FEEDS_RUNNING_PREFIX = "running:"
+# A starting task takes the pair's key ("running:<its token>", fresh lifetime) unless another
+# task is running the merge, and says whether it did. A queued task that has not started yet
+# gives way: whichever task starts first does the merge, so a queue that stays behind can
+# never keep handing the pair to a newer task that is still waiting. apps/rss_feeds/models.py
 MERGE_FEEDS_CLAIM_SCRIPT = """
 local holder = redis.call('get', KEYS[1])
-if holder == false or holder == ARGV[1] then
-    redis.call('set', KEYS[1], ARGV[1], 'EX', ARGV[2])
-    return 1
+local mine = 'running:' .. ARGV[1]
+if holder and holder ~= mine and string.sub(holder, 1, 8) == 'running:' then
+    return 0
 end
-return 0
+redis.call('set', KEYS[1], mine, 'EX', ARGV[2])
+return 1
 """
-# Clears the pair's key only while it still holds this task's token, so a task never frees a
-# pair another task owns. apps/rss_feeds/models.py
+# Clears the pair's key only while it still holds this task's token, waiting or running, so a
+# task never frees a pair another task owns. apps/rss_feeds/models.py
 MERGE_FEEDS_RELEASE_SCRIPT = """
-if redis.call('get', KEYS[1]) == ARGV[1] then
+local holder = redis.call('get', KEYS[1])
+if holder == 'queued:' .. ARGV[1] or holder == 'running:' .. ARGV[1] then
     return redis.call('del', KEYS[1])
 end
 return 0
@@ -6070,7 +6078,7 @@ def queue_merge_feeds_once(original_feed_id, duplicate_feed_id, feed_address=Non
     r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
     key = merge_feeds_queued_key(original_feed_id, duplicate_feed_id)
     token = uuid.uuid4().hex
-    if not r.set(key, token, nx=True, ex=MERGE_FEEDS_QUEUED_SECONDS):
+    if not r.set(key, MERGE_FEEDS_QUEUED_PREFIX + token, nx=True, ex=MERGE_FEEDS_QUEUED_SECONDS):
         return False
     try:
         MergeFeeds.apply_async(args=(original_feed_id, duplicate_feed_id, feed_address, token))
@@ -6085,8 +6093,8 @@ def queue_merge_feeds_once(original_feed_id, duplicate_feed_id, feed_address=Non
 
 def claim_merge_feeds_queued(original_feed_id, duplicate_feed_id, token):
     """A MergeFeeds starting: take the pair's key for this task's token with a full lifetime
-    from now, unless another task owns the pair. Says whether this task owns it.
-    apps/rss_feeds/models.py
+    from now, unless another task is already running the merge. A task that is only queued
+    gives way to this one. Says whether this task owns the pair. apps/rss_feeds/models.py
     """
     r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
     key = merge_feeds_queued_key(original_feed_id, duplicate_feed_id)

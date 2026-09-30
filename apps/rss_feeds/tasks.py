@@ -238,8 +238,9 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None, queued_to
     pair.
 
     queued_token is the pair's key queue_merge_feeds_once set for this task. The task claims
-    the key when it starts (a fresh lifetime, however long it waited in the queue), leaves the
-    merge to another task that owns the pair, and releases only its own token when it ends.
+    the key when it starts (a fresh lifetime, however long it waited in the queue), taking it
+    from a task that is still queued but leaving the merge to one that is already running, and
+    releases only its own token when it ends.
     A task queued before tokens existed carries none and merges without touching the key.
     apps/rss_feeds/tasks.py
     """
@@ -255,7 +256,7 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None, queued_to
 
     if queued_token and not claim_merge_feeds_queued(original_feed_id, duplicate_feed_id, queued_token):
         logging.debug(
-            " ---> MergeFeeds(%s, %s): another merge task owns this pair, leaving it to that one"
+            " ---> MergeFeeds(%s, %s): another merge task is running this pair, leaving it to that one"
             % (original_feed_id, duplicate_feed_id)
         )
         return

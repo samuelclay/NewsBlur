@@ -5760,12 +5760,12 @@ class Test_AddressCheckMergesOnTheCallingThread(TransactionTestCase):
         key = merge_feeds_queued_key(real.pk, copy.pk)
         self.addCleanup(r.delete, key)
 
-        r.set(key, "first-task", ex=MERGE_FEEDS_QUEUED_SECONDS)
+        r.set(key, "queued:first-task", ex=MERGE_FEEDS_QUEUED_SECONDS)
         with patch("apps.rss_feeds.models.merge_feeds", return_value=real.pk) as merge:
             MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss", "first-task")
         self.assertIsNone(r.get(key))
 
-        r.set(key, "second-task", ex=MERGE_FEEDS_QUEUED_SECONDS)
+        r.set(key, "queued:second-task", ex=MERGE_FEEDS_QUEUED_SECONDS)
         with patch("apps.rss_feeds.models.merge_feeds", side_effect=LockError("held")):
             MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss", "second-task")
         self.assertIsNone(r.get(key))
@@ -5836,7 +5836,7 @@ class Test_MergeFeedsQueuedKey(TestCase):
         self.assertTrue(queued)
         (args,) = publish.call_args.kwargs.values()
         self.assertEqual(args[:3], (self.original_id, self.duplicate_id, "https://news.example.com/rss"))
-        self.assertEqual(self.r.get(self.key), args[3])
+        self.assertEqual(self.r.get(self.key), "queued:%s" % args[3])
         self.assertFalse(self.queue()[0])
 
     def test_a_failed_publish_frees_the_pair_for_the_next_collision(self):
@@ -5871,25 +5871,48 @@ class Test_MergeFeedsQueuedKey(TestCase):
             MergeFeeds(self.original_id, self.duplicate_id, None, "waited-task")
 
         ((holder, ttl, queued_again),) = seen_during_merge
-        self.assertEqual(holder, "waited-task")
+        self.assertEqual(holder, "running:waited-task")
         self.assertGreater(ttl, MERGE_FEEDS_QUEUED_SECONDS - 60)
         self.assertFalse(queued_again)
         self.assertIsNone(self.r.get(self.key))
 
-    def test_a_task_leaves_a_pair_another_task_owns_alone(self):
-        """A second task for the pair (queued after the first one's key expired in a backlog)
-        starts while the first one owns the pair. It must not merge alongside it, and must
-        not clear the first task's key when it ends."""
+    def test_a_task_leaves_a_pair_another_running_task_owns_alone(self):
+        """Another task for the pair is already merging it. This one must not merge alongside
+        it, and must not clear that task's key when it ends."""
         from apps.rss_feeds.models import MERGE_FEEDS_QUEUED_SECONDS
         from apps.rss_feeds.tasks import MergeFeeds
 
-        self.r.set(self.key, "running-task", ex=MERGE_FEEDS_QUEUED_SECONDS)
+        self.r.set(self.key, "running:running-task", ex=MERGE_FEEDS_QUEUED_SECONDS)
 
         with patch("apps.rss_feeds.models.merge_feeds") as merge:
             MergeFeeds(self.original_id, self.duplicate_id, None, "late-task")
 
         merge.assert_not_called()
-        self.assertEqual(self.r.get(self.key), "running-task")
+        self.assertEqual(self.r.get(self.key), "running:running-task")
+
+    def test_the_first_task_to_start_merges_even_if_a_newer_one_is_queued(self):
+        """The queue stays more than 65 minutes behind: task A's key expires while it waits, a
+        failing fetch queues task B, and A starts before B. A must take the pair from B, which
+        has not started, and merge; otherwise each task could give way to a newer waiting one
+        forever. When B starts after A is done, it finds the pair free and its merge is a
+        no-op on feeds already merged."""
+        from apps.rss_feeds.models import MERGE_FEEDS_QUEUED_SECONDS
+        from apps.rss_feeds.tasks import MergeFeeds
+
+        self.r.set(self.key, "queued:task-b", ex=MERGE_FEEDS_QUEUED_SECONDS)
+        holders = []
+
+        def merge(original_feed_id, duplicate_feed_id):
+            holders.append(self.r.get(self.key))
+            return None
+
+        with patch("apps.rss_feeds.models.merge_feeds", side_effect=merge):
+            MergeFeeds(self.original_id, self.duplicate_id, None, "task-a")
+            self.assertIsNone(self.r.get(self.key))
+            MergeFeeds(self.original_id, self.duplicate_id, None, "task-b")
+
+        self.assertEqual(holders, ["running:task-a", "running:task-b"])
+        self.assertIsNone(self.r.get(self.key))
 
     def test_releasing_only_clears_the_callers_own_token(self):
         from apps.rss_feeds.models import (
@@ -5897,11 +5920,12 @@ class Test_MergeFeedsQueuedKey(TestCase):
             release_merge_feeds_queued,
         )
 
-        self.r.set(self.key, "owner", ex=MERGE_FEEDS_QUEUED_SECONDS)
-        release_merge_feeds_queued(self.original_id, self.duplicate_id, "someone-else")
-        self.assertEqual(self.r.get(self.key), "owner")
-        release_merge_feeds_queued(self.duplicate_id, self.original_id, "owner")
-        self.assertIsNone(self.r.get(self.key))
+        for holder in ("queued:owner", "running:owner"):
+            self.r.set(self.key, holder, ex=MERGE_FEEDS_QUEUED_SECONDS)
+            release_merge_feeds_queued(self.original_id, self.duplicate_id, "someone-else")
+            self.assertEqual(self.r.get(self.key), holder)
+            release_merge_feeds_queued(self.duplicate_id, self.original_id, "owner")
+            self.assertIsNone(self.r.get(self.key))
 
     def test_a_task_queued_before_tokens_merges_without_touching_the_key(self):
         from apps.rss_feeds.models import MERGE_FEEDS_QUEUED_SECONDS
