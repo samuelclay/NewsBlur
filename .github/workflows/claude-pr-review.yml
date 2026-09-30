@@ -78,7 +78,10 @@ jobs:
         id: claude_review
         # Nothing to review when the head was already reviewed or a push only merged main.
         if: steps.scope.outputs.mode != 'skip'
-        uses: anthropics/claude-code-action@a874e9ecd7bb36efdad65429c6b35815f5a08f10 # v1.0.210
+        # The pinned release installs its own Claude Code (base-action/action.yml
+        # CLAUDE_CODE_VERSION), which has to be new enough for the --model below:
+        # claude-opus-5-5 needs 2.1.280 or newer and v1.0.237 installs 2.1.285.
+        uses: anthropics/claude-code-action@fd1c128679612beff4ca259c78021c506e8aa7a7 # v1.0.237
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # The review text is public on the PR anyway; full output puts the API error in
