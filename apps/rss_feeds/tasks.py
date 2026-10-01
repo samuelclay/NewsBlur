@@ -215,8 +215,19 @@ def PushFeeds(feed_id, xml):
         feed.update(options=options)
 
 
-@app.task(name="merge-feeds", time_limit=65 * 60, soft_time_limit=60 * 60, ignore_result=True)
-def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
+# How long Celery lets a MergeFeeds run before killing it. The pair's queued key in
+# apps/rss_feeds/models.py (MERGE_FEEDS_QUEUED_SECONDS) lives exactly this long, so it can
+# never expire under a task that is still allowed to run. apps/rss_feeds/tasks.py
+MERGE_FEEDS_TIME_LIMIT_SECONDS = 65 * 60
+
+
+@app.task(
+    name="merge-feeds",
+    time_limit=MERGE_FEEDS_TIME_LIMIT_SECONDS,
+    soft_time_limit=MERGE_FEEDS_TIME_LIMIT_SECONDS - 5 * 60,
+    ignore_result=True,
+)
+def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None, queued_token=None):
     """merge_feeds off the fetch queue. check_feed_link_for_feed_address hands a merge here
     when it would move MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS or more subscriptions: run inline,
     a merge that size (Hacker News moved 15,492 in 13 minutes, forum #13860) outlasts the
@@ -224,17 +235,32 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
     survivor itself, exactly as the save collision would have; with the address the check
     discovered, the survivor then takes it and is marked healthy, as an inline fix is. A merge
     cut short here is finished by the pair's next collision or by merge_feeds with the same
-    pair. apps/rss_feeds/tasks.py
+    pair.
+
+    queued_token is the pair's key queue_merge_feeds_once set for this task. The task claims
+    the key when it starts (a fresh lifetime, however long it waited in the queue), taking it
+    from a task that is still queued but leaving the merge to one that is already running, and
+    releases only its own token when it ends.
+    A task queued before tokens existed carries none; it merges without claiming the key and
+    clears the old "1" value it was queued with when it ends.
+    apps/rss_feeds/tasks.py
     """
     from redis.exceptions import LockError
 
     from apps.rss_feeds.models import (
         Feed,
-        clear_merge_feeds_queued,
+        claim_merge_feeds_queued,
         merge_feeds,
+        release_merge_feeds_queued,
         settle_address_check_merge,
     )
 
+    if queued_token and not claim_merge_feeds_queued(original_feed_id, duplicate_feed_id, queued_token):
+        logging.debug(
+            " ---> MergeFeeds(%s, %s): another merge task is running this pair, leaving it to that one"
+            % (original_feed_id, duplicate_feed_id)
+        )
+        return
     try:
         survivor = Feed.get_by_id(merge_feeds(original_feed_id, duplicate_feed_id))
         if survivor and feed_address:
@@ -245,7 +271,7 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
             " ---> MergeFeeds(%s, %s) found the feeds locked: %s" % (original_feed_id, duplicate_feed_id, e)
         )
     finally:
-        clear_merge_feeds_queued(original_feed_id, duplicate_feed_id)
+        release_merge_feeds_queued(original_feed_id, duplicate_feed_id, queued_token)
 
 
 @app.task()
