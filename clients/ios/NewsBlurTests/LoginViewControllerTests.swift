@@ -766,6 +766,36 @@ final class DetailViewControllerTests: XCTestCase {
         }
     }
 
+    func test_iPadEdgeFlickWithoutChangedEventRevealsFeeds() async throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad viewport gestures") }
+        for initialDistance: CGFloat in [0, 40] {
+            for finalState: UIGestureRecognizer.State in [.ended, .cancelled] {
+                let fixture = IPadFeedRevealFixture()
+                defer { fixture.close() }
+                let table = UITableView()
+                fixture.titles.storyTitlesTable = table
+                fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+                let pan = IPadFeedRevealPan()
+                fixture.titles.view.addGestureRecognizer(pan)
+                pan.distance = initialDistance
+                pan.simulatedState = .began
+                fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+                pan.distance = 180
+                pan.simulatedState = finalState
+                fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+                let expected: UISplitViewController.Column = finalState == .ended ? .primary : .secondary
+                let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                    fixture.split.shownColumns.last == expected &&
+                        !(fixture.titles.value(forKey: "feedListRevealActive") as? Bool ?? true)
+                }, object: nil)
+                await fulfillment(of: [settled], timeout: 2)
+                XCTAssertEqual(fixture.split.shownColumns.last, expected,
+                               "UIKit may end or cancel a quick edge flick without an intermediate changed event")
+                XCTAssertTrue(table.isScrollEnabled)
+            }
+        }
+    }
+
     func test_iPadCancelledRowRevealClosesAndPreservesViewportEdge() async throws {
         guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad viewport gestures") }
         let fixture = IPadFeedRevealFixture()
