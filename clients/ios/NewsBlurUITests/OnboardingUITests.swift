@@ -1,6 +1,32 @@
 import XCTest
 
 final class Test_OnboardingUI: XCTestCase {
+    func test_singleSearchFindsInterestsAndAddsSites() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-newsblur-ui-testing", "-newsblur-ui-test-screen", "onboarding"]
+        app.launch()
+        let search = app.textFields["Search interests and sites"]
+        XCTAssertTrue(search.waitForExistence(timeout: 15))
+        XCTAssertEqual(app.textFields.count, 1)
+        XCTAssertFalse(app.staticTexts["Make room for curiosity."].exists)
+        search.tap()
+        search.typeText("Science")
+        XCTAssertTrue(app.buttons["onboarding.interest.Science"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["onboarding.interest.Design"].exists)
+        let add = app.buttons["Add Science Daily"]
+        for _ in 0..<3 where !add.isHittable { app.swipeUp() }
+        XCTAssertTrue(add.waitForExistence(timeout: 10))
+        screenshot("unified-search")
+        add.tap()
+        XCTAssertTrue(app.staticTexts["Subscribed"].waitForExistence(timeout: 10))
+        for _ in 0..<4 where !app.buttons["Clear search"].isHittable { app.swipeDown() }
+        app.buttons["Clear search"].tap()
+        XCTAssertTrue(app.buttons["onboarding.interest.Design"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Science Daily"].exists)
+        screenshot("search-cleared")
+        app.terminate()
+    }
+
     func test_existingAccountCanReopenImportAndBundles() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Import menu uses an isolated existing-account fixture")
@@ -86,9 +112,18 @@ final class Test_OnboardingUI: XCTestCase {
             app.launchArguments = ["-newsblur-ui-testing", "-newsblur-ui-test-screen", "onboarding", "-newsblur-ui-test-theme", theme]
             app.launch()
             XCTAssertTrue(app.buttons["Import OPML"].waitForExistence(timeout: 15))
+            let all = app.buttons["onboarding.interest.all"]
+            let technology = app.buttons["onboarding.interest.Technology"]
+            XCTAssertTrue(technology.waitForExistence(timeout: 10))
+            XCTAssertEqual(all.frame.height, technology.frame.height, accuracy: 1, "Cards must keep equal heights when their titles wrap.")
+            if app.frame.width > 600 {
+                XCTAssertEqual(all.frame.minY, technology.frame.minY, accuracy: 1)
+                XCTAssertGreaterThan(technology.frame.minX, all.frame.maxX)
+                XCTAssertGreaterThan(app.buttons["onboarding.interest.Science"].frame.minY, all.frame.maxY, "Wide layouts must show two cards per row.")
+            }
             screenshot("import-" + theme)
             app.buttons["Import OPML"].tap()
-            XCTAssertTrue(app.buttons["Cancel"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["Cancel"].waitForExistence(timeout: 15))
             app.buttons["Cancel"].tap()
             let science = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Science'")).firstMatch
             for _ in 0..<4 where !science.isHittable { app.swipeUp() }

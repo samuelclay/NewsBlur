@@ -57,7 +57,7 @@ The slow-additions UI regression first failed twice in `/tmp/newsblur-loading-re
 
 [Before the edge drag](ipad-edge-before.png), [feeds revealed](ipad-edge-revealed.png), and [Two Columns with Save preserved](ipad-edge-save-preserved.png) show isolated fixtures on the iOS 27 iPad Air simulator (`F1931FFE-8117-4164-B71D-C91AF30CEF47`). The four-case UI matrix passes in `/tmp/newsblur-ipad27-root-priority.log`: Auto and Two Columns, each with Back and Save, including a short cancelled edge followed by a completed reveal. Three hosted gesture tests and a further UI test for row Back after a cancelled edge pass in `/tmp/newsblur-ipad27-verified.xcresult`. The hosted tests cover continuous drag position, forced cancellation, gesture priority, and existing Duo behavior. Both existing iPhone edge/full-row Back regressions pass in `/tmp/newsblur-ftux-phone-gestures.xcresult`.
 
-NB Alpha is installed and launches on the unlocked ClayPad Air. The physical gesture test runner timed out while enabling automation, so the verified gesture behavior above remains from the matching iOS 27 simulator.
+NB Alpha is installed and launches on the unlocked ClayPad Air. Physical automation initially timed out while enabling automation; subsequent checks below ran successfully.
 
 ## Reopening import on an existing account
 
@@ -66,6 +66,16 @@ The feed-list gear menu now includes **Import or upload sites**, matching the we
 [Import menu](import-menu.png) shows the entry on the existing iPhone simulator. `Test_OnboardingUI.test_existingAccountCanReopenImportAndBundles` passes in `/tmp/newsblur-ftux-import-menu.xcresult`: it opens the real settings menu, opens and cancels the Files picker, verifies bundles, completes setup, checks an existing subscription remains, and repeats without relaunching or creating an account. The updated NB Alpha build succeeds in `/tmp/newsblur-ftux-claypad-import-menu.log` and is installed and running on ClayPad Air.
 
 The same reopen-and-finish test also passes on the existing iOS 27 iPad Air simulator in `/tmp/newsblur-ftux-ipad-import-menu.xcresult`, covering the iPad popover dismissal and presentation handoff.
+
+## Import and discovery layout refinement, October 2
+
+[ClayPad with live feed icons](redesigned-import-claypad.png) and [dark iPad simulator](redesigned-import-dark.png) show the revised page. The ClayPad capture is normalized to upright portrait. The import description and button share one row on iPad and wrap together on narrow screens. The marketing headline, diagonal arrows, second search control, and redundant Skip action are removed. Cards use two columns on iPad, one on narrow screens, equal scaled heights, and icons beside their titles. Feed icons appear progressively as each source arrives, with placeholders during initial loading.
+
+One search field filters interests and searches sites through the existing Discover autocomplete service. Results reuse `DiscoverFeedCardView`; adding uses the retained onboarding queue and exact folder paths, including on retry. The field has a VoiceOver label and clear action.
+
+Validation: ten hosted onboarding tests and iPhone UI tests pass in `/tmp/newsblur-ftux-redesign.xcresult`; the final nested-folder retry and search checks pass in `/tmp/newsblur-ftux-redesign-final-search.xcresult`. Import, shared bundle previews, completion, equal card heights, and two-column layout pass across all four themes on iPad in `/tmp/newsblur-ftux-redesign-ipad-final.xcresult`. The first iPad run exceeded the Files picker's five-second startup allowance; the test now allows fifteen seconds. The signed-in ClayPad menu and live icon check passes in `/tmp/newsblur-claypad-redesign-final.xcresult`, with the final NB Alpha installed.
+
+The reported cold-launch edge failure remains unreproduced. Stronger tests now exercise the very first drag without the cancelled warm-up used by earlier coverage: Auto and Two Columns on iPad simulator, after closing import, and directly from All Site Stories on physical ClayPad. All pass. [ClayPad before the first edge](claypad-first-edge-before.png) and [after](claypad-first-edge-after.png) come from `/tmp/newsblur-claypad-initial-edge-before.xcresult`. Gesture production code was not changed in this refinement. XCTest waits for launch idle; a gesture during the earliest startup transition remains unverified.
 
 ## Provider configuration and rollout
 

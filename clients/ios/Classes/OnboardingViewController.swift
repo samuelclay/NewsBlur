@@ -82,10 +82,7 @@ private final class OnboardingOPMLValidator: NSObject, XMLParserDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let host = UIHostingController(rootView: OnboardingView(onDiscover: { [weak self] in
-            let discover = DiscoverSitesViewController()
-            self?.navigationController?.pushViewController(discover, animated: true)
-        }, onFinish: { [weak self] in
+        let host = UIHostingController(rootView: OnboardingView(onFinish: { [weak self] in
             if let username = NewsBlurAppDelegate.shared()?.activeUsername {
                 UserDefaults.standard.set(true, forKey: "onboarding_completed_" + username)
             }
@@ -123,6 +120,11 @@ struct OnboardingFeed: Identifiable {
         guard let preview = DiscoverSitesViewModel.parsePopularFeedEntry(entry) else { return nil }
         self.preview = preview
         source = entry["feed_type"] as? String ?? "rss"
+    }
+
+    init(preview: DiscoverPopularFeed) {
+        self.preview = preview
+        source = "rss"
     }
 }
 
@@ -182,6 +184,7 @@ struct OnboardingFeed: Identifiable {
         let id = UUID()
         let folder: String
         let feeds: [OnboardingFeed]
+        var existingFolder = false
     }
 
     private let onSubscriptionsChanged: () -> Void
@@ -201,6 +204,7 @@ struct OnboardingFeed: Identifiable {
     @Published var icons: [String: [DiscoverPopularFeed]] = [:]
     private var generation = UUID()
     private var iconRequests: Set<String> = []
+    private var loadedIconInterests: Set<String> = []
     private var subscriptionTask: Task<Void, Never>?
 
     func prepareToRead() {
@@ -230,9 +234,9 @@ struct OnboardingFeed: Identifiable {
 
     func loadIcons(_ interest: String?) async {
         let key = interest ?? ""
-        guard icons[key] == nil, iconRequests.insert(key).inserted else { return }
+        guard !loadedIconInterests.contains(key), iconRequests.insert(key).inserted else { return }
         defer { iconRequests.remove(key) }
-        var previews: [DiscoverPopularFeed] = []
+        var previews = icons[key] ?? []
         // OnboardingViewController.swift requests only visible cards, caching one real feed per source.
         for source in ["rss", "newsletter", "youtube", "reddit", "podcast"] {
             if Task.isCancelled { return }
@@ -242,11 +246,13 @@ struct OnboardingFeed: Identifiable {
                     if let feed = DiscoverSitesViewModel.parsePopularFeedEntry(entry),
                        !previews.contains(where: { $0.feedAddress == feed.feedAddress }) { previews.append(feed) }
                 }
+                icons[key] = previews
             } catch {
                 if Task.isCancelled { return }
             }
         }
-        if !previews.isEmpty { icons[key] = previews }
+        icons[key] = previews
+        loadedIconInterests.insert(key)
     }
 
     func load(_ interest: String? = nil) async {
@@ -296,17 +302,24 @@ struct OnboardingFeed: Identifiable {
         failedBundles.removeAll { $0.id == failure.id }
         let chosen = failure.feeds.filter { !queued.contains($0.url) && !added.contains($0.url) }
         guard !chosen.isEmpty else { return }
-        _ = enqueue(chosen, into: failure.folder, selectionGeneration: generation)
+        _ = enqueue(chosen, into: failure.folder, selectionGeneration: generation, existingFolder: failure.existingFolder)
     }
 
-    private func enqueue(_ chosen: [OnboardingFeed], into destination: String, selectionGeneration: UUID) -> Task<Void, Never> {
+    @discardableResult
+    func queueSearchResult(_ feed: DiscoverPopularFeed, folder: String) -> Task<Void, Never>? {
+        guard !queued.contains(feed.feedAddress), !added.contains(feed.feedAddress) else { return nil }
+        return enqueue([OnboardingFeed(preview: feed)], into: folder, selectionGeneration: generation, existingFolder: true)
+    }
+
+    private func enqueue(_ chosen: [OnboardingFeed], into destination: String, selectionGeneration: UUID,
+                         existingFolder: Bool = false) -> Task<Void, Never> {
         let username = NewsBlurAppDelegate.shared()?.activeUsername
         let server = NewsBlurAppDelegate.shared()?.url
         let previous = subscriptionTask
         let chosenURLs = Set(chosen.map(\.url))
         failedBundles = failedBundles.compactMap { failure in
             let remaining = failure.feeds.filter { !chosenURLs.contains($0.url) }
-            return remaining.isEmpty ? nil : FailedBundle(folder: failure.folder, feeds: remaining)
+            return remaining.isEmpty ? nil : FailedBundle(folder: failure.folder, feeds: remaining, existingFolder: failure.existingFolder)
         }
         queued.formUnion(chosenURLs)
         selection.subtract(chosenURLs)
@@ -325,9 +338,14 @@ struct OnboardingFeed: Identifiable {
                     return
                 }
                 do {
-                    _ = try await OnboardingAPI.request("/reader/add_url", body: [
-                        "url": feed.url, "new_folder": destination, "folder_path": "[]"
-                    ])
+                    let body: [String: String]
+                    if existingFolder {
+                        let path = destination.isEmpty ? [] : destination.components(separatedBy: " ▸ ")
+                        body = ["url": feed.url, "folder_path": String(decoding: try JSONEncoder().encode(path), as: UTF8.self)]
+                    } else {
+                        body = ["url": feed.url, "new_folder": destination, "folder_path": "[]"]
+                    }
+                    _ = try await OnboardingAPI.request("/reader/add_url", body: body)
                     guard username == NewsBlurAppDelegate.shared()?.activeUsername,
                           server == NewsBlurAppDelegate.shared()?.url else {
                         queued.subtract(chosenURLs)
@@ -345,11 +363,11 @@ struct OnboardingFeed: Identifiable {
                 return
             }
             if !failures.isEmpty {
-                failedBundles.append(FailedBundle(folder: destination, feeds: failures))
+                failedBundles.append(FailedBundle(folder: destination, feeds: failures, existingFolder: existingFolder))
                 if generation == selectionGeneration { selection.formUnion(failures.map(\.url)) }
             }
             if generation == selectionGeneration {
-                message = failures.isEmpty ? "Added \(successes) feeds to \(destination)."
+                message = failures.isEmpty ? "Added \(successes) feeds\(destination.isEmpty ? "" : " to " + destination)."
                     : "Added \(successes) feeds. \(failures.count) could not be added. You can retry them below."
             }
             if OnboardingFeedLoading.shared.finishWork(loadingToken) { onSubscriptionsChanged() }
@@ -360,10 +378,9 @@ struct OnboardingFeed: Identifiable {
 }
 
 private struct OnboardingView: View {
-    let onDiscover: () -> Void
     let onFinish: () -> Void
     @StateObject private var bundles = OnboardingBundles()
-    @StateObject private var discovery = DiscoverSitesViewModel()
+    @StateObject private var discovery = DiscoverSitesViewModel(session: OnboardingAPI.session)
     @ObservedObject private var feedLoading = OnboardingFeedLoading.shared
     @State private var step = 0
     @State private var showImporter = false
@@ -372,7 +389,13 @@ private struct OnboardingView: View {
     @State private var selectedInterest: String?
     @State private var interestSearch = ""
     @State private var showBundle = false
-    private let titles = ["Make room for curiosity.", "You’re all set up."]
+    @ScaledMetric(relativeTo: .headline) private var cardHeight = 132.0
+    private let contentWidth: CGFloat = 760
+    private var columns: [GridItem] { [GridItem(.adaptive(minimum: 260), spacing: 16, alignment: .top)] }
+    private var query: String { interestSearch.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var matchingInterests: [String] {
+        bundles.interests.filter { query.isEmpty || $0.localizedCaseInsensitiveContains(query) }
+    }
 
     var body: some View {
         ZStack {
@@ -386,25 +409,25 @@ private struct OnboardingView: View {
                         Text("\(step + 1) / 2").font(.subheadline.monospacedDigit()).foregroundStyle(DiscoverColors.textSecondary)
                     }
                     HStack(spacing: 6) {
-                        ForEach(0..<2) { index in Capsule().fill(index <= step ? Color.accentColor : Color.secondary.opacity(0.2)).frame(height: 4) }
+                        ForEach(0..<2) { index in Capsule().fill(index <= step ? DiscoverColors.textSecondary : DiscoverColors.border.opacity(0.5)).frame(height: 3) }
                     }
-                    Text(titles[step]).font(.largeTitle.bold()).fixedSize(horizontal: false, vertical: true)
                     if step == 0 {
                         importPage
+                        Divider().overlay(DiscoverColors.border)
                         discoveryPage
-                    } else { finishedPage }
-                }.padding(24).frame(maxWidth: 620).frame(maxWidth: .infinity)
+                    } else {
+                        Text("You’re all set up.").font(.largeTitle.bold()).fixedSize(horizontal: false, vertical: true)
+                        finishedPage
+                    }
+                }.padding(24).frame(maxWidth: contentWidth).frame(maxWidth: .infinity)
             }.id(step)
+                .scrollDismissesKeyboard(.interactively)
         }
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 12) {
                 if step == 0 {
                     Button("Continue") { showCompletion() }
                         .buttonStyle(OnboardingPrimaryButton())
-                    HStack {
-                        Spacer()
-                        Button("Skip this step") { showCompletion() }
-                    }
                 } else {
                     if feedLoading.isLoading { loadingIndicator }
                     Button("Start reading") {
@@ -413,10 +436,11 @@ private struct OnboardingView: View {
                     }.buttonStyle(OnboardingPrimaryButton())
                     Button("Back to feeds") { step = 0 }
                 }
-            }.padding(.horizontal, 24).padding(.vertical, 12).frame(maxWidth: 620)
+            }.padding(.horizontal, 24).padding(.vertical, 12).frame(maxWidth: contentWidth)
                 .frame(maxWidth: .infinity).background(DiscoverColors.background)
         }
         .foregroundColor(DiscoverColors.textPrimary)
+        .onChange(of: bundles.added) { discovery.addedFeedURLs.formUnion($0) }
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [UTType(filenameExtension: "opml") ?? .xml, .xml, .data]) { result in
             switch result {
             case .success(let url):
@@ -451,42 +475,56 @@ private struct OnboardingView: View {
 
     private var importPage: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center, spacing: 14) {
-                Image(systemName: "tray.and.arrow.down.fill").font(.title2).foregroundColor(.accentColor)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Bring your feeds with you").font(.headline)
-                    Text("Import feeds and folders from an OPML export.").font(.subheadline).foregroundStyle(DiscoverColors.textSecondary)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 20) {
+                    importDescription.fixedSize()
+                    Spacer(minLength: 0)
+                    importButton
                 }
-                Spacer(minLength: 0)
+                VStack(alignment: .leading, spacing: 12) {
+                    importDescription
+                    importButton
+                }
             }
-            Button { showImporter = true } label: { Label("Import OPML", systemImage: "doc.badge.plus") }
-                .buttonStyle(.bordered).disabled(importing)
             if importing { ProgressView("Uploading your feeds…") }
             if let importMessage { Text(importMessage).font(.subheadline).accessibilityIdentifier("onboarding.import.status") }
-        }.padding(18).frame(maxWidth: .infinity, alignment: .leading)
-            .background(DiscoverColors.cardBackground).clipShape(RoundedRectangle(cornerRadius: 20))
+        }.frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var importDescription: some View {
+        Text("Import feeds and folders from an OPML export")
+            .font(.subheadline).foregroundStyle(DiscoverColors.textSecondary)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var importButton: some View {
+        Button("Import OPML") { showImporter = true }
+            .font(.subheadline.weight(.semibold)).buttonStyle(.plain)
+            .padding(.horizontal, 16).frame(height: 44)
+            .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(DiscoverColors.border, lineWidth: 1))
+            .fixedSize().disabled(importing)
     }
 
     private var discoveryPage: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("A few good sources can open up a whole new world. Choose an interest to build your first folder.").font(.title3).foregroundStyle(DiscoverColors.textSecondary)
-            Button(action: onDiscover) { Label("Search all sites and sources", systemImage: "magnifyingglass") }
-                .padding().frame(maxWidth: .infinity).background(DiscoverColors.cardBackground).clipShape(RoundedRectangle(cornerRadius: 14))
-            TextField("Find an interest", text: $interestSearch).textFieldStyle(.roundedBorder).accessibilityLabel("Find an interest")
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Choose your feeds").font(.title2.weight(.semibold))
+            searchField
             if bundles.catalogLoading { ProgressView("Finding your next favorites…") }
             if let message = bundles.message, bundles.interests.isEmpty {
                 Text(message).font(.subheadline)
                 Button("Try again") { Task { await bundles.loadCatalog() } }
             }
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 145), spacing: 12)], spacing: 12) {
-                if interestSearch.isEmpty { bundleCard("A little of everything", interest: nil, symbol: "sparkles") }
-                ForEach(bundles.interests.filter { interestSearch.isEmpty || $0.localizedCaseInsensitiveContains(interestSearch) }, id: \.self) { interest in
+            LazyVGrid(columns: columns, spacing: 16) {
+                if query.isEmpty { bundleCard("A little of everything", interest: nil, symbol: "sparkles") }
+                ForEach(matchingInterests, id: \.self) { interest in
                     bundleCard(interest, interest: interest, symbol: bundleSymbol(interest))
                 }
             }
+            if !query.isEmpty { searchResults }
             subscriptionStatus
             if !bundles.added.isEmpty {
-                Label("\(bundles.added.count) feeds added. Your new folders are ready.", systemImage: "checkmark.circle.fill").foregroundColor(.accentColor)
+                Label("\(bundles.added.count) feeds added.", systemImage: "checkmark.circle.fill").foregroundColor(DiscoverColors.textSecondary)
             }
         }
         .task { await bundles.loadCatalog() }
@@ -528,6 +566,47 @@ private struct OnboardingView: View {
         }
     }
 
+    private var searchField: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "magnifyingglass").foregroundStyle(DiscoverColors.textSecondary)
+            TextField("", text: $interestSearch)
+                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                .submitLabel(.search).accessibilityLabel("Search interests and sites")
+                .onChange(of: interestSearch) { discovery.searchAutocomplete(query: $0.trimmingCharacters(in: .whitespacesAndNewlines)) }
+            if !interestSearch.isEmpty {
+                Button { interestSearch = "" } label: { Image(systemName: "xmark.circle.fill") }
+                    .foregroundStyle(DiscoverColors.textSecondary).accessibilityLabel("Clear search")
+            }
+        }.padding(.horizontal, 16).frame(height: 52)
+            .background(DiscoverColors.textFieldBackground, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(DiscoverColors.border, lineWidth: 1))
+    }
+
+    private var searchResults: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if !discovery.searchState.isSearching && !discovery.searchState.results.isEmpty {
+                Text("Sites").font(.headline).foregroundStyle(DiscoverColors.textSecondary)
+                ForEach(discovery.searchState.results) { result in
+                    let feed = DiscoverPopularFeed(autocompleteResult: result)
+                    if bundles.queued.contains(feed.feedAddress) {
+                        Label("Adding \(feed.feedTitle)…", systemImage: "arrow.triangle.2.circlepath")
+                    } else {
+                        DiscoverFeedCardView(feed: feed, onAddFeed: { feed in
+                            bundles.queueSearchResult(feed, folder: discovery.selectedFolder)
+                        }).environmentObject(discovery)
+                    }
+                }
+            }
+            if discovery.searchState.isSearching { ProgressView("Searching sites…") }
+            if let error = discovery.searchState.errorMessage {
+                Text(error).font(.subheadline).foregroundStyle(DiscoverColors.errorText)
+                Button("Try search again") { discovery.searchAutocomplete(query: query) }
+            } else if !discovery.searchState.isSearching && discovery.searchState.results.isEmpty && matchingInterests.isEmpty {
+                Text("No interests or sites found. Try another search.").foregroundStyle(DiscoverColors.textSecondary)
+            }
+        }
+    }
+
     private var loadingIndicator: some View {
         HStack(spacing: 10) {
             ProgressView()
@@ -544,7 +623,7 @@ private struct OnboardingView: View {
             }
             ForEach(bundles.failedBundles) { failure in
                 HStack {
-                    Text("\(failure.feeds.count) feeds couldn’t be added to \(failure.folder).")
+                    Text("\(failure.feeds.count) feeds couldn’t be added\(failure.folder.isEmpty ? "" : " to " + failure.folder).")
                     Spacer()
                     Button("Retry") { bundles.retry(failure) }
                 }.font(.subheadline)
@@ -558,14 +637,22 @@ private struct OnboardingView: View {
             showBundle = true
             Task { await bundles.load(interest) }
         } label: {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Image(systemName: symbol).font(.system(size: 25, weight: .medium)).foregroundColor(.accentColor)
-                    Spacer()
-                    Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(DiscoverColors.textSecondary)
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 12) {
+                    Image(systemName: symbol).font(.system(size: 23, weight: .regular))
+                        .foregroundStyle(DiscoverColors.textSecondary).frame(width: 30)
+                        .accessibilityHidden(true)
+                    Text(interest == nil ? title : title.localizedCapitalized).font(.headline).foregroundColor(DiscoverColors.textPrimary)
+                        .lineLimit(2).multilineTextAlignment(.leading)
                 }
-                Text(title).font(.headline).foregroundColor(DiscoverColors.textPrimary).fixedSize(horizontal: false, vertical: true)
-                HStack(spacing: -5) {
+                Spacer(minLength: 0)
+                HStack(spacing: 6) {
+                    if bundles.icons[interest ?? ""] == nil {
+                        ForEach(0..<4) { _ in
+                            RoundedRectangle(cornerRadius: 7).fill(DiscoverColors.border.opacity(0.45))
+                                .frame(width: 28, height: 28).padding(3).accessibilityHidden(true)
+                        }
+                    }
                     ForEach((bundles.icons[interest ?? ""] ?? []).prefix(5)) { feed in
                         DiscoverFeedIconView(feed: feed)
                             .frame(width: 28, height: 28).padding(3)
@@ -573,9 +660,13 @@ private struct OnboardingView: View {
                             .accessibilityHidden(true)
                     }
                 }.frame(height: 34, alignment: .leading)
-            }.padding(18).frame(maxWidth: .infinity, minHeight: 155, alignment: .topLeading)
-                .background(DiscoverColors.cardBackground).clipShape(RoundedRectangle(cornerRadius: 20))
+            }.padding(20).frame(maxWidth: .infinity, alignment: .leading).frame(height: cardHeight, alignment: .topLeading)
+                .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(DiscoverColors.border.opacity(0.45), lineWidth: 1))
         }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("onboarding.interest.\(interest ?? "all")")
+        .accessibilityValue(bundles.icons[interest ?? ""].map { "\($0.count) sources" } ?? "Loading sources")
         .task { await bundles.loadIcons(interest) }
     }
 
@@ -584,7 +675,9 @@ private struct OnboardingView: View {
         for (word, symbol) in [("tech", "cpu"), ("science", "atom"), ("food", "fork.knife"), ("design", "paintpalette"),
                                ("travel", "globe.americas"), ("music", "music.note"), ("sport", "figure.run"),
                                ("news", "newspaper"), ("art", "paintbrush.pointed"), ("business", "chart.line.uptrend.xyaxis"),
-                               ("game", "gamecontroller"), ("book", "books.vertical"), ("nature", "leaf"), ("space", "moon.stars")] {
+                               ("game", "gamecontroller"), ("book", "books.vertical"), ("nature", "leaf"), ("space", "moon.stars"),
+                               ("architecture", "building.2"), ("agriculture", "leaf"), ("autom", "car"),
+                               ("career", "briefcase"), ("comedy", "theatermasks"), ("anime", "sparkles")] {
             if name.contains(word) { return symbol }
         }
         return "square.stack.3d.up"
