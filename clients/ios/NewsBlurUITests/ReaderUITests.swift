@@ -473,6 +473,107 @@ final class ReaderUITests: XCTestCase {
         app = XCUIApplication()
     }
 
+    func test_liveAlphaIPadPortraitEdgeRevealsFeeds() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        XCUIDevice.shared.orientation = .portrait
+        attachScreenshot(named: "claypad-before-edge-reproduction")
+        let feeds = app.tables["feeds-list"].firstMatch
+        if !feeds.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(feeds.waitForExistence(timeout: 15))
+        let feed = feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable }
+        try XCTUnwrap(feed).tap()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        attachScreenshot(named: "claypad-titles-before-edge")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: 1, dy: app.frame.height * 0.45))
+        let end = origin.withOffset(CGVector(dx: 280, dy: app.frame.height * 0.45))
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "claypad-titles-after-edge")
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "Dragging from the left screen edge must reveal the feeds sidebar")
+        #endif
+    }
+
+    func test_iPadPortraitEdgeRevealsFeeds() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        for behavior in ["auto", "displace"] {
+            for action in ["back", "save"] {
+                app.launchArguments = ["-split_behavior", behavior, "-story_title_swipe_right", action,
+                                       "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+                launch(on: "reader-feed-swift")
+                XCTAssertTrue(waitForFixtureStoryTitles())
+                attachScreenshot(named: "ipad-titles-before-edge-\(behavior)-\(action)")
+                let feeds = app.tables["feeds-list"].firstMatch
+                XCTAssertFalse(feeds.isHittable, "The feed sidebar must start hidden")
+                let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+                // ReaderUITests.swift uses the app window's content edge; titlebar drags belong to iPadOS window management.
+                let edgeY = storyRow("ui-story-swift-1").frame.midY - app.windows.firstMatch.frame.minY
+                let start = origin.withOffset(CGVector(dx: 1, dy: edgeY))
+                start.press(forDuration: 0.05, thenDragTo: origin.withOffset(CGVector(dx: 35, dy: edgeY)),
+                            withVelocity: .slow, thenHoldForDuration: 0.3)
+                XCTAssertFalse(feeds.isHittable, "A short edge drag must cancel")
+                if action == "save" {
+                    let row = storyRow("ui-story-swift-1")
+                    row.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5)).press(forDuration: 0.05,
+                        thenDragTo: row.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)),
+                        withVelocity: .slow, thenHoldForDuration: 0)
+                    let saved = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value ENDSWITH %@", ", Saved"),
+                                                          object: storyRow("ui-story-swift-1"))
+                    XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 3), .completed,
+                                   "Screen-edge recognition must preserve the configured row action")
+                    XCTAssertFalse(feeds.isHittable)
+                }
+                let end = origin.withOffset(CGVector(dx: 280, dy: edgeY))
+                start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+                attachScreenshot(named: "ipad-titles-after-edge-\(behavior)-\(action)")
+                let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+                XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                               "Dragging from the screen edge must reveal the feeds sidebar")
+                app.terminate()
+            }
+        }
+        #endif
+    }
+
+    func test_iPadRowBackSurvivesCancelledEdge() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-split_behavior", "auto", "-story_title_swipe_right", "back",
+                               "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let feeds = app.tables["feeds-list"].firstMatch
+        let row = storyRow("ui-story-swift-1")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = row.frame.midY - app.windows.firstMatch.frame.minY
+        origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 35, dy: edgeY)),
+            withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertFalse(feeds.isHittable)
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5)).press(forDuration: 0.05,
+            thenDragTo: row.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "The full-row Back action must remain interactive after a cancelled edge drag")
+        attachScreenshot(named: "ipad-row-back-after-cancelled-edge")
+        #endif
+    }
+
     func test_feedFolderAndSpecialRowContextMenus() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Context menus use isolated simulator fixtures")
