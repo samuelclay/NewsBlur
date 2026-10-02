@@ -97,6 +97,10 @@ final class NewsBlurUITestHarness {
         guard isEnabled, !didScheduleScenario else { return }
 
         UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
+        // NewsBlurUITestHarness.swift also supports reopening onboarding from the reader's settings menu.
+        let onboardingConfiguration = URLSessionConfiguration.ephemeral
+        onboardingConfiguration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
+        OnboardingAPI.session = URLSession(configuration: onboardingConfiguration)
         DiscoverFeedsViewController.viewModelFactory = { feedId, feedIds in
             let configuration = URLSessionConfiguration.ephemeral
             configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
@@ -118,9 +122,6 @@ final class NewsBlurUITestHarness {
         switch requestedScreen {
         case "onboarding", "onboarding-account":
             didScheduleScenario = true
-            let configuration = URLSessionConfiguration.ephemeral
-            configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
-            OnboardingAPI.session = URLSession(configuration: configuration)
             configureOnboarding(on: appDelegate, remainingRetries: 100)
         case "discover-sites":
             didScheduleScenario = true
