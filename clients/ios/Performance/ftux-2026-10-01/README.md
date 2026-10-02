@@ -75,7 +75,17 @@ One search field filters interests and searches sites through the existing Disco
 
 Validation: ten hosted onboarding tests and iPhone UI tests pass in `/tmp/newsblur-ftux-redesign.xcresult`; the final nested-folder retry and search checks pass in `/tmp/newsblur-ftux-redesign-final-search.xcresult`. Import, shared bundle previews, completion, equal card heights, and two-column layout pass across all four themes on iPad in `/tmp/newsblur-ftux-redesign-ipad-final.xcresult`. The first iPad run exceeded the Files picker's five-second startup allowance; the test now allows fifteen seconds. The signed-in ClayPad menu and live icon check passes in `/tmp/newsblur-claypad-redesign-final.xcresult`, with the final NB Alpha installed.
 
-The reported cold-launch edge failure remains unreproduced. Stronger tests now exercise the very first drag without the cancelled warm-up used by earlier coverage: Auto and Two Columns on iPad simulator, after closing import, and directly from All Site Stories on physical ClayPad. All pass. [ClayPad before the first edge](claypad-first-edge-before.png) and [after](claypad-first-edge-after.png) come from `/tmp/newsblur-claypad-initial-edge-before.xcresult`. Gesture production code was not changed in this refinement. XCTest waits for launch idle; a gesture during the earliest startup transition remains unverified.
+The initial cold-launch edge investigation did not reproduce the reported failure. Stronger tests exercise the very first drag without the cancelled warm-up used by earlier coverage: Auto and Two Columns on iPad simulator, after closing import, and directly from All Site Stories on physical ClayPad. [ClayPad before the first edge](claypad-first-edge-before.png) and [after](claypad-first-edge-after.png) come from `/tmp/newsblur-claypad-initial-edge-before.xcresult`. The subsequent handler fix below addresses a separately reproduced missed-event path.
+
+## Cold-launch edge flick follow-up
+
+`FeedDetailObjCViewController.m` previously initialized the interactive reveal only in `.changed`. An accepted gesture that went directly from `.began` to `.ended` returned without opening feeds. [UIKit documents `.changed` as optional](https://developer.apple.com/documentation/uikit/uigesturerecognizer?language=objc). The handler now initializes the reveal in `.began`, including when initial translation is zero, and still handles later movement, release thresholds, and cancellation through the existing code.
+
+The new hosted regression fails before the fix in `/tmp/newsblur-ipad-edge-flick-matrix-before.xcresult`. After the fix, its matrix covers zero/40-point initial translation, with direct end/cancel and no intermediate update. The focused hosted suite also checks existing cancellation and viewport priority with Back/Save row actions.
+
+All three focused hosted tests and both UI tests pass in `/tmp/newsblur-ipad-first-edge-fixed.xcresult`. UI coverage includes untouched first edges in Auto and Two Columns, plus Auto/Two Columns × Back/Save, cancelled drags, and preserved Save actions.
+
+Both physical cold-launch tests pass in `/tmp/newsblur-claypad-first-edge-fixed.xcresult`: a normal edge drag and a fast 160-point flick next to a story row. [Before the flick](claypad-edge-flick-before.png) and [after attempt one](claypad-edge-flick-first-attempt.png) show the live All Site Stories account. The precise three-attempt sequence was not captured on hardware; the reproduced failure is the handler's dropped begin-to-end sequence. NB Alpha with the fix is installed on ClayPad. No gesture thresholds, preferences, or iPhone navigation paths changed.
 
 ## Provider configuration and rollout
 

@@ -1619,16 +1619,19 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     CGPoint translation = [gestureRecognizer translationInView:self.view];
     BOOL isHorizontal = fabs(translation.x) > fabs(translation.y);
 
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.feedListRevealActive = NO;
+        self.feedListRevealBouncing = NO;
+        self.feedListRevealWidth = revealWidth;
+    }
+
     switch (gestureRecognizer.state) {
-        case UIGestureRecognizerStateBegan: {
-            self.feedListRevealActive = NO;
-            self.feedListRevealBouncing = NO;
-            self.feedListRevealWidth = revealWidth;
-            break;
-        }
+        case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStateChanged: {
             if (!self.feedListRevealActive) {
-                if (!isHorizontal || translation.x <= 0) {
+                // FeedDetailObjCViewController.m starts an accepted rightward gesture immediately; UIKit can end a quick flick without a changed event.
+                if (gestureRecognizer.state != UIGestureRecognizerStateBegan &&
+                    (!isHorizontal || translation.x <= 0)) {
                     break;
                 }
 

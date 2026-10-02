@@ -526,6 +526,33 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_liveAlphaColdRowEdgeFlick() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertFalse(feeds.isHittable)
+        attachScreenshot(named: "claypad-cold-row-before-edge-flick")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = app.windows.firstMatch.frame.height * 0.45
+        var openedOnAttempt = 0
+        for attempt in 1...3 {
+            origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.001,
+                thenDragTo: origin.withOffset(CGVector(dx: 160, dy: edgeY)),
+                withVelocity: .fast, thenHoldForDuration: 0)
+            attachScreenshot(named: "claypad-cold-row-edge-flick-\(attempt)")
+            if feeds.isHittable { openedOnAttempt = attempt; break }
+        }
+        XCTAssertEqual(openedOnAttempt, 1, "A natural first edge flick beside a story row must reveal feeds")
+        #endif
+    }
+
     func test_liveAlphaImportLayout() throws {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the signed-in ClayPad")
