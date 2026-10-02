@@ -1398,8 +1398,10 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
             return ["trending_feeds": ["fixture-trending": ["feed": feed("The Daily Perspective", slug: "daily"),
                 "stories": [["story_title": "A better way to follow the news", "story_authors": "Alex Morgan"]]]]]
         case "/discover/autocomplete":
+            let science = (params["term"] ?? "").localizedCaseInsensitiveContains("science")
             return ["term": params["term"] ?? "", "feeds": [
-                ["label": "Swift by Sundell", "value": "https://ui-test.newsblur.example/swift.xml", "num_subscribers": 42]
+                ["label": science ? "Science Daily" : "Swift by Sundell",
+                 "value": "https://ui-test.newsblur.example/\(science ? "science" : "swift").xml", "num_subscribers": 42]
             ]]
         case "/discover/popular_feeds":
             let type = params["type"] ?? "all"

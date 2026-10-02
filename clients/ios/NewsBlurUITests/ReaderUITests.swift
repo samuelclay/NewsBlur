@@ -501,6 +501,119 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_liveAlphaInitialPortraitEdgeRevealsFeeds() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertFalse(feeds.isHittable, "This checks launch directly into story titles, without opening the sidebar first")
+        attachScreenshot(named: "claypad-initial-titles-before-first-edge")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = app.windows.firstMatch.frame.height * 0.45
+        origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 280, dy: edgeY)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "claypad-initial-titles-after-first-edge")
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "The first edge drag on launch must reveal feeds without opening the sidebar first")
+        #endif
+    }
+
+    func test_liveAlphaImportLayout() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        XCTAssertTrue(app.textFields["Search interests and sites"].waitForExistence(timeout: 15))
+        let architecture = app.buttons["onboarding.interest.architecture"]
+        XCTAssertTrue(architecture.waitForExistence(timeout: 30))
+        XCTAssertEqual(app.textFields.count, 1)
+        let sources = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '5 sources'"),
+                                                object: app.buttons["onboarding.interest.all"])
+        XCTAssertEqual(XCTWaiter.wait(for: [sources], timeout: 45), .completed)
+        attachScreenshot(named: "claypad-redesigned-import")
+        #endif
+    }
+
+    func test_iPadPortraitFirstEdgeRevealsFeeds() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        for behavior in ["auto", "displace"] {
+            app.launchArguments = ["-split_behavior", behavior, "-story_title_swipe_right", "back",
+                                   "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader-feed-swift")
+            XCTAssertTrue(waitForFixtureStoryTitles())
+            let feeds = app.tables["feeds-list"].firstMatch
+            XCTAssertFalse(feeds.isHittable)
+            attachScreenshot(named: "ipad-before-first-edge-\(behavior)")
+            let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+            let edgeY = storyRow("ui-story-swift-1").frame.midY - app.windows.firstMatch.frame.minY
+            origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: 280, dy: edgeY)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            attachScreenshot(named: "ipad-after-first-edge-\(behavior)")
+            let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+            XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                           "The first edge drag after launch must reveal feeds without a warm-up gesture")
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_iPadFirstEdgeAfterClosingImportRevealsFeeds() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-split_behavior", "auto", "-story_title_swipe_right", "back",
+                               "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+        launch(on: "reader")
+        let settings = app.buttons["feed-list-settings"]
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        XCTAssertTrue(app.buttons["Import OPML"].waitForExistence(timeout: 10))
+        app.buttons["Continue"].tap()
+        app.buttons["Start reading"].tap()
+        XCTAssertTrue(app.buttons["Start reading"].waitForNonExistence(timeout: 5))
+        let feed = feedCell("910001")
+        XCTAssertTrue(feed.waitForExistence(timeout: 10))
+        feed.tap()
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertFalse(feeds.isHittable)
+        attachScreenshot(named: "ipad-after-import-before-first-edge")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = app.windows.firstMatch.frame.height * 0.45
+        origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 280, dy: edgeY)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "ipad-after-import-first-edge")
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "The first edge drag after closing import must reveal feeds")
+        app.terminate()
+        #endif
+    }
+
     func test_iPadPortraitEdgeRevealsFeeds() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Uses isolated reader fixtures")

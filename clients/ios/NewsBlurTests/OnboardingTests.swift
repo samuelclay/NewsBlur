@@ -92,6 +92,29 @@ import MetalKit
         XCTAssertTrue(bundles.selection.isEmpty)
     }
 
+    func test_searchAdditionAndRetryPreserveExistingNestedFolder() async throws {
+        var attempts: [String] = []
+        var shouldFail = true
+        network { request in
+            attempts.append(Self.body(request).removingPercentEncoding ?? "")
+            return shouldFail ? (503, ["message": "Unavailable"]) : (200, ["code": 1])
+        }
+        let bundles = OnboardingBundles(onSubscriptionsChanged: {})
+        let feed = DiscoverPopularFeed(feedId: "search", feedDict: ["feed_address": "https://example.com/science.xml"])
+        let queued = try XCTUnwrap(bundles.queueSearchResult(feed, folder: "Reading ▸ Science"))
+        XCTAssertTrue(bundles.queued.contains(feed.feedAddress))
+        await queued.value
+        shouldFail = false
+        let failure = try XCTUnwrap(bundles.failedBundles.first)
+        bundles.retry(failure)
+        // OnboardingTests.swift waits for the retained background retry, not a second submission.
+        for _ in 0..<100 where !bundles.queued.isEmpty { try await Task.sleep(nanoseconds: 10_000_000) }
+        XCTAssertTrue(bundles.added.contains(feed.feedAddress))
+        XCTAssertEqual(attempts.count, 2)
+        XCTAssertTrue(attempts.allSatisfy { $0.contains("folder_path=[\"Reading\",\"Science\"]") && !$0.contains("new_folder") })
+        XCTAssertNil(bundles.queueSearchResult(feed, folder: ""), "An added search result must not be queued twice.")
+    }
+
     func test_queueReturnsImmediatelyKeepsFolderAndRefreshesAfterCompletion() async throws {
         var attempted: [String] = []
         var refreshes = 0
