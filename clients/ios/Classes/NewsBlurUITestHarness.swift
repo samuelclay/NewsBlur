@@ -76,7 +76,7 @@ final class NewsBlurUITestHarness {
         }
 
         switch requestedScreen {
-        case "add-site", "discover-sites":
+        case "add-site", "discover-sites", "onboarding", "onboarding-account":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -116,6 +116,12 @@ final class NewsBlurUITestHarness {
         }
 
         switch requestedScreen {
+        case "onboarding", "onboarding-account":
+            didScheduleScenario = true
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
+            OnboardingAPI.session = URLSession(configuration: configuration)
+            configureOnboarding(on: appDelegate, remainingRetries: 100)
         case "discover-sites":
             didScheduleScenario = true
             DiscoverSitesViewController.viewModelFactory = {
@@ -152,6 +158,24 @@ final class NewsBlurUITestHarness {
 
     private static var isEnabled: Bool {
         ProcessInfo.processInfo.arguments.contains(LaunchArgument.enabled)
+    }
+
+    private static func configureOnboarding(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+        guard remainingRetries > 0 else { return }
+        guard let root = appDelegate.window?.rootViewController, root.viewIfLoaded?.window != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                configureOnboarding(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+        let show = {
+            let controller: UIViewController = requestedScreen == "onboarding-account"
+                ? OnboardingAccountViewController() : UINavigationController(rootViewController: OnboardingViewController())
+            controller.modalPresentationStyle = .fullScreen
+            root.present(controller, animated: false)
+        }
+        if root.presentedViewController != nil { root.dismiss(animated: false, completion: show) }
+        else { show() }
     }
 
     private static var requestedScreen: String? {
@@ -682,6 +706,11 @@ private enum ReaderUITestFixtures {
     static func response(for request: URLRequest) throws -> (HTTPURLResponse, Data) {
         guard let url = request.url else {
             throw URLError(.badURL)
+        }
+
+        if url.path == "/onboarding-preview.jpg", let imageURL = Bundle.main.url(forResource: "Lyric", withExtension: "jpg") {
+            return (HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil,
+                                    headerFields: ["Content-Type": "image/jpeg"])!, try Data(contentsOf: imageURL))
         }
 
         let response = HTTPURLResponse(
@@ -1286,11 +1315,26 @@ private final class AddSiteUITestURLProtocol: URLProtocol {
 
 // NewsBlurUITestHarness.swift intercepts every Discover request, including mutations and unexpected URLs.
 private final class DiscoverSitesUITestURLProtocol: URLProtocol {
+    private var delayedResponse: DispatchWorkItem?
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
-    override func stopLoading() {}
+    override func stopLoading() { delayedResponse?.cancel() }
 
     override func startLoading() {
+        // NewsBlurUITestHarness.swift keeps slow bundle requests pending while testing immediate dismissal.
+        let slowPreview = ProcessInfo.processInfo.arguments.contains("-onboarding-slow-previews") &&
+            request.url?.path == "/discover/popular_feeds" && request.url?.query?.contains("category=") == true
+        let slowAddition = ProcessInfo.processInfo.arguments.contains("-onboarding-slow-additions") && request.url?.path == "/reader/add_url"
+        if slowPreview || slowAddition {
+            let work = DispatchWorkItem { [weak self] in self?.sendResponse() }
+            delayedResponse = work
+            DispatchQueue.global().asyncAfter(deadline: .now() + (slowPreview ? 8 : 2.5), execute: work)
+        } else {
+            sendResponse()
+        }
+    }
+
+    private func sendResponse() {
         do {
             guard let url = request.url, url.host == ReaderUITestFixtures.baseURL.host else {
                 throw URLError(.unsupportedURL)
@@ -1358,6 +1402,28 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
             ]]
         case "/discover/popular_feeds":
             let type = params["type"] ?? "all"
+            if ProcessInfo.processInfo.arguments.contains("onboarding") {
+                let types = type == "all" ? ["rss", "newsletter", "youtube", "reddit", "podcast"] : [type]
+                let titles = ["rss": "Independent Journal", "youtube": "Practical Engineering", "reddit": "r/science",
+                              "newsletter": "The Marginalian", "podcast": "Radiolab"]
+                let icons = ["rss": "newspaper.fill", "newsletter": "envelope.fill", "youtube": "play.rectangle.fill",
+                             "reddit": "bubble.left.and.bubble.right.fill", "podcast": "mic.fill"]
+                let entries: [[String: Any]] = types.map { source in
+                    var entry = feed(titles[source] ?? source, slug: source)
+                    entry["feed_url"] = entry["feed_address"]
+                    entry["feed_type"] = source
+                    entry["favicon"] = UIImage(systemName: icons[source] ?? "globe")?.withTintColor(.systemTeal, renderingMode: .alwaysOriginal).pngData()?.base64EncodedString()
+                    if params["include_stories"] == "true", var stories = entry["stories"] as? [[String: Any]] {
+                        for index in stories.indices {
+                            stories[index]["story_hash"] = source + "-story-" + String(index)
+                            stories[index]["image_urls"] = ["https://ui-test.newsblur.example/onboarding-preview.jpg"]
+                        }
+                        entry["stories"] = stories
+                    } else { entry["stories"] = [] }
+                    return entry
+                }
+                return ["feeds": entries, "has_more": false, "categories": ["Technology", "Science", "Design", "Food", "Travel", "Books"]]
+            }
             if params["query"] == "catalog fallback" {
                 return ["feeds": [feed("Catalog Science", slug: "catalog-science")], "has_more": false]
             }
@@ -1366,7 +1432,12 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
             let title = params["subcategory"].map { "\($0) sites" }
                 ?? params["category"].map { "\($0) sites" }
                 ?? titles[type] ?? "Independent Journal"
-            return ["feeds": [feed(title, slug: type)], "has_more": false,
+            var catalogFeed = feed(title, slug: type)
+            catalogFeed["title"] = ProcessInfo.processInfo.arguments.contains("onboarding") ? (titles[type] ?? "Independent Journal") : title
+            catalogFeed["feed_url"] = catalogFeed["feed_address"]
+            catalogFeed["feed_type"] = type
+            return ["feeds": [catalogFeed], "has_more": false,
+                    "categories": ["Technology", "Science", "Design", "Food", "Travel", "Books"],
                     "grouped_categories": [["name": "Technology", "feed_count": 1,
                                             "subcategories": [["name": "Engineering", "feed_count": 1]]]],
                     "platform_counts": ["substack": 1, "beehiiv": 1]]

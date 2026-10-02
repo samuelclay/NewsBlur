@@ -1,8 +1,12 @@
 from django.conf.urls import url
 
-from apps.api import views
+from apps.api import social_auth, views
 
 urlpatterns = [
+    url(r"^social/start/?$", social_auth.start, name="social-start"),
+    url(r"^social/apple/?$", social_auth.apple, name="social-apple"),
+    url(r"^social/google/callback/?$", social_auth.google_callback, name="social-google-callback"),
+    url(r"^social/complete/?$", social_auth.complete, name="social-complete"),
     url(r"^logout", views.logout, name="api-logout"),
     url(r"^login", views.login, name="api-login"),
     url(r"^signup", views.signup, name="api-signup"),

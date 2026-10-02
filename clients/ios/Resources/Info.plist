@@ -416,6 +416,10 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array><string>newsblur-auth</string></array>
+		</dict>
+		<dict>
 			<key>CFBundleURLName</key>
 			<string>net.app.client.7Y482n6JErhDeSDA6TY7Qv29mU22G2v2</string>
 			<key>CFBundleURLSchemes</key>
