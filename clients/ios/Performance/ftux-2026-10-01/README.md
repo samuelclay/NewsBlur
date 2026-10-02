@@ -57,7 +57,15 @@ The slow-additions UI regression first failed twice in `/tmp/newsblur-loading-re
 
 [Before the edge drag](ipad-edge-before.png), [feeds revealed](ipad-edge-revealed.png), and [Two Columns with Save preserved](ipad-edge-save-preserved.png) show isolated fixtures on the iOS 27 iPad Air simulator (`F1931FFE-8117-4164-B71D-C91AF30CEF47`). The four-case UI matrix passes in `/tmp/newsblur-ipad27-root-priority.log`: Auto and Two Columns, each with Back and Save, including a short cancelled edge followed by a completed reveal. Three hosted gesture tests and a further UI test for row Back after a cancelled edge pass in `/tmp/newsblur-ipad27-verified.xcresult`. The hosted tests cover continuous drag position, forced cancellation, gesture priority, and existing Duo behavior. Both existing iPhone edge/full-row Back regressions pass in `/tmp/newsblur-ftux-phone-gestures.xcresult`.
 
-The final NB Alpha device build succeeds in `/tmp/newsblur-ftux-claypad-final-gestures.log` and is installed on ClayPad Air. Device launch and physical gesture verification remain blocked by the locked device; the verified gesture behavior above is from the matching iOS 27 simulator.
+NB Alpha is installed and launches on the unlocked ClayPad Air. The physical gesture test runner timed out while enabling automation, so the verified gesture behavior above remains from the matching iOS 27 simulator.
+
+## Reopening import on an existing account
+
+The feed-list gear menu now includes **Import or upload sites**, matching the web Manage menu, above Mute Sites and Organize Sites. It reopens the combined OPML import and interest bundles screen without changing accounts or resetting subscriptions. The completion flag only controls automatic presentation, so this menu remains available after completing setup.
+
+[Import menu](import-menu.png) shows the entry on the existing iPhone simulator. `Test_OnboardingUI.test_existingAccountCanReopenImportAndBundles` passes in `/tmp/newsblur-ftux-import-menu.xcresult`: it opens the real settings menu, opens and cancels the Files picker, verifies bundles, completes setup, checks an existing subscription remains, and repeats without relaunching or creating an account. The updated NB Alpha build succeeds in `/tmp/newsblur-ftux-claypad-import-menu.log` and is installed and running on ClayPad Air.
+
+The same reopen-and-finish test also passes on the existing iOS 27 iPad Air simulator in `/tmp/newsblur-ftux-ipad-import-menu.xcresult`, covering the iPad popover dismissal and presentation handoff.
 
 ## Provider configuration and rollout
 

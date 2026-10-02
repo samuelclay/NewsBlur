@@ -1836,6 +1836,10 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     [viewController startNewSection];
 
+    [viewController addFeedListTitle:@"Import or upload sites" iconName:@"dialog-import" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showFirstTimeUser];
+    }];
+
     [viewController addFeedListTitle:@"Mute Sites" iconName:@"feed-menu-mute" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showMuteSites];
     }];
