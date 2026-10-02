@@ -740,6 +740,61 @@ final class DetailViewControllerTests: XCTestCase {
         }
     }
 
+    func test_iPadLeadingEdgeCoversViewportWithBackOrSaveRowSwipe() throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad viewport gestures") }
+        let fixture = IPadFeedRevealFixture()
+        defer { fixture.close() }
+        let nativeEdge = UIScreenEdgePanGestureRecognizer()
+        fixture.split.view.addGestureRecognizer(nativeEdge)
+        for action in ["back", "save"] {
+            UserDefaults.standard.set(action, forKey: "story_title_swipe_right")
+            fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+            XCTAssertFalse(fixture.split.presentsWithGesture, "Only one recognizer owns the screen edge")
+            XCTAssertFalse(nativeEdge.isEnabled)
+            let customEdge = try XCTUnwrap(fixture.titles.value(forKey: "feedListEdgeSwipeGesture") as? UIGestureRecognizer)
+            XCTAssertTrue(customEdge.isEnabled, "Repeated setup must not suppress the app's own edge recognizer")
+            XCTAssertTrue(customEdge.view === fixture.split.view, "Inset titles must retain the full viewport edge")
+            let rowPan = try XCTUnwrap(fixture.titles.value(forKey: "feedListSwipeGesture") as? UIGestureRecognizer)
+            XCTAssertEqual(rowPan.isEnabled, action == "back", "Save remains the configured row action")
+            let nestedContainer = UIView()
+            fixture.split.view.addSubview(nestedContainer)
+            let competingPan = UIPanGestureRecognizer()
+            nestedContainer.addGestureRecognizer(competingPan)
+            XCTAssertTrue(customEdge.delegate?.gestureRecognizer?(customEdge, shouldBeRequiredToFailBy: competingPan) ?? false,
+                          "Native split-container pans above the titles must yield to the viewport edge")
+            nestedContainer.removeFromSuperview()
+        }
+    }
+
+    func test_iPadCancelledRowRevealClosesAndPreservesViewportEdge() async throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad viewport gestures") }
+        let fixture = IPadFeedRevealFixture()
+        defer { fixture.close() }
+        fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+        let pan = IPadFeedRevealPan()
+        fixture.titles.view.addGestureRecognizer(pan)
+        pan.simulatedState = .began
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        pan.simulatedState = .changed
+        pan.distance = 80
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        let container = try XCTUnwrap(fixture.titles.value(forKey: "feedListRevealContainer") as? UIView)
+        let firstPosition = container.transform.tx
+        pan.distance = 180
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        XCTAssertEqual(container.transform.tx - firstPosition, 100, accuracy: 1, "The sidebar follows the drag before it settles")
+        fixture.split.shownColumns.removeAll()
+        pan.simulatedState = .cancelled
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            !(fixture.titles.value(forKey: "feedListRevealActive") as? Bool ?? true)
+        }, object: nil)
+        await fulfillment(of: [settled], timeout: 2)
+        XCTAssertEqual(fixture.split.shownColumns, [.secondary], "Cancellation must close despite distance or forward velocity")
+        XCTAssertTrue((fixture.titles.value(forKey: "feedListEdgeSwipeGesture") as? UIGestureRecognizer)?.isEnabled ?? false, "A row drag must not permanently disable the next viewport edge drag")
+        XCTAssertEqual(container.transform, .identity)
+    }
+
     func test_duoFullscreenOwnsNativeInteractiveRevealInsteadOfTheOneShotReaderEdge() throws {
         let fixture = try DuoFullscreenTransitionFixture()
         defer { fixture.close() }
@@ -3826,5 +3881,45 @@ private final class GradientSpyStoryDetailViewController: StoryDetailViewControl
 
     override func becomeFirstResponder() -> Bool {
         true
+    }
+}
+
+@MainActor private final class IPadFeedRevealPan: UIPanGestureRecognizer {
+    var simulatedState: UIGestureRecognizer.State = .possible
+    var distance: CGFloat = 0
+    override var state: UIGestureRecognizer.State { get { simulatedState } set { simulatedState = newValue } }
+    override func translation(in view: UIView?) -> CGPoint { CGPoint(x: distance, y: 0) }
+    override func velocity(in view: UIView?) -> CGPoint { CGPoint(x: 1_000, y: 0) }
+}
+
+@MainActor private final class IPadFeedRevealFixture {
+    let app = NewsBlurAppDelegate()
+    let detail = DuoExpansionDetailController()
+    let split = DuoSidebarSplitController(style: .doubleColumn)
+    let titles = DuoFullscreenStories()
+    private let preferences = ["story_title_swipe_right", "enable_story_swipes"]
+    private var previousPreferences: [String: Any] = [:]
+
+    init() {
+        for key in preferences { previousPreferences[key] = UserDefaults.standard.object(forKey: key) }
+        UserDefaults.standard.set("back", forKey: preferences[0])
+        UserDefaults.standard.set(true, forKey: preferences[1])
+        detail.simulatesPhone = false
+        detail.isCompact = false
+        detail.appDelegate = app
+        app.detailViewController = detail
+        app.splitViewController = split
+        app.feedsNavigationController = UINavigationController(rootViewController: DuoFullscreenFeeds())
+        app.feedsNavigationController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 1_180)
+        split.view.frame = CGRect(x: 0, y: 0, width: 820, height: 1_180)
+        titles.appDelegate = app
+        titles.loadViewIfNeeded()
+    }
+
+    func close() {
+        app.feedsNavigationController.setViewControllers([], animated: false)
+        app.feedsNavigationController = nil
+        app.detailViewController = nil
+        for key in preferences { UserDefaults.standard.set(previousPreferences[key], forKey: key) }
     }
 }

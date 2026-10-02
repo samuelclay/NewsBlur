@@ -51,6 +51,14 @@ The original background regression failed in `/tmp/newsblur-ftux-chrome-red.log`
 
 The slow-additions UI regression first failed twice in `/tmp/newsblur-loading-red.xcresult`, and the real `fetchFeedList` request-order regression failed in `/tmp/newsblur-loading-race-red.log` by applying `[complete, partial]`. All 9 onboarding unit tests pass in `/tmp/newsblur-loading-final.xcresult`, including pending-work/final-refresh lifetime, all additions failing, and final refresh error ordering. The final UI run passes in `/tmp/newsblur-loading-footer.xcresult`: the loading label is visibly reachable on completion, Start Reading remains enabled, progress survives into the feed list, and disappears after the queued work and final refresh finish. These screenshots and delayed responses use isolated fixtures on the existing iPhone 17e simulator.
 
+## iPad interactive edge reveal
+
+`FeedDetailObjCViewController.m` attaches the iPad feed-list edge gesture to the split viewport and gives it priority over competing navigation gestures in intermediate split containers. The prior gesture could begin recognition without ever receiving a drag callback on iOS 27. The existing interactive reveal now follows the edge drag, remains available after cancellation, and preserves configured story-row actions. A cancelled gesture never commits the sidebar open, even after crossing the distance or velocity threshold. Hidden or covered title panes cannot use the viewport gesture.
+
+[Before the edge drag](ipad-edge-before.png), [feeds revealed](ipad-edge-revealed.png), and [Two Columns with Save preserved](ipad-edge-save-preserved.png) show isolated fixtures on the iOS 27 iPad Air simulator (`F1931FFE-8117-4164-B71D-C91AF30CEF47`). The four-case UI matrix passes in `/tmp/newsblur-ipad27-root-priority.log`: Auto and Two Columns, each with Back and Save, including a short cancelled edge followed by a completed reveal. Three hosted gesture tests and a further UI test for row Back after a cancelled edge pass in `/tmp/newsblur-ipad27-verified.xcresult`. The hosted tests cover continuous drag position, forced cancellation, gesture priority, and existing Duo behavior. Both existing iPhone edge/full-row Back regressions pass in `/tmp/newsblur-ftux-phone-gestures.xcresult`.
+
+The final NB Alpha device build succeeds in `/tmp/newsblur-ftux-claypad-final-gestures.log` and is installed on ClayPad Air. Device launch and physical gesture verification remain blocked by the locked device; the verified gesture behavior above is from the matching iOS 27 simulator.
+
 ## Provider configuration and rollout
 
 Both provider changes were submitted with explicit approval and verified as saved:
