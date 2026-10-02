@@ -1594,6 +1594,12 @@
 		F519D0A10516273849A00013 /* AddSiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A40516273849A00002 /* AddSiteUITests.swift */; };
 		E91820260918000100000001 /* DuoPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91820260918000100000002 /* DuoPresentationTests.swift */; };
 		F519D0A10516273849A00016 /* LoginViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0004 /* LoginViewControllerTests.swift */; };
+		0A4D183600221A8913D90C97 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245E44A083A28A7825D81461 /* OnboardingViewController.swift */; };
+		91464237D9CA4A1CE2AF76CA /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245E44A083A28A7825D81461 /* OnboardingViewController.swift */; };
+		23D61C6588FC28D1FD85FF07 /* OnboardingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */; };
+		C4ED3C79B1AF41489100A269 /* OnboardingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */; };
+		746302FCDF2BC718B82DFE5F /* OnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D345AFC7DBB635AE55C0D6AF /* OnboardingTests.swift */; };
+		B459B3DA08BDADE1895F24D6 /* OnboardingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370AD1F91446CD54CA1DE59F /* OnboardingUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2687,6 +2693,10 @@
 		F519D0A10516273849A00001 /* NewsBlurAlphaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewsBlurAlphaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E91820260918000100000002 /* DuoPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoPresentationTests.swift; sourceTree = "<group>"; };
 		F519D0A10516273849A00002 /* DuoLiveUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoLiveUITests.swift; sourceTree = "<group>"; };
+		245E44A083A28A7825D81461 /* OnboardingViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingAccountViewController.swift; sourceTree = "<group>"; };
+		D345AFC7DBB635AE55C0D6AF /* OnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTests.swift; sourceTree = "<group>"; };
+		370AD1F91446CD54CA1DE59F /* OnboardingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -3233,6 +3243,8 @@
 				43E8381A15BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib */,
 				784B50EA127E3F68008F90EA /* LoginViewController.h */,
 				784B50EB127E3F68008F90EA /* LoginViewController.m */,
+				12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */,
+				245E44A083A28A7825D81461 /* OnboardingViewController.swift */,
 				43B232BD15D5F61700D035B4 /* AuthorizeServicesViewController.h */,
 				43B232BE15D5F61700D035B4 /* AuthorizeServicesViewController.m */,
 				43B232BF15D5F61700D035B4 /* AuthorizeServicesViewController.xib */,
@@ -3890,6 +3902,7 @@
 				B1C2D3E4F5061728394A0006 /* AddSiteViewModelTests.swift */,
 				B1C2D3E4F5061728394A0002 /* AppDelegateHelperTests.swift */,
 				B1C2D3E4F5061728394A0004 /* LoginViewControllerTests.swift */,
+				D345AFC7DBB635AE55C0D6AF /* OnboardingTests.swift */,
 				B1C2D3E4F5061728394A0005 /* ReadTimeTrackerTests.swift */,
 				72AC992B011F4490943B6F21 /* AuthenticationResetTests.swift */,
 				0F8A8E142FF74BADA0000078 /* NotificationNavigationTests.swift */,
@@ -3933,6 +3946,7 @@
 			children = (
 				D1E2F3A40516273849A00002 /* AddSiteUITests.swift */,
 				D1E2F3A40516273849A00016 /* ReaderUITests.swift */,
+				370AD1F91446CD54CA1DE59F /* OnboardingUITests.swift */,
 			);
 			path = NewsBlurUITests;
 			sourceTree = SOURCE_ROOT;
@@ -5751,6 +5765,8 @@
 				1757923D2930605500490924 /* StoryDetailObjCViewController.m in Sources */,
 				1757923E2930605500490924 /* PINDiskCache.m in Sources */,
 				175792402930605500490924 /* LoginViewController.m in Sources */,
+				23D61C6588FC28D1FD85FF07 /* OnboardingAccountViewController.swift in Sources */,
+				0A4D183600221A8913D90C97 /* OnboardingViewController.swift in Sources */,
 				175792412930605500490924 /* StoryPagesCollectionCell.swift in Sources */,
 				175792422930605500490924 /* NotificationsViewController.m in Sources */,
 				175792432930605500490924 /* MCSwipeTableViewCell.m in Sources */,
@@ -6015,6 +6031,8 @@
 				7842ECF811D44A530066CF9D /* StoryDetailObjCViewController.m in Sources */,
 				FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
+				C4ED3C79B1AF41489100A269 /* OnboardingAccountViewController.swift in Sources */,
+				91464237D9CA4A1CE2AF76CA /* OnboardingViewController.swift in Sources */,
 				177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,
 				FFCDD8FE17F6368F000C6483 /* MCSwipeTableViewCell.m in Sources */,
@@ -6263,6 +6281,7 @@
 				A1B2C3D4E5F60718293A0005 /* AddSiteViewModelTests.swift in Sources */,
 				A1B2C3D4E5F60718293A0001 /* AppDelegateHelperTests.swift in Sources */,
 				A1B2C3D4E5F60718293A0003 /* LoginViewControllerTests.swift in Sources */,
+				746302FCDF2BC718B82DFE5F /* OnboardingTests.swift in Sources */,
 				A1B2C3D4E5F60718293A0004 /* ReadTimeTrackerTests.swift in Sources */,
 				A1B2C3D4E5F60718293A0002 /* ThemeManagerTests.swift in Sources */,
 				A91220260000000000000001 /* StoryTitleSwipeTests.swift in Sources */,
@@ -6278,6 +6297,7 @@
 			files = (
 				D1E2F3A40516273849A00011 /* AddSiteUITests.swift in Sources */,
 				D1E2F3A40516273849A00015 /* ReaderUITests.swift in Sources */,
+				B459B3DA08BDADE1895F24D6 /* OnboardingUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1616,7 +1616,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     if (!self.isOffline) {
         // start up the first time user experience
         if ([[results objectForKey:@"social_feeds"] count] == 0 &&
-            [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
+            [[[results objectForKey:@"feeds"] allKeys] count] == 0 &&
+            [OnboardingViewController shouldShowForUsername:appDelegate.activeUsername]) {
             [self layoutHeaderCounts:0];
             [self refreshHeaderCounts];
             [appDelegate showFirstTimeUser];

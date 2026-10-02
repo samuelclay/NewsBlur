@@ -59,6 +59,11 @@ NEWSBLUR_URL = "https://www.newsblur.com"
 IMAGES_URL = "https://imageproxy.newsblur.com"
 PUSH_DOMAIN = "push.newsblur.com"
 SECRET_KEY = "YOUR_SECRET_KEY"
+# apps/api/social_auth.py uses a native Apple ID and a Google web OAuth client.
+SOCIAL_APPLE_CLIENT_IDS = ["com.newsblur.NewsBlur"]
+SOCIAL_GOOGLE_CLIENT_ID = os.environ.get("SOCIAL_GOOGLE_CLIENT_ID", "")
+SOCIAL_GOOGLE_CLIENT_SECRET = os.environ.get("SOCIAL_GOOGLE_CLIENT_SECRET", "")
+SOCIAL_GOOGLE_REDIRECT_URI = "https://www.newsblur.com/api/social/google/callback"
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 DNSIMPLE_TOKEN = "YOUR_DNSIMPLE_TOKEN"
 RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"
