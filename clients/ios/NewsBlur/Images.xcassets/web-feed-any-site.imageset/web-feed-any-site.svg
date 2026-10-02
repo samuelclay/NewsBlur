@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>web-feed-any-site</title>
+    <g id="web-feed-any-site" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(4, 8)" fill-rule="nonzero">
+            <!-- Browser window frame -->
+            <path d="M14,0 C6.268,0 0,6.268 0,14 L0,104 C0,111.732 6.268,118 14,118 L80,118 C80,118 80,114 80,110 L14,110 C10.686,110 8,107.314 8,104 L8,30 L118,30 L118,52 C122,52 126,52 126,52 L126,14 C126,6.268 119.732,0 112,0 L14,0 Z M14,8 L112,8 C115.314,8 118,10.686 118,14 L118,22 L8,22 L8,14 C8,10.686 10.686,8 14,8 Z" fill="#95968E"/>
+            <!-- Address bar dots -->
+            <circle cx="20" cy="15" r="4" fill="#95968E"/>
+            <circle cx="32" cy="15" r="4" fill="#95968E"/>
+            <circle cx="44" cy="15" r="4" fill="#95968E"/>
+            <!-- Page content lines -->
+            <rect x="20" y="42" width="60" height="6" rx="3" fill="#95968E"/>
+            <rect x="20" y="56" width="48" height="6" rx="3" fill="#95968E"/>
+            <rect x="20" y="70" width="54" height="6" rx="3" fill="#95968E"/>
+            <rect x="20" y="84" width="36" height="6" rx="3" fill="#95968E"/>
+            <!-- RSS signal waves (blue accent) -->
+            <circle cx="102" cy="122" r="8" fill="#5C89C9"/>
+            <path d="M102,98 C102,98 102,98 102,98 C115.255,98 126,108.745 126,122 L118,122 C118,113.163 110.837,106 102,106 L102,98 Z" fill="#5C89C9"/>
+            <path d="M102,80 C102,80 102,80 102,80 C125.196,80 144,98.804 144,122 L136,122 C136,103.222 120.778,88 102,88 L102,80 Z" fill="#5C89C9"/>
+        </g>
+    </g>
+</svg>

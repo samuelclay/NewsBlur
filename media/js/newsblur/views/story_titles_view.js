@@ -26,11 +26,21 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     events: {
         "click .NB-feed-story-premium-only a": function (e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            // story_titles_view.js: The notice link's data-feature names the tier
+            // line to highlight (river, saved-tags, or search).
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: $(e.currentTarget).data('feature') });
         },
         "click .NB-briefing-generate-btn": function (e) {
             e.preventDefault();
             NEWSBLUR.reader.generate_daily_briefing();
+        },
+        "click .NB-classifier-filter-empty-clear": function (e) {
+            e.preventDefault();
+            NEWSBLUR.reader.close_classifier_filter();
+        },
+        "click .NB-classifier-filter-empty-widen": function (e) {
+            e.preventDefault();
+            this.widen_classifier_filter();
         }
     },
 
@@ -167,6 +177,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         $groups = this._render_briefing_groups(briefings, data);
 
+        // story_titles_view.js: Banner for non-archive users explaining that briefings
+        // are preview-only on their plan — no schedule, and only the first few stories
+        // of each briefing are unlocked.
+        if (data.is_preview) {
+            $groups.unshift(NEWSBLUR.utils.make_archive_callout(
+                "You're previewing the first 3 stories of each briefing. " +
+                "Upgrade to unlock every story and automatic briefings on your schedule.",
+                { highlight_feature: 'briefing' }
+            ));
+        }
+
         if (!briefings.length) {
             var $empty = $.make('div', { className: 'NB-briefing-empty' }, [
                 $.make('div', { className: 'NB-briefing-empty-icon' }),
@@ -263,7 +284,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $groups = [];
         var group_index = 0;
         _.each(briefings, function (briefing) {
-            briefing.is_preview = data.is_preview;
             var display_briefing = briefing;
             if (active_section) {
                 var section_hashes = (briefing.curated_sections || {})[active_section] || [];
@@ -446,13 +466,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     append_river_premium_only_notification: function () {
         var message = [
             'The full River of News is a ',
-            $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+            $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'river' }, 'premium feature'),
             '.'
         ];
         if (NEWSBLUR.reader.flags['starred_view']) {
             message = [
                 'Reading saved stories by tag is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'saved-tags' }, 'premium feature'),
                 '.'
             ];
         }
@@ -474,7 +494,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
                 'Search is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'search' }, 'premium feature'),
                 '.'
             ])
         ]);
@@ -588,7 +608,12 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
 
     show_no_more_stories: function () {
-        this.$('.NB-end-line').remove();
+        this.$('.NB-end-line, .NB-classifier-filter-empty').remove();
+        var filter = NEWSBLUR.reader.flags['classifier_filter'];
+        if (filter && !this.collection.length) {
+            this.show_classifier_filter_empty(filter);
+            return;
+        }
         var $end_stories_line = $.make('div', { className: "NB-end-line" }, [
             $.make('div', { className: 'NB-fleuron' })
         ]);
@@ -611,6 +636,43 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
 
         this.$el.append($end_stories_line);
+    },
+
+    show_classifier_filter_empty: function (filter) {
+        var type_label = filter.type === 'url' ? 'URL' : Inflector.capitalize(filter.type);
+        var active_feed = NEWSBLUR.reader.active_feed;
+        var can_widen = active_feed !== 'river:';
+        var context = NEWSBLUR.reader.feed_title(active_feed) || 'this view';
+
+        var $actions = $.make('div', { className: 'NB-classifier-filter-empty-actions' });
+        if (can_widen) {
+            $actions.append($.make('button', {
+                type: 'button',
+                className: 'NB-classifier-filter-empty-widen'
+            }, 'Search All Site Stories'));
+        }
+        $actions.append($.make('button', {
+            type: 'button',
+            className: 'NB-classifier-filter-empty-clear'
+        }, 'Clear filter'));
+
+        var $icon = $.make('div', { className: 'NB-classifier-filter-empty-icon', 'aria-hidden': 'true' });
+        $icon.html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>');
+        this.$el.append($.make('div', { className: 'NB-classifier-filter-empty' }, [
+            $icon,
+            $.make('div', { className: 'NB-classifier-filter-empty-title' }, 'No matches for “' + filter.value + '”'),
+            $.make('div', { className: 'NB-classifier-filter-empty-copy' },
+                type_label + ' filters found no stories in ' + context + '.'),
+            $actions
+        ]));
+    },
+
+    widen_classifier_filter: function (e) {
+        var filter = NEWSBLUR.reader.flags['classifier_filter'];
+        if (!filter) return;
+        NEWSBLUR.reader.open_river_stories(null, null, {
+            classifier_filter: filter
+        });
     },
 
     snap_back_scroll_position: function () {

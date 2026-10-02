@@ -21,6 +21,7 @@ class StoriesResponseTypeAdapter : JsonDeserializer<StoriesResponse> {
                 registerTypeAdapter(Date::class.java, DateStringTypeAdapter())
                 registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
                 registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
+                registerTypeAdapter(Boolean::class.javaObjectType, BooleanTypeAdapter())
                 registerTypeAdapter(Story::class.java, StoryTypeAdapter())
             }.create()
 

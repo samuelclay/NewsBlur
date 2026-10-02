@@ -7,8 +7,9 @@ around 175,000/day, against one domain. Production data (July 2026) shows 99.75%
 ~88,000 hosts fetched in any given hour already stay under 1 fetch/minute; only a couple
 dozen hosts exceed the default budget here, and they are either genuinely hammered
 single sites (abebooks.com, news.google.com, nitter.net) or huge multi-tenant hosts
-serving thousands of distinct legitimate feeds (youtube.com, feeds.feedburner.com),
-which get raised budgets via DOMAIN_FETCHES_PER_MINUTE_OVERRIDES.
+serving thousands of distinct legitimate feeds (youtube.com, feeds.feedburner.com).
+Hosts that can take more than the default — multi-tenant hosts and large sites with
+legitimate power users — get raised budgets via DOMAIN_FETCHES_PER_MINUTE_OVERRIDES.
 
 This is modeled on the shared Reddit API budget in utils/reddit_fetcher.py: a fixed
 one-minute window in Redis (settings.REDIS_FEED_UPDATE_POOL, shared by every task
@@ -38,10 +39,13 @@ THROTTLE_STATS_TTL = 60 * 60 * 24 * 7
 
 # Deferral bounds for a feed that lost the budget race: never sooner than 5 minutes
 # (feeds on hot domains gain nothing from retrying within the same few windows), never
-# later than 4 hours (matching the premium scheduling cap in
-# apps/rss_feeds/models.py get_next_scheduled_update).
+# later than 1 hour. The cap used to be 4 hours, which is exactly what Pro users saw
+# as their worst-case fetch interval on oversubscribed domains (August 2026:
+# abebooks.com feeds expected every 5-10 minutes were arriving every 3-4 hours).
+# Capping at an hour bounds that worst case; the extra retry churn on a still-hot
+# domain is just one Redis INCR per deferred attempt.
 MIN_DEFER_SECONDS = 60 * 5
-MAX_DEFER_SECONDS = 60 * 60 * 4
+MAX_DEFER_SECONDS = 60 * 60
 
 
 def feed_host(feed_address):
@@ -68,6 +72,14 @@ def feed_host(feed_address):
     # Hosts without a dot are local/docker names, not internet domains.
     if "." not in host:
         return None
+    # Every youtube subdomain shares youtube.com's budget. Legacy feed addresses
+    # still point at gdata.youtube.com (dead since 2015), but all YouTube feeds are
+    # fetched through the YouTube Data API at googleapis.com (utils/youtube_fetcher.py),
+    # so none of this traffic touches youtube.com anyway. Before this collapse,
+    # gdata.youtube.com silently fell to the default budget and was the most
+    # throttled host in production (586k deferrals/day in August 2026).
+    if host.endswith(".youtube.com"):
+        host = "youtube.com"
     return host
 
 

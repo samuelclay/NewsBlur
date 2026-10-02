@@ -12,5 +12,20 @@
 # SSH add-on config (/data/options.json):
 #   "init_commands": ["/config/scripts/setup_cron.sh"]
 #
+# This option is REQUIRED. The crontab and crond live inside the add-on
+# container, so every add-on auto-update or host reboot wipes them. Without
+# init_commands nothing reinstalls them: backups silently stopped from April to
+# September 2026 this way. setup_cron.sh now sets the option itself through the
+# Supervisor API (POST /addons/self/options) when run by
+# `make offsite-backup-install`, since the `ha` CLI cannot edit add-on options.
+# To check: ssh root@192.168.1.27 "crontab -l; pgrep -x crond"
+#
+# setup_cron.sh also rebuilds /config/scripts/venv when an add-on update ships
+# a new Python version, which otherwise orphans the venv's site-packages.
+#
+# Off-box alerting: offsite_pull.sh uploads heartbeat markers to S3 and
+# utils/monitor_offsite_backup.py (cron on htask-work-1) emails when they go
+# stale. That is the only thing that notices when this box stops running pulls.
+#
 # NOTE: Do NOT use HA automations or shell_command for backups. HA Core
 # doesn't have Docker, so mount/unmount scripts fail with exit code 127.

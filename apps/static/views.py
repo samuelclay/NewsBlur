@@ -17,6 +17,10 @@ def about(request):
     return render(request, "static/about.xhtml")
 
 
+def contact(request):
+    return render(request, "static/contact.xhtml")
+
+
 def pricing(request):
     return render(request, "static/pricing.xhtml")
 

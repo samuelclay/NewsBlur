@@ -109,6 +109,7 @@ urlpatterns = [
         name="django.contrib.sitemaps.views.sitemap",
     ),
     url(r"^about/?", static_views.about, name="about"),
+    url(r"^contact/?$", static_views.contact, name="contact"),
     url(r"^faq/?", static_views.faq, name="faq"),
     url(r"^api/faq/?$", static_views.faq_data, name="faq-data"),
     url(r"^api/?$", static_views.api, name="api"),

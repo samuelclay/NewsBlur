@@ -433,7 +433,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
     show_correct_feed_view_options_in_menu: function () {
         var order = NEWSBLUR.assets.view_setting(this.options.feed_id, 'order');
-        var read_filter = NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter');
+        var read_filter = NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+            NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter'),
+            NEWSBLUR.reader.flags['classifier_filter']
+        );
         var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.options.feed_id, 'dashboard_count'), 10);
         var mark_scroll = NEWSBLUR.assets.preference('mark_read_on_scroll_titles');
         var density = NEWSBLUR.assets.preference('density');
@@ -825,8 +828,19 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     open_premium_modal: function (e) {
         e.preventDefault();
         e.stopPropagation();
+        // feed_options_popover.js: Highlight the archive feature line that matches
+        // the upgrade notice that was clicked (auto-read, date filter, or clustering).
+        var $notice = $(e.currentTarget);
+        var highlight_feature = null;
+        if ($notice.hasClass('NB-auto-mark-read-upgrade-notice')) {
+            highlight_feature = 'auto-mark-read';
+        } else if ($notice.hasClass('NB-date-filter-upgrade-notice')) {
+            highlight_feature = 'date-filter';
+        } else if ($notice.hasClass('NB-clustering-upgrade-notice')) {
+            highlight_feature = 'clustering';
+        }
         this.close(_.bind(function () {
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
         }, this));
     },
 

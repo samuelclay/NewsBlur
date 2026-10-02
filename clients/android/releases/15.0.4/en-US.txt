@@ -1,0 +1,6 @@
+Add sites from a compact panel, with Popular, Trending, and more.
+Discover and Related Sites share rich previews, folder selection, and remembered list/grid layouts.
+Story previews open the selected article and return to loaded titles; empty feeds fetch automatically.
+Menus fade and expand smoothly.
+Tap article images to zoom and swipe to dismiss, with stable status and navigation bars.
+Improved reading controls, folder upgrades, and unread-state reliability.

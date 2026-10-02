@@ -1945,3 +1945,124 @@ class Test_StoreReceiptRenewals(TestCase):
         self.assertEqual(
             PaymentHistory.objects.filter(user=self.user, payment_provider="ios-subscription").count(), 1
         )
+
+
+class Test_StripeWebhookOrdering(TestCase):
+    """Stripe webhook ordering for first-time Stripe customers (apps/profile/models.py).
+
+    RomanMSK (Sep 2026) paid for Premium Archive through Stripe Checkout but stayed
+    on the trial. Stripe fired customer.subscription.created, charge.succeeded and
+    customer.subscription.updated a few seconds before checkout.session.completed.
+    Those three handlers look the profile up by stripe_id, which only gets stored by
+    the checkout handler, so they all hit Profile.DoesNotExist and returned silently.
+    The checkout handler then stored the id but never activated the tier, and the
+    account sat on the trial until the six-hourly Stripe history reimport ran.
+    """
+
+    STRIPE_ID = "cus_webhookorder"
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="webhookorder", password="password", email="webhookorder@test.com"
+        )
+        self.profile = self.user.profile
+        # A fresh signup: on the free trial and never seen by Stripe before.
+        self.profile.is_premium = True
+        self.profile.is_premium_trial = True
+        self.profile.stripe_id = None
+        self.profile.save()
+        self.archive_price = Profile.plan_to_stripe_price("archive")
+
+    def _start_patches(self):
+        # Side effects of tier activation that would otherwise hit celery/redis/mongo.
+        patch("apps.profile.tasks.EmailNewPremium.delay").start()
+        patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay").start()
+        patch("apps.profile.models.SchedulePremiumSetup").start()
+        patch("apps.reader.models.UserSubscription.queue_new_feeds").start()
+        patch("apps.reader.models.UserSubscription.schedule_fetch_archive_feeds_for_user").start()
+        patch("apps.profile.models.MReferral.award_credit").start()
+        patch.object(Profile, "retrieve_paypal_ids").start()
+        patch.object(Profile, "cancel_premium_paypal").start()
+        patch.object(Profile, "refund_prorated_store_payment_for_provider_switch").start()
+
+        # Stripe as it looks right after checkout: one active archive subscription
+        # and one paid $99 charge on a brand-new customer.
+        plan = MagicMock()
+        plan.id = self.archive_price
+        plan.active = True
+        subscription = MagicMock()
+        subscription.plan = plan
+        subscription.cancel_at = None
+        charge = MagicMock()
+        charge.created = int(datetime.datetime.now().timestamp())
+        charge.status = "succeeded"
+        charge.amount = 9900
+        charge.refunded = False
+        customer = MagicMock(id=self.STRIPE_ID, email=self.user.email)
+        customer.stripe_id = self.STRIPE_ID
+        patch("stripe.Customer.retrieve", return_value=customer).start()
+        patch("stripe.Customer.list", return_value=[customer]).start()
+        patch("stripe.Subscription.list", return_value=MagicMock(data=[subscription])).start()
+        patch("stripe.Charge.list", return_value=MagicMock(data=[charge])).start()
+        self.addCleanup(patch.stopall)
+
+    def _event(self, obj):
+        return {"data": {"object": obj}}
+
+    def _subscription_object(self):
+        return {
+            "customer": self.STRIPE_ID,
+            "plan": {"id": self.archive_price, "active": True},
+            "cancel_at": None,
+            "items": {"data": []},
+        }
+
+    def _checkout_object(self):
+        return {
+            "customer": self.STRIPE_ID,
+            "subscription": "sub_webhookorder",
+            "metadata": {"newsblur_user_id": str(self.user.pk)},
+        }
+
+    def _assert_archive_active(self):
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.stripe_id, self.STRIPE_ID)
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_premium_trial)
+        self.assertEqual(self.profile.active_provider, "stripe")
+        self.assertTrue(self.profile.premium_renewal)
+        self.assertEqual(PaymentHistory.objects.filter(user=self.user, payment_provider="stripe").count(), 1)
+
+    def test_checkout_completed_arriving_last_still_activates_archive(self):
+        """The order Stripe actually used for RomanMSK: checkout.session.completed last."""
+        self._start_patches()
+        from apps.profile.models import (
+            stripe_checkout_session_completed,
+            stripe_payment_history_sync,
+            stripe_signup,
+            stripe_subscription_updated,
+        )
+
+        stripe_signup(None, self._event(self._subscription_object()))
+        stripe_payment_history_sync(None, self._event({"customer": self.STRIPE_ID}))
+        stripe_subscription_updated(None, self._event(self._subscription_object()))
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+
+        self._assert_archive_active()
+
+    def test_checkout_completed_arriving_first_still_activates_archive(self):
+        """The usual order keeps working and doesn't double-activate or double-record."""
+        self._start_patches()
+        from apps.profile.models import (
+            stripe_checkout_session_completed,
+            stripe_payment_history_sync,
+            stripe_signup,
+            stripe_subscription_updated,
+        )
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        stripe_signup(None, self._event(self._subscription_object()))
+        stripe_payment_history_sync(None, self._event({"customer": self.STRIPE_ID}))
+        stripe_subscription_updated(None, self._event(self._subscription_object()))
+
+        self._assert_archive_active()

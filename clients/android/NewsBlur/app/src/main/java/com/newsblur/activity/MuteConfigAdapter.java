@@ -29,7 +29,7 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
         View groupView = super.getGroupView(groupPosition, isExpanded, convertView, parent);
 
         groupView.setOnClickListener(v -> {
-            ArrayList<Feed> folderChild = MuteConfigAdapter.this.folderChildren.get(groupPosition);
+            ArrayList<Feed> folderChild = getSubtreeFeeds(groupPosition);
             boolean allAreMute = true;
             for (Feed feed : folderChild) {
                 if (feed.active) {

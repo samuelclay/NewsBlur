@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import UserNotifications
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    let appDelegate: NewsBlurAppDelegate = .shared
+    var appDelegate: NewsBlurAppDelegate = .shared
     
     var window: UIWindow?
 #if targetEnvironment(macCatalyst)
@@ -28,6 +29,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if appDelegate.window != nil {
+            handleNotificationResponse(connectionOptions.notificationResponse)
+            connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }
             DispatchQueue.main.async {
                 self.window?.isHidden = true
                 UIApplication.shared.requestSceneSessionDestruction(session, options: .none)
@@ -58,12 +61,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #endif
         
         appDelegate.prepareViewControllers()
+        connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }
+        handleNotificationResponse(connectionOptions.notificationResponse)
 
         if #available(iOS 16.0, *) {
             Task { @MainActor in
                 NewsBlurUITestHarness.configureIfNeeded(appDelegate: self.appDelegate)
             }
         }
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        appDelegate.resumeFeedSubscription()
+    }
+
+    private func handleNotificationResponse(_ response: UNNotificationResponse?) {
+        guard let response else { return }
+
+        // SceneDelegate.swift receives notification launches that do not reach the legacy app launch options.
+        appDelegate.processNotification(response.notification.request.content.userInfo,
+                                        action: response.actionIdentifier,
+                                        withCompletionHandler: nil)
     }
     
 #if targetEnvironment(macCatalyst)

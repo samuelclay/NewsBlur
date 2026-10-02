@@ -11,8 +11,19 @@
 
   {%- seo -%}
   <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
+  {% comment %}
+    blog/_includes/head.html: the Hoefler cloud fonts only answer requests
+    referred from blog.newsblur.com and otherwise hold the connection open,
+    so on a local `jekyll serve` preview these two render-blocking
+    stylesheets stall the page until the browser gives up. The committed
+    _site is built with JEKYLL_ENV=production (a pre-commit hook enforces
+    it), so only production builds get the font links. 711824 is the
+    production font project, 731824 the debug one.
+  {% endcomment %}
+  {%- if jekyll.environment == "production" %}
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
-  {% comment %} debug {% endcomment %} <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /> 
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
+  {%- endif %}
 
   {%- if jekyll.environment == 'production' and site.google_analytics -%}
     {%- include google-analytics.html -%}

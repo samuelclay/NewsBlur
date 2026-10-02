@@ -69,6 +69,7 @@ from apps.analyzer.models import (
     apply_classifier_titles,
     apply_classifier_url_regex,
     apply_classifier_urls,
+    classifier_title_matches,
     get_classifiers_for_user,
     load_scoped_classifiers,
     sort_classifiers_by_feed,
@@ -101,7 +102,7 @@ from apps.reader.models import (
 )
 from apps.recommendations.models import RecommendedFeed
 from apps.rss_feeds.models import MFeedIcon, MSavedSearch, MStarredStoryCounts
-from apps.search.models import MUserSearch
+from apps.search.models import MUserSearch, SearchStory
 from apps.statistics.models import MAnalyticsLoader, MStatistics
 from apps.statistics.rstats import RStats
 from apps.statistics.rtrending import RTrendingStory
@@ -134,6 +135,13 @@ from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
+from utils.folder_paths import (
+    InvalidFolderPath,
+    folder_path_errors,
+    parse_folder_path,
+    parse_folder_paths,
+    resolve_folder_path,
+)
 from utils.ratelimit import ratelimit, ratelimit_by_url_user
 from utils.story_functions import (
     format_story_link_date__long,
@@ -184,6 +192,35 @@ def get_subdomain(request):
         return host.split(".")[0]
     else:
         return None
+
+
+def int_or_default(value, default):
+    """
+    Parse an integer request parameter, falling back to the default when it doesn't parse.
+
+    Bots and broken clients regularly mangle querystrings, sending values like
+    page="6&feed_address=https://444.hu/feed&order=newest" or limit="abc". Those are
+    garbage rather than a real request, so silently using the default beats a 500.
+    """
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def int_feed_ids(feed_ids):
+    """
+    Convert a list of feed id parameters to integers, dropping anything that isn't numeric.
+
+    Same mangled-querystring problem as int_or_default: feed ids arrive as
+    "Entrepreneuriat" or as an entire querystring crammed into one value.
+    """
+    parsed_feed_ids = []
+    for feed_id in feed_ids:
+        parsed_feed_id = int_or_default(feed_id, None)
+        if parsed_feed_id is not None:
+            parsed_feed_ids.append(parsed_feed_id)
+    return parsed_feed_ids
 
 
 def adjust_read_filter_for_date_range(
@@ -271,6 +308,53 @@ def normalize_date_filters(date_filter_start, date_filter_end, user_timezone):
             end_utc_start_of_day = None
 
     return start_utc, end_utc_exclusive, end_utc_start_of_day
+
+
+# Classifier filter banner view: most stories are loaded via the normal
+# feed/river/folder path and then narrowed here. Archive folder/global tag
+# filters can use the story tag index before falling back to this bounded scan.
+# Match semantics mirror apps/analyzer/models.py:apply_classifier_* so the
+# banner hits the same stories a trained classifier would.
+CLASSIFIER_FILTER_TYPES = ("tag", "author", "title", "url", "text")
+# The multiplier inflates the fetch window so post-filtering has enough
+# raw stories to actually find every match. Some pages may still return
+# fewer than `limit` — deliberately dumb, pagination can keep going.
+CLASSIFIER_FILTER_SCAN_MULTIPLIER = 20
+
+
+def normalize_classifier_filter_params(type_value, raw_value, scope_value):
+    classifier_type = (type_value or "").strip() or None
+    classifier_value = (raw_value or "").strip() or None
+    if classifier_type and classifier_type not in CLASSIFIER_FILTER_TYPES:
+        classifier_type = None
+        classifier_value = None
+    scope = (scope_value or "feed").strip() or "feed"
+    if scope not in ("feed", "folder", "global"):
+        scope = "feed"
+    return classifier_type, classifier_value, scope
+
+
+def filter_stories_by_classifier(stories, classifier_type, classifier_value):
+    if not stories or not classifier_type or not classifier_value:
+        return stories
+
+    needle_lower = classifier_value.lower()
+
+    def matches(story):
+        if classifier_type == "tag":
+            return classifier_value in (story.get("story_tags") or [])
+        if classifier_type == "author":
+            return story.get("story_authors") == classifier_value
+        if classifier_type == "title":
+            return classifier_title_matches(story.get("story_title"), classifier_value)
+        if classifier_type == "url":
+            return needle_lower in (story.get("story_permalink") or "").lower()
+        if classifier_type == "text":
+            content = story.get("story_content") or ""
+            return needle_lower in strip_tags(content).lower()
+        return False
+
+    return [story for story in stories if matches(story)]
 
 
 @never_cache
@@ -653,6 +737,7 @@ def load_feeds(request):
         "is_staff": user.is_staff,
         "user_id": user.pk,
         "folders": json.decode(folders.folders),
+        "folder_paths_supported": True,
         "starred_count": starred_count,
         "starred_counts": starred_counts,
         "saved_searches": saved_searches,
@@ -988,8 +1073,14 @@ def refresh_feed(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
 
     feed = feed.update(force=True, compute_scores=False)
-    usersub = UserSubscription.objects.get(user=user, feed=feed)
-    usersub.calculate_feed_scores(silent=False)
+    try:
+        usersub = UserSubscription.objects.get(user=user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        # An unsubscribed user can still refresh a feed, there are just no scores to
+        # recalculate. load_single_feed below already handles a missing subscription.
+        usersub = None
+    if usersub:
+        usersub.calculate_feed_scores(silent=False)
 
     logging.user(request, "~FBRefreshing feed: %s" % feed)
     MAnalyticsLoader.add(page_load=time.time() - start)
@@ -1082,9 +1173,24 @@ def load_single_feed(request, feed_id):
     # offset                  = int(request.GET.get('offset', 0))
     # limit                   = int(request.GET.get('limit', 6))
     limit = 6
-    page = int(request.GET.get("page", 1))
-    delay = int(request.GET.get("delay", 0))
-    offset = limit * (page - 1)
+    page = int_or_default(request.GET.get("page", 1), 1)
+    delay = int_or_default(request.GET.get("delay", 0), 0)
+    classifier_filter_type, classifier_filter_value, _classifier_filter_scope = (
+        normalize_classifier_filter_params(
+            request.GET.get("classifier_filter_type"),
+            request.GET.get("classifier_filter_value"),
+            request.GET.get("classifier_filter_scope"),
+        )
+    )
+    # Inflate the fetch window so the post-query filter has enough raw
+    # stories to find matches. Offset scales with the inflated page so
+    # successive pages don't re-scan the same window.
+    effective_limit = (
+        limit * CLASSIFIER_FILTER_SCAN_MULTIPLIER
+        if classifier_filter_type and classifier_filter_value
+        else limit
+    )
+    offset = effective_limit * (page - 1)
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
     date_filter_start = request.GET.get("date_filter_start")
@@ -1192,14 +1298,14 @@ def load_single_feed(request, feed_id):
         if read_filter == "starred":
             mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
                 "%sstarred_date" % ("-" if order == "newest" else "")
-            )[offset : offset + limit]
+            )[offset : offset + effective_limit]
             stories = Feed.format_stories(mstories)
         elif usersub and read_filter == "unread":
             stories = usersub.get_stories(
                 order=order,
                 read_filter=read_filter,
                 offset=offset,
-                limit=limit,
+                limit=effective_limit,
                 cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
@@ -1208,11 +1314,14 @@ def load_single_feed(request, feed_id):
         else:
             stories = feed.get_stories(
                 offset,
-                limit,
+                effective_limit,
                 order=order,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
             )
+
+    if classifier_filter_type and classifier_filter_value:
+        stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
 
@@ -2425,20 +2534,20 @@ def load_river_stories__redis(request):
     # GET or POST requests, since the parameters for this endpoint can be
     # very long, at which point the max size of a GET url request is exceeded.
     get_post = getattr(request, request.method)
-    limit = int(get_post.get("limit", 12))
+    limit = int_or_default(get_post.get("limit", 12), 12)
     start = time.time()
     user = get_user(request)
     message = None
     feed_ids = get_post.getlist("feeds") or get_post.getlist("feeds[]")
-    feed_ids = [int(feed_id) for feed_id in feed_ids if feed_id]
+    feed_ids = int_feed_ids(feed_ids)
     if not feed_ids:
         feed_ids = get_post.getlist("f") or get_post.getlist("f[]")
-        feed_ids = [int(feed_id) for feed_id in get_post.getlist("f") if feed_id]
+        feed_ids = int_feed_ids(get_post.getlist("f"))
     story_hashes = get_post.getlist("h") or get_post.getlist("h[]")
     story_hashes = story_hashes[:100]
     requested_hashes = len(story_hashes)
     original_feed_ids = list(feed_ids)
-    page = int(get_post.get("page", 1))
+    page = int_or_default(get_post.get("page", 1), 1)
     order = get_post.get("order", "newest")
     read_filter = get_post.get("read_filter", "unread")
     if page > 400 and not story_hashes:
@@ -2457,6 +2566,20 @@ def load_river_stories__redis(request):
         date_filter_end = None
 
     query = get_post.get("query", "").strip()
+    classifier_filter_type, classifier_filter_value, classifier_filter_scope = (
+        normalize_classifier_filter_params(
+            get_post.get("classifier_filter_type"),
+            get_post.get("classifier_filter_value"),
+            get_post.get("classifier_filter_scope"),
+        )
+    )
+    classifier_filter_source_story = (
+        get_post.get("classifier_filter_source_story") or ""
+    ).strip()
+    # Folder/global scopes are a Premium Archive feature (mirrors classifier
+    # scoping in apps/analyzer/models.py). Silently coerce anyone else.
+    if classifier_filter_scope != "feed" and not (user.is_authenticated and user.profile.is_archive):
+        classifier_filter_scope = "feed"
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
@@ -2527,7 +2650,32 @@ def load_river_stories__redis(request):
     usersubs = []
     code = 0 if is_free_river_user else 1
     user_search = None
-    offset = (page - 1) * limit
+    use_indexed_tag_filter = bool(
+        classifier_filter_type == "tag"
+        and classifier_filter_value
+        and classifier_filter_scope in ("folder", "global")
+        and user.is_authenticated
+        and user.profile.is_archive
+    )
+
+    def include_indexed_tag_source_story(indexed_story_hashes, selected_feed_ids):
+        story_hashes_with_source = list(indexed_story_hashes)
+        if page != 1 or not classifier_filter_source_story:
+            return story_hashes_with_source
+
+        source_feed_id, _ = MStory.split_story_hash(classifier_filter_source_story)
+        if source_feed_id is None or int(source_feed_id) not in set(selected_feed_ids):
+            return story_hashes_with_source
+        if classifier_filter_source_story not in story_hashes_with_source:
+            story_hashes_with_source.append(classifier_filter_source_story)
+        return story_hashes_with_source
+
+    effective_limit = (
+        limit * CLASSIFIER_FILTER_SCAN_MULTIPLIER
+        if (classifier_filter_type and classifier_filter_value)
+        else limit
+    )
+    offset = (page - 1) * effective_limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
 
     # Android app duplicate request deduplication - only kicks in when concurrent requests detected
@@ -2597,9 +2745,34 @@ def load_river_stories__redis(request):
             )
 
         if read_filter == "starred":
-            mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
-                "%sstarred_date" % ("-" if order == "newest" else "")
-            )[offset : offset + limit]
+            indexed_tag_story_hashes = None
+            if use_indexed_tag_filter:
+                indexed_tag_story_hashes = SearchStory.query_tag(
+                    feed_ids,
+                    classifier_filter_value,
+                    order=order,
+                    offset=(page - 1) * limit,
+                    limit=limit,
+                )
+
+            if indexed_tag_story_hashes is not None:
+                story_hashes = include_indexed_tag_source_story(
+                    indexed_tag_story_hashes, feed_ids
+                )
+                mstories = MStarredStory.objects(
+                    user_id=user.pk,
+                    story_feed_id__in=feed_ids,
+                    story_hash__in=story_hashes,
+                )
+                if date_filter_start_utc:
+                    mstories = mstories.filter(story_date__gte=date_filter_start_utc)
+                if date_filter_end_utc:
+                    mstories = mstories.filter(story_date__lt=date_filter_end_utc)
+                mstories = mstories.order_by(story_date_order)
+            else:
+                mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
+                    "%sstarred_date" % ("-" if order == "newest" else "")
+                )[offset : offset + effective_limit]
             stories = Feed.format_stories(mstories)
             unread_feed_story_hashes = None
         else:
@@ -2620,13 +2793,49 @@ def load_river_stories__redis(request):
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
                 cache_feed_ids = Feed.low_volume_feeds(cache_feed_ids, stories_per_month=infrequent)
-            if feed_ids:
+
+            indexed_tag_story_hashes = None
+            if use_indexed_tag_filter:
+                indexed_tag_story_hashes = SearchStory.query_tag(
+                    feed_ids,
+                    classifier_filter_value,
+                    order=order,
+                    offset=(page - 1) * limit,
+                    limit=limit,
+                )
+
+            if indexed_tag_story_hashes is not None:
+                story_hashes = include_indexed_tag_source_story(
+                    indexed_tag_story_hashes, feed_ids
+                )
+                unread_feed_story_hashes = (
+                    UserSubscription.unread_story_hashes_for_story_hashes(
+                        user.pk,
+                        story_hashes,
+                        usersubs=usersubs,
+                        cutoff_date=user.profile.unread_cutoff,
+                    )
+                )
+                if read_filter == "unread":
+                    unread_story_hashes = set(unread_feed_story_hashes)
+                    story_hashes = [
+                        story_hash for story_hash in story_hashes if story_hash in unread_story_hashes
+                    ]
+                    unread_feed_story_hashes = story_hashes
+
+                mstories = MStory.objects(story_hash__in=story_hashes, story_feed_id__in=feed_ids)
+                if date_filter_start_utc:
+                    mstories = mstories.filter(story_date__gte=date_filter_start_utc)
+                if date_filter_end_utc:
+                    mstories = mstories.filter(story_date__lt=date_filter_end_utc)
+                mstories = mstories.order_by(story_date_order)
+            elif feed_ids:
                 params = {
                     "user_id": user.pk,
                     "feed_ids": feed_ids,
                     "all_feed_ids": cache_feed_ids,
                     "offset": offset,
-                    "limit": limit,
+                    "limit": effective_limit,
                     "order": order,
                     "read_filter": read_filter,
                     "usersubs": usersubs,
@@ -2649,7 +2858,7 @@ def load_river_stories__redis(request):
                     story_hashes,
                     unread_feed_story_hashes,
                     story_date_order,
-                    limit,
+                    effective_limit,
                     fetch_more=fetch_more_story_hashes,
                 )
             else:
@@ -2658,6 +2867,9 @@ def load_river_stories__redis(request):
                 mstories = []
 
             stories = Feed.format_stories(mstories)
+
+    if classifier_filter_type and classifier_filter_value:
+        stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
@@ -3767,6 +3979,7 @@ def _parse_user_info(user):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def add_url(request):
     code = 0
     url = request.POST.get("url", "")
@@ -3775,6 +3988,11 @@ def add_url(request):
     auto_active = is_true(request.POST.get("auto_active", 1))
     skip_fetch = is_true(request.POST.get("skip_fetch", False))
     feed = None
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        subscription_folders, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
+        resolve_folder_path(json.decode(subscription_folders.folders or "[]"), folder_path)
+        folder = folder_path
 
     if not url:
         code = -1
@@ -3810,7 +4028,7 @@ def add_url(request):
     if new_folder:
         usf, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
         usf.add_folder(folder, new_folder)
-        folder = new_folder
+        folder = folder + [new_folder] if isinstance(folder, list) else new_folder
 
     code, message, us = UserSubscription.add_subscription(
         user=request.user, feed_address=url, folder=folder, auto_active=auto_active, skip_fetch=skip_fetch
@@ -3826,9 +4044,13 @@ def add_url(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def add_folder(request):
     folder = request.POST["folder"].replace("river:", "")
     parent_folder = request.POST.get("parent_folder", "").replace("river:", "")
+    parent_path = parse_folder_path(request, "parent_folder_path")
+    if parent_path is not None:
+        parent_folder = parent_path
     folders = None
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
 
@@ -3849,11 +4071,16 @@ def add_folder(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def delete_feed(request):
     feed_id = int(request.POST["feed_id"])
     in_folder = request.POST.get("in_folder", "").replace("river:", "")
     if not in_folder or in_folder == " ":
         in_folder = ""
+
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        in_folder = folder_path
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_feed(feed_id, in_folder)
@@ -3896,9 +4123,18 @@ def delete_feed_by_url(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def delete_folder(request):
     folder_to_delete = request.POST.get("folder_name") or request.POST.get("folder_to_delete")
     in_folder = request.POST.get("in_folder", None)
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        if not folder_path:
+            raise InvalidFolderPath("Choose a folder, not Top Level.")
+        folder_to_delete = folder_path[-1]
+        in_folder = folder_path[:-1]
+        folder_tree = UserSubscriptionFolders.objects.get(user=request.user)
+        resolve_folder_path(json.decode(folder_tree.folders), folder_path)
     feed_ids_in_folder = request.POST.getlist("feed_id") or request.POST.getlist("feed_id[]")
     feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 
@@ -3913,7 +4149,9 @@ def delete_folder(request):
     folders = json.decode(user_sub_folders.folders)
 
     # Clean up folder icon when folder is deleted
-    MFolderIcon.delete_folder_icon(request.user.pk, folder_to_delete)
+    MFolderIcon.delete_folder_icon(
+        request.user.pk, " - ".join(folder_path) if folder_path else folder_to_delete
+    )
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
@@ -3972,6 +4210,10 @@ def _find_full_folder_path(flat_folders, folder_leaf_name, parent_leaf_name):
     full paths like "Parent - Child - Grandchild". parent_leaf_name is the immediate parent's
     leaf name (empty string for top-level folders).
     """
+    if isinstance(parent_leaf_name, list):
+        candidate = " - ".join(parent_leaf_name + [folder_leaf_name])
+        return candidate if candidate in flat_folders else None
+
     for path in flat_folders:
         parts = path.split(" - ")
         if parts[-1] != folder_leaf_name:
@@ -4007,12 +4249,21 @@ def _update_classifiers_for_folder_path_change(user_id, old_path, new_path):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def rename_folder(request):
     folder_to_rename = request.POST.get("folder_name") or request.POST.get("folder_to_rename")
     new_folder_name = request.POST["new_folder_name"]
     in_folder = request.POST.get("in_folder", "").replace("river:", "")
     if "Top Level" in in_folder:
         in_folder = ""
+    folder_path = parse_folder_path(request, "folder_path")
+    if folder_path is not None:
+        if not folder_path:
+            raise InvalidFolderPath("Choose a folder, not Top Level.")
+        folder_to_rename = folder_path[-1]
+        in_folder = folder_path[:-1]
+        folder_tree = UserSubscriptionFolders.objects.get(user=request.user)
+        resolve_folder_path(json.decode(folder_tree.folders), folder_path)
     code = 0
 
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
@@ -4025,10 +4276,12 @@ def rename_folder(request):
 
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
         # Update folder icon when folder is renamed
-        MFolderIcon.rename_folder_icon(request.user.pk, folder_to_rename, new_folder_name)
+        icon_old_name = " - ".join(folder_path) if folder_path else folder_to_rename
+        icon_new_name = " - ".join(folder_path[:-1] + [new_folder_name]) if folder_path else new_folder_name
+        MFolderIcon.rename_folder_icon(request.user.pk, icon_old_name, icon_new_name)
         # Update folder-scoped classifiers using full flattened paths
         if old_path:
-            parts = old_path.split(" - ")
+            parts = list(folder_path) if folder_path else old_path.split(" - ")
             parts[-1] = new_folder_name
             new_path = " - ".join(parts)
             _update_classifiers_for_folder_path_change(request.user.pk, old_path, new_path)
@@ -4041,10 +4294,18 @@ def rename_folder(request):
 
 @ajax_login_required
 @json.json_view
+@folder_path_errors
 def move_feed_to_folders(request):
     feed_id = int(request.POST["feed_id"])
     in_folders = request.POST.getlist("in_folders", "") or request.POST.getlist("in_folders[]", "")
     to_folders = request.POST.getlist("to_folders", "") or request.POST.getlist("to_folders[]", "")
+
+    in_paths = parse_folder_paths(request, "in_folder_paths")
+    to_paths = parse_folder_paths(request, "to_folder_paths")
+    if in_paths is not None or to_paths is not None:
+        if in_paths is None or to_paths is None:
+            raise InvalidFolderPath("Supply both source and destination folder paths.")
+        in_folders, to_folders = in_paths, to_paths
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_feed_to_folders(
@@ -4414,7 +4675,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    page = max(int(request.GET.get("page", 0)), 0)
+    page = max(int_or_default(request.GET.get("page", 0), 0), 0)
     if page > 1:
         logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page + 1))
     features = list(Feature.objects.all()[page * 3 : (page + 1) * 3 + 1].values())
@@ -5090,7 +5351,19 @@ def _mark_story_as_starred(request):
             starred_story.user_tags = user_tags
             starred_story.highlights = highlights
             starred_story.user_notes = user_notes
-            starred_story.save()
+            try:
+                starred_story.save()
+            except NotUniqueError as e:
+                # A double click or a retried request can unsave the story between the
+                # lookup above and this save, which turns the update into an upsert that
+                # collides on the unique user_id/story_guid index.
+                logging.user(
+                    request, "~FCStarring ~FRfailed~FC: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], e)
+                )
+                datas.append(
+                    {"code": -1, "message": "Could not save story due to: %s" % e, "story_hash": story_hash}
+                )
+                continue
 
         if len(highlights) == 1 and len(new_highlights) == 1:
             MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=1)
@@ -5179,7 +5452,17 @@ def _mark_story_as_unstarred(request):
             )
             continue
 
-        starred_story = starred_story[0]
+        try:
+            starred_story = starred_story[0]
+        except IndexError:
+            # Two unsaves racing each other (double click, retried request) can delete the
+            # story between the check above and this fetch, leaving an empty cursor.
+            logging.user(request, "~FCUnstarring ~FRfailed~FC: %s not found" % (story_hash))
+            datas.append(
+                {"code": -1, "message": "Could not unsave story, not found", "story_hash": story_hash}
+            )
+            continue
+
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))
         user_tags = starred_story.user_tags
         feed_id = starred_story.story_feed_id
@@ -5452,9 +5735,14 @@ def remove_dashboard_river(request):
 
 
 def print_story(request):
-    story_hash = request.GET["story_hash"]
+    story_hash = request.GET.get("story_hash")
+    if not story_hash:
+        raise Http404
     text_view = request.GET.get("text", False)
-    timezone = request.user.profile.timezone
+    # apps/reader/views.py: get_user falls back to the homepage user, so logged out
+    # readers hitting a print link still get a sane timezone instead of an AttributeError.
+    user = get_user(request)
+    timezone = user.profile.timezone
     try:
         story = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:

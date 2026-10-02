@@ -1,0 +1,3 @@
+PASS: folder chosen in Related Sites survives process restart and opens in Add + Discover
+PASS: Add + Discover folder selection updates Related Sites
+PASS: restored Top Level folder

@@ -1,5 +1,34 @@
 NEWSBLUR.utils = {
 
+    // reader_utils.js: True when the user's tier is below Premium Archive, which
+    // means briefings are preview-only: no scheduled auto-generation and only the
+    // first few curated stories per briefing.
+    is_briefing_preview: function () {
+        return !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro;
+    },
+
+    // reader_utils.js: Shared Premium Archive callout — a light strip with the
+    // archive badge and a one-line message that opens the upgrade modal. Used by
+    // the briefing views and the related stories upsell. Pass
+    // options.highlight_feature to pulse that tier line in the modal, or
+    // options.on_upgrade to run custom logic (e.g. closing a popover) first.
+    make_archive_callout: function (message, options) {
+        options = options || {};
+        var $callout = $.make('div', { className: 'NB-archive-callout', role: 'button' }, [
+            $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
+            $.make('span', { className: 'NB-archive-callout-text' }, message)
+        ]);
+        $callout.on('click', function (e) {
+            e.preventDefault();
+            if (options.on_upgrade) {
+                options.on_upgrade();
+            } else {
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: options.highlight_feature });
+            }
+        });
+        return $callout;
+    },
+
     service_name: function (service) {
         switch (service) {
             case 'twitter':

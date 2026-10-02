@@ -43,6 +43,9 @@ typedef NS_ENUM(NSUInteger, MCSwipeTableViewCellMode){
 // When the user releases the cell, after swiping it, this method is called
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state mode:(MCSwipeTableViewCellMode)mode;
 
+// MCSwipeTableViewCell.m calls this after the action, including swipes that return below the threshold.
+- (void)swipeTableViewCellDidFinishSwiping:(MCSwipeTableViewCell *)cell;
+
 @end
 
 @interface MCSwipeTableViewCell : UITableViewCell

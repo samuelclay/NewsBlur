@@ -88,7 +88,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 }),
                                 $.make('div', { className: 'NB-daysofunread-slider-value' })
                             ]),
-                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#' }, [
+                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#', 'data-feature': 'stay-unread' }, [
                                 $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
                                 ' Customize days of unreads'
                             ]))
@@ -429,7 +429,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     $.make('div', { className: 'NB-clustering-mark-read-option' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
                                         $.make('input', { id: 'NB-preference-cluster-mark-read', type: 'checkbox', name: 'cluster_mark_read', value: 'true', disabled: !NEWSBLUR.Globals.is_archive }),
                                         $.make('label', { 'for': 'NB-preference-cluster-mark-read' }, 'Mark duplicates as read'),
-                                        (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-premium-archive-upgrade-notice NB-premium-link' }, [
+                                        (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-premium-archive-upgrade-notice NB-premium-link', 'data-feature': 'clustering' }, [
                                             $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
                                         ]))
                                     ])
@@ -1763,9 +1763,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
     },
 
-    close_and_load_premium: function () {
+    close_and_load_premium: function (highlight_feature) {
         this.close(function () {
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
         });
     },
 
@@ -1852,7 +1852,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-premium-link' }, function ($t, $p) {
             e.preventDefault();
-            self.close_and_load_premium();
+            // reader_preferences.js: The archive notices carry a data-feature naming
+            // the tier line to highlight in the upgrade modal.
+            self.close_and_load_premium($t.data('feature'));
         });
         $.targetIs(e, { tagSelector: '.NB-clustering-mark-read-option.NB-disabled' }, function ($t, $p) {
             e.preventDefault();

@@ -232,7 +232,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSMutableDictionary *allFoldersDict = [self.dictFolders mutableCopy];
-    NSArray *specialFolders = @[@"river_blurblogs", @"trending:well_read", @"trending:long_reads", @"saved_searches", @"saved_stories"];
+    NSArray *specialFolders = @[@"river_blurblogs", @"trending:well_read", @"trending:long_reads", @"trending:good_reads", @"saved_searches", @"saved_stories"];
     
     [allFoldersDict removeObjectsForKeys:specialFolders];
     

@@ -9,7 +9,9 @@ urlpatterns = [
     url(r"^welcome", views.welcome_req, name="welcome"),
     url(r"^logout", views.logout, name="welcome-logout"),
     url(r"^login", views.login, name="welcome-login"),
-    url(r"^autologin/(?P<username>\w+)/(?P<secret>\w+)/?", views.autologin, name="autologin"),
+    # Usernames can hold spaces and punctuation that \w+ won't match, which made
+    # reverse() raise NoReverseMatch while building autologin links for emails.
+    url(r"^autologin/(?P<username>[^/]+)/(?P<secret>\w+)/?", views.autologin, name="autologin"),
     url(r"^dev/autologin/?$", views.dev_autologin, name="dev-autologin-default"),
     url(r"^dev/autologin/(?P<username>\w+)/?$", views.dev_autologin, name="dev-autologin"),
     url(r"^signup", views.signup, name="welcome-signup"),

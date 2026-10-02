@@ -12,4 +12,11 @@
 
 @property (nonatomic) BOOL destructive;
 
++ (UIFont *)menuFont;
++ (UIColor *)menuBackgroundColor;
++ (UIColor *)menuTextColor;
++ (UIColor *)menuIconColor;
++ (UIColor *)menuSeparatorColor;
++ (CGFloat)heightForTitle:(NSString *)title width:(CGFloat)width;
+
 @end

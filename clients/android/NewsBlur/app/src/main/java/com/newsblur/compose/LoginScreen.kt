@@ -1,5 +1,6 @@
 package com.newsblur.compose
 
+import android.content.Intent
 import android.graphics.Paint
 import android.graphics.RuntimeShader
 import android.net.Uri
@@ -95,6 +96,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.R
+import com.newsblur.activity.ContactActivity
 import com.newsblur.design.LoginAuthPalette
 import com.newsblur.design.LoginAuthPalettes
 import com.newsblur.design.NbThemeVariant
@@ -358,6 +360,10 @@ internal fun LoginScreenContent(
         ) {
             Spacer(Modifier.height(48.dp))
             Header(palette = palette)
+            TextButton(onClick = { context.startActivity(Intent(context, ContactActivity::class.java)) }) {
+                Text(stringResource(R.string.contact_us), color = palette.link, fontFamily = whitney)
+            }
+
             Spacer(Modifier.height(28.dp))
 
             FrostedPanel(

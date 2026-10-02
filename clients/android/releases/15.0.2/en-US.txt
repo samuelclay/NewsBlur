@@ -1,0 +1,1 @@
+Long-press a story to open its menu again, including Mark older stories read and Mark newer stories read. Both options follow the current feed or folder and adjust their order and arrows for Newest or Oldest sorting. Your explicitly chosen long-press action is preserved. Also includes the new Add + Discover Sites experience and floating toolbars from 15.0.1.

@@ -1,6 +1,7 @@
+import re
 import zlib
 from socket import error as SocketError
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 import urllib3
@@ -15,6 +16,7 @@ from pyasn1.error import PyAsn1Error
 from requests.packages.urllib3.exceptions import LocationParseError
 from simplejson.decoder import JSONDecodeError
 
+from apps.statistics.rscrapingbee import RScrapingBee
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
 from utils.story_functions import _normalize_image_url_for_dedup
@@ -29,6 +31,123 @@ BROKEN_URLS = [
 
 INVALID_XML_CONTROL_CHARACTERS = dict.fromkeys((*range(0x00, 0x09), 0x0B, 0x0C, *range(0x0E, 0x20)))
 
+# Google answers requests from the EU (where NewsBlur's servers are) with a cookie consent
+# interstitial on these hosts instead of the page asked for. Extracting it yields "We use
+# cookies and data..." as the story text (forum #13827), so a fetch that ends up here is
+# treated as a failure. apps/rss_feeds/text_importer.py
+GOOGLE_CONSENT_HOSTS = ("consent.google.com", "consent.youtube.com")
+
+
+# The opening line of that interstitial, as extracted by Mercury or readability, plus the
+# controls that only the consent page itself carries. Stories fetched before the fix cached
+# it as their original text; see MStory.fetch_original_text. An article that merely quotes
+# the opening line does not match: it also needs the privacy-tools link or both buttons.
+GOOGLE_CONSENT_PHRASE = "We use cookies and data, including IP addresses"
+GOOGLE_CONSENT_MARKERS = ("g.co/privacytools", "Accept all", "Reject all")
+
+
+def is_google_news_url(url):
+    """True for a Google News story link (news.google.com/.../articles/<token>)."""
+    try:
+        parsed = urlparse(url or "")
+    except ValueError:
+        return False
+    return parsed.hostname == "news.google.com" and "/articles/" in parsed.path
+
+
+def is_google_consent_url(url):
+    """True when a fetch was redirected to Google's cookie consent wall."""
+    try:
+        return urlparse(url or "").hostname in GOOGLE_CONSENT_HOSTS
+    except ValueError:
+        return False
+
+
+def is_google_consent_text(text):
+    """True when extracted or cached original text is Google's cookie consent wall: the
+    opening line plus either the privacy-tools link or both the Accept and Reject buttons."""
+    if not text:
+        return False
+    text = smart_str(text)
+    if GOOGLE_CONSENT_PHRASE not in text:
+        return False
+    privacy_link, accept, reject = (marker in text for marker in GOOGLE_CONSENT_MARKERS)
+    return privacy_link or (accept and reject)
+
+
+# A site that blocks NewsBlur's servers answers an article-page request with one of these
+# statuses, or with a 200 whose body is a bot challenge instead of the article. Shared by
+# TextImporter (Text view) and PageImporter (Story view), which fall back to ScrapingBee.
+# The markup markers are specific to Cloudflare's and Anubis's challenge pages. The titles
+# are those pages' own <title> text, compared whole after trimming and lowercasing, so an
+# article headlined "Attention Required at the Border" or "Checking Your Browser Privacy
+# Settings" is still an article. apps/rss_feeds/text_importer.py
+BLOCKED_STATUS_CODES = (403, 429, 503)
+BOT_CHALLENGE_MARKUP = (
+    b"cf-browser-verification",
+    b"_cf_chl",
+    b"cf-challenge",
+    b"challenge-platform",
+    b"anubis-challenge",
+)
+BOT_CHALLENGE_TITLES = (
+    "just a moment...",
+    "attention required! | cloudflare",
+    "making sure you're not a bot!",
+    "making sure you're not a bot",
+)
+PAGE_TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
+
+
+def is_bot_challenge_title(title):
+    """True when a page title is, whole, one of the challenge pages' own ("Just a moment...").
+    Whitespace is collapsed and case ignored; a title that merely contains the words is not
+    a match."""
+    if not title:
+        return False
+    normalized = " ".join(smart_str(title, errors="replace").split()).lower()
+    return normalized in BOT_CHALLENGE_TITLES
+
+
+def is_blocked_response(response):
+    """True when an article-page response is the site blocking us rather than the article:
+    a 403, 429 or 503, or a 200 whose first bytes carry challenge-page markup or whose
+    <title> is a challenge page's."""
+    if response.status_code in BLOCKED_STATUS_CODES:
+        return True
+    if response.status_code != 200:
+        return False
+    content_start = (response.content or b"")[:4096].lower()
+    if any(marker in content_start for marker in BOT_CHALLENGE_MARKUP):
+        return True
+    title = PAGE_TITLE_RE.search(content_start)
+    return bool(title) and is_bot_challenge_title(title.group(1))
+
+
+class ProxiedPage:
+    """The article page as ScrapingBee returned it, shaped like the requests response
+    TextImporter.fetch_manually reads (content, encoding, url). The url is the article's
+    final address (the story link, or where the site redirected the proxy), never the
+    proxy call itself, so readability resolves relative links and images against the
+    article and the API key in the proxy URL never reaches a log or the saved text."""
+
+    def __init__(self, content, encoding, url):
+        self.content = content
+        self.encoding = encoding
+        self.url = url
+        self.status_code = 200
+        self.ok = True
+
+
+def redact_proxy_error(error, api_key):
+    """The exception type and message for a failed ScrapingBee call, with the API key
+    blanked. requests folds the full request URL, api_key query parameter included, into
+    connection and TLS errors, so the raw exception must never reach a log line."""
+    message = str(error)
+    if api_key:
+        message = message.replace(api_key, "<api_key>")
+    return "%s: %s" % (type(error).__name__, message)
+
 
 class TextImporter:
     def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
@@ -40,6 +159,7 @@ class TextImporter:
             from apps.rss_feeds.models import Feed
 
             self.story_url = Feed.resolve_google_redirect_url(self.story_url)
+            self.story_url = Feed.resolve_google_news_article_url(self.story_url)
         self.feed = feed
         self.request = request
         self.debug = debug
@@ -106,6 +226,25 @@ class TextImporter:
         url = doc["url"]
         image = doc["lead_image_url"]
 
+        # Mercury reports the requested URL, not always the final host after redirects, so
+        # for a Google News link that could not be decoded the extracted text is checked too.
+        if is_google_consent_url(url) or (
+            is_google_news_url(self.story_url) and is_google_consent_text(text)
+        ):
+            logging.user(
+                self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % url
+            )
+            return
+
+        if is_bot_challenge_title(title):
+            # Mercury extracted a bot challenge page, not the article. Returning nothing
+            # sends fetch() on to fetch_manually, whose block detection reaches the proxy;
+            # saving it here would have cached "Checking your browser" as the story text.
+            logging.user(
+                self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: bot challenge page at %s" % url
+            )
+            return
+
         if image and ("http://" in image[1:] or "https://" in image[1:]):
             logging.user(self.request, "~SN~FRRemoving broken image from text: %s" % image)
             image = None
@@ -124,7 +263,31 @@ class TextImporter:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: too many redirects")
             resp = None
 
-        if not resp:
+        # A requests.Response is falsy for any 4xx or 5xx, so the check has to be against
+        # None or a 403 would return here before the block detection below ever ran.
+        if resp is None:
+            return
+
+        if is_blocked_response(resp):
+            # Forum #13832: TMZ's CDN answers every article-page request from NewsBlur's
+            # servers with a 403. The feed fetcher already rescues the feed through the paid
+            # proxy, but Text view (and the thumbnails MStory.extract_image_urls saves from it)
+            # came through here with no fallback, so readers got the summary and no images.
+            # A 200 bot challenge page used to be extracted as the article text; now it is
+            # recognized as a block too.
+            resp = self.fetch_blocked_page_with_scrapingbee(resp)
+            if resp is None:
+                return
+        elif resp.status_code >= 400:
+            # Any other error page has nothing to extract, which is what the falsy response
+            # used to mean here.
+            return
+
+        if is_google_consent_url(getattr(resp, "url", None)):
+            logging.user(
+                self.request,
+                "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: Google consent wall at %s" % resp.url,
+            )
             return
 
         @timelimit(5)
@@ -206,6 +369,90 @@ class TextImporter:
             original_text_doc=original_text_doc,
         )
 
+    def fetch_blocked_page_with_scrapingbee(self, blocked_response):
+        """Fetch the article page through ScrapingBee after the site blocked a direct request.
+        Mirrors PageImporter._fetch_story_with_scrapingbee (apps/rss_feeds/page_importer.py) and
+        is charged to the "original_text" source on the ScrapingBee dashboard. Returns a
+        ProxiedPage, or None when the proxy is unconfigured, the host is over its daily credit
+        cap, or the proxy fetch fails."""
+        url = self.story_url
+        logging.user(
+            self.request,
+            "~SN~FYOriginal text ~FRblocked~FY (%s), retrying with ScrapingBee: %s"
+            % (blocked_response.status_code, url),
+        )
+        api_key = getattr(settings, "SCRAPINGBEE_API_KEY", None)
+        if not api_key:
+            logging.user(self.request, "~SN~FRScrapingBee API key not configured")
+            return None
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError as e:
+            logging.user(self.request, "~SN~FRScrapingBee original text URL rejected: %s" % e)
+            return None
+        if RScrapingBee.host_over_budget(url):
+            # The same daily cap the feed fetcher honors, so one blocked site's Text views
+            # cannot drain the plan. apps/statistics/rscrapingbee.py
+            RScrapingBee.record_capped("original_text", url=url)
+            logging.user(self.request, "~SN~FRScrapingBee original text skipped, host over daily credit cap")
+            return None
+
+        params = {
+            "api_key": api_key,
+            "url": url,
+            "render_js": "false",
+            "return_page_source": "true",
+        }
+        try:
+            response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
+            RScrapingBee.record_response("original_text", response, url=url)
+            if response.status_code == 200 and response.content:
+                if is_blocked_response(response):
+                    # The proxy reached the site but got a challenge page itself, which
+                    # nothing downstream checks again; without this it would be cached as
+                    # the article text the moment it outgrew the story summary.
+                    logging.user(
+                        self.request, "~SN~FRScrapingBee original text fetch returned a bot challenge page"
+                    )
+                    return None
+                logging.user(
+                    self.request,
+                    "~SN~FGScrapingBee original text fetch succeeded: ~SB%s bytes" % len(response.content),
+                )
+                return ProxiedPage(
+                    content=response.content,
+                    encoding=response.encoding,
+                    url=self.proxied_page_url(response, url),
+                )
+            logging.user(
+                self.request,
+                "~SN~FRScrapingBee original text fetch failed: status %s" % response.status_code,
+            )
+        except Exception as e:
+            RScrapingBee.record("original_text", None, url=url)
+            logging.user(
+                self.request,
+                "~SN~FRScrapingBee original text fetch error: %s" % redact_proxy_error(e, api_key),
+            )
+        return None
+
+    def proxied_page_url(self, response, url):
+        """The address the article was finally served from. ScrapingBee reports where the
+        site redirected it in the Spb-resolved-url header; that is used when it is a public
+        http(s) URL, otherwise the story link stands. Never the proxy request URL."""
+        resolved = (response.headers.get("Spb-resolved-url") or "").strip()
+        if not resolved or resolved == url:
+            return url
+        try:
+            host = urlparse(resolved).hostname or ""
+            if host.endswith("scrapingbee.com"):
+                return url
+            validate_public_url(resolved)
+        except (UnsafeUrlError, ValueError):
+            return url
+        logging.user(self.request, "~SN~FYProxy followed a redirect to %s" % resolved)
+        return resolved
+
     def process_content(
         self, content, title, url, image, skip_save=False, return_document=False, original_text_doc=None
     ):
@@ -220,7 +467,7 @@ class TextImporter:
 
         content = self.add_hero_image(content, story_image_urls)
         if content:
-            content = self.rewrite_content(content)
+            content = self.rewrite_content(content, base_url=url)
 
         full_content_is_longer = False
         if self.feed and self.feed.is_newsletter:
@@ -284,7 +531,9 @@ class TextImporter:
 
         return content
 
-    def rewrite_content(self, content):
+    def rewrite_content(self, content, base_url=None):
+        # base_url is the address the page was actually served from (after any redirect the
+        # proxy followed); the story link is the fallback. apps/rss_feeds/text_importer.py
         soup = BeautifulSoup(content, features="lxml")
 
         for noscript in soup.findAll("noscript"):
@@ -297,7 +546,7 @@ class TextImporter:
             if "src" in img.attrs:
                 src = img["src"]
                 if not src.startswith(("http://", "https://", "//")):
-                    img["src"] = urljoin(self.story_url, src)
+                    img["src"] = urljoin(base_url or self.story_url, src)
 
         return str(soup)
 

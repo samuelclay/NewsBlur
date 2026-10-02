@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_statistics" android:title="@string/menu_statistics" />
+    <item android:id="@+id/menu_discover_related_sites" android:title="@string/discover_related_sites_title" />
     
     <item android:id="@+id/menu_mark_feed_as_read"
           android:title="@string/menu_mark_feed_as_read" />

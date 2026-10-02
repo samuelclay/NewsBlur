@@ -345,6 +345,16 @@ body.NB-iphone {
     padding-bottom: calc(64px + constant(safe-area-inset-bottom));
 }
 
+/* storyDetailView.css removes bottom-toolbar reserves when the reader controls occupy the side rail. */
+#story_pane.NB-vertical-reader-toolbar {
+    padding-bottom: 16px;
+}
+
+#story_pane.NB-vertical-reader-toolbar .NB-share-wrapper,
+#story_pane.NB-vertical-reader-toolbar #NB-comments-wrapper {
+    margin-bottom: 0;
+}
+
 /** {*/
 /*    box-sizing: border-box;*/
 /*}*/

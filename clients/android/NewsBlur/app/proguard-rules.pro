@@ -12,6 +12,13 @@
 -keep class com.newsblur.domain.** { <fields>; }
 -keep class com.newsblur.network.domain.** { <fields>; }
 
+# FeedSet is saved as Gson JSON that has to outlive an app update: LastStoryList.kt keeps the last
+# story list in preferences and FeedSet.toCompactSerial() stores it with sync metadata. Renamed
+# fields would restore as an empty set, so its field names and the filter enums it holds stay put.
+-keep class com.newsblur.util.FeedSet { <fields>; }
+-keep enum com.newsblur.util.StateFilter { *; }
+-keep enum com.newsblur.util.ReadFilter { *; }
+
 # Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
 -keep class * extends com.google.gson.TypeAdapter

@@ -41,6 +41,15 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
 @property (nonatomic) BOOL hasStory;
+@property (nonatomic, readonly) BOOL readyForPresentation;
+- (void)prepareCurrentStoryForPresentation;
+- (void)finishStoryPresentation;
+- (void)beginStoryPresentationFade;
+- (void)cancelStoryPresentationFade;
+- (void)cancelStoryPresentationFadePreservingStory;
+- (void)receiveStoryReadyMessage:(WKScriptMessage *)message;
+- (BOOL)isCurrentStoryImageLoad:(NSString *)loadID;
+- (BOOL)canOpenStoryImageForAccessibility:(BOOL)accessibility NS_SWIFT_NAME(canOpenStoryImage(accessibility:));
 @property (nonatomic) BOOL lastDragDirectionDown;
 @property (nonatomic,  readonly) BOOL isSinglePage;
 

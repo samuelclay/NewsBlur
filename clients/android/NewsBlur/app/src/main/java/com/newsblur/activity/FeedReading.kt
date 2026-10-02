@@ -19,7 +19,8 @@ class FeedReading : Reading() {
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val feed = dbHelper.getFeed(fs!!.getSingleFeed())
+            // FeedReading.kt can open a discovery story before its Try Feed metadata reaches the database.
+            val feed = feedUtils.getFeed(fs!!.getSingleFeed())
             withContext(Dispatchers.Main) {
                 if (feed != null) {
                     val customIcon = BlurDatabaseHelper.getFeedIcon(feed.feedId)

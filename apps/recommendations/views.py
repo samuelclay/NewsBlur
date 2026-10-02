@@ -80,9 +80,12 @@ def load_feed_info(request, feed_id):
 @ajax_login_required
 @json.json_view
 def save_recommended_feed(request):
-    feed_id = request.POST["feed_id"]
+    feed_id = request.POST.get("feed_id")
+    tagline = request.POST.get("tagline")
+    if not feed_id or not str(feed_id).isdigit() or not tagline:
+        return dict(code=-1)
+
     feed = get_object_or_404(Feed, pk=int(feed_id))
-    tagline = request.POST["tagline"]
     twitter = request.POST.get("twitter")
     code = 1
 

@@ -1,0 +1,4 @@
+Five-second dwell: Google's new AI weather model uses live satellite data for higher-resolution forecasts
+One second in reader, seven seconds on HOME: read=0
+Resumed reader (including prepared entrance), marked after 10.0s: read=1
+Returned title visible: [64,259][500,365]

@@ -23,6 +23,7 @@ public class FeedSet implements Serializable {
     private static final long serialVersionUID = 0L;
     public static final String TRENDING_WELL_READ = "well_read";
     public static final String TRENDING_LONG_READS = "long_reads";
+    public static final String TRENDING_GOOD_READS = "good_reads";
 
     private Set<String> feeds;
     /** Mapping of social feed IDs to usernames. */
@@ -123,6 +124,10 @@ public class FeedSet implements Serializable {
 
     public static FeedSet longReads() {
         return trendingStories(TRENDING_LONG_READS);
+    }
+
+    public static FeedSet goodReads() {
+        return trendingStories(TRENDING_GOOD_READS);
     }
 
     /**
@@ -272,6 +277,10 @@ public class FeedSet implements Serializable {
         return TRENDING_LONG_READS.equals(this.trendingType);
     }
 
+    public boolean isGoodReads() {
+        return TRENDING_GOOD_READS.equals(this.trendingType);
+    }
+
     public String getTrendingType() {
         return this.trendingType;
     }
@@ -283,6 +292,8 @@ public class FeedSet implements Serializable {
     public String getTrendingPreferenceName() {
         if (isLongReads()) {
             return PrefConstants.LONG_READS_FOLDER_NAME;
+        } else if (isGoodReads()) {
+            return PrefConstants.GOOD_READS_FOLDER_NAME;
         } else {
             return PrefConstants.WIDELY_READ_STORIES_FOLDER_NAME;
         }

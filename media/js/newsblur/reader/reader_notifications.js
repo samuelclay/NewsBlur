@@ -308,7 +308,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             e.preventDefault();
 
             self.close(function () {
-                NEWSBLUR.reader.open_premium_upgrade_modal();
+                NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'notifications' });
             });
         });
     },

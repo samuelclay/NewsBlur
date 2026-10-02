@@ -14,6 +14,7 @@ import com.newsblur.di.ThumbnailCache
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
 import com.newsblur.util.Log
+import com.newsblur.util.StorySplitView
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,8 @@ class NbApplication :
         super<Application>.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         Log.offerContext(this)
+        // Split rules must exist before the first story list or reader launches.
+        StorySplitView.installIfWideEnough(this)
 
         // warm up most of the dependencies that would block the UI thread
         CoroutineScope(Dispatchers.IO).launch {

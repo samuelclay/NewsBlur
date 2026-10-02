@@ -18,6 +18,7 @@ from django.contrib.auth import logout as logout_user
 from django.core.mail import mail_admins
 from django.http import HttpResponse
 from django.shortcuts import render
+from mongoengine.queryset import NotUniqueError
 
 from apps.profile.models import Profile
 from apps.reader.forms import LoginForm, SignupForm
@@ -227,9 +228,9 @@ def add_site_authed(request):
 
 def check_share_on_site(request, token):
     code = 0
-    story_url = request.GET["story_url"]
+    story_url = request.GET.get("story_url")
     rss_url = request.GET.get("rss_url")
-    callback = request.GET["callback"]
+    callback = request.GET.get("callback", "")
     other_stories = None
     same_stories = None
     usersub = None
@@ -242,13 +243,19 @@ def check_share_on_site(request, token):
     previous_stories = None
 
     if not story_url:
+        response = HttpResponse(
+            callback + "(" + json.encode({"code": -1, "message": "No story_url specified."}) + ")",
+            content_type="text/plain",
+        )
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET"
+        return response
+
+    try:
+        user_profile = Profile.objects.get(secret_token=token)
+        user = user_profile.user
+    except Profile.DoesNotExist:
         code = -1
-    else:
-        try:
-            user_profile = Profile.objects.get(secret_token=token)
-            user = user_profile.user
-        except Profile.DoesNotExist:
-            code = -1
 
     logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % rss_url)
     feed = Feed.get_feed_from_url(rss_url, create=False, fetch=False)
@@ -521,9 +528,13 @@ def save_story(request, token=None):
     else:
         importer = TextImporter(story=None, story_url=story_url, request=request, debug=settings.DEBUG)
         document = importer.fetch(skip_save=True, return_document=True)
-        content = document["content"]
-        if not title:
-            title = document["title"]
+        if document:
+            content = document["content"]
+            if not title:
+                title = document["title"]
+        else:
+            # The original page couldn't be fetched or parsed, so save the story without content
+            content = ""
 
     if add_user_tag:
         user_tags = user_tags + [tag for tag in add_user_tag.split(",")]
@@ -533,6 +544,7 @@ def save_story(request, token=None):
         .limit(1)
         .first()
     )
+    created = False
     if not starred_story:
         story_db = {
             "story_guid": story_url,
@@ -546,10 +558,21 @@ def save_story(request, token=None):
             "user_tags": user_tags,
             "user_notes": user_notes,
         }
-        starred_story = MStarredStory.objects.create(**story_db)
+        try:
+            starred_story = MStarredStory.objects.create(**story_db)
+            created = True
+        except NotUniqueError:
+            # Saved stories are unique on (user_id, story_guid), so the filter above misses
+            # a story already saved under a different feed id, and a double-posting
+            # bookmarklet can race two creates. Grab the existing story and update it.
+            starred_story = (
+                MStarredStory.objects.filter(user_id=profile.user.pk, story_guid=story_url).limit(1).first()
+            )
+
+    if created:
         logging.user(profile.user, "~BM~FCStarring story from site: ~SB%s: %s" % (story_url, user_tags))
         message = "Saving story from site: %s: %s" % (story_url, user_tags)
-    else:
+    elif starred_story:
         starred_story.story_content = content
         starred_story.story_title = title
         starred_story.user_tags = user_tags
@@ -562,6 +585,9 @@ def save_story(request, token=None):
             profile.user, "~BM~FC~SBUpdating~SN starred story from site: ~SB%s: %s" % (story_url, user_tags)
         )
         message = "Updating saved story from site: %s: %s" % (story_url, user_tags)
+    else:
+        code = -1
+        message = "Story is already saved, but it couldn't be found to update."
 
     MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
 

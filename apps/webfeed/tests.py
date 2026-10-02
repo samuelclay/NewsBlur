@@ -1,9 +1,10 @@
+import datetime
 import hashlib
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
-from django.test import TestCase
-from django.test.client import Client
+from django.test import SimpleTestCase, TestCase, override_settings
+from django.test.client import Client, RequestFactory
 from django.urls import reverse
 
 from apps.webfeed.models import MWebFeedConfig, is_degenerate_container_xpath
@@ -490,6 +491,76 @@ class Test_WebFeedAnalyzeRedirectsRealFeeds(TestCase):
         mock_task.assert_called_once()
 
 
+class Test_AnalyzeWebFeedPageModel(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("webfeed_model_tester", "wf-model@example.com", "test")
+
+    @patch("apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result")
+    @patch("apps.webfeed.tasks.LLMCostTracker")
+    @patch("apps.ask_ai.providers.get_briefing_provider")
+    @patch("apps.webfeed.tasks.fetch_page_html")
+    @patch("apps.webfeed.tasks.redis.Redis")
+    def test_analysis_uses_luna_medium_thinking_and_openai_cost_labels(
+        self, mock_redis, mock_fetch, mock_get_provider, mock_cost, mock_record_result
+    ):
+        from apps.webfeed.tasks import AnalyzeWebFeedPage
+
+        mock_fetch.return_value = """
+        <html><head><title>Example</title></head><body><main>
+        <article class="post">
+            <h2><a href="/one">First Story</a></h2>
+            <p class="summary">One summary.</p>
+        </article>
+        </main></body></html>
+        """
+
+        mock_provider = MagicMock()
+        mock_provider.is_configured.return_value = True
+        mock_provider.stream_response.return_value = [
+            json.encode(
+                [
+                    {
+                        "label": "Main stories",
+                        "description": "Primary article list",
+                        "story_container": "//article[contains(@class, 'post')]",
+                        "title": ".//h2/a/text()",
+                        "link": ".//h2/a/@href",
+                        "content": ".//p[contains(@class, 'summary')]/text()",
+                        "image": None,
+                        "author": None,
+                        "date": None,
+                    }
+                ]
+            )
+        ]
+        mock_provider.get_last_usage.return_value = (100, 25)
+        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+
+        request_id = "shared-request-id"
+        result = AnalyzeWebFeedPage(self.user.pk, "https://example.com/", request_id=request_id)
+
+        self.assertEqual(result["code"], 1)
+        mock_get_provider.assert_called_once_with("openai")
+        mock_provider.stream_response.assert_called_once()
+        self.assertEqual(
+            mock_provider.stream_response.call_args.kwargs["thinking_config"],
+            {"reasoning_effort": "medium"},
+        )
+        mock_cost.record_usage.assert_called_once()
+        self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
+        self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-5.6-luna")
+        self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "webfeed")
+        mock_record_result.assert_called_once_with(success=True)
+        stored_keys = {call.args[0] for call in mock_redis.return_value.set.call_args_list}
+        self.assertEqual(
+            stored_keys,
+            {
+                f"webfeed:status:{self.user.pk}:{request_id}",
+                f"webfeed:results:{self.user.pk}:{request_id}",
+            },
+        )
+
+
 class Test_DegenerateContainerXPaths(TestCase):
     """A container XPath pinned to specific item ids can only ever re-match the
     analysis-time items, so the feed never finds a new story. See
@@ -668,3 +739,292 @@ class Test_InitialFetchIsForced(TestCase):
         with patch("apps.rss_feeds.models.Feed.get_by_id", return_value=feed):
             FetchWebFeed(feed_id=101, user_id=1)
         feed.update.assert_called_once_with(force=True)
+
+
+class Test_WebFeedProxySkips(TestCase):
+    """Bot challenges and the per-host daily credit cap in WebFeedFetcher._fetch_html
+    (utils/webfeed_fetcher.py): neither should cost a ScrapingBee credit or count as a failure."""
+
+    URL = "https://www.abebooks.com/servlet/SearchResults?an=keynes"
+
+    def _fetcher(self, last_direct_fetch=None):
+        fetcher = WebFeedFetcher.__new__(WebFeedFetcher)
+        fetcher.feed = MagicMock(log_title="AbeBooks: keynes")
+        fetcher.url = self.URL
+        fetcher.config = MWebFeedConfig(
+            feed_id=99999,
+            url=self.URL,
+            story_container_xpath="//div",
+            title_xpath=".//h2/text()",
+            link_xpath=".//a/@href",
+            last_direct_fetch=last_direct_fetch,
+        )
+        fetcher.config.save = MagicMock()
+        fetcher.config.record_failure = MagicMock()
+        fetcher.skip_reason = None
+        return fetcher
+
+    def _response(self, status_code, body=b"<html>Just a moment</html>"):
+        response = MagicMock()
+        response.status_code = status_code
+        response.content = body
+        response.headers = {"Content-Type": "text/html; charset=utf-8"}
+        response.text = body.decode("utf-8")
+        return response
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_challenge_on_a_site_other_servers_reach_skips_the_proxy(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget
+    ):
+        mock_direct.return_value = self._response(202)
+        fetcher = self._fetcher(last_direct_fetch=datetime.datetime.utcnow() - datetime.timedelta(minutes=10))
+
+        result = fetcher.fetch()
+
+        self.assertIsNone(result)
+        mock_proxy.assert_not_called()
+        fetcher.config.record_failure.assert_not_called()
+        self.assertIn("bot challenge (202)", fetcher.skip_reason)
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.record_response")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_challenge_on_a_site_that_blocks_every_server_still_uses_the_proxy(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget, mock_record
+    ):
+        mock_direct.return_value = self._response(403)
+        mock_proxy.return_value = self._response(
+            200, b"<html><div><h2>Title</h2><a href='/x'>x</a></div></html>"
+        )
+        fetcher = self._fetcher(last_direct_fetch=None)
+
+        html = fetcher._fetch_html()
+
+        self.assertIn("Title", html)
+        mock_proxy.assert_called_once()
+        self.assertIsNone(fetcher.skip_reason)
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.record_response")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=False)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_stale_direct_fetch_means_the_site_blocks_every_server(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget, mock_record
+    ):
+        mock_direct.return_value = self._response(202)
+        mock_proxy.return_value = self._response(200, b"<html><div><h2>Title</h2></div></html>")
+        fetcher = self._fetcher(last_direct_fetch=datetime.datetime.utcnow() - datetime.timedelta(days=2))
+
+        html = fetcher._fetch_html()
+
+        self.assertIn("Title", html)
+        mock_proxy.assert_called_once()
+
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_direct_success_records_last_direct_fetch(self, mock_validate, mock_direct, mock_proxy):
+        mock_direct.return_value = self._response(200, b"<html><div><h2>Title</h2></div></html>")
+        fetcher = self._fetcher(last_direct_fetch=None)
+
+        html = fetcher._fetch_html()
+
+        self.assertIn("Title", html)
+        mock_proxy.assert_not_called()
+        age = datetime.datetime.utcnow() - fetcher.config.last_direct_fetch
+        self.assertLess(age, datetime.timedelta(minutes=1))
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("utils.webfeed_fetcher.RScrapingBee.record_capped")
+    @patch("utils.webfeed_fetcher.RScrapingBee.host_over_budget", return_value=True)
+    @patch("utils.webfeed_fetcher.requests.get")
+    @patch("utils.webfeed_fetcher.safe_requests_get")
+    @patch("utils.webfeed_fetcher.validate_public_url")
+    def test_host_over_daily_credit_cap_skips_proxies_without_failing(
+        self, mock_validate, mock_direct, mock_proxy, mock_budget, mock_capped
+    ):
+        mock_direct.return_value = self._response(403)
+        fetcher = self._fetcher(last_direct_fetch=None)
+
+        result = fetcher.fetch()
+
+        self.assertIsNone(result)
+        mock_proxy.assert_not_called()
+        fetcher.config.record_failure.assert_not_called()
+        mock_capped.assert_called_once_with("webfeed", url=self.URL)
+        self.assertIn("daily proxy credit cap", fetcher.skip_reason)
+
+
+class Test_WebFeedStatus(TestCase):
+    """apps/webfeed/views.py must preserve the worker payload for the iOS poller."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("webfeed_poll_tester")
+        self.client.force_login(self.user)
+        self.request_id = "12345678-1234-1234-1234-123456789012"
+
+    @patch("apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result")
+    @patch("apps.webfeed.tasks.fetch_page_html", return_value=None)
+    @patch("apps.webfeed.tasks.redis.Redis")
+    def test_same_request_id_is_isolated_between_users(self, redis_client, mock_fetch, mock_record):
+        from apps.webfeed.tasks import AnalyzeWebFeedPage
+
+        other_user = User.objects.create_user("other_webfeed_poll_tester")
+        stored = {}
+        redis_client.return_value.set.side_effect = lambda key, value, **kwargs: stored.update({key: value})
+        redis_client.return_value.get.side_effect = stored.get
+
+        AnalyzeWebFeedPage(self.user.pk, "https://example.com/first", request_id=self.request_id)
+        owner_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(owner_response.content)["url"], "https://example.com/first")
+
+        self.client.force_login(other_user)
+        other_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        other_data = json.decode(other_response.content)
+        self.assertEqual(other_data["code"], -1)
+        self.assertEqual(other_data["status"], "unknown")
+        self.assertNotIn("url", other_data)
+
+        AnalyzeWebFeedPage(other_user.pk, "https://example.com/second", request_id=self.request_id)
+        other_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(other_response.content)["url"], "https://example.com/second")
+        self.client.force_login(self.user)
+        owner_response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(owner_response.content)["url"], "https://example.com/first")
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_complete_includes_preview_patterns_and_page_title(self, redis_client):
+        variants = {
+            "page_title": "Example Stories",
+            "html_hash": "page-hash",
+            "variants": [
+                {
+                    "story_container": "//article",
+                    "title": ".//h2/text()",
+                    "preview_stories": [{"title": "First story", "link": "https://example.com/story"}],
+                }
+            ],
+        }
+        stored = {
+            f"webfeed:status:{self.user.pk}:{self.request_id}": json.encode({"type": "complete"}),
+            f"webfeed:results:{self.user.pk}:{self.request_id}": json.encode(variants),
+            f"webfeed:results:{self.request_id}": json.encode({"page_title": "Another user's result"}),
+        }
+        redis_client.return_value.get.side_effect = stored.get
+        response = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        data = json.decode(response.content)
+        self.assertEqual(data["code"], 1)
+        self.assertEqual(data["variants_data"], variants)
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_pending_and_worker_error_are_distinct(self, redis_client):
+        redis_client.return_value.get.return_value = None
+        pending = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(pending.content)["status"], "unknown")
+        redis_client.return_value.get.return_value = json.encode(
+            {"type": "error", "error": "No stories found"}
+        )
+        failed = self.client.get("/webfeed/status", {"request_id": self.request_id})
+        self.assertEqual(json.decode(failed.content)["error"], "No stories found")
+
+    @patch("apps.webfeed.views.redis.Redis")
+    def test_invalid_identifier_does_not_query_redis(self, redis_client):
+        response = self.client.get("/webfeed/status", {"request_id": "not a request id"})
+        self.assertEqual(json.decode(response.content)["status"], "invalid")
+        redis_client.assert_not_called()
+
+    def test_requires_authentication(self):
+        self.client.logout()
+        self.assertEqual(self.client.get("/webfeed/status", {"request_id": self.request_id}).status_code, 403)
+
+
+class Test_WebFeedAnalysisOwnership(SimpleTestCase):
+    """apps/webfeed/tasks.py and views.py must isolate identical request IDs by account."""
+
+    def setUp(self):
+        self.owner = User(pk=101, username="webfeed_analysis_owner")
+        self.other = User(pk=102, username="webfeed_analysis_other")
+        self.request_id = "shared-analysis-request"
+        self.values = {}
+        self.redis = MagicMock()
+        self.redis.get.side_effect = self.values.get
+        self.redis.set.side_effect = lambda key, value, **kwargs: self.values.__setitem__(key, value)
+        self.redis_patch = patch("apps.webfeed.tasks.redis.Redis", return_value=self.redis)
+        self.redis_patch.start()
+        self.addCleanup(self.redis_patch.stop)
+
+    def analyze(self, user, url):
+        from apps.webfeed.tasks import AnalyzeWebFeedPage
+
+        provider = MagicMock()
+        provider.is_configured.return_value = True
+        provider.stream_response.return_value = [
+            json.encode(
+                [
+                    {
+                        "label": "Stories",
+                        "story_container": "//article",
+                        "title": ".//h2/text()",
+                        "link": ".//a/@href",
+                    }
+                ]
+            )
+        ]
+        provider.get_last_usage.return_value = (10, 5)
+        html = f'<html><title>{url}</title><article><h2>{user.username}</h2><a href="/story">Read</a></article></html>'
+        with patch("apps.webfeed.tasks.User.objects.get", return_value=user), patch(
+            "apps.webfeed.tasks.fetch_page_html", return_value=html
+        ), patch("apps.ask_ai.providers.get_briefing_provider", return_value=(provider, "test-model")), patch(
+            "apps.webfeed.tasks.LLMCostTracker"
+        ), patch(
+            "apps.webfeed.tasks.logging.user"
+        ), patch(
+            "apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result"
+        ):
+            self.assertEqual(AnalyzeWebFeedPage(user.pk, url, self.request_id)["code"], 1)
+
+    def status(self, user):
+        from apps.webfeed.views import status
+
+        request = RequestFactory().get("/webfeed/status", {"request_id": self.request_id})
+        request.user = user
+        return json.decode(status(request).content)
+
+    def test_other_account_cannot_read_completed_analysis(self):
+        self.analyze(self.owner, "https://owner.example.com/")
+        self.assertEqual(self.status(self.owner)["variants_data"]["page_title"], "https://owner.example.com/")
+        other_status = self.status(self.other)
+        self.assertEqual(other_status["code"], -1)
+        self.assertEqual(other_status.get("status"), "unknown")
+
+    def test_same_request_id_does_not_overwrite_other_accounts_results(self):
+        self.analyze(self.owner, "https://owner.example.com/")
+        self.analyze(self.other, "https://other.example.com/")
+        for user, url in [
+            (self.owner, "https://owner.example.com/"),
+            (self.other, "https://other.example.com/"),
+        ]:
+            status = self.status(user)
+            self.assertEqual(status["url"], url)
+            self.assertEqual(status["variants_data"]["page_title"], url)
+            self.assertEqual(
+                status["variants_data"]["variants"][0]["preview_stories"][0]["title"], user.username
+            )
+
+    def test_legacy_unowned_results_are_not_exposed(self):
+        self.values[f"webfeed:status:{self.request_id}"] = json.encode(
+            {"type": "complete", "url": "https://owner.example.com/"}
+        )
+        self.values[f"webfeed:results:{self.request_id}"] = json.encode({"page_title": "Other account"})
+        other_status = self.status(self.other)
+        self.assertEqual(other_status["code"], -1)
+        self.assertEqual(other_status.get("status"), "unknown")

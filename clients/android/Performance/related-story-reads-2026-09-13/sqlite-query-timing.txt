@@ -1,0 +1,2 @@
+indexed: 100 queries, median 0.0ms, p95 0.0ms, total 0.007s
+scan: 100 queries, median 43.0ms, p95 89.0ms, total 4.927s

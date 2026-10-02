@@ -194,6 +194,21 @@ def format_relative_date(date, future=False):
 
 
 def add_object_to_folder(obj, in_folder, folders, parent="", added=False):
+    if isinstance(in_folder, list):
+        # folder_paths.py resolves only this branch, even when leaf names repeat elsewhere.
+        from utils.folder_paths import resolve_folder_path
+
+        destination = resolve_folder_path(folders, in_folder)
+        if isinstance(obj, dict):
+            name = next(iter(obj))
+            if not any(
+                isinstance(item, dict) and any(key.lower() == name.lower() for key in item)
+                for item in destination
+            ):
+                destination.append(obj)
+        elif obj not in destination:
+            destination.append(obj)
+        return folders
     if parent.startswith("river:"):
         parent = parent.replace("river:", "")
     if in_folder.startswith("river:"):
@@ -504,7 +519,11 @@ def rewrite_openrss_to_feed_address(url):
     feed address. Open RSS asked us to do this rather than rely on autodiscovery.
 
     Returns the rewritten URL, or the original URL unchanged when it is not an
-    openrss.org address, is already a /feed/ address, or is openrss.org's own root.
+    openrss.org address, is already a /feed/ address, is openrss.org's own root,
+    or is one of Open RSS's first-party feeds (e.g. https://openrss.org/changelog.rss),
+    which live at the bare path and 404 under /feed/. A proxied feed's first path
+    segment is always a hostname (www.youtube.com, reddit.com), so only rewrite
+    when that segment looks like one. See apps/rss_feeds/test_rss_feeds.py.
     """
     if not is_openrss_feed_address(url):
         return url
@@ -513,7 +532,30 @@ def rewrite_openrss_to_feed_address(url):
     path = parsed.path or ""
     if path in ("", "/") or path == "/feed" or path.startswith("/feed/"):
         return url
+    if not _openrss_path_segment_is_hostname(path.lstrip("/").split("/", 1)[0]):
+        return url
     rewritten = urllib.parse.urlunparse(parsed._replace(path="/feed" + path))
     if not had_scheme and rewritten.startswith("//"):
         rewritten = rewritten[2:]
     return rewritten
+
+
+# File extensions that mark an openrss.org path segment as a first-party feed file
+# (e.g. /changelog.rss) rather than a proxied hostname (e.g. /reddit.com).
+OPENRSS_FEED_FILE_EXTENSIONS = ("rss", "xml", "atom", "json", "html", "htm", "txt")
+
+
+def _openrss_path_segment_is_hostname(segment):
+    """Return True when an openrss.org path segment looks like a proxied hostname.
+
+    Proxied feeds embed the target site as the first path segment, so it has at
+    least one dot with a TLD-like last label: www.youtube.com, reddit.com.
+    Open RSS's own pages and feeds are single words (changelog, blog) or feed
+    files (changelog.rss, feed.xml), which must never be prefixed with /feed/.
+    """
+    if not segment or "." not in segment:
+        return False
+    last_label = segment.rsplit(".", 1)[1].lower()
+    if not last_label or last_label in OPENRSS_FEED_FILE_EXTENSIONS:
+        return False
+    return True

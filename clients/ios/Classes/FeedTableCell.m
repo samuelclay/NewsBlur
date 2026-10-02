@@ -73,6 +73,11 @@ static UIFont *textFont = nil;
     [self setNeedsDisplay];
 }
 
+- (void)setFeedFavicon:(UIImage *)image {
+    feedFavicon = image;
+    self.feedFaviconPrepared = NO;
+}
+
 - (void) setPositiveCount:(int)ps {
     if (ps == _positiveCount) return;
     
@@ -96,37 +101,34 @@ static UIFont *textFont = nil;
 }
 
 - (void)setupGestures {
-    if (self.isSaved) {
-        self.shouldDrag = NO;
-        return;
-    }
-    
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *swipe = [preferences stringForKey:@"feed_swipe_left"];
-    NSString *iconName;
-    
-    if (self.isSocial) {
-        iconName = @"menu_icn_fetch_subscribers.png";
-    } else if ([swipe isEqualToString:@"notifications"]) {
-        iconName = @"menu_icn_notifications.png";
-    } else if ([swipe isEqualToString:@"statistics"]) {
-        iconName = @"menu_icn_statistics.png";
-    } else {
-        iconName = @"train.png";
-    }
+    self.shouldDrag = GesturePreferences.feedsEnabled && !self.isSaved;
+    self.mode = self.shouldDrag ? MCSwipeTableViewCellModeSwitch : MCSwipeTableViewCellModeNone;
+    if (!self.shouldDrag) return;
+    NSString *right = GesturePreferences.feedRightAction;
+    NSString *left = GesturePreferences.feedLeftAction;
     
     [self setDelegate:(FeedsViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
-    [self setFirstStateIconName:(iconName)
-                     firstColor:UIColorFromRGB(0xA4D97B)
+    [self setFirstStateIconName:[GesturePreferences feedIconWithAction:right social:self.isSocial]
+                     firstColor:UIColorFromLightSepiaMediumDarkRGB(0xA4D97B, 0x98C572, 0x52763A, 0x3D592D)
             secondStateIconName:nil
                     secondColor:nil
-                  thirdIconName:@"indicator-unread"
-                     thirdColor:UIColorFromRGB(0x6A6659)
+                  thirdIconName:[GesturePreferences feedIconWithAction:left social:self.isSocial]
+                     thirdColor:UIColorFromLightSepiaMediumDarkRGB(0x6A6659, 0x6A604F, 0x545458, 0x48484A)
                  fourthIconName:nil
                     fourthColor:nil];
     
     self.mode = MCSwipeTableViewCellModeSwitch;
     self.shouldAnimatesIcons = NO;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (!self.shouldDrag && !GesturePreferences.feedsEnabled &&
+        [gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
+        CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
+        // FeedTableCell.m consumes disabled horizontal swipes so UITableView does not select the row.
+        return fabs(velocity.x) > fabs(velocity.y);
+    }
+    return [super gestureRecognizerShouldBegin:gestureRecognizer];
 }
 
 - (void)redrawUnreadCounts {
@@ -221,7 +223,7 @@ static UIFont *textFont = nil;
     if (cell.isSocial) {
         if (!cell.appDelegate.isPhone) {
             faviconSize = CGSizeMake(28, 28);
-            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
             [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
@@ -229,7 +231,7 @@ static UIFont *textFont = nil;
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             faviconSize = CGSizeMake(26, 26);
-            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
             [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(42, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
@@ -238,7 +240,7 @@ static UIFont *textFont = nil;
         }
     } else {
         faviconSize = CGSizeMake(16, 16);
-        UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+        UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
         if (!cell.appDelegate.isPhone) {
             [feedIcon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)

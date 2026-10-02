@@ -3398,7 +3398,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     open_webfeed_upgrade_modal: function (e) {
         e.preventDefault();
         e.stopPropagation();
-        NEWSBLUR.reader.open_premium_upgrade_modal();
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'webfeeds' });
     },
 
     subscribe_webfeed: function () {

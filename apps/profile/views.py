@@ -510,7 +510,17 @@ def paypal_webhooks(request):
         # Kick it over to paypal ipn
         return paypal_standard_ipn(request)
 
-    logging.user(request, f" ---> Paypal webhooks {data.get('event_type', '<no event_type>')} data: {data}")
+    # json.decode hands an empty body straight back, and a well-formed JSON body can
+    # still be a list or a string, so anything but a dict has no webhook to dispatch.
+    if not isinstance(data, dict):
+        logging.user(request, f" ---> Paypal webhooks unparseable body, ignoring: {request.body[:200]}")
+        return HttpResponse("OK")
+
+    if not data.get("event_type"):
+        logging.user(request, f" ---> Paypal webhooks missing event_type, ignoring: {data}")
+        return HttpResponse("OK")
+
+    logging.user(request, f" ---> Paypal webhooks {data['event_type']} data: {data}")
 
     if data["event_type"] == "BILLING.SUBSCRIPTION.CREATED":
         # Don't start a subscription but save it in case the payment comes before the subscription activation
@@ -1614,13 +1624,23 @@ def forgot_password(request):
     if request.method == "POST":
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
-            logging.user(request.user, "~BC~FRForgot password: ~SB%s" % request.POST["email"])
+            # Use the cleaned email, since the form strips the surrounding whitespace
+            # that the raw POST value still carries. Looking the raw value up instead
+            # misses the account the form just validated.
+            email = form.cleaned_data["email"]
+            logging.user(request.user, "~BC~FRForgot password: ~SB%s" % email)
             try:
-                user = User.objects.get(email__iexact=request.POST["email"])
+                user = User.objects.get(email__iexact=email)
             except User.MultipleObjectsReturned:
-                user = User.objects.filter(email__iexact=request.POST["email"])[0]
-            user.profile.send_forgot_password_email()
-            return HttpResponseRedirect(reverse("index"))
+                user = User.objects.filter(email__iexact=email)[0]
+            except User.DoesNotExist:
+                # The account went away between form validation and this lookup.
+                logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % email)
+                form.add_error("email", "No user has that email address.")
+                user = None
+            if user:
+                user.profile.send_forgot_password_email()
+                return HttpResponseRedirect(reverse("index"))
         else:
             logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % request.POST.get("email"))
     else:
@@ -1873,14 +1893,36 @@ def email_optout_token(request, username, secret):
     }
 
 
+@csrf_exempt
+@require_POST
 @json.json_view
 def ios_subscription_status(request):
-    logging.debug(" ---> iOS Subscription Status: %s" % request.body)
-    data = json.decode(request.body)
-    subject = "iOS Subscription Status: %s" % data.get("notification_type", "[missing]")
-    message = """%s""" % (request.body)
-    mail_admins(subject, message)
+    from appstoreserverlibrary.signed_data_verifier import (
+        VerificationException,
+        VerificationStatus,
+    )
 
+    from apps.profile.apple_notifications import process_apple_notification
+
+    try:
+        if len(request.body) > 128 * 1024:
+            raise ValueError("Oversized notification")
+        data = json.decode(request.body)
+        if not isinstance(data, dict) or not isinstance(data.get("signedPayload"), str):
+            raise ValueError("Missing signed payload")
+        result = process_apple_notification(data["signedPayload"])
+    except VerificationException as exc:
+        # Never log signed receipts or secrets from requests in apps/profile/views.py.
+        logging.debug(" ---> Apple notification verification failed: %s" % exc.status.name)
+        status = 503 if exc.status == VerificationStatus.RETRYABLE_VERIFICATION_FAILURE else 400
+        return HttpResponse(status=status)
+    except (ValueError, TypeError, UnicodeDecodeError):
+        return HttpResponse(status=400)
+
+    logging.debug(" ---> Apple notification processed: %s" % result)
+    if result["status"] in ("unmatched", "ambiguous"):
+        # Apple retries while a newly purchased subscription reaches save_ios_receipt.
+        return HttpResponse(status=503)
     return {"code": 1}
 
 

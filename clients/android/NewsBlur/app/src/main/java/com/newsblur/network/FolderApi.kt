@@ -3,7 +3,10 @@ package com.newsblur.network
 import com.newsblur.network.domain.NewsBlurResponse
 
 interface FolderApi {
-    suspend fun addFolder(folderName: String): NewsBlurResponse
+    suspend fun addFolder(
+        folderName: String,
+        parentFolder: String = "",
+    ): NewsBlurResponse
 
     suspend fun deleteFolder(
         folderName: String?,

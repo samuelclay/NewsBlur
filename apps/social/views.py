@@ -101,7 +101,11 @@ def sanitize_for_xml(text):
 @json.json_view
 def load_social_stories(request, user_id, username=None):
     user = get_user(request)
-    social_user_id = int(user_id)
+    try:
+        social_user_id = int(user_id)
+    except ValueError:
+        # The URL pattern accepts \w+, so broken JS sends "undefined" here.
+        raise Http404
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.GET.get("offset", 0))
     limit = int(request.GET.get("limit", 6))
@@ -332,7 +336,12 @@ def load_social_stories(request, user_id, username=None):
     if socialsub:
         socialsub.feed_opens += 1
         socialsub.needs_unread_recalc = True
-        socialsub.save()
+        try:
+            socialsub.save()
+        except NotUniqueError:
+            # A concurrent request already wrote this subscription. All that's
+            # lost is the feed_opens bump, so serve the stories anyway.
+            logging.user(request, "~FR~SBCouldn't save social subscription, continuing")
 
     search_log = "~SN~FG(~SB%s~SN)" % query if query else ""
     logging.user(
@@ -638,7 +647,11 @@ def load_river_blurblog(request):
 
 def load_social_page(request, user_id, username=None, **kwargs):
     user = get_user(request.user)
-    social_user_id = int(user_id)
+    try:
+        social_user_id = int(user_id)
+    except ValueError:
+        # The URL pattern accepts \w+, so broken JS sends "undefined" here.
+        raise Http404
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.GET.get("offset", 0))
     limit = int(request.GET.get("limit", 6))
@@ -766,10 +779,20 @@ def load_social_page(request, user_id, username=None, **kwargs):
         for story in stories:
             if user.pk in story["share_user_ids"]:
                 story["shared_by_user"] = True
-                shared_story = MSharedStory.objects.hint([("story_hash", 1)]).get(
-                    user_id=user.pk, story_feed_id=story["story_feed_id"], story_hash=story["story_hash"]
+                # A user can end up with duplicate shares of the same story, so
+                # take the first match rather than blowing up on either count.
+                shared_story = (
+                    MSharedStory.objects.hint([("story_hash", 1)])
+                    .filter(
+                        user_id=user.pk,
+                        story_feed_id=story["story_feed_id"],
+                        story_hash=story["story_hash"],
+                    )
+                    .limit(1)
+                    .first()
                 )
-                story["user_comments"] = shared_story.comments
+                if shared_story:
+                    story["user_comments"] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
 
@@ -888,6 +911,7 @@ def story_public_comments(request):
 
 
 @ajax_login_required
+@required_params("story_id", feed_id=int, method="POST")
 def mark_story_as_shared(request):
     code = 1
     feed_id = int(request.POST["feed_id"])
@@ -1067,6 +1091,7 @@ def mark_story_as_shared(request):
 
 
 @ajax_login_required
+@required_params("story_id", feed_id=int, method="POST")
 def mark_story_as_unshared(request):
     feed_id = int(request.POST["feed_id"])
     story_id = request.POST["story_id"]
@@ -1124,6 +1149,7 @@ def mark_story_as_unshared(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", method="POST")
 def save_comment_reply(request):
     code = 1
     story_feed_id = request.POST.get("story_feed_id")
@@ -1266,6 +1292,7 @@ def save_comment_reply(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", story_feed_id=int, method="POST")
 def remove_comment_reply(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1369,7 +1396,10 @@ def profile(request):
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     include_activities_html = request.GET.get("include_activities_html", None)
 
-    social_profile = MSocialProfile.get_user(user_id)
+    try:
+        social_profile = MSocialProfile.get_user(user_id)
+    except User.DoesNotExist:
+        return json.json_response(request, {"code": -1, "message": "User not found."})
     social_profile.count_follows()
 
     activities = []
@@ -1444,6 +1474,7 @@ def load_user_profile(request):
 
 
 @ajax_login_required
+@required_params("website", "location", "bio", "photo_service", method="POST")
 @json.json_view
 def save_user_profile(request):
     data = request.POST
@@ -1471,7 +1502,11 @@ def save_user_profile(request):
 @ajax_login_required
 @json.json_view
 def upload_avatar(request):
-    photo = request.FILES["photo"]
+    # required_params can't reach request.FILES, so check the upload by hand.
+    photo = request.FILES.get("photo")
+    if not photo:
+        return {"code": -1, "message": "Missing parameter: photo"}
+
     profile = MSocialProfile.get_user(request.user.pk)
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
 
@@ -1554,6 +1589,7 @@ def load_user_friends(request):
 
 
 @ajax_login_required
+@required_params("user_id", method="POST")
 @json.json_view
 def follow(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1597,6 +1633,7 @@ def follow(request):
 
 
 @ajax_login_required
+@required_params("user_id", method="POST")
 @json.json_view
 def unfollow(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1627,6 +1664,7 @@ def unfollow(request):
 
 
 @ajax_login_required
+@required_params(user_id=int, method="POST")
 @json.json_view
 def approve_follower(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1644,6 +1682,7 @@ def approve_follower(request):
 
 
 @ajax_login_required
+@required_params(user_id=int, method="POST")
 @json.json_view
 def ignore_follower(request):
     profile = MSocialProfile.get_user(request.user.pk)
@@ -1731,6 +1770,7 @@ def find_friends(request):
 
 
 @ajax_login_required
+@required_params("story_id", story_feed_id=int, comment_user_id=int, method="POST")
 def like_comment(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1801,6 +1841,7 @@ def like_comment(request):
 
 
 @ajax_login_required
+@required_params("story_id", "comment_user_id", story_feed_id=int, method="POST")
 def remove_like_comment(request):
     code = 1
     feed_id = int(request.POST["story_feed_id"])
@@ -1874,7 +1915,13 @@ def shared_stories_rss_feed(request, user_id, username=None):
         raise Http404
 
     limit = 25
-    offset = request.GET.get("page", 0) * limit
+    # ?page= arrives as a string, which turned this multiplication into string
+    # repetition and crashed the slice below with a TypeError.
+    try:
+        page = int(request.GET.get("page", 0))
+    except (TypeError, ValueError):
+        page = 0
+    offset = page * limit
     username = username and username.lower()
     profile = MSocialProfile.get_user(user.pk)
     params = {"username": profile.username_slug, "user_id": user.pk}

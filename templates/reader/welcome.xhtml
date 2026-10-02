@@ -199,7 +199,12 @@
         <div class="NB-inner">
 
             <div class="NB-feature-group NB-feature-group-read">
-                <h3 class="NB-feature-group-label">Read Your Way</h3>
+                <h3 class="NB-feature-group-folder">
+                    <span class="NB-folder-caret"></span>
+                    <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
+                    <span class="NB-folder-name">Read Your Way</span>
+                    <span class="NB-folder-count">7</span>
+                </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#speed" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
@@ -254,7 +259,12 @@
             </div>
 
             <div class="NB-feature-group NB-feature-group-smart">
-                <h3 class="NB-feature-group-label">Stay Smart</h3>
+                <h3 class="NB-feature-group-folder">
+                    <span class="NB-folder-caret"></span>
+                    <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
+                    <span class="NB-folder-name">Stay Smart</span>
+                    <span class="NB-folder-count">7</span>
+                </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#training" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
@@ -309,7 +319,12 @@
             </div>
 
             <div class="NB-feature-group NB-feature-group-share">
-                <h3 class="NB-feature-group-label">Share &amp; Organize</h3>
+                <h3 class="NB-feature-group-folder">
+                    <span class="NB-folder-caret"></span>
+                    <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
+                    <span class="NB-folder-name">Share &amp; Organize</span>
+                    <span class="NB-folder-count">4</span>
+                </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#blurblog" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
@@ -343,7 +358,12 @@
             </div>
 
             <div class="NB-feature-group NB-feature-group-everywhere">
-                <h3 class="NB-feature-group-label">Works Everywhere</h3>
+                <h3 class="NB-feature-group-folder">
+                    <span class="NB-folder-caret"></span>
+                    <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
+                    <span class="NB-folder-name">Works Everywhere</span>
+                    <span class="NB-folder-count">4</span>
+                </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#apps" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_8.jpg">
@@ -515,87 +535,6 @@
             <a href="{% url "pricing" %}" class="NB-welcome-banner-button NB-banner-pricing">
                 Compare plans and FAQ <span class="NB-banner-arrow">&rarr;</span>
             </a>
-        </div>
-    </div>
-
-    <div class="NB-welcome-faq">
-        <div class="NB-inner">
-            <h2>Common Questions</h2>
-            <div class="NB-welcome-faq-grid">
-                <div class="NB-welcome-faq-item">
-                    <h3>Is there a free trial?</h3>
-                    <p>Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your feeds and training on the free tier.</p>
-                </div>
-                <div class="NB-welcome-faq-item">
-                    <h3>Can I import feeds from another reader?</h3>
-                    <p>Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with Google Reader exports, Feedly, Inoreader, and more.</p>
-                </div>
-                <div class="NB-welcome-faq-item">
-                    <h3>Is NewsBlur open source?</h3>
-                    <p>Fully open source under the MIT license. Run your own instance with Docker, contribute on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>, or just read the code. No lock-in, ever.</p>
-                </div>
-                <div class="NB-welcome-faq-item">
-                    <h3>What happens if I cancel?</h3>
-                    <p>Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No data is deleted. Upgrade again anytime and everything is restored.</p>
-                </div>
-                <div class="NB-welcome-faq-item">
-                    <h3>Does NewsBlur work with other apps?</h3>
-                    <p>Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, and training sync across every app.</p>
-                </div>
-                <div class="NB-welcome-faq-item">
-                    <h3>Do I need RSS feeds to follow a site?</h3>
-                    <p>No. <a href="/features#web-feeds">Web Feeds</a> let you follow any website, even without RSS. NewsBlur monitors the page for changes and delivers new content to you automatically.</p>
-                </div>
-                <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
-                    <h3>How does NewsBlur compare to Feedly?</h3>
-                    <p>NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open source. No ads, no tracking, no algorithmic feeds.</p>
-                    <a href="{% url "compare-feedly" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
-                </div>
-                <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
-                    <h3>How does NewsBlur compare to Inoreader?</h3>
-                    <p>NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully open source codebase you can self-host.</p>
-                    <a href="{% url "compare-inoreader" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
-                </div>
-            </div>
-            <div class="NB-welcome-banner-button-wrap">
-                <a href="{% url "faq" %}" class="NB-welcome-banner-button NB-banner-faq">
-                    See all frequently asked questions <span class="NB-banner-arrow">&rarr;</span>
-                </a>
-            </div>
-            <div class="NB-welcome-compare-header">
-                <div class="NB-welcome-compare-rule"></div>
-                <span class="NB-welcome-compare-label">Compare</span>
-                <div class="NB-welcome-compare-rule"></div>
-            </div>
-            <div class="NB-welcome-compare-versus">
-                <a href="{% url "compare-feedly" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Feedly</span>
-                </a>
-                <a href="{% url "compare-inoreader" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Inoreader</span>
-                </a>
-                <a href="{% url "compare-readwise" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Readwise Reader</span>
-                </a>
-                <a href="{% url "compare-the-old-reader" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">The Old Reader</span>
-                </a>
-                <a href="{% url "compare-feedbin" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
-                    <span class="NB-compare-vs-name">Feedbin</span>
-                </a>
-            </div>
-            <div class="NB-welcome-compare-alts">
-                <a href="{% url "alt-feedly" %}">Feedly Alternative</a>
-                <a href="{% url "alt-google-reader" %}">Google Reader Alternative</a>
-                <a href="{% url "alt-open-source" %}">Open Source RSS</a>
-                <a href="{% url "alt-inoreader" %}">Inoreader Alternative</a>
-                <a href="{% url "alt-self-hosted" %}">Self-Hosted RSS</a>
-            </div>
         </div>
     </div>
 
@@ -1711,6 +1650,87 @@
         </div>
         <div class="NB-testimonials-fade NB-testimonials-fade-left"></div>
         <div class="NB-testimonials-fade NB-testimonials-fade-right"></div>
+    </div>
+
+    <div class="NB-welcome-faq">
+        <div class="NB-inner">
+            <h2>Common Questions</h2>
+            <div class="NB-welcome-faq-grid">
+                <div class="NB-welcome-faq-item">
+                    <h3>Is there a free trial?</h3>
+                    <p>Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your feeds and training on the free tier.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Can I import feeds from another reader?</h3>
+                    <p>Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with Google Reader exports, Feedly, Inoreader, and more.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Is NewsBlur open source?</h3>
+                    <p>Fully open source under the MIT license. Run your own instance with Docker, contribute on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>, or just read the code. No lock-in, ever.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>What happens if I cancel?</h3>
+                    <p>Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No data is deleted. Upgrade again anytime and everything is restored.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Does NewsBlur work with other apps?</h3>
+                    <p>Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, and training sync across every app.</p>
+                </div>
+                <div class="NB-welcome-faq-item">
+                    <h3>Do I need RSS feeds to follow a site?</h3>
+                    <p>No. <a href="/features#web-feeds">Web Feeds</a> let you follow any website, even without RSS. NewsBlur monitors the page for changes and delivers new content to you automatically.</p>
+                </div>
+                <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
+                    <h3>How does NewsBlur compare to Feedly?</h3>
+                    <p>NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open source. No ads, no tracking, no algorithmic feeds.</p>
+                    <a href="{% url "compare-feedly" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
+                </div>
+                <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
+                    <h3>How does NewsBlur compare to Inoreader?</h3>
+                    <p>NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully open source codebase you can self-host.</p>
+                    <a href="{% url "compare-inoreader" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
+                </div>
+            </div>
+            <div class="NB-welcome-banner-button-wrap">
+                <a href="{% url "faq" %}" class="NB-welcome-banner-button NB-banner-faq">
+                    See all frequently asked questions <span class="NB-banner-arrow">&rarr;</span>
+                </a>
+            </div>
+            <div class="NB-welcome-compare-header">
+                <div class="NB-welcome-compare-rule"></div>
+                <span class="NB-welcome-compare-label">Compare</span>
+                <div class="NB-welcome-compare-rule"></div>
+            </div>
+            <div class="NB-welcome-compare-versus">
+                <a href="{% url "compare-feedly" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Feedly</span>
+                </a>
+                <a href="{% url "compare-inoreader" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Inoreader</span>
+                </a>
+                <a href="{% url "compare-readwise" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Readwise Reader</span>
+                </a>
+                <a href="{% url "compare-the-old-reader" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">The Old Reader</span>
+                </a>
+                <a href="{% url "compare-feedbin" %}" class="NB-compare-vs-link">
+                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-name">Feedbin</span>
+                </a>
+            </div>
+            <div class="NB-welcome-compare-alts">
+                <a href="{% url "alt-feedly" %}">Feedly Alternative</a>
+                <a href="{% url "alt-google-reader" %}">Google Reader Alternative</a>
+                <a href="{% url "alt-open-source" %}">Open Source RSS</a>
+                <a href="{% url "alt-inoreader" %}">Inoreader Alternative</a>
+                <a href="{% url "alt-self-hosted" %}">Self-Hosted RSS</a>
+            </div>
+        </div>
     </div>
 
     <div class="NB-welcome-activity">

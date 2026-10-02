@@ -55,11 +55,12 @@ from apps.reader.metrics import (
     normalize_reader_metrics_read_filter,
     normalize_reader_metrics_source,
 )
-from apps.rss_feeds.models import DuplicateFeed, Feed, MStory
+from apps.rss_feeds.models import DuplicateFeed, Feed, MStory, renew_merge_feeds_locks
 from apps.rss_feeds.tasks import NewFeeds
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import add_object_to_folder, chunks
+from utils.folder_paths import InvalidFolderPath, resolve_folder_path
 
 
 def unread_cutoff_default():
@@ -1364,7 +1365,13 @@ class UserSubscription(models.Model):
 
     @classmethod
     def trim_user_read_stories(self, user_id):
-        user = User.objects.get(pk=user_id)
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            # The cleanup task can run after the user has been deleted
+            logging.debug(" ---> ~FRCan't trim read stories, no user for user_id: ~SB%s" % user_id)
+            return
+
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         subs = UserSubscription.objects.filter(user_id=user_id).only("feed")
         if not subs:
@@ -1727,7 +1734,7 @@ class UserSubscription(models.Model):
             return None
         return datetime.datetime.utcnow() - datetime.timedelta(days=days)
 
-    def calculate_feed_scores(self, silent=False, stories=None, force=False):
+    def calculate_feed_scores(self, silent=False, stories=None, stories_cutoff=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         oldest_unread_story_date = now
@@ -1773,7 +1780,22 @@ class UserSubscription(models.Model):
         has_scoped = self.user.profile.is_archive and self.user.profile.has_scoped_classifiers
         if self.is_trained or has_scoped:
             if not stories:
-                stories = cache.get("S:v3:%s" % self.feed_id)
+                # The fetch-time prefetch is cached as {"stories": [...], "cutoff": dt}.
+                # The cutoff records how far back the prefetch reaches (see
+                # utils/feed_fetcher.py: it is bounded to DAYS_OF_UNREAD rather than
+                # the feed's archive-wide unread_cutoff).
+                cached_stories = cache.get("S:v4:%s" % self.feed_id)
+                if isinstance(cached_stories, dict):
+                    stories = cached_stories.get("stories")
+                    stories_cutoff = cached_stories.get("cutoff")
+
+            if stories and stories_cutoff and date_delta < stories_cutoff:
+                # This subscriber's unread window reaches further back than the
+                # prefetch covers (an archive user with a long days_of_unread and an
+                # old mark_read_date). Using the truncated list would undercount, so
+                # discard it and fall through to the targeted per-user query below.
+                stories = None
+                stories_cutoff = None
 
             unread_story_hashes = self.story_hashes(
                 user_id=self.user_id,
@@ -2074,12 +2096,14 @@ class UserSubscription(models.Model):
         return scores["feed"]
 
     def switch_feed(self, new_feed, old_feed):
-        # Rewrite feed in subscription folders
-        try:
-            user_sub_folders = UserSubscriptionFolders.objects.get(user=self.user)
-        except Exception as e:
-            logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
-            return
+        # A reader with no folder row still has a subscription to move. Returning early here
+        # left the subscription on the old feed, and merge_feeds then deleted it along with
+        # that feed (forum #13830). The folder rewrite below is skipped for them instead.
+        user_sub_folders = UserSubscriptionFolders.objects.filter(user=self.user).first()
+        if user_sub_folders is None:
+            logging.info(
+                " ***> %s has no folder row, moving the subscription without a folder rewrite" % self.user
+            )
 
         logging.info("      ===> %s " % self.user)
 
@@ -2107,6 +2131,12 @@ class UserSubscription(models.Model):
         switch_feed_for_classifier(MClassifierFeed)
         switch_feed_for_classifier(MClassifierTag)
         switch_feed_for_classifier(MClassifierText)
+
+        # Folders first, then the subscription row: if the merge stops between the two, the
+        # reader is still found under the old feed on the next run and the rewrite repeats
+        # harmlessly; the other order would strand a moved subscription without a sidebar entry.
+        if user_sub_folders is not None:
+            user_sub_folders.rewrite_feed(new_feed, old_feed)
 
         # Switch to original feed for the user subscription
         self.feed = new_feed
@@ -2146,9 +2176,6 @@ class UserSubscription(models.Model):
             existing_sub.needs_unread_recalc = True
             existing_sub.save()
             self.delete()
-
-        # Always rewrite folders to clean up duplicate feed references
-        user_sub_folders.rewrite_feed(new_feed, old_feed)
 
     @classmethod
     def collect_orphan_feeds(cls, user):
@@ -2572,20 +2599,35 @@ class RUserStory:
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
 
-        story_hashes = UserSubscription.story_hashes(user_id, feed_ids=[old_feed_id])
-        # story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
+        # The reader's actual read set for the old feed. UserSubscription.story_hashes with
+        # its default read_filter="unread" listed the *unread* stories here, which marked
+        # them read on the new feed and dropped the real read state (merge_feeds, #2133).
+        story_hashes = [
+            story_hash.decode() if isinstance(story_hash, bytes) else story_hash
+            for story_hash in cls.get_stories(user_id, old_feed_id, r=r)
+        ]
 
-        for story_hash in story_hashes:
+        # One expiry lookup (it queries Postgres) for the whole set, and the pipeline flushed
+        # in bounded batches: a long-time reader can have tens of thousands of read hashes.
+        expire_seconds = Feed.days_of_story_hashes_for_feed(new_feed_id) * 24 * 60 * 60
+        read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
+        read_user_key = "RS:%s" % (user_id)
+        for index, story_hash in enumerate(story_hashes, 1):
             _, hash_story = MStory.split_story_hash(story_hash)
+            if not hash_story:
+                continue
             new_story_hash = "%s:%s" % (new_feed_id, hash_story)
-            read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
             p.sadd(read_feed_key, new_story_hash)
-            p.expire(read_feed_key, Feed.days_of_story_hashes_for_feed(new_feed_id) * 24 * 60 * 60)
-
-            read_user_key = "RS:%s" % (user_id)
             p.sadd(read_user_key, new_story_hash)
-            p.expire(read_user_key, Feed.days_of_story_hashes_for_feed(new_feed_id) * 24 * 60 * 60)
-
+            if index % 1000 == 0:
+                # Expiry rides with every batch so a set created by an early batch never
+                # outlives its feed if the worker stops before the last one.
+                p.expire(read_feed_key, expire_seconds)
+                p.expire(read_user_key, expire_seconds)
+                p.execute()
+        if story_hashes:
+            p.expire(read_feed_key, expire_seconds)
+            p.expire(read_user_key, expire_seconds)
         p.execute()
 
         if len(story_hashes) > 0:
@@ -2599,6 +2641,10 @@ class RUserStory:
         usersubs = UserSubscription.objects.filter(feed_id=feed.pk, last_read_date__gte=feed.unread_cutoff)
         logging.info(" ---> ~SB%s usersubs~SN to switch read story hashes..." % len(usersubs))
         for sub in usersubs:
+            # One story of a popular feed can outlast the fetch lease in here; keep the lock
+            # the fetch holds on the feed, or stop before writing under a lost one. A no-op
+            # outside a lock. apps/reader/models.py
+            renew_merge_feeds_locks()
             rs_key = "RS:%s:%s" % (sub.user.pk, feed.pk)
             read = r.sismember(rs_key, old_hash)
             if read:
@@ -2798,6 +2844,9 @@ class UserSubscriptionFolders(models.Model):
 
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         feed_id = int(feed_id)
+        explicit_path = isinstance(in_folder, list)
+        if explicit_path:
+            resolve_folder_path(json.decode(self.folders), in_folder)
 
         # apps/reader/models.py
         # Count every placement of the feed and note whether any sits directly in the
@@ -2818,17 +2867,19 @@ class UserSubscriptionFolders(models.Model):
                             in_requested = True
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        sub_total, sub_in = _count_feed(f_v, f_k)
+                        sub_total, sub_in = _count_feed(f_v, folder_name + [f_k] if explicit_path else f_k)
                         total += sub_total
                         in_requested = in_requested or sub_in
             return total, in_requested
 
         arranged = self.arranged_folders()
-        total_occurrences, occurrence_in_requested = _count_feed(arranged)
+        total_occurrences, occurrence_in_requested = _count_feed(arranged, [] if explicit_path else "")
 
         # Honor the requested folder only when the feed actually lives there; otherwise
         # remove the first placement anywhere so a mismatched in_folder can't leave the
         # feed stuck and subscribed.
+        if explicit_path and not occurrence_in_requested:
+            raise InvalidFolderPath("That feed is no longer in the selected folder. Refresh and try again.")
         target_folder = in_folder if (in_folder is not None and occurrence_in_requested) else None
         removal = {"deleted": False}
 
@@ -2849,10 +2900,12 @@ class UserSubscriptionFolders(models.Model):
                     new_folders.append(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        new_folders.append({f_k: _remove_one(f_v, f_k)})
+                        new_folders.append(
+                            {f_k: _remove_one(f_v, folder_name + [f_k] if explicit_path else f_k)}
+                        )
             return new_folders
 
-        user_sub_folders = _remove_one(arranged)
+        user_sub_folders = _remove_one(arranged, [] if explicit_path else "")
         self.folders = json.encode(user_sub_folders)
         self.save()
 
@@ -2874,6 +2927,13 @@ class UserSubscriptionFolders(models.Model):
                 user_sub.delete()
 
     def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder, commit_delete=True):
+        explicit_path = isinstance(in_folder, list)
+        if explicit_path:
+            destination = resolve_folder_path(json.decode(self.folders), in_folder)
+            target_name = folder_to_delete
+            if not any(isinstance(item, dict) and target_name in item for item in destination):
+                raise InvalidFolderPath("That folder has changed. Refresh and try again.")
+
         def _find_folder_in_folders(old_folders, folder_name, feeds_to_delete, deleted_folder=None):
             new_folders = []
             for k, folder in enumerate(old_folders):
@@ -2891,7 +2951,10 @@ class UserSubscriptionFolders(models.Model):
                             deleted_folder = folder
                         else:
                             nf, feeds_to_delete, deleted_folder = _find_folder_in_folders(
-                                f_v, f_k, feeds_to_delete, deleted_folder
+                                f_v,
+                                folder_name + [f_k] if explicit_path else f_k,
+                                feeds_to_delete,
+                                deleted_folder,
                             )
                             new_folders.append({f_k: nf})
 
@@ -2899,7 +2962,7 @@ class UserSubscriptionFolders(models.Model):
 
         user_sub_folders = json.decode(self.folders)
         user_sub_folders, feeds_to_delete, deleted_folder = _find_folder_in_folders(
-            user_sub_folders, "", feed_ids_in_folder
+            user_sub_folders, [] if explicit_path else "", feed_ids_in_folder
         )
         self.folders = json.encode(user_sub_folders)
         self.save()
@@ -2919,6 +2982,13 @@ class UserSubscriptionFolders(models.Model):
         return self
 
     def rename_folder(self, folder_to_rename, new_folder_name, in_folder):
+        explicit_path = isinstance(in_folder, list)
+        if explicit_path:
+            destination = resolve_folder_path(json.decode(self.folders), in_folder)
+            target_name = folder_to_rename
+            if not any(isinstance(item, dict) and target_name in item for item in destination):
+                raise InvalidFolderPath("That folder has changed. Refresh and try again.")
+
         def _find_folder_in_folders(old_folders, folder_name):
             new_folders = []
             for k, folder in enumerate(old_folders):
@@ -2926,7 +2996,7 @@ class UserSubscriptionFolders(models.Model):
                     new_folders.append(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        nf = _find_folder_in_folders(f_v, f_k)
+                        nf = _find_folder_in_folders(f_v, folder_name + [f_k] if explicit_path else f_k)
                         if f_k == folder_to_rename and in_folder == folder_name:
                             logging.user(
                                 self.user,
@@ -2939,7 +3009,7 @@ class UserSubscriptionFolders(models.Model):
             return new_folders
 
         user_sub_folders = json.decode(self.folders)
-        user_sub_folders = _find_folder_in_folders(user_sub_folders, "")
+        user_sub_folders = _find_folder_in_folders(user_sub_folders, [] if explicit_path else "")
         self.folders = json.encode(user_sub_folders)
         self.save()
 
@@ -2948,6 +3018,12 @@ class UserSubscriptionFolders(models.Model):
             self.user, "~FBMoving feed '~SB%s~SN' in '%s' to: ~SB%s" % (feed_id, in_folders, to_folders)
         )
         user_sub_folders = json.decode(self.folders)
+        for path in to_folders:
+            if isinstance(path, list):
+                resolve_folder_path(user_sub_folders, path)
+        for path in in_folders:
+            if isinstance(path, list) and int(feed_id) not in resolve_folder_path(user_sub_folders, path):
+                raise InvalidFolderPath("That feed has moved. Refresh and try again.")
         for in_folder in in_folders:
             self.delete_feed(feed_id, in_folder, commit_delete=False)
         user_sub_folders = json.decode(self.folders)
@@ -2997,14 +3073,17 @@ class UserSubscriptionFolders(models.Model):
     def rewrite_feed(self, original_feed, duplicate_feed):
         def rewrite_folders(folders, original_feed, duplicate_feed):
             new_folders = []
+            # A reader subscribed to both feeds in the same folder would otherwise end up
+            # with the survivor listed twice there after the rewrite (merge_feeds).
+            feeds_in_this_folder = set()
 
             for k, folder in enumerate(folders):
                 if isinstance(folder, int):
-                    if folder == duplicate_feed.pk:
-                        # logging.info("              ===> Rewrote %s'th item: %s" % (k+1, folders))
-                        new_folders.append(original_feed.pk)
-                    else:
-                        new_folders.append(folder)
+                    rewritten = original_feed.pk if folder == duplicate_feed.pk else folder
+                    if rewritten in feeds_in_this_folder:
+                        continue
+                    feeds_in_this_folder.add(rewritten)
+                    new_folders.append(rewritten)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
                         new_folders.append({f_k: rewrite_folders(f_v, original_feed, duplicate_feed)})
@@ -3405,6 +3484,7 @@ class MCustomFeedIcon(mongo.Document):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for icon in duplicate_icons:
+                renew_merge_feeds_locks()
                 # Check if user already has a custom icon for the original feed
                 try:
                     cls.objects.get(user_id=icon.user_id, feed_id=original_feed_id)

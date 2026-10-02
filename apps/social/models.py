@@ -50,7 +50,7 @@ from apps.analyzer.models import (
 )
 from apps.profile.models import MSentEmail, Profile
 from apps.reader.models import RUserStory, UserSubscription
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, renew_merge_feeds_locks
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.text_importer import TextImporter
 from utils import json_functions as json
@@ -199,6 +199,12 @@ class MSocialProfile(mongo.Document):
         try:
             profile = cls.objects.get(user_id=user_id)
         except cls.DoesNotExist:
+            # Don't conjure a profile for a user_id with no django User behind
+            # it. create() runs save() -> import_user_fields(), which raises
+            # User.DoesNotExist from deep inside mongoengine; raise it here
+            # instead so callers can see what actually went wrong.
+            if not User.objects.filter(pk=user_id).exists():
+                raise User.DoesNotExist("No user with id %s" % user_id)
             profile = cls.objects.create(user_id=user_id)
             profile.save()
 
@@ -224,9 +230,9 @@ class MSocialProfile(mongo.Document):
         if self.bio:
             self.bio = strip_tags(self.bio)
         if self.website:
-            self.website = strip_tags(self.website)
+            self.website = strip_tags(self.website)[: MSocialProfile.website.max_length]
         if self.location:
-            self.location = strip_tags(self.location)
+            self.location = strip_tags(self.location)[: MSocialProfile.location.max_length]
         if self.custom_css:
             self.custom_css = strip_tags(self.custom_css)
 
@@ -2087,6 +2093,8 @@ class MSharedStory(mongo.DynamicDocument):
         shared_stories = cls.objects.filter(story_feed_id=duplicate_feed_id)
         logging.info(" ---> %s shared stories" % shared_stories.count())
         for story in shared_stories:
+            # Keeps the merge's locks alive on a feed with many shares. apps/social/models.py
+            renew_merge_feeds_locks()
             story.story_feed_id = original_feed_id
             story.save()
 
@@ -2768,8 +2776,15 @@ class MSharedStory(mongo.DynamicDocument):
 
         return image_sizes
 
+    drop_cached_google_consent_text = MStory.drop_cached_google_consent_text
+
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
+        # Same consent-wall cache cleanup as MStory.fetch_original_text (forum #13827):
+        # find_story falls back to shared stories once the feed story ages out.
+        original_text_z, dropped_consent_cache = self.drop_cached_google_consent_text(
+            original_text_z, force=force, request=request
+        )
         feed = Feed.get_by_id(self.story_feed_id)
 
         if not original_text_z or force:

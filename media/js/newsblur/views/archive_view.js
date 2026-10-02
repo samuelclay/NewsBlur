@@ -2260,7 +2260,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
     open_premium_modal: function (e) {
         e.preventDefault();
-        NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'ask-ai' });
     },
 
     render_assistant_messages: function () {

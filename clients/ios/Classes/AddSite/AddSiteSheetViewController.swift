@@ -16,6 +16,8 @@ import SwiftUI
     private var hostingController: UIHostingController<AddSiteView>?
     private var viewModel: AddSiteViewModel?
     private weak var sheetController: UISheetPresentationController?
+    private var compactDetentIdentifier: UISheetPresentationController.Detent.Identifier = .medium
+    private var isEditingInput = false
 
     @objc var initialFeedAddress: String?
     @objc var onDismiss: (() -> Void)?
@@ -52,15 +54,33 @@ import SwiftUI
             self?.expandSheet()
         }
         viewModel.onResultsCleared = { [weak self] in
-            self?.shrinkSheet()
+            guard let self, !self.isEditingInput else { return }
+            self.shrinkSheet()
         }
 
         let addSiteView = AddSiteView(
             viewModel: viewModel,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
+            },
+            onEditingChanged: { [weak self] isEditing in
+                guard let self else { return }
+                self.isEditingInput = isEditing
+                if isEditing {
+                    self.expandSheet()
+                } else if self.viewModel?.autocompleteResults.isEmpty == true {
+                    self.shrinkSheet()
+                }
+            },
+            onDiscover: { [weak self] tab in
+                self?.dismiss(animated: true) {
+                    let discover = DiscoverSitesViewController()
+                    discover.initialTab = tab
+                    NewsBlurAppDelegate.shared()?.detailViewController.showDiscoverSites(discover)
+                }
             }
         )
+
 
         let hostingController = UIHostingController(rootView: addSiteView)
         hostingController.view.backgroundColor = .clear
@@ -83,21 +103,36 @@ import SwiftUI
 
     @objc func setSheetController(_ sheet: UISheetPresentationController?) {
         self.sheetController = sheet
+        if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
+            compactDetentIdentifier = .init("add-site-compact")
+            sheet?.detents = [
+                .custom(identifier: compactDetentIdentifier) { context in
+                    // AddSiteSheetViewController.swift leaves room for the input rows and discovery tiles.
+                    min(context.maximumDetentValue, max(280, context.maximumDetentValue * 0.25))
+                },
+                .large()
+            ]
+        } else {
+            compactDetentIdentifier = .medium
+            sheet?.detents = [.medium(), .large()]
+        }
+        sheet?.selectedDetentIdentifier = compactDetentIdentifier
+        sheet?.prefersGrabberVisible = true
+        sheet?.prefersScrollingExpandsWhenScrolledToEdge = true
+        sheet?.preferredCornerRadius = 12
     }
 
     private func expandSheet() {
         guard let sheet = sheetController ?? navigationController?.sheetPresentationController else { return }
         sheet.animateChanges {
-            sheet.selectedDetentIdentifier = .medium
+            sheet.selectedDetentIdentifier = .large
         }
     }
 
     private func shrinkSheet() {
         guard let sheet = sheetController ?? navigationController?.sheetPresentationController else { return }
-        if #available(iOS 16.0, *) {
-            sheet.animateChanges {
-                sheet.selectedDetentIdentifier = UISheetPresentationController.Detent.Identifier("addSiteSmall")
-            }
+        sheet.animateChanges {
+            sheet.selectedDetentIdentifier = compactDetentIdentifier
         }
     }
 

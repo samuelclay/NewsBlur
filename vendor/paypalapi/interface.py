@@ -111,13 +111,17 @@ class PayPalInterface(object):
         logger.debug("PayPal NVP API Endpoint: %s" % api_endpoint)
 
         if not response.success:
-            logger.error("A PayPal API error was encountered.")
+            # A failed NVP call is routine (declined cards, expired tokens), and it is
+            # already reported to the caller as PayPalAPIResponseError below. Log the
+            # request/response at warning so it stays in the server logs without each
+            # line becoming its own Sentry error event.
+            logger.warning("A PayPal API error was encountered.")
             safe_payload = dict(
                 (p, "X" * len(v) if p in self.__credentials else v) for (p, v) in list(payload.items())
             )
-            logger.error("PayPal NVP Query Key/Vals (credentials removed):" "\n%s" % pformat(safe_payload))
-            logger.error("PayPal NVP Query Response")
-            logger.error(response)
+            logger.warning("PayPal NVP Query Key/Vals (credentials removed):" "\n%s" % pformat(safe_payload))
+            logger.warning("PayPal NVP Query Response")
+            logger.warning(response)
             raise PayPalAPIResponseError(response)
 
         return response

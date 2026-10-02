@@ -24,16 +24,23 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 281
-        versionName = "14.5.6"
+        versionCode = 289
+        versionName = "15.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["defaultLauncherEnabled"] = "true"
     }
 
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
+        }
+        create("alpha") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".alpha"
+            matchingFallbacks += listOf("debug")
+            manifestPlaceholders["defaultLauncherEnabled"] = "false"
         }
         maybeCreate("benchmark")
         getByName("benchmark") {
@@ -95,6 +102,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.webkit)
+    implementation(libs.androidx.window)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.profileinstaller)
 

@@ -130,3 +130,23 @@
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
+
+# Dead man's switch for the off-site backup pull on the Home Assistant box.
+# offsite_pull.sh uploads heartbeat markers to S3; this emails if they go stale.
+# Runs once a day (16:00 UTC = 9am PDT / 8am PST, a few hours after the 6am
+# Pacific pull) on a single host so a stale backup means one email, not three.
+- name: Add sanity checker cronjob for off-site backup heartbeat
+  become: yes
+  copy:
+    owner: root
+    dest: /etc/cron.d/offsite_backup_sanity_checker
+    mode: 0744
+    content: |
+      MAILTO=""
+      SHELL=/bin/sh
+      PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+      0 16 * * *    nb    sudo docker run --rm -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_offsite_backup.py >> /var/log/sanity_checker.log
+
+  when: inventory_hostname == 'htask-work-1'
+  tags:
+    - sanity-checker

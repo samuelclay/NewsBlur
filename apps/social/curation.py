@@ -318,7 +318,7 @@ def select_with_llm(candidates, max_picks=MAX_PICKS):
     """Ask Haiku which candidates are worth the river. Returns None when the API is unusable."""
     from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
 
-    provider, model_id = get_briefing_provider("haiku")
+    provider, model_id = get_briefing_provider("anthropic")
     if not provider.is_configured():
         logging.debug(" ---> ~FRGlobal shared: ~FYAnthropic not configured, using fallback")
         return None

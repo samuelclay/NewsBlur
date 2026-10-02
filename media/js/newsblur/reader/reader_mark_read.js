@@ -265,7 +265,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         $.targetIs(e, { tagSelector: '.NB-mark-unread-upgrade' }, function ($t, $p) {
             e.preventDefault();
             $.modal.close();
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'stay-unread' });
         });
     },
 

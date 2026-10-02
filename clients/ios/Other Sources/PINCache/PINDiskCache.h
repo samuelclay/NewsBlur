@@ -174,9 +174,12 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
 + (instancetype)sharedCache;
 
 /**
- Empties the trash with `DISPATCH_QUEUE_PRIORITY_BACKGROUND`. Does not use lock.
+ Empties the trash at utility priority. Does not use lock.
  */
 + (void)emptyTrash;
+
+/** PINDiskCache.m calls completion on its trash queue after previously queued deletions and this cleanup finish. */
++ (void)emptyTrashWithCompletion:(void (^ _Nullable)(BOOL success))completion;
 
 - (instancetype)init NS_UNAVAILABLE;
 

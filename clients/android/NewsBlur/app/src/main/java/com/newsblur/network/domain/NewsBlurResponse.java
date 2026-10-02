@@ -4,6 +4,8 @@ package com.newsblur.network.domain;
  * A generic response to an API call that only encapsuates success versus failure.
  */
 public class NewsBlurResponse {
+    @com.google.gson.annotations.SerializedName("story_hashes")
+    public String[] storyHashes;
 
     // not part of the response schema, but populated by the API manager to indicate
     // that we never got *any* valid JSON back

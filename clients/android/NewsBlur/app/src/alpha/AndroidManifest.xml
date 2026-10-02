@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application
+        android:icon="@mipmap/app_icon_alpha"
+        tools:replace="android:icon">
+        <activity-alias
+            android:name=".activity.LauncherAlpha"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_alpha"
+            android:label="@string/app_name"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+        <activity-alias
+            android:name=".activity.LauncherAlphaLight"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_alpha_light"
+            android:label="@string/app_name"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+        <activity-alias
+            android:name=".activity.LauncherAlphaDark"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/app_icon_alpha_dark"
+            android:label="@string/app_name"
+            android:targetActivity=".activity.InitActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity-alias>
+    </application>
+</manifest>

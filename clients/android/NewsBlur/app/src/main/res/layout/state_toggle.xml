@@ -12,10 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="1dp"
-        android:layout_weight="1"
-        android:animateLayoutChanges="true"
         android:background="@drawable/intel_toggle_background_selector"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingLeft="6dp"
         android:paddingTop="4dp"
@@ -29,6 +27,7 @@
             android:layout_height="wrap_content"
             android:enabled="false"
             android:gravity="center"
+            android:singleLine="true"
             android:text="@string/state_all" />
     </LinearLayout>
 
@@ -37,10 +36,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="1dp"
-        android:layout_weight="1"
-        android:animateLayoutChanges="true"
         android:background="@drawable/intel_toggle_background_selector"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingLeft="6dp"
         android:paddingTop="4dp"
@@ -61,6 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:gravity="center"
+            android:singleLine="true"
             android:text="@string/state_unread" />
     </LinearLayout>
 
@@ -69,10 +67,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="1dp"
-        android:layout_weight="1"
-        android:animateLayoutChanges="true"
         android:background="@drawable/intel_toggle_background_selector"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingLeft="6dp"
         android:paddingTop="4dp"
@@ -92,6 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:gravity="center"
+            android:singleLine="true"
             android:text="@string/state_focus" />
     </LinearLayout>
 
@@ -100,10 +97,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="1dp"
-        android:layout_weight="1"
-        android:animateLayoutChanges="true"
         android:background="@drawable/intel_toggle_background_selector"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingLeft="6dp"
         android:paddingTop="4dp"
@@ -123,6 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:gravity="center"
+            android:singleLine="true"
             android:text="@string/state_saved" />
 
     </LinearLayout>

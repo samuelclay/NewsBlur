@@ -1,0 +1,2 @@
+Header before=[119, 976, 311, 1037], after=[119, 976, 311, 1037]
+PASS: sheet stayed anchored during downward list scrolling

@@ -25,6 +25,8 @@ import com.newsblur.databinding.DialogChoosefoldersBinding;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.AppConstants;
+import com.newsblur.util.UIUtils;
 
 import javax.inject.Inject;
 
@@ -60,8 +62,8 @@ public class ChooseFoldersFragment extends DialogFragment {
         final Set<String> oldFolders = new HashSet<>();
         for (Folder folder : folders) {
             if (folder.feedIds.contains(feed.feedId) && folder.name != null) {
-                newFolders.add(folder.name);
-                oldFolders.add(folder.name);
+                newFolders.add(folder.flatName());
+                oldFolders.add(folder.flatName());
             }
         }
 
@@ -91,20 +93,20 @@ public class ChooseFoldersFragment extends DialogFragment {
             public View getView(final int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
                 CheckBox row = v.findViewById(R.id.choosefolders_foldername);
-                if (position == 0) {
-                    row.setText(R.string.top_level);
-                }
-                row.setChecked(folders.get(position).feedIds.contains(feed.feedId));
+                Folder folder = folders.get(position);
+                row.setText(AppConstants.ROOT_FOLDER.equals(folder.name) ? getString(R.string.top_level) : folder.name);
+                row.setContentDescription(AppConstants.ROOT_FOLDER.equals(folder.name) ? row.getText() : folder.flatName());
+                row.setPaddingRelative(UIUtils.dp2px(requireContext(), 10 + 28 * folder.depth()),
+                        row.getPaddingTop(), row.getPaddingEnd(), row.getPaddingBottom());
+                row.setChecked(newFolders.contains(folder.flatName()));
                 row.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         CheckBox row = (CheckBox) v;
                         if (row.isChecked()) {
-                            folders.get(position).feedIds.add(feed.feedId);
-                            newFolders.add(folders.get(position).name);
+                            newFolders.add(folder.flatName());
                         } else {
-                            folders.get(position).feedIds.remove(feed.feedId);
-                            newFolders.remove(folders.get(position).name);
+                            newFolders.remove(folder.flatName());
                         }
                     }
                 });
@@ -119,4 +121,3 @@ public class ChooseFoldersFragment extends DialogFragment {
 	}
 
 }
-

@@ -26,6 +26,7 @@ import com.newsblur.R;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
 import com.newsblur.delegate.MainContextMenuDelegateImpl;
+import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.fragment.FeedSelectorFragment;
 import com.newsblur.fragment.FeedsShortcutFragment;
 import com.newsblur.fragment.FolderListFragment;
@@ -37,12 +38,15 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.LastStoryList;
 import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StorySplitView;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 import java.lang.ref.WeakReference;
+import java.text.NumberFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -56,6 +60,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private static final long SYNC_STATUS_DONE_DURATION_MS = 5000L;
     private static final DecelerateInterpolator SYNC_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateInterpolator SYNC_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
+    // Main.java's bottom toolbar hugs its contents on screens at least this wide (tablets).
+    private static final int COMPACT_TOOLBAR_MIN_WIDTH_DP = 600;
     private static WeakReference<Main> visibleMainRef = new WeakReference<>(null);
 
     private enum SyncStatusAccessory {
@@ -75,6 +81,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private ActivityMainBinding binding;
     private MainContextMenuDelegate contextMenuDelegate;
     private KeyboardManager keyboardManager;
+    private final NumberFormat unreadCountFormatter = NumberFormat.getIntegerInstance();
     private boolean hasSeenActiveSyncStatus = false;
     private boolean isShowingDoneSyncStatus = false;
     private boolean isShowingLoadingSyncPlaceholder = true;
@@ -90,6 +97,16 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         Trace.beginSection("MainOnCreate");
 
         super.onCreate(savedInstanceState);
+        // On tablets the feed list slides over the last story list instead of filling the screen
+        // (FeedListDrawer.kt), so Main.java hands off to that story list and steps aside. Only a
+        // fresh launch does: a Main recreated under an open story list and reader (a foldable
+        // unfolding, a window widening) stays the feed list rather than clearing what's being read,
+        // and one already finishing (NbActivity.kt found no login) leaves the login screen alone.
+        if (!isFinishing() && savedInstanceState == null && !isFeedDrawer() && StorySplitView.usesTabletNavigation(this)) {
+            openStoryListUnderFeedDrawer();
+            Trace.endSection();
+            return;
+        }
         visibleMainRef = new WeakReference<>(this);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -127,6 +144,17 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
+        binding.bottomToolbar.setBackground(com.newsblur.view.FloatingToolbarSurface.background(this, prefsRepo.getResolvedTheme(this)));
+        fitBottomToolbarToContentOnTablets();
+        binding.bottomToolbar.bringToFront();
+        binding.bottomToolbar.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            View list = findViewById(R.id.folderfeed_list);
+            if (list != null) {
+                int inset = binding.getRoot().getHeight() - binding.bottomToolbar.getTop() + UIUtils.dp2px(this, 8);
+                if (list.getPaddingBottom() != inset) list.setPadding(list.getPaddingLeft(), list.getPaddingTop(), list.getPaddingRight(), inset);
+                if (list instanceof android.view.ViewGroup) ((android.view.ViewGroup) list).setClipToPadding(false);
+            }
+        });
 
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
@@ -171,7 +199,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // will be required, however inefficient
         folderFeedList.hasUpdated();
 
-        syncServiceState.resetReadingSession(dbHelper); // TODO suspend
+        // As the tablet slide-over (FeedListDrawer.kt), the story list beneath still owns the reading session.
+        if (!isFeedDrawer()) {
+            syncServiceState.resetReadingSession(dbHelper); // TODO suspend
+        }
         syncServiceState.flushRecounts();
 
         updateStatusIndicators();
@@ -199,6 +230,53 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             visibleMainRef.clear();
         }
         super.onDestroy();
+    }
+
+    // Main.java's floating toolbar spans a phone's width, but on a tablet that stretches the add
+    // button, filter, and settings button across the screen, so there it hugs its contents, centered.
+    private void fitBottomToolbarToContentOnTablets() {
+        if (getResources().getConfiguration().smallestScreenWidthDp < COMPACT_TOOLBAR_MIN_WIDTH_DP) return;
+        android.view.ViewGroup.LayoutParams toolbarParams = binding.bottomToolbar.getLayoutParams();
+        toolbarParams.width = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+        binding.bottomToolbar.setLayoutParams(toolbarParams);
+        View selector = feedSelectorFragment.getView();
+        if (selector != null && selector.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+            android.widget.LinearLayout.LayoutParams selectorParams = (android.widget.LinearLayout.LayoutParams) selector.getLayoutParams();
+            selectorParams.width = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+            selectorParams.weight = 0f;
+            selectorParams.setMarginStart(UIUtils.dp2px(this, 12));
+            selectorParams.setMarginEnd(UIUtils.dp2px(this, 12));
+            selector.setLayoutParams(selectorParams);
+        }
+    }
+
+    // FeedListDrawer.kt runs Main.java as a slide-over panel on top of a tablet's story list and reader.
+    protected boolean isFeedDrawer() {
+        return false;
+    }
+
+    // Opens the last story list as the root of a fresh task, with the feed list slid over it, or
+    // All Site Stories directly from the launcher shortcut.
+    private void openStoryListUnderFeedDrawer() {
+        BootReceiver.scheduleSyncService(this);
+        Intent storyList;
+        String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
+        if (shortcutExtra != null && shortcutExtra.startsWith(ShortcutUtils.SHORTCUT_ALL_STORIES)) {
+            storyList = new Intent(this, AllStoriesItemsList.class);
+            storyList.putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds());
+            storyList.putExtra(ItemsList.EXTRA_VISIBLE_SEARCH, shortcutExtra.equals(ShortcutUtils.SHORTCUT_ALL_STORIES_SEARCH));
+        } else {
+            storyList = LastStoryList.intent(this, dbHelper);
+            storyList.putExtra(ItemsList.EXTRA_OPEN_FEED_DRAWER, true);
+            // Hidden under the slide-over, the last story list loads nothing until the feed list
+            // closes without a pick; a pick switches it to that feed instead (FeedListDrawer.kt).
+            storyList.putExtra(ItemsList.EXTRA_DEFER_STORIES, true);
+            // A feed just added (AddFeedFragment.kt) stays visible in the slide-over's feed list.
+            storyList.putExtra(EXTRA_FORCE_SHOW_FEED_ID, getIntent().getStringExtra(EXTRA_FORCE_SHOW_FEED_ID));
+        }
+        storyList.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(storyList);
+        finish();
     }
 
     public static Bitmap createVisibleFeedListSnapshot() {
@@ -292,8 +370,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
-        binding.mainUnreadCountNeutText.setText(Integer.toString(neutCount));
-        binding.mainUnreadCountPosiText.setText(Integer.toString(posiCount));
+        binding.mainUnreadCountNeutText.setText(unreadCountFormatter.format(neutCount));
+        binding.mainUnreadCountPosiText.setText(unreadCountFormatter.format(posiCount));
     }
 
     /**
@@ -352,12 +430,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             return;
         }
 
+        // FolderListFragment.java may still be reading cached feeds before the service reports any status.
+        if (!folderFeedList.firstCursorSeenYet) {
+            isShowingLoadingSyncPlaceholder = true;
+            showSyncStatusIndicator(getString(R.string.loading), SyncStatusAccessory.SPINNER);
+            return;
+        }
+
         if (hasSeenActiveSyncStatus) {
-            if (!folderFeedList.firstCursorSeenYet) {
-                isShowingLoadingSyncPlaceholder = true;
-                showSyncStatusIndicator(getString(R.string.loading), SyncStatusAccessory.SPINNER);
-                return;
-            }
             hasSeenActiveSyncStatus = false;
             shouldTrackActiveSyncStatus = false;
             isShowingLoadingSyncPlaceholder = false;
@@ -478,8 +558,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickAddButton() {
-        Intent i = new Intent(this, FeedSearchActivity.class);
-        startActivity(i);
+        if (getSupportFragmentManager().findFragmentByTag("add_site") == null) {
+            AddFeedFragment.newInstance().show(getSupportFragmentManager(), "add_site");
+        }
     }
 
     private void onClickUserButton() {

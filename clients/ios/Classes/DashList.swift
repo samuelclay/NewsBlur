@@ -65,6 +65,8 @@ import Foundation
                 folderId = "trending:well_read"
             } else if localRiverId == "trending:long_reads" {
                 folderId = "trending:long_reads"
+            } else if localRiverId == "trending:good_reads" {
+                folderId = "trending:good_reads"
             } else if localRiverId.hasPrefix("river:") {
                 folderId = localRiverId.deletingPrefix("river:")
             } else if localRiverId.hasPrefix("starred:") {
@@ -139,6 +141,8 @@ import Foundation
             return "Widely Read Stories"
         } else if folderId == "trending:long_reads" {
             return "Long Reads"
+        } else if folderId == "trending:good_reads" {
+            return "Good Reads"
         } else {
             return baseName
         }
@@ -153,6 +157,8 @@ import Foundation
             return UIImage(named: "trending-well-read")
         } else if folderId == "trending:long_reads" {
             return UIImage(named: "trending-long-reads")
+        } else if folderId == "trending:good_reads" {
+            return UIImage(systemName: "star.fill")
         } else if isFolder {
             return folder?.image ?? UIImage(named: "folder-open")
         } else {
