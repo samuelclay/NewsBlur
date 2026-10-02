@@ -39,6 +39,18 @@ xcodebuild -project clients/ios/NewsBlur.xcodeproj -scheme NewsBlur -configurati
 
 The original background regression failed in `/tmp/newsblur-ftux-chrome-red.log`, and Done-while-loading failed in `/tmp/newsblur-ftux-done-red.log`. The updated unit tests, account UI and slow-network navigation tests pass in `/tmp/newsblur-ftux-restored.xcresult`. That run exposed an invalid accessibility assertion for decorative thumbnails; the images were visibly rendered in its screenshots. The corrected theme run is `/tmp/newsblur-ftux-discovery-final.xcresult`. Backend output is `/tmp/newsblur-ftux-backend-database.log`.
 
+## Loading feeds after setup
+
+`OnboardingViewController.swift` retains a shared loading state across queued subscriptions, OPML upload and the final feed refresh. Completion shows a spinner labeled “Loading your feeds…” above the enabled Start Reading button. After dismissal, the same state appears in the feed list's existing `SyncNotifierView`, with navigation still available. It ends after the latest feed response renders or fails. Failed additions remain retryable; a failed final refresh preserves the usual Offline/error presentation.
+
+`FeedsObjCViewController.m` now rejects older feed-list responses, including their asynchronous database and rendering work. A slower partial response can no longer replace a newer complete list. Offline cache publication observes the same request generation.
+
+| Completion while loading | Feed list while loading | Final refresh complete |
+| --- | --- | --- |
+| [Visible spinner and Start Reading](onboarding-loading-final.png) | [Nonblocking feed-list spinner](onboarding-loading-reader.png) | [Spinner cleared](onboarding-loading-reader-finished.png) |
+
+The slow-additions UI regression first failed twice in `/tmp/newsblur-loading-red.xcresult`, and the real `fetchFeedList` request-order regression failed in `/tmp/newsblur-loading-race-red.log` by applying `[complete, partial]`. All 9 onboarding unit tests pass in `/tmp/newsblur-loading-final.xcresult`, including pending-work/final-refresh lifetime, all additions failing, and final refresh error ordering. The final UI run passes in `/tmp/newsblur-loading-footer.xcresult`: the loading label is visibly reachable on completion, Start Reading remains enabled, progress survives into the feed list, and disappears after the queued work and final refresh finish. These screenshots and delayed responses use isolated fixtures on the existing iPhone 17e simulator.
+
 ## Provider configuration and rollout
 
 Both provider changes were submitted with explicit approval and verified as saved:

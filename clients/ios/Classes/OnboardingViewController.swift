@@ -126,6 +126,57 @@ struct OnboardingFeed: Identifiable {
     }
 }
 
+// OnboardingViewController.swift keeps setup progress alive after its sheet is dismissed.
+@MainActor @objc final class OnboardingFeedLoading: NSObject, ObservableObject {
+    @objc static let shared = OnboardingFeedLoading()
+    @Published private(set) var isLoading = false
+    @objc var loading: Bool { isLoading }
+    private var work: Set<UUID> = []
+    private var awaitingRefresh = false
+
+    func beginWork() -> UUID {
+        let token = UUID()
+        work.insert(token)
+        publish()
+        return token
+    }
+
+    @discardableResult func finishWork(_ token: UUID) -> Bool {
+        guard work.remove(token) != nil else { return false }
+        requestRefresh()
+        return true
+    }
+
+    func cancelWork(_ token: UUID) {
+        guard work.remove(token) != nil else { return }
+        publish()
+    }
+
+    func requestRefresh() {
+        awaitingRefresh = true
+        publish()
+    }
+
+    // FeedsObjCViewController.m calls this only after its latest response is rendered, or has failed.
+    @objc func refreshDidFinish() {
+        awaitingRefresh = false
+        publish()
+    }
+
+    @objc func reset() {
+        work.removeAll()
+        awaitingRefresh = false
+        publish()
+    }
+
+    private func publish() {
+        let next = !work.isEmpty || awaitingRefresh
+        guard isLoading != next else { return }
+        isLoading = next
+        NotificationCenter.default.post(name: Notification.Name("OnboardingFeedLoadingChanged"), object: self)
+    }
+}
+
 @MainActor final class OnboardingBundles: ObservableObject {
     struct FailedBundle: Identifiable {
         let id = UUID()
@@ -153,6 +204,7 @@ struct OnboardingFeed: Identifiable {
     private var subscriptionTask: Task<Void, Never>?
 
     func prepareToRead() {
+        OnboardingFeedLoading.shared.requestRefresh()
         onSubscriptionsChanged()
     }
 
@@ -259,6 +311,7 @@ struct OnboardingFeed: Identifiable {
         queued.formUnion(chosenURLs)
         selection.subtract(chosenURLs)
         message = nil
+        let loadingToken = OnboardingFeedLoading.shared.beginWork()
         let task = Task { [self] in
             await previous?.value
             var failures: [OnboardingFeed] = []
@@ -268,6 +321,7 @@ struct OnboardingFeed: Identifiable {
                 guard username == NewsBlurAppDelegate.shared()?.activeUsername,
                       server == NewsBlurAppDelegate.shared()?.url else {
                     queued.subtract(chosenURLs)
+                    OnboardingFeedLoading.shared.cancelWork(loadingToken)
                     return
                 }
                 do {
@@ -277,6 +331,7 @@ struct OnboardingFeed: Identifiable {
                     guard username == NewsBlurAppDelegate.shared()?.activeUsername,
                           server == NewsBlurAppDelegate.shared()?.url else {
                         queued.subtract(chosenURLs)
+                        OnboardingFeedLoading.shared.cancelWork(loadingToken)
                         return
                     }
                     added.insert(feed.url)
@@ -285,7 +340,10 @@ struct OnboardingFeed: Identifiable {
                 queued.remove(feed.url)
             }
             guard username == NewsBlurAppDelegate.shared()?.activeUsername,
-                  server == NewsBlurAppDelegate.shared()?.url else { return }
+                  server == NewsBlurAppDelegate.shared()?.url else {
+                OnboardingFeedLoading.shared.cancelWork(loadingToken)
+                return
+            }
             if !failures.isEmpty {
                 failedBundles.append(FailedBundle(folder: destination, feeds: failures))
                 if generation == selectionGeneration { selection.formUnion(failures.map(\.url)) }
@@ -294,7 +352,7 @@ struct OnboardingFeed: Identifiable {
                 message = failures.isEmpty ? "Added \(successes) feeds to \(destination)."
                     : "Added \(successes) feeds. \(failures.count) could not be added. You can retry them below."
             }
-            if successes > 0 { onSubscriptionsChanged() }
+            if OnboardingFeedLoading.shared.finishWork(loadingToken) { onSubscriptionsChanged() }
         }
         subscriptionTask = task
         return task
@@ -306,6 +364,7 @@ private struct OnboardingView: View {
     let onFinish: () -> Void
     @StateObject private var bundles = OnboardingBundles()
     @StateObject private var discovery = DiscoverSitesViewModel()
+    @ObservedObject private var feedLoading = OnboardingFeedLoading.shared
     @State private var step = 0
     @State private var showImporter = false
     @State private var importing = false
@@ -335,7 +394,7 @@ private struct OnboardingView: View {
                         discoveryPage
                     } else { finishedPage }
                 }.padding(24).frame(maxWidth: 620).frame(maxWidth: .infinity)
-            }
+            }.id(step)
         }
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 12) {
@@ -347,6 +406,7 @@ private struct OnboardingView: View {
                         Button("Skip this step") { showCompletion() }
                     }
                 } else {
+                    if feedLoading.isLoading { loadingIndicator }
                     Button("Start reading") {
                         bundles.prepareToRead()
                         onFinish()
@@ -362,6 +422,7 @@ private struct OnboardingView: View {
             case .success(let url):
                 let username = NewsBlurAppDelegate.shared()?.activeUsername
                 let server = NewsBlurAppDelegate.shared()?.url
+                let loadingToken = OnboardingFeedLoading.shared.beginWork()
                 importing = true
                 importMessage = nil
                 Task {
@@ -369,8 +430,13 @@ private struct OnboardingView: View {
                         let count = try await OnboardingAPI.importOPML(url)
                         importMessage = "\(count) feeds queued for import. Your folders come along too. You can keep going while NewsBlur imports them."
                         if username == NewsBlurAppDelegate.shared()?.activeUsername,
-                           server == NewsBlurAppDelegate.shared()?.url { bundles.prepareToRead() }
-                    } catch { importMessage = error.localizedDescription }
+                           server == NewsBlurAppDelegate.shared()?.url {
+                            if OnboardingFeedLoading.shared.finishWork(loadingToken) { bundles.prepareToRead() }
+                        } else { OnboardingFeedLoading.shared.cancelWork(loadingToken) }
+                    } catch {
+                        importMessage = error.localizedDescription
+                        OnboardingFeedLoading.shared.cancelWork(loadingToken)
+                    }
                     importing = false
                 }
             case .failure(let error): importMessage = error.localizedDescription
@@ -462,8 +528,16 @@ private struct OnboardingView: View {
         }
     }
 
+    private var loadingIndicator: some View {
+        HStack(spacing: 10) {
+            ProgressView()
+            Text("Loading your feeds…")
+        }.accessibilityIdentifier("onboarding.feeds.loading")
+    }
+
     private var subscriptionStatus: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if step == 0 && feedLoading.isLoading { loadingIndicator }
             if !bundles.queued.isEmpty {
                 Label("Adding \(bundles.queued.count) feeds in the background…", systemImage: "arrow.triangle.2.circlepath")
                     .font(.subheadline).foregroundStyle(DiscoverColors.textSecondary)

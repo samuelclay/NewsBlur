@@ -21,7 +21,30 @@ import MetalKit
         XCTAssertTrue(background.isPaused, "The login animation must stop when the screen closes.")
     }
 
+    func test_olderPartialFeedResponseCannotReplaceLatestRefresh() {
+        let app = OnboardingRefreshAppDelegate()
+        let feeds = OnboardingRefreshFeedsController()
+        feeds.appDelegate = app
+        feeds.fetchFeedList(false)
+        feeds.fetchFeedList(false)
+        XCTAssertEqual(app.responses.count, 2)
+        app.responses[1](nil, ["marker": "complete"])
+        app.responses[0](nil, ["marker": "partial"])
+        XCTAssertEqual(feeds.appliedMarkers, ["complete"], "A slow partial response must not overwrite the final feed list.")
+    }
+
+    func test_failedFinalRefreshEndsLoadingBeforeShowingOfflineError() {
+        let app = OnboardingRefreshAppDelegate()
+        let feeds = OnboardingRefreshFeedsController()
+        feeds.appDelegate = app
+        OnboardingFeedLoading.shared.requestRefresh()
+        feeds.fetchFeedList(false)
+        app.failures[0](nil, URLError(.notConnectedToInternet))
+        XCTAssertEqual(feeds.loadingWhenShowingError, [false], "The final error must be allowed to show Offline instead of being replaced by Loading.")
+    }
+
     override func tearDown() {
+        OnboardingFeedLoading.shared.reset()
         OnboardingAPI.session = .shared
         OnboardingURLProtocol.handler = nil
         super.tearDown()
@@ -88,13 +111,35 @@ import MetalKit
         bundles.folder = "Another folder"
         bundles.prepareToRead()
         XCTAssertEqual(refreshes, 1, "Entering completion refreshes immediately while additions are pending.")
+        OnboardingFeedLoading.shared.refreshDidFinish()
+        XCTAssertTrue(OnboardingFeedLoading.shared.isLoading, "An early partial refresh must not clear progress while additions are pending.")
         await task.value
         XCTAssertTrue(bundles.queued.isEmpty)
         XCTAssertEqual(attempted.count, 5)
         XCTAssertTrue(attempted.allSatisfy { $0.contains("new_folder=Science") })
         XCTAssertEqual(refreshes, 2, "Finishing the queue refreshes the newly added feeds.")
+        XCTAssertTrue(OnboardingFeedLoading.shared.isLoading, "The spinner must survive the final add response until the feed list is rendered.")
+        OnboardingFeedLoading.shared.refreshDidFinish()
+        XCTAssertFalse(OnboardingFeedLoading.shared.isLoading)
         bundles.prepareToRead()
         XCTAssertEqual(refreshes, 3, "Start Reading refreshes again.")
+    }
+
+    func test_failedAdditionsStillRefreshAndStopLoading() async {
+        network { request in
+            if request.url?.path == "/reader/add_url" { return (503, ["message": "Unavailable"]) }
+            return (200, ["feeds": [["feed_url": "https://example.com/rss", "title": "Example"]]])
+        }
+        var refreshes = 0
+        let bundles = OnboardingBundles(onSubscriptionsChanged: {
+            refreshes += 1
+            OnboardingFeedLoading.shared.refreshDidFinish()
+        })
+        await bundles.load("Science")
+        await bundles.subscribe()
+        XCTAssertEqual(refreshes, 1)
+        XCTAssertFalse(OnboardingFeedLoading.shared.isLoading)
+        XCTAssertEqual(bundles.failedBundles.count, 1)
     }
 
     func test_opmlUploadPreservesDocumentAndHandlesQueuedResponse() async throws {
@@ -161,4 +206,27 @@ private final class OnboardingURLProtocol: URLProtocol {
         } catch { client?.urlProtocol(self, didFailWithError: error) }
     }
     override func stopLoading() {}
+}
+
+private final class OnboardingRefreshAppDelegate: NewsBlurAppDelegate {
+    var responses: [(URLSessionDataTask?, Any?) -> Void] = []
+    var failures: [(URLSessionDataTask?, Error?) -> Void] = []
+    override func cancelOfflineQueue() {}
+    override var url: String! { "https://onboarding-refresh.invalid" }
+    override func get(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
+        responses.append(success)
+        failures.append(failure)
+    }
+}
+
+private final class OnboardingRefreshFeedsController: FeedsObjCViewController {
+    var appliedMarkers: [String] = []
+    var loadingWhenShowingError: [Bool] = []
+    @objc(finishedWithError:statusCode:) func finishedWithError(_ error: NSError, statusCode: Int) {
+        loadingWhenShowingError.append(OnboardingFeedLoading.shared.isLoading)
+    }
+    // OnboardingTests.swift observes the real fetchFeedList callback without unrelated feed rendering setup.
+    @objc func finishLoadingFeedList(_ results: NSDictionary) {
+        appliedMarkers.append(results["marker"] as! String)
+    }
 }
