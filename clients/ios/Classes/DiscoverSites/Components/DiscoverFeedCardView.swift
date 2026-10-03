@@ -11,16 +11,39 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct DiscoverFeedCardView: View {
     @EnvironmentObject var discovery: DiscoverSitesViewModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let feed: DiscoverPopularFeed
     var showStories: Bool = false
+    var selection: Binding<Bool>? = nil
+    var selectionStatus: String? = nil
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
     var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
 
+    @ViewBuilder
     var body: some View {
+        if let selection, selectionStatus == nil {
+            // DiscoverFeedCardView.swift treats the entire chooser card as one selection control.
+            Button { selection.wrappedValue.toggle() } label: {
+                cardContent
+                    .contentShape(RoundedRectangle(cornerRadius: 14))
+                    .opacity(selection.wrappedValue ? 1 : 0.5)
+            }
+            .buttonStyle(.plain)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: selection.wrappedValue)
+            .accessibilityLabel("Include \(feed.feedTitle)")
+            .accessibilityValue(selection.wrappedValue ? "Included in bundle" : "Not included in bundle")
+            .accessibilityAddTraits(selection.wrappedValue ? .isSelected : [])
+            .accessibilityIdentifier("discover-bundle-feed-\(feed.id)")
+        } else {
+            cardContent
+        }
+    }
+
+    private var cardContent: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
-                faviconView
+                DiscoverFeedIconView(feed: feed)
                     .frame(width: 32, height: 32)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 4) {
@@ -47,28 +70,42 @@ struct DiscoverFeedCardView: View {
             if showStories && !feed.stories.isEmpty {
                 Divider()
                 ForEach(feed.stories.prefix(3)) { story in
-                    Button { onOpenStory?(feed, story) } label: {
+                    if let onOpenStory, selection == nil {
+                        Button { onOpenStory(feed, story) } label: { storyRow(story) }
+                            .buttonStyle(DiscoverStoryButtonStyle(isSelected: discovery.selectedPreviewStoryID == story.id))
+                            .disabled(discovery.isPreparingPreview)
+                            .accessibilityIdentifier("discover-story-\(story.id)")
+                            .accessibilityAddTraits(discovery.selectedPreviewStoryID == story.id ? .isSelected : [])
+                    } else {
                         storyRow(story)
                     }
-                    .buttonStyle(DiscoverStoryButtonStyle(isSelected: discovery.selectedPreviewStoryID == story.id))
-                    .disabled(discovery.isPreparingPreview)
-                    .accessibilityIdentifier("discover-story-\(story.id)")
-                    .accessibilityAddTraits(discovery.selectedPreviewStoryID == story.id ? .isSelected : [])
                 }
             }
 
             Divider()
             HStack(spacing: 8) {
-                Button(action: { onTryFeed?(feed) }) {
-                    Label("Try", systemImage: "doc.text.magnifyingglass")
-                        .frame(minWidth: 62, minHeight: 44)
+                if let onTryFeed, selection == nil {
+                    Button(action: { onTryFeed(feed) }) {
+                        Label("Try", systemImage: "doc.text.magnifyingglass")
+                            .frame(minWidth: 62, minHeight: 44)
+                    }
+                    .fixedSize(horizontal: true, vertical: false)
+                    .accessibilityLabel("Try \(feed.feedTitle)")
+                    .accessibilityIdentifier("discover-try-feed-\(feed.id)")
+                    .disabled(discovery.isPreparingPreview)
+                    .foregroundColor(DiscoverColors.tryButtonText)
                 }
-                .fixedSize(horizontal: true, vertical: false)
-                .accessibilityLabel("Try \(feed.feedTitle)")
-                .accessibilityIdentifier("discover-try-feed-\(feed.id)")
-                .disabled(discovery.isPreparingPreview)
-                .foregroundColor(DiscoverColors.tryButtonText)
-                if isSubscribed {
+                if let selection {
+                    if let selectionStatus {
+                        Label(selectionStatus, systemImage: "checkmark.circle.fill")
+                            .foregroundColor(DiscoverColors.accent).frame(minHeight: 44)
+                    } else {
+                        Label(selection.wrappedValue ? "Included in bundle" : "Include in bundle",
+                              systemImage: selection.wrappedValue ? "checkmark.circle.fill" : "circle")
+                            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                            .foregroundColor(DiscoverColors.accent)
+                    }
+                } else if isSubscribed {
                     Spacer(minLength: 0)
                     Label("Subscribed", systemImage: "checkmark.circle.fill")
                         .foregroundColor(DiscoverColors.accent)
@@ -157,46 +194,6 @@ struct DiscoverFeedCardView: View {
         .accessibilityIdentifier("discover-freshness-\(feed.id)")
     }
 
-    // MARK: - Favicon
-
-    @ViewBuilder
-    private var faviconView: some View {
-        if let faviconData = feed.faviconData,
-           !faviconData.isEmpty,
-           let data = Data(base64Encoded: faviconData),
-           let uiImage = UIImage(data: data) {
-            Image(uiImage: uiImage)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 24, height: 24)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
-        } else if let faviconUrl = feed.faviconUrl, !faviconUrl.isEmpty, let url = URL(string: faviconUrl) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                case .failure:
-                    defaultFavicon
-                default:
-                    defaultFavicon
-                        .opacity(0.4)
-                }
-            }
-        } else {
-            defaultFavicon
-        }
-    }
-
-    private var defaultFavicon: some View {
-        Image(systemName: "globe")
-            .font(.system(size: 14))
-            .foregroundColor(DiscoverColors.textSecondary)
-            .frame(width: 24, height: 24)
-    }
-
     // MARK: - Story Row
 
     private func storyRow(_ story: DiscoverStory) -> some View {
@@ -282,6 +279,51 @@ struct DiscoverFeedCardView: View {
 
         guard let appDelegate = NewsBlurAppDelegate.shared() else { return false }
         return appDelegate.dictFeeds?.object(forKey: feed.id) != nil
+    }
+}
+
+// DiscoverFeedCardView.swift shares the exact favicon rendering with onboarding interest cards.
+@available(iOS 15.0, *)
+struct DiscoverFeedIconView: View {
+    let feed: DiscoverPopularFeed
+
+    @ViewBuilder
+    var body: some View {
+        if let faviconData = feed.faviconData,
+           !faviconData.isEmpty,
+           let data = Data(base64Encoded: faviconData),
+           let uiImage = UIImage(data: data) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+        } else if let faviconUrl = feed.faviconUrl, !faviconUrl.isEmpty,
+                  let url = URL(string: faviconUrl, relativeTo: URL(string: NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com"))?.absoluteURL {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                case .failure:
+                    defaultFavicon
+                default:
+                    defaultFavicon
+                        .opacity(0.4)
+                }
+            }
+        } else {
+            defaultFavicon
+        }
+    }
+
+    private var defaultFavicon: some View {
+        Image(systemName: "globe")
+            .font(.system(size: 14))
+            .foregroundColor(DiscoverColors.textSecondary)
+            .frame(width: 24, height: 24)
     }
 }
 

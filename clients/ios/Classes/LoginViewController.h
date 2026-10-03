@@ -23,6 +23,10 @@
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) CAGradientLayer *backgroundGradientLayer;
 
+// LoginViewController.m shares the branded background with the Swift account form.
+- (void)setupLoginBackground;
+- (void)setLoginBackgroundActive:(BOOL)active;
+
 - (void)checkPassword;
 - (void)registerAccount;
 - (IBAction)tapLoginButton;
