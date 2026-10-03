@@ -37,6 +37,23 @@ class SetupQueueTest {
 
     private fun response(value: String) = SetupResponse(JsonParser.parseString(value).asJsonObject, null)
 
+    @Test fun loadingWaitsForTheRefreshedFeedCursor() = runTest(dispatcher) {
+        val sync = mockk<SyncServiceState>(relaxed = true)
+        val queue = SetupQueue(api, sync, mockk<Context>()).apply { bind(account) }
+        queue.refresh()
+        queue.feedListRendered()
+        assertTrue(queue.isPending())
+        every { sync.doFeedsFolders } returns true
+        queue.metadataRefreshed()
+        queue.feedListRendered()
+        assertTrue(queue.isPending())
+        every { sync.doFeedsFolders } returns false
+        queue.metadataRefreshed()
+        assertTrue(queue.isPending())
+        queue.feedListRendered()
+        assertFalse(queue.isPending())
+    }
+
     @Test fun accountChangeDuringCapabilityProbePreventsEveryWrite() =
         runTest(dispatcher) {
             coEvery { api.request(any(), any(), any(), any(), any(), any()) } coAnswers {

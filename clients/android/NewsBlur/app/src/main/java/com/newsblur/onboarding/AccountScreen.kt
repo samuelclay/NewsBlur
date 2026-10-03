@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -310,7 +312,8 @@ fun AccountScreen(
     BasicTextField(
         value,
         onChange,
-        Modifier.fillMaxWidth().background(Color.White.copy(alpha = .12f), RoundedCornerShape(12.dp)).padding(15.dp),
+        Modifier.fillMaxWidth().background(Color.White.copy(alpha = .12f), RoundedCornerShape(12.dp)).padding(15.dp)
+            .semantics { contentDescription = label },
         enabled = enabled,
         singleLine = true,
         textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
@@ -341,7 +344,11 @@ fun SocialBrowserEffect(
     LaunchedEffect(state.browserUrl) {
         state.browserUrl?.let { url ->
             model.browserOpened()
-            CustomTabsIntent.Builder().build().launchUrl(context, url.toUri())
+            try {
+                CustomTabsIntent.Builder().build().launchUrl(context, url.toUri())
+            } catch (_: android.content.ActivityNotFoundException) {
+                model.browserUnavailable()
+            }
         }
     }
 }

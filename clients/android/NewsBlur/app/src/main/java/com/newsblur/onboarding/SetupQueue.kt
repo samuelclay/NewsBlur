@@ -8,6 +8,8 @@ import com.newsblur.discover.number
 import com.newsblur.discover.objects
 import com.newsblur.discover.string
 import com.newsblur.service.SyncServiceState
+import com.newsblur.service.NbSyncManager
+import com.newsblur.service.NBSync
 import com.newsblur.util.FeedUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -56,13 +58,15 @@ class SetupQueue
         private var tail: Job? = null
         private var importJob: Job? = null
         private var batchSupported: Boolean? = null
+        private var awaitingRenderedFeeds = false
+        private var metadataReceived = false
 
         fun isPending(): Boolean =
             owner?.let { api.isCurrent(it) } == true &&
                 (
                     mutable.value.queued.isNotEmpty() ||
                         mutable.value.importing ||
-                        (mutable.value.added.isNotEmpty() && sync.doFeedsFolders)
+                        awaitingRenderedFeeds
                 )
 
         init {
@@ -70,6 +74,15 @@ class SetupQueue
                 state.collect {
                     com.newsblur.service.NbSyncManager
                         .submitUpdate(com.newsblur.service.NbSyncManager.UPDATE_STATUS)
+                }
+            }
+            scope.launch {
+                NbSyncManager.state.collect { event ->
+                    if (event is NBSync.Update && event.type and NbSyncManager.UPDATE_METADATA != 0 && !sync.doFeedsFolders) {
+                        metadataRefreshed()
+                    } else if (event is NBSync.Error) {
+                        awaitingRenderedFeeds = false
+                    }
                 }
             }
         }
@@ -80,12 +93,29 @@ class SetupQueue
             importJob?.cancel()
             owner = account
             batchSupported = null
+            awaitingRenderedFeeds = false
+            metadataReceived = false
             mutable.value = SetupProgress()
         }
 
         fun refresh() {
+            if (owner?.let(api::isCurrent) != true) return
+            awaitingRenderedFeeds = true
+            metadataReceived = false
             sync.forceFeedsFolders()
             FeedUtils.triggerSync(context)
+            NbSyncManager.submitUpdate(NbSyncManager.UPDATE_STATUS)
+        }
+
+        // SetupQueue.kt waits for Main's cursor callback, not merely the network response.
+        fun metadataRefreshed() {
+            if (!sync.doFeedsFolders) metadataReceived = true
+        }
+
+        fun feedListRendered() {
+            if (!awaitingRenderedFeeds || !metadataReceived || sync.doFeedsFolders) return
+            awaitingRenderedFeeds = false
+            NbSyncManager.submitUpdate(NbSyncManager.UPDATE_STATUS)
         }
 
         private fun imported(folders: Map<String, List<DiscoveryFeed>>) {

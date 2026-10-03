@@ -100,7 +100,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -252,12 +253,18 @@ fun SetupScreen(
                         items(state.search, key = {
                             "search:${it.url}"
                         }, span = { GridItemSpan(maxLineSpan) }) { feed -> SearchResult(feed, state, progress, colors, model) }
+                        if (!state.searching && state.search.isEmpty() && categories.isEmpty() && state.error == null) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                Text("No interests or sites found. Try another search.", color = colors.textSecondary)
+                            }
+                        }
                     }
                     state.error?.let { message ->
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             Column {
                                 Text(message, color = colors.textPrimary)
                                 if (state.categories.isEmpty()) TextButton(onClick = { model.loadCatalog() }) { Text("Try again") }
+                                if (state.query.isNotBlank()) TextButton(onClick = { model.search(state.query) }) { Text("Try search again") }
                             }
                         }
                     }
@@ -342,7 +349,7 @@ fun SetupScreen(
                                         start = 12.dp,
                                     ).weight(
                                         1f,
-                                    ),
+                                    ).semantics { contentDescription = "Bundle folder name" },
                                 singleLine = true,
                                 textStyle =
                                     TextStyle(
@@ -476,60 +483,53 @@ fun SetupScreen(
     }
 }
 
+@Composable private fun InterestHeading(state: SetupState, colors: ReaderSheetPalette.Colors) {
+    Column {
+        Text("Explore interests", color = colors.textPrimary, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+        if (state.categories.isNotEmpty()) {
+            Text("${state.categories.size} categories to choose from", Modifier.padding(top = 4.dp),
+                color = colors.textSecondary, fontSize = 12.sp)
+        }
+    }
+}
+
 @Composable private fun SearchHeader(
     state: SetupState,
     colors: ReaderSheetPalette.Colors,
     onSearch: (String) -> Unit,
 ) {
     var focused by remember { mutableStateOf(false) }
+    val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
     BoxWithConstraints {
         val showHeading = !focused || maxWidth >= 550.dp
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            if (showHeading) {
-                Column(Modifier.width(IntrinsicSize.Max)) {
-                    Text("Explore interests", color = colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
-                    if (state.categories.isNotEmpty()) {
-                        Text(
-                            "${state.categories.size} categories to choose from",
-                            Modifier.padding(top = 4.dp),
-                            color = colors.textSecondary,
-                            fontSize = 12.sp,
-                        )
+        val stacked = maxWidth < 550.dp && fontScale > 1.15f
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (showHeading && stacked) InterestHeading(state, colors)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                if (showHeading && !stacked) Box(Modifier.width(IntrinsicSize.Max)) { InterestHeading(state, colors) }
+                Row(
+                    Modifier.then(if (showHeading && !stacked) Modifier.widthIn(max = 240.dp).weight(1f) else Modifier.fillMaxWidth())
+                        .heightIn(min = 44.dp)
+                        .background(colors.inputBackground, RoundedCornerShape(12.dp))
+                        .border(1.dp, colors.border, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Outlined.Search, null, Modifier.size(20.dp), tint = colors.textSecondary)
+                    BasicTextField(
+                        state.query, onSearch,
+                        Modifier.padding(start = 8.dp).weight(1f)
+                            .onFocusChanged { focused = it.isFocused }
+                            .semantics { contentDescription = "Search interests and sites" },
+                        singleLine = true,
+                        textStyle = TextStyle(color = colors.textPrimary, fontSize = 15.sp),
+                        cursorBrush = SolidColor(setupTeal),
+                    )
+                    if (state.query.isNotEmpty()) {
+                        IconButton(onClick = { onSearch("") }, modifier = Modifier.size(28.dp)) {
+                            Icon(Icons.Outlined.Close, "Clear search", tint = colors.textSecondary)
+                        }
                     }
-                }
-            }
-            Row(
-                Modifier
-                    .then(
-                        if (showHeading) Modifier.widthIn(max = 240.dp).weight(1f) else Modifier.fillMaxWidth(),
-                    ).height(44.dp)
-                    .background(colors.inputBackground, RoundedCornerShape(12.dp))
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(Icons.Outlined.Search, "Search interests and sites", Modifier.size(20.dp), tint = colors.textSecondary)
-                BasicTextField(
-                    state.query,
-                    onSearch,
-                    Modifier.padding(start = 8.dp).weight(1f).onFocusChanged {
-                        focused = it.isFocused
-                    },
-                    singleLine = true,
-                    textStyle =
-                        TextStyle(
-                            color = colors.textPrimary,
-                            fontSize = 15.sp,
-                        ),
-                    cursorBrush = SolidColor(setupTeal),
-                    decorationBox = { inner ->
-                        if (state.query.isBlank()) Text("Search", color = colors.textSecondary, fontSize = 15.sp)
-                        inner()
-                    },
-                )
-                if (state.query.isNotEmpty()) {
-                    IconButton(onClick = {
-                        onSearch("")
-                    }, modifier = Modifier.size(28.dp)) { Icon(Icons.Outlined.Close, "Clear search", tint = colors.textSecondary) }
                 }
             }
         }

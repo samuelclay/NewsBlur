@@ -328,6 +328,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             updateStatusIndicators();
         }
         if ((updateType & UPDATE_METADATA) != 0) {
+            setupQueue.metadataRefreshed();
             folderFeedList.hasUpdated();
         }
     }
@@ -382,6 +383,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
      * having to expensively recalculate those totals from the DB.
      */
     public void updateFeedCount(int feedCount) {
+        setupQueue.feedListRendered();
         if (folderFeedList.firstCursorSeenYet && isShowingLoadingSyncPlaceholder && !syncServiceState.isFeedCountSyncRunning()) {
             updateStatusIndicators();
         }
@@ -408,7 +410,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-        String rawSyncStatus = setupQueue.isPending() ? getString(R.string.loading) : syncServiceState.getSyncStatusMessage(this, false);
+        String rawSyncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        if (setupQueue.isPending() && !isOfflineSyncStatus(rawSyncStatus)) rawSyncStatus = getString(R.string.loading);
         boolean isOfflineSyncStatus = isOfflineSyncStatus(rawSyncStatus);
         boolean isShowingActiveSyncPill = rawSyncStatus != null && !isOfflineSyncStatus;
         binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning() && !isShowingActiveSyncPill);
