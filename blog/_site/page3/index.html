@@ -82,6 +82,135 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Feb 2, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/02/02/global-and-folder-scoped-intelligence-training/">
+              Global and folder-scoped intelligence training: Train once, apply everywhere
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.</p>
+
+<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.</p>
+
+<h3 id="three-scope-levels">Three scope levels</h3>
+
+<p>Every classifier pill in the Intelligence Trainer now shows three small scope icons on the left: a feed icon, a folder icon, and a globe icon.</p>
+
+<!-- SCREENSHOT: Intelligence trainer showing a classifier pill with the three scope toggle icons (feed, folder, globe) -->
+<p><img src="/assets/scope-toggle-icons.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<ul>
+  <li><strong>Per Site</strong> (feed icon) — The default. The classifier only applies to the feed you’re training. This is how classifiers have always worked.</li>
+  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.</li>
+  <li><strong>Global</strong> (globe icon) — The classifier applies to every feed you subscribe to.</li>
+</ul>
+
+<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.</p>
+
+<h3 id="real-world-examples">Real-world examples</h3>
+
+<p><strong>Hide a topic everywhere.</strong> Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
+
+<p><strong>Focus on a topic within a folder.</strong> Have a “Tech” folder with 40 feeds? Train “machine learning” as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.</p>
+
+<p><strong>Dislike a prolific author.</strong> Some authors are syndicated across multiple sites. Instead of training the same author name on each feed, set it to global and it applies everywhere at once.</p>
+
+<h3 id="manage-training-scope-filter">Manage Training scope filter</h3>
+
+<p>The Manage Training tab now includes a scope filter alongside the existing sentiment, type, and search filters. You can quickly see all your global classifiers, all your folder-scoped classifiers, or narrow down to just per-site training.</p>
+
+<!-- SCREENSHOT: Manage Training tab showing the scope filter segmented control (All, Per Site, Per Folder, Global) -->
+<p><img src="/assets/manage-training-scope-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Each classifier pill in the Manage Training list also shows a small colored scope badge, so you can tell at a glance whether a classifier is site-level, folder-level, or global.</p>
+
+<h3 id="how-scoping-works-under-the-hood">How scoping works under the hood</h3>
+
+<p>When NewsBlur scores a story, it checks all classifiers that apply to that story’s feed — including any folder-scoped classifiers for the feed’s folder and any global classifiers. The same “green always wins” rule applies: if a story matches both a liked global classifier and a disliked per-site classifier, the story is marked as Focus.</p>
+
+<p>Scope controls work with all classifier types: titles, authors, tags, text, and URLs. They also work with regex classifiers.</p>
+
+<h3 id="subscription-tiers">Subscription tiers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Tier Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Per-site classifiers (default)</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>Global and folder-scoped classifiers</td>
+      <td>Premium Archive</td>
+    </tr>
+    <tr>
+      <td>Manage Training scope filter</td>
+      <td>Premium Archive</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Jan 23, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/01/23/per-feed-auto-mark-read/">
+              Premium Archive: Per-feed and per-folder auto-mark-as-read settings
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscribers get the site-wide “days of unread” setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the feed options popover (click the gear icon in the feed header) and you’ll see a new “Auto Mark as Read” section. Choose how many days stories should remain unread before NewsBlur automatically marks them as read:</p>
+
+<!-- SCREENSHOT: Feed options popover showing Auto Mark as Read section with slider -->
+<p><img src="/assets/auto-mark-read-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The slider goes from 1 day to 365 days, with a “never” zone at the far right for feeds where you truly want to read every story regardless of age. Choose “Default” to inherit from the parent folder or site-wide setting, “Days” to set a specific duration, or “Never” to disable auto-marking entirely.</p>
+
+<h3 id="folder-inheritance">Folder inheritance</h3>
+
+<p>Settings cascade down from folders to feeds. Set a folder to 7 days, and all feeds inside inherit that setting unless they have their own override. This is perfect for organizing feeds by how aggressively you want to age them out:</p>
+
+<ul>
+  <li><strong>Must Read</strong> folder: Set to “Never” so nothing ages out</li>
+  <li><strong>News</strong> folder: Set to 2 days since news gets stale fast</li>
+  <li><strong>Blogs</strong> folder: Set to 30 days for long-form content worth revisiting</li>
+  <li>Individual feeds can still override their folder’s setting</li>
+</ul>
+
+<!-- SCREENSHOT: Folder settings dialog showing Auto Mark as Read with inheritance text -->
+<p><img src="/assets/auto-mark-read-folder-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The status text below the slider shows where the current setting comes from: the site-wide preference, a parent folder, or an explicit setting on this feed.</p>
+
+<h3 id="site-settings-dialog">Site settings dialog</h3>
+
+<p>You can also configure auto-mark-read from the site settings dialog (right-click a feed and choose “Site settings”). The same controls are available there, redesigned to match the popover style.</p>
+
+<!-- SCREENSHOT: Site settings dialog showing Auto Mark as Read section -->
+<p><img src="/assets/auto-mark-read-site-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Per-feed and per-folder auto-mark-as-read settings are a <a href="https://newsblur.com/?next=premium">Premium Archive</a> feature, available now on the web. They work alongside the existing site-wide “days of unread” preference in Manage → Preferences → General → Days of unreads, which is also a Premium Archive feature.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Jan 22, 2026</span>
           <h3>
             <a class="post-link" href="/2026/01/22/intelligence-trainer-overhaul/">
@@ -484,71 +613,6 @@
 <p>I’m super proud of this release; it took years to build and a decade to plan. And while the Discover Stories feature is technically only available to Premium Archive subscribers, you can see related stories if another Premium Archive subscriber is subscribed to that site. I don’t think hiding those stories from free and premium users is worthwhile.</p>
 
 <p>Please post your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>, ideally as an “idea,” but you know I love responding to all feedback. For every person who writes up their thoughts on the forum, there are ten people who are thinking the same thing, so it’s worthwhile to hear from you, knowing the multiplier it represents.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Oct 22, 2024</span>
-          <h3>
-            <a class="post-link" href="/2024/10/22/newsblur-macos-app/">
-              NewsBlur&#39;s native macOS App offers news notifications directly on your desktop
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.</p>
-
-<p>Introducing the <a href="https://apps.apple.com/us/app/newsblur/id463981119">NewsBlur macOS app</a>, available for free on the Mac App Store.</p>
-
-<p><img src="/assets/macos-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>The macOS app also supports all of the themes, so it can turn itself into dark mode automatically.</p>
-
-<p><img src="/assets/macos-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>It’s configurable and supports ay=utomatic hiding and showing of the feed list so you can focus on the stories you want to read. Use your mouse to swipe left and right on both stories and to swap which pane is visible.</p>
-
-<p><img src="/assets/macos-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>In the Grid view, you can swipe right with your mouse to temporarily show the feed list, giving you a compact view of your news stories without having to give up screen real estate.</p>
-
-<p><img src="/assets/macos-4.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>Training is supported natively, so you can hide those stories you don’t want to see while highlighting those thast you do.</p>
-
-<p><img src="/assets/macos-5.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
-
-<p>It’s important to be able to train, because you can set notifications to be sent from either your Unread list or your Focus list, ensuring you only see the notifications from sites you want to see. And clicking on those native macOS notifications takes you directly to the story in the new macOS app.</p>
-
-<p><img src="/assets/macos-6.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>If you have any ideas you’d like to see on macOS, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
-
-<p>Coming up soon are the discover feeds feature, where you can see related feeds based purely on semantic similarity (and not based on mined usage data), as well as real-time updates to the macOS app similar to the dashboard on the web.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Dec 6, 2023</span>
-          <h3>
-            <a class="post-link" href="/2023/12/06/ios-grid-view/">
-              Introducing the Grid view on iOS
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>The Grid view is now on iOS. Read stories with large thumbnails in a magazine-like format, where you can see a customizable number of story previews at once. Works beautifully for both iPhone and iPad.
-<img src="/assets/ipad-grid-1.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>Just like on the web, you can customize how many stories you see and how large each story is, giving you the freedom to read stories with large thumbnails or small image previews.</p>
-
-<p><img src="/assets/ipad-grid-2.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>It even works on iPhone!</p>
-
-<p><img src="/assets/iphone-grid.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>If you have any other ideas you’d like to see on iPad and iPhone, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
-
-<p>This is a huge release and has been a year in the making. Coming up soon: a new Mac app and intelligent feed discovery.</p>
 
         </div>
       </li></ul>

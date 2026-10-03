@@ -1,0 +1,17 @@
+{% assign phone = 'iphone-17' %}
+{% if include.image contains 'android-' %}{% assign phone = 'galaxy-s22' %}{% endif %}
+<figure class="mobile-release-phone mobile-release-phone--{{ phone }}">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      {% if include.video %}
+      <video muted loop playsinline controls preload="none" poster="{{ include.image | relative_url }}" aria-label="{{ include.alt | escape }}">
+        <source src="{{ include.video | relative_url }}" type="video/mp4">
+        <img src="{{ include.image | relative_url }}" alt="{{ include.alt | escape }}">
+      </video>
+      {% else %}
+      <img src="{{ include.image | relative_url }}" alt="{{ include.alt | escape }}" loading="lazy">
+      {% endif %}
+    </div>
+  </div>
+  <figcaption>{{ include.caption }}{% if include.video %}<br><a class="mobile-release-phone__download" href="{{ include.video | relative_url }}">Open video</a>{% endif %}</figcaption>
+</figure>

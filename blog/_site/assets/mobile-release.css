@@ -1,0 +1,13 @@
+/* mobile-release.css fits recordings beneath the measured transparent device bezels. */
+.mobile-release-phone { width: 350px; max-width: 90%; margin: 32px auto; text-align: center; }
+.mobile-release-phone__device { position: relative; width: 100%; aspect-ratio: 388 / 800; filter: drop-shadow(0 10px 15px rgba(0, 0, 0, .16)); }
+.mobile-release-phone__screen { position: absolute; overflow: hidden; background: #000; }
+.mobile-release-phone--iphone-17 .mobile-release-phone__screen { left: 4.1237%; top: 1.625%; width: 91.7526%; height: 96.75%; border-radius: 13% / 6%; }
+.mobile-release-phone--galaxy-s22 .mobile-release-phone__screen { left: 3.6082%; top: 1.75%; width: 92.0103%; height: 96.375%; border-radius: 10% / 4.6%; }
+.mobile-release-phone__screen img, .mobile-release-phone__screen video { display: block; width: 100%; height: 100%; object-fit: contain; margin: 0; border: 0; }
+.mobile-release-phone__device::after { content: ""; position: absolute; inset: 0; background-size: 100% 100%; background-repeat: no-repeat; pointer-events: none; }
+.mobile-release-phone--iphone-17 .mobile-release-phone__device::after { background-image: url("iphone-17-frame.png"); }
+.mobile-release-phone--galaxy-s22 .mobile-release-phone__device::after { background-image: url("galaxy-s22-frame.png"); }
+.mobile-release-phone figcaption { margin-top: 18px; font-size: 14px; line-height: 1.5; }
+.mobile-release-phone__play { margin-top: 8px; padding: 5px 12px; border: 1px solid currentColor; border-radius: 18px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.mobile-release-phone__download { margin-left: 8px; font-size: 12px; }
