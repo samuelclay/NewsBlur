@@ -5,6 +5,7 @@ import SwiftUI
 
 @objc final class OnboardingAccountViewController: LoginViewController {
     private var account = OnboardingAccountModel()
+    private var pendingAppleRevocationNotice = false
 
     override func loadView() {
         let host = UIHostingController(rootView: OnboardingAccountView(model: account))
@@ -27,9 +28,27 @@ import SwiftUI
         account.lastUsed = UserDefaults.standard.string(forKey: "last_auth_method")
         if !account.needsUsername && !account.needsLink { account.signup = account.lastUsed == nil }
     }
-    override func viewDidAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {
+        if pendingAppleRevocationNotice { showAppleRevocationNoticeWhenVisible() }
+    }
     override func viewDidLayoutSubviews() { super.viewDidLayoutSubviews() }
     override func viewDidDisappear(_ animated: Bool) { setLoginBackgroundActive(false) }
+
+    func showAppleRevocationNoticeWhenVisible() {
+        guard viewIfLoaded?.window != nil else {
+            pendingAppleRevocationNotice = true
+            return
+        }
+        pendingAppleRevocationNotice = false
+        let alert = UIAlertController(title: "Finish disconnecting Apple",
+                                      message: "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it.",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "View instructions", style: .default) { _ in
+            UIApplication.shared.open(URL(string: "https://support.apple.com/en-us/102571")!)
+        })
+        alert.addAction(UIAlertAction(title: "Done", style: .cancel))
+        present(alert, animated: true)
+    }
 }
 
 @MainActor final class OnboardingAccountModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding, ASWebAuthenticationPresentationContextProviding {
@@ -139,16 +158,30 @@ import SwiftUI
         Task {
             defer { busy = false; appleController = nil }
             do {
-                try deletionSession?.validate()
-                guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
-                      let data = credential.identityToken, let token = String(data: data, encoding: .utf8) else { throw OnboardingAPI.error("Apple did not return an identity token.") }
-                let result = try await OnboardingAPI.request("/api/social/apple", body: ["state": state, "id_token": token])
-                try deletionSession?.validate()
-                guard let ticket = result["ticket"] as? String else { throw OnboardingAPI.error("Apple sign-in failed.") }
-                self.ticket = ticket
+                guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
+                    throw OnboardingAPI.error("Apple did not return an identity token.")
+                }
+                ticket = try await exchangeAppleCredential(identityToken: credential.identityToken, authorizationCode: credential.authorizationCode)
                 try await complete()
             } catch { message = error.localizedDescription }
         }
+    }
+
+    func exchangeAppleCredential(identityToken: Data?, authorizationCode: Data?) async throws -> String {
+        try deletionSession?.validate()
+        guard let identityToken, let token = String(data: identityToken, encoding: .utf8) else {
+            throw OnboardingAPI.error("Apple did not return an identity token.")
+        }
+        var body = ["state": state, "id_token": token]
+        // OnboardingAccountViewController.swift supplies Apple's one-time code for revocation only during account deletion.
+        if deletionSession != nil, let authorizationCode,
+           let code = String(data: authorizationCode, encoding: .utf8), !code.isEmpty {
+            body["authorization_code"] = code
+        }
+        let result = try await OnboardingAPI.request("/api/social/apple", body: body)
+        try deletionSession?.validate()
+        guard let ticket = result["ticket"] as? String else { throw OnboardingAPI.error("Apple sign-in failed.") }
+        return ticket
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
@@ -243,10 +276,10 @@ import SwiftUI
     let authentication = OnboardingAccountModel()
     let session = AccountDeletionSession()
     private var deleteToken: String?
-    private let onDeleted: () -> Void
+    private let onDeleted: (Bool) -> Void
     var onLegacy: (() -> Void)?
 
-    init(onDeleted: @escaping () -> Void) {
+    init(onDeleted: @escaping (Bool) -> Void) {
         self.onDeleted = onDeleted
         authentication.deletionSession = session
         authentication.onReauthenticated = { [weak self] token in
@@ -276,7 +309,7 @@ import SwiftUI
                       json["code"] as? Int == 1, let linked = json["providers"] as? [String] else {
                     throw OnboardingAPI.error("Unable to load your account. Please try again.")
                 }
-                providers = linked.filter { ["apple", "google"].contains($0) }
+                providers = linked.contains("apple") ? ["apple"] : linked.filter { $0 == "google" }
                 useLegacyDeletion = providers.isEmpty
             }
             if useLegacyDeletion { onLegacy?() }
@@ -290,11 +323,11 @@ import SwiftUI
         defer { deleting = false }
         do {
             try session.validate()
-            _ = try await OnboardingAPI.request("/api/social/delete_account", body: ["delete_token": deleteToken, "confirm": "Delete"])
+            let result = try await OnboardingAPI.request("/api/social/delete_account", body: ["delete_token": deleteToken, "confirm": "Delete"])
             try session.validate()
             self.deleteToken = nil
             isVerified = false
-            onDeleted()
+            onDeleted(result["apple_revocation_required"] as? Bool == true)
         } catch {
             self.deleteToken = nil
             isVerified = false
@@ -323,7 +356,7 @@ import SwiftUI
     }
 
     override func loadView() {
-        model = AccountDeletionModel { [weak self] in
+        model = AccountDeletionModel { [weak self] needsAppleRevocation in
             guard let self else { return }
             self.dismiss(animated: true) {
                 guard (try? self.model.session.validate()) != nil, let app = NewsBlurAppDelegate.shared() else { return }
@@ -335,6 +368,9 @@ import SwiftUI
                 app.activeStory = nil
                 UserDefaults.standard.removeObject(forKey: "active_username")
                 app.showLogin()
+                if needsAppleRevocation {
+                    (app.loginViewController as? OnboardingAccountViewController)?.showAppleRevocationNoticeWhenVisible()
+                }
             }
         }
         model.onLegacy = { [weak self] in

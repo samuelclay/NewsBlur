@@ -1,7 +1,9 @@
 """Native onboarding authentication; provider identities never link on email alone."""
 
 import hashlib
+import logging
 import secrets
+import time
 from urllib.parse import urlencode
 
 import jwt
@@ -23,6 +25,7 @@ from utils.ip_rate_tracker import _get_client_ip
 APPLE_KEYS = jwt.PyJWKClient("https://appleid.apple.com/auth/keys", timeout=10)
 GOOGLE_KEYS = jwt.PyJWKClient("https://www.googleapis.com/oauth2/v3/certs", timeout=10)
 TTL = 600
+logger = logging.getLogger(__name__)
 
 
 class AppRedirect(HttpResponseRedirect):
@@ -62,7 +65,7 @@ def rate_limited(request):
         return False
 
 
-def verified_claims(provider, token, nonce):
+def verified_claims(provider, token, nonce, include_audience=False):
     client_ids = (
         settings.SOCIAL_APPLE_CLIENT_IDS if provider == "apple" else [settings.SOCIAL_GOOGLE_CLIENT_ID]
     )
@@ -85,7 +88,86 @@ def verified_claims(provider, token, nonce):
         raise ValueError("Nonce mismatch")
     if not claims.get("email") or claims.get("email_verified") not in (True, "true"):
         raise ValueError("A verified email address is required")
-    return {"provider": provider, "subject": claims["sub"], "email": claims["email"]}
+    identity = {"provider": provider, "subject": claims["sub"], "email": claims["email"]}
+    if include_audience:
+        identity["audience"] = claims["aud"]
+    return identity
+
+
+def apple_client_secret(client_id):
+    if client_id not in settings.SOCIAL_APPLE_CLIENT_IDS:
+        raise ValueError("Unknown Apple client")
+    if not (
+        settings.SOCIAL_APPLE_TEAM_ID
+        and settings.SOCIAL_APPLE_KEY_ID
+        and settings.SOCIAL_APPLE_PRIVATE_KEY_PATH
+    ):
+        raise ValueError("Apple signing key is not configured")
+    with open(settings.SOCIAL_APPLE_PRIVATE_KEY_PATH, encoding="utf-8") as key_file:
+        private_key = key_file.read()
+    now = int(time.time())
+    return jwt.encode(
+        {
+            "iss": settings.SOCIAL_APPLE_TEAM_ID,
+            "iat": now,
+            "exp": now + TTL,
+            "aud": "https://appleid.apple.com",
+            "sub": client_id,
+        },
+        private_key,
+        algorithm="ES256",
+        headers={"kid": settings.SOCIAL_APPLE_KEY_ID},
+    )
+
+
+def prepare_apple_revocation(authorization_code, client_id, identity, nonce):
+    # social_auth.py exchanges the short-lived code before the user pauses at deletion confirmation.
+    try:
+        if not authorization_code or not client_id:
+            raise ValueError("Apple authorization code or client is missing")
+        response = requests.post(
+            "https://appleid.apple.com/auth/token",
+            timeout=5,
+            data={
+                "client_id": client_id,
+                "client_secret": apple_client_secret(client_id),
+                "code": authorization_code,
+                "grant_type": "authorization_code",
+            },
+        )
+        response.raise_for_status()
+        tokens = response.json()
+        exchanged = verified_claims("apple", tokens["id_token"], nonce, include_audience=True)
+        if exchanged["subject"] != identity["subject"] or exchanged["audience"] != client_id:
+            raise ValueError("Apple authorization code does not match the verified identity")
+        token_type = "refresh_token" if tokens.get("refresh_token") else "access_token"
+        token = tokens[token_type]
+        if not isinstance(token, str) or not token:
+            raise ValueError("Apple returned no revocable token")
+        return {"client_id": client_id, "token": token, "token_type_hint": token_type}
+    except (requests.RequestException, jwt.PyJWTError, OSError, ValueError, KeyError, TypeError) as error:
+        # social_auth.py never logs provider responses, credentials, token values, or signing key paths.
+        logger.warning("Apple token exchange unavailable during account deletion (%s).", type(error).__name__)
+        return None
+
+
+def revoke_apple_token(context):
+    if not context:
+        return False
+    try:
+        response = requests.post(
+            "https://appleid.apple.com/auth/revoke",
+            timeout=5,
+            data=dict(context, client_secret=apple_client_secret(context["client_id"])),
+        )
+        response.raise_for_status()
+        return True
+    except (requests.RequestException, jwt.PyJWTError, OSError, ValueError, KeyError, TypeError) as error:
+        # social_auth.py follows TN3194: provider revocation problems must not block account deletion.
+        logger.warning(
+            "Apple token revocation unavailable during account deletion (%s).", type(error).__name__
+        )
+        return False
 
 
 def has_account_session(request):
@@ -132,6 +214,10 @@ def start(request):
             return failure("Please sign in before deleting your account.", 401)
         if not request.user.social_identities.filter(provider=provider).exists():
             return failure("Verify with a provider already connected to this NewsBlur account.", 403)
+        if provider != "apple" and request.user.social_identities.filter(provider="apple").exists():
+            return failure(
+                "Verify with Apple to disconnect Sign in with Apple when deleting your account.", 403
+            )
         context = dict(user_id=request.user.pk, session_key=request.session.session_key)
     if provider == "google" and not (
         settings.SOCIAL_GOOGLE_CLIENT_ID and settings.SOCIAL_GOOGLE_CLIENT_SECRET
@@ -167,9 +253,17 @@ def apple(request):
     if not state or state["provider"] != "apple":
         return failure("Sign-in expired. Please try again.")
     try:
-        identity = verified_claims("apple", request.POST.get("id_token", ""), state["nonce"])
+        identity = verified_claims(
+            "apple",
+            request.POST.get("id_token", ""),
+            state["nonce"],
+            include_audience=state.get("purpose") == "delete_account",
+        )
     except (jwt.PyJWTError, ValueError):
         return failure("Apple could not verify your account. Please try again.")
+    if state.get("purpose") == "delete_account":
+        state["apple_client_id"] = identity.pop("audience", None)
+        state["apple_authorization_code"] = request.POST.get("authorization_code", "")[:4096]
     ticket = remember("ticket", dict(state, identity=identity))
     return JsonResponse(dict(code=1, ticket=ticket))
 
@@ -231,6 +325,14 @@ def complete(request):
             return failure(
                 "Verify the Apple or Google account connected to your current NewsBlur account.", 403
             )
+        revocation = {}
+        if identity["provider"] == "apple":
+            revocation["apple_revocation"] = prepare_apple_revocation(
+                ticket.get("apple_authorization_code"),
+                ticket.get("apple_client_id"),
+                identity,
+                ticket.get("nonce"),
+            )
         proof = remember(
             "delete-account",
             dict(
@@ -238,6 +340,7 @@ def complete(request):
                 session_key=request.session.session_key,
                 identity_id=existing.pk,
                 purpose="delete_account",
+                **revocation,
             ),
         )
         return JsonResponse(dict(code=1, delete_token=proof))
@@ -357,5 +460,10 @@ def delete_account(request):
         return failure("Account verification expired. Verify with Apple or Google again.", 403)
     # social_auth.py keeps provider verification separate from login, linking, and final deletion consent.
     request.user.profile.delete_user(confirm=True)
+    result = dict(code=1)
+    if "apple_revocation" in proof and not revoke_apple_token(proof["apple_revocation"]):
+        result.update(
+            apple_revocation_required=True, apple_revocation_url="https://support.apple.com/en-us/102571"
+        )
     logout(request)
-    return JsonResponse(dict(code=1))
+    return JsonResponse(result)
