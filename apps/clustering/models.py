@@ -1169,19 +1169,18 @@ def apply_clustering_to_stories(
         representative = page_group[0]
         representative_hashes.add(representative["story_hash"])
 
-        # Mark other on-page members as clustered (to remove from results)
-        for s in page_group[1:]:
-            clustered_hashes.add(s["story_hash"])
-
         rep_title = representative.get("story_title", "") or ""
         rep_feed_id = representative.get("story_feed_id")
         rep_words = representative_title_words(rep_title, rep_feed_id, feed_title_map)
 
-        # Build cluster_stories from ALL other members (on-page and off-page),
-        # skipping only the representative itself.
-        cluster_stories = []
-        for member_hash in all_members:
-            if member_hash == representative["story_hash"]:
+        # clustering/models.py: Recompute each member's tier against the chosen
+        # representative once, then reuse it for both the on-page folding and the
+        # cluster_stories list below. On-page members are included even if their
+        # zCL entry has gone stale, so the same-feed guard sees every row it folds.
+        member_tiers = {}
+        same_feed_related_hashes = set()
+        for member_hash in list(all_members) + [s["story_hash"] for s in page_group[1:]]:
+            if member_hash == representative["story_hash"] or member_hash in member_tiers:
                 continue
 
             if member_hash in page_stories_by_hash:
@@ -1204,6 +1203,33 @@ def apply_clustering_to_stories(
                 feed_title_map=feed_title_map,
                 rep_words=rep_words,
             )
+            member_tiers[member_hash] = member_tier
+
+            # clustering/models.py: A different story from the representative's own
+            # feed that only matches it as "related" (e.g. two blog posts chained
+            # together through other feeds' reposts of both) is not a duplicate. It
+            # keeps its own row and is never listed as a sibling, so a feed doesn't
+            # look like it deduplicated its own story. Same-feed title matches
+            # (duplicate headline reposts) still fold under the representative.
+            if sib_feed_id == rep_feed_id and member_tier != CLUSTER_TIER_TITLE:
+                same_feed_related_hashes.add(member_hash)
+
+        # Mark other on-page members as clustered (to remove from results)
+        for s in page_group[1:]:
+            if s["story_hash"] in same_feed_related_hashes:
+                continue
+            clustered_hashes.add(s["story_hash"])
+
+        # Build cluster_stories from ALL other members (on-page and off-page),
+        # skipping the representative itself and its own feed's related stories.
+        cluster_stories = []
+        for member_hash in all_members:
+            if member_hash == representative["story_hash"]:
+                continue
+            if member_hash in same_feed_related_hashes:
+                continue
+
+            member_tier = member_tiers[member_hash]
 
             if member_hash in page_stories_by_hash:
                 # On-page member — already has intelligence, score, read_status
