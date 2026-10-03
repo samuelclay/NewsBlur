@@ -1,7 +1,9 @@
 package com.newsblur.onboarding
 
 import com.newsblur.discover.DiscoveryFeed
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class SetupOpmlTest {
@@ -21,6 +23,16 @@ class SetupOpmlTest {
         ).forEach { xml ->
             assertTrue(runCatching { SetupOpml.parse(xml.toByteArray()) }.isFailure)
         }
+    }
+
+    @Test fun boundsFileSizeAndUnnamedNestingBeforeImport() {
+        val oversized = ByteArray(SetupOpml.MAX_BYTES + 1)
+        assertTrue(runCatching { SetupOpml.read(oversized.inputStream()) }.isFailure)
+        val deep = "<opml><body>" + "<outline>".repeat(130) +
+            "<outline xmlUrl='https://a.test/rss'/>" + "</outline>".repeat(130) + "</body></opml>"
+        assertTrue(runCatching { SetupOpml.parse(deep.toByteArray()) }.isFailure)
+        val external = "<!DOCTYPE opml [<!ENTITY secret SYSTEM 'file:///etc/passwd'>]><opml><body>&secret;</body></opml>"
+        assertTrue(runCatching { SetupOpml.parse(external.toByteArray(Charsets.UTF_16)) }.isFailure)
     }
 
     @Test fun progressiveSourcesDoNotResetUserChoices() {

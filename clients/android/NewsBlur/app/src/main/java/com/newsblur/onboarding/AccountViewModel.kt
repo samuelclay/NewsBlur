@@ -185,6 +185,10 @@ class AccountViewModel
             mutable.update { it.copy(browserUrl = null) }
         }
 
+        fun browserUnavailable() {
+            mutable.update { it.copy(error = "Install a web browser to continue with Apple or Google.") }
+        }
+
         fun callback(uri: Uri) {
             val expected = if (BuildConfig.APPLICATION_ID.endsWith(".alpha")) "newsblur-auth-android-alpha" else "newsblur-auth-android"
             if (uri.scheme != expected || uri.host != "complete") return

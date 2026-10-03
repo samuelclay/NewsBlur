@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.design.NewsBlurTheme
@@ -32,10 +33,18 @@ class LoginActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val deleting = intent.getBooleanExtra("manage_account", false)
+        val resolvedTheme = prefsRepo.getResolvedTheme(this)
+        val light = deleting && (resolvedTheme == com.newsblur.util.PrefConstants.ThemeValue.LIGHT ||
+            resolvedTheme == com.newsblur.util.PrefConstants.ThemeValue.SEPIA)
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = light
+            isAppearanceLightNavigationBars = light
+        }
         intent?.data?.let(account::callback)
         val variant = prefsRepo.getSelectedTheme().toVariant()
         setContent {
-            NewsBlurTheme(variant = variant) {
+            NewsBlurTheme(variant = variant, dynamic = false) {
                 val state by account.state.collectAsStateWithLifecycle()
                 if (state.deleting) {
                     com.newsblur.onboarding.AccountDeletionScreen(state, account, prefsRepo.getResolvedTheme(this), { finish() }, {
