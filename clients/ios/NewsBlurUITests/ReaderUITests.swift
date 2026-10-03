@@ -4,6 +4,71 @@ import UIKit
 final class ReaderUITests: XCTestCase {
     private var app: XCUIApplication!
 
+    func test_liveAlphaNarrowAutoSidebarPreservesStoryWidth() throws {
+        try requireLiveSession()
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-split_behavior", "auto"]
+        app.launch()
+        let story = app.webViews.firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 20))
+        let feeds = app.tables["feeds-list"].firstMatch
+        if feeds.isHittable {
+            try XCTUnwrap(app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable })).tap()
+        }
+        let originalWidth = story.frame.width
+        attachScreenshot(named: "claypad-auto-reader-before-sidebar")
+        try XCTUnwrap(app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable })).tap()
+        XCTAssertTrue(feeds.waitForExistence(timeout: 5))
+        XCTAssertEqual(story.frame.width, originalWidth, accuracy: 2)
+        attachScreenshot(named: "claypad-auto-reader-with-overlay")
+        let feed = try XCTUnwrap(feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first(where: { $0.isHittable }))
+        feed.tap()
+        XCTAssertFalse(feeds.isHittable)
+        attachScreenshot(named: "claypad-auto-reader-after-feed-selection")
+    }
+
+    func test_iPadAutoSidebarKeepsStoryWidthAndHidesAfterFeedSelection() throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("iPad reader layout") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-split_behavior", "auto", "-newsblur-ui-test-animations"]
+        launch(on: "reader-story-swift-1")
+        let story = app.webViews.firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 15))
+        let feeds = app.tables["feeds-list"].firstMatch
+        let sidebar = app.buttons["Sidebar"].firstMatch
+        if feeds.isHittable { sidebar.tap() }
+        let originalWidth = story.frame.width
+        attachScreenshot(named: "ipad-auto-story-before-sidebar")
+        sidebar.tap()
+        XCTAssertTrue(feeds.waitForExistence(timeout: 5))
+        attachScreenshot(named: "ipad-auto-story-with-sidebar")
+        XCTAssertEqual(story.frame.width, originalWidth, accuracy: 2, "Opening the feed overlay must preserve the article width.")
+        feedCell("910001").tap()
+        XCTAssertFalse(feeds.isHittable, "Selecting a feed must dismiss the temporary overlay.")
+        app.terminate()
+    }
+
+    func test_iPadSyncStatusDoesNotCoverSidebarButton() throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("iPad header layout") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-newsblur-ui-test-sync-status", "-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader")
+        let feeds = app.tables["feeds-list"].firstMatch
+        let sidebar = app.buttons["Sidebar"].firstMatch
+        if !feeds.isHittable, sidebar.exists { sidebar.tap() }
+        let status = app.staticTexts["feed-list-sync-status"].firstMatch
+        XCTAssertTrue(status.waitForExistence(timeout: 15))
+        attachScreenshot(named: "ipad-sync-status-header")
+        // ReaderUITests.swift checks the overlay's button, not the obscured reader button behind it.
+        let visibleSidebar = try XCTUnwrap(app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable }))
+        XCTAssertFalse(status.frame.intersects(visibleSidebar.frame), "Sync status must not run underneath the hide-sidebar control.")
+        visibleSidebar.tap()
+        XCTAssertFalse(feeds.isHittable)
+        app.terminate()
+    }
+
     func test_feedContextDialogDestinationsStayOpen() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
@@ -553,6 +618,124 @@ final class ReaderUITests: XCTestCase {
         #endif
     }
 
+    func test_liveAlphaCookingBundleQuality() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad and live catalog")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        let search = app.textFields["Search interests and sites"]
+        XCTAssertTrue(search.waitForExistence(timeout: 15))
+        search.tap()
+        search.typeText("cooking")
+        let cooking = app.buttons["onboarding.interest.food & cooking"]
+        XCTAssertTrue(cooking.waitForExistence(timeout: 15))
+        let icons = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '5 sources'"), object: cooking)
+        XCTAssertEqual(XCTWaiter.wait(for: [icons], timeout: 90), .completed,
+                       "Cooking must have five validated, distinct feed icons.")
+        attachScreenshot(named: "claypad-cooking-five-icons")
+        cooking.tap()
+        let add = app.buttons["onboarding.addBundle"]
+        XCTAssertTrue(add.waitForExistence(timeout: 20))
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            (Int(add.label.split(separator: " ").dropFirst().first ?? "0") ?? 0) >= 5
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 30), .completed)
+        let count = Int(add.label.split(separator: " ").dropFirst().first ?? "0") ?? 0
+        XCTAssertGreaterThanOrEqual(count, 5)
+        XCTAssertTrue(add.label.contains("“Cooking & Food” folder"), "The action should name the title-cased destination folder.")
+        XCTAssertFalse(app.staticTexts["Make this bundle yours."].exists)
+        XCTAssertFalse(app.staticTexts.matching(identifier: "No stories yet").allElementsBoundByIndex.contains { $0.isHittable },
+                       "The visible bundle must contain real story previews; unrelated search results behind it are outside the bundle.")
+        attachScreenshot(named: "claypad-cooking-validated-bundle")
+        let card = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'discover-bundle-feed-'")).firstMatch
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        card.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.07)).tap()
+        XCTAssertEqual(card.value as? String, "Not included in bundle")
+        attachScreenshot(named: "claypad-cooking-excluded")
+        card.coordinate(withNormalizedOffset: CGVector(dx: 0.4, dy: 0.4)).tap()
+        XCTAssertEqual(card.value as? String, "Included in bundle")
+        attachScreenshot(named: "claypad-cooking-reincluded")
+        #endif
+    }
+
+    func test_liveAlphaEconomicsShowsFeedsProgressively() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad and live discovery results")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        let search = app.textFields["Search interests and sites"]
+        XCTAssertTrue(search.waitForExistence(timeout: 15))
+        search.tap()
+        search.typeText("economics")
+        let category = app.buttons["onboarding.interest.economics"]
+        XCTAssertTrue(category.waitForExistence(timeout: 10))
+        let icons = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '5 sources'"), object: category)
+        XCTAssertEqual(XCTWaiter.wait(for: [icons], timeout: 15), .completed)
+        let start = Date()
+        category.tap()
+        let add = app.buttons["onboarding.addBundle"]
+        XCTAssertTrue(add.waitForExistence(timeout: 10), "Completed sources should become selectable without waiting for the slowest source.")
+        let elapsed = Date().timeIntervalSince(start)
+        print("ClayPad Economics first selectable feeds: \(elapsed) seconds")
+        XCTAssertFalse(add.label.hasPrefix("Add 0"))
+        if add.label.hasPrefix("Add ") {
+            XCTAssertTrue(add.isEnabled)
+            XCTAssertTrue(add.label.contains("“Economics” folder"))
+        }
+        XCTAssertFalse(app.staticTexts["Loading your feeds…"].isHittable)
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Adding ' AND label ENDSWITH ' in the background…'")).firstMatch.exists)
+        attachScreenshot(named: "claypad-economics-first-selectable-feeds")
+        app.buttons["Done"].tap()
+        app.buttons["Close import and discovery"].tap()
+        #endif
+    }
+
+    func test_liveAlphaCategoryIconsLoadTogether() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad and live favicon endpoint")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        let interests = ["all", "agriculture", "anime & manga", "architecture", "arts & culture", "automotive"]
+            .map { "onboarding.interest." + $0 }
+        for attempt in 1...2 {
+            settings.tap()
+            let action = app.tables["grouped-action-menu"].staticTexts["Import or upload sites"]
+            XCTAssertTrue(action.waitForExistence(timeout: 5))
+            let started = Date()
+            action.tap()
+            let loaded = app.buttons.matching(NSPredicate(format: "identifier IN %@ AND value == '5 sources'", interests))
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in loaded.count == interests.count }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
+                           "The first six category cards should load together, without waiting on story previews.")
+            let elapsed = Date().timeIntervalSince(started)
+            XCTAssertLessThan(elapsed, 10, "Fresh icons must not sit behind per-category story requests.")
+            print("ClayPad fresh category icons, opening \(attempt): \(elapsed) seconds")
+            attachScreenshot(named: "claypad-fresh-icons-opening-\(attempt)")
+            app.buttons["Close import and discovery"].tap()
+            XCTAssertTrue(settings.waitForExistence(timeout: 5))
+        }
+        #endif
+    }
+
     func test_liveAlphaImportLayout() throws {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires the signed-in ClayPad")
@@ -568,11 +751,27 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(app.textFields["Search interests and sites"].waitForExistence(timeout: 15))
         let architecture = app.buttons["onboarding.interest.architecture"]
         XCTAssertTrue(architecture.waitForExistence(timeout: 30))
-        XCTAssertEqual(app.textFields.count, 1)
+        let presentation = app.otherElements["onboarding-presentation"]
+        XCTAssertEqual(presentation.textFields.count, 1)
+        XCTAssertLessThan(presentation.frame.width, app.frame.width)
+        XCTAssertLessThan(presentation.frame.height, app.frame.height)
         let sources = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '5 sources'"),
                                                 object: app.buttons["onboarding.interest.all"])
         XCTAssertEqual(XCTWaiter.wait(for: [sources], timeout: 45), .completed)
-        attachScreenshot(named: "claypad-redesigned-import")
+        let close = app.buttons["Close import and discovery"]
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        let top = presentation.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02))
+        top.press(forDuration: 0.1, thenDragTo: presentation.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7)))
+        XCTAssertTrue(close.isHittable, "Pulling down must not dismiss setup.")
+        XCTAssertTrue(app.staticTexts["50 categories to choose from"].exists)
+        attachScreenshot(named: "claypad-import-sheet")
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(settings.isHittable, "Closing import early must return to the existing reader.")
+        attachScreenshot(named: "claypad-import-closed")
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
         #endif
     }
 

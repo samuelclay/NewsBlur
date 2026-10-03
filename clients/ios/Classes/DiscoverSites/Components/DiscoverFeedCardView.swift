@@ -11,6 +11,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct DiscoverFeedCardView: View {
     @EnvironmentObject var discovery: DiscoverSitesViewModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let feed: DiscoverPopularFeed
     var showStories: Bool = false
     var selection: Binding<Bool>? = nil
@@ -19,7 +20,27 @@ struct DiscoverFeedCardView: View {
     var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
 
+    @ViewBuilder
     var body: some View {
+        if let selection, selectionStatus == nil {
+            // DiscoverFeedCardView.swift treats the entire chooser card as one selection control.
+            Button { selection.wrappedValue.toggle() } label: {
+                cardContent
+                    .contentShape(RoundedRectangle(cornerRadius: 14))
+                    .opacity(selection.wrappedValue ? 1 : 0.5)
+            }
+            .buttonStyle(.plain)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: selection.wrappedValue)
+            .accessibilityLabel("Include \(feed.feedTitle)")
+            .accessibilityValue(selection.wrappedValue ? "Included in bundle" : "Not included in bundle")
+            .accessibilityAddTraits(selection.wrappedValue ? .isSelected : [])
+            .accessibilityIdentifier("discover-bundle-feed-\(feed.id)")
+        } else {
+            cardContent
+        }
+    }
+
+    private var cardContent: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 DiscoverFeedIconView(feed: feed)
@@ -49,7 +70,7 @@ struct DiscoverFeedCardView: View {
             if showStories && !feed.stories.isEmpty {
                 Divider()
                 ForEach(feed.stories.prefix(3)) { story in
-                    if let onOpenStory {
+                    if let onOpenStory, selection == nil {
                         Button { onOpenStory(feed, story) } label: { storyRow(story) }
                             .buttonStyle(DiscoverStoryButtonStyle(isSelected: discovery.selectedPreviewStoryID == story.id))
                             .disabled(discovery.isPreparingPreview)
@@ -63,7 +84,7 @@ struct DiscoverFeedCardView: View {
 
             Divider()
             HStack(spacing: 8) {
-                if let onTryFeed {
+                if let onTryFeed, selection == nil {
                     Button(action: { onTryFeed(feed) }) {
                         Label("Try", systemImage: "doc.text.magnifyingglass")
                             .frame(minWidth: 62, minHeight: 44)
@@ -79,14 +100,10 @@ struct DiscoverFeedCardView: View {
                         Label(selectionStatus, systemImage: "checkmark.circle.fill")
                             .foregroundColor(DiscoverColors.accent).frame(minHeight: 44)
                     } else {
-                        Button { selection.wrappedValue.toggle() } label: {
-                            Label(selection.wrappedValue ? "Included in bundle" : "Include in bundle",
-                                  systemImage: selection.wrappedValue ? "checkmark.circle.fill" : "circle")
-                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                        }
-                        .foregroundColor(DiscoverColors.accent)
-                        .accessibilityLabel("Include \(feed.feedTitle)")
-                        .accessibilityAddTraits(selection.wrappedValue ? .isSelected : [])
+                        Label(selection.wrappedValue ? "Included in bundle" : "Include in bundle",
+                              systemImage: selection.wrappedValue ? "checkmark.circle.fill" : "circle")
+                            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                            .foregroundColor(DiscoverColors.accent)
                     }
                 } else if isSubscribed {
                     Spacer(minLength: 0)

@@ -1595,6 +1595,10 @@
 		E91820260918000100000001 /* DuoPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91820260918000100000002 /* DuoPresentationTests.swift */; };
 		F519D0A10516273849A00016 /* LoginViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A0004 /* LoginViewControllerTests.swift */; };
 		0A4D183600221A8913D90C97 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245E44A083A28A7825D81461 /* OnboardingViewController.swift */; };
+		D42610020100000000000001 /* OnboardingCatalogSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42610020100000000000003 /* OnboardingCatalogSelector.swift */; };
+		D42610020200000000000001 /* OnboardingIconCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42610020200000000000003 /* OnboardingIconCatalog.swift */; };
+		D42610020100000000000002 /* OnboardingCatalogSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42610020100000000000003 /* OnboardingCatalogSelector.swift */; };
+		D42610020200000000000002 /* OnboardingIconCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42610020200000000000003 /* OnboardingIconCatalog.swift */; };
 		91464237D9CA4A1CE2AF76CA /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245E44A083A28A7825D81461 /* OnboardingViewController.swift */; };
 		23D61C6588FC28D1FD85FF07 /* OnboardingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */; };
 		C4ED3C79B1AF41489100A269 /* OnboardingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */; };
@@ -2694,6 +2698,8 @@
 		E91820260918000100000002 /* DuoPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoPresentationTests.swift; sourceTree = "<group>"; };
 		F519D0A10516273849A00002 /* DuoLiveUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoLiveUITests.swift; sourceTree = "<group>"; };
 		245E44A083A28A7825D81461 /* OnboardingViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		D42610020100000000000003 /* OnboardingCatalogSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCatalogSelector.swift; sourceTree = "<group>"; };
+		D42610020200000000000003 /* OnboardingIconCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingIconCatalog.swift; sourceTree = "<group>"; };
 		12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingAccountViewController.swift; sourceTree = "<group>"; };
 		D345AFC7DBB635AE55C0D6AF /* OnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTests.swift; sourceTree = "<group>"; };
 		370AD1F91446CD54CA1DE59F /* OnboardingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingUITests.swift; sourceTree = "<group>"; };
@@ -3245,6 +3251,8 @@
 				784B50EB127E3F68008F90EA /* LoginViewController.m */,
 				12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */,
 				245E44A083A28A7825D81461 /* OnboardingViewController.swift */,
+				D42610020100000000000003 /* OnboardingCatalogSelector.swift */,
+				D42610020200000000000003 /* OnboardingIconCatalog.swift */,
 				43B232BD15D5F61700D035B4 /* AuthorizeServicesViewController.h */,
 				43B232BE15D5F61700D035B4 /* AuthorizeServicesViewController.m */,
 				43B232BF15D5F61700D035B4 /* AuthorizeServicesViewController.xib */,
@@ -5767,6 +5775,8 @@
 				175792402930605500490924 /* LoginViewController.m in Sources */,
 				23D61C6588FC28D1FD85FF07 /* OnboardingAccountViewController.swift in Sources */,
 				0A4D183600221A8913D90C97 /* OnboardingViewController.swift in Sources */,
+				D42610020100000000000001 /* OnboardingCatalogSelector.swift in Sources */,
+				D42610020200000000000001 /* OnboardingIconCatalog.swift in Sources */,
 				175792412930605500490924 /* StoryPagesCollectionCell.swift in Sources */,
 				175792422930605500490924 /* NotificationsViewController.m in Sources */,
 				175792432930605500490924 /* MCSwipeTableViewCell.m in Sources */,
@@ -6033,6 +6043,8 @@
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
 				C4ED3C79B1AF41489100A269 /* OnboardingAccountViewController.swift in Sources */,
 				91464237D9CA4A1CE2AF76CA /* OnboardingViewController.swift in Sources */,
+				D42610020100000000000002 /* OnboardingCatalogSelector.swift in Sources */,
+				D42610020200000000000002 /* OnboardingIconCatalog.swift in Sources */,
 				177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,
 				FFCDD8FE17F6368F000C6483 /* MCSwipeTableViewCell.m in Sources */,

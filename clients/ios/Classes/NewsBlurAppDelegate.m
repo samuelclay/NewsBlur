@@ -1547,7 +1547,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.ftuxNavigationController.navigationBar.translucent = NO;
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+    // NewsBlurAppDelegate.m keeps import and discovery dismissible over the current reader.
+    self.ftuxNavigationController.modalPresentationStyle = self.isPhone ? UIModalPresentationPageSheet : UIModalPresentationFormSheet;
+    self.ftuxNavigationController.preferredContentSize = CGSizeMake(760, 900);
+    self.ftuxNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
     [self.splitViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
     
 }
