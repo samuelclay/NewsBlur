@@ -11,7 +11,13 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.test import Client, RequestFactory, SimpleTestCase, TransactionTestCase, override_settings
+from django.test import (
+    Client,
+    RequestFactory,
+    SimpleTestCase,
+    TransactionTestCase,
+    override_settings,
+)
 
 from apps.api import social_auth
 from newsblur_web import settings as base_settings
@@ -95,6 +101,95 @@ class Test_SocialAuthentication(SimpleTestCase):
                 self.factory.post("/api/social/complete", dict(ticket=token, verifier=verifier))
             )
             self.assertEqual(response.status_code, 400)
+
+    @override_settings(SOCIAL_APPLE_WEB_CLIENT_ID="com.newsblur.web")
+    def test_android_apple_callback_requires_web_audience_and_one_use_state(self):
+        for audience, accepted in [("com.newsblur.NewsBlur", False), ("com.newsblur.web", True)]:
+            response = social_auth.start(
+                self.factory.post(
+                    "/api/social/start", dict(provider="apple", platform="android-alpha", challenge="a" * 64)
+                )
+            )
+            data = json.loads(response.content)
+            query = parse_qs(urlparse(data["url"]).query)
+            self.assertEqual(query["client_id"], ["com.newsblur.web"])
+            self.assertEqual(query["response_mode"], ["form_post"])
+            token = jwt.encode(
+                dict(self.claims, aud=audience, nonce=data["nonce"]), self.key, algorithm="RS256"
+            )
+            request = self.factory.post(
+                "/api/social/apple/callback", dict(state=data["state"], id_token=token)
+            )
+            with patch.object(
+                social_auth.APPLE_KEYS,
+                "get_signing_key_from_jwt",
+                return_value=SimpleNamespace(key=self.key.public_key()),
+            ):
+                callback = social_auth.apple_callback(request)
+            self.assertTrue(callback.url.startswith("newsblur-auth-android-alpha://complete?"))
+            result = parse_qs(urlparse(callback.url).query)
+            self.assertEqual("ticket" in result, accepted)
+            self.assertEqual(social_auth.apple_callback(request).status_code, 400)
+        # test_social_auth.py also proves native verification did not gain the browser audience.
+        with self.assertRaises(jwt.InvalidAudienceError):
+            self.verify(dict(aud="com.newsblur.web"))
+
+    def test_platform_cannot_redirect_to_an_arbitrary_app(self):
+        response = social_auth.start(
+            self.factory.post(
+                "/api/social/start",
+                dict(provider="google", platform="attacker://callback", challenge="a" * 64),
+            )
+        )
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(
+            social_auth.start(
+                self.factory.post(
+                    "/api/social/start", dict(provider="google", platform="android", challenge="a" * 64)
+                )
+            ).content
+        )
+        cancelled = social_auth.google_callback(
+            self.factory.get("/api/social/google/callback", dict(state=data["state"], error="access_denied"))
+        )
+        self.assertTrue(cancelled.url.startswith("newsblur-auth-android://complete?error="))
+
+    @override_settings(SOCIAL_APPLE_WEB_CLIENT_ID="")
+    def test_unconfigured_android_apple_fails_without_changing_native_signin(self):
+        for platform, status in [("android", 503), ("ios", 200)]:
+            response = social_auth.start(
+                self.factory.post(
+                    "/api/social/start", dict(provider="apple", platform=platform, challenge="a" * 64)
+                )
+            )
+            self.assertEqual(response.status_code, status)
+
+    def test_password_deletion_requires_confirmation_password_and_no_social_identity(self):
+        user = Mock(pk=9, is_authenticated=True, is_active=True, username="reader")
+        user.social_identities.exists.return_value = False
+        with patch.object(social_auth, "authenticate", return_value=user) as authenticate, patch.object(
+            social_auth, "logout"
+        ):
+            for fields in ({"confirm": "Delete", "password": ""}, {"confirm": "no", "password": "secret"}):
+                request = self.factory.post("/api/social/delete_password_account", fields)
+                request.user, request.session = user, SimpleNamespace(session_key="session")
+                self.assertEqual(social_auth.delete_password_account(request).status_code, 400)
+                user.profile.delete_user.assert_not_called()
+            authenticate.assert_not_called()
+            request = self.factory.post(
+                "/api/social/delete_password_account", {"confirm": "Delete", "password": "secret"}
+            )
+            request.user, request.session = user, SimpleNamespace(session_key="session")
+            user.social_identities.exists.return_value = True
+            self.assertEqual(social_auth.delete_password_account(request).status_code, 403)
+            authenticate.assert_not_called()
+            user.social_identities.exists.return_value = False
+            authenticate.return_value = None
+            self.assertEqual(social_auth.delete_password_account(request).status_code, 403)
+            user.profile.delete_user.assert_not_called()
+            authenticate.return_value = user
+            self.assertEqual(social_auth.delete_password_account(request).status_code, 200)
+            user.profile.delete_user.assert_called_once_with(confirm=True)
 
     def test_google_start_requests_identity_only_and_nonce(self):
         response = social_auth.start(
