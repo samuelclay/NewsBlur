@@ -4435,7 +4435,8 @@ def create_profile(sender, instance, created, **kwargs):
             is_premium_trial=True,
             premium_expire=now + datetime.timedelta(days=30),
         )
-        EmailNewPremiumTrial.delay(user_id=instance.pk)
+        # models.py also creates profiles inside apps/api/social_auth.py's signup transaction.
+        transaction.on_commit(lambda: EmailNewPremiumTrial.delay(user_id=instance.pk))
         logging.user(
             instance,
             "~BY~SK~FW~SBNEW USER WITH PREMIUM TRIAL! Expires %s~SN" % profile.premium_expire,

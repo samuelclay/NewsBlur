@@ -10,10 +10,9 @@ from django.db import transaction
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.tasks import MaintainFeedSubscriptions
 from apps.rss_feeds.models import Feed
-from apps.search.models import MUserSearch
-from apps.social.models import MActivity, MSocialServices
-from apps.statistics.rtrending_subscriptions import RTrendingSubscription
+from apps.social.models import MSocialServices
 from utils import json_functions as json
 from utils.folder_paths import InvalidFolderPath, resolve_folder_path
 
@@ -59,7 +58,20 @@ def _destination(tree, folder_path, folder, new_folder):
     return parent
 
 
-def _access_error(user, feed, subscribed, public_catalog_ids, banned_urls):
+def _twitter_access_error(user):
+    if not user.profile.is_premium:
+        return "You must be a premium subscriber to add Twitter feeds."
+    services = MSocialServices.get_user(user.pk)
+    try:
+        if not services.twitter_uid:
+            raise tweepy.TweepError("No API token")
+        services.twitter_api().me()
+    except tweepy.TweepError:
+        return "Your Twitter connection isn't setup. Go to Manage - Friends/Followers and reconnect Twitter."
+    return None
+
+
+def _access_error(user, feed, subscribed, public_catalog_ids, banned_urls, twitter_error):
     if subscribed:
         return None
     # load_single_feed in reader/views.py protects single-subscriber feeds. PopularFeed
@@ -73,17 +85,7 @@ def _access_error(user, feed, subscribed, public_catalog_ids, banned_urls):
     if any(domain in feed.feed_address for domain in banned_urls):
         return "The publisher of this website has banned NewsBlur."
     if re.match(r"(https?://)?twitter.com/\w+/?$", feed.feed_address):
-        if not user.profile.is_premium:
-            return "You must be a premium subscriber to add Twitter feeds."
-        services = MSocialServices.get_user(user.pk)
-        try:
-            if not services.twitter_uid:
-                raise tweepy.TweepError("No API token")
-            services.twitter_api().me()
-        except tweepy.TweepError:
-            return (
-                "Your Twitter connection isn't setup. Go to Manage - Friends/Followers and reconnect Twitter."
-            )
+        return twitter_error
     return None
 
 
@@ -92,6 +94,26 @@ def add_feed_ids(
 ):
     results = []
     changed = []
+    numeric_ids = []
+    for value in feed_ids:
+        try:
+            number = int(value)
+            if isinstance(value, bool) or str(number) != str(value) or not 0 < number <= 2147483647:
+                raise ValueError
+        except (ValueError, TypeError):
+            number = None
+        numeric_ids.append(number)
+    feeds = Feed.objects.in_bulk(number for number in numeric_ids if number is not None)
+    subscribed_ids = set(
+        UserSubscription.objects.filter(user=user, feed_id__in=feeds).values_list("feed_id", flat=True)
+    )
+    # subscription_batch.py checks the remote account once, before acquiring either database lock.
+    twitter_error = None
+    if any(
+        feed.pk not in subscribed_ids and re.match(r"(https?://)?twitter.com/\w+/?$", feed.feed_address)
+        for feed in feeds.values()
+    ):
+        twitter_error = _twitter_access_error(user)
     with transaction.atomic():
         # Serialize bundle requests even before a user's folder row exists. Lock the
         # folder row too so other callers that lock it share the same serialization.
@@ -100,16 +122,6 @@ def add_feed_ids(
         folders = UserSubscriptionFolders.objects.select_for_update().get(pk=folders.pk)
         tree = json.decode(folders.folders or "[]")
         destination = _destination(tree, folder_path, folder, new_folder)
-        numeric_ids = []
-        for value in feed_ids:
-            try:
-                number = int(value)
-                if isinstance(value, bool) or str(number) != str(value) or not 0 < number <= 2147483647:
-                    raise ValueError
-            except (ValueError, TypeError):
-                number = None
-            numeric_ids.append(number)
-        feeds = Feed.objects.in_bulk(number for number in numeric_ids if number is not None)
         subscriptions = {
             sub.feed_id: sub for sub in UserSubscription.objects.filter(user=user, feed_id__in=feeds)
         }
@@ -128,7 +140,9 @@ def add_feed_ids(
             sub = subscriptions.get(feed_id)
             message = "Invalid feed ID." if feed_id is None else "Feed not found." if feed is None else None
             if not message:
-                message = _access_error(user, feed, sub is not None, public_catalog_ids, banned_urls)
+                message = _access_error(
+                    user, feed, sub is not None, public_catalog_ids, banned_urls, twitter_error
+                )
             if not message and active and (not sub or not sub.active) and limit and active_count >= limit:
                 message = (
                     "You've reached your limit of %s sites. Mute some sites or upgrade your account to add more."
@@ -154,27 +168,19 @@ def add_feed_ids(
             if feed_id not in destination:
                 destination.append(feed_id)
             if created or (active and not was_active):
-                changed.append((feed, created))
+                changed.append((feed.pk, created))
             results.append({"feed_id": feed_id, "code": 1, "message": "", "created": created})
         successful_ids = [item["feed_id"] for item in results if item["code"] == 1]
         if successful_ids:
             folders.folders = json.encode(tree)
             folders.save(update_fields=["folders"])
-
-    # The database mutations are complete before the normal subscription maintenance.
-    # Repeated requests skip activity/trending and never rediscover or fetch feed URLs.
-    for feed, created in changed:
-        if created:
-            MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
-            RTrendingSubscription.add_subscription(feed_id=feed.pk)
-        feed.setup_feed_for_premium_subscribers(
-            allow_skip_resync=user.profile.is_archive and feed.active_premium_subscribers != 0
-        )
-        if feed.archive_count:
-            feed.schedule_fetch_archive_feed()
-    if successful_ids:
-        MUserSearch.schedule_index_feeds_for_search(successful_ids, user.pk)
-        redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL).publish(user.username, "reload:feeds")
+            # subscription_batch.py queues maintenance only after the outermost transaction commits.
+            transaction.on_commit(lambda: MaintainFeedSubscriptions.delay(user.pk, changed, successful_ids))
+            transaction.on_commit(
+                lambda: redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL).publish(
+                    user.username, "reload:feeds"
+                )
+            )
     return {
         "code": 1 if len(successful_ids) == len(results) else 0 if successful_ids else -1,
         "results": results,

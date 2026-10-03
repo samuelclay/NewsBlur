@@ -3,6 +3,8 @@ from django.conf.urls import url
 from apps.api import social_auth, views
 
 urlpatterns = [
+    url(r"^social/account/?$", social_auth.account, name="social-account"),
+    url(r"^social/delete_account/?$", social_auth.delete_account, name="social-delete-account"),
     url(r"^social/start/?$", social_auth.start, name="social-start"),
     url(r"^social/apple/?$", social_auth.apple, name="social-apple"),
     url(r"^social/google/callback/?$", social_auth.google_callback, name="social-google-callback"),

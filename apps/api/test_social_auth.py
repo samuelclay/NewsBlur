@@ -4,13 +4,16 @@ import json
 import time
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
+from urllib.parse import parse_qs, urlparse
 
 import jwt
 from cryptography.hazmat.primitives.asymmetric import rsa
 from django.core.cache import cache
-from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.db import IntegrityError, transaction
+from django.test import Client, RequestFactory, SimpleTestCase, TransactionTestCase, override_settings
 
 from apps.api import social_auth
+from newsblur_web import settings as base_settings
 
 
 @override_settings(
@@ -51,6 +54,12 @@ class Test_SocialAuthentication(SimpleTestCase):
 
     def test_signed_verified_identity(self):
         self.assertEqual(self.verify()["subject"], "provider-subject")
+
+    @override_settings(SOCIAL_APPLE_CLIENT_IDS=base_settings.SOCIAL_APPLE_CLIENT_IDS)
+    def test_alpha_apple_identity_is_accepted_without_allowing_other_app_audiences(self):
+        self.assertEqual(self.verify(dict(aud="com.newsblur.NB-Alpha"))["subject"], "provider-subject")
+        with self.assertRaises(jwt.InvalidAudienceError):
+            self.verify(dict(aud="com.newsblur.untrusted"))
 
     def test_rejects_wrong_audience_issuer_nonce_expiry_and_unverified_email(self):
         for change in [
@@ -126,7 +135,9 @@ class Test_SocialAuthentication(SimpleTestCase):
         ) as login:
             identities.filter.return_value.select_related.return_value.first.return_value = None
             users.filter.return_value.__getitem__.return_value = [
-                SimpleNamespace(pk=42, username="reader", email="reader@example.com")
+                SimpleNamespace(
+                    pk=42, username="reader", email="reader@example.com", has_usable_password=lambda: True
+                )
             ]
             result = social_auth.complete(
                 self.factory.post("/api/social/complete", dict(ticket=token, verifier="proof"))
@@ -238,10 +249,11 @@ class Test_SocialAuthentication(SimpleTestCase):
     AUTO_ENABLE_NEW_USERS=True,
     AUTO_PREMIUM_NEW_USERS=False,
 )
-class Test_SocialAuthenticationDatabase(TestCase):
+class Test_SocialAuthenticationDatabase(TransactionTestCase):
     def setUp(self):
         cache.clear()
         # test_social_auth.py isolates external signup effects while exercising real users, identities and sessions.
+        self.effects = {}
         for target in [
             "apps.profile.tasks.EmailNewPremiumTrial.delay",
             "apps.reader.forms.EmailNewUser.delay",
@@ -251,7 +263,7 @@ class Test_SocialAuthenticationDatabase(TestCase):
             "apps.profile.models.Profile.activate_free",
         ]:
             patcher = patch(target)
-            patcher.start()
+            self.effects[target] = patcher.start()
             self.addCleanup(patcher.stop)
 
     def complete(self, username="reader", password=""):
@@ -289,3 +301,240 @@ class Test_SocialAuthenticationDatabase(TestCase):
         self.assertFalse(result.json()["created"])
         self.assertEqual(social_auth.SocialIdentity.objects.get(subject="subject").user_id, user.pk)
         self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+
+    def test_signup_external_effects_wait_for_commit_and_see_linked_identity(self):
+        targets = [name for name in self.effects if name != "apps.reader.forms.query"]
+        with transaction.atomic():
+            self.assertEqual(self.complete().status_code, 200)
+            for target in targets:
+                self.effects[target].assert_not_called()
+        user = social_auth.User.objects.get(username="reader")
+        self.assertEqual(social_auth.SocialIdentity.objects.get(subject="subject").user_id, user.pk)
+        for target in targets:
+            self.effects[target].assert_called_once()
+
+    def test_failed_identity_creation_rolls_back_user_without_external_signup_effects(self):
+        with patch.object(
+            social_auth.SocialIdentity.objects, "create", side_effect=IntegrityError("duplicate identity")
+        ):
+            self.assertEqual(self.complete().status_code, 400)
+        self.assertFalse(social_auth.User.objects.filter(username="reader").exists())
+        for target, effect in self.effects.items():
+            if target != "apps.reader.forms.query":
+                effect.assert_not_called()
+
+    def test_passwordless_account_names_existing_provider_instead_of_requesting_missing_password(self):
+        user = social_auth.User.objects.create_user("reader", "reader@example.com")
+        social_auth.SocialIdentity.objects.create(
+            user=user, provider="google", subject="google-subject", email=user.email
+        )
+        result = self.complete().json()
+        self.assertEqual(result["code"], -1)
+        self.assertFalse(result.get("link_required", False))
+        self.assertIn("Sign in with Google", result["message"])
+        self.assertIn("reset", result["message"].lower())
+        self.assertFalse(social_auth.SocialIdentity.objects.filter(provider="apple").exists())
+
+    def test_ambiguous_email_directs_existing_accounts_to_recovery_without_password_link_prompt(self):
+        social_auth.User.objects.create_user("reader", "reader@example.com", "first-password")
+        social_auth.User.objects.create_user("other", "reader@example.com", "second-password")
+        result = self.complete(password="first-password").json()
+        self.assertFalse(result.get("link_required", False))
+        self.assertIn("support", result["message"].lower())
+        self.assertFalse(social_auth.SocialIdentity.objects.exists())
+
+    def deletion_ticket(self, client=None, identity=None):
+        client = client or self.client
+        start = client.post(
+            "/api/social/start",
+            {
+                "provider": "apple",
+                "challenge": hashlib.sha256(b"proof").hexdigest(),
+                "purpose": "delete_account",
+            },
+        )
+        self.assertEqual(start.status_code, 200, start.content)
+        with patch.object(
+            social_auth,
+            "verified_claims",
+            return_value=identity or dict(provider="apple", subject="subject", email="reader@example.com"),
+        ):
+            response = client.post(
+                "/api/social/apple", {"state": start.json()["state"], "id_token": "signed-token"}
+            )
+        self.assertEqual(response.status_code, 200, response.content)
+        return response.json()["ticket"]
+
+    def complete_deletion(self, ticket, client=None):
+        return (client or self.client).post("/api/social/complete", {"ticket": ticket, "verifier": "proof"})
+
+    def test_social_account_lists_only_current_users_linked_providers(self):
+        self.assertEqual(self.client.get("/api/social/account").status_code, 401)
+        self.complete()
+        self.assertEqual(
+            self.client.get("/api/social/account").json(),
+            {"code": 1, "providers": ["apple"], "has_password": False},
+        )
+
+    def test_deletion_start_requires_authenticated_user_and_linked_provider(self):
+        data = {"provider": "apple", "challenge": "a" * 64, "purpose": "delete_account"}
+        self.assertEqual(self.client.post("/api/social/start", data).status_code, 401)
+        self.complete()
+        self.assertEqual(
+            self.client.post("/api/social/start", dict(data, provider="google")).status_code, 403
+        )
+        self.assertEqual(
+            self.client.post("/api/social/start", dict(data, purpose="unknown")).status_code, 400
+        )
+
+    def test_social_signup_can_reauthenticate_and_delete_without_setting_password(self):
+        self.complete()
+        session_key = self.client.session.session_key
+        ticket = self.deletion_ticket()
+        response = self.complete_deletion(ticket)
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(set(response.json()), {"code", "delete_token"})
+        self.assertEqual(self.client.session.session_key, session_key)
+        self.assertFalse(social_auth.User.objects.get(username="reader").has_usable_password())
+        self.assertEqual(self.complete_deletion(ticket).status_code, 400)
+        token = response.json()["delete_token"]
+        with patch("apps.profile.models.Profile.delete_user") as delete_user:
+            result = self.client.post(
+                "/api/social/delete_account", {"delete_token": token, "confirm": "Delete"}
+            )
+            self.assertEqual(result.json(), {"code": 1})
+            delete_user.assert_called_once_with(confirm=True)
+            self.assertNotIn("_auth_user_id", self.client.session)
+            self.client.force_login(social_auth.User.objects.get(username="reader"))
+            self.assertEqual(
+                self.client.post(
+                    "/api/social/delete_account", {"delete_token": token, "confirm": "Delete"}
+                ).status_code,
+                403,
+            )
+            delete_user.assert_called_once()
+
+    def test_deletion_verification_rejects_other_identity_or_changed_session_without_linking(self):
+        self.complete()
+        user = social_auth.User.objects.get(username="reader")
+        wrong_identity = dict(provider="apple", subject="different-subject", email=user.email)
+        self.assertEqual(
+            self.complete_deletion(self.deletion_ticket(identity=wrong_identity)).status_code, 403
+        )
+        ticket = self.deletion_ticket()
+        self.client.logout()
+        self.client.force_login(user)
+        self.assertEqual(self.complete_deletion(ticket).status_code, 403)
+        ticket = self.deletion_ticket()
+        other = social_auth.User.objects.create_user("other", "other@example.com", "password")
+        self.client.force_login(other)
+        self.assertEqual(self.complete_deletion(ticket).status_code, 403)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), other.pk)
+        self.assertEqual(social_auth.SocialIdentity.objects.count(), 1)
+
+    def test_delete_requires_separate_proof_confirmation_and_unchanged_session(self):
+        self.complete()
+        user = social_auth.User.objects.get(username="reader")
+        ordinary_ticket = social_auth.remember(
+            "ticket",
+            dict(
+                challenge=hashlib.sha256(b"proof").hexdigest(),
+                identity=dict(provider="apple", subject="subject", email=user.email),
+            ),
+        )
+        with patch("apps.profile.models.Profile.delete_user") as delete_user:
+            for invalid in ("", ordinary_ticket):
+                self.assertEqual(
+                    self.client.post(
+                        "/api/social/delete_account", {"delete_token": invalid, "confirm": "Delete"}
+                    ).status_code,
+                    403,
+                )
+            token = self.complete_deletion(self.deletion_ticket()).json()["delete_token"]
+            self.assertEqual(
+                self.client.post(
+                    "/api/social/delete_account", {"delete_token": token, "confirm": "Cancel"}
+                ).status_code,
+                400,
+            )
+            self.client.logout()
+            self.client.force_login(user)
+            self.assertEqual(
+                self.client.post(
+                    "/api/social/delete_account", {"delete_token": token, "confirm": "Delete"}
+                ).status_code,
+                403,
+            )
+            delete_user.assert_not_called()
+
+    def test_delete_rejects_unlinked_identity_and_missing_authentication(self):
+        self.complete()
+        token = self.complete_deletion(self.deletion_ticket()).json()["delete_token"]
+        social_auth.SocialIdentity.objects.all().delete()
+        with patch("apps.profile.models.Profile.delete_user") as delete_user:
+            self.assertEqual(
+                self.client.post(
+                    "/api/social/delete_account", {"delete_token": token, "confirm": "Delete"}
+                ).status_code,
+                403,
+            )
+            self.assertEqual(
+                Client()
+                .post("/api/social/delete_account", {"delete_token": token, "confirm": "Delete"})
+                .status_code,
+                401,
+            )
+            delete_user.assert_not_called()
+
+    @override_settings(SOCIAL_GOOGLE_CLIENT_ID="google-client", SOCIAL_GOOGLE_CLIENT_SECRET="fixture-secret")
+    def test_google_browser_callback_preserves_deletion_binding_without_browser_session(self):
+        self.complete()
+        user = social_auth.User.objects.get(username="reader")
+        identity = dict(provider="google", subject="google-subject", email=user.email)
+        social_auth.SocialIdentity.objects.create(user=user, **identity)
+        data = {
+            "provider": "google",
+            "challenge": hashlib.sha256(b"proof").hexdigest(),
+            "purpose": "delete_account",
+        }
+        start = self.client.post("/api/social/start", data).json()
+        self.assertEqual(parse_qs(urlparse(start["url"]).query)["prompt"], ["select_account"])
+        browser = Client()
+        token_response = Mock()
+        token_response.json.return_value = {"id_token": "signed-token"}
+        with patch.object(social_auth.requests, "post", return_value=token_response), patch.object(
+            social_auth, "verified_claims", return_value=identity
+        ):
+            callback = browser.get(
+                "/api/social/google/callback", {"state": start["state"], "code": "authorization"}
+            )
+        ticket = parse_qs(urlparse(callback["Location"]).query)["ticket"][0]
+        self.assertIn("delete_token", self.complete_deletion(ticket).json())
+        cancelled_start = self.client.post("/api/social/start", data).json()
+        cancelled = browser.get(
+            "/api/social/google/callback", {"state": cancelled_start["state"], "error": "access_denied"}
+        )
+        self.assertEqual(set(parse_qs(urlparse(cancelled["Location"]).query)), {"error"})
+
+    def test_deletion_proof_expiry_and_other_account_never_delete(self):
+        self.complete()
+        expired = self.complete_deletion(self.deletion_ticket()).json()["delete_token"]
+        cache.delete("social:delete-account:" + expired)
+        valid = self.complete_deletion(self.deletion_ticket()).json()["delete_token"]
+        other = social_auth.User.objects.create_user("other", "other@example.com", "password")
+        other_client = Client()
+        other_client.force_login(other)
+        with patch("apps.profile.models.Profile.delete_user") as delete_user:
+            self.assertEqual(
+                self.client.post(
+                    "/api/social/delete_account", {"delete_token": expired, "confirm": "Delete"}
+                ).status_code,
+                403,
+            )
+            self.assertEqual(
+                other_client.post(
+                    "/api/social/delete_account", {"delete_token": valid, "confirm": "Delete"}
+                ).status_code,
+                403,
+            )
+            delete_user.assert_not_called()

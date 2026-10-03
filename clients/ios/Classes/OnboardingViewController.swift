@@ -239,6 +239,8 @@ struct OnboardingFeed: Identifiable {
         return token
     }
 
+    func isActive(_ token: UUID) -> Bool { work.contains(token) }
+
     @discardableResult func finishWork(_ token: UUID) -> Bool {
         guard work.remove(token) != nil else { return false }
         requestRefresh()
@@ -639,6 +641,12 @@ struct OnboardingFeed: Identifiable {
         selection.subtract(chosenURLs)
         message = nil
         let loadingToken = OnboardingFeedLoading.shared.beginWork()
+        // FeedsObjCViewController.m clears work tokens on authentication changes, including signing back into the same account.
+        func isCurrentAccount() -> Bool {
+            OnboardingFeedLoading.shared.isActive(loadingToken) &&
+                username == NewsBlurAppDelegate.shared()?.activeUsername &&
+                server == NewsBlurAppDelegate.shared()?.url
+        }
         let task = Task { [self] in
             await previous?.value
             var failures: [OnboardingFeed] = []
@@ -646,21 +654,25 @@ struct OnboardingFeed: Identifiable {
             var individual = chosen
             let known = chosen.filter { (Int($0.preview.id) ?? 0) > 0 }
             if !known.isEmpty {
-                guard username == NewsBlurAppDelegate.shared()?.activeUsername,
-                      server == NewsBlurAppDelegate.shared()?.url else {
+                guard isCurrentAccount() else {
                     queued.subtract(chosenURLs)
                     OnboardingFeedLoading.shared.cancelWork(loadingToken)
                     return
                 }
                 do {
                     if batchEndpointSupported == nil { batchEndpointSupported = try await OnboardingAPI.supportsBatchFeeds() }
+                    // OnboardingViewController.swift must recheck after the probe suspends, before either subscription endpoint can write.
+                    guard isCurrentAccount() else {
+                        queued.subtract(chosenURLs)
+                        OnboardingFeedLoading.shared.cancelWork(loadingToken)
+                        return
+                    }
                     let path = existingFolder && !destination.isEmpty ? destination.components(separatedBy: " ▸ ") : []
                     var body = ["folder_path": String(decoding: try JSONEncoder().encode(path), as: UTF8.self)]
                     if !existingFolder { body["new_folder"] = destination }
                     if batchEndpointSupported == true,
                        let response = try await OnboardingAPI.addFeedIDs(known.compactMap { Int($0.preview.id) }, folder: body) {
-                        guard username == NewsBlurAppDelegate.shared()?.activeUsername,
-                              server == NewsBlurAppDelegate.shared()?.url else {
+                        guard isCurrentAccount() else {
                             queued.subtract(chosenURLs)
                             OnboardingFeedLoading.shared.cancelWork(loadingToken)
                             return
@@ -686,8 +698,7 @@ struct OnboardingFeed: Identifiable {
             }
             for feed in individual {
                 // OnboardingViewController.swift never continues queued subscriptions in another account.
-                guard username == NewsBlurAppDelegate.shared()?.activeUsername,
-                      server == NewsBlurAppDelegate.shared()?.url else {
+                guard isCurrentAccount() else {
                     queued.subtract(chosenURLs)
                     OnboardingFeedLoading.shared.cancelWork(loadingToken)
                     return
@@ -701,8 +712,7 @@ struct OnboardingFeed: Identifiable {
                         body = ["url": feed.url, "new_folder": destination, "folder_path": "[]"]
                     }
                     _ = try await OnboardingAPI.request("/reader/add_url", body: body)
-                    guard username == NewsBlurAppDelegate.shared()?.activeUsername,
-                          server == NewsBlurAppDelegate.shared()?.url else {
+                    guard isCurrentAccount() else {
                         queued.subtract(chosenURLs)
                         OnboardingFeedLoading.shared.cancelWork(loadingToken)
                         return
@@ -712,8 +722,7 @@ struct OnboardingFeed: Identifiable {
                 } catch { failures.append(feed) }
                 queued.remove(feed.url)
             }
-            guard username == NewsBlurAppDelegate.shared()?.activeUsername,
-                  server == NewsBlurAppDelegate.shared()?.url else {
+            guard isCurrentAccount() else {
                 OnboardingFeedLoading.shared.cancelWork(loadingToken)
                 return
             }

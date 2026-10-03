@@ -8,7 +8,7 @@ import jwt
 import requests
 from django import forms
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
@@ -88,6 +88,33 @@ def verified_claims(provider, token, nonce):
     return {"provider": provider, "subject": claims["sub"], "email": claims["email"]}
 
 
+def has_account_session(request):
+    user = getattr(request, "user", None)
+    return bool(user and user.is_authenticated and user.is_active and request.session.session_key)
+
+
+def matches_account_session(request, context):
+    return (
+        has_account_session(request)
+        and context.get("user_id") == request.user.pk
+        and secrets.compare_digest(context.get("session_key", ""), request.session.session_key)
+    )
+
+
+@never_cache
+@require_GET
+def account(request):
+    if not has_account_session(request):
+        return failure("Please sign in to manage your account.", 401)
+    providers = list(
+        request.user.social_identities.filter(provider__in=["apple", "google"])
+        .order_by("provider")
+        .values_list("provider", flat=True)
+        .distinct()
+    )
+    return JsonResponse(dict(code=1, providers=providers, has_password=request.user.has_usable_password()))
+
+
 @never_cache
 @require_POST
 def start(request):
@@ -96,6 +123,16 @@ def start(request):
     provider = request.POST.get("provider")
     if provider not in ("apple", "google"):
         return failure("Unknown sign-in provider.")
+    purpose = request.POST.get("purpose", "signin")
+    if purpose not in ("signin", "delete_account"):
+        return failure("Unknown sign-in purpose.")
+    context = {}
+    if purpose == "delete_account":
+        if not has_account_session(request):
+            return failure("Please sign in before deleting your account.", 401)
+        if not request.user.social_identities.filter(provider=provider).exists():
+            return failure("Verify with a provider already connected to this NewsBlur account.", 403)
+        context = dict(user_id=request.user.pk, session_key=request.session.session_key)
     if provider == "google" and not (
         settings.SOCIAL_GOOGLE_CLIENT_ID and settings.SOCIAL_GOOGLE_CLIENT_SECRET
     ):
@@ -104,7 +141,9 @@ def start(request):
     if len(challenge) != 64 or any(c not in "0123456789abcdef" for c in challenge):
         return failure("Invalid sign-in challenge.")
     nonce = secrets.token_urlsafe(32)
-    state = remember("state", dict(provider=provider, nonce=nonce, challenge=challenge))
+    state = remember(
+        "state", dict(provider=provider, nonce=nonce, challenge=challenge, purpose=purpose, **context)
+    )
     result = dict(code=1, state=state, nonce=nonce)
     if provider == "google":
         result["url"] = "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(
@@ -131,7 +170,7 @@ def apple(request):
         identity = verified_claims("apple", request.POST.get("id_token", ""), state["nonce"])
     except (jwt.PyJWTError, ValueError):
         return failure("Apple could not verify your account. Please try again.")
-    ticket = remember("ticket", dict(identity=identity, challenge=state["challenge"]))
+    ticket = remember("ticket", dict(state, identity=identity))
     return JsonResponse(dict(code=1, ticket=ticket))
 
 
@@ -162,7 +201,7 @@ def google_callback(request):
         return AppRedirect(
             target + urlencode(dict(error="Google could not verify your account. Please try again."))
         )
-    ticket = remember("ticket", dict(identity=identity, challenge=state["challenge"]))
+    ticket = remember("ticket", dict(state, identity=identity))
     return AppRedirect(target + urlencode(dict(ticket=ticket)))
 
 
@@ -183,15 +222,53 @@ def complete(request):
         .select_related("user")
         .first()
     )
+    if ticket.get("purpose") == "delete_account":
+        if (
+            not matches_account_session(request, ticket)
+            or not existing
+            or existing.user_id != request.user.pk
+        ):
+            return failure(
+                "Verify the Apple or Google account connected to your current NewsBlur account.", 403
+            )
+        proof = remember(
+            "delete-account",
+            dict(
+                user_id=request.user.pk,
+                session_key=request.session.session_key,
+                identity_id=existing.pk,
+                purpose="delete_account",
+            ),
+        )
+        return JsonResponse(dict(code=1, delete_token=proof))
     created = False
     if existing:
         user = existing.user
     else:
         matches = list(User.objects.filter(email__iexact=identity["email"])[:2])
         if matches:
+            if len(matches) > 1:
+                return failure(
+                    "More than one NewsBlur account uses this email. Sign in with your existing "
+                    "username, or contact support@newsblur.com for help connecting this provider."
+                )
+            matched = matches[0]
+            if not matched.has_usable_password():
+                providers = set(matched.social_identities.values_list("provider", flat=True))
+                provider_names = [
+                    name for key, name in (("apple", "Apple"), ("google", "Google")) if key in providers
+                ]
+                existing_signin = (
+                    "Sign in with " + " or ".join(provider_names)
+                    if provider_names
+                    else "Recover your existing NewsBlur account"
+                )
+                return failure(
+                    existing_signin + ". To connect another provider, first reset your NewsBlur password "
+                    "at newsblur.com/profile/forgot_password, then try again with that password."
+                )
             # social_auth.py deliberately bypasses LoginForm's legacy blank-password fallback.
             identifier = request.POST.get("username", "").strip().casefold()
-            matched = matches[0] if len(matches) == 1 else None
             username = (
                 matched.username
                 if matched and identifier in (matched.username.casefold(), matched.email.casefold())
@@ -227,7 +304,7 @@ def complete(request):
                 )
             try:
                 with transaction.atomic():
-                    # Serialize creation per provider subject before invoking SignupForm side effects.
+                    # social_auth.py serializes identity creation; SignupForm publishes only on commit.
                     from django.db import connection
 
                     lock = int.from_bytes(
@@ -259,3 +336,26 @@ def complete(request):
         return failure("This account is inactive. Please contact NewsBlur support.", 403)
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
     return JsonResponse(dict(code=1, created=created, username=user.username))
+
+
+@never_cache
+@require_POST
+def delete_account(request):
+    if not has_account_session(request):
+        return failure("Please sign in before deleting your account.", 401)
+    if rate_limited(request):
+        return failure("Please wait a minute before trying again.", 429)
+    if request.POST.get("confirm") != "Delete":
+        return failure("Confirm that you want to permanently delete your account.")
+    proof = consume("delete-account", request.POST.get("delete_token", ""))
+    if (
+        not proof
+        or proof.get("purpose") != "delete_account"
+        or not matches_account_session(request, proof)
+        or not request.user.social_identities.filter(pk=proof.get("identity_id")).exists()
+    ):
+        return failure("Account verification expired. Verify with Apple or Google again.", 403)
+    # social_auth.py keeps provider verification separate from login, linking, and final deletion consent.
+    request.user.profile.delete_user(confirm=True)
+    logout(request)
+    return JsonResponse(dict(code=1))

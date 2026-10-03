@@ -49,6 +49,8 @@ import SwiftUI
     private var ticket = ""
     private var webSession: ASWebAuthenticationSession?
     private var appleController: ASAuthorizationController?
+    var deletionSession: AccountDeletionSession?
+    var onReauthenticated: ((String) -> Void)?
 
     func emailSignIn() {
         guard !busy else { return }
@@ -75,17 +77,9 @@ import SwiftUI
         guard !busy else { return }
         busy = true
         message = nil
-        provider = name
-        needsLink = false
-        needsUsername = false
-        // OnboardingAccountViewController.swift binds the callback ticket to this app session.
-        verifier = UUID().uuidString + UUID().uuidString
-        let challenge = SHA256.hash(data: Data(verifier.utf8)).map { String(format: "%02x", $0) }.joined()
         Task {
             do {
-                let result = try await OnboardingAPI.request("/api/social/start", body: ["provider": name, "challenge": challenge])
-                guard let state = result["state"] as? String else { throw OnboardingAPI.error("Unable to start sign-in.") }
-                self.state = state
+                let result = try await prepareSocial(name)
                 if name == "apple" {
                     let request = ASAuthorizationAppleIDProvider().createRequest()
                     request.requestedScopes = [.email]
@@ -116,6 +110,7 @@ import SwiftUI
                         }
                     }
                     session.presentationContextProvider = self
+                    session.prefersEphemeralWebBrowserSession = deletionSession != nil
                     webSession = session
                     if !session.start() { throw OnboardingAPI.error("Unable to open Google sign-in. Please try again.") }
                 }
@@ -123,13 +118,32 @@ import SwiftUI
         }
     }
 
+    func prepareSocial(_ name: String) async throws -> [String: Any] {
+        try deletionSession?.validate()
+        provider = name
+        needsLink = false
+        needsUsername = false
+        // OnboardingAccountViewController.swift binds the callback ticket to this app session.
+        verifier = UUID().uuidString + UUID().uuidString
+        let challenge = SHA256.hash(data: Data(verifier.utf8)).map { String(format: "%02x", $0) }.joined()
+        var body = ["provider": name, "challenge": challenge]
+        if deletionSession != nil { body["purpose"] = "delete_account" }
+        let result = try await OnboardingAPI.request("/api/social/start", body: body)
+        try deletionSession?.validate()
+        guard let state = result["state"] as? String else { throw OnboardingAPI.error("Unable to start sign-in.") }
+        self.state = state
+        return result
+    }
+
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         Task {
             defer { busy = false; appleController = nil }
             do {
+                try deletionSession?.validate()
                 guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
                       let data = credential.identityToken, let token = String(data: data, encoding: .utf8) else { throw OnboardingAPI.error("Apple did not return an identity token.") }
                 let result = try await OnboardingAPI.request("/api/social/apple", body: ["state": state, "id_token": token])
+                try deletionSession?.validate()
                 guard let ticket = result["ticket"] as? String else { throw OnboardingAPI.error("Apple sign-in failed.") }
                 self.ticket = ticket
                 try await complete()
@@ -146,9 +160,24 @@ import SwiftUI
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor { self.controller?.view.window ?? ASPresentationAnchor() }
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor { controller?.view.window ?? ASPresentationAnchor() }
 
+    func complete(ticket: String) async throws {
+        self.ticket = ticket
+        try await complete()
+    }
+
     private func complete() async throws {
+        try deletionSession?.validate()
         let result = try await OnboardingAPI.request("/api/social/complete", body: ["ticket": ticket, "verifier": verifier,
             "username": needsUsername || needsLink ? username : "", "password": needsLink ? password : ""])
+        if let deletionSession {
+            try deletionSession.validate()
+            guard let token = result["delete_token"] as? String, !token.isEmpty else {
+                throw OnboardingAPI.error("Unable to verify your account. Please try again.")
+            }
+            self.ticket = ""
+            onReauthenticated?(token)
+            return
+        }
         if result["link_required"] as? Bool == true || result["username_required"] as? Bool == true {
             ticket = result["ticket"] as? String ?? ""
             needsLink = result["link_required"] as? Bool == true
@@ -158,6 +187,15 @@ import SwiftUI
             return
         }
         finish(method: provider, created: result["created"] as? Bool == true)
+    }
+
+    func cancelAuthentication() {
+        deletionSession?.cancelled = true
+        webSession?.cancel()
+        webSession = nil
+        appleController = nil
+        busy = false
+        cancelContinuation()
     }
 
     func cancelContinuation() {
@@ -175,6 +213,217 @@ import SwiftUI
         cancelContinuation()
         NewsBlurAppDelegate.shared()?.finishAuthentication()
         controller?.dismiss(animated: true)
+    }
+}
+
+// OnboardingAccountViewController.swift binds deletion to the existing authenticated browsing session.
+@MainActor final class AccountDeletionSession {
+    let username = NewsBlurAppDelegate.shared()?.activeUsername
+    let server = NewsBlurAppDelegate.shared()?.url
+    private let generation = NewsBlurAppDelegate.shared()?.feedsViewController.feedListAccountGeneration
+    var cancelled = false
+
+    func validate() throws {
+        let app = NewsBlurAppDelegate.shared()
+        guard !cancelled, let username, !username.isEmpty, username == app?.activeUsername,
+              server == app?.url, generation == app?.feedsViewController.feedListAccountGeneration else {
+            throw OnboardingAPI.error("Your account session changed. Close this dialog and try again.")
+        }
+    }
+}
+
+@MainActor final class AccountDeletionModel: ObservableObject {
+    @Published var providers: [String] = []
+    @Published var loading = true
+    @Published var deleting = false
+    @Published var confirmation = ""
+    @Published var message: String?
+    @Published private(set) var isVerified = false
+    @Published private(set) var useLegacyDeletion = false
+    let authentication = OnboardingAccountModel()
+    let session = AccountDeletionSession()
+    private var deleteToken: String?
+    private let onDeleted: () -> Void
+    var onLegacy: (() -> Void)?
+
+    init(onDeleted: @escaping () -> Void) {
+        self.onDeleted = onDeleted
+        authentication.deletionSession = session
+        authentication.onReauthenticated = { [weak self] token in
+            self?.deleteToken = token
+            self?.isVerified = true
+            self?.message = nil
+        }
+    }
+
+    func load() async {
+        loading = true
+        message = nil
+        defer { loading = false }
+        do {
+            try session.validate()
+            guard let server = session.server, let url = URL(string: server + "/api/social/account") else {
+                throw OnboardingAPI.error("Invalid server address.")
+            }
+            let (data, response) = try await OnboardingAPI.session.data(for: URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
+            try session.validate()
+            guard let http = response as? HTTPURLResponse else { throw OnboardingAPI.error("Unable to load your account. Please try again.") }
+            if http.statusCode == 404 || ((200...299).contains(http.statusCode) && http.mimeType == "text/html") {
+                useLegacyDeletion = true
+            } else {
+                guard (200...299).contains(http.statusCode),
+                      let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      json["code"] as? Int == 1, let linked = json["providers"] as? [String] else {
+                    throw OnboardingAPI.error("Unable to load your account. Please try again.")
+                }
+                providers = linked.filter { ["apple", "google"].contains($0) }
+                useLegacyDeletion = providers.isEmpty
+            }
+            if useLegacyDeletion { onLegacy?() }
+        } catch { message = error.localizedDescription }
+    }
+
+    func deleteAccount() async {
+        guard !deleting, isVerified, let deleteToken, confirmation == "Delete" else { return }
+        deleting = true
+        message = nil
+        defer { deleting = false }
+        do {
+            try session.validate()
+            _ = try await OnboardingAPI.request("/api/social/delete_account", body: ["delete_token": deleteToken, "confirm": "Delete"])
+            try session.validate()
+            self.deleteToken = nil
+            isVerified = false
+            onDeleted()
+        } catch {
+            self.deleteToken = nil
+            isVerified = false
+            confirmation = ""
+            message = error.localizedDescription
+        }
+    }
+
+    func cancel() {
+        session.cancelled = true
+        deleteToken = nil
+        isVerified = false
+        authentication.cancelAuthentication()
+    }
+}
+
+@objc final class AccountDeletionController: UIViewController {
+    private(set) var model: AccountDeletionModel!
+
+    @objc(presentFromController:) static func present(from controller: UIViewController) {
+        let deletion = AccountDeletionController()
+        deletion.modalPresentationStyle = .formSheet
+        deletion.preferredContentSize = CGSize(width: 520, height: 560)
+        deletion.isModalInPresentation = true
+        controller.present(deletion, animated: true)
+    }
+
+    override func loadView() {
+        model = AccountDeletionModel { [weak self] in
+            guard let self else { return }
+            self.dismiss(animated: true) {
+                guard (try? self.model.session.validate()) != nil, let app = NewsBlurAppDelegate.shared() else { return }
+                // OnboardingAccountViewController.swift invalidates queued account work before returning to login after deletion.
+                app.cancelOfflineQueue()
+                app.feedsViewController.resetForAccountChange()
+                app.feedDetailViewController.resetForAccountChange()
+                app.activeUsername = nil
+                app.activeStory = nil
+                UserDefaults.standard.removeObject(forKey: "active_username")
+                app.showLogin()
+            }
+        }
+        model.onLegacy = { [weak self] in
+            guard let self, let server = self.model.session.server else { return }
+            self.dismiss(animated: true) {
+                guard (try? self.model.session.validate()) != nil, let url = URL(string: server + "/profile/delete_account") else { return }
+                NewsBlurAppDelegate.shared()?.show(inAppBrowser: url, withCustomTitle: "Delete Account", fromSender: nil)
+            }
+        }
+        model.authentication.controller = self
+        let host = UIHostingController(rootView: AccountDeletionView(model: model, cancel: { [weak self] in
+            self?.model.cancel()
+            self?.dismiss(animated: true)
+        }))
+        view = UIView()
+        addChild(host)
+        view.addSubview(host.view)
+        host.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            host.view.topAnchor.constraint(equalTo: view.topAnchor), host.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            host.view.leadingAnchor.constraint(equalTo: view.leadingAnchor), host.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        host.didMove(toParent: self)
+    }
+}
+
+private struct AccountDeletionView: View {
+    @ObservedObject var model: AccountDeletionModel
+    @ObservedObject var authentication: OnboardingAccountModel
+    let cancel: () -> Void
+
+    init(model: AccountDeletionModel, cancel: @escaping () -> Void) {
+        self.model = model
+        self.authentication = model.authentication
+        self.cancel = cancel
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            HStack {
+                Text("Delete account").font(.title2.weight(.semibold))
+                Spacer()
+                Button("Cancel", action: cancel).disabled(model.deleting)
+            }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Image(systemName: model.isVerified ? "person.crop.circle.badge.checkmark" : "person.crop.circle.badge.minus")
+                        .font(.system(size: 42, weight: .light)).foregroundStyle(DiscoverColors.textSecondary).accessibilityHidden(true)
+                    Text(model.isVerified ? "Your identity is verified" : "Verify your identity first")
+                        .font(.title3.weight(.semibold))
+                    Text("Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone.")
+                        .foregroundStyle(DiscoverColors.textSecondary)
+                    if model.loading { ProgressView("Loading account…").frame(maxWidth: .infinity).padding() }
+                    else if model.isVerified {
+                        Text("Type Delete to permanently delete \(model.session.username ?? "your account").").font(.subheadline)
+                        TextField("Delete", text: $model.confirmation)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .padding(14).background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
+                            .accessibilityIdentifier("account-deletion.confirmation")
+                        Button(role: .destructive) { Task { await model.deleteAccount() } } label: {
+                            Text("Permanently delete account").fontWeight(.semibold).frame(maxWidth: .infinity).padding(.vertical, 8)
+                        }.buttonStyle(.borderedProminent).tint(.red)
+                            .disabled(model.confirmation != "Delete" || model.deleting)
+                            .accessibilityIdentifier("account-deletion.submit")
+                        if model.deleting { ProgressView("Deleting account…") }
+                    } else {
+                        ForEach(model.providers, id: \.self) { provider in
+                            Button { authentication.social(provider) } label: {
+                                HStack(spacing: 12) {
+                                    if provider == "apple" { Image(systemName: "apple.logo").font(.title2) }
+                                    else { Image("google-signin").resizable().frame(width: 22, height: 22) }
+                                    Text(provider == "apple" ? "Verify with Apple" : "Verify with Google").fontWeight(.semibold)
+                                    Spacer()
+                                }.padding(16).background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
+                            }.buttonStyle(.plain).disabled(authentication.busy)
+                        }
+                        if authentication.busy { ProgressView("Verifying your identity…") }
+                        if model.providers.isEmpty && model.message != nil {
+                            Button("Try again") { Task { await model.load() } }
+                        }
+                    }
+                    if let message = model.message ?? authentication.message {
+                        Text(message).font(.subheadline).foregroundStyle(.red).accessibilityIdentifier("account-deletion.error")
+                    }
+                }.frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }.padding(28).foregroundStyle(DiscoverColors.textPrimary)
+            .background(DiscoverColors.background.ignoresSafeArea())
+            .task { await model.load() }
     }
 }
 
