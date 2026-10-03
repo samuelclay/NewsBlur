@@ -76,7 +76,7 @@ final class NewsBlurUITestHarness {
         }
 
         switch requestedScreen {
-        case "add-site", "discover-sites", "onboarding", "onboarding-account":
+        case "add-site", "discover-sites", "onboarding", "onboarding-account", "account-deletion", "account-deletion-confirm":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -120,7 +120,7 @@ final class NewsBlurUITestHarness {
         }
 
         switch requestedScreen {
-        case "onboarding", "onboarding-account":
+        case "onboarding", "onboarding-account", "account-deletion", "account-deletion-confirm":
             didScheduleScenario = true
             configureOnboarding(on: appDelegate, remainingRetries: 100)
         case "discover-sites":
@@ -163,6 +163,17 @@ final class NewsBlurUITestHarness {
 
     private static func configureOnboarding(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
         guard remainingRetries > 0 else { return }
+        if requestedScreen == "account-deletion" || requestedScreen == "account-deletion-confirm" {
+            // NewsBlurUITestHarness.swift establishes the fixture account before deletion captures its authentication generation.
+            loadFixtureFeedList(on: appDelegate)
+            guard didFinishReaderFeedLoad else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    configureOnboarding(on: appDelegate, remainingRetries: remainingRetries - 1)
+                }
+                return
+            }
+            appDelegate.feedsViewController.loadWorkItem?.cancel()
+        }
         guard let root = appDelegate.window?.rootViewController, root.viewIfLoaded?.window != nil else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 configureOnboarding(on: appDelegate, remainingRetries: remainingRetries - 1)
@@ -170,6 +181,19 @@ final class NewsBlurUITestHarness {
             return
         }
         let show = {
+            if requestedScreen == "account-deletion" || requestedScreen == "account-deletion-confirm" {
+                let controller = AccountDeletionController()
+                controller.modalPresentationStyle = .formSheet
+                controller.preferredContentSize = CGSize(width: 520, height: 560)
+                controller.isModalInPresentation = true
+                controller.loadViewIfNeeded()
+                // NewsBlurUITestHarness.swift previews confirmation without contacting a real identity provider or deleting an account.
+                if requestedScreen == "account-deletion-confirm" {
+                    controller.model.authentication.onReauthenticated?("fixture-delete-token")
+                }
+                root.present(controller, animated: false)
+                return
+            }
             let controller: UIViewController = requestedScreen == "onboarding-account"
                 ? OnboardingAccountViewController() : UINavigationController(rootViewController: OnboardingViewController())
             controller.modalPresentationStyle = .fullScreen
@@ -1398,6 +1422,9 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
     }
 
     private func responsePayload(url: URL) throws -> [String: Any] {
+        if url.path == "/api/social/account" {
+            return ["code": 1, "providers": ["apple", "google"], "has_password": false]
+        }
         if url.path == "/reader/add_feeds", request.httpMethod == "GET" {
             return ["batch_add_supported": false]
         }

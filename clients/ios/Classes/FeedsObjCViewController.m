@@ -2361,9 +2361,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         }
     } else if ([key isEqualToString:@"delete_account"]) {
         [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
-            NSString *urlString = [NSString stringWithFormat:@"%@/profile/delete_account",
-                                   self.appDelegate.url];
-            [self.appDelegate showInAppBrowser:[NSURL URLWithString:urlString] withCustomTitle:@"Delete Account" fromSender:nil];
+            [AccountDeletionController presentFromController:self.appDelegate.splitViewController];
         }];
     } else if ([key isEqualToString:@"app_icon"]) {
         [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{

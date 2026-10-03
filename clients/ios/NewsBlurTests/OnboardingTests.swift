@@ -165,6 +165,131 @@ import Combine
         OnboardingAPI.session = URLSession(configuration: configuration)
     }
 
+    func test_providerDeletionRequiresVerificationAndTypedConfirmation() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let username = app.activeUsername
+        app.activeUsername = "delete-fixture"
+        defer { app.activeUsername = username }
+        var paths: [String] = []
+        var deleted = 0
+        network { request in
+            paths.append(request.url!.path)
+            switch request.url!.path {
+            case "/api/social/account": return (200, ["code": 1, "providers": ["google"], "has_password": false])
+            case "/api/social/start":
+                XCTAssertTrue(Self.body(request).contains("purpose=delete_account"))
+                return (200, ["state": "delete-state", "url": "https://accounts.google.com/test"])
+            case "/api/social/complete": return (200, ["code": 1, "delete_token": "verified-token"])
+            case "/api/social/delete_account":
+                XCTAssertTrue(Self.body(request).contains("delete_token=verified-token"))
+                XCTAssertTrue(Self.body(request).contains("confirm=Delete"))
+                return (200, ["code": 1])
+            default: XCTFail("Unexpected request"); return (500, [:])
+            }
+        }
+        let model = AccountDeletionModel(onDeleted: { deleted += 1 })
+        await model.load()
+        XCTAssertEqual(model.providers, ["google"])
+        await model.deleteAccount()
+        XCTAssertFalse(paths.contains("/api/social/delete_account"))
+        _ = try await model.authentication.prepareSocial("google")
+        try await model.authentication.complete(ticket: "provider-ticket")
+        XCTAssertTrue(model.isVerified)
+        XCTAssertEqual(app.activeUsername, "delete-fixture", "Provider verification must never finish normal sign-in.")
+        model.confirmation = "delete"
+        await model.deleteAccount()
+        XCTAssertFalse(paths.contains("/api/social/delete_account"))
+        model.confirmation = "Delete"
+        await model.deleteAccount()
+        XCTAssertEqual(paths.filter { $0 == "/api/social/delete_account" }.count, 1)
+        XCTAssertEqual(deleted, 1)
+    }
+
+    func test_providerDeletionCancellationAndAccountSwitchCannotWrite() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let username = app.activeUsername
+        defer { app.activeUsername = username }
+        for cancel in [true, false] {
+            app.activeUsername = "delete-fixture"
+            var mutations: [String] = []
+            network { request in
+                mutations.append(request.url!.path)
+                return (200, ["state": "delete-state", "delete_token": "verified-token"])
+            }
+            let model = AccountDeletionModel(onDeleted: { XCTFail("Must not delete") })
+            _ = try await model.authentication.prepareSocial("google")
+            if cancel { model.cancel() } else { app.activeUsername = "another-account" }
+            do { try await model.authentication.complete(ticket: "provider-ticket"); XCTFail("Expected stale verification rejection") }
+            catch {}
+            model.confirmation = "Delete"
+            await model.deleteAccount()
+            XCTAssertEqual(mutations, ["/api/social/start"])
+        }
+    }
+
+    func test_passwordAccountAndOldServerRetainLegacyDeletion() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let username = app.activeUsername
+        app.activeUsername = "delete-fixture"
+        defer { app.activeUsername = username }
+        for response in [["code": 1, "providers": [], "has_password": true], ["_test_html": "<html>NewsBlur</html>"]] as [[String: Any]] {
+            network { _ in (200, response) }
+            let model = AccountDeletionModel(onDeleted: {})
+            await model.load()
+            XCTAssertTrue(model.useLegacyDeletion)
+        }
+    }
+
+    func test_staleAccountCannotUseVerifiedDeletionProof() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let username = app.activeUsername
+        app.activeUsername = "delete-fixture"
+        defer { app.activeUsername = username }
+        var deletes = 0
+        network { request in
+            if request.url?.path == "/api/social/delete_account" { deletes += 1 }
+            return (200, ["state": "delete-state", "delete_token": "verified-token"])
+        }
+        let model = AccountDeletionModel(onDeleted: { XCTFail("Wrong account must not be deleted") })
+        _ = try await model.authentication.prepareSocial("google")
+        try await model.authentication.complete(ticket: "provider-ticket")
+        app.activeUsername = "another-account"
+        model.confirmation = "Delete"
+        await model.deleteAccount()
+        XCTAssertEqual(deletes, 0)
+        XCTAssertFalse(model.isVerified)
+        XCTAssertNotNil(model.message)
+    }
+
+    func test_expiredDeletionProofReturnsToProviderVerificationWithoutRetrying() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let username = app.activeUsername
+        app.activeUsername = "delete-fixture"
+        defer { app.activeUsername = username }
+        var deletes = 0
+        network { request in
+            if request.url?.path == "/api/social/account" { return (200, ["code": 1, "providers": ["google"], "has_password": false]) }
+            if request.url?.path == "/api/social/delete_account" {
+                deletes += 1
+                return (400, ["code": -1, "message": "Please verify your identity again."])
+            }
+            return (200, ["state": "delete-state", "delete_token": "verified-token"])
+        }
+        let model = AccountDeletionModel(onDeleted: { XCTFail("Expired proof cannot delete") })
+        await model.load()
+        _ = try await model.authentication.prepareSocial("google")
+        try await model.authentication.complete(ticket: "provider-ticket")
+        model.confirmation = "Delete"
+        await model.deleteAccount()
+        XCTAssertFalse(model.isVerified)
+        XCTAssertEqual(model.providers, ["google"])
+        XCTAssertEqual(model.confirmation, "")
+        XCTAssertEqual(model.message, "Please verify your identity again.")
+        model.confirmation = "Delete"
+        await model.deleteAccount()
+        XCTAssertEqual(deletes, 1, "A failed proof must never be posted a second time.")
+    }
+
     func test_bundleSourcesStartTogetherAndPreserveChoicesAsResultsArrive() async throws {
         let sources = ["rss", "newsletter", "youtube", "reddit", "podcast"]
         let fixtures = Dictionary(uniqueKeysWithValues: sources.map { source in
@@ -518,6 +643,52 @@ import Combine
         XCTAssertTrue(bodies[0].contains("feed_ids=[101,102]"))
         XCTAssertTrue(bodies[1].contains("feed_ids=[102]"))
         XCTAssertTrue(bodies.allSatisfy { $0.contains("new_folder=My Cooking") && $0.contains("folder_path=[]") })
+    }
+
+    func test_accountChangeDuringCapabilityProbeCannotSendQueuedSubscriptions() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let originalUsername = app.activeUsername
+        let originalServer = app.url
+        defer {
+            app.activeUsername = originalUsername
+            app.setCustomDomainForTesting(originalServer)
+        }
+        for change in ["username", "server", "session reset"] {
+            for supported in [true, false] {
+                app.activeUsername = "original-account"
+                app.setCustomDomainForTesting("https://original-account.invalid")
+                OnboardingFeedLoading.shared.reset()
+                var writes: [URLRequest] = []
+                network { _ in (200, [:]) }
+                let held = OnboardingHeldRequests()
+                let probing = expectation(description: "Capability probe is suspended")
+                OnboardingURLProtocol.deferredHandler = { request, completion in
+                    if request.httpMethod == "GET" {
+                        held.hold("probe", completion: completion)
+                        probing.fulfill()
+                    } else {
+                        writes.append(request)
+                        completion(200, ["code": 1, "results": [["feed_id": 101, "code": 1]]])
+                    }
+                }
+                var refreshes = 0
+                let bundles = OnboardingBundles(onSubscriptionsChanged: { refreshes += 1 })
+                let feed = DiscoverPopularFeed(feedId: "101", feedDict: ["feed_address": "https://example.com/101"])
+                let task = try XCTUnwrap(bundles.queueSearchResult(feed, folder: "Science"))
+                await fulfillment(of: [probing], timeout: 2)
+                if change == "username" { app.activeUsername = "another-account" }
+                if change == "server" { app.setCustomDomainForTesting("https://another-server.invalid") }
+                if change == "session reset" { OnboardingFeedLoading.shared.reset() }
+                held.respond("probe", json: ["batch_add_supported": supported])
+                await task.value
+                XCTAssertTrue(writes.isEmpty, "\(change), batch=\(supported): a stale queue must not send a POST.")
+                XCTAssertTrue(bundles.queued.isEmpty)
+                XCTAssertTrue(bundles.added.isEmpty)
+                XCTAssertTrue(bundles.failedBundles.isEmpty)
+                XCTAssertEqual(refreshes, 0)
+                XCTAssertFalse(OnboardingFeedLoading.shared.isLoading)
+            }
+        }
     }
 
     func test_batchFallsBackOnlyForMissingEndpointNotAmbiguousTransport() async {

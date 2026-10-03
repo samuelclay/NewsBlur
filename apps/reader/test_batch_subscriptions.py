@@ -4,11 +4,16 @@ import json
 from unittest.mock import PropertyMock, patch
 
 from django.contrib.auth.models import User
+from django.db import connection, transaction
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 
 from apps.discover.models import PopularFeed
+from apps.feed_import.models import OPMLImporter
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.subscription_batch import add_feed_ids
+from apps.reader.tasks import MaintainFeedSubscriptions
 from apps.rss_feeds.models import Feed
 
 
@@ -28,6 +33,7 @@ class Test_BatchSubscriptions(TestCase):
         self.folders, _ = UserSubscriptionFolders.objects.get_or_create(user=self.user)
         self.folders.folders = json.dumps([{"Keep": [1]}, {"Interests": [{"Science": [2]}]}])
         self.folders.save()
+        self.maintenance = patch("apps.reader.tasks.MaintainFeedSubscriptions.delay").start()
         for target in [
             "apps.social.models.MActivity.new_feed_subscription",
             "apps.statistics.rtrending_subscriptions.RTrendingSubscription.add_subscription",
@@ -77,7 +83,7 @@ class Test_BatchSubscriptions(TestCase):
                 user=self.user, feed__in=[self.first, self.second], active=True
             ).count(),
         )
-        self.assertEqual(2, self.activity.call_count)
+        self.activity.assert_not_called()
 
     def test_existing_subscription_gets_new_placement_without_losing_previous(self):
         UserSubscription.objects.create(user=self.user, feed=self.first, active=True)
@@ -185,3 +191,113 @@ class Test_BatchSubscriptions(TestCase):
         self.assertEqual(-1, result["code"])
         self.assertEqual(original, self.tree())
         self.assertFalse(UserSubscription.objects.filter(user=self.user, feed=self.first).exists())
+
+    def test_import_merges_bundle_placements_added_while_outline_is_processing(self):
+        importer = OPMLImporter(
+            '<opml version="1.0"><body><outline text="Interests"><outline text="Science">'
+            '<outline text="Imported" xmlUrl="https://bundle.example/second" />'
+            "</outline></outline></body></opml>",
+            self.user,
+        )
+        process_feed = importer.process_feed
+
+        def overlap(*args, **kwargs):
+            folders = process_feed(*args, **kwargs)
+            self.post([self.first.pk], folder_path='["Interests"]', new_folder="Science")
+            self.post([self.first.pk], folder_path="[]", new_folder="Cooking")
+            return folders
+
+        with patch.object(importer, "process_feed", side_effect=overlap):
+            importer.process()
+        self.assertEqual(
+            [
+                {"Keep": [1]},
+                {"Interests": [{"Science": [2, self.first.pk, self.second.pk]}]},
+                {"Cooking": [self.first.pk]},
+            ],
+            self.tree(),
+        )
+
+    def test_batch_returns_without_running_slow_feed_maintenance(self):
+        with patch.object(
+            Feed, "setup_feed_for_premium_subscribers", side_effect=RuntimeError("Slow search service")
+        ):
+            result = self.post([self.first.pk], folder_path="[]", new_folder="Science")
+        self.assertEqual(1, result["code"])
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=self.first).exists())
+
+    def test_import_does_not_restore_folders_removed_while_resolving_feeds(self):
+        importer = OPMLImporter(
+            '<opml version="1.0"><body><outline text="Imported" '
+            'xmlUrl="https://bundle.example/second" /></body></opml>',
+            self.user,
+        )
+        process_feed = importer.process_feed
+
+        def overlap(*args, **kwargs):
+            folders = process_feed(*args, **kwargs)
+            UserSubscriptionFolders.objects.filter(user=self.user).update(folders='[{"Latest": []}]')
+            return folders
+
+        with patch.object(importer, "process_feed", side_effect=overlap):
+            importer.process()
+        self.assertEqual([{"Latest": []}, self.second.pk], self.tree())
+
+    def test_maintenance_waits_for_commit_and_is_discarded_on_rollback(self):
+        callback_start = len(connection.run_on_commit)
+        with transaction.atomic():
+            result = self.post([self.first.pk], folder_path="[]", new_folder="Science")
+            self.assertEqual(1, result["code"])
+            self.maintenance.assert_not_called()
+        callbacks = connection.run_on_commit[callback_start:]
+        self.assertEqual(2, len(callbacks))
+        # test_batch_subscriptions.py executes Django 3.1's captured callbacks; TestCase never commits its outer transaction.
+        with patch("apps.reader.subscription_batch.redis.Redis"):
+            for _, callback in callbacks:
+                callback()
+        self.maintenance.assert_called_once_with(self.user.pk, [(self.first.pk, True)], [self.first.pk])
+
+        callback_start = len(connection.run_on_commit)
+        with self.assertRaises(RuntimeError), transaction.atomic():
+            self.post([self.second.pk], folder_path="[]", new_folder="Rolled back")
+            raise RuntimeError("Abort enclosing transaction")
+        self.assertEqual(callback_start, len(connection.run_on_commit))
+        self.assertFalse(UserSubscription.objects.filter(user=self.user, feed=self.second).exists())
+
+    def test_worker_maintains_changed_feeds_and_only_records_new_subscriptions(self):
+        with patch.object(Feed, "setup_feed_for_premium_subscribers") as setup, patch(
+            "apps.search.models.MUserSearch.schedule_index_feeds_for_search"
+        ) as index, patch("apps.reader.tasks.redis.Redis") as redis_client:
+            MaintainFeedSubscriptions.run(
+                self.user.pk,
+                [(self.first.pk, True), (self.second.pk, False)],
+                [self.first.pk, self.second.pk],
+            )
+        self.activity.assert_called_once_with(
+            user_id=self.user.pk, feed_id=self.first.pk, feed_title=self.first.title
+        )
+        self.assertEqual(2, setup.call_count)
+        index.assert_called_once_with([self.first.pk, self.second.pk], self.user.pk)
+        redis_client.return_value.publish.assert_called_once_with(self.user.username, "reload:feeds")
+
+    def test_twitter_credentials_checked_once_before_folder_locks(self):
+        feeds = [
+            Feed.objects.create(feed_address="https://twitter.com/%s" % name, num_subscribers=20)
+            for name in ["first", "second"]
+        ]
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        with CaptureQueriesContext(connection) as queries, patch(
+            "apps.reader.subscription_batch.MSocialServices.get_user"
+        ) as get_services:
+
+            def assert_unlocked():
+                self.assertFalse(any("FOR UPDATE" in query["sql"] for query in queries.captured_queries))
+
+            check = get_services.return_value.twitter_api.return_value.me
+            check.side_effect = assert_unlocked
+            result = add_feed_ids(
+                self.user, [feed.pk for feed in feeds], folder_path=[], new_folder="Twitter"
+            )
+        self.assertEqual(1, result["code"])
+        self.assertEqual(1, check.call_count)

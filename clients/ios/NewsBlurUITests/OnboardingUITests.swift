@@ -1,6 +1,36 @@
 import XCTest
 
 final class Test_OnboardingUI: XCTestCase {
+    func test_providerDeletionSheetsAcrossThemes() {
+        for theme in ["light", "sepia", "medium", "dark"] {
+            for confirmed in [false, true] {
+                let app = XCUIApplication()
+                app.launchArguments = ["-newsblur-ui-testing", "-newsblur-ui-test-screen",
+                                       confirmed ? "account-deletion-confirm" : "account-deletion",
+                                       "-newsblur-ui-test-theme", theme]
+                app.launch()
+                if confirmed {
+                    let input = app.textFields["account-deletion.confirmation"]
+                    XCTAssertTrue(input.waitForExistence(timeout: 15))
+                    let submit = app.buttons["account-deletion.submit"]
+                    XCTAssertFalse(submit.isEnabled, "Verification alone cannot authorize deletion.")
+                    screenshot("deletion-confirmation-" + theme)
+                    input.tap()
+                    input.typeText("Delete")
+                    XCTAssertTrue(submit.isEnabled)
+                    // OnboardingUITests.swift never presses the destructive action, even with isolated fixture networking.
+                } else {
+                    XCTAssertTrue(app.buttons["Verify with Apple"].waitForExistence(timeout: 15))
+                    XCTAssertTrue(app.buttons["Verify with Google"].isHittable)
+                    screenshot("deletion-providers-" + theme)
+                }
+                app.buttons["Cancel"].tap()
+                XCTAssertTrue(app.staticTexts["Delete account"].waitForNonExistence(timeout: 5))
+                app.terminate()
+            }
+        }
+    }
+
     func test_entireBundleCardTogglesInclusion() {
         for theme in ["light", "sepia", "medium", "dark"] {
             let app = XCUIApplication()
