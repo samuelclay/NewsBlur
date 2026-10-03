@@ -676,7 +676,16 @@
 
         <activity
             android:name=".activity.LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${socialCallbackScheme}" android:host="complete" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".activity.Main"
@@ -825,6 +834,7 @@
             android:name=".activity.DiscoverFeedsActivity"
             android:launchMode="singleTop" />
 
+        <activity android:name=".activity.OnboardingActivity" android:exported="false" />
         <activity
             android:name=".activity.DiscoverSitesActivity"
             android:windowSoftInputMode="adjustResize" />

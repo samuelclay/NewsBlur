@@ -107,7 +107,13 @@ internal fun DiscoveryFeedCard(
                 }
             })
             Column(Modifier.weight(1f)) {
-                Text(feed.title, color = colors.textPrimary, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(
+                    feed.title,
+                    color = colors.textPrimary,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Text(
                     feed.link,
                     color = colors.siteLink,
@@ -130,7 +136,10 @@ internal fun DiscoveryFeedCard(
             feed.stories.take(3).forEach { story ->
                 HorizontalDivider(color = colors.border)
                 DiscoveryStoryRow(
-                    story, colors, thumbnailLoader, enabled,
+                    story,
+                    colors,
+                    thumbnailLoader,
+                    enabled,
                     story.hash.isNotBlank() && state.selectedPreviewStoryHash == story.hash,
                 ) { onOpenStory(story) }
             }
@@ -156,7 +165,7 @@ internal fun DiscoveryFeedCard(
 }
 
 @Composable
-private fun DiscoveryStoryRow(
+internal fun DiscoveryStoryRow(
     story: DiscoveryStory,
     colors: ReaderSheetPalette.Colors,
     thumbnailLoader: ImageLoader,
@@ -169,25 +178,35 @@ private fun DiscoveryStoryRow(
     val title = remember(story.title) { UIUtils.fromHtml(story.title).toString().trim() }
     val authors = remember(story.authors) { UIUtils.fromHtml(story.authors).toString().trim() }
     val excerpt = remember(story.excerpt) { UIUtils.fromHtml(story.excerpt).toString().trim() }
-    val date = story.timestamp?.let {
-        DateUtils.getRelativeTimeSpanString(it * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
-    }
+    val date =
+        story.timestamp?.let {
+            DateUtils.getRelativeTimeSpanString(it * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
+        }
     val secondaryText = colors.textPrimary.copy(alpha = 0.85f)
     Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 44.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(colors.accent.copy(alpha = if (pressed) 0.24f else if (isSelected) 0.14f else 0f))
-            .border(1.dp, colors.accent.copy(alpha = if (pressed || isSelected) 0.5f else 0f), RoundedCornerShape(8.dp))
+            .background(
+                colors.accent.copy(
+                    alpha =
+                        if (pressed) {
+                            0.24f
+                        } else if (isSelected) {
+                            0.14f
+                        } else {
+                            0f
+                        },
+                ),
+            ).border(1.dp, colors.accent.copy(alpha = if (pressed || isSelected) 0.5f else 0f), RoundedCornerShape(8.dp))
             .clickable(
                 enabled = enabled && story.hash.isNotBlank(),
                 role = Role.Button,
                 interactionSource = interaction,
                 indication = null,
                 onClick = onClick,
-            )
-            .semantics { selected = isSelected }
+            ).semantics { selected = isSelected }
             .padding(horizontal = 8.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top,
@@ -262,8 +281,7 @@ internal fun DiscoveryFolderPicker(
                 .semantics {
                     contentDescription = "Add to folder"
                     stateDescription = displayName
-                }
-                .padding(horizontal = 10.dp, vertical = 8.dp),
+                }.padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
@@ -276,9 +294,11 @@ internal fun DiscoveryFolderPicker(
             modifier = Modifier.heightIn(max = 360.dp).widthIn(min = 180.dp, max = 340.dp),
             containerColor = colors.cardBackground,
         ) {
-            val folders = listOf(AppConstants.ROOT_FOLDER to "Top Level") + state.folders
-                .filter { it.flatName() != AppConstants.ROOT_FOLDER }
-                .map { it.flatName() to "${"    ".repeat(it.depth())}${it.name}" }
+            val folders =
+                listOf(AppConstants.ROOT_FOLDER to "Top Level") +
+                    state.folders
+                        .filter { it.flatName() != AppConstants.ROOT_FOLDER }
+                        .map { it.flatName() to "${"    ".repeat(it.depth())}${it.name}" }
             folders.forEach { (path, title) ->
                 DropdownMenuItem(
                     text = { Text(title, color = colors.textPrimary) },

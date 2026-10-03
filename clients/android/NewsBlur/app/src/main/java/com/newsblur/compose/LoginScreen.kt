@@ -13,6 +13,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,8 +46,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.autofill.ContentType
-import androidx.compose.ui.autofill.contentType
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material3.Button
@@ -62,8 +61,11 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.autofill.contentType
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
@@ -71,6 +73,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -91,7 +94,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -104,8 +106,6 @@ import com.newsblur.design.NbThemes
 import com.newsblur.viewModel.LoginRegisterViewModel
 import com.newsblur.viewModel.LoginRegisterViewModel.AuthMode
 import kotlinx.coroutines.delay
-import androidx.compose.foundation.Canvas
-import androidx.compose.runtime.withFrameNanos
 
 private val gothamNarrow = FontFamily(Font(R.font.gotham_narrow_book, FontWeight.SemiBold))
 private val chronicle = FontFamily(Font(R.font.chronicle_ssm_book))
@@ -281,9 +281,9 @@ internal fun LoginScreenContent(
     passwordFocusRequester: FocusRequester? = null,
     emailFocusRequester: FocusRequester? = null,
     showShaderBackground: Boolean = true,
-    ) {
-        val context = LocalContext.current
-        val scrollState = rememberScrollState()
+) {
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
     val resolvedVariant =
         if (variant == NbThemeVariant.System && androidx.compose.foundation.isSystemInDarkTheme()) {
             NbThemeVariant.Dark
@@ -481,7 +481,7 @@ internal fun LoginScreenContent(
                             disabledContainerColor = palette.buttonDisabled,
                             disabledContentColor = palette.buttonText.copy(alpha = 0.75f),
                         ),
-                    ) {
+                ) {
                     Text(
                         text = submitButtonLabel,
                         fontFamily = gothamNarrow,
@@ -599,9 +599,7 @@ object LoginScreenTestHarness {
 }
 
 @Composable
-private fun AndroidShaderBackground(
-    palette: LoginAuthPalette,
-) {
+internal fun AndroidShaderBackground(palette: LoginAuthPalette) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
 
     val shader = remember { RuntimeShader(LOGIN_SHADER_SOURCE) }
@@ -706,8 +704,7 @@ private fun FrostedPanel(
                     } else {
                         Modifier
                     },
-                )
-                .border(1.dp, palette.cardBorder, shape),
+                ).border(1.dp, palette.cardBorder, shape),
     ) {
         Column(
             modifier =
@@ -753,8 +750,7 @@ private fun SegmentedControl(
                             Brush.verticalGradient(
                                 colors = listOf(palette.segmentPillTop, palette.segmentPillBottom),
                             ),
-                    )
-                    .border(1.dp, palette.segmentBorder, RoundedCornerShape(10.dp)),
+                    ).border(1.dp, palette.segmentBorder, RoundedCornerShape(10.dp)),
         )
 
         Row(modifier = Modifier.fillMaxSize()) {
@@ -844,8 +840,7 @@ private fun AuthTextField(
                     } else {
                         Color.Transparent
                     },
-                )
-                .border(1.dp, borderColor, shape),
+                ).border(1.dp, borderColor, shape),
     ) {
         BasicTextField(
             value = value,
@@ -951,7 +946,7 @@ private fun CustomServerFooter(
 }
 
 @Composable
-private fun CustomServerDialog(
+internal fun CustomServerDialog(
     palette: LoginAuthPalette,
     initialValue: String,
     onDismiss: () -> Unit,
