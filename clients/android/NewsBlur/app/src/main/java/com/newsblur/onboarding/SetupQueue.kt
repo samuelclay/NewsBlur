@@ -1,6 +1,7 @@
 package com.newsblur.onboarding
 
 import android.content.Context
+import android.net.Uri
 import com.google.gson.Gson
 import com.newsblur.discover.DiscoveryFeed
 import com.newsblur.discover.number
@@ -9,9 +10,15 @@ import com.newsblur.discover.string
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,6 +35,9 @@ data class SetupProgress(
     val folders: Map<String, List<DiscoveryFeed>> = emptyMap(),
     val categories: Map<String, Set<String>> = emptyMap(),
     val failures: List<SetupFailure> = emptyList(),
+    val importing: Boolean = false,
+    val importMessage: String? = null,
+    val importError: String? = null,
 )
 
 // SetupQueue.kt owns work beyond the sheet lifetime, and never continues it in a different login session.
@@ -44,11 +54,30 @@ class SetupQueue
         val state = mutable.asStateFlow()
         private var owner: SetupAccount? = null
         private var tail: Job? = null
+        private var importJob: Job? = null
         private var batchSupported: Boolean? = null
+
+        fun isPending(): Boolean =
+            owner?.let { api.isCurrent(it) } == true &&
+                (
+                    mutable.value.queued.isNotEmpty() ||
+                        mutable.value.importing ||
+                        (mutable.value.added.isNotEmpty() && sync.doFeedsFolders)
+                )
+
+        init {
+            scope.launch {
+                state.collect {
+                    com.newsblur.service.NbSyncManager
+                        .submitUpdate(com.newsblur.service.NbSyncManager.UPDATE_STATUS)
+                }
+            }
+        }
 
         fun bind(account: SetupAccount) {
             if (owner == account) return
             tail?.cancel()
+            importJob?.cancel()
             owner = account
             batchSupported = null
             mutable.value = SetupProgress()
@@ -59,10 +88,43 @@ class SetupQueue
             FeedUtils.triggerSync(context)
         }
 
-        fun imported(folders: Map<String, List<DiscoveryFeed>>) {
+        private fun imported(folders: Map<String, List<DiscoveryFeed>>) {
             val old = mutable.value
             mutable.value = old.copy(added = old.added + folders.values.flatten().map { it.url }, folders = merge(old.folders, folders))
             refresh()
+        }
+
+        fun import(uri: Uri) {
+            val account = owner ?: return
+            if (!api.isCurrent(account) || importJob?.isActive == true) return
+            mutable.value = mutable.value.copy(importing = true, importMessage = null, importError = null)
+            importJob =
+                scope.launch {
+                    try {
+                        val (bytes, receipt) =
+                            withContext(Dispatchers.IO) {
+                                val data =
+                                    context.contentResolver.openInputStream(uri)?.use(SetupOpml::read)
+                                        ?: error("Could not open this file.")
+                                data to SetupOpml.parse(data)
+                            }
+                        if (!api.isCurrent(account)) return@launch
+                        api.import(bytes, account)
+                        if (!api.isCurrent(account)) return@launch
+                        imported(receipt)
+                        mutable.value =
+                            mutable.value.copy(importMessage = "Import queued. Your feeds and folders will appear as they are processed.")
+                    } catch (cancel: CancellationException) {
+                        throw cancel
+                    } catch (e: Exception) {
+                        if (api.isCurrent(account)) {
+                            mutable.value =
+                                mutable.value.copy(importError = e.message ?: "Could not import this file.")
+                        }
+                    } finally {
+                        if (owner == account) mutable.value = mutable.value.copy(importing = false)
+                    }
+                }
         }
 
         private fun merge(
@@ -191,6 +253,7 @@ class SetupQueue
                         }
                     }
                     if (!api.isCurrent(account)) return@launch
+                    refresh()
                     val current = mutable.value
                     mutable.value =
                         current.copy(
@@ -199,7 +262,6 @@ class SetupQueue
                                 current.failures +
                                     if (failed.isEmpty()) emptyList() else listOf(SetupFailure(folder, failed, existing, error)),
                         )
-                    refresh()
                 }
         }
 

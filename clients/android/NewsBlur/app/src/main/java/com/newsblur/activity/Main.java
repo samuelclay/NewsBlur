@@ -84,6 +84,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private final NumberFormat unreadCountFormatter = NumberFormat.getIntegerInstance();
     private boolean hasSeenActiveSyncStatus = false;
     private boolean isShowingDoneSyncStatus = false;
+    @Inject com.newsblur.onboarding.SetupQueue setupQueue;
+
     private boolean isShowingLoadingSyncPlaceholder = true;
     private boolean shouldTrackActiveSyncStatus = false;
     private int lastForegroundSessionId = 0;
@@ -385,7 +387,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
 
         if (feedCount < 1) {
-            if (syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
+            if (setupQueue.isPending() || syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 binding.emptyViewImage.setVisibility(View.INVISIBLE);
                 binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {
@@ -406,7 +408,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-        String rawSyncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        String rawSyncStatus = setupQueue.isPending() ? getString(R.string.loading) : syncServiceState.getSyncStatusMessage(this, false);
         boolean isOfflineSyncStatus = isOfflineSyncStatus(rawSyncStatus);
         boolean isShowingActiveSyncPill = rawSyncStatus != null && !isOfflineSyncStatus;
         binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning() && !isShowingActiveSyncPill);

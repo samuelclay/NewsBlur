@@ -27,6 +27,8 @@ object OnboardingCatalog {
 
     fun key(value: String) = value.lowercase(Locale.ROOT).let { aliases[it] ?: it }
 
+    fun categoryAliases(value: String) = listOf(key(value)) + aliases.filterValues { it == key(value) }.keys
+
     fun title(value: String): String =
         if (key(value) ==
             "food & cooking"

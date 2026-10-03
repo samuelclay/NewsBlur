@@ -15,13 +15,18 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OnboardingActivity : NbActivity() {
+    override fun shouldUseTranslucentTheme() = resources.configuration.screenWidthDp >= 600
+
     private val model: SetupViewModel by viewModels()
 
     @Inject @ThumbnailLoader
     lateinit var thumbnails: ImageLoader
 
+    @Inject lateinit var gate: com.newsblur.onboarding.OnboardingGate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        gate.presented()
         setContent {
             NewsBlurTheme(variant = prefsRepo.getSelectedTheme().toVariant(), dynamic = false) {
                 SetupScreen(model, prefsRepo.getResolvedTheme(this), thumbnails, onClose = { leave(false) }, onComplete = { leave(true) })
