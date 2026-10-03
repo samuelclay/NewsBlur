@@ -81,6 +81,7 @@ urlpatterns = [
     url(r"^upload_folder_icon", views.upload_folder_icon, name="upload-folder-icon"),
     url(r"^save_feed_icon", views.save_feed_icon, name="save-feed-icon"),
     url(r"^upload_feed_icon", views.upload_feed_icon, name="upload-feed-icon"),
+    url(r"^add_feeds/?$", views.add_feeds, name="add-feeds"),
     url(r"^add_url", views.add_url),
     url(r"^add_folder", views.add_folder),
     url(r"^add_feature", views.add_feature, name="add-feature"),
