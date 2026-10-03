@@ -214,6 +214,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
 
         this.$el.html($view);
 
+        if (this.feedback_summary) this.feedback_summary.remove();
+        if (NEWSBLUR.reader.active_feed === 'trending:discovery' && NEWSBLUR.Globals.is_authenticated) {
+            this.feedback_summary = new NEWSBLUR.Views.RecommendationFeedbackSummary();
+            this.$('.folder_title_text').after(this.feedback_summary.el);
+        }
+
         if (NEWSBLUR.reader.flags.searching) {
             this.focus_search();
         }
@@ -222,6 +228,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
 
     remove: function () {
+        if (this.feedback_summary) {
+            this.feedback_summary.remove();
+            delete this.feedback_summary;
+        }
         if (this.view) {
             this.view.remove();
             delete this.view;
@@ -391,4 +401,3 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
 
 });
-

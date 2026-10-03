@@ -16,6 +16,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-river-well-read": "open_well_read_stories",
         "click .NB-feeds-header-river-long-reads": "open_long_reads_stories",
         "click .NB-feeds-header-river-good-reads": "open_good_reads_stories",
+        "click .NB-feeds-header-river-discovery": "open_discovery_stories",
         "click .NB-feeds-header-river-dashboard": "show_splash_page",
         "click .NB-feeds-header-archive": "open_archive",
         "click .NB-feeds-header-add-site": "open_add_site",
@@ -294,6 +295,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
     open_long_reads_stories: function () {
         return NEWSBLUR.reader.open_trending_stories({ 'trending_type': 'long_reads' });
+    },
+
+    open_discovery_stories: function () {
+        return NEWSBLUR.reader.open_trending_stories({ 'trending_type': 'discovery' });
     },
 
     open_good_reads_stories: function () {

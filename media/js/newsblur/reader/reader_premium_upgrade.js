@@ -178,6 +178,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Discover related stories across your archive'
                         ]),
+                        $.make('li', { className: 'NB-feature-discovery' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Personalized Discovery from sites you don’t follow'
+                        ]),
                         $.make('li', { className: 'NB-12 NB-feature-export-folders' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Export trained stories from folders'

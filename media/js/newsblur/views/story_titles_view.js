@@ -433,7 +433,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         _.invoke(this.stories, 'destroy');
         this.cache = {};
         this.collection.page_fill_outs = 0;
-        this.collection.no_more_stories = false;
+        this.collection.no_more_stories = !!(NEWSBLUR.discovery_preview_active(this.collection) && NEWSBLUR.assets.discovery_cursor === null);
     },
 
     override_grid: function () {
@@ -537,6 +537,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
+        if (this.collection === NEWSBLUR.assets.stories && NEWSBLUR.reader.active_feed === 'trending:discovery' && !this.collection.length) {
+            $endline = NEWSBLUR.discovery_loading();
+        }
         this.$el.append($endline);
 
         if (options.scroll_to_loadbar) {
@@ -559,6 +562,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
 
     check_premium_river: function () {
+        if (this.collection === NEWSBLUR.assets.stories && NEWSBLUR.reader.active_feed === 'trending:discovery') return this.show_no_more_stories();
         if (!NEWSBLUR.Globals.is_premium &&
             NEWSBLUR.Globals.is_authenticated &&
             (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || NEWSBLUR.reader.flags['river_view'])) {
@@ -609,9 +613,18 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     show_no_more_stories: function () {
         this.$('.NB-end-line, .NB-classifier-filter-empty').remove();
+        if (NEWSBLUR.discovery_preview_active(this.collection)) {
+            this.$el.append(NEWSBLUR.discovery_preview_callout());
+            return;
+        }
         var filter = NEWSBLUR.reader.flags['classifier_filter'];
         if (filter && !this.collection.length) {
             this.show_classifier_filter_empty(filter);
+            return;
+        }
+        if (this.collection === NEWSBLUR.assets.stories && NEWSBLUR.reader.active_feed === 'trending:discovery' && !this.collection.length) {
+            this.$el.append($.make('div', { className: 'NB-end-line NB-discovery-empty' },
+                'No new discoveries right now. Keep reading and check back for more stories from new sites.'));
             return;
         }
         var $end_stories_line = $.make('div', { className: "NB-end-line" }, [
