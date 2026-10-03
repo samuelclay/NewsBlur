@@ -1462,11 +1462,18 @@ final class DetailViewControllerTests: XCTestCase {
         defaults.set("auto", forKey: keys[0])
         for key in keys.dropFirst() { defaults.set("titles_on_left", forKey: key) }
         defer { for (key, value) in zip(keys, previous) { defaults.set(value, forKey: key) } }
-        let scenarios: [(phone: Bool, compact: Bool, style: UISplitViewController.Style)] = [
-            (true, false, .doubleColumn), (true, true, .doubleColumn),
-            (false, false, .doubleColumn), (false, false, .tripleColumn)
+        let scenarios: [(phone: Bool, compact: Bool, style: UISplitViewController.Style,
+                         width: CGFloat, preference: String, expected: UISplitViewController.SplitBehavior)] = [
+            (true, false, .doubleColumn, 951, "auto", .overlay),
+            (true, true, .doubleColumn, 951, "auto", .overlay),
+            (false, false, .doubleColumn, 951, "auto", .overlay),
+            (false, false, .tripleColumn, 951, "auto", .overlay),
+            (false, false, .doubleColumn, 1376, "auto", .tile),
+            (false, false, .tripleColumn, 1376, "auto", .tile),
+            (false, false, .doubleColumn, 951, "tile", .tile)
         ]
         for scenario in scenarios {
+            defaults.set(scenario.preference, forKey: keys[0])
             for folder in [false, true] {
                 let app = NewsBlurAppDelegate()
                 let collection = StoriesCollection()
@@ -1483,7 +1490,7 @@ final class DetailViewControllerTests: XCTestCase {
                 detail.isCompact = scenario.compact
                 app.detailViewController = detail
                 let split = DuoSidebarSplitController(style: scenario.style)
-                split.view.frame = CGRect(x: 0, y: 0, width: 951, height: 669)
+                split.view.frame = CGRect(x: 0, y: 0, width: scenario.width, height: 669)
                 split.simulatedDisplayMode = .oneOverSecondary
                 split.simulatedSplitBehavior = .overlay
                 app.splitViewController = split
@@ -1522,8 +1529,8 @@ final class DetailViewControllerTests: XCTestCase {
                 if scenario.compact { app.updateSplitBehavior(false) }
                 else { detail.show(column: .primary, animated: false) }
                 XCTAssertFalse(detail.isBrowsingDuoSources)
-                // LoginViewControllerTests.swift preserves the existing auto policy's tiled layout at 951×669 outside expanded Duo.
-                let expected: UISplitViewController.SplitBehavior = scenario.phone && !scenario.compact ? .overlay : .tile
+                // LoginViewControllerTests.swift keeps narrow Auto overlays stable through source refresh while preserving wide and explicit tiled layouts.
+                let expected = scenario.expected
                 XCTAssertEqual(split.preferredSplitBehavior, expected)
                 split.requestedBehaviors.removeAll()
                 // LoginViewControllerTests.swift runs the real loadingFeed→updateLayout→updateSplitBehavior chain before and after native source dismissal.
@@ -1539,7 +1546,7 @@ final class DetailViewControllerTests: XCTestCase {
                         split.simulatedDisplayMode = .secondaryOnly
                     }
                 }
-                XCTAssertEqual(defaults.string(forKey: "split_behavior"), "auto")
+                XCTAssertEqual(defaults.string(forKey: "split_behavior"), scenario.preference)
             }
         }
         #endif
