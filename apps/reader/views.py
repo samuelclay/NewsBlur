@@ -4045,6 +4045,40 @@ def add_url(request):
 @ajax_login_required
 @json.json_view
 @folder_path_errors
+def add_feeds(request):
+    """Subscribe a discovery selection in one request, using already known feed IDs."""
+    from django.http import HttpResponseNotAllowed
+
+    from apps.reader.subscription_batch import add_feed_ids
+
+    if request.method == "GET":
+        return {"batch_add_supported": True, "max_feeds": 100}
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["GET", "POST"])
+    feed_ids = request.POST.getlist("feed_ids") or request.POST.getlist("feed_ids[]")
+    if len(feed_ids) == 1 and feed_ids[0].startswith("["):
+        try:
+            feed_ids = json.decode(feed_ids[0])
+        except (ValueError, TypeError):
+            feed_ids = None
+    if not isinstance(feed_ids, list) or not 1 <= len(feed_ids) <= 100:
+        return {"code": -1, "message": "Provide between 1 and 100 feed IDs.", "results": []}
+    if any(not isinstance(value, (str, int)) for value in feed_ids):
+        return {"code": -1, "message": "Invalid feed IDs.", "results": []}
+    return add_feed_ids(
+        request.user,
+        feed_ids,
+        folder_path=parse_folder_path(request, "folder_path"),
+        folder=request.POST.get("folder", "").replace("river:", ""),
+        new_folder=request.POST.get("new_folder", "").strip(),
+        auto_active=is_true(request.POST.get("auto_active", 1)),
+        banned_urls=BANNED_URLS,
+    )
+
+
+@ajax_login_required
+@json.json_view
+@folder_path_errors
 def add_folder(request):
     folder = request.POST["folder"].replace("river:", "")
     parent_folder = request.POST.get("parent_folder", "").replace("river:", "")
