@@ -264,8 +264,11 @@ class Test_SocialAuthentication(SimpleTestCase):
         self.assertLessEqual(claims["exp"] - claims["iat"], 600)
         self.assertEqual(jwt.get_unverified_header(token)["kid"], "key")
 
-    def apple_exchange(self, changes=None, response=None):
-        token = jwt.encode(dict(self.claims, **(changes or {})), self.key, algorithm="RS256")
+    def apple_exchange(self, changes=None, response=None, omit=(), key=None):
+        claims = dict(self.claims, **(changes or {}))
+        for name in omit:
+            claims.pop(name, None)
+        token = jwt.encode(claims, key or self.key, algorithm="RS256")
         response = response or Mock()
         response.json.return_value = {"id_token": token, "refresh_token": "private-refresh-token"}
         with patch.object(
@@ -297,6 +300,35 @@ class Test_SocialAuthentication(SimpleTestCase):
         self.assertEqual(post.call_args.kwargs["data"]["grant_type"], "authorization_code")
         self.assertEqual(post.call_args.kwargs["data"]["code"], "private-authorization-code")
         self.assertLessEqual(post.call_args.kwargs["timeout"], 10)
+
+    def test_apple_exchange_accepts_missing_nonce_and_email_but_native_identity_requires_them(self):
+        for omitted in (("nonce",), ("email", "email_verified"), ("nonce", "email", "email_verified")):
+            with self.subTest(omitted=omitted):
+                result, _ = self.apple_exchange(omit=omitted)
+                self.assertIsNotNone(result)
+                self.assertEqual(result["token"], "private-refresh-token")
+                native_token = jwt.encode(
+                    {key: value for key, value in self.claims.items() if key not in omitted},
+                    self.key,
+                    algorithm="RS256",
+                )
+                with patch.object(
+                    social_auth.APPLE_KEYS,
+                    "get_signing_key_from_jwt",
+                    return_value=SimpleNamespace(key=self.key.public_key()),
+                ), self.assertRaises((jwt.PyJWTError, ValueError)):
+                    social_auth.verified_claims("apple", native_token, "nonce")
+
+    def test_apple_exchange_rejects_wrong_signature_and_missing_required_claims(self):
+        with self.assertLogs("apps.api.social_auth", level="WARNING"):
+            result, _ = self.apple_exchange(
+                key=rsa.generate_private_key(public_exponent=65537, key_size=2048)
+            )
+        self.assertIsNone(result)
+        for missing in ("sub", "aud", "iss", "exp", "iat"):
+            with self.subTest(missing=missing), self.assertLogs("apps.api.social_auth", level="WARNING"):
+                result, _ = self.apple_exchange(omit=(missing, "nonce", "email", "email_verified"))
+                self.assertIsNone(result)
 
     def test_apple_deletion_ticket_captures_code_and_verified_audience_without_polluting_identity(self):
         state = social_auth.remember(
@@ -353,6 +385,8 @@ class Test_SocialAuthentication(SimpleTestCase):
             {"sub": "another-subject"},
             {"aud": "com.newsblur.NB-Alpha"},
             {"nonce": "another-nonce"},
+            {"iss": "https://attacker.example"},
+            {"exp": int(time.time()) - 10},
         ):
             with self.subTest(changes=changes), self.assertLogs(
                 "apps.api.social_auth", level="WARNING"

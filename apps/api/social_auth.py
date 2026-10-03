@@ -120,6 +120,23 @@ def apple_client_secret(client_id):
     )
 
 
+def verify_apple_exchange_token(token, client_id, subject, nonce):
+    # social_auth.py already verified the native identity; exchange tokens need not repeat email or nonce.
+    key = APPLE_KEYS.get_signing_key_from_jwt(token).key
+    claims = jwt.decode(
+        token,
+        key,
+        algorithms=["RS256"],
+        audience=client_id,
+        issuer="https://appleid.apple.com",
+        options={"require": ["sub", "exp", "iat", "aud", "iss"]},
+    )
+    if claims["sub"] != subject or claims["aud"] != client_id:
+        raise ValueError("Apple authorization code does not match the verified identity")
+    if "nonce" in claims and not secrets.compare_digest(str(claims["nonce"]), nonce):
+        raise ValueError("Apple authorization code nonce mismatch")
+
+
 def prepare_apple_revocation(authorization_code, client_id, identity, nonce):
     # social_auth.py exchanges the short-lived code before the user pauses at deletion confirmation.
     try:
@@ -137,9 +154,7 @@ def prepare_apple_revocation(authorization_code, client_id, identity, nonce):
         )
         response.raise_for_status()
         tokens = response.json()
-        exchanged = verified_claims("apple", tokens["id_token"], nonce, include_audience=True)
-        if exchanged["subject"] != identity["subject"] or exchanged["audience"] != client_id:
-            raise ValueError("Apple authorization code does not match the verified identity")
+        verify_apple_exchange_token(tokens["id_token"], client_id, identity["subject"], nonce)
         token_type = "refresh_token" if tokens.get("refresh_token") else "access_token"
         token = tokens[token_type]
         if not isinstance(token, str) or not token:
