@@ -501,6 +501,18 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             }
 
             if (gestureRecognizer == self.feedListEdgeSwipeGesture) {
+                if (gestureRecognizer.view != self.view) {
+                    // FeedDetailObjCViewController.m keeps a root-owned recognizer from acting for cached or covered titles.
+                    if (!self.view.window || !appDelegate.splitViewController.isFeedsListHidden ||
+                        appDelegate.splitViewController.presentedViewController) return NO;
+                    UIView *ancestor = self.view;
+                    while (ancestor) {
+                        if (ancestor.hidden || ancestor.alpha <= 0.01) return NO;
+                        ancestor = ancestor.superview;
+                    }
+                    CGRect titlesFrame = [self.view convertRect:self.view.bounds toView:gestureRecognizer.view];
+                    if (!CGRectIntersectsRect(titlesFrame, gestureRecognizer.view.bounds)) return NO;
+                }
                 BOOL shouldBeginLeadingEdgeReveal = [FeedSidebarRevealGestureDecision shouldBeginLeadingEdgeFeedsRevealWithPresentation:appDelegate.detailViewController.fullscreenSidebarPresentation
                                                                                                                        isPhoneOrCompact:self.isPhoneOrCompact];
                 if (!shouldBeginLeadingEdgeReveal) {
@@ -543,6 +555,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if (gestureRecognizer == self.feedListEdgeSwipeGesture && gestureRecognizer.view != self.view &&
+        [otherGestureRecognizer.view isDescendantOfView:gestureRecognizer.view]) {
+        // FeedDetailObjCViewController.m gives the screen edge priority over competing split, UIKit, and SwiftUI gestures.
+        return YES;
+    }
     if (otherGestureRecognizer == self.feedListSwipeGesture) {
         return NO;
     }
@@ -1388,6 +1405,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)suppressNativeSplitGesture:(UIGestureRecognizer *)gesture {
+    // FeedDetailObjCViewController.m owns this viewport edge; only UIKit's competing recognizers are suppressed.
+    if (gesture == self.feedListEdgeSwipeGesture) return;
     if (!self.suppressedSplitGestures) {
         self.suppressedSplitGestures = [NSMapTable weakToStrongObjectsMapTable];
     }
@@ -1416,6 +1435,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     if (self.isPhoneOrCompact) {
+        self.feedListEdgeSwipeGesture.enabled = NO;
         [self configureInteractivePopGesture];
         if (!StoryTitleSwipePreference.usesFullScreenBack) {
             self.fullScreenPopGesture.enabled = NO;
@@ -1425,6 +1445,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return;
     }
 
+    BOOL iPadViewportEdge = self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
+        !appDelegate.detailViewController.isPhone;
+    UIView *edgeHost = iPadViewportEdge ? (appDelegate.splitViewController.view ?: self.view) : self.view;
+    if (self.feedListEdgeSwipeGesture && self.feedListEdgeSwipeGesture.view != edgeHost) {
+        [edgeHost addGestureRecognizer:self.feedListEdgeSwipeGesture];
+    }
     self.feedListEdgeSwipeGesture.enabled = YES;
     
     if (appDelegate.splitViewController) {
@@ -1484,7 +1510,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.feedListEdgeSwipeGesture.edges = UIRectEdgeLeft;
         self.feedListEdgeSwipeGesture.delegate = self;
         self.feedListEdgeSwipeGesture.maximumNumberOfTouches = 1;
-        [self.view addGestureRecognizer:self.feedListEdgeSwipeGesture];
+        // FeedDetailObjCViewController.m receives the viewport edge even when the titles pane is inset.
+        [edgeHost addGestureRecognizer:self.feedListEdgeSwipeGesture];
 
         if (self.storyTitlesTable.panGestureRecognizer) {
             [self.storyTitlesTable.panGestureRecognizer requireGestureRecognizerToFail:self.feedListEdgeSwipeGesture];
@@ -1592,16 +1619,19 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     CGPoint translation = [gestureRecognizer translationInView:self.view];
     BOOL isHorizontal = fabs(translation.x) > fabs(translation.y);
 
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        self.feedListRevealActive = NO;
+        self.feedListRevealBouncing = NO;
+        self.feedListRevealWidth = revealWidth;
+    }
+
     switch (gestureRecognizer.state) {
-        case UIGestureRecognizerStateBegan: {
-            self.feedListRevealActive = NO;
-            self.feedListRevealBouncing = NO;
-            self.feedListRevealWidth = revealWidth;
-            break;
-        }
+        case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStateChanged: {
             if (!self.feedListRevealActive) {
-                if (!isHorizontal || translation.x <= 0) {
+                // FeedDetailObjCViewController.m starts an accepted rightward gesture immediately; UIKit can end a quick flick without a changed event.
+                if (gestureRecognizer.state != UIGestureRecognizerStateBegan &&
+                    (!isHorizontal || translation.x <= 0)) {
                     break;
                 }
 
@@ -1694,7 +1724,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             CGFloat effectiveRevealWidth = self.feedListRevealWidth > 0 ? self.feedListRevealWidth : revealWidth;
             CGFloat clampedTranslation = MAX(0.0, MIN(translation.x, effectiveRevealWidth));
             CGPoint velocity = [gestureRecognizer velocityInView:self.view];
-            BOOL shouldOpen = (clampedTranslation > effectiveRevealWidth * 0.33f) || (velocity.x > 800.0f);
+            // FeedDetailObjCViewController.m never commits an interrupted drag, even after it crossed the open threshold.
+            BOOL shouldOpen = gestureRecognizer.state == UIGestureRecognizerStateEnded &&
+                ((clampedTranslation > effectiveRevealWidth * 0.33f) || (velocity.x > 800.0f));
 
             UIView *container = self.feedListRevealContainer ?: primaryContainer;
 

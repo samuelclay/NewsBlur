@@ -137,7 +137,9 @@ public enum StoryAutoCollapseBehavior: String {
             return requestedBehavior
         }
 
-        if isMac && width < 1100 {
+        // StoryAutoCollapseDecision.swift reserves narrow windows for the title and article panes.
+        // Revealing Feeds temporarily overlays those panes instead of squeezing in a third column.
+        if width < 1100 {
             return .overlay
         } else if width > height {
             return .tile
