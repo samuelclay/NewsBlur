@@ -5,7 +5,6 @@ import com.google.gson.JsonParser
 import com.newsblur.di.ApiOkHttpClient
 import com.newsblur.discover.number
 import com.newsblur.discover.string
-import com.newsblur.network.APIConstants
 import com.newsblur.preference.PrefsRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,7 +38,14 @@ class OnboardingApi
     ) {
         private val client = client.newBuilder().retryOnConnectionFailure(false).build()
 
-        fun account() = SetupAccount(APIConstants.buildUrl(""), prefs.getCookie(), prefs.getUniqueLoginKey())
+        fun account() =
+            SetupAccount(
+                prefs.getCustomServer()?.takeIf {
+                    it.isNotBlank()
+                } ?: "https://newsblur.com",
+                prefs.getCookie(),
+                prefs.getUniqueLoginKey(),
+            )
 
         fun isCurrent(account: SetupAccount) = account == account()
 
@@ -90,17 +96,42 @@ class OnboardingApi
                     if ((!response.isSuccessful || json.number("code") < 0) && !continuation) {
                         throw IOException(
                             json.string("message").ifBlank {
-                                json
-                                    .getAsJsonObject(
-                                        "errors",
-                                    )?.entrySet()
-                                    ?.joinToString(" ") { it.value.toString().replace(Regex("[\\[\\]\"]"), "") }
+                                json.get("errors")?.toString()?.filter { it != '[' && it != ']' && it != '"' }
                                     ?: "The request failed. Please try again."
                             },
                         )
                     }
                     check(isCurrent(account)) { "Your account changed. Reopen setup to continue." }
-                    SetupResponse(json, response.header("Set-Cookie"))
+                    SetupResponse(
+                        json,
+                        response
+                            .headers("Set-Cookie")
+                            .map { it.substringBefore(';') }
+                            .joinToString("; ")
+                            .takeIf { it.isNotBlank() },
+                    )
+                }
+            }
+
+        suspend fun thumbnail(address: String): android.graphics.Bitmap? =
+            withContext(Dispatchers.IO) {
+                val url = address.takeIf { it.startsWith("https://") || it.startsWith("http://") } ?: return@withContext null
+                // OnboardingApi.kt never sends account cookies to external artwork hosts.
+                client.newCall(Request.Builder().url(url).build()).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext null
+                    val body = response.body ?: return@withContext null
+                    if (body.contentLength() > 2_000_000) return@withContext null
+                    val output = java.io.ByteArrayOutputStream()
+                    val input = body.byteStream()
+                    val buffer = ByteArray(8192)
+                    while (true) {
+                        val count = input.read(buffer)
+                        if (count < 0) break
+                        if (output.size() + count > 2_000_000) return@withContext null
+                        output.write(buffer, 0, count)
+                    }
+                    val data = output.toByteArray()
+                    OnboardingCatalog.bitmap(android.util.Base64.encodeToString(data, android.util.Base64.NO_WRAP))
                 }
             }
 

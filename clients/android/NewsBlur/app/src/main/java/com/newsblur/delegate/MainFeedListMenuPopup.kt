@@ -173,6 +173,14 @@ class MainFeedListMenuPopup(
                         activity.startActivity(Intent(activity, ImportExportActivity::class.java))
                     },
                 )
+                add(
+                    MainMenuRow(title = "Delete account", iconRes = R.drawable.nb_menu_preferences) {
+                        popupWindow.dismiss()
+                        activity.startActivity(
+                            Intent(activity, com.newsblur.activity.LoginActivity::class.java).putExtra("manage_account", true),
+                        )
+                    },
+                )
                 if (KeyboardManager.hasHardwareKeyboard(activity)) {
                     add(
                         MainMenuRow(

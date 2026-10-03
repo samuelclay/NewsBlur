@@ -1,19 +1,93 @@
 package com.newsblur.onboarding
 
+import android.text.format.DateUtils
+import android.widget.ImageView
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.outlined.Apartment
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.DirectionsCar
+import androidx.compose.material.icons.outlined.DirectionsRun
+import androidx.compose.material.icons.outlined.Eco
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Forum
+import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.Layers
+import androidx.compose.material.icons.outlined.Memory
+import androidx.compose.material.icons.outlined.MenuBook
+import androidx.compose.material.icons.outlined.MoveToInbox
+import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.outlined.Newspaper
+import androidx.compose.material.icons.outlined.NightsStay
+import androidx.compose.material.icons.outlined.NorthEast
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.RadioButtonUnchecked
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Science
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material.icons.outlined.TheaterComedy
+import androidx.compose.material.icons.outlined.TrendingUp
+import androidx.compose.material.icons.outlined.WorkOutline
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,21 +99,25 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.R
 import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.discover.DiscoveryFeed
-import com.newsblur.discover.DiscoveryStoryRow
+import com.newsblur.discover.DiscoveryStory
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.UIUtils
 
 private val setupTeal = Color(0xFF406663)
 
@@ -53,14 +131,29 @@ fun SetupScreen(
 ) {
     val state by model.state.collectAsStateWithLifecycle()
     val progress by model.queue.state.collectAsStateWithLifecycle()
-    val colors = ReaderSheetPalette.colors(theme).let { it.copy(background = it.siteFormBackground) }
+    val colors = SetupPalette.colors(theme)
+    val tablet = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp >= 600
     var complete by rememberSaveable { mutableStateOf(false) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(model::import) }
     BackHandler { if (state.category != null) model.closeBundle() else onClose() }
-    Box(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding(), contentAlignment = Alignment.TopCenter) {
-        Column(Modifier.widthIn(max = 808.dp).fillMaxSize()) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(
+                if (tablet) Color.Black.copy(alpha = .3f) else colors.background,
+            ).safeDrawingPadding()
+            .padding(vertical = if (tablet) 24.dp else 0.dp, horizontal = if (tablet) 24.dp else 0.dp),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(
+            Modifier
+                .widthIn(max = 808.dp)
+                .fillMaxSize()
+                .clip(RoundedCornerShape(if (tablet) 28.dp else 0.dp))
+                .background(colors.background),
+        ) {
             Row(
-                Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp, top = 12.dp, bottom = 16.dp),
+                Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(painterResource(R.drawable.logo), null, Modifier.size(36.dp))
@@ -72,7 +165,10 @@ fun SetupScreen(
                     fontWeight = FontWeight.Bold,
                 )
                 Text(if (complete) "2 / 2" else "1 / 2", color = colors.textSecondary, fontSize = 14.sp)
-                IconButton(onClick = onClose) { Icon(Icons.Outlined.Close, "Close setup", tint = colors.textSecondary) }
+                Spacer(Modifier.width(8.dp))
+                IconButton(onClick = onClose, modifier = Modifier.size(44.dp).background(colors.cardBackground, CircleShape)) {
+                    Icon(Icons.Outlined.Close, "Close setup", Modifier.size(20.dp), tint = colors.textPrimary)
+                }
             }
             Row(Modifier.padding(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 repeat(2) { index ->
@@ -81,17 +177,20 @@ fun SetupScreen(
                             if (index == 0 ||
                                 complete
                             ) {
-                                setupTeal
+                                colors.textSecondary
                             } else {
-                                colors.border
+                                colors.border.copy(alpha = .5f)
                             },
                             CircleShape,
                         ),
                     )
                 }
             }
-            val categories = listOf("") + state.categories.filter { OnboardingCatalog.title(it).contains(state.query, true) }
+            val categories =
+                (if (state.query.isBlank()) listOf("") else emptyList()) +
+                    state.categories.filter { OnboardingCatalog.title(it).contains(state.query, true) }
             val gridState = rememberLazyGridState()
+            LaunchedEffect(complete) { gridState.scrollToItem(0) }
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(260.dp),
                 state = gridState,
@@ -189,18 +288,28 @@ fun SetupScreen(
                 ),
         ) {
             Box(Modifier.fillMaxSize().safeDrawingPadding(), contentAlignment = Alignment.Center) {
-                Column(Modifier.widthIn(max = 760.dp).fillMaxHeight().background(colors.background, RoundedCornerShape(20.dp))) {
-                    Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(
+                    Modifier
+                        .widthIn(
+                            max = 640.dp,
+                        ).fillMaxHeight(if (tablet) .92f else 1f)
+                        .background(colors.background, RoundedCornerShape(20.dp)),
+                ) {
+                    Box(Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
                         Text(
-                            state.category!!
-                                .ifEmpty {
-                                    "A little of everything"
-                                }.let(OnboardingCatalog::title),
-                            Modifier.weight(1f),
+                            if (state.category!!.isEmpty()) "A little of everything" else OnboardingCatalog.title(state.category!!),
+                            Modifier.fillMaxWidth().padding(horizontal = 56.dp),
                             color = colors.textPrimary,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                         )
-                        TextButton(onClick = model::closeBundle) { Text("Done", color = colors.siteLink) }
+                        TextButton(
+                            onClick = model::closeBundle,
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                        ) { Text("Done", color = colors.siteLink) }
                     }
                     Column(
                         Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(24.dp),
@@ -339,12 +448,12 @@ fun SetupScreen(
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 Icon(Icons.Outlined.MoveToInbox, null, Modifier.size(25.dp), tint = colors.textPrimary)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("Already have feeds?", color = colors.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
-                    Text("Bring your feeds and folders from another reader.", color = colors.textSecondary, fontSize = 14.sp)
+                    Text("Already have feeds?", color = colors.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
+                    Text("Bring your feeds and folders from another reader.", color = colors.textSecondary, fontSize = 15.sp)
                 }
-                if (wide) ImportButton(state.importing, onImport)
+                if (wide) ImportButton(state.importing, colors, onImport)
             }
-            if (!wide) ImportButton(state.importing, onImport)
+            if (!wide) ImportButton(state.importing, colors, onImport)
             state.importMessage?.let { Text(it, color = colors.textSecondary, fontSize = 14.sp) }
         }
     }
@@ -352,10 +461,18 @@ fun SetupScreen(
 
 @Composable private fun ImportButton(
     busy: Boolean,
+    colors: ReaderSheetPalette.Colors,
     onImport: () -> Unit,
 ) {
-    OutlinedButton(onImport, enabled = !busy, shape = RoundedCornerShape(10.dp)) {
-        Text(if (busy) "Importing…" else "Import OPML", color = setupTeal)
+    OutlinedButton(
+        onImport,
+        modifier = Modifier.heightIn(min = 44.dp),
+        enabled = !busy,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, colors.border),
+        colors = ButtonDefaults.outlinedButtonColors(containerColor = colors.cardBackground),
+    ) {
+        Text(if (busy) "Importing…" else "Import OPML", color = colors.textPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 
@@ -527,7 +644,7 @@ private fun categoryIcon(name: String): ImageVector =
     size: Int = 36,
 ) {
     Box(Modifier.size(size.dp).clip(RoundedCornerShape(8.dp)).background(colors.background), contentAlignment = Alignment.Center) {
-        val icon = state.icons[feed.id]
+        val icon = state.icons[feed.id.ifBlank { feed.url }]
         if (icon !=
             null
         ) {
@@ -562,10 +679,12 @@ private fun categoryIcon(name: String): ImageVector =
                 RoundedCornerShape(12.dp),
             ).background(colors.cardBackground)
             .border(1.dp, colors.border, RoundedCornerShape(12.dp))
-            .clickable(
+            .toggleable(
+                value = selected || status != null,
                 enabled =
                     status == null,
-                onClick = onClick,
+                role = Role.Checkbox,
+                onValueChange = { onClick() },
             ).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -574,10 +693,9 @@ private fun categoryIcon(name: String): ImageVector =
             Column(Modifier.weight(1f)) {
                 Text(feed.title, color = colors.textPrimary, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                 Text(
-                    feed.link
-                        .removePrefix("https://")
-                        .removePrefix("http://")
-                        .trimEnd('/'),
+                    android.net.Uri
+                        .parse(feed.link)
+                        .host ?: feed.link,
                     color = colors.siteLink,
                     fontSize = 12.sp,
                     maxLines = 1,
@@ -585,21 +703,24 @@ private fun categoryIcon(name: String): ImageVector =
                 )
             }
         }
-        if (feed.subscribers >
-            0
-        ) {
+        FeedStatistics(feed, colors)
+        if (feed.description.isNotBlank()) {
             Text(
-                "${java.text.NumberFormat.getIntegerInstance().format(feed.subscribers)} subscribers",
+                UIUtils.fromHtml(feed.description).toString(),
                 color = colors.textSecondary,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
             )
         }
-        feed.stories.take(3).forEach { story ->
-            HorizontalDivider(color = colors.border)
-            DiscoveryStoryRow(story, colors, thumbnails, false, false, {})
-        }
+        if (feed.stories.isNotEmpty()) HorizontalDivider(color = colors.border)
+        feed.stories.take(3).forEach { story -> BundleStory(story, colors, thumbnails) }
         HorizontalDivider(color = colors.border)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 44.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Icon(
                 if (selected ||
                     status != null
@@ -613,7 +734,7 @@ private fun categoryIcon(name: String): ImageVector =
                 tint = setupTeal,
             )
             Text(
-                status ?: if (selected) "Selected" else "Not selected",
+                status ?: if (selected) "Included in bundle" else "Include in bundle",
                 Modifier.padding(start = 6.dp),
                 color = colors.textSecondary,
                 fontSize = 14.sp,
@@ -632,8 +753,15 @@ private fun categoryIcon(name: String): ImageVector =
     var folder by remember(feed.url) { mutableStateOf("") }
     var choose by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().background(colors.cardBackground, RoundedCornerShape(12.dp)).padding(16.dp)) {
-        Text(feed.title, color = colors.textPrimary, fontWeight = FontWeight.SemiBold)
-        Text(feed.url, color = colors.textSecondary, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FeedIcon(feed, state, colors)
+            Column(Modifier.weight(1f)) {
+                Text(feed.title, color = colors.textPrimary, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(feed.url, color = colors.siteLink, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        FeedStatistics(feed, colors)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Box {
                 TextButton(onClick = { choose = true }) { Text(folder.ifEmpty { "All Site Stories" }, color = colors.siteLink) }
@@ -650,7 +778,20 @@ private fun categoryIcon(name: String): ImageVector =
             val unavailable = feed.url in state.unavailable || feed.url in progress.added || feed.url in progress.queued
             TextButton(onClick = {
                 model.addSearch(feed, folder)
-            }, enabled = !unavailable) { Text(if (unavailable) "Added" else "Add", color = colors.siteLink) }
+            }, enabled = !unavailable) {
+                Text(
+                    if (feed.url in
+                        progress.queued
+                    ) {
+                        "Queued"
+                    } else if (unavailable) {
+                        "Added"
+                    } else {
+                        "Add"
+                    },
+                    color = colors.siteLink,
+                )
+            }
         }
     }
 }
@@ -721,7 +862,7 @@ private fun categoryIcon(name: String): ImageVector =
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    Text("$count feeds", color = accent)
+                    Text("$count ${if (count == 1) "feed" else "feeds"}", color = accent)
                 }
                 folders.forEach { (folder, feeds) ->
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -837,6 +978,106 @@ private fun categoryIcon(name: String): ImageVector =
                 color = colors.textSecondary,
             )
             TextButton(onClick = { model.queue.retry(failure) }) { Text("Retry", color = colors.siteLink) }
+        }
+    }
+}
+
+@Composable private fun FeedStatistics(
+    feed: DiscoveryFeed,
+    colors: ReaderSheetPalette.Colors,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(
+                "${java.text.NumberFormat.getIntegerInstance().format(feed.subscribers)} subscribers",
+                color = colors.textSecondary,
+                fontSize = 12.sp,
+            )
+            if (feed.storiesPerMonth > 0) Text("${feed.storiesPerMonth} stories/month", color = colors.textSecondary, fontSize = 12.sp)
+        }
+        val date =
+            com.newsblur.util.DiscoverFeedFreshnessFormatter
+                .parseApiDateMillis(feed.lastStoryDate)
+                ?: feed.stories.mapNotNull { it.timestamp?.times(1000) }.maxOrNull()
+        if (date != null) {
+            val stale = System.currentTimeMillis() - date > 365L * 86400000
+            Text(
+                "● ${if (stale) "Stale · last story" else "Updated"} ${DateUtils.getRelativeTimeSpanString(
+                    date,
+                    System.currentTimeMillis(),
+                    DateUtils.MINUTE_IN_MILLIS,
+                )}",
+                color = if (stale) colors.stale else colors.fresh,
+                fontSize = 12.sp,
+            )
+        }
+    }
+}
+
+@Composable private fun BundleStory(
+    story: DiscoveryStory,
+    colors: ReaderSheetPalette.Colors,
+    thumbnails: ImageLoader,
+) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(horizontal = 8.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Box(Modifier.padding(top = 6.dp).size(5.dp).background(colors.accent, CircleShape))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                UIUtils.fromHtml(story.title).toString(),
+                color = colors.textPrimary,
+                fontSize = 13.sp,
+                lineHeight = 17.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (story.excerpt.isNotBlank()) {
+                Text(
+                    UIUtils.fromHtml(story.excerpt).toString(),
+                    color = colors.textSecondary,
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            val date =
+                story.timestamp?.let {
+                    DateUtils.getRelativeTimeSpanString(it * 1000, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
+                }
+            Text(
+                listOfNotNull(
+                    story.authors
+                        .takeIf {
+                            it.isNotBlank()
+                        }?.let {
+                            UIUtils.fromHtml(it).toString()
+                        },
+                    date,
+                ).joinToString(" · "),
+                color = colors.textSecondary,
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        if (story.imageUrl.isNotBlank()) {
+            AndroidView(modifier = Modifier.size(48.dp).clip(RoundedCornerShape(4.dp)), factory = {
+                ImageView(it).apply {
+                    scaleType =
+                        ImageView.ScaleType.CENTER_CROP
+                }
+            }, update = { view ->
+                if (view.tag !=
+                    story.imageUrl
+                ) {
+                    view.tag = story.imageUrl
+                    view.setImageDrawable(null)
+                    thumbnails.displayImage(story.imageUrl, view)
+                }
+            })
         }
     }
 }

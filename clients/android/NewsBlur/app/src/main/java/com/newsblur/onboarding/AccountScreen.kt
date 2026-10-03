@@ -1,14 +1,41 @@
 package com.newsblur.onboarding
 
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -21,7 +48,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,12 +80,7 @@ fun AccountScreen(
     val palette = LoginAuthPalettes.of(NbThemeVariant.Light)
     val heading = FontFamily(Font(R.font.gotham_narrow_book))
     LaunchedEffect(state.authenticated) { if (state.authenticated) onAuthenticated(state.setup) }
-    LaunchedEffect(state.browserUrl) {
-        state.browserUrl?.let { url ->
-            model.browserOpened()
-            CustomTabsIntent.Builder().build().launchUrl(context, url.toUri())
-        }
-    }
+    SocialBrowserEffect(model, state)
     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(palette.gradientTop, palette.gradientBottom)))) {
         AndroidShaderBackground(palette)
         BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding().imePadding()) {
@@ -304,4 +329,19 @@ fun AccountScreen(
             inner()
         },
     )
+}
+
+// AccountScreen.kt shares browser handoff with deletion without rendering a login form underneath it.
+@Composable
+fun SocialBrowserEffect(
+    model: AccountViewModel,
+    state: AccountState,
+) {
+    val context = LocalContext.current
+    LaunchedEffect(state.browserUrl) {
+        state.browserUrl?.let { url ->
+            model.browserOpened()
+            CustomTabsIntent.Builder().build().launchUrl(context, url.toUri())
+        }
+    }
 }

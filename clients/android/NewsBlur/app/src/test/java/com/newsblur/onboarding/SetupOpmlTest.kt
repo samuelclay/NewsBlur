@@ -32,3 +32,19 @@ class SetupOpmlTest {
         assertEquals(setOf(c.url), choices.selected)
     }
 }
+
+class Test_OnboardingGate {
+    @Test fun emptyAccountResponsesAcceptBothServerShapesButNeverMissingOrUnauthenticatedData() {
+        fun empty(json: String) =
+            hasEmptySubscriptions(
+                com.google.gson.JsonParser
+                    .parseString(json)
+                    .asJsonObject,
+            )
+        assertTrue(empty("""{"authenticated":true,"feeds":[]}"""))
+        assertTrue(empty("""{"authenticated":true,"feeds":{}}"""))
+        assertFalse(empty("""{"authenticated":true,"feeds":{"1":{}}}"""))
+        assertFalse(empty("""{"authenticated":true}"""))
+        assertFalse(empty("""{"authenticated":false,"feeds":[]}"""))
+    }
+}

@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.BuildConfig
-import com.newsblur.discover.obj
 import com.newsblur.discover.string
 import com.newsblur.network.APIConstants
 import com.newsblur.network.AuthApi
@@ -16,8 +15,14 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.inject.Inject
@@ -31,6 +36,12 @@ data class AccountState(
     val authenticated: Boolean = false,
     val setup: Boolean = false,
     val lastUsed: String? = null,
+    val deleting: Boolean = false,
+    val providers: List<String> = emptyList(),
+    val accountLoaded: Boolean = false,
+    val verified: Boolean = false,
+    val deleted: Boolean = false,
+    val revocationRequired: Boolean = false,
 )
 
 @HiltViewModel
@@ -50,9 +61,44 @@ class AccountViewModel
                     signup = prefs.lastAuthProvider() == null,
                     lastUsed = prefs.lastAuthProvider(),
                     continuation = saved["continuation"],
+                    deleting = saved.get<Boolean>("manage_account") == true,
                 ),
             )
         val state = mutable.asStateFlow()
+
+        private val owner = api.account()
+
+        init {
+            if (state.value.deleting) loadAccount()
+        }
+
+        fun loadAccount() =
+            run {
+                val json = api.request("/api/social/account", account = owner)!!.json
+                val providers = json.getAsJsonArray("providers").map { it.asString }
+                mutable.update { it.copy(accountLoaded = true, providers = if ("apple" in providers) listOf("apple") else providers) }
+            }
+
+        fun deleteAccount(
+            confirm: String,
+            password: String,
+        ) = run {
+            check(confirm == "Delete") { "Type Delete to confirm." }
+            val social = state.value.providers.isNotEmpty()
+            val values =
+                if (social) {
+                    mapOf("confirm" to confirm, "delete_token" to saved.get<String>("delete_token").orEmpty())
+                } else {
+                    mapOf(
+                        "confirm" to confirm,
+                        "password" to password,
+                    )
+                }
+            val path = if (social) "/api/social/delete_account" else "/api/social/delete_password_account"
+            val json = api.request(path, values, true, owner)!!.json
+            mutable.update { it.copy(deleted = true, revocationRequired = json.string("apple_revocation_required") == "true") }
+            saved.remove<String>("delete_token")
+        }
 
         fun mode() {
             saved.remove<String>("ticket")
@@ -115,12 +161,18 @@ class AccountViewModel
                 saved["verifier"] = verifier
                 saved["provider"] = provider
                 saved["server"] = api.account().server
+                saved["login_generation"] = api.account().generation
                 val platform = if (BuildConfig.APPLICATION_ID.endsWith(".alpha")) "android-alpha" else "android"
                 val json =
                     api
                         .request(
                             "/api/social/start",
-                            mapOf("provider" to provider, "challenge" to challenge, "platform" to platform),
+                            mapOf(
+                                "provider" to provider,
+                                "challenge" to challenge,
+                                "platform" to platform,
+                                "purpose" to if (state.value.deleting) "delete_account" else "signin",
+                            ),
                             true,
                         )!!
                         .json
@@ -138,7 +190,10 @@ class AccountViewModel
             if (uri.scheme != expected || uri.host != "complete") return
             val verifier: String? = saved["verifier"]
             val server: String? = saved["server"]
-            if (verifier.isNullOrBlank() || server != api.account().server) {
+            if (verifier.isNullOrBlank() ||
+                server != api.account().server ||
+                saved.get<String>("login_generation") != api.account().generation
+            ) {
                 mutable.update { it.copy(error = "Sign-in expired. Please try again.") }
                 return
             }
@@ -148,7 +203,10 @@ class AccountViewModel
             }
             val ticket = uri.getQueryParameter("ticket") ?: return
             saved["ticket"] = ticket
-            complete("", "")
+            viewModelScope.launch {
+                state.first { !it.busy }
+                complete("", "")
+            }
         }
 
         private fun complete(
@@ -164,6 +222,13 @@ class AccountViewModel
                 )
             val response = api.request("/api/social/complete", values, true)!!
             val json = response.json
+            if (state.value.deleting) {
+                val token = json.string("delete_token")
+                check(token.isNotBlank()) { "Account verification expired. Please try again." }
+                saved["delete_token"] = token
+                mutable.update { it.copy(verified = true) }
+                return@run
+            }
             val continuation =
                 when {
                     json.string("link_required") == "true" -> "link"
@@ -175,7 +240,7 @@ class AccountViewModel
                 saved["continuation"] = continuation
                 mutable.update { it.copy(continuation = continuation, error = json.string("message")) }
             } else {
-                val cookie = response.cookie?.substringBefore(';')
+                val cookie = response.cookie
                 check(!cookie.isNullOrBlank()) { "The server did not return a login session. Please try again." }
                 prefs.saveLogin(json.string("username"), cookie)
                 authenticated(json.string("created") == "true", saved.get<String>("provider").orEmpty())
@@ -202,11 +267,7 @@ class AccountViewModel
                     false
                 } else {
                     try {
-                        api
-                            .request("/reader/feeds", mapOf("include_favicons" to "false"))!!
-                            .json
-                            .obj("feeds")
-                            ?.size() == 0
+                        hasEmptySubscriptions(api.request("/reader/feeds", mapOf("include_favicons" to "false"))!!.json)
                     } catch (_: Exception) {
                         false
                     }

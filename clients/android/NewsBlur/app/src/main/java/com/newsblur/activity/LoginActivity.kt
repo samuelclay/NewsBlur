@@ -6,8 +6,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.preference.PrefsRepo
@@ -24,6 +26,8 @@ class LoginActivity : FragmentActivity() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
+    @Inject lateinit var dbHelper: com.newsblur.database.BlurDatabaseHelper
+
     @SuppressLint("UseKtx")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +36,20 @@ class LoginActivity : FragmentActivity() {
         val variant = prefsRepo.getSelectedTheme().toVariant()
         setContent {
             NewsBlurTheme(variant = variant) {
-                com.newsblur.onboarding.AccountScreen(
-                    model = account,
-                    onAuthenticated = ::onAuthCompleted,
-                    onForgot = ::onOpenForgotPassword,
-                )
+                val state by account.state.collectAsStateWithLifecycle()
+                if (state.deleting) {
+                    com.newsblur.onboarding.AccountDeletionScreen(state, account, prefsRepo.getResolvedTheme(this), { finish() }, {
+                        prefsRepo.logout(this, dbHelper)
+                        finish()
+                    })
+                    com.newsblur.onboarding.SocialBrowserEffect(account, state)
+                } else {
+                    com.newsblur.onboarding.AccountScreen(
+                        model = account,
+                        onAuthenticated = ::onAuthCompleted,
+                        onForgot = ::onOpenForgotPassword,
+                    )
+                }
             }
         }
     }

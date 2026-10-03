@@ -27,6 +27,9 @@ data class DiscoveryFeed(
     val image: String = "",
     val subscribers: Int = 0,
     val stories: List<DiscoveryStory> = emptyList(),
+    val description: String = "",
+    val storiesPerMonth: Int = 0,
+    val lastStoryDate: String = "",
 ) {
     fun asFeed(resolvedId: String = id) =
         Feed().also {
@@ -66,6 +69,9 @@ data class DiscoveryFeed(
                 link = first("feed_link", "link", "itunes_url").ifBlank { url },
                 image = first("favicon_url", "thumbnail_url", "thumbnail", "icon", "artwork"),
                 subscribers = first("num_subscribers", "subscriber_count", "subscribers", "subs").toIntOrNull() ?: 0,
+                description = first("description"),
+                storiesPerMonth = first("average_stories_per_month").toIntOrNull() ?: 0,
+                lastStoryDate = first("last_story_date"),
                 stories =
                     entry
                         .objects(
@@ -86,7 +92,8 @@ data class DiscoveryStory(
     val imageUrl: String = "",
 ) {
     companion object {
-        private val hiddenContent = Regex("<(script|style)\\b[^>]*>.*?</\\1\\s*>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL))
+        private val hiddenContent =
+            Regex("<(script|style)\\b[^>]*>.*?</\\1\\s*>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL))
         private val tags = Regex("<[^>]+>")
         private val blockTags = Regex("</?(?:p|div|br|li|h[1-6]|blockquote|tr|td|section|article)\\b[^>]*>", RegexOption.IGNORE_CASE)
         private val whitespace = Regex("\\s+")
@@ -96,23 +103,35 @@ data class DiscoveryStory(
             val title = json.string("story_title").ifBlank { json.string("title") }
             if (title.isBlank()) return null
             val content = hiddenContent.replace(json.string("story_content").ifBlank { json.string("content") }, " ")
-            val images = json.get("image_urls")?.takeIf { it.isJsonArray }?.asJsonArray
-                ?.filter { it.isJsonPrimitive && it.asJsonPrimitive.isString }
-                ?.map { it.asString }.orEmpty()
-            val original = images.firstOrNull { imageAddress(it).isNotEmpty() }
-                ?: contentImage.find(content)?.groupValues?.get(1).orEmpty()
-            val image = listOf(
-                json.obj("secure_image_thumbnails")?.string(original).orEmpty(),
-                json.obj("secure_image_urls")?.string(original).orEmpty(),
-                original,
-            ).firstNotNullOfOrNull { imageAddress(it).takeIf(String::isNotEmpty) }.orEmpty()
+            val images =
+                json
+                    .get("image_urls")
+                    ?.takeIf { it.isJsonArray }
+                    ?.asJsonArray
+                    ?.filter { it.isJsonPrimitive && it.asJsonPrimitive.isString }
+                    ?.map { it.asString }
+                    .orEmpty()
+            val original =
+                images.firstOrNull { imageAddress(it).isNotEmpty() }
+                    ?: contentImage
+                        .find(content)
+                        ?.groupValues
+                        ?.get(1)
+                        .orEmpty()
+            val image =
+                listOf(
+                    json.obj("secure_image_thumbnails")?.string(original).orEmpty(),
+                    json.obj("secure_image_urls")?.string(original).orEmpty(),
+                    original,
+                ).firstNotNullOfOrNull { imageAddress(it).takeIf(String::isNotEmpty) }.orEmpty()
             return DiscoveryStory(
                 title = title,
                 hash = json.string("story_hash"),
                 permalink = json.string("story_permalink"),
                 authors = json.string("story_authors").ifBlank { json.string("authors") },
-                timestamp = json.string("story_timestamp").toLongOrNull()?.takeIf { it > 0 && it <= Long.MAX_VALUE / 1000 }
-                    ?: DiscoverFeedFreshnessFormatter.parseApiDateMillis(json.string("story_date"))?.div(1000)?.takeIf { it > 0 },
+                timestamp =
+                    json.string("story_timestamp").toLongOrNull()?.takeIf { it > 0 && it <= Long.MAX_VALUE / 1000 }
+                        ?: DiscoverFeedFreshnessFormatter.parseApiDateMillis(json.string("story_date"))?.div(1000)?.takeIf { it > 0 },
                 // DiscoveryModels.kt: preserve entities for Android's HTML decoder in DiscoveryStoryRow.
                 excerpt = whitespace.replace(tags.replace(blockTags.replace(content, " "), ""), " ").trim().take(320),
                 imageUrl = image,

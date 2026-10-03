@@ -8,13 +8,29 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.discover.*
+import com.newsblur.discover.DiscoveryFeed
+import com.newsblur.discover.obj
+import com.newsblur.discover.objects
+import com.newsblur.discover.string
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -71,10 +87,48 @@ class SetupViewModel
             queue.bind(account)
             loadCatalog()
             viewModelScope.launch {
-                val feeds = withContext(Dispatchers.IO) { db.allFeeds.mapNotNull(db::getFeed) }
-                mutable.update { it.copy(unavailable = feeds.map { feed -> feed.address }.toSet()) }
+                queue.state.collect { progress ->
+                    mutable.update {
+                        it.copy(
+                            importing = progress.importing,
+                            importMessage = progress.importMessage ?: progress.importError,
+                            choices = it.choices.copy(selected = it.choices.selected - progress.added - progress.queued),
+                        )
+                    }
+                }
+            }
+            refreshSubscriptions()
+            viewModelScope.launch {
+                com.newsblur.service.NbSyncManager.state.collect { event ->
+                    if (event is com.newsblur.service.NBSync.Update &&
+                        event.type and com.newsblur.service.NbSyncManager.UPDATE_METADATA != 0
+                    ) {
+                        refreshSubscriptions()
+                    }
+                }
             }
         }
+
+        private fun refreshSubscriptions() =
+            viewModelScope.launch {
+                val (feeds, folders) =
+                    withContext(Dispatchers.IO) {
+                        db.allFeeds.mapNotNull(db::getFeed) to
+                            db.folders
+                                .sortedWith(com.newsblur.domain.Folder.FolderComparator)
+                                .map { it.flatName() }
+                                .filter { it != com.newsblur.util.AppConstants.ROOT_FOLDER }
+                    }
+                if (!api.isCurrent(account)) return@launch
+                val unavailable = feeds.map { it.address }.toSet()
+                mutable.update {
+                    it.copy(
+                        unavailable = unavailable,
+                        existingFolders = listOf("") + folders,
+                        choices = it.choices.copy(selected = it.choices.selected - unavailable),
+                    )
+                }
+            }
 
         fun loadCatalog() =
             viewModelScope.launch {
@@ -201,7 +255,16 @@ class SetupViewModel
                 ) {
                     continue
                 }
-                val latest = feed.stories.mapNotNull { it.timestamp }.maxOrNull() ?: continue
+                val latest =
+                    (
+                        feed.stories.mapNotNull { it.timestamp } +
+                            listOfNotNull(
+                                com.newsblur.util.DiscoverFeedFreshnessFormatter
+                                    .parseApiDateMillis(feed.lastStoryDate)
+                                    ?.div(1000),
+                            )
+                    ).maxOrNull()
+                        ?: continue
                 val age = System.currentTimeMillis() / 1000 - latest
                 if (age !in -86400..365L * 86400) continue
                 val titles = feed.stories.map { it.title.replace(Regex("<[^>]+>"), " ") }.filter { it.count(Char::isLetter) >= 8 }
@@ -223,8 +286,15 @@ class SetupViewModel
                 if (multilingual) continue
                 val bitmap =
                     OnboardingCatalog.bitmap(raw.string("favicon"))?.takeIf { OnboardingCatalog.fingerprint(it) != null } ?: icon(feed.id)
+                        ?: try {
+                            semaphore.withPermit { api.thumbnail(feed.image)?.takeIf { OnboardingCatalog.fingerprint(it) != null } }
+                        } catch (
+                            _: Exception,
+                        ) {
+                            null
+                        }
                         ?: continue
-                mutable.update { it.copy(icons = it.icons + (feed.id to bitmap)) }
+                mutable.update { it.copy(icons = it.icons + (feed.id.ifBlank { feed.url } to bitmap)) }
                 result.add(feed)
             }
             return result.distinctBy { it.url }.sortedByDescending { it.subscribers }
@@ -277,6 +347,38 @@ class SetupViewModel
                             }.joinAll()
                     }
                     for (i in 0 until 20) append(category, OnboardingCatalog.sources.mapNotNull { pools[it]?.getOrNull(i) })
+
+                    fun distinctIcons(): List<DiscoveryFeed> =
+                        candidates[category].orEmpty().distinctBy {
+                            mutable.value.icons[it.id.ifBlank { it.url }]?.let(OnboardingCatalog::fingerprint)
+                        }
+                    if (distinctIcons().size < 5) {
+                        for (alias in OnboardingCatalog.categoryAliases(category)) {
+                            try {
+                                val params =
+                                    mapOf(
+                                        "type" to "all",
+                                        "limit" to "80",
+                                        "exclude_subscribed" to "false",
+                                        "staleness" to "year",
+                                        "include_stories" to "true",
+                                    ) +
+                                        if (alias.isEmpty()) emptyMap() else mapOf("category" to alias)
+                                val json = api.request("/discover/popular_feeds", params, account = account)!!.json
+                                append(category, validate(json.objects("feeds"), category))
+                            } catch (cancel: CancellationException) {
+                                throw cancel
+                            } catch (e: Exception) {
+                                error = e.message
+                            }
+                        }
+                    }
+                    val readyIcons = distinctIcons().take(5).map { it.id.ifBlank { it.url } }
+                    if (readyIcons.size >= 5) {
+                        mutable.update {
+                            it.copy(cardIcons = it.cardIcons + (category to readyIcons), iconFailures = it.iconFailures - category)
+                        }
+                    }
                     mutable.update {
                         if (it.category ==
                             category
@@ -284,7 +386,7 @@ class SetupViewModel
                             it.copy(
                                 bundleLoading = false,
                                 bundleError =
-                                    if (it.choices.feeds.isEmpty()) {
+                                    if (readyIcons.size < 5) {
                                         error
                                             ?: "These feeds aren’t ready yet. Please try again."
                                     } else {
@@ -331,6 +433,7 @@ class SetupViewModel
             feed: DiscoveryFeed,
             folder: String,
         ) {
+            if (feed.url in mutable.value.unavailable) return
             queue.enqueue(listOf(feed), folder, existing = true)
         }
 
@@ -352,6 +455,7 @@ class SetupViewModel
                                 .json
                         val feeds = json.objects("feeds").mapNotNull { DiscoveryFeed.parse(it, true) }
                         mutable.update { it.copy(search = feeds) }
+                        feeds.forEach { feed -> launch { icon(feed.id) } }
                     } catch (
                         cancel: CancellationException,
                     ) {
@@ -366,33 +470,10 @@ class SetupViewModel
                 }
         }
 
-        fun import(uri: Uri) =
-            viewModelScope.launch {
-                mutable.update { it.copy(importing = true, error = null, importMessage = null) }
-                try {
-                    val (data, receipt) =
-                        withContext(Dispatchers.IO) {
-                            val bytes =
-                                context.contentResolver.openInputStream(uri)?.use { it.readNBytes(SetupOpml.MAX_BYTES + 1) }
-                                    ?: error("Could not open this file.")
-                            bytes to SetupOpml.parse(bytes)
-                        }
-                    api.import(data, account)
-                    queue.imported(receipt)
-                    mutable.update { it.copy(importMessage = "Import queued. Your feeds and folders will appear as they are processed.") }
-                } catch (cancel: CancellationException) {
-                    throw cancel
-                } catch (e: Exception) {
-                    mutable.update {
-                        it.copy(
-                            error =
-                                e.message ?: "Could not import this file.",
-                        )
-                    }
-                } finally {
-                    mutable.update { it.copy(importing = false) }
-                }
-            }
+        fun import(uri: Uri) {
+            mutable.update { it.copy(error = null) }
+            queue.import(uri)
+        }
 
         override fun onCleared() {
             language.close()
