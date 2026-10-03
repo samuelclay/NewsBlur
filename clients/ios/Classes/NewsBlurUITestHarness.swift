@@ -352,6 +352,11 @@ final class NewsBlurUITestHarness {
         // FeedsViewController.swift schedules startup navigation after publishing the feed list.
         appDelegate.feedsViewController.loadWorkItem?.cancel()
         applyReaderScenario(scenario, on: appDelegate, remainingRetries: remainingRetries)
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-sync-status") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                appDelegate.feedsViewController.syncNotifier.showWithStyle(.syncing, title: "Syncing stories...")
+            }
+        }
     }
 
     private static func retryConfiguringReader(
@@ -1326,10 +1331,19 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
         let slowPreview = ProcessInfo.processInfo.arguments.contains("-onboarding-slow-previews") &&
             request.url?.path == "/discover/popular_feeds" && request.url?.query?.contains("category=") == true
         let slowAddition = ProcessInfo.processInfo.arguments.contains("-onboarding-slow-additions") && request.url?.path == "/reader/add_url"
-        if slowPreview || slowAddition {
+        let progressivePreview = ProcessInfo.processInfo.arguments.contains("-onboarding-progressive-previews") &&
+            request.url?.path == "/discover/popular_feeds" && request.url?.query?.contains("category=") == true &&
+            request.url?.query?.contains("type=rss") != true
+        let slowCatalog = ProcessInfo.processInfo.arguments.contains("-onboarding-slow-catalog") &&
+            request.url?.path == "/discover/popular_feeds" && request.url?.query?.contains("limit=1") == true
+        let iconID = request.url.flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false)?.queryItems?.first(where: { $0.name == "feed_ids" })?.value }
+        let slowIcon = ProcessInfo.processInfo.arguments.contains("-onboarding-progressive-icons") &&
+            request.url?.path == "/reader/favicons" && OnboardingIconCatalog.cards[""]?.prefix(5).dropFirst().contains(where: { $0.id == iconID }) == true
+        if slowPreview || slowAddition || progressivePreview || slowCatalog || slowIcon {
+
             let work = DispatchWorkItem { [weak self] in self?.sendResponse() }
             delayedResponse = work
-            DispatchQueue.global().asyncAfter(deadline: .now() + (slowPreview ? 8 : 2.5), execute: work)
+            DispatchQueue.global().asyncAfter(deadline: .now() + (slowIcon ? 12 : slowCatalog ? 10 : progressivePreview ? 20 : 8), execute: work)
         } else {
             sendResponse()
         }
@@ -1384,6 +1398,9 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
     }
 
     private func responsePayload(url: URL) throws -> [String: Any] {
+        if url.path == "/reader/add_feeds", request.httpMethod == "GET" {
+            return ["batch_add_supported": false]
+        }
         let params = parameters(url: url)
         if url.path.hasPrefix("/discover/similar/") {
             if (Int(params["page"] ?? "1") ?? 1) > 1 { return ["discover_feeds": [:]] }
@@ -1394,6 +1411,18 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
             ]]]
         }
         switch url.path {
+        case "/reader/favicons":
+            let ids = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.filter { $0.name == "feed_ids" }.compactMap(\.value) ?? []
+            return ids.reduce(into: [:]) { response, id in
+                let number = Int(id) ?? 0
+                let image = UIGraphicsImageRenderer(size: CGSize(width: 24, height: 24)).image { context in
+                    UIColor(hue: CGFloat(number % 251) / 251, saturation: 0.8, brightness: 0.85, alpha: 1).setFill()
+                    context.fill(CGRect(x: 0, y: 0, width: 24, height: 24))
+                    UIColor.white.setFill()
+                    context.fill(CGRect(x: 3 + number % 11, y: 4, width: 5, height: 15))
+                }
+                response[id] = image.pngData()?.base64EncodedString()
+            }
         case "/discover/trending":
             return ["trending_feeds": ["fixture-trending": ["feed": feed("The Daily Perspective", slug: "daily"),
                 "stories": [["story_title": "A better way to follow the news", "story_authors": "Alex Morgan"]]]]]
@@ -1405,7 +1434,8 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
             ]]
         case "/discover/popular_feeds":
             let type = params["type"] ?? "all"
-            if ProcessInfo.processInfo.arguments.contains("onboarding") {
+            if ProcessInfo.processInfo.arguments.contains("onboarding") ||
+                (params["staleness"] == "year" && params["exclude_subscribed"] == "false") {
                 let types = type == "all" ? ["rss", "newsletter", "youtube", "reddit", "podcast"] : [type]
                 let titles = ["rss": "Independent Journal", "youtube": "Practical Engineering", "reddit": "r/science",
                               "newsletter": "The Marginalian", "podcast": "Radiolab"]
@@ -1415,10 +1445,14 @@ private final class DiscoverSitesUITestURLProtocol: URLProtocol {
                     var entry = feed(titles[source] ?? source, slug: source)
                     entry["feed_url"] = entry["feed_address"]
                     entry["feed_type"] = source
+                    entry["last_story_date"] = Date().ISO8601Format()
                     entry["favicon"] = UIImage(systemName: icons[source] ?? "globe")?.withTintColor(.systemTeal, renderingMode: .alwaysOriginal).pngData()?.base64EncodedString()
                     if params["include_stories"] == "true", var stories = entry["stories"] as? [[String: Any]] {
+                        stories.append(["story_title": "Why scientists are changing the way we understand our world",
+                                        "story_content": "<p>A third recent preview for this source.</p>"])
                         for index in stories.indices {
                             stories[index]["story_hash"] = source + "-story-" + String(index)
+                            stories[index]["story_title"] = index == 0 ? "New discoveries reveal how the natural world works" : "How researchers are finding answers to important questions"
                             stories[index]["image_urls"] = ["https://ui-test.newsblur.example/onboarding-preview.jpg"]
                         }
                         entry["stories"] = stories

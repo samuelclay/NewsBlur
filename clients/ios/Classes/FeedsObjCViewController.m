@@ -729,6 +729,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    [self.syncNotifier updateFrameInSuperview];
 
     BOOL usesVerticalToolbar = [self usesVerticalFeedToolbar];
     BOOL hasScrollingHeader = self.scrollingFeedHeaderView && self.feedTitlesTable.tableHeaderView == self.scrollingFeedHeaderView;
@@ -4589,6 +4590,8 @@ heightForHeaderInSection:(NSInteger)section {
     if (!self.syncNotifier) {
         self.syncNotifier = [[SyncNotifierView alloc] initWithTitle:@""];
     }
+    self.syncNotifier.horizontalLayoutView = self.view;
+    self.syncNotifier.accountNameLabel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? userLabel : nil;
     // Re-add to userInfoView since userInfoView is recreated each time
     [self.syncNotifier removeFromSuperview];
     [self.userInfoView addSubview:self.syncNotifier];
