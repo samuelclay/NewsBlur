@@ -740,6 +740,91 @@ final class DetailViewControllerTests: XCTestCase {
         }
     }
 
+    func test_iPadLeadingEdgeCoversViewportWithBackOrSaveRowSwipe() throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad viewport gestures") }
+        let fixture = IPadFeedRevealFixture()
+        defer { fixture.close() }
+        let nativeEdge = UIScreenEdgePanGestureRecognizer()
+        fixture.split.view.addGestureRecognizer(nativeEdge)
+        for action in ["back", "save"] {
+            UserDefaults.standard.set(action, forKey: "story_title_swipe_right")
+            fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+            XCTAssertFalse(fixture.split.presentsWithGesture, "Only one recognizer owns the screen edge")
+            XCTAssertFalse(nativeEdge.isEnabled)
+            let customEdge = try XCTUnwrap(fixture.titles.value(forKey: "feedListEdgeSwipeGesture") as? UIGestureRecognizer)
+            XCTAssertTrue(customEdge.isEnabled, "Repeated setup must not suppress the app's own edge recognizer")
+            XCTAssertTrue(customEdge.view === fixture.split.view, "Inset titles must retain the full viewport edge")
+            let rowPan = try XCTUnwrap(fixture.titles.value(forKey: "feedListSwipeGesture") as? UIGestureRecognizer)
+            XCTAssertEqual(rowPan.isEnabled, action == "back", "Save remains the configured row action")
+            let nestedContainer = UIView()
+            fixture.split.view.addSubview(nestedContainer)
+            let competingPan = UIPanGestureRecognizer()
+            nestedContainer.addGestureRecognizer(competingPan)
+            XCTAssertTrue(customEdge.delegate?.gestureRecognizer?(customEdge, shouldBeRequiredToFailBy: competingPan) ?? false,
+                          "Native split-container pans above the titles must yield to the viewport edge")
+            nestedContainer.removeFromSuperview()
+        }
+    }
+
+    func test_iPadEdgeFlickWithoutChangedEventRevealsFeeds() async throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad viewport gestures") }
+        for initialDistance: CGFloat in [0, 40] {
+            for finalState: UIGestureRecognizer.State in [.ended, .cancelled] {
+                let fixture = IPadFeedRevealFixture()
+                defer { fixture.close() }
+                let table = UITableView()
+                fixture.titles.storyTitlesTable = table
+                fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+                let pan = IPadFeedRevealPan()
+                fixture.titles.view.addGestureRecognizer(pan)
+                pan.distance = initialDistance
+                pan.simulatedState = .began
+                fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+                pan.distance = 180
+                pan.simulatedState = finalState
+                fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+                let expected: UISplitViewController.Column = finalState == .ended ? .primary : .secondary
+                let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                    fixture.split.shownColumns.last == expected &&
+                        !(fixture.titles.value(forKey: "feedListRevealActive") as? Bool ?? true)
+                }, object: nil)
+                await fulfillment(of: [settled], timeout: 2)
+                XCTAssertEqual(fixture.split.shownColumns.last, expected,
+                               "UIKit may end or cancel a quick edge flick without an intermediate changed event")
+                XCTAssertTrue(table.isScrollEnabled)
+            }
+        }
+    }
+
+    func test_iPadCancelledRowRevealClosesAndPreservesViewportEdge() async throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad viewport gestures") }
+        let fixture = IPadFeedRevealFixture()
+        defer { fixture.close() }
+        fixture.titles.perform(NSSelectorFromString("setupStoryTitlesSwipeGestures"))
+        let pan = IPadFeedRevealPan()
+        fixture.titles.view.addGestureRecognizer(pan)
+        pan.simulatedState = .began
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        pan.simulatedState = .changed
+        pan.distance = 80
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        let container = try XCTUnwrap(fixture.titles.value(forKey: "feedListRevealContainer") as? UIView)
+        let firstPosition = container.transform.tx
+        pan.distance = 180
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        XCTAssertEqual(container.transform.tx - firstPosition, 100, accuracy: 1, "The sidebar follows the drag before it settles")
+        fixture.split.shownColumns.removeAll()
+        pan.simulatedState = .cancelled
+        fixture.titles.perform(NSSelectorFromString("handleFeedListSwipe:"), with: pan)
+        let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            !(fixture.titles.value(forKey: "feedListRevealActive") as? Bool ?? true)
+        }, object: nil)
+        await fulfillment(of: [settled], timeout: 2)
+        XCTAssertEqual(fixture.split.shownColumns, [.secondary], "Cancellation must close despite distance or forward velocity")
+        XCTAssertTrue((fixture.titles.value(forKey: "feedListEdgeSwipeGesture") as? UIGestureRecognizer)?.isEnabled ?? false, "A row drag must not permanently disable the next viewport edge drag")
+        XCTAssertEqual(container.transform, .identity)
+    }
+
     func test_duoFullscreenOwnsNativeInteractiveRevealInsteadOfTheOneShotReaderEdge() throws {
         let fixture = try DuoFullscreenTransitionFixture()
         defer { fixture.close() }
@@ -1377,11 +1462,18 @@ final class DetailViewControllerTests: XCTestCase {
         defaults.set("auto", forKey: keys[0])
         for key in keys.dropFirst() { defaults.set("titles_on_left", forKey: key) }
         defer { for (key, value) in zip(keys, previous) { defaults.set(value, forKey: key) } }
-        let scenarios: [(phone: Bool, compact: Bool, style: UISplitViewController.Style)] = [
-            (true, false, .doubleColumn), (true, true, .doubleColumn),
-            (false, false, .doubleColumn), (false, false, .tripleColumn)
+        let scenarios: [(phone: Bool, compact: Bool, style: UISplitViewController.Style,
+                         width: CGFloat, preference: String, expected: UISplitViewController.SplitBehavior)] = [
+            (true, false, .doubleColumn, 951, "auto", .overlay),
+            (true, true, .doubleColumn, 951, "auto", .overlay),
+            (false, false, .doubleColumn, 951, "auto", .overlay),
+            (false, false, .tripleColumn, 951, "auto", .overlay),
+            (false, false, .doubleColumn, 1376, "auto", .tile),
+            (false, false, .tripleColumn, 1376, "auto", .tile),
+            (false, false, .doubleColumn, 951, "tile", .tile)
         ]
         for scenario in scenarios {
+            defaults.set(scenario.preference, forKey: keys[0])
             for folder in [false, true] {
                 let app = NewsBlurAppDelegate()
                 let collection = StoriesCollection()
@@ -1398,7 +1490,7 @@ final class DetailViewControllerTests: XCTestCase {
                 detail.isCompact = scenario.compact
                 app.detailViewController = detail
                 let split = DuoSidebarSplitController(style: scenario.style)
-                split.view.frame = CGRect(x: 0, y: 0, width: 951, height: 669)
+                split.view.frame = CGRect(x: 0, y: 0, width: scenario.width, height: 669)
                 split.simulatedDisplayMode = .oneOverSecondary
                 split.simulatedSplitBehavior = .overlay
                 app.splitViewController = split
@@ -1437,8 +1529,8 @@ final class DetailViewControllerTests: XCTestCase {
                 if scenario.compact { app.updateSplitBehavior(false) }
                 else { detail.show(column: .primary, animated: false) }
                 XCTAssertFalse(detail.isBrowsingDuoSources)
-                // LoginViewControllerTests.swift preserves the existing auto policy's tiled layout at 951×669 outside expanded Duo.
-                let expected: UISplitViewController.SplitBehavior = scenario.phone && !scenario.compact ? .overlay : .tile
+                // LoginViewControllerTests.swift keeps narrow Auto overlays stable through source refresh while preserving wide and explicit tiled layouts.
+                let expected = scenario.expected
                 XCTAssertEqual(split.preferredSplitBehavior, expected)
                 split.requestedBehaviors.removeAll()
                 // LoginViewControllerTests.swift runs the real loadingFeed→updateLayout→updateSplitBehavior chain before and after native source dismissal.
@@ -1454,7 +1546,7 @@ final class DetailViewControllerTests: XCTestCase {
                         split.simulatedDisplayMode = .secondaryOnly
                     }
                 }
-                XCTAssertEqual(defaults.string(forKey: "split_behavior"), "auto")
+                XCTAssertEqual(defaults.string(forKey: "split_behavior"), scenario.preference)
             }
         }
         #endif
@@ -3826,5 +3918,45 @@ private final class GradientSpyStoryDetailViewController: StoryDetailViewControl
 
     override func becomeFirstResponder() -> Bool {
         true
+    }
+}
+
+@MainActor private final class IPadFeedRevealPan: UIPanGestureRecognizer {
+    var simulatedState: UIGestureRecognizer.State = .possible
+    var distance: CGFloat = 0
+    override var state: UIGestureRecognizer.State { get { simulatedState } set { simulatedState = newValue } }
+    override func translation(in view: UIView?) -> CGPoint { CGPoint(x: distance, y: 0) }
+    override func velocity(in view: UIView?) -> CGPoint { CGPoint(x: 1_000, y: 0) }
+}
+
+@MainActor private final class IPadFeedRevealFixture {
+    let app = NewsBlurAppDelegate()
+    let detail = DuoExpansionDetailController()
+    let split = DuoSidebarSplitController(style: .doubleColumn)
+    let titles = DuoFullscreenStories()
+    private let preferences = ["story_title_swipe_right", "enable_story_swipes"]
+    private var previousPreferences: [String: Any] = [:]
+
+    init() {
+        for key in preferences { previousPreferences[key] = UserDefaults.standard.object(forKey: key) }
+        UserDefaults.standard.set("back", forKey: preferences[0])
+        UserDefaults.standard.set(true, forKey: preferences[1])
+        detail.simulatesPhone = false
+        detail.isCompact = false
+        detail.appDelegate = app
+        app.detailViewController = detail
+        app.splitViewController = split
+        app.feedsNavigationController = UINavigationController(rootViewController: DuoFullscreenFeeds())
+        app.feedsNavigationController.view.frame = CGRect(x: 0, y: 0, width: 320, height: 1_180)
+        split.view.frame = CGRect(x: 0, y: 0, width: 820, height: 1_180)
+        titles.appDelegate = app
+        titles.loadViewIfNeeded()
+    }
+
+    func close() {
+        app.feedsNavigationController.setViewControllers([], animated: false)
+        app.feedsNavigationController = nil
+        app.detailViewController = nil
+        for key in preferences { UserDefaults.standard.set(previousPreferences[key], forKey: key) }
     }
 }

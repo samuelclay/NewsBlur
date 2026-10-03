@@ -4,15 +4,10 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from dns.resolver import (
-    NXDOMAIN,
-    NoAnswer,
-    NoNameservers,
-    NoResolverConfiguration,
-    query,
-)
+from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, NoResolverConfiguration, query
 
 from apps.profile.models import RNewUserQueue, blank_authenticate
 from apps.profile.tasks import EmailNewUser
@@ -202,17 +197,19 @@ class SignupForm(forms.Form):
         new_user.save()
         new_user = authenticate(username=username, password=password)
         new_user = User.objects.get(username=username)
-        MActivity.new_signup(user_id=new_user.pk)
 
-        RNewUserQueue.add_user(new_user.pk)
+        def finish_signup():
+            # forms.py must not publish users that apps/api/social_auth.py may still roll back.
+            MActivity.new_signup(user_id=new_user.pk)
+            RNewUserQueue.add_user(new_user.pk)
+            if new_user.email:
+                EmailNewUser.delay(user_id=new_user.pk)
+            if getattr(settings, "AUTO_PREMIUM_NEW_USERS", False):
+                new_user.profile.activate_premium()
+            elif getattr(settings, "AUTO_ENABLE_NEW_USERS", False):
+                new_user.profile.activate_free()
 
-        if new_user.email:
-            EmailNewUser.delay(user_id=new_user.pk)
-
-        if getattr(settings, "AUTO_PREMIUM_NEW_USERS", False):
-            new_user.profile.activate_premium()
-        elif getattr(settings, "AUTO_ENABLE_NEW_USERS", False):
-            new_user.profile.activate_free()
+        transaction.on_commit(finish_signup)
 
         return new_user
 
