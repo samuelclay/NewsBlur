@@ -187,7 +187,7 @@ import Combine
             default: XCTFail("Unexpected request"); return (500, [:])
             }
         }
-        let model = AccountDeletionModel(onDeleted: { deleted += 1 })
+        let model = AccountDeletionModel(onDeleted: { _ in deleted += 1 })
         await model.load()
         XCTAssertEqual(model.providers, ["google"])
         await model.deleteAccount()
@@ -205,6 +205,70 @@ import Combine
         XCTAssertEqual(deleted, 1)
     }
 
+    func test_appleDeletionSendsRevocationCodeWithoutChangingOrdinarySignIn() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let username = app.activeUsername
+        app.activeUsername = "delete-fixture"
+        defer { app.activeUsername = username }
+        for deleting in [true, false] {
+            var appleRequests = 0
+            network { request in
+                switch request.url?.path {
+                case "/api/social/start": return (200, ["state": "apple-state", "nonce": "fixture-nonce"])
+                case "/api/social/apple":
+                    appleRequests += 1
+                    let body = Self.body(request)
+                    let fields = URLComponents(string: "https://fixture.invalid/?" + body)?.queryItems ?? []
+                    XCTAssertEqual(fields.first { $0.name == "state" }?.value, "apple-state")
+                    XCTAssertEqual(fields.first { $0.name == "id_token" }?.value, "fixture-identity-token")
+                    XCTAssertEqual(fields.first { $0.name == "authorization_code" }?.value,
+                                   deleting ? "fixture-code+for/revocation" : nil)
+                    return (200, ["ticket": "apple-ticket"])
+                case "/api/social/complete": return (200, ["code": 1, "delete_token": "deletion-proof"])
+                default: XCTFail("Unexpected request"); return (500, [:])
+                }
+            }
+            let deletion = AccountDeletionModel(onDeleted: { _ in XCTFail("Verification must not delete the account") })
+            let authentication = deleting ? deletion.authentication : OnboardingAccountModel()
+            _ = try await authentication.prepareSocial("apple")
+            let ticket = try await authentication.exchangeAppleCredential(identityToken: Data("fixture-identity-token".utf8),
+                                                                          authorizationCode: Data("fixture-code+for/revocation".utf8))
+            XCTAssertEqual(ticket, "apple-ticket")
+            XCTAssertEqual(appleRequests, 1)
+            if deleting {
+                try await authentication.complete(ticket: ticket)
+                XCTAssertTrue(deletion.isVerified)
+            }
+            XCTAssertEqual(app.activeUsername, "delete-fixture")
+        }
+    }
+
+    func test_appleLinkedDeletionUsesAppleAndStillFinishesWhenManualRevocationIsRequired() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let username = app.activeUsername
+        app.activeUsername = "delete-fixture"
+        defer { app.activeUsername = username }
+        network { request in
+            switch request.url?.path {
+            case "/api/social/account": return (200, ["code": 1, "providers": ["apple", "google"], "has_password": false])
+            case "/api/social/start": return (200, ["state": "apple-state"])
+            case "/api/social/complete": return (200, ["code": 1, "delete_token": "deletion-proof"])
+            case "/api/social/delete_account": return (200, ["code": 1, "apple_revocation_required": true])
+            default: XCTFail("Unexpected request"); return (500, [:])
+            }
+        }
+        var deletionNotices: [Bool] = []
+        let model = AccountDeletionModel(onDeleted: { deletionNotices.append($0) })
+        await model.load()
+        XCTAssertEqual(model.providers, ["apple"], "An Apple-linked account needs Apple's fresh revocation code.")
+        _ = try await model.authentication.prepareSocial("apple")
+        try await model.authentication.complete(ticket: "apple-ticket")
+        model.confirmation = "Delete"
+        await model.deleteAccount()
+        XCTAssertEqual(deletionNotices, [true], "Unavailable revocation must not prevent deletion from finishing and showing the instructions.")
+        XCTAssertNil(model.message)
+    }
+
     func test_providerDeletionCancellationAndAccountSwitchCannotWrite() async throws {
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
         let username = app.activeUsername
@@ -216,7 +280,7 @@ import Combine
                 mutations.append(request.url!.path)
                 return (200, ["state": "delete-state", "delete_token": "verified-token"])
             }
-            let model = AccountDeletionModel(onDeleted: { XCTFail("Must not delete") })
+            let model = AccountDeletionModel(onDeleted: { _ in XCTFail("Must not delete") })
             _ = try await model.authentication.prepareSocial("google")
             if cancel { model.cancel() } else { app.activeUsername = "another-account" }
             do { try await model.authentication.complete(ticket: "provider-ticket"); XCTFail("Expected stale verification rejection") }
@@ -234,7 +298,7 @@ import Combine
         defer { app.activeUsername = username }
         for response in [["code": 1, "providers": [], "has_password": true], ["_test_html": "<html>NewsBlur</html>"]] as [[String: Any]] {
             network { _ in (200, response) }
-            let model = AccountDeletionModel(onDeleted: {})
+            let model = AccountDeletionModel(onDeleted: { _ in})
             await model.load()
             XCTAssertTrue(model.useLegacyDeletion)
         }
@@ -250,7 +314,7 @@ import Combine
             if request.url?.path == "/api/social/delete_account" { deletes += 1 }
             return (200, ["state": "delete-state", "delete_token": "verified-token"])
         }
-        let model = AccountDeletionModel(onDeleted: { XCTFail("Wrong account must not be deleted") })
+        let model = AccountDeletionModel(onDeleted: { _ in XCTFail("Wrong account must not be deleted") })
         _ = try await model.authentication.prepareSocial("google")
         try await model.authentication.complete(ticket: "provider-ticket")
         app.activeUsername = "another-account"
@@ -275,7 +339,7 @@ import Combine
             }
             return (200, ["state": "delete-state", "delete_token": "verified-token"])
         }
-        let model = AccountDeletionModel(onDeleted: { XCTFail("Expired proof cannot delete") })
+        let model = AccountDeletionModel(onDeleted: { _ in XCTFail("Expired proof cannot delete") })
         await model.load()
         _ = try await model.authentication.prepareSocial("google")
         try await model.authentication.complete(ticket: "provider-ticket")

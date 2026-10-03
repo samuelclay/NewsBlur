@@ -61,6 +61,10 @@ PUSH_DOMAIN = "push.newsblur.com"
 SECRET_KEY = "YOUR_SECRET_KEY"
 # apps/api/social_auth.py uses a native Apple ID and a Google web OAuth client.
 SOCIAL_APPLE_CLIENT_IDS = ["com.newsblur.NewsBlur", "com.newsblur.NB-Alpha"]
+# apps/api/social_auth.py uses a Sign in with Apple key mounted outside the repository for token revocation.
+SOCIAL_APPLE_TEAM_ID = os.environ.get("SOCIAL_APPLE_TEAM_ID", "")
+SOCIAL_APPLE_KEY_ID = os.environ.get("SOCIAL_APPLE_KEY_ID", "")
+SOCIAL_APPLE_PRIVATE_KEY_PATH = os.environ.get("SOCIAL_APPLE_PRIVATE_KEY_PATH", "")
 SOCIAL_GOOGLE_CLIENT_ID = os.environ.get("SOCIAL_GOOGLE_CLIENT_ID", "")
 SOCIAL_GOOGLE_CLIENT_SECRET = os.environ.get("SOCIAL_GOOGLE_CLIENT_SECRET", "")
 SOCIAL_GOOGLE_REDIRECT_URI = "https://www.newsblur.com/api/social/google/callback"

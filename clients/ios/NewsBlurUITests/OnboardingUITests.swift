@@ -21,7 +21,7 @@ final class Test_OnboardingUI: XCTestCase {
                     // OnboardingUITests.swift never presses the destructive action, even with isolated fixture networking.
                 } else {
                     XCTAssertTrue(app.buttons["Verify with Apple"].waitForExistence(timeout: 15))
-                    XCTAssertTrue(app.buttons["Verify with Google"].isHittable)
+                    XCTAssertFalse(app.buttons["Verify with Google"].exists, "Apple-linked accounts must verify with Apple so its authorization can be revoked.")
                     screenshot("deletion-providers-" + theme)
                 }
                 app.buttons["Cancel"].tap()
@@ -29,6 +29,21 @@ final class Test_OnboardingUI: XCTestCase {
                 app.terminate()
             }
         }
+    }
+
+    func test_appleRevocationNoticeCanCloseAfterDeletion() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-newsblur-ui-testing", "-newsblur-ui-test-screen", "account-deletion-notice",
+                               "-newsblur-ui-test-theme", "sepia"]
+        app.launch()
+        let notice = app.alerts["Finish disconnecting Apple"]
+        XCTAssertTrue(notice.waitForExistence(timeout: 15))
+        XCTAssertTrue(notice.buttons["View instructions"].isHittable)
+        screenshot("deletion-apple-revocation-notice")
+        notice.buttons["Done"].tap()
+        XCTAssertTrue(notice.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Sign in with Apple"].isHittable)
+        app.terminate()
     }
 
     func test_entireBundleCardTogglesInclusion() {

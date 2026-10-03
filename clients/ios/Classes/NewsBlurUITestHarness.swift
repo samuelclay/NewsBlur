@@ -76,7 +76,7 @@ final class NewsBlurUITestHarness {
         }
 
         switch requestedScreen {
-        case "add-site", "discover-sites", "onboarding", "onboarding-account", "account-deletion", "account-deletion-confirm":
+        case "add-site", "discover-sites", "onboarding", "onboarding-account", "account-deletion", "account-deletion-confirm", "account-deletion-notice":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -120,7 +120,7 @@ final class NewsBlurUITestHarness {
         }
 
         switch requestedScreen {
-        case "onboarding", "onboarding-account", "account-deletion", "account-deletion-confirm":
+        case "onboarding", "onboarding-account", "account-deletion", "account-deletion-confirm", "account-deletion-notice":
             didScheduleScenario = true
             configureOnboarding(on: appDelegate, remainingRetries: 100)
         case "discover-sites":
@@ -181,6 +181,13 @@ final class NewsBlurUITestHarness {
             return
         }
         let show = {
+            if requestedScreen == "account-deletion-notice" {
+                let controller = OnboardingAccountViewController()
+                controller.modalPresentationStyle = .fullScreen
+                controller.showAppleRevocationNoticeWhenVisible()
+                root.present(controller, animated: false)
+                return
+            }
             if requestedScreen == "account-deletion" || requestedScreen == "account-deletion-confirm" {
                 let controller = AccountDeletionController()
                 controller.modalPresentationStyle = .formSheet

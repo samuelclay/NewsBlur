@@ -3,11 +3,12 @@ import hashlib
 import json
 import time
 from types import SimpleNamespace
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, mock_open, patch
 from urllib.parse import parse_qs, urlparse
 
 import jwt
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.test import Client, RequestFactory, SimpleTestCase, TransactionTestCase, override_settings
@@ -243,6 +244,227 @@ class Test_SocialAuthentication(SimpleTestCase):
         with patch("apps.profile.models.User.objects.get", return_value=user):
             self.assertIsNone(blank_authenticate(user.username))
 
+    @override_settings(
+        SOCIAL_APPLE_TEAM_ID="team",
+        SOCIAL_APPLE_KEY_ID="key",
+        SOCIAL_APPLE_PRIVATE_KEY_PATH="/private/signin.p8",
+    )
+    def test_apple_client_secret_is_short_lived_and_bound_to_native_client(self):
+        key = ec.generate_private_key(ec.SECP256R1())
+        pem = key.private_bytes(
+            serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()
+        ).decode()
+        with patch("builtins.open", mock_open(read_data=pem)):
+            token = social_auth.apple_client_secret("com.newsblur.NewsBlur")
+        claims = jwt.decode(
+            token, key.public_key(), algorithms=["ES256"], audience="https://appleid.apple.com"
+        )
+        self.assertEqual(claims["iss"], "team")
+        self.assertEqual(claims["sub"], "com.newsblur.NewsBlur")
+        self.assertLessEqual(claims["exp"] - claims["iat"], 600)
+        self.assertEqual(jwt.get_unverified_header(token)["kid"], "key")
+
+    def apple_exchange(self, changes=None, response=None):
+        token = jwt.encode(dict(self.claims, **(changes or {})), self.key, algorithm="RS256")
+        response = response or Mock()
+        response.json.return_value = {"id_token": token, "refresh_token": "private-refresh-token"}
+        with patch.object(
+            social_auth, "apple_client_secret", return_value="private-client-secret"
+        ), patch.object(social_auth.requests, "post", return_value=response) as post, patch.object(
+            social_auth.APPLE_KEYS,
+            "get_signing_key_from_jwt",
+            return_value=SimpleNamespace(key=self.key.public_key()),
+        ):
+            result = social_auth.prepare_apple_revocation(
+                "private-authorization-code",
+                "com.newsblur.NewsBlur",
+                {"provider": "apple", "subject": "provider-subject", "email": "reader@example.com"},
+                "nonce",
+            )
+        return result, post
+
+    def test_apple_exchange_verifies_identity_before_retaining_revocation_token(self):
+        result, post = self.apple_exchange()
+        self.assertEqual(
+            result,
+            {
+                "client_id": "com.newsblur.NewsBlur",
+                "token": "private-refresh-token",
+                "token_type_hint": "refresh_token",
+            },
+        )
+        self.assertEqual(post.call_args.args[0], "https://appleid.apple.com/auth/token")
+        self.assertEqual(post.call_args.kwargs["data"]["grant_type"], "authorization_code")
+        self.assertEqual(post.call_args.kwargs["data"]["code"], "private-authorization-code")
+        self.assertLessEqual(post.call_args.kwargs["timeout"], 10)
+
+    def test_apple_deletion_ticket_captures_code_and_verified_audience_without_polluting_identity(self):
+        state = social_auth.remember(
+            "state",
+            dict(
+                provider="apple",
+                purpose="delete_account",
+                nonce="nonce",
+                challenge="a" * 64,
+                user_id=42,
+                session_key="session",
+            ),
+        )
+        token = jwt.encode(self.claims, self.key, algorithm="RS256")
+        with patch.object(
+            social_auth.APPLE_KEYS,
+            "get_signing_key_from_jwt",
+            return_value=SimpleNamespace(key=self.key.public_key()),
+        ):
+            response = social_auth.apple(
+                self.factory.post(
+                    "/api/social/apple",
+                    {
+                        "state": state,
+                        "id_token": token,
+                        "authorization_code": "private-authorization-code",
+                    },
+                )
+            )
+        ticket = social_auth.consume("ticket", json.loads(response.content)["ticket"])
+        self.assertEqual(ticket["apple_client_id"], "com.newsblur.NewsBlur")
+        self.assertEqual(ticket["apple_authorization_code"], "private-authorization-code")
+        self.assertNotIn("audience", ticket["identity"])
+
+    @override_settings(SOCIAL_APPLE_TEAM_ID="", SOCIAL_APPLE_KEY_ID="", SOCIAL_APPLE_PRIVATE_KEY_PATH="")
+    def test_apple_missing_configuration_and_exchange_failure_return_no_revocation_token(self):
+        with patch.object(social_auth.requests, "post") as post, self.assertLogs(
+            "apps.api.social_auth", level="WARNING"
+        ):
+            self.assertIsNone(
+                social_auth.prepare_apple_revocation("code", "com.newsblur.NewsBlur", {}, "nonce")
+            )
+            post.assert_not_called()
+        response = Mock()
+        response.raise_for_status.side_effect = social_auth.requests.Timeout("private-authorization-code")
+        with self.assertLogs("apps.api.social_auth", level="WARNING") as logs:
+            result, _ = self.apple_exchange(response=response)
+        self.assertIsNone(result)
+        self.assertNotIn("private-", " ".join(logs.output))
+
+    @override_settings(SOCIAL_APPLE_CLIENT_IDS=["com.newsblur.NewsBlur", "com.newsblur.NB-Alpha"])
+    def test_apple_exchange_rejects_subject_audience_nonce_mixups_without_logging_secrets(self):
+        for changes in (
+            {"sub": "another-subject"},
+            {"aud": "com.newsblur.NB-Alpha"},
+            {"nonce": "another-nonce"},
+        ):
+            with self.subTest(changes=changes), self.assertLogs(
+                "apps.api.social_auth", level="WARNING"
+            ) as logs:
+                result, _ = self.apple_exchange(changes)
+                self.assertIsNone(result)
+            self.assertNotIn("private-", " ".join(logs.output))
+
+    def test_apple_revocation_failure_is_sanitized_and_nonfatal(self):
+        context = {
+            "client_id": "com.newsblur.NewsBlur",
+            "token": "private-refresh-token",
+            "token_type_hint": "refresh_token",
+        }
+        with patch.object(
+            social_auth, "apple_client_secret", return_value="private-client-secret"
+        ), patch.object(
+            social_auth.requests,
+            "post",
+            side_effect=social_auth.requests.Timeout("private-refresh-token private-client-secret"),
+        ), self.assertLogs(
+            "apps.api.social_auth", level="WARNING"
+        ) as logs:
+            self.assertFalse(social_auth.revoke_apple_token(context))
+        self.assertNotIn("private-", " ".join(logs.output))
+        with patch.object(social_auth, "apple_client_secret", return_value="client-secret"), patch.object(
+            social_auth.requests, "post"
+        ) as post:
+            self.assertTrue(social_auth.revoke_apple_token(context))
+            self.assertEqual(post.call_args.args[0], "https://appleid.apple.com/auth/revoke")
+            self.assertEqual(post.call_args.kwargs["data"]["token"], context["token"])
+
+    def test_apple_deletion_prepares_token_before_confirmation_and_revokes_only_on_delete(self):
+        context = {
+            "client_id": "com.newsblur.NewsBlur",
+            "token": "refresh-token",
+            "token_type_hint": "refresh_token",
+        }
+        ticket = social_auth.remember(
+            "ticket",
+            {
+                "purpose": "delete_account",
+                "user_id": 42,
+                "session_key": "session",
+                "challenge": hashlib.sha256(b"proof").hexdigest(),
+                "nonce": "nonce",
+                "apple_authorization_code": "code",
+                "apple_client_id": "com.newsblur.NewsBlur",
+                "identity": {
+                    "provider": "apple",
+                    "subject": "provider-subject",
+                    "email": "reader@example.com",
+                },
+            },
+        )
+        user = Mock(pk=42, is_authenticated=True, is_active=True)
+        request = self.factory.post("/api/social/complete", {"ticket": ticket, "verifier": "proof"})
+        request.user, request.session = user, SimpleNamespace(session_key="session")
+        with patch.object(social_auth.SocialIdentity, "objects") as identities, patch.object(
+            social_auth, "prepare_apple_revocation", return_value=context
+        ) as prepare, patch.object(
+            social_auth, "revoke_apple_token", return_value=True
+        ) as revoke, patch.object(
+            social_auth, "logout"
+        ):
+            identities.filter.return_value.select_related.return_value.first.return_value = SimpleNamespace(
+                user_id=42, pk=8
+            )
+            response = social_auth.complete(request)
+            proof = json.loads(response.content)["delete_token"]
+            prepare.assert_called_once_with(
+                "code",
+                "com.newsblur.NewsBlur",
+                {"provider": "apple", "subject": "provider-subject", "email": "reader@example.com"},
+                "nonce",
+            )
+            revoke.assert_not_called()
+            cached = cache.get("social:delete-account:" + proof)
+            self.assertEqual(cached["apple_revocation"], context)
+            self.assertNotIn("apple_authorization_code", cached)
+            delete = self.factory.post(
+                "/api/social/delete_account", {"delete_token": proof, "confirm": "Delete"}
+            )
+            delete.user, delete.session = user, request.session
+            result = social_auth.delete_account(delete)
+            self.assertEqual(json.loads(result.content), {"code": 1})
+            revoke.assert_called_once_with(context)
+            user.profile.delete_user.assert_called_once_with(confirm=True)
+
+    def test_apple_revocation_unavailable_still_deletes_and_returns_manual_guidance(self):
+        user = Mock(pk=42, is_authenticated=True, is_active=True)
+        proof = social_auth.remember(
+            "delete-account",
+            {
+                "purpose": "delete_account",
+                "user_id": 42,
+                "session_key": "session",
+                "identity_id": 8,
+                "apple_revocation": None,
+            },
+        )
+        request = self.factory.post(
+            "/api/social/delete_account", {"delete_token": proof, "confirm": "Delete"}
+        )
+        request.user, request.session = user, SimpleNamespace(session_key="session")
+        with patch.object(social_auth, "logout"):
+            result = json.loads(social_auth.delete_account(request).content)
+        self.assertEqual(result["code"], 1)
+        self.assertTrue(result["apple_revocation_required"])
+        self.assertEqual(result["apple_revocation_url"], "https://support.apple.com/en-us/102571")
+        user.profile.delete_user.assert_called_once_with(confirm=True)
+
 
 @override_settings(
     CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}},
@@ -252,6 +474,9 @@ class Test_SocialAuthentication(SimpleTestCase):
 class Test_SocialAuthenticationDatabase(TransactionTestCase):
     def setUp(self):
         cache.clear()
+        revocation = patch("apps.api.social_auth.prepare_apple_revocation", return_value=None)
+        revocation.start()
+        self.addCleanup(revocation.stop)
         # test_social_auth.py isolates external signup effects while exercising real users, identities and sessions.
         self.effects = {}
         for target in [
@@ -402,7 +627,8 @@ class Test_SocialAuthenticationDatabase(TransactionTestCase):
             result = self.client.post(
                 "/api/social/delete_account", {"delete_token": token, "confirm": "Delete"}
             )
-            self.assertEqual(result.json(), {"code": 1})
+            self.assertEqual(result.json()["code"], 1)
+            self.assertTrue(result.json()["apple_revocation_required"])
             delete_user.assert_called_once_with(confirm=True)
             self.assertNotIn("_auth_user_id", self.client.session)
             self.client.force_login(social_auth.User.objects.get(username="reader"))
@@ -497,6 +723,8 @@ class Test_SocialAuthenticationDatabase(TransactionTestCase):
             "challenge": hashlib.sha256(b"proof").hexdigest(),
             "purpose": "delete_account",
         }
+        self.assertEqual(self.client.post("/api/social/start", data).status_code, 403)
+        user.social_identities.filter(provider="apple").delete()
         start = self.client.post("/api/social/start", data).json()
         self.assertEqual(parse_qs(urlparse(start["url"]).query)["prompt"], ["select_account"])
         browser = Client()
