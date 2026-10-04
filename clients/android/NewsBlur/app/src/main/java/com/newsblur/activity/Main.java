@@ -84,6 +84,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private final NumberFormat unreadCountFormatter = NumberFormat.getIntegerInstance();
     private boolean hasSeenActiveSyncStatus = false;
     private boolean isShowingDoneSyncStatus = false;
+    @Inject com.newsblur.onboarding.SetupQueue setupQueue;
+
     private boolean isShowingLoadingSyncPlaceholder = true;
     private boolean shouldTrackActiveSyncStatus = false;
     private int lastForegroundSessionId = 0;
@@ -326,6 +328,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             updateStatusIndicators();
         }
         if ((updateType & UPDATE_METADATA) != 0) {
+            setupQueue.metadataRefreshed();
             folderFeedList.hasUpdated();
         }
     }
@@ -380,12 +383,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
      * having to expensively recalculate those totals from the DB.
      */
     public void updateFeedCount(int feedCount) {
+        setupQueue.feedListRendered();
         if (folderFeedList.firstCursorSeenYet && isShowingLoadingSyncPlaceholder && !syncServiceState.isFeedCountSyncRunning()) {
             updateStatusIndicators();
         }
 
         if (feedCount < 1) {
-            if (syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
+            if (setupQueue.isPending() || syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 binding.emptyViewImage.setVisibility(View.INVISIBLE);
                 binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {
@@ -407,6 +411,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     private void updateStatusIndicators() {
         String rawSyncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        if (setupQueue.isPending() && !isOfflineSyncStatus(rawSyncStatus)) rawSyncStatus = getString(R.string.loading);
         boolean isOfflineSyncStatus = isOfflineSyncStatus(rawSyncStatus);
         boolean isShowingActiveSyncPill = rawSyncStatus != null && !isOfflineSyncStatus;
         binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning() && !isShowingActiveSyncPill);

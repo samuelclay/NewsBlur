@@ -16,6 +16,7 @@ from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 from apps.profile.models import SocialIdentity
@@ -29,7 +30,17 @@ logger = logging.getLogger(__name__)
 
 
 class AppRedirect(HttpResponseRedirect):
-    allowed_schemes = ["newsblur-auth"]
+    allowed_schemes = ["newsblur-auth", "newsblur-auth-android", "newsblur-auth-android-alpha"]
+
+
+def callback_target(state):
+    # social_auth.py only accepts fixed app destinations, never a caller-supplied redirect URI.
+    schemes = {
+        "ios": "newsblur-auth",
+        "android": "newsblur-auth-android",
+        "android-alpha": "newsblur-auth-android-alpha",
+    }
+    return schemes[state.get("platform", "ios")] + "://complete?"
 
 
 def failure(message, status=400, **extra):
@@ -65,7 +76,7 @@ def rate_limited(request):
         return False
 
 
-def verified_claims(provider, token, nonce, include_audience=False):
+def verified_claims(provider, token, nonce, include_audience=False, expected_audience=None):
     client_ids = (
         settings.SOCIAL_APPLE_CLIENT_IDS if provider == "apple" else [settings.SOCIAL_GOOGLE_CLIENT_ID]
     )
@@ -80,7 +91,7 @@ def verified_claims(provider, token, nonce, include_audience=False):
         token,
         key,
         algorithms=["RS256"],
-        audience=client_ids,
+        audience=[expected_audience] if expected_audience is not None else client_ids,
         issuer=issuer,
         options={"require": ["sub", "exp", "iat", "aud", "iss", "nonce"]},
     )
@@ -95,7 +106,7 @@ def verified_claims(provider, token, nonce, include_audience=False):
 
 
 def apple_client_secret(client_id):
-    if client_id not in settings.SOCIAL_APPLE_CLIENT_IDS:
+    if client_id not in settings.SOCIAL_APPLE_CLIENT_IDS + [settings.SOCIAL_APPLE_WEB_CLIENT_ID]:
         raise ValueError("Unknown Apple client")
     if not (
         settings.SOCIAL_APPLE_TEAM_ID
@@ -220,6 +231,11 @@ def start(request):
     provider = request.POST.get("provider")
     if provider not in ("apple", "google"):
         return failure("Unknown sign-in provider.")
+    platform = request.POST.get("platform", "ios")
+    if platform not in ("ios", "android", "android-alpha"):
+        return failure("Unknown sign-in platform.")
+    if provider == "apple" and platform != "ios" and not settings.SOCIAL_APPLE_WEB_CLIENT_ID:
+        return failure("Apple sign-in is not configured for Android on this server yet.", 503)
     purpose = request.POST.get("purpose", "signin")
     if purpose not in ("signin", "delete_account"):
         return failure("Unknown sign-in purpose.")
@@ -243,7 +259,10 @@ def start(request):
         return failure("Invalid sign-in challenge.")
     nonce = secrets.token_urlsafe(32)
     state = remember(
-        "state", dict(provider=provider, nonce=nonce, challenge=challenge, purpose=purpose, **context)
+        "state",
+        dict(
+            provider=provider, nonce=nonce, challenge=challenge, purpose=purpose, platform=platform, **context
+        ),
     )
     result = dict(code=1, state=state, nonce=nonce)
     if provider == "google":
@@ -258,6 +277,18 @@ def start(request):
                 prompt="select_account",
             )
         )
+    if provider == "apple" and platform != "ios":
+        result["url"] = "https://appleid.apple.com/auth/authorize?" + urlencode(
+            dict(
+                client_id=settings.SOCIAL_APPLE_WEB_CLIENT_ID,
+                redirect_uri=settings.SOCIAL_APPLE_REDIRECT_URI,
+                response_type="code id_token",
+                response_mode="form_post",
+                scope="email",
+                state=state,
+                nonce=nonce,
+            )
+        )
     return JsonResponse(result)
 
 
@@ -265,7 +296,7 @@ def start(request):
 @require_POST
 def apple(request):
     state = consume("state", request.POST.get("state", ""))
-    if not state or state["provider"] != "apple":
+    if not state or state["provider"] != "apple" or state.get("platform", "ios") != "ios":
         return failure("Sign-in expired. Please try again.")
     try:
         identity = verified_claims(
@@ -283,13 +314,42 @@ def apple(request):
     return JsonResponse(dict(code=1, ticket=ticket))
 
 
+@csrf_exempt
+@never_cache
+@require_POST
+def apple_callback(request):
+    # social_auth.py authenticates Apple's cross-site form POST with a one-use nonce-bound state.
+    state = consume("state", request.POST.get("state", ""))
+    if not state or state["provider"] != "apple" or state.get("platform") not in ("android", "android-alpha"):
+        return failure("Sign-in expired. Return to NewsBlur and try again.")
+    target = callback_target(state)
+    if request.POST.get("error"):
+        return AppRedirect(target + urlencode(dict(error="Apple sign-in was cancelled.")))
+    try:
+        identity = verified_claims(
+            "apple",
+            request.POST.get("id_token", ""),
+            state["nonce"],
+            expected_audience=settings.SOCIAL_APPLE_WEB_CLIENT_ID,
+        )
+    except (jwt.PyJWTError, ValueError):
+        return AppRedirect(
+            target + urlencode(dict(error="Apple could not verify your account. Please try again."))
+        )
+    if state.get("purpose") == "delete_account":
+        state["apple_client_id"] = settings.SOCIAL_APPLE_WEB_CLIENT_ID
+        state["apple_authorization_code"] = request.POST.get("code", "")[:4096]
+    ticket = remember("ticket", dict(state, identity=identity))
+    return AppRedirect(target + urlencode(dict(ticket=ticket)))
+
+
 @never_cache
 @require_GET
 def google_callback(request):
     state = consume("state", request.GET.get("state", ""))
     if not state or state["provider"] != "google":
         return failure("Sign-in expired. Return to NewsBlur and try again.")
-    target = "newsblur-auth://complete?"
+    target = callback_target(state)
     if request.GET.get("error"):
         return AppRedirect(target + urlencode(dict(error="Google sign-in was cancelled.")))
     try:
@@ -482,3 +542,26 @@ def delete_account(request):
         )
     logout(request)
     return JsonResponse(result)
+
+
+@never_cache
+@require_POST
+def delete_password_account(request):
+    # social_auth.py exposes JSON deletion for Android's native-password accounts without bypassing social proof.
+    if not has_account_session(request):
+        return failure("Please sign in before deleting your account.", 401)
+    if rate_limited(request):
+        return failure("Please wait a minute before trying again.", 429)
+    if request.user.social_identities.exists():
+        return failure(
+            "Verify with your connected Apple or Google account before deleting your account.", 403
+        )
+    password = request.POST.get("password", "")
+    if request.POST.get("confirm") != "Delete" or not password:
+        return failure("Enter your password and type Delete to confirm.")
+    user = authenticate(username=request.user.username, password=password)
+    if not user or user.pk != request.user.pk:
+        return failure("Your password does not match.", 403)
+    request.user.profile.delete_user(confirm=True)
+    logout(request)
+    return JsonResponse(dict(code=1))

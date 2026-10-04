@@ -123,6 +123,7 @@ object StorySplitView {
             DailyBriefingActivity::class.java,
             DiscoverFeedsActivity::class.java,
             DiscoverSitesActivity::class.java,
+            com.newsblur.activity.OnboardingActivity::class.java,
             FeedSearchActivity::class.java,
             ImportExportActivity::class.java,
             MuteConfig::class.java,

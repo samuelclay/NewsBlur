@@ -65,6 +65,9 @@ SOCIAL_APPLE_CLIENT_IDS = ["com.newsblur.NewsBlur", "com.newsblur.NB-Alpha"]
 SOCIAL_APPLE_TEAM_ID = os.environ.get("SOCIAL_APPLE_TEAM_ID", "")
 SOCIAL_APPLE_KEY_ID = os.environ.get("SOCIAL_APPLE_KEY_ID", "")
 SOCIAL_APPLE_PRIVATE_KEY_PATH = os.environ.get("SOCIAL_APPLE_PRIVATE_KEY_PATH", "")
+# apps/api/social_auth.py keeps the Apple Services ID audience separate from native iOS audiences.
+SOCIAL_APPLE_WEB_CLIENT_ID = os.environ.get("SOCIAL_APPLE_WEB_CLIENT_ID", "")
+SOCIAL_APPLE_REDIRECT_URI = "https://www.newsblur.com/api/social/apple/callback"
 SOCIAL_GOOGLE_CLIENT_ID = os.environ.get("SOCIAL_GOOGLE_CLIENT_ID", "")
 SOCIAL_GOOGLE_CLIENT_SECRET = os.environ.get("SOCIAL_GOOGLE_CLIENT_SECRET", "")
 SOCIAL_GOOGLE_REDIRECT_URI = "https://www.newsblur.com/api/social/google/callback"
