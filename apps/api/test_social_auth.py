@@ -1106,10 +1106,37 @@ class Test_SocialAuthenticationDatabase(TransactionTestCase):
     def test_social_account_lists_only_current_users_linked_providers(self):
         self.assertEqual(self.client.get("/api/social/account").status_code, 401)
         self.complete()
+        user = social_auth.User.objects.get(username="reader")
+        other = social_auth.User.objects.create_user("other", "other@example.com", "password")
+        for owner, provider, subject, email in [
+            (user, "google", "google-one", "personal@example.com"),
+            (user, "google", "google-two", "work@example.com"),
+            (other, "google", "other-google", "private@example.com"),
+        ]:
+            social_auth.SocialIdentity.objects.create(
+                user=owner, provider=provider, subject=subject, email=email
+            )
         self.assertEqual(
             self.client.get("/api/social/account").json(),
-            {"code": 1, "providers": ["apple"], "has_password": False},
+            {
+                "code": 1,
+                "providers": ["apple", "google"],
+                "has_password": False,
+                "connected_accounts": [
+                    {"provider": "apple", "email": "reader@example.com"},
+                    {"provider": "google", "email": "personal@example.com"},
+                    {"provider": "google", "email": "work@example.com"},
+                ],
+            },
         )
+
+    def test_social_account_without_connections_returns_empty_list(self):
+        user = social_auth.User.objects.create_user("reader", "reader@example.com", "password")
+        self.client.force_login(user)
+        result = self.client.get("/api/social/account").json()
+        self.assertEqual(result["connected_accounts"], [])
+        self.assertEqual(result["providers"], [])
+        self.assertTrue(result["has_password"])
 
     def test_deletion_start_requires_authenticated_user_and_linked_provider(self):
         data = {"provider": "apple", "challenge": "a" * 64, "purpose": "delete_account"}

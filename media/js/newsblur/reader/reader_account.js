@@ -32,6 +32,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.handle_change();
         this.select_preferences();
         this.fetch_email_status();
+        this.fetch_connected_accounts();
 
         this.fetch_payment_history();
         this.fetch_usage_billing_history();
@@ -78,6 +79,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: 'NB-preference-option' }, [
                                 $.make('input', { id: 'NB-preference-email', type: 'text', name: 'email', value: NEWSBLUR.Globals.email })
+                            ]),
+                            $.make('div', { className: 'NB-account-connected-accounts', style: 'display: none;' }, [
+                                $.make('div', { className: 'NB-account-connected-heading' }, 'Connected accounts'),
+                                $.make('ul', { className: 'NB-account-connected-list', 'aria-label': 'Connected accounts' })
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -737,6 +742,37 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             }
         });
         $('#NB-preference-renewal-notify', this.$modal).prop('checked', !!pref('notify_before_renewal'));
+    },
+
+    fetch_connected_accounts: function () {
+        var self = this;
+        var providers = {
+            apple: { name: 'Apple', icon: 'img/icons/remix-fill/apple-fill.svg' },
+            google: { name: 'Google', icon: 'img/reader/google-signin.png' }
+        };
+        this.model.make_request('/api/social/account', {}, function (data) {
+            if (!data || data.code !== 1) return;
+            var $section = $('.NB-account-connected-accounts', self.$modal);
+            var $list = $('.NB-account-connected-list', $section).empty();
+            _.each(data.connected_accounts || [], function (account) {
+                var provider = providers[account.provider];
+                if (!provider) return;
+                $list.append($.make('li', { className: 'NB-account-connected-row' }, [
+                    $.make('img', {
+                        className: 'NB-account-connected-icon NB-account-connected-' + account.provider,
+                        src: NEWSBLUR.Globals.MEDIA_URL + provider.icon,
+                        alt: '', width: 16, height: 16
+                    }),
+                    $.make('span', { className: 'NB-account-connected-provider' }).text(provider.name),
+                    $.make('span', { className: 'NB-account-connected-email' }).text(account.email)
+                ]));
+            });
+            if (!$list.children().length) {
+                $list.append($.make('li', { className: 'NB-account-connected-empty' }, 'No connected accounts'));
+            }
+            $section.show();
+            $(window).trigger('resize.simplemodal');
+        }, $.noop, { request_type: 'GET' });
     },
 
     fetch_email_status: function () {

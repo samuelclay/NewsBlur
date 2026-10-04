@@ -218,13 +218,20 @@ def matches_account_session(request, context):
 def account(request):
     if not has_account_session(request):
         return failure("Please sign in to manage your account.", 401)
-    providers = list(
+    connected_accounts = list(
         request.user.social_identities.filter(provider__in=["apple", "google"])
-        .order_by("provider")
-        .values_list("provider", flat=True)
-        .distinct()
+        .order_by("provider", "email")
+        .values("provider", "email")
     )
-    return JsonResponse(dict(code=1, providers=providers, has_password=request.user.has_usable_password()))
+    providers = list(dict.fromkeys(account["provider"] for account in connected_accounts))
+    return JsonResponse(
+        dict(
+            code=1,
+            providers=providers,
+            connected_accounts=connected_accounts,
+            has_password=request.user.has_usable_password(),
+        )
+    )
 
 
 @never_cache

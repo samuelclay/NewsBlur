@@ -795,6 +795,16 @@ color: #a85b40;
     box-shadow: none;
 }
 
+/* darkmode.css: Connected accounts beneath the main account email. */
+.NB-dark .NB-account-connected-heading,
+.NB-dark .NB-account-connected-empty {
+    color: #b0b0b0;
+}
+
+.NB-dark .NB-account-connected-apple {
+    filter: brightness(0) invert(1);
+}
+
 /* Classifier delete pills */
 .NB-dark .NB-modal-account .NB-classifier-pill {
     background: #3a3a3a;
