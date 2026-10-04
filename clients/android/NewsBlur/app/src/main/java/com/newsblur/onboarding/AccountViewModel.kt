@@ -125,6 +125,13 @@ class AccountViewModel
             mutable.update { it.copy(continuation = "link", password = "", error = null) }
         }
 
+        fun createNewAccountInstead() {
+            if (state.value.busy || state.value.continuation != "link") return
+            saved["continuation"] = "username"
+            saved["username"] = ""
+            mutable.update { it.copy(continuation = "username", username = "", password = "", error = null) }
+        }
+
         private fun resetContinuation() {
             saved.remove<String>("verifier")
             saved.remove<String>("ticket")

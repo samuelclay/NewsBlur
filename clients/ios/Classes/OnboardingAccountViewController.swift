@@ -206,6 +206,15 @@ import SwiftUI
         message = nil
     }
 
+    func createNewAccountInstead() {
+        guard needsLink, !busy else { return }
+        needsLink = false
+        needsUsername = true
+        username = ""
+        password = ""
+        message = nil
+    }
+
     private func complete() async throws {
         try deletionSession?.validate()
         var body = ["ticket": ticket, "verifier": verifier,
@@ -537,6 +546,10 @@ private struct OnboardingAccountView: View {
                         if model.needsUsername {
                             Button("Connect an existing account") { model.connectExistingAccount() }
                                 .accessibilityIdentifier("onboarding.connect-existing-account")
+                        }
+                        if model.needsLink {
+                            Button("Create a new account instead") { model.createNewAccountInstead() }
+                                .accessibilityIdentifier("onboarding.create-new-account")
                         }
                         if continuation { Button("Use another sign-in method") { model.cancelContinuation() } }
                         if model.needsLink || (!continuation && !model.signup) {

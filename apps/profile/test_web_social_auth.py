@@ -165,7 +165,7 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         self.assertContains(response, 'value="taken"')
         self.assertContains(response, 'name="password"')
         self.assertFalse(SocialIdentity.objects.exists())
-        response = self.client.post("/account/social/continue", {"action": "choose_username"})
+        response = self.client.post("/account/social/continue", {"action": ["link", "choose_username"]})
         self.assertContains(response, "Choose your username")
         response = self.client.post("/account/social/continue", {"username": "available"})
         self.assertEqual(response.status_code, 302)

@@ -4,13 +4,19 @@ import android.util.Base64
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonParser
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.service.SubscriptionSyncService
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -166,5 +172,56 @@ class Test_AccountSocialLink {
         assertNull(saved.get<String>("ticket"))
         assertNull(saved.get<String>("verifier"))
         assertNull(model(saved).state.value.continuation)
+    }
+
+    @Test fun test_taken_username_can_return_from_link_to_signup_and_complete_after_recreation() = runTest(dispatcher) {
+        mockkObject(SubscriptionSyncService.Companion)
+        every { SubscriptionSyncService.schedule(any()) } just Runs
+        coEvery { api.request("/api/social/complete", any(), true, any(), any(), any()) } answers {
+            val values = secondArg<Map<String, String>>()
+            requests.add(values.toMap())
+            if (values["username"] == "taken-reader") {
+                SetupResponse(
+                    JsonParser.parseString("""{"link_required":true,"ticket":"collision-ticket","message":"Connect your existing account"}""").asJsonObject,
+                    null,
+                )
+            } else {
+                SetupResponse(JsonParser.parseString("""{"username":"available-reader","created":true}""").asJsonObject, "session-cookie")
+            }
+        }
+        val saved = saved("username")
+        val model = model(saved)
+        model.updateUsername("taken-reader")
+        model.submit(model.state.value.username, "", "")
+        advanceUntilIdle()
+        assertEquals("link", model.state.value.continuation)
+        assertNotNull(model.state.value.error)
+        model.updatePassword("stale-password")
+
+        model.createNewAccountInstead()
+
+        assertEquals("username", model.state.value.continuation)
+        assertEquals("", model.state.value.username)
+        assertEquals("", model.state.value.password)
+        assertNull(model.state.value.error)
+        assertEquals("collision-ticket", saved.get<String>("ticket"))
+        assertEquals("provider-verifier", saved.get<String>("verifier"))
+        assertEquals("google", saved.get<String>("provider"))
+        val restored = SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) })
+        val recreated = AccountViewModel(mockk(), api, mockk(), mockk(relaxed = true), prefs, restored)
+        assertEquals("username", recreated.state.value.continuation)
+        assertEquals("", recreated.state.value.username)
+        recreated.updateUsername("available-reader")
+        recreated.submit(recreated.state.value.username, recreated.state.value.password, "")
+        val finished = recreated.state.first { it.authenticated || it.error != null }
+        assertNull(finished.error)
+        assertTrue(finished.authenticated)
+        assertTrue(finished.setup)
+        assertEquals(
+            mapOf("username" to "available-reader", "password" to "", "ticket" to "collision-ticket", "verifier" to "provider-verifier"),
+            requests.last(),
+        )
+        verify { prefs.saveLogin("available-reader", "session-cookie") }
+        verify { prefs.saveLastAuthProvider("google") }
     }
 }
