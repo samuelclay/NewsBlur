@@ -150,4 +150,64 @@ class Test_AccountStatus {
         assertEquals("Incorrect NewsBlur password", model.state.value.error)
         assertNull(model.state.value.activeProvider)
     }
+
+    @Test fun test_replayed_callback_after_recreation_preserves_continuation_ticket_and_form_status() = runTest(dispatcher) {
+        coEvery { api.request("/api/social/start", any(), true, any(), any(), any()) } returns
+            response("""{"url":"https://provider.example/authorize"}""")
+        for (continuation in listOf("link", "username")) {
+            val requests = mutableListOf<Map<String, String>>()
+            coEvery { api.request("/api/social/complete", any(), true, any(), any(), any()) } answers {
+                val values = secondArg<Map<String, String>>()
+                requests.add(values.toMap())
+                if (requests.size == 1) {
+                    response("""{"${continuation}_required":true,"ticket":"continuation-ticket"}""")
+                } else if (values["ticket"] == "browser-ticket") {
+                    throw IOException("This sign-in ticket has already been used")
+                } else {
+                    throw IOException("Check your NewsBlur details")
+                }
+            }
+            val saved = SavedStateHandle()
+            val model = model(saved)
+            model.social("google")
+            advanceUntilIdle()
+            model.browserOpened()
+            model.callback(callback())
+            advanceUntilIdle()
+            assertEquals(continuation, model.state.value.continuation)
+
+            val restored = SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) })
+            val recreated = model(restored)
+            recreated.callback(callback())
+            advanceUntilIdle()
+
+            assertEquals(continuation, recreated.state.value.continuation)
+            assertNull(recreated.state.value.activeProvider)
+            assertNull(recreated.state.value.error)
+            assertEquals("continuation-ticket", restored.get<String>("ticket"))
+            assertEquals(1, requests.size)
+            recreated.submit("reader", "password", "")
+            advanceUntilIdle()
+            assertEquals("continuation-ticket", requests.last()["ticket"])
+            assertEquals("Check your NewsBlur details", recreated.state.value.error)
+            assertNull(recreated.state.value.activeProvider)
+        }
+    }
+
+    @Test fun test_restored_continuation_owns_status_even_with_stale_provider_owner() {
+        for (continuation in listOf("link", "username")) {
+            val saved = SavedStateHandle(mapOf(
+                "continuation" to continuation,
+                "status_provider" to "google",
+                "provider" to "google",
+                "ticket" to "continuation-ticket",
+            ))
+            val model = model(saved)
+            assertNull(model.state.value.activeProvider)
+            model.browserUnavailable()
+            assertNotNull(model.state.value.error)
+            assertNull(model.state.value.activeProvider)
+            assertEquals(continuation, model.state.value.continuation)
+        }
+    }
 }
