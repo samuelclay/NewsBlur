@@ -27,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,6 +45,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -126,6 +130,8 @@ fun AccountScreen(
                         )
                         if (state.continuation == null) {
                             listOf("apple", "google").forEach { provider ->
+                                val providerName = if (provider == "apple") "Apple" else "Google"
+                                val signingIn = state.busy && state.activeProvider == provider
                                 Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Button(
                                         onClick = {
@@ -135,11 +141,16 @@ fun AccountScreen(
                                         modifier =
                                             Modifier.fillMaxWidth().height(
                                                 50.dp,
-                                            ),
+                                            ).semantics {
+                                                liveRegion = LiveRegionMode.Polite
+                                                if (signingIn) stateDescription = "Signing in with $providerName"
+                                            },
                                         colors =
                                             ButtonDefaults.buttonColors(
                                                 containerColor = Color.White,
                                                 contentColor = Color.Black,
+                                                disabledContainerColor = Color.White,
+                                                disabledContentColor = Color.Black,
                                             ),
                                         shape = RoundedCornerShape(7.dp),
                                     ) {
@@ -157,11 +168,21 @@ fun AccountScreen(
                                             Modifier.size(20.dp),
                                         )
                                         Text(
-                                            "Sign in with ${if (provider == "apple") "Apple" else "Google"}",
+                                            if (signingIn) "Signing in…" else "Sign in with $providerName",
                                             Modifier.padding(start = 12.dp),
                                             fontSize = 17.sp,
                                             fontWeight = FontWeight.Medium,
                                         )
+                                        if (signingIn) {
+                                            CircularProgressIndicator(
+                                                Modifier.padding(start = 12.dp).size(18.dp),
+                                                color = LocalContentColor.current,
+                                                strokeWidth = 2.dp,
+                                            )
+                                        }
+                                    }
+                                    if (state.activeProvider == provider) {
+                                        state.error?.let { AccountError(it, palette) }
                                     }
                                     if (state.lastUsed == provider) LastUsed()
                                 }
@@ -207,7 +228,6 @@ fun AccountScreen(
                         ) {
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) { LastUsed() }
                         }
-                        state.error?.let { Text(it, color = palette.error, fontSize = 14.sp) }
                         Button(
                             onClick = { model.submit(state.username.trim(), state.password, email.trim()) },
                             enabled =
@@ -243,6 +263,19 @@ fun AccountScreen(
                                 fontSize = 17.sp,
                             )
                         }
+                        if (state.activeProvider == null) {
+                            state.error?.let { AccountError(it, palette) }
+                            if (state.busy) {
+                                Row(
+                                    Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    CircularProgressIndicator(Modifier.size(20.dp), color = palette.fieldText, strokeWidth = 2.dp)
+                                    Text("Signing in…", Modifier.padding(start = 10.dp), color = palette.fieldText)
+                                }
+                            }
+                        }
                         if (state.continuation == "username") {
                             TextButton(
                                 onClick = model::connectExistingAccount,
@@ -256,16 +289,6 @@ fun AccountScreen(
                                 enabled = !state.busy,
                             ) {
                                 Text("Create a new account instead", color = palette.link)
-                            }
-                        }
-                        if (state.busy) {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                CircularProgressIndicator(Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
-                                Text("Signing in…", Modifier.padding(start = 10.dp), color = Color.White)
                             }
                         }
                         if (state.continuation !=
@@ -308,6 +331,17 @@ fun AccountScreen(
             model.server(it)
             customServer = false
         }
+    }
+}
+
+@Composable private fun AccountError(message: String, palette: LoginAuthPalette) {
+    if (message.isNotBlank()) {
+        Text(
+            message,
+            Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+            color = palette.error,
+            fontSize = 14.sp,
+        )
     }
 }
 

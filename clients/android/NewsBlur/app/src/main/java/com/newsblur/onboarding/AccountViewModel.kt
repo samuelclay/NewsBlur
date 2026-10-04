@@ -31,6 +31,7 @@ data class AccountState(
     val signup: Boolean,
     val busy: Boolean = false,
     val error: String? = null,
+    val activeProvider: String? = null,
     val browserUrl: String? = null,
     val continuation: String? = null,
     val canChooseUsername: Boolean = false,
@@ -63,6 +64,7 @@ class AccountViewModel
                 AccountState(
                     signup = prefs.lastAuthProvider() == null,
                     lastUsed = prefs.lastAuthProvider(),
+                    activeProvider = saved["status_provider"],
                     continuation = saved["continuation"],
                     canChooseUsername = saved.get<Boolean>("can_choose_username") == true,
                     username = saved.get<String>("username").orEmpty(),
@@ -108,7 +110,14 @@ class AccountViewModel
         fun mode() {
             if (state.value.busy) return
             if (state.value.continuation != null) resetContinuation()
+            setActiveProvider(null)
             mutable.update { it.copy(signup = !it.signup, password = "", error = null) }
+        }
+
+        // AccountViewModel.kt separates visible status ownership from the pending OAuth provider.
+        private fun setActiveProvider(provider: String?) {
+            if (provider == null) saved.remove<String>("status_provider") else saved["status_provider"] = provider
+            mutable.update { it.copy(activeProvider = provider) }
         }
 
         fun updateUsername(value: String) {
@@ -140,7 +149,8 @@ class AccountViewModel
             saved.remove<String>("ticket")
             saved.remove<String>("continuation")
             saved.remove<Boolean>("can_choose_username")
-            mutable.update { it.copy(error = null, continuation = null, canChooseUsername = false, password = "", browserUrl = null) }
+            saved.remove<String>("status_provider")
+            mutable.update { it.copy(error = null, activeProvider = null, continuation = null, canChooseUsername = false, password = "", browserUrl = null) }
         }
 
         fun customServer() = prefs.getCustomServer().orEmpty()
@@ -164,6 +174,7 @@ class AccountViewModel
             email: String,
         ) {
             if (state.value.busy) return
+            setActiveProvider(null)
             if (state.value.continuation != null) {
                 complete(username, password)
                 return
@@ -190,6 +201,7 @@ class AccountViewModel
         fun social(provider: String) =
             run {
                 resetContinuation()
+                setActiveProvider(provider)
                 updateUsername("")
                 val verifier =
                     Base64.encodeToString(
@@ -225,6 +237,7 @@ class AccountViewModel
         }
 
         fun browserUnavailable() {
+            setActiveProvider(saved["provider"])
             mutable.update { it.copy(error = "Install a web browser to continue with Apple or Google.") }
         }
 
@@ -237,10 +250,12 @@ class AccountViewModel
                 server != api.account().server ||
                 saved.get<String>("login_generation") != api.account().generation
             ) {
+                setActiveProvider(saved["provider"])
                 mutable.update { it.copy(error = "Sign-in expired. Please try again.") }
                 return
             }
             uri.getQueryParameter("error")?.let { message ->
+                setActiveProvider(saved["provider"])
                 mutable.update { it.copy(error = message) }
                 return
             }
@@ -248,6 +263,7 @@ class AccountViewModel
             saved["ticket"] = ticket
             viewModelScope.launch {
                 state.first { !it.busy }
+                setActiveProvider(saved["provider"])
                 complete("", "")
             }
         }
@@ -284,9 +300,11 @@ class AccountViewModel
                 saved["ticket"] = json.string("ticket")
                 saved["continuation"] = continuation
                 saved["can_choose_username"] = canChooseUsername
+                saved.remove<String>("status_provider")
                 mutable.update {
                     it.copy(
                         continuation = continuation,
+                        activeProvider = null,
                         canChooseUsername = canChooseUsername,
                         error = json.string("message"),
                         password = if (continuation != it.continuation) "" else it.password,
@@ -301,7 +319,8 @@ class AccountViewModel
                 saved.remove<String>("ticket")
                 saved.remove<String>("continuation")
                 saved.remove<Boolean>("can_choose_username")
-                mutable.update { it.copy(canChooseUsername = false) }
+                saved.remove<String>("status_provider")
+                mutable.update { it.copy(canChooseUsername = false, activeProvider = null) }
             }
         }
 
