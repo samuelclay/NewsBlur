@@ -42446,3 +42446,62 @@ span.NB-briefing-inline-favicon {
     line-height: 16px;
     color: #6E7068;
 }
+
+/* accounts/social_buttons.html keeps provider controls shared across all web entry points. */
+.NB-social-signin form {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+}
+.NB-social-signin-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid #747775;
+    border-radius: 6px;
+    background: #fff;
+    color: #1f1f1f;
+    font: 500 14px / 20px Arial, sans-serif;
+    cursor: pointer;
+}
+.NB-social-signin-button:hover {
+    background: #f2f2f2;
+}
+.NB-social-signin-button:focus-visible {
+    outline: 2px solid #467a39;
+    outline-offset: 3px;
+}
+.NB-social-signin-button img {
+    flex: 0 0 20px;
+}
+.NB-social-signin-button small {
+    font-size: 10px;
+    line-height: 14px;
+    padding: 2px 5px;
+    border-radius: 8px;
+    background: #e8ede7;
+    white-space: nowrap;
+}
+.NB-social-signin-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    color: #76766e;
+    font-size: 12px;
+}
+.NB-social-signin-divider::before,
+.NB-social-signin-divider::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid currentColor;
+    opacity: 0.25;
+}
+.NB-dark .NB-social-signin-divider {
+    color: #b0b0a8;
+}

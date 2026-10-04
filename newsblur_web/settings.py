@@ -71,6 +71,13 @@ SOCIAL_APPLE_REDIRECT_URI = "https://www.newsblur.com/api/social/apple/callback"
 SOCIAL_GOOGLE_CLIENT_ID = os.environ.get("SOCIAL_GOOGLE_CLIENT_ID", "")
 SOCIAL_GOOGLE_CLIENT_SECRET = os.environ.get("SOCIAL_GOOGLE_CLIENT_SECRET", "")
 SOCIAL_GOOGLE_REDIRECT_URI = "https://www.newsblur.com/api/social/google/callback"
+# web_social_auth.py uses browser callbacks separate from the mobile app callbacks.
+SOCIAL_APPLE_WEB_REDIRECT_URI = os.environ.get(
+    "SOCIAL_APPLE_WEB_REDIRECT_URI", "https://www.newsblur.com/account/social/apple/callback"
+)
+SOCIAL_GOOGLE_WEB_REDIRECT_URI = os.environ.get(
+    "SOCIAL_GOOGLE_WEB_REDIRECT_URI", "https://www.newsblur.com/account/social/google/callback"
+)
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 DNSIMPLE_TOKEN = "YOUR_DNSIMPLE_TOKEN"
 RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"

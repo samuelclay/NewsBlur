@@ -381,6 +381,11 @@ def complete(request):
         return failure("Please wait a minute before trying again.", 429)
     ticket = consume("ticket", request.POST.get("ticket", ""))
     verifier = request.POST.get("verifier", "")
+    return complete_ticket(request, ticket, verifier)
+
+
+def complete_ticket(request, ticket, verifier):
+    # web_social_auth.py shares native account creation and linking without exposing browser tickets.
     if not ticket or not secrets.compare_digest(
         ticket["challenge"], hashlib.sha256(verifier.encode()).hexdigest()
     ):
