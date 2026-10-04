@@ -7,6 +7,7 @@ import android.provider.Settings
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -112,8 +113,9 @@ object EdgeToEdgeUtil {
             if (findViewById<View>(R.id.itemlist_story_header) != null) {
                 findViewById<View>(R.id.content)?.let {
                     val keyboard = insets.getInsets(WindowInsetsCompat.Type.ime())
-                    val bottomToolbar = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
-                        .getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
+                    val bottomToolbar =
+                        getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
+                            .getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
                     val bottomInset = maxOf(navBar.bottom, keyboard.bottom)
                     // EdgeToEdgeUtil.kt insets only the floating controls so stories still draw behind them.
                     it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, if (bottomToolbar) 0 else bottomInset)
@@ -122,8 +124,9 @@ object EdgeToEdgeUtil {
                             bottomMargin = bottomInset + UIUtils.dp2px(this@applyView, 8)
                         }
                         // EdgeToEdgeUtil.kt reserves both search rows when a landscape keyboard leaves no room for the feed title.
-                        val compactSearch = keyboard.bottom > 0 &&
-                            binding.root.height - keyboard.bottom - statusBar.top < UIUtils.dp2px(this, 168)
+                        val compactSearch =
+                            keyboard.bottom > 0 &&
+                                binding.root.height - keyboard.bottom - statusBar.top < UIUtils.dp2px(this, 168)
                         findViewById<View>(R.id.toolbar)?.visibility = if (compactSearch) View.GONE else View.VISIBLE
                         val verticalPadding = if (compactSearch) 0 else UIUtils.dp2px(this, 4)
                         listOf(R.id.itemlist_story_header_bar, R.id.itemlist_search_container).forEach { id ->
@@ -161,9 +164,48 @@ object EdgeToEdgeUtil {
         return value.data
     }
 
-    fun View.applyNavBarInsetBottomTo(targetView: View) {
-        navBarInsetBottom()?.let { bottom ->
-            targetView.updateBottomPadding(bottom)
+    fun View.applyReaderBottomInsetTo(targetView: View): Runnable {
+        val viewportLocation = IntArray(2)
+        val controlsLocation = IntArray(2)
+        val gap = UIUtils.dp2px(context, 8)
+        // EdgeToEdgeUtil.kt follows AppBarLayout offsets too; they move the page without a new layout pass.
+        val listener =
+            ViewTreeObserver.OnPreDrawListener {
+                val controls = rootView.findViewById<View>(R.id.content_bottom_overlay)
+                var bottom = navBarInsetBottom() ?: 0
+                if (isLaidOut && controls?.isLaidOut == true) {
+                    getLocationOnScreen(viewportLocation)
+                    controls.getLocationOnScreen(controlsLocation)
+                    // EdgeToEdgeUtil.kt leaves the final comment above the capsules, including their margin and system navigation.
+                    bottom = maxOf(bottom, viewportLocation[1] + height - controlsLocation[1] + gap)
+                }
+                if (targetView.paddingBottom != bottom) targetView.updateBottomPadding(bottom)
+                true
+            }
+        var registeredObserver: ViewTreeObserver? = null
+
+        fun unregister() {
+            registeredObserver?.takeIf { it.isAlive }?.removeOnPreDrawListener(listener)
+            registeredObserver = null
+        }
+
+        fun register() {
+            unregister()
+            registeredObserver = viewTreeObserver.also { it.addOnPreDrawListener(listener) }
+            listener.onPreDraw()
+        }
+        val attachment =
+            object : View.OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(view: View) = register()
+
+                // EdgeToEdgeUtil.kt releases the window observer before FragmentStateManager detaches the page and calls onDestroyView.
+                override fun onViewDetachedFromWindow(view: View) = unregister()
+            }
+        addOnAttachStateChangeListener(attachment)
+        if (isAttachedToWindow) register() else listener.onPreDraw()
+        return Runnable {
+            removeOnAttachStateChangeListener(attachment)
+            unregister()
         }
     }
 

@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
+@Suppress("ktlint:standard:class-naming")
 class Test_AppIconCompatibility {
     @Test
     fun test_preferences_icon_selection_resolves_on_supported_android_versions() {

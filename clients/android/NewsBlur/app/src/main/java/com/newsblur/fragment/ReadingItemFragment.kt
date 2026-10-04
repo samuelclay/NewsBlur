@@ -60,7 +60,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.AppConstants.READING_BASE_URL
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.DefaultFeedView
-import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
+import com.newsblur.util.EdgeToEdgeUtil.applyReaderBottomInsetTo
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileCache
@@ -126,6 +126,7 @@ class ReadingItemFragment :
     lateinit var imageViewerClient: okhttp3.OkHttpClient
 
     private var storyImageViewer: com.newsblur.image.StoryImageViewer? = null
+    private var clearBottomInsetListener: Runnable? = null
 
     // When a photo started opening on StoryImageViewerHost.kt, which holds off a second tap until the host shows it.
     private var storyImageHostLaunchedAt = 0L
@@ -352,6 +353,8 @@ class ReadingItemFragment :
     }
 
     override fun onDestroyView() {
+        clearBottomInsetListener?.run()
+        clearBottomInsetListener = null
         // A photo host that never started must not keep this fragment, its WebView, or the preview alive.
         storyImageHostToken?.let(StoryImageViewerHost::cancelPending)
         storyImageHostToken = null
@@ -452,7 +455,7 @@ class ReadingItemFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
+        clearBottomInsetListener = view.applyReaderBottomInsetTo(readingItemActionsBinding.commentsContainer)
         view.doOnPreDraw {
             story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
         }

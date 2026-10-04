@@ -17,6 +17,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
+@Suppress("ktlint:standard:class-naming")
 class Test_StoryViewAdapterSubscriptionPreview {
     @Before fun setUp() {
         mockkStatic(SystemClock::class, android.util.Log::class)
@@ -24,7 +25,9 @@ class Test_StoryViewAdapterSubscriptionPreview {
         every { android.util.Log.d(any(), any()) } returns 0
     }
 
-    @After fun tearDown() { unmockkStatic(SystemClock::class, android.util.Log::class) }
+    @After fun tearDown() {
+        unmockkStatic(SystemClock::class, android.util.Log::class)
+    }
 
     @Test
     fun test_free_folder_first_page_notifies_only_the_three_visible_stories() {
@@ -80,14 +83,28 @@ class Test_StoryViewAdapterSubscriptionPreview {
     fun test_preview_keeps_related_rows_of_the_third_visible_story() {
         val fixture = Fixture(FeedSet.allFeeds())
         fixture.showRelatedStories()
-        fixture.load((1..12).map { number -> story(number).apply {
-            clusterStories = arrayOf(Story.ClusterStory().apply { storyHash = "2:$number"; feedId = "2"; title = "Related $number" })
-        } })
+        fixture.load(
+            (1..12).map { number ->
+                story(number).apply {
+                    clusterStories =
+                        arrayOf(
+                            Story.ClusterStory().apply {
+                                storyHash = "2:$number"
+                                feedId = "2"
+                                title = "Related $number"
+                            },
+                        )
+                }
+            },
+        )
         assertEquals(7, fixture.adapter.itemCount)
         fixture.assertNotificationsMatchVisibleRows()
     }
 
-    private class Fixture(feedSet: FeedSet, subscribed: Boolean = false) {
+    private class Fixture(
+        feedSet: FeedSet,
+        subscribed: Boolean = false,
+    ) {
         val adapter = mockk<StoryViewAdapter>(relaxed = true)
         private val prefs = mockk<PrefsRepo>(relaxed = true)
         private val grid = mockk<RecyclerView>(relaxed = true)
@@ -105,7 +122,10 @@ class Test_StoryViewAdapterSubscriptionPreview {
                 "footerViews" to mutableListOf(mockk<View>(relaxed = true)),
                 "clusterThumbnailUrls" to mutableMapOf<String, String?>(),
             )) {
-                StoryViewAdapter::class.java.getDeclaredField(name).apply { isAccessible = true }.set(adapter, value)
+                StoryViewAdapter::class.java
+                    .getDeclaredField(name)
+                    .apply { isAccessible = true }
+                    .set(adapter, value)
             }
             every { adapter.itemCount } answers { callOriginal() }
             every { adapter.storyCount } answers { callOriginal() }
@@ -118,7 +138,9 @@ class Test_StoryViewAdapterSubscriptionPreview {
             every { grid.adapter } returns adapter
         }
 
-        fun setSubscribed(subscribed: Boolean) { every { prefs.hasSubscription() } returns subscribed }
+        fun setSubscribed(subscribed: Boolean) {
+            every { prefs.hasSubscription() } returns subscribed
+        }
 
         fun showRelatedStories() {
             every { prefs.getBoolean(any(), any()) } returns true
@@ -127,28 +149,64 @@ class Test_StoryViewAdapterSubscriptionPreview {
 
         fun load(stories: List<Story>) {
             val submission = StoryViewAdapter.StorySubmission(stories, 1, grid, false, 0, null)
-            val calculate = StoryViewAdapter::class.java.getDeclaredMethod("calculateStoryDiff", StoryViewAdapter.StorySubmission::class.java).apply { isAccessible = true }
+            val calculate =
+                StoryViewAdapter::class.java.getDeclaredMethod("calculateStoryDiff", StoryViewAdapter.StorySubmission::class.java).apply {
+                    isAccessible =
+                        true
+                }
             val difference = calculate.invoke(adapter, submission) as StoryViewAdapter.StoryDifference
-            difference.diff.dispatchUpdatesTo(object : ListUpdateCallback {
-                override fun onInserted(position: Int, count: Int) { notifiedItemCount += count }
-                override fun onRemoved(position: Int, count: Int) { notifiedItemCount -= count }
-                override fun onMoved(fromPosition: Int, toPosition: Int) = Unit
-                override fun onChanged(position: Int, count: Int, payload: Any?) = Unit
-            })
-            StoryViewAdapter::class.java.getDeclaredMethod("commitStoryDiff", StoryViewAdapter.StoryDifference::class.java).apply { isAccessible = true }.invoke(adapter, difference)
+            difference.diff.dispatchUpdatesTo(
+                object : ListUpdateCallback {
+                    override fun onInserted(
+                        position: Int,
+                        count: Int,
+                    ) {
+                        notifiedItemCount += count
+                    }
+
+                    override fun onRemoved(
+                        position: Int,
+                        count: Int,
+                    ) {
+                        notifiedItemCount -= count
+                    }
+
+                    override fun onMoved(
+                        fromPosition: Int,
+                        toPosition: Int,
+                    ) = Unit
+
+                    override fun onChanged(
+                        position: Int,
+                        count: Int,
+                        payload: Any?,
+                    ) = Unit
+                },
+            )
+            StoryViewAdapter::class.java
+                .getDeclaredMethod("commitStoryDiff", StoryViewAdapter.StoryDifference::class.java)
+                .apply {
+                    isAccessible =
+                        true
+                }.invoke(adapter, difference)
         }
 
         fun assertNotificationsMatchVisibleRows() {
-            assertEquals("RecyclerView must receive exactly the row count exposed by StoryViewAdapter.kt", adapter.itemCount, notifiedItemCount)
+            assertEquals(
+                "RecyclerView must receive exactly the row count exposed by StoryViewAdapter.kt",
+                adapter.itemCount,
+                notifiedItemCount,
+            )
         }
     }
 
     companion object {
-        private fun story(number: Int) = Story().apply {
-            storyHash = "1:$number"
-            feedId = "1"
-            title = "Story $number"
-            sharedUserIds = emptyArray()
-        }
+        private fun story(number: Int) =
+            Story().apply {
+                storyHash = "1:$number"
+                feedId = "1"
+                title = "Story $number"
+                sharedUserIds = emptyArray()
+            }
     }
 }
