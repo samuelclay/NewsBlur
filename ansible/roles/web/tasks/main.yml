@@ -35,6 +35,8 @@
     block: |
       # web/tasks/main.yml keeps provider redirects on the initiating staging site.
       SOCIAL_WEB_ENABLED = True
+      SOCIAL_GOOGLE_REDIRECT_URI = "https://staging.newsblur.com/api/social/google/callback"
+      SOCIAL_APPLE_REDIRECT_URI = "https://staging.newsblur.com/api/social/apple/callback"
       SOCIAL_GOOGLE_WEB_REDIRECT_URI = "https://staging.newsblur.com/account/social/google/callback"
       SOCIAL_APPLE_WEB_REDIRECT_URI = "https://staging.newsblur.com/account/social/apple/callback"
   when: "'staging' in group_names"
