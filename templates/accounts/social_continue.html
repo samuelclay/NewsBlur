@@ -16,17 +16,22 @@
             {% if step == 'link' %}<input type="hidden" name="action" value="link" />{% endif %}
             <div class="NB-static-card-field">
                 <label for="social-username">{% if step == 'link' %}Username or email{% else %}NewsBlur username{% endif %}</label>
-                <input id="social-username" name="username" type="text" value="{{ username }}" autocomplete="username" required autofocus />
+                <input id="social-username" name="username" type="text" value="{{ username }}" autocomplete="username" required {% if step != 'link' or not username %}autofocus{% endif %} />
             </div>
             {% if step == 'link' %}
             <div class="NB-static-card-field">
                 <label for="social-password">NewsBlur password</label>
-                <input id="social-password" name="password" type="password" autocomplete="current-password" required />
+                <input id="social-password" name="password" type="password" autocomplete="current-password" required {% if username %}autofocus{% endif %} />
             </div>
             {% endif %}
             <button type="submit" class="NB-static-card-submit">{% if step == 'link' %}Connect {{ provider|title }}{% else %}Create account{% endif %}</button>
             {% if step == 'username' %}
-            <button type="submit" name="action" value="link" formnovalidate class="NB-static-card-altlink">Connect an existing account</button>
+            <div class="NB-social-existing-account">
+                <p>Already have a NewsBlur account?</p>
+                <button type="submit" name="action" value="link" formnovalidate class="NB-social-signin-button">Connect an existing account</button>
+            </div>
+            {% elif step == 'link' %}
+            <button type="submit" name="action" value="choose_username" formnovalidate class="NB-static-card-altlink">Create a new account instead</button>
             {% endif %}
         </form>
         {% if step == 'link' %}<a class="NB-static-card-altlink" href="{% url 'profile-forgot-password' %}">Forgot password?</a>{% endif %}

@@ -42475,7 +42475,7 @@ span.NB-briefing-inline-favicon {
     padding: 14px 16px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.65);
     color: #2d261a;
     font-family: 'Whitney SSm A', 'Whitney SSm B', sans-serif;
     font-size: 15px;
@@ -42485,16 +42485,16 @@ span.NB-briefing-inline-favicon {
     transition: border-color 0.2s ease, background 0.2s ease;
 }
 .NB-welcome-header-formcard .NB-social-signin-button {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.72);
     border-color: rgba(0, 0, 0, 0.08);
     font-size: 16px;
 }
 .NB-social-signin-button:hover {
     border-color: rgba(217, 166, 33, 0.4);
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.85);
 }
 .NB-social-signin-button:active {
-    background: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.6);
 }
 .NB-social-signin-button:focus-visible {
     outline: 2px solid #D9A621;
@@ -42534,21 +42534,42 @@ span.NB-briefing-inline-favicon {
     color: #b0b0a8;
 }
 .NB-dark .NB-social-signin-button {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.1);
     color: white;
 }
 .NB-dark .NB-social-signin-button:hover {
-    background: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.2);
     border-color: rgba(217, 166, 33, 0.5);
 }
 .NB-dark .NB-social-signin-button:active {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
 }
 .NB-dark .NB-social-signin-apple img {
     filter: brightness(0) invert(1);
 }
 .NB-dark .NB-social-signin-button small {
     background: rgba(251, 219, 155, 0.12);
+    color: #FBDB9B;
+}
+
+/* social_continue.html separates existing-account linking from new-account creation. */
+.NB-social-existing-account {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(138, 109, 27, 0.2);
+}
+.NB-social-existing-account p {
+    margin: 0 0 12px;
+    color: #786224;
+    font-size: 14px;
+}
+.NB-social-existing-account .NB-social-signin-button {
+    font-weight: 600;
+}
+.NB-dark .NB-social-existing-account {
+    border-color: rgba(251, 219, 155, 0.2);
+}
+.NB-dark .NB-social-existing-account p {
     color: #FBDB9B;
 }

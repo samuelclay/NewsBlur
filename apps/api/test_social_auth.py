@@ -1008,7 +1008,8 @@ class Test_SocialAuthenticationDatabase(TransactionTestCase):
     def test_different_email_signup_does_not_implicitly_link_taken_username(self):
         user = social_auth.User.objects.create_user("reader", "account@example.com", "existing-password")
         response = self.complete(password="existing-password")
-        self.assertTrue(response.json().get("username_required"), response.content)
+        self.assertTrue(response.json().get("link_required"), response.content)
+        self.assertIn("This account already exists.", response.json()["message"])
         self.assertFalse(social_auth.SocialIdentity.objects.exists())
         self.assertNotIn("_auth_user_id", self.client.session)
         self.assertEqual(social_auth.User.objects.get().pk, user.pk)

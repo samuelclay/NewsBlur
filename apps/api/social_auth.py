@@ -474,8 +474,27 @@ def complete_ticket(request, ticket, verifier):
     if existing:
         user = existing.user
     else:
+        if request.POST.get("action") == "choose_username":
+            return failure(
+                "Choose your NewsBlur username.",
+                username_required=True,
+                ticket=remember("ticket", ticket),
+            )
         explicit_link = request.POST.get("action") == "link"
         identifier = request.POST.get("username", "").strip()
+        if (
+            not explicit_link
+            and identifier
+            and User.objects.filter(username__iexact=identifier)
+            .exclude(email__iexact=identity["email"])
+            .exists()
+        ):
+            # social_auth.py requires a separate link submission after a signup username collision.
+            return failure(
+                "This account already exists. Log in to connect it to %s." % identity["provider"].title(),
+                link_required=True,
+                ticket=remember("ticket", ticket),
+            )
         if explicit_link:
             # social_auth.py resolves credentials before ModelBackend's exact username lookup.
             matches = list(User.objects.filter(username__iexact=identifier)[:2]) if identifier else []
