@@ -599,7 +599,7 @@ object LoginScreenTestHarness {
 }
 
 @Composable
-private fun AndroidShaderBackground(
+internal fun AndroidShaderBackground(
     palette: LoginAuthPalette,
 ) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
@@ -951,7 +951,7 @@ private fun CustomServerFooter(
 }
 
 @Composable
-private fun CustomServerDialog(
+internal fun CustomServerDialog(
     palette: LoginAuthPalette,
     initialValue: String,
     onDismiss: () -> Unit,
