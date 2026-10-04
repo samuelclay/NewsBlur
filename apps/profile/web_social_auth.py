@@ -208,7 +208,14 @@ def continue_signin(request):
     if not context or not verifier:
         return page(request, "Sign-in expired. Please try again.")
     if request.method == "GET" and context.get("step"):
-        return page(request, context["message"], 200, step=context["step"], provider=context["provider"])
+        return page(
+            request,
+            context["message"],
+            200,
+            step=context["step"],
+            provider=context["provider"],
+            username=context.get("username", ""),
+        )
     if social_auth.rate_limited(request):
         return page(request, "Please wait a minute before trying again.", 429)
     ticket = social_auth.consume("ticket", context["ticket"])
@@ -233,9 +240,14 @@ def continue_signin(request):
             response.delete_cookie("nb_gift_code")
         return response
     step = "link" if result.get("link_required") else "username" if result.get("username_required") else None
+    username = (
+        ""
+        if request.POST.get("action") == "choose_username"
+        else request.POST.get("username", context.get("username", ""))
+    )
     if step:
         request.session["web_social_pending"] = dict(
-            context, ticket=result["ticket"], step=step, message=result["message"]
+            context, ticket=result["ticket"], step=step, message=result["message"], username=username
         )
     else:
         request.session.pop("web_social_pending", None)
@@ -245,5 +257,5 @@ def continue_signin(request):
         200 if step else response.status_code,
         step=step,
         provider=context["provider"],
-        username=request.POST.get("username", ""),
+        username=username,
     )

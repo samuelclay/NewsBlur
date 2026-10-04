@@ -160,10 +160,45 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         User.objects.create_user("taken", "other@example.com", "password")
         self.verify(self.callback(self.start()))
         response = self.client.post("/account/social/continue", {"username": "taken"})
+        self.assertContains(response, "Connect your account")
+        self.assertContains(response, "This account already exists. Log in to connect it to Google.")
+        self.assertContains(response, 'value="taken"')
+        self.assertContains(response, 'name="password"')
+        self.assertFalse(SocialIdentity.objects.exists())
+        response = self.client.post("/account/social/continue", {"action": "choose_username"})
         self.assertContains(response, "Choose your username")
         response = self.client.post("/account/social/continue", {"username": "available"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(SocialIdentity.objects.get().user.username, "available")
+
+    def test_taken_username_opens_link_form_and_keeps_username_on_refresh(self):
+        user = User.objects.create_user("existing", "other@example.com", "existing-password")
+        params = self.start("apple")
+        claims = self.apple_claims(params)
+        callback = self.callback(params, "apple", id_token=self.sign_apple(claims))
+        finished, _ = self.finish_apple(callback, self.sign_apple(claims))
+        self.assertEqual(finished.status_code, 302)
+        self.client.get(finished.url)
+        response = self.client.post("/account/social/continue", {"username": "EXISTING"})
+        self.assertContains(response, "This account already exists. Log in to connect it to Apple.")
+        self.assertContains(response, 'name="action" value="link"')
+        refreshed = self.client.get("/account/social/continue")
+        self.assertContains(refreshed, 'value="EXISTING"')
+        self.assertFalse(SocialIdentity.objects.exists())
+        response = self.client.post(
+            "/account/social/continue",
+            dict(action="link", username="EXISTING", password="wrong"),
+        )
+        self.assertContains(response, "Connect your account")
+        self.assertNotIn("_auth_user_id", self.client.session)
+        response = self.client.post(
+            "/account/social/continue",
+            dict(action="link", username="EXISTING", password="existing-password"),
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(SocialIdentity.objects.get().user_id, user.pk)
+        user.refresh_from_db()
+        self.assertEqual(user.email, "other@example.com")
 
     def test_new_provider_email_can_switch_to_existing_account_link_and_retry(self):
         user = User.objects.create_user("reader", "account@example.com", "existing-password")
