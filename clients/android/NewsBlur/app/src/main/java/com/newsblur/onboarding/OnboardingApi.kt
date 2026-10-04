@@ -90,6 +90,12 @@ class OnboardingApi
                         try {
                             JsonParser.parseString(response.body?.string()).asJsonObject
                         } catch (_: Exception) {
+                            if (response.code == 404 && path == "/api/social/start") {
+                                throw IOException(
+                                    "Apple and Google sign-in are not available on this server yet. " +
+                                        "Please sign in with your NewsBlur username and password.",
+                                )
+                            }
                             throw IOException("The server returned an unreadable response. Please try again.")
                         }
                     val continuation = json.string("link_required") == "true" || json.string("username_required") == "true"
