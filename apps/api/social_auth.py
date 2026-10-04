@@ -4,7 +4,7 @@ import hashlib
 import logging
 import secrets
 import time
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import jwt
 import requests
@@ -148,20 +148,24 @@ def verify_apple_exchange_token(token, client_id, subject, nonce):
         raise ValueError("Apple authorization code nonce mismatch")
 
 
-def prepare_apple_revocation(authorization_code, client_id, identity, nonce):
+def prepare_apple_revocation(authorization_code, client_id, identity, nonce, redirect_uri=None):
     # social_auth.py exchanges the short-lived code before the user pauses at deletion confirmation.
     try:
         if not authorization_code or not client_id:
             raise ValueError("Apple authorization code or client is missing")
+        data = {
+            "client_id": client_id,
+            "client_secret": apple_client_secret(client_id),
+            "code": authorization_code,
+            "grant_type": "authorization_code",
+        }
+        # social_auth.py sends the original browser redirect URI; native iOS never supplied one.
+        if redirect_uri is not None:
+            data["redirect_uri"] = redirect_uri
         response = requests.post(
             "https://appleid.apple.com/auth/token",
             timeout=5,
-            data={
-                "client_id": client_id,
-                "client_secret": apple_client_secret(client_id),
-                "code": authorization_code,
-                "grant_type": "authorization_code",
-            },
+            data=data,
         )
         response.raise_for_status()
         tokens = response.json()
@@ -258,6 +262,8 @@ def start(request):
     if len(challenge) != 64 or any(c not in "0123456789abcdef" for c in challenge):
         return failure("Invalid sign-in challenge.")
     nonce = secrets.token_urlsafe(32)
+    if provider == "apple" and platform != "ios":
+        context["apple_redirect_uri"] = settings.SOCIAL_APPLE_REDIRECT_URI
     state = remember(
         "state",
         dict(
@@ -281,7 +287,7 @@ def start(request):
         result["url"] = "https://appleid.apple.com/auth/authorize?" + urlencode(
             dict(
                 client_id=settings.SOCIAL_APPLE_WEB_CLIENT_ID,
-                redirect_uri=settings.SOCIAL_APPLE_REDIRECT_URI,
+                redirect_uri=context["apple_redirect_uri"],
                 response_type="code id_token",
                 response_mode="form_post",
                 scope="email",
@@ -374,9 +380,45 @@ def google_callback(request):
     return AppRedirect(target + urlencode(dict(ticket=ticket)))
 
 
+def is_same_origin_completion(request):
+    # social_auth.py accepts headerless native clients but rejects cross-origin browser login CSRF.
+    # A valid attacker-owned ticket/verifier does not establish the browser's intent to sign in.
+    fetch_site = request.META.get("HTTP_SEC_FETCH_SITE")
+    if fetch_site is not None and fetch_site != "same-origin":
+        return False
+
+    def origin(value, allow_path=False):
+        try:
+            parsed = urlsplit(value)
+            if (
+                any(character.isspace() for character in value)
+                or parsed.scheme not in ("http", "https")
+                or not parsed.hostname
+                or parsed.username is not None
+                or parsed.password is not None
+                or (not allow_path and (parsed.path or parsed.query or parsed.fragment))
+            ):
+                return None
+            port = parsed.port if parsed.port is not None else (443 if parsed.scheme == "https" else 80)
+            return parsed.scheme, parsed.hostname, port
+        except ValueError:
+            return None
+
+    # social_auth.py uses Django's configured proxy trust, never raw forwarded host/protocol headers.
+    expected = origin("%s://%s" % (request.scheme, request.get_host()))
+    for header in ("HTTP_ORIGIN", "HTTP_REFERER"):
+        if header in request.META:
+            actual = origin(request.META[header], allow_path=header == "HTTP_REFERER")
+            if actual is None or actual != expected:
+                return False
+    return True
+
+
 @never_cache
 @require_POST
 def complete(request):
+    if not is_same_origin_completion(request):
+        return failure("Sign in from this NewsBlur site or the NewsBlur app.", 403)
     if rate_limited(request):
         return failure("Please wait a minute before trying again.", 429)
     ticket = consume("ticket", request.POST.get("ticket", ""))
@@ -407,11 +449,15 @@ def complete_ticket(request, ticket, verifier):
             )
         revocation = {}
         if identity["provider"] == "apple":
+            exchange_options = (
+                {"redirect_uri": ticket["apple_redirect_uri"]} if "apple_redirect_uri" in ticket else {}
+            )
             revocation["apple_revocation"] = prepare_apple_revocation(
                 ticket.get("apple_authorization_code"),
                 ticket.get("apple_client_id"),
                 identity,
                 ticket.get("nonce"),
+                **exchange_options,
             )
         proof = remember(
             "delete-account",
