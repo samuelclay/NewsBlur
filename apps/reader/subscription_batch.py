@@ -74,12 +74,12 @@ def _twitter_access_error(user):
 def _access_error(user, feed, subscribed, public_catalog_ids, banned_urls, twitter_error):
     if subscribed:
         return None
-    # load_single_feed in reader/views.py protects single-subscriber feeds. PopularFeed
-    # is a curated public catalog, so its entries remain addable even with one reader.
+    # subscription_batch.py protects potentially private feeds with zero or one subscriber.
+    # PopularFeed is a curated public catalog, so its entries remain addable.
     if (
         feed.is_newsletter
         or feed.is_private_branch
-        or (feed.num_subscribers == 1 and feed.pk not in public_catalog_ids and not user.is_staff)
+        or (feed.num_subscribers <= 1 and feed.pk not in public_catalog_ids and not user.is_staff)
     ):
         return "This feed is not available to subscribe by ID."
     if any(domain in feed.feed_address for domain in banned_urls):
