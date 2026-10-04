@@ -9,7 +9,8 @@ import jwt
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.db import transaction
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -22,17 +23,7 @@ from apps.profile.models import MGiftCode, MRedeemedCode, MReferral
 
 
 def available_providers():
-    if not settings.SOCIAL_WEB_ENABLED:
-        return {"apple": False, "google": False}
-    return {
-        "apple": bool(
-            settings.SOCIAL_APPLE_WEB_CLIENT_ID
-            and settings.SOCIAL_APPLE_TEAM_ID
-            and settings.SOCIAL_APPLE_KEY_ID
-            and settings.SOCIAL_APPLE_PRIVATE_KEY_PATH
-        ),
-        "google": bool(settings.SOCIAL_GOOGLE_CLIENT_ID and settings.SOCIAL_GOOGLE_CLIENT_SECRET),
-    }
+    return social_auth.available_web_providers()
 
 
 def page(request, message, status=400, **context):
@@ -64,21 +55,39 @@ def start(request):
     if social_auth.rate_limited(request):
         return page(request, "Please wait a minute before trying again.", 429)
     provider = request.POST.get("provider")
+    purpose = request.POST.get("purpose", "signin")
+    if purpose not in ("signin", "connect_account"):
+        return page(request, "Unknown sign-in purpose.")
+    connecting = purpose == "connect_account"
+    if connecting and not social_auth.has_account_session(request):
+        return page(request, "Please sign in before connecting an account.", 401)
     if provider not in ("apple", "google"):
         return page(request, "Unknown sign-in provider.")
     if not available_providers()[provider]:
-        return page(request, "%s sign-in is not configured on this server yet." % provider.title(), 503)
+        return page(
+            request,
+            "%s sign-in is not configured on this server yet." % provider.title(),
+            503,
+            connecting=connecting,
+        )
     verifier = secrets.token_urlsafe(32)
     request.session["web_social_verifier"] = verifier
     request.session.pop("web_social_pending", None)
     context = dict(
         provider=provider,
+        purpose=purpose,
         nonce=secrets.token_urlsafe(32),
         challenge=hashlib.sha256(verifier.encode()).hexdigest(),
         next=safe_next(request, request.POST.get("next", "")),
         referrer=request.COOKIES.get("nb_referrer") or request.POST.get("referrer", "")[:255],
         gift_code=request.COOKIES.get("nb_gift_code") or request.POST.get("gift_code", "")[:255],
     )
+    if connecting:
+        context.update(
+            user_id=request.user.pk,
+            session_key=request.session.session_key,
+            next=reverse("index") + "?next=account",
+        )
     state = social_auth.remember("web-state", context)
     client_id, redirect_uri = configuration(provider)
     params = dict(
@@ -135,9 +144,17 @@ def finish(request):
     ):
         return page(request, "Sign-in expired or started in another browser. Please try again.")
     provider = context["provider"]
+    connecting = context.get("purpose") == "connect_account"
+    if connecting and not social_auth.matches_account_session(request, context):
+        return page(
+            request,
+            "Your signed-in account changed. Start again from Account settings.",
+            403,
+            connecting=True,
+        )
     if context.pop("cancelled"):
         return page(
-            request, "%s sign-in was cancelled. You can try again or use your password." % provider.title()
+            request, "%s sign-in was cancelled. You can try again." % provider.title(), connecting=connecting
         )
     client_id, redirect_uri = configuration(provider)
     try:
@@ -175,7 +192,11 @@ def finish(request):
                 provider, response.json()["id_token"], context["nonce"], expected_audience=client_id
             )
     except (requests.RequestException, jwt.PyJWTError, OSError, ValueError, KeyError, TypeError):
-        return page(request, "%s could not verify your account. Please try again." % provider.title())
+        return page(
+            request,
+            "%s could not verify your account. Please try again." % provider.title(),
+            connecting=connecting,
+        )
     ticket = social_auth.remember("ticket", dict(context, identity=identity))
     request.session["web_social_pending"] = dict(context, ticket=ticket)
     # web_social_auth.py drops the callback URL before rendering a form or loading third-party assets.
@@ -258,4 +279,35 @@ def continue_signin(request):
         step=step,
         provider=context["provider"],
         username=username,
+        connecting=context.get("purpose") == "connect_account",
     )
+
+
+@never_cache
+@csrf_protect
+@require_POST
+def disconnect(request):
+    if not social_auth.has_account_session(request):
+        return social_auth.failure("Please sign in to manage your connected accounts.", 401)
+    try:
+        identity_id = int(request.POST.get("identity_id", ""))
+    except (ValueError, TypeError):
+        return social_auth.failure("Choose a connected account to disconnect.")
+    # web_social_auth.py locks the owner so simultaneous removals cannot remove the last sign-in method.
+    with transaction.atomic():
+        owner = User.objects.select_for_update().filter(pk=request.user.pk, is_active=True).first()
+        if not owner:
+            return social_auth.failure("Please sign in to manage your connected accounts.", 401)
+        connections = owner.social_identities.filter(provider__in=["apple", "google"])
+        connection = connections.filter(pk=identity_id).first()
+        if not connection:
+            return social_auth.failure(
+                "That connection was not found. Reopen Account settings and try again.", 404
+            )
+        if not owner.has_usable_password() and connections.count() <= 1:
+            return social_auth.failure(
+                "Add another sign-in method or set a NewsBlur password before disconnecting your last account.",
+                409,
+            )
+        connection.delete()
+    return JsonResponse(dict(code=1))

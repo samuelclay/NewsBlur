@@ -9,6 +9,7 @@ from urllib.parse import parse_qs, urlparse
 
 import jwt
 from cryptography.hazmat.primitives.asymmetric import rsa
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.template.loader import render_to_string
@@ -93,6 +94,171 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         self.assertEqual(SocialIdentity.objects.get(subject="subject").user_id, user.pk)
         self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
         self.assertEqual(response.cookies["nb_last_social_provider"].value, "google")
+
+    def connect_google(self):
+        return self.verify(self.callback(self.start(purpose="connect_account")))
+
+    def test_account_connection_requires_login_and_csrf(self):
+        self.assertEqual(
+            self.client.post(
+                "/account/social/start", dict(provider="google", purpose="connect_account")
+            ).status_code,
+            401,
+        )
+        user = User.objects.create_user("owner", "owner@example.com", "password")
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(user)
+        self.assertEqual(
+            client.post(
+                "/account/social/start", dict(provider="google", purpose="connect_account")
+            ).status_code,
+            403,
+        )
+        account = client.get("/api/social/account")
+        token = account.cookies["csrftoken"].value
+        response = client.post(
+            "/account/social/start",
+            dict(provider="google", purpose="connect_account", csrfmiddlewaretoken=token),
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_connecting_from_account_preserves_owner_email_and_session_for_both_providers(self):
+        user = User.objects.create_user("owner", "owner@example.com", "password")
+        self.client.force_login(user)
+        session_key = self.client.session.session_key
+        response = self.connect_google()
+        self.assertEqual(response.url, "/?next=account")
+        params = self.start("apple", purpose="connect_account")
+        claims = self.apple_claims(params)
+        callback = self.callback(params, "apple", id_token=self.sign_apple(claims))
+        finished, _ = self.finish_apple(callback, self.sign_apple(claims))
+        self.assertEqual(self.client.get(finished.url).url, "/?next=account")
+        self.assertEqual(set(user.social_identities.values_list("provider", flat=True)), {"apple", "google"})
+        self.assertEqual(User.objects.count(), 1)
+        user.refresh_from_db()
+        self.assertEqual(user.email, "owner@example.com")
+        self.assertTrue(user.check_password("password"))
+        self.assertEqual(self.client.session.session_key, session_key)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+
+    def test_connection_rejects_other_owner_without_switching_accounts(self):
+        other = User.objects.create_user("other", "other@example.com", "password")
+        identity = SocialIdentity.objects.create(user=other, **self.identity)
+        owner = User.objects.create_user("owner", "owner@example.com", "password")
+        self.client.force_login(owner)
+        response = self.connect_google()
+        self.assertContains(response, "already connected to another NewsBlur account", status_code=409)
+        self.assertContains(response, "Back to account", status_code=409)
+        self.assertNotContains(response, "Sign in with Google", status_code=409)
+        identity.refresh_from_db()
+        self.assertEqual(identity.user_id, other.pk)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), owner.pk)
+
+    def test_connecting_same_provider_identity_is_idempotent(self):
+        owner = User.objects.create_user("owner", "owner@example.com", "password")
+        self.client.force_login(owner)
+        self.assertEqual(self.connect_google().url, "/?next=account")
+        self.assertEqual(self.connect_google().url, "/?next=account")
+        self.assertEqual(SocialIdentity.objects.count(), 1)
+
+    def test_connecting_rejects_rotated_session_before_exchange(self):
+        owner = User.objects.create_user("owner", "owner@example.com", "password")
+        self.client.force_login(owner)
+        callback = self.callback(self.start(purpose="connect_account"))
+        session = self.client.session
+        session.cycle_key()
+        session.save()
+        self.client.cookies[settings.SESSION_COOKIE_NAME] = session.session_key
+        with patch.object(web_social_auth.requests, "post") as exchange:
+            self.assertEqual(self.client.get(callback.url).status_code, 403)
+        exchange.assert_not_called()
+        self.assertFalse(SocialIdentity.objects.exists())
+
+    def test_connection_ticket_cannot_attach_after_account_changes(self):
+        owner = User.objects.create_user("owner", "owner@example.com", "password")
+        other = User.objects.create_user("other", "other@example.com", "password")
+        self.client.force_login(owner)
+        params = self.start(purpose="connect_account")
+        callback = self.callback(params)
+        token_response = Mock()
+        token_response.json.return_value = {"id_token": "signed-token"}
+        with patch.object(web_social_auth.requests, "post", return_value=token_response), patch.object(
+            social_auth, "verified_claims", return_value=self.identity
+        ):
+            finished = self.client.get(callback.url)
+        session = self.client.session
+        session["_auth_user_id"] = str(other.pk)
+        session["_auth_user_hash"] = other.get_session_auth_hash()
+        session.save()
+        self.assertEqual(self.client.get(finished.url).status_code, 403)
+        self.assertFalse(SocialIdentity.objects.exists())
+
+    def test_connection_cancellation_returns_to_account_without_mutating_it(self):
+        owner = User.objects.create_user("owner", "owner@example.com", "password")
+        self.client.force_login(owner)
+        callback = self.callback(self.start(purpose="connect_account"), error="access_denied")
+        response = self.client.get(callback.url)
+        self.assertContains(response, "Back to account", status_code=400)
+        self.assertFalse(SocialIdentity.objects.exists())
+        self.assertEqual(int(self.client.session["_auth_user_id"]), owner.pk)
+
+    def test_disconnect_then_connect_to_another_account_full_loop(self):
+        first = User.objects.create_user("first", "first@example.com", "password")
+        second = User.objects.create_user("second", "second@example.com", "password")
+        self.client.force_login(first)
+        self.assertEqual(self.connect_google().status_code, 302)
+        identity = SocialIdentity.objects.get()
+        self.client.force_login(second)
+        self.assertEqual(
+            self.client.post("/account/social/disconnect", {"identity_id": identity.pk}).status_code, 404
+        )
+        self.assertEqual(self.connect_google().status_code, 409)
+        self.client.force_login(first)
+        self.assertEqual(
+            self.client.post("/account/social/disconnect", {"identity_id": identity.pk}).json()["code"], 1
+        )
+        self.client.force_login(second)
+        self.assertEqual(self.connect_google().url, "/?next=account")
+        self.assertEqual(SocialIdentity.objects.get().user_id, second.pk)
+        self.assertEqual(User.objects.count(), 2)
+
+    def test_disconnect_protects_last_signin_method_and_keeps_other_connections(self):
+        owner = User.objects.create_user("owner", "owner@example.com")
+        self.client.force_login(owner)
+        first = SocialIdentity.objects.create(user=owner, **self.identity)
+        response = self.client.post("/account/social/disconnect", {"identity_id": first.pk})
+        self.assertEqual(response.status_code, 409)
+        self.assertTrue(SocialIdentity.objects.filter(pk=first.pk).exists())
+        second = SocialIdentity.objects.create(
+            user=owner, provider="apple", subject="apple-subject", email="personal@example.com"
+        )
+        self.assertEqual(
+            self.client.post("/account/social/disconnect", {"identity_id": first.pk}).status_code, 200
+        )
+        self.assertEqual(
+            self.client.post("/account/social/disconnect", {"identity_id": second.pk}).status_code, 409
+        )
+        self.assertTrue(SocialIdentity.objects.filter(pk=second.pk).exists())
+
+    def test_disconnect_requires_post_login_and_csrf(self):
+        self.assertEqual(self.client.get("/account/social/disconnect").status_code, 405)
+        self.assertEqual(self.client.post("/account/social/disconnect", {"identity_id": 1}).status_code, 401)
+        owner = User.objects.create_user("owner", "owner@example.com", "password")
+        identity = SocialIdentity.objects.create(user=owner, **self.identity)
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(owner)
+        self.assertEqual(
+            client.post("/account/social/disconnect", {"identity_id": identity.pk}).status_code, 403
+        )
+        account = client.get("/api/social/account")
+        self.assertEqual(
+            client.post(
+                "/account/social/disconnect",
+                {"identity_id": identity.pk, "csrfmiddlewaretoken": account.cookies["csrftoken"].value},
+            ).status_code,
+            200,
+        )
+        self.assertFalse(SocialIdentity.objects.exists())
         self.assertNotIn("web_social_pending", self.client.session)
 
     def test_native_identity_signs_in_without_another_account(self):
@@ -520,6 +686,24 @@ class Test_WebSocialAuthentication(TransactionTestCase):
                     ),
                 )
                 self.assertEqual(response.status_code, 200, response.content)
+        user = User.objects.create_user("reader", "reader@example.com", "password")
+        self.client.force_login(user)
+        self.assertEqual(self.client.get("/api/social/account").json()["connect_providers"], [])
+        for provider in ["apple", "google"]:
+            response = self.client.post(
+                "/account/social/start", dict(provider=provider, purpose="connect_account")
+            )
+            self.assertEqual(response.status_code, 503)
+            self.assertContains(response, "Back to account", status_code=503)
+
+    def test_account_connect_only_offers_configured_providers(self):
+        user = User.objects.create_user("reader", "reader@example.com", "password")
+        self.client.force_login(user)
+        self.assertEqual(
+            self.client.get("/api/social/account").json()["connect_providers"], ["apple", "google"]
+        )
+        with override_settings(SOCIAL_APPLE_WEB_CLIENT_ID=""):
+            self.assertEqual(self.client.get("/api/social/account").json()["connect_providers"], ["google"])
 
     @override_settings(SOCIAL_GOOGLE_CLIENT_ID="", SOCIAL_APPLE_WEB_CLIENT_ID="")
     def test_unconfigured_providers_are_hidden_and_cannot_start(self):

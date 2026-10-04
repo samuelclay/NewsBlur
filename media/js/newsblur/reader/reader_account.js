@@ -81,8 +81,12 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                                 $.make('input', { id: 'NB-preference-email', type: 'text', name: 'email', value: NEWSBLUR.Globals.email })
                             ]),
                             $.make('div', { className: 'NB-account-connected-accounts', style: 'display: none;' }, [
-                                $.make('div', { className: 'NB-account-connected-heading' }, 'Connected accounts'),
-                                $.make('ul', { className: 'NB-account-connected-list', 'aria-label': 'Connected accounts' })
+                                $.make('div', { className: 'NB-account-connected-header' }, [
+                                    $.make('div', { className: 'NB-account-connected-heading' }, 'Connected accounts'),
+                                    $.make('div', { className: 'NB-account-connected-actions' })
+                                ]),
+                                $.make('ul', { className: 'NB-account-connected-list', 'aria-label': 'Connected accounts' }),
+                                $.make('div', { className: 'NB-account-connected-message', role: 'status', 'aria-live': 'polite' })
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -754,6 +758,14 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             if (!data || data.code !== 1) return;
             var $section = $('.NB-account-connected-accounts', self.$modal);
             var $list = $('.NB-account-connected-list', $section).empty();
+            var $actions = $('.NB-account-connected-actions', $section).empty();
+            _.each(data.connect_providers || [], function (name) {
+                var provider = providers[name];
+                if (!provider) return;
+                $actions.append($.make('button', {
+                    type: 'button', className: 'NB-account-connect-provider', 'data-provider': name
+                }).text('Connect ' + provider.name));
+            });
             _.each(data.connected_accounts || [], function (account) {
                 var provider = providers[account.provider];
                 if (!provider) return;
@@ -764,7 +776,14 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         alt: '', width: 16, height: 16
                     }),
                     $.make('span', { className: 'NB-account-connected-provider' }).text(provider.name),
-                    $.make('span', { className: 'NB-account-connected-email' }).text(account.email)
+                    $.make('span', { className: 'NB-account-connected-email' }).text(account.email),
+                    $.make('button', {
+                        type: 'button', className: 'NB-account-disconnect-provider',
+                        'data-identity-id': account.id,
+                        'data-account-label': provider.name + ' (' + account.email + ')',
+                        'aria-label': 'Disconnect ' + provider.name + ' (' + account.email + ')',
+                        title: 'Disconnect ' + provider.name + ' (' + account.email + ')'
+                    }).text('\u00d7')
                 ]));
             });
             if (!$list.children().length) {
@@ -773,6 +792,38 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             $section.show();
             $(window).trigger('resize.simplemodal');
         }, $.noop, { request_type: 'GET' });
+    },
+
+    connect_provider: function (provider) {
+        // reader_account.js submits outside the Account form to preserve its email/password controls.
+        var $form = $('<form method="POST" action="/account/social/start"></form>');
+        $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
+        $form.append($('<input type="hidden" name="purpose">').val('connect_account'));
+        $form.append($('<input type="hidden" name="provider">').val(provider));
+        $('body').append($form);
+        $form.submit();
+    },
+
+    disconnect_provider: function ($button) {
+        var self = this;
+        var label = $button.attr('data-account-label');
+        if (!window.confirm('Disconnect ' + label + '? You will no longer be able to use it to sign in to this NewsBlur account.')) return;
+        var $message = $('.NB-account-connected-message', this.$modal).empty().removeClass('NB-error');
+        $button.prop('disabled', true);
+        var show_error = function (error) {
+            var result = error && (error.responseJSON || error);
+            $message.addClass('NB-error').text(result && result.message || 'Could not disconnect this account. Please try again.');
+            $button.prop('disabled', false);
+            $(window).trigger('resize.simplemodal');
+        };
+        this.model.make_request('/account/social/disconnect', {
+            identity_id: $button.attr('data-identity-id'),
+            csrfmiddlewaretoken: $.cookie('csrftoken')
+        }, function (data) {
+            if (!data || data.code !== 1) return show_error(data);
+            $message.text(label + ' disconnected.');
+            self.fetch_connected_accounts();
+        }, show_error, { retry: false });
     },
 
     fetch_email_status: function () {
@@ -1044,6 +1095,14 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     handle_click: function (elem, e) {
         var self = this;
 
+        $.targetIs(e, { tagSelector: '.NB-account-connect-provider' }, function ($t) {
+            e.preventDefault();
+            self.connect_provider($t.attr('data-provider'));
+        });
+        $.targetIs(e, { tagSelector: '.NB-account-disconnect-provider' }, function ($t) {
+            e.preventDefault();
+            self.disconnect_provider($t);
+        });
         $.targetIs(e, { tagSelector: '.NB-modal-tab' }, function ($t, $p) {
             e.preventDefault();
             var newtab;

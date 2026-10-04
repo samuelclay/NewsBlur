@@ -11,13 +11,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.test import (
-    Client,
-    RequestFactory,
-    SimpleTestCase,
-    TransactionTestCase,
-    override_settings,
-)
+from django.test import Client, RequestFactory, SimpleTestCase, TransactionTestCase, override_settings
 
 from apps.api import social_auth
 from newsblur_web import settings as base_settings
@@ -1103,29 +1097,35 @@ class Test_SocialAuthenticationDatabase(TransactionTestCase):
     def complete_deletion(self, ticket, client=None):
         return (client or self.client).post("/api/social/complete", {"ticket": ticket, "verifier": "proof"})
 
+    @override_settings(SOCIAL_WEB_ENABLED=False)
     def test_social_account_lists_only_current_users_linked_providers(self):
         self.assertEqual(self.client.get("/api/social/account").status_code, 401)
         self.complete()
         user = social_auth.User.objects.get(username="reader")
+        apple_id = user.social_identities.get().pk
+        google_ids = []
         other = social_auth.User.objects.create_user("other", "other@example.com", "password")
         for owner, provider, subject, email in [
             (user, "google", "google-one", "personal@example.com"),
             (user, "google", "google-two", "work@example.com"),
             (other, "google", "other-google", "private@example.com"),
         ]:
-            social_auth.SocialIdentity.objects.create(
+            connection = social_auth.SocialIdentity.objects.create(
                 user=owner, provider=provider, subject=subject, email=email
             )
+            if owner == user:
+                google_ids.append(connection.pk)
         self.assertEqual(
             self.client.get("/api/social/account").json(),
             {
                 "code": 1,
                 "providers": ["apple", "google"],
                 "has_password": False,
+                "connect_providers": [],
                 "connected_accounts": [
-                    {"provider": "apple", "email": "reader@example.com"},
-                    {"provider": "google", "email": "personal@example.com"},
-                    {"provider": "google", "email": "work@example.com"},
+                    {"id": apple_id, "provider": "apple", "email": "reader@example.com"},
+                    {"id": google_ids[0], "provider": "google", "email": "personal@example.com"},
+                    {"id": google_ids[1], "provider": "google", "email": "work@example.com"},
                 ],
             },
         )

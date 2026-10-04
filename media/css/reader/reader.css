@@ -26238,11 +26238,69 @@ h5.NB-classifier-section-header {
     clear: both;
     padding: 14px 4px 2px;
 }
+.NB-account-connected-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
 .NB-account-connected-heading {
     color: #606060;
     font-size: 11px;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-right: auto;
+}
+.NB-account-connected-actions {
+    display: flex;
+    gap: 6px;
+}
+.NB-account-connect-provider,
+.NB-account-disconnect-provider {
+    cursor: pointer;
+    color: #505050;
+    background: #fafafa;
+    border: 1px solid #d4d4d4;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 18px;
+    padding: 2px 7px;
+}
+.NB-account-connect-provider:hover,
+.NB-account-disconnect-provider:hover {
+    background: #eee;
+    border-color: #aaa;
+}
+.NB-account-connect-provider:focus-visible,
+.NB-account-disconnect-provider:focus-visible {
+    outline: 2px solid #728f35;
+    outline-offset: 2px;
+}
+.NB-account-disconnect-provider {
+    align-self: center;
+    flex: 0 0 24px;
+    margin-left: auto;
+    padding: 0;
+    font-size: 18px;
+    line-height: 22px;
+    background: transparent;
+    border-color: transparent;
+}
+.NB-account-disconnect-provider:disabled {
+    opacity: .4;
+    cursor: wait;
+}
+.NB-account-connected-message {
+    color: #606060;
+    font-size: 12px;
+    line-height: 18px;
+}
+.NB-account-connected-message:not(:empty) {
+    margin-top: 8px;
+}
+.NB-account-connected-message.NB-error {
+    color: #a03030;
 }
 .NB-account-connected-list {
     list-style: none;
