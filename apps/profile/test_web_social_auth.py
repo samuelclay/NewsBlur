@@ -165,6 +165,40 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(SocialIdentity.objects.get().user.username, "available")
 
+    def test_new_provider_email_can_switch_to_existing_account_link_and_retry(self):
+        user = User.objects.create_user("reader", "account@example.com", "existing-password")
+        response = self.verify(self.callback(self.start()))
+        self.assertContains(response, "Connect an existing account")
+        response = self.client.post("/account/social/continue", {"action": "link"})
+        self.assertContains(response, "Connect your account")
+        self.assertContains(response, 'name="action" value="link"')
+        self.assertFalse(SocialIdentity.objects.exists())
+        for password in ("", "wrong"):
+            response = self.client.post(
+                "/account/social/continue", dict(action="link", username="reader", password=password)
+            )
+            self.assertContains(response, "Connect your account")
+            self.assertNotIn("_auth_user_id", self.client.session)
+            self.assertFalse(SocialIdentity.objects.exists())
+        response = self.client.post(
+            "/account/social/continue",
+            dict(action="link", username="reader", password="existing-password"),
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(SocialIdentity.objects.get().user_id, user.pk)
+        self.assertEqual(User.objects.get().email, "account@example.com")
+
+    def test_auth_pages_do_not_block_parsing_on_external_font_stylesheets(self):
+        # test_web_social_auth.py reproduces stalled typography CSS blocking base.html's body script.
+        for path in ("/account/login", "/account/social/continue"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                links = re.findall(r"<link\b[^>]*>", response.content.decode())
+                font_links = [link for link in links if "cloud.typography.com" in link]
+                self.assertTrue(font_links)
+                for link in font_links:
+                    self.assertNotRegex(link, r'\brel="stylesheet"')
+
     def test_apple_post_without_session_cookie_returns_to_initiating_browser(self):
         params = self.start("apple")
         self.assertEqual(params["response_mode"], ["form_post"])

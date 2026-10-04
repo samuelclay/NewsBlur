@@ -839,18 +839,179 @@ class Test_SocialAuthenticationDatabase(TransactionTestCase):
             self.effects[target] = patcher.start()
             self.addCleanup(patcher.stop)
 
-    def complete(self, username="reader", password=""):
+    def complete(self, username="reader", password="", provider="apple", **data):
         ticket = social_auth.remember(
             "ticket",
             dict(
                 challenge=hashlib.sha256(b"proof").hexdigest(),
-                identity=dict(provider="apple", subject="subject", email="reader@example.com"),
+                identity=dict(provider=provider, subject="subject", email="reader@example.com"),
             ),
         )
         return self.client.post(
             "/api/social/complete",
-            dict(ticket=ticket, verifier="proof", username=username, password=password),
+            dict(ticket=ticket, verifier="proof", username=username, password=password, **data),
         )
+
+    def test_explicit_link_accepts_different_provider_email_only_after_password_proof(self):
+        user = social_auth.User.objects.create_user("reader", "account@example.com", "existing-password")
+        for provider in ("apple", "google"):
+            with self.subTest(provider=provider):
+                self.client.logout()
+                response = self.complete(provider=provider, action="link", password="wrong")
+                self.assertTrue(response.json().get("link_required"), response.content)
+                self.assertFalse(social_auth.SocialIdentity.objects.filter(provider=provider).exists())
+                self.assertNotIn("_auth_user_id", self.client.session)
+                response = self.complete(provider=provider, action="link", password="existing-password")
+                self.assertEqual(response.status_code, 200, response.content)
+                self.assertFalse(response.json()["created"])
+                identity = social_auth.SocialIdentity.objects.get(provider=provider)
+                self.assertEqual(identity.user_id, user.pk)
+                self.assertEqual(identity.email, "reader@example.com")
+                self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+        user.refresh_from_db()
+        self.assertEqual(user.email, "account@example.com")
+        self.assertEqual(social_auth.User.objects.count(), 1)
+
+    def test_explicit_link_never_creates_an_account_for_unknown_credentials(self):
+        response = self.complete(username="missing", password="supplied-password", action="link")
+        self.assertTrue(response.json().get("link_required"), response.content)
+        self.assertFalse(social_auth.User.objects.exists())
+        self.assertFalse(social_auth.SocialIdentity.objects.exists())
+
+    def test_explicit_link_accepts_case_insensitive_username_or_unique_account_email(self):
+        user = social_auth.User.objects.create_user("Reader", "Account@example.com", "existing-password")
+        for provider, identifier in (("apple", " rEADER "), ("google", " ACCOUNT@EXAMPLE.COM ")):
+            with self.subTest(identifier=identifier):
+                self.client.logout()
+                response = self.complete(
+                    provider=provider, username=identifier, password="existing-password", action="link"
+                )
+                self.assertEqual(response.status_code, 200, response.content)
+                self.assertFalse(response.json()["created"])
+                self.assertEqual(social_auth.SocialIdentity.objects.get(provider=provider).user_id, user.pk)
+                self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+        user.refresh_from_db()
+        self.assertEqual(user.email, "Account@example.com")
+        self.assertEqual(social_auth.User.objects.count(), 1)
+
+    def test_explicit_link_bad_credentials_are_generic_and_ticket_can_retry(self):
+        user = social_auth.User.objects.create_user("reader", "account@example.com", "existing-password")
+        for username, password in (
+            ("reader", ""),
+            ("reader", "wrong"),
+            ("missing", "secret"),
+            ("", "secret"),
+        ):
+            with self.subTest(username=username, password=password):
+                response = self.complete(username=username, password=password, action="link")
+                result = response.json()
+                self.assertEqual(response.status_code, 400, response.content)
+                self.assertEqual(
+                    result["message"], "Sign in to your existing NewsBlur account to connect this provider."
+                )
+                self.assertTrue(result["link_required"])
+                self.assertTrue(result["ticket"])
+                self.assertFalse(result.get("username_required", False))
+                self.assertFalse(social_auth.SocialIdentity.objects.exists())
+                self.assertNotIn("_auth_user_id", self.client.session)
+                self.assertEqual(social_auth.User.objects.count(), 1)
+        response = self.client.post(
+            "/api/social/complete",
+            dict(
+                ticket=result["ticket"],
+                verifier="proof",
+                username="reader",
+                password="existing-password",
+                action="link",
+            ),
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(social_auth.SocialIdentity.objects.get().user_id, user.pk)
+
+    def test_explicit_link_rejects_inactive_and_passwordless_accounts(self):
+        for username, password, active in (
+            ("inactive", "existing-password", False),
+            ("passwordless", None, True),
+            ("blankpassword", "", True),
+        ):
+            with self.subTest(username=username):
+                user = social_auth.User.objects.create_user(
+                    username, username + "@example.com", password, is_active=active
+                )
+                original_password = user.password
+                for supplied_password in ("", username, password or "wrong"):
+                    response = self.complete(username=username, password=supplied_password, action="link")
+                    result = response.json()
+                    self.assertEqual(response.status_code, 400, response.content)
+                    self.assertTrue(result["link_required"])
+                    self.assertTrue(result["ticket"])
+                    self.assertEqual(
+                        result["message"],
+                        "Sign in to your existing NewsBlur account to connect this provider.",
+                    )
+                    self.assertFalse(social_auth.SocialIdentity.objects.exists())
+                    self.assertNotIn("_auth_user_id", self.client.session)
+                user.refresh_from_db()
+                self.assertEqual(user.password, original_password)
+        self.assertEqual(social_auth.User.objects.count(), 3)
+
+    def test_explicit_link_rejects_ambiguous_email_but_username_resolves_duplicate_provider_email(self):
+        user = social_auth.User.objects.create_user("reader", "reader@example.com", "existing-password")
+        social_auth.User.objects.create_user("other", "READER@example.com", "existing-password")
+        response = self.complete(username="reader@example.com", password="existing-password", action="link")
+        self.assertEqual(response.status_code, 400, response.content)
+        self.assertTrue(response.json()["link_required"])
+        self.assertTrue(response.json()["ticket"])
+        self.assertFalse(social_auth.SocialIdentity.objects.exists())
+        self.assertNotIn("_auth_user_id", self.client.session)
+        response = self.complete(username="READER", password="existing-password", action="link")
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(social_auth.SocialIdentity.objects.get().user_id, user.pk)
+        self.assertEqual(social_auth.User.objects.count(), 2)
+
+    def test_explicit_link_rejects_ambiguous_case_insensitive_username(self):
+        social_auth.User.objects.create_user("reader", "first@example.com", "first-password")
+        social_auth.User.objects.create_user("Reader", "second@example.com", "second-password")
+        response = self.complete(username="reader", password="first-password", action="link")
+        self.assertEqual(response.status_code, 400, response.content)
+        self.assertTrue(response.json()["link_required"])
+        self.assertTrue(response.json()["ticket"])
+        self.assertFalse(social_auth.SocialIdentity.objects.exists())
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_explicit_link_ignores_provider_email_matching_another_account(self):
+        user = social_auth.User.objects.create_user("reader", "account@example.com", "existing-password")
+        social_auth.User.objects.create_user("other", "reader@example.com", "other-password")
+        response = self.complete(password="existing-password", action="link")
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(social_auth.SocialIdentity.objects.get().user_id, user.pk)
+        user.refresh_from_db()
+        self.assertEqual(user.email, "account@example.com")
+
+    def test_explicit_link_cannot_move_existing_provider_identity(self):
+        owner = social_auth.User.objects.create_user("owner", "owner@example.com", "owner-password")
+        social_auth.User.objects.create_user("reader", "account@example.com", "existing-password")
+        for provider in ("apple", "google"):
+            with self.subTest(provider=provider):
+                self.client.logout()
+                identity = social_auth.SocialIdentity.objects.create(
+                    user=owner, provider=provider, subject="subject", email=owner.email
+                )
+                response = self.complete(provider=provider, password="existing-password", action="link")
+                self.assertEqual(response.status_code, 200, response.content)
+                self.assertFalse(response.json()["created"])
+                self.assertEqual(int(self.client.session["_auth_user_id"]), owner.pk)
+                identity.refresh_from_db()
+                self.assertEqual(identity.user_id, owner.pk)
+        self.assertEqual(social_auth.User.objects.count(), 2)
+
+    def test_different_email_signup_does_not_implicitly_link_taken_username(self):
+        user = social_auth.User.objects.create_user("reader", "account@example.com", "existing-password")
+        response = self.complete(password="existing-password")
+        self.assertTrue(response.json().get("username_required"), response.content)
+        self.assertFalse(social_auth.SocialIdentity.objects.exists())
+        self.assertNotIn("_auth_user_id", self.client.session)
+        self.assertEqual(social_auth.User.objects.get().pk, user.pk)
 
     def test_creates_passwordless_account_and_reuses_identity_with_authenticated_session(self):
         result = self.complete()

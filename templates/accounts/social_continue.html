@@ -13,6 +13,7 @@
         {% if step %}
         <form method="post" action="{% url 'web-social-continue' %}">
             {% csrf_token %}
+            {% if step == 'link' %}<input type="hidden" name="action" value="link" />{% endif %}
             <div class="NB-static-card-field">
                 <label for="social-username">{% if step == 'link' %}Username or email{% else %}NewsBlur username{% endif %}</label>
                 <input id="social-username" name="username" type="text" value="{{ username }}" autocomplete="username" required autofocus />
@@ -24,6 +25,9 @@
             </div>
             {% endif %}
             <button type="submit" class="NB-static-card-submit">{% if step == 'link' %}Connect {{ provider|title }}{% else %}Create account{% endif %}</button>
+            {% if step == 'username' %}
+            <button type="submit" name="action" value="link" formnovalidate class="NB-static-card-altlink">Connect an existing account</button>
+            {% endif %}
         </form>
         {% if step == 'link' %}<a class="NB-static-card-altlink" href="{% url 'profile-forgot-password' %}">Forgot password?</a>{% endif %}
         {% else %}

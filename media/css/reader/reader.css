@@ -29786,6 +29786,16 @@ h5.NB-classifier-section-header {
     transition: color 0.2s ease;
 }
 
+/* reader.css gives the account-linking form button the same treatment as alternate links. */
+button.NB-static-card-altlink {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
 .NB-static-card-altlink:hover {
     color: #5a4710;
 }
@@ -42450,31 +42460,48 @@ span.NB-briefing-inline-favicon {
 /* accounts/social_buttons.html keeps provider controls shared across all web entry points. */
 .NB-social-signin form {
     display: grid;
-    gap: 10px;
+    gap: 12px;
     margin: 0;
 }
 .NB-social-signin-button {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 10px;
     box-sizing: border-box;
     width: 100%;
-    min-height: 42px;
-    padding: 10px 12px;
-    border: 1px solid #747775;
-    border-radius: 6px;
-    background: #fff;
-    color: #1f1f1f;
-    font: 500 14px / 20px Arial, sans-serif;
+    min-height: 50px;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    color: #2d261a;
+    font-family: 'Whitney SSm A', 'Whitney SSm B', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
     cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.NB-welcome-header-formcard .NB-social-signin-button {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.08);
+    font-size: 16px;
 }
 .NB-social-signin-button:hover {
-    background: #f2f2f2;
+    border-color: rgba(217, 166, 33, 0.4);
+    background: rgba(255, 255, 255, 0.75);
+}
+.NB-social-signin-button:active {
+    background: rgba(255, 255, 255, 0.45);
 }
 .NB-social-signin-button:focus-visible {
-    outline: 2px solid #467a39;
+    outline: 2px solid #D9A621;
     outline-offset: 3px;
+}
+.NB-social-signin-button span {
+    white-space: nowrap;
 }
 .NB-social-signin-button img {
     flex: 0 0 20px;
@@ -42482,9 +42509,10 @@ span.NB-briefing-inline-favicon {
 .NB-social-signin-button small {
     font-size: 10px;
     line-height: 14px;
-    padding: 2px 5px;
-    border-radius: 8px;
-    background: #e8ede7;
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: rgba(138, 109, 27, 0.09);
+    color: #786224;
     white-space: nowrap;
 }
 .NB-social-signin-divider {
@@ -42504,4 +42532,23 @@ span.NB-briefing-inline-favicon {
 }
 .NB-dark .NB-social-signin-divider {
     color: #b0b0a8;
+}
+.NB-dark .NB-social-signin-button {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+.NB-dark .NB-social-signin-button:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(217, 166, 33, 0.5);
+}
+.NB-dark .NB-social-signin-button:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+.NB-dark .NB-social-signin-apple img {
+    filter: brightness(0) invert(1);
+}
+.NB-dark .NB-social-signin-button small {
+    background: rgba(251, 219, 155, 0.12);
+    color: #FBDB9B;
 }

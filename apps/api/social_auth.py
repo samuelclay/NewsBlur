@@ -474,15 +474,23 @@ def complete_ticket(request, ticket, verifier):
     if existing:
         user = existing.user
     else:
-        matches = list(User.objects.filter(email__iexact=identity["email"])[:2])
-        if matches:
-            if len(matches) > 1:
+        explicit_link = request.POST.get("action") == "link"
+        identifier = request.POST.get("username", "").strip()
+        if explicit_link:
+            # social_auth.py resolves credentials before ModelBackend's exact username lookup.
+            matches = list(User.objects.filter(username__iexact=identifier)[:2]) if identifier else []
+            if identifier and not matches:
+                matches = list(User.objects.filter(email__iexact=identifier)[:2])
+        else:
+            matches = list(User.objects.filter(email__iexact=identity["email"])[:2])
+        if matches or explicit_link:
+            if len(matches) > 1 and not explicit_link:
                 return failure(
                     "More than one NewsBlur account uses this email. Sign in with your existing "
                     "username, or contact support@newsblur.com for help connecting this provider."
                 )
-            matched = matches[0]
-            if not matched.has_usable_password():
+            matched = matches[0] if len(matches) == 1 else None
+            if not explicit_link and not matched.has_usable_password():
                 providers = set(matched.social_identities.values_list("provider", flat=True))
                 provider_names = [
                     name for key, name in (("apple", "Apple"), ("google", "Google")) if key in providers
@@ -497,18 +505,15 @@ def complete_ticket(request, ticket, verifier):
                     "at newsblur.com/profile/forgot_password, then try again with that password."
                 )
             # social_auth.py deliberately bypasses LoginForm's legacy blank-password fallback.
-            identifier = request.POST.get("username", "").strip().casefold()
+            identifier = identifier.casefold()
             username = (
                 matched.username
                 if matched and identifier in (matched.username.casefold(), matched.email.casefold())
                 else ""
             )
-            user = (
-                authenticate(username=username, password=request.POST.get("password", ""))
-                if username
-                else None
-            )
-            if not user or len(matches) != 1 or user.pk != matches[0].pk:
+            password = request.POST.get("password", "")
+            user = authenticate(username=username, password=password) if username and password else None
+            if not user or not user.is_active or len(matches) != 1 or user.pk != matches[0].pk:
                 return failure(
                     "Sign in to your existing NewsBlur account to connect this provider.",
                     link_required=True,
