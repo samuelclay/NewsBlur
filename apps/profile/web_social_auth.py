@@ -22,6 +22,8 @@ from apps.profile.models import MGiftCode, MRedeemedCode, MReferral
 
 
 def available_providers():
+    if not settings.SOCIAL_WEB_ENABLED:
+        return {"apple": False, "google": False}
     return {
         "apple": bool(
             settings.SOCIAL_APPLE_WEB_CLIENT_ID

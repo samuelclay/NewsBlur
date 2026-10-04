@@ -23,6 +23,7 @@ from apps.profile.models import SocialIdentity
     CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}},
     AUTO_ENABLE_NEW_USERS=True,
     AUTO_PREMIUM_NEW_USERS=False,
+    SOCIAL_WEB_ENABLED=True,
     SOCIAL_GOOGLE_CLIENT_ID="google-client",
     SOCIAL_GOOGLE_CLIENT_SECRET="google-secret",
     SOCIAL_APPLE_WEB_CLIENT_ID="com.newsblur.web",
@@ -423,6 +424,33 @@ class Test_WebSocialAuthentication(TransactionTestCase):
                 self.assertIn("Sign in with Google", html)
                 self.assertIn("Last used", html)
                 self.assertNotIn('"><script>alert(1)</script>', html)
+
+    @override_settings(SOCIAL_WEB_ENABLED=False)
+    def test_disabled_web_signin_hides_configured_providers_and_blocks_browser_starts(self):
+        for path in ["/welcome", "/", "/account/signup", "/reader/signup", "/account/login"]:
+            with self.subTest(path=path):
+                response = self.client.get(path, HTTP_USER_AGENT="Mozilla/5.0")
+                self.assertEqual(response.status_code, 200)
+                self.assertNotContains(response, "Sign in with Apple")
+                self.assertNotContains(response, "Sign in with Google")
+                self.assertContains(response, 'type="password"')
+        for provider in ["apple", "google"]:
+            with self.subTest(provider=provider):
+                response = self.client.post("/account/social/start", {"provider": provider})
+                self.assertEqual(response.status_code, 503)
+                self.assertNotIn("Location", response)
+                self.assertNotIn("web_social_verifier", self.client.session)
+        for platform, provider in [("ios", "google"), ("android", "google"), ("android", "apple")]:
+            with self.subTest(platform=platform, provider=provider):
+                response = self.client.post(
+                    "/api/social/start",
+                    dict(
+                        provider=provider,
+                        platform=platform,
+                        challenge=hashlib.sha256(b"verifier").hexdigest(),
+                    ),
+                )
+                self.assertEqual(response.status_code, 200, response.content)
 
     @override_settings(SOCIAL_GOOGLE_CLIENT_ID="", SOCIAL_APPLE_WEB_CLIENT_ID="")
     def test_unconfigured_providers_are_hidden_and_cannot_start(self):

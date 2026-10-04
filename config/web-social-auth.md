@@ -2,7 +2,11 @@
 
 `apps/profile/web_social_auth.py` adds browser redirects around the account protocol in
 `apps/api/social_auth.py`, shared with iOS and Android. Provider buttons appear on `/account/login`,
-`/account/signup`, and both forms on `/welcome` once that provider is configured.
+`/account/signup`, and both forms on `/welcome` when `SOCIAL_WEB_ENABLED = True` and
+that provider is configured. Browser sign-in is disabled by default, even when mobile
+provider credentials are configured. Disabled browser sign-in hides both buttons and
+rejects new `/account/social/start` requests; existing in-flight attempts can finish.
+The switch does not affect iOS or Android's `/api/social/` endpoints.
 Username/password forms remain available. New provider users choose a username; existing
 email matches must prove their NewsBlur password before linking. Email alone never links
 accounts. Existing provider identities log in directly.
@@ -27,13 +31,17 @@ Apple needs a Services ID for the website:
   uses this same Services ID (`com.newsblur.signin`).
 - `SOCIAL_APPLE_TEAM_ID`, `SOCIAL_APPLE_KEY_ID`, `SOCIAL_APPLE_PRIVATE_KEY_PATH`:
   reuse the externally mounted Sign in with Apple signing key configuration.
+  NewsBlur's private secrets repository stores `keys/apple-signin.p8`; the web Ansible
+  role copies it to the ignored `/srv/newsblur/config/secrets/apple-signin.p8` path
+  with owner-only permissions when provisioning settings (`env` tag).
 - Register `www.newsblur.com` and the exact return URL
   `https://www.newsblur.com/account/social/apple/callback` on that Services ID.
   Preserve Android's `https://www.newsblur.com/api/social/apple/callback` return URL.
 - `SOCIAL_APPLE_WEB_REDIRECT_URI` can override the browser callback. Apple requires
   a registered HTTPS domain rather than localhost or an IP address.
 - Configure Apple's private email relay for NewsBlur's sender domains if accepting
-  Hide My Email addresses. Do not commit signing keys or OAuth client secrets.
+  Hide My Email addresses. Keep signing keys and OAuth client secrets in the private
+  secrets repository, never in this application repository.
 
 See [Apple's environment setup](https://developer.apple.com/documentation/signinwithapple/configuring-your-environment-for-sign-in-with-apple)
 and [Google's OpenID Connect server flow](https://developers.google.com/identity/openid-connect/openid-connect).
@@ -49,7 +57,10 @@ Register these additional return URLs with the same provider clients:
 
 Also register `staging.newsblur.com` on Apple's Services ID. The staging-specific
 configuration in `ansible/roles/web/tasks/main.yml` preserves these callbacks when
-server settings are recopied. Google credentials remain in the external common settings.
+server settings are recopied and sets `SOCIAL_WEB_ENABLED = True` only on staging.
+Keep this flag out of shared production settings until browser sign-in is ready to launch.
+For local testing, set it in the worktree's untracked `newsblur_web/local_settings.py`.
+Google credentials remain in the external common settings.
 Staging shares the NewsBlur database, so accounts and identity links created there
 are real accounts. A successful staging login still requires provider-console setup.
 
