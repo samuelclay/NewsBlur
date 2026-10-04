@@ -178,11 +178,15 @@
       </script>
       {% include_stylesheets "common" %}
       {% if debug_assets %}
-        <link rel="stylesheet"
+        <link rel="preload"
+              as="style"
+              onload="this.onload=null;this.rel='stylesheet'"
               type="text/css"
               href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
       {% else %}
-        <link rel="stylesheet"
+        <link rel="preload"
+              as="style"
+              onload="this.onload=null;this.rel='stylesheet'"
               type="text/css"
               href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
       {% endif %}

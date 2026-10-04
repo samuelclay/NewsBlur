@@ -10,6 +10,12 @@ The switch does not affect iOS or Android's `/api/social/` endpoints.
 Username/password forms remain available. New provider users choose a username; existing
 email matches must prove their NewsBlur password before linking. Email alone never links
 accounts. Existing provider identities log in directly.
+The username continuation also offers “Connect an existing account.” That explicit
+choice sends `action=link` with the existing NewsBlur username or email and password,
+so Apple and Google can use different email addresses while connecting to the same
+NewsBlur account. Linking keeps the NewsBlur account email unchanged. Unknown or
+incorrect credentials never create a new account, and an already linked provider
+identity cannot be moved to another account through this flow.
 
 ## Server and provider configuration
 
