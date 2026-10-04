@@ -7,17 +7,22 @@ import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class SetupOpmlTest {
-    @Test fun mixedNewsBlurExportKeepsOrdinaryAndInternalFeeds() {
+    @Test fun mixedNewsBlurExportAcceptsInternalFeedsWithoutClaimingTheyWereImported() {
         val xml = """<opml><body><outline text="News"><outline text="RSS" xmlUrl="https://a.test/rss"/><outline text="Newsletter" xmlUrl="newsletter:123:inbox"/><outline text="Web feed" xmlUrl="webfeed:456"/></outline></body></opml>"""
         val result = SetupOpml.parse(xml.toByteArray())
         assertEquals(
-            listOf("https://a.test/rss", "newsletter:123:inbox", "webfeed:456"),
+            listOf("https://a.test/rss"),
             result["News"]!!.map { it.url },
         )
         listOf("file:///etc/passwd", "javascript:alert(1)", "data:text/plain,feed").forEach { url ->
             val unsafe = xml.replace("webfeed:456", url)
             assertTrue(runCatching { SetupOpml.parse(unsafe.toByteArray()) }.isFailure)
         }
+    }
+
+    @Test fun internalOnlyExportsAreAcceptedWithAnEmptyReceipt() {
+        val xml = """<opml><body><outline text="Newsletter" xmlUrl="newsletter:123:inbox"/><outline text="Web feed" xmlUrl="webfeed:456"/><outline text="Legacy newsletter" xmlUrl="http://newsletter:123:legacy"/><outline text="HTTPS newsletter" xmlUrl="https://newsletter:123:legacy"/></body></opml>"""
+        assertTrue(SetupOpml.parse(xml.toByteArray()).isEmpty())
     }
 
     @Test fun nestedFoldersAndDuplicateFeedsKeepTheirPaths() {

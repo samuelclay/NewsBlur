@@ -35,6 +35,9 @@ object SetupOpml {
         val root = document.documentElement
         require(root.tagName.equals("opml", true)) { "This file is not an OPML feed list." }
         val folders = linkedMapOf<String, MutableList<DiscoveryFeed>>()
+        var hasValidFeed = false
+        // Match apps/feed_import/models.py INTERNAL_ADDRESS_PREFIXES; the backend may skip these feeds.
+        val internalPrefixes = listOf("newsletter:", "http://newsletter:", "https://newsletter:", "webfeed:")
 
         fun visit(
             element: Element,
@@ -51,7 +54,10 @@ object SetupOpml {
                     require(listOf("https://", "http://", "newsletter:", "webfeed:").any { url.startsWith(it) }) {
                         "The OPML file contains an invalid feed address."
                     }
-                    folders.getOrPut(path.joinToString(" ▸ ")) { mutableListOf() }.add(DiscoveryFeed(url, title.ifBlank { url }))
+                    hasValidFeed = true
+                    if (internalPrefixes.none { url.startsWith(it) }) {
+                        folders.getOrPut(path.joinToString(" ▸ ")) { mutableListOf() }.add(DiscoveryFeed(url, title.ifBlank { url }))
+                    }
                 } else if (title.isNotBlank()) {
                     next = path + title
                 }
@@ -59,7 +65,7 @@ object SetupOpml {
             for (i in 0 until element.childNodes.length) (element.childNodes.item(i) as? Element)?.let { visit(it, next, depth + 1) }
         }
         visit(root, emptyList())
-        require(folders.isNotEmpty()) { "This OPML file contains no feeds." }
+        require(hasValidFeed) { "This OPML file contains no feeds." }
         return folders.mapValues { it.value.distinctBy { feed -> feed.url } }
     }
 }
