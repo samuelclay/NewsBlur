@@ -81,12 +81,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                                 $.make('input', { id: 'NB-preference-email', type: 'text', name: 'email', value: NEWSBLUR.Globals.email })
                             ]),
                             $.make('div', { className: 'NB-account-connected-accounts', style: 'display: none;' }, [
-                                $.make('div', { className: 'NB-account-connected-header' }, [
-                                    $.make('div', { className: 'NB-account-connected-heading' }, 'Connected accounts'),
-                                    $.make('div', { className: 'NB-account-connected-actions' })
-                                ]),
+                                $.make('div', { className: 'NB-account-connected-heading' }, 'Connected accounts'),
                                 $.make('ul', { className: 'NB-account-connected-list', 'aria-label': 'Connected accounts' }),
-                                $.make('div', { className: 'NB-account-connected-message', role: 'status', 'aria-live': 'polite' })
+                                $.make('div', { className: 'NB-account-connected-message', role: 'status', 'aria-live': 'polite' }),
+                                $.make('div', { className: 'NB-account-connected-actions' })
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -763,8 +761,16 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 var provider = providers[name];
                 if (!provider) return;
                 $actions.append($.make('button', {
-                    type: 'button', className: 'NB-account-connect-provider', 'data-provider': name
-                }).text('Connect ' + provider.name));
+                    type: 'button',
+                    className: 'NB-account-connect-provider NB-social-signin-button NB-social-signin-' + name,
+                    'data-provider': name
+                }, [
+                    $.make('img', {
+                        src: NEWSBLUR.Globals.MEDIA_URL + provider.icon,
+                        alt: '', width: 20, height: 20
+                    }),
+                    $.make('span').text('Connect ' + provider.name)
+                ]));
             });
             _.each(data.connected_accounts || [], function (account) {
                 var provider = providers[account.provider];

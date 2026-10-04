@@ -802,7 +802,6 @@ color: #a85b40;
     color: #b0b0b0;
 }
 
-.NB-dark .NB-account-connect-provider,
 .NB-dark .NB-account-disconnect-provider {
     color: #ddd;
     background: #363636;
@@ -814,7 +813,6 @@ color: #a85b40;
     border-color: transparent;
 }
 
-.NB-dark .NB-account-connect-provider:hover,
 .NB-dark .NB-account-disconnect-provider:hover {
     background: #484848;
     border-color: #808080;

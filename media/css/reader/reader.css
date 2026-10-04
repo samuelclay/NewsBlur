@@ -26227,6 +26227,11 @@ h5.NB-classifier-section-header {
     box-shadow: 2px 2px 0 #D0D0D0;
 }
 
+.NB-modal-account .NB-preference-username .NB-preference-label,
+.NB-modal-account .NB-preference-email .NB-preference-label {
+    padding-top: 4px;
+}
+
 .NB-modal-preferences .NB-link-account-preferences {
     float: right;
     line-height: 30px;
@@ -26238,24 +26243,21 @@ h5.NB-classifier-section-header {
     clear: both;
     padding: 14px 4px 2px;
 }
-.NB-account-connected-header {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
-}
 .NB-account-connected-heading {
     color: #606060;
     font-size: 11px;
     font-weight: bold;
-    margin-right: auto;
+    margin-bottom: 8px;
 }
 .NB-account-connected-actions {
-    display: flex;
-    gap: 6px;
+    display: grid;
+    gap: 10px;
+    width: 220px;
+    max-width: 100%;
 }
-.NB-account-connect-provider,
+.NB-account-connected-actions:not(:empty) {
+    margin-top: 14px;
+}
 .NB-account-disconnect-provider {
     cursor: pointer;
     color: #505050;
@@ -26267,17 +26269,18 @@ h5.NB-classifier-section-header {
     line-height: 18px;
     padding: 2px 7px;
 }
-.NB-account-connect-provider:hover,
 .NB-account-disconnect-provider:hover {
     background: #eee;
     border-color: #aaa;
 }
-.NB-account-connect-provider:focus-visible,
 .NB-account-disconnect-provider:focus-visible {
     outline: 2px solid #728f35;
     outline-offset: 2px;
 }
 .NB-account-disconnect-provider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     align-self: center;
     flex: 0 0 24px;
     margin-left: auto;
@@ -26309,7 +26312,7 @@ h5.NB-classifier-section-header {
 }
 .NB-account-connected-row {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
     margin: 6px 0 0;
     font-size: 12px;
