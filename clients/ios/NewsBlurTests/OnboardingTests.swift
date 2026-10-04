@@ -165,6 +165,125 @@ import Combine
         OnboardingAPI.session = URLSession(configuration: configuration)
     }
 
+    func test_socialExplicitLinkPreservesIdentityAndRetriesWithReplacementTicket() async throws {
+        for provider in ["apple", "google"] {
+            var bodies: [[String: String]] = []
+            network { request in
+                if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+                XCTAssertEqual(request.url?.path, "/api/social/complete")
+                bodies.append(Self.formBody(request))
+                if bodies.count == 1 {
+                    return (200, ["username_required": true, "ticket": "choose-username-ticket"])
+                }
+                return (400, ["code": -1, "link_required": true, "ticket": "retry-link-ticket",
+                              "message": "Incorrect NewsBlur password."])
+            }
+            let model = OnboardingAccountModel()
+            _ = try await model.prepareSocial(provider)
+            try await model.complete(ticket: "provider-ticket")
+            XCTAssertTrue(model.needsUsername)
+            XCTAssertFalse(model.needsLink)
+            model.username = "existing-reader"
+            model.password = "stale-password"
+            model.message = "That username is already taken."
+
+            model.connectExistingAccount()
+
+            XCTAssertFalse(model.needsUsername)
+            XCTAssertTrue(model.needsLink)
+            XCTAssertEqual(model.username, "existing-reader")
+            XCTAssertEqual(model.password, "")
+            XCTAssertNil(model.message)
+            XCTAssertEqual(bodies.count, 1, "Switching modes must not consume the continuation ticket.")
+
+            model.password = "wrong-password"
+            await submitAccount(model)
+            XCTAssertEqual(model.message, "Incorrect NewsBlur password.")
+            XCTAssertEqual(model.password, "")
+            XCTAssertTrue(model.needsLink)
+            XCTAssertEqual(model.username, "existing-reader")
+            model.username = "reader+news@example.net"
+            model.password = "corrected+password"
+            await submitAccount(model)
+
+            XCTAssertEqual(bodies.count, 3)
+            guard bodies.count == 3 else { continue }
+            XCTAssertNil(bodies[0]["action"], "The initial provider completion must preserve default signup behavior.")
+            XCTAssertEqual(bodies[1]["action"], "link")
+            XCTAssertEqual(bodies[1]["ticket"], "choose-username-ticket")
+            XCTAssertEqual(bodies[1]["username"], "existing-reader")
+            XCTAssertEqual(bodies[1]["password"], "wrong-password")
+            XCTAssertEqual(bodies[2]["action"], "link")
+            XCTAssertEqual(bodies[2]["ticket"], "retry-link-ticket")
+            XCTAssertEqual(bodies[2]["username"], "reader+news@example.net")
+            XCTAssertEqual(bodies[2]["password"], "corrected+password")
+            let verifier = try XCTUnwrap(bodies[0]["verifier"])
+            XCTAssertFalse(verifier.isEmpty)
+            XCTAssertEqual(bodies[1]["verifier"], verifier)
+            XCTAssertEqual(bodies[2]["verifier"], verifier)
+        }
+    }
+
+    func test_socialSameEmailLinkSendsExplicitAction() async throws {
+        for provider in ["apple", "google"] {
+            var bodies: [[String: String]] = []
+            network { request in
+                if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+                bodies.append(Self.formBody(request))
+                return (400, ["code": -1, "link_required": true, "ticket": "same-email-ticket"])
+            }
+            let model = OnboardingAccountModel()
+            _ = try await model.prepareSocial(provider)
+            try await model.complete(ticket: "provider-ticket")
+            XCTAssertTrue(model.needsLink)
+            XCTAssertFalse(model.needsUsername)
+            model.username = "reader@example.com"
+            model.password = "newsblur-password"
+            await submitAccount(model)
+            XCTAssertEqual(bodies.count, 2)
+            XCTAssertEqual(bodies.last?["action"], "link")
+            XCTAssertEqual(bodies.last?["ticket"], "same-email-ticket")
+            XCTAssertEqual(bodies.last?["username"], "reader@example.com")
+            XCTAssertEqual(bodies.last?["password"], "newsblur-password")
+        }
+    }
+
+    func test_socialUsernameCollisionStaysInSignupUntilLinkIsChosen() async throws {
+        var bodies: [[String: String]] = []
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            bodies.append(Self.formBody(request))
+            return (400, ["code": -1, "username_required": true, "ticket": "signup-retry-ticket",
+                          "message": "That username is already taken."])
+        }
+        let model = OnboardingAccountModel()
+        _ = try await model.prepareSocial("google")
+        try await model.complete(ticket: "provider-ticket")
+        model.username = "taken-username"
+        model.password = "stale-password"
+        await submitAccount(model)
+        XCTAssertTrue(model.needsUsername)
+        XCTAssertFalse(model.needsLink)
+        XCTAssertEqual(model.message, "That username is already taken.")
+        XCTAssertEqual(bodies.last?["username"], "taken-username")
+        XCTAssertEqual(bodies.last?["ticket"], "signup-retry-ticket")
+        XCTAssertEqual(bodies.last?["password"], "")
+        XCTAssertNil(bodies.last?["action"])
+    }
+
+    private func submitAccount(_ model: OnboardingAccountModel) async {
+        let finished = expectation(description: "Account submission finished")
+        let observation = model.$busy.dropFirst().filter { !$0 }.prefix(1).sink { _ in finished.fulfill() }
+        model.emailSignIn()
+        await fulfillment(of: [finished], timeout: 3)
+        observation.cancel()
+    }
+
+    nonisolated private static func formBody(_ request: URLRequest) -> [String: String] {
+        let items = URLComponents(string: "https://fixture.invalid/?" + body(request))?.queryItems ?? []
+        return Dictionary(uniqueKeysWithValues: items.map { ($0.name, $0.value ?? "") })
+    }
+
     func test_providerDeletionRequiresVerificationAndTypedConfirmation() async throws {
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
         let username = app.activeUsername
