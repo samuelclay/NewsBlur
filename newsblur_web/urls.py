@@ -25,6 +25,7 @@ urlpatterns = [
     ),
     url(r"^account/social/finish/?$", web_social_auth.finish, name="web-social-finish"),
     url(r"^account/social/continue/?$", web_social_auth.continue_signin, name="web-social-continue"),
+    url(r"^account/social/disconnect/?$", web_social_auth.disconnect, name="web-social-disconnect"),
     url(r"^$", reader_views.index, name="index"),
     url(r"^reader/", include("apps.reader.urls")),
     url(r"^ask-ai/", include("apps.ask_ai.urls")),

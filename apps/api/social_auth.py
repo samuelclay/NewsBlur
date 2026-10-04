@@ -16,7 +16,7 @@ from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 
 from apps.profile.models import SocialIdentity
@@ -213,7 +213,22 @@ def matches_account_session(request, context):
     )
 
 
+def available_web_providers():
+    if not settings.SOCIAL_WEB_ENABLED:
+        return {"apple": False, "google": False}
+    return {
+        "apple": bool(
+            settings.SOCIAL_APPLE_WEB_CLIENT_ID
+            and settings.SOCIAL_APPLE_TEAM_ID
+            and settings.SOCIAL_APPLE_KEY_ID
+            and settings.SOCIAL_APPLE_PRIVATE_KEY_PATH
+        ),
+        "google": bool(settings.SOCIAL_GOOGLE_CLIENT_ID and settings.SOCIAL_GOOGLE_CLIENT_SECRET),
+    }
+
+
 @never_cache
+@ensure_csrf_cookie
 @require_GET
 def account(request):
     if not has_account_session(request):
@@ -221,7 +236,7 @@ def account(request):
     connected_accounts = list(
         request.user.social_identities.filter(provider__in=["apple", "google"])
         .order_by("provider", "email")
-        .values("provider", "email")
+        .values("id", "provider", "email")
     )
     providers = list(dict.fromkeys(account["provider"] for account in connected_accounts))
     return JsonResponse(
@@ -229,6 +244,9 @@ def account(request):
             code=1,
             providers=providers,
             connected_accounts=connected_accounts,
+            connect_providers=[
+                provider for provider, enabled in available_web_providers().items() if enabled
+            ],
             has_password=request.user.has_usable_password(),
         )
     )
@@ -477,6 +495,27 @@ def complete_ticket(request, ticket, verifier):
             ),
         )
         return JsonResponse(dict(code=1, delete_token=proof))
+    if ticket.get("purpose") == "connect_account":
+        if not matches_account_session(request, ticket):
+            return failure("Your signed-in account changed. Start again from Account settings.", 403)
+        # social_auth.py serializes account connection changes with web_social_auth.py's disconnect.
+        with transaction.atomic():
+            owner = User.objects.select_for_update().filter(pk=request.user.pk, is_active=True).first()
+            if not owner:
+                return failure("Please sign in again before connecting an account.", 403)
+            connection, _ = SocialIdentity.objects.get_or_create(
+                provider=identity["provider"],
+                subject=identity["subject"],
+                defaults={"user": owner, "email": identity["email"]},
+            )
+            if connection.user_id != owner.pk:
+                return failure(
+                    "This %s account is already connected to another NewsBlur account. "
+                    "Sign in to that NewsBlur account and disconnect it there first."
+                    % identity["provider"].title(),
+                    409,
+                )
+        return JsonResponse(dict(code=1, created=False, username=owner.username))
     created = False
     if existing:
         user = existing.user

@@ -8,7 +8,7 @@
 <div class="NB-static-card-wrapper">
     <div class="NB-static-card">
         <a href="{% url 'index' %}" class="NB-static-card-logo"><img src="{{ MEDIA_URL }}img/logo_512.png" alt="NewsBlur" /></a>
-        <h1 class="NB-static-card-title">{% if step == 'username' %}Choose your username{% elif step == 'link' %}Connect your account{% else %}Sign in to NewsBlur{% endif %}</h1>
+        <h1 class="NB-static-card-title">{% if step == 'username' %}Choose your username{% elif step == 'link' or connecting %}Connect your account{% else %}Sign in to NewsBlur{% endif %}</h1>
         <p class="NB-static-card-tagline" role="status">{{ message }}</p>
         {% if step %}
         <form method="post" action="{% url 'web-social-continue' %}">
@@ -35,10 +35,14 @@
             {% endif %}
         </form>
         {% if step == 'link' %}<a class="NB-static-card-altlink" href="{% url 'profile-forgot-password' %}">Forgot password?</a>{% endif %}
-        {% else %}
+        {% elif not connecting %}
         {% social_signin_buttons %}
         {% endif %}
+        {% if connecting %}
+        <a href="{% url 'index' %}?next=account" class="NB-static-card-altlink">Back to account</a>
+        {% else %}
         <a href="{% url 'login' %}" class="NB-static-card-altlink">Back to login</a>
+        {% endif %}
     </div>
 </div>
 {% endautoescape %}

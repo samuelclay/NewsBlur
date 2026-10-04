@@ -797,8 +797,31 @@ color: #a85b40;
 
 /* darkmode.css: Connected accounts beneath the main account email. */
 .NB-dark .NB-account-connected-heading,
-.NB-dark .NB-account-connected-empty {
+.NB-dark .NB-account-connected-empty,
+.NB-dark .NB-account-connected-message {
     color: #b0b0b0;
+}
+
+.NB-dark .NB-account-connect-provider,
+.NB-dark .NB-account-disconnect-provider {
+    color: #ddd;
+    background: #363636;
+    border-color: #606060;
+}
+
+.NB-dark .NB-account-disconnect-provider {
+    background: transparent;
+    border-color: transparent;
+}
+
+.NB-dark .NB-account-connect-provider:hover,
+.NB-dark .NB-account-disconnect-provider:hover {
+    background: #484848;
+    border-color: #808080;
+}
+
+.NB-dark .NB-account-connected-message.NB-error {
+    color: #f39999;
 }
 
 .NB-dark .NB-account-connected-apple {
