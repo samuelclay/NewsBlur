@@ -76,7 +76,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.SupervisorJob
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -412,9 +411,13 @@ class StoryViewAdapter(
         val subscribedFeedIds = if (showClusterRows) subscribedFeedIds() else emptySet()
         val isArchiveUser = isArchiveUser()
         val clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo)
+        // StoryViewAdapter.kt must diff the same preview rows that RecyclerView can display.
+        // Capping only itemCount sends inserts for hidden stories and corrupts RecyclerView's positions.
+        val visibleStories =
+            if (fs?.let { UIUtils.needsSubscriptionAccess(it, prefsRepo) } == true) stories.take(3) else stories
 
         return buildList {
-            stories.forEachIndexed { storyIndex, story ->
+            visibleStories.forEachIndexed { storyIndex, story ->
                 add(DisplayItem.StoryRow(story, storyIndex))
 
                 if (!showClusterRows || story.isBriefingSummary) return@forEachIndexed
@@ -1629,32 +1632,7 @@ class StoryViewAdapter(
 
     private fun isArchiveUser(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
 
-    private fun visibleDisplayItemCount(): Int {
-        if (fs == null || !UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
-            return displayItems.size
-        }
-
-        val visibleStories = min(3.0, stories.size.toDouble()).toInt()
-        if (visibleStories <= 0) {
-            return 0
-        }
-
-        var seenStories = 0
-        displayItems.forEachIndexed { index, item ->
-            if (item is DisplayItem.StoryRow) {
-                seenStories++
-                if (seenStories == visibleStories) {
-                    var end = index + 1
-                    while (end < displayItems.size && displayItems[end] is DisplayItem.ClusterRow) {
-                        end++
-                    }
-                    return end
-                }
-            }
-        }
-
-        return displayItems.size
-    }
+    private fun visibleDisplayItemCount(): Int = displayItems.size
 
     private fun rebuildStoryDisplayPositions() {
         storyDisplayPositions.clear()
