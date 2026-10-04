@@ -94,6 +94,7 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         self.assertEqual(SocialIdentity.objects.get(subject="subject").user_id, user.pk)
         self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
         self.assertEqual(response.cookies["nb_last_social_provider"].value, "google")
+        self.assertNotIn("web_social_pending", self.client.session)
 
     def connect_google(self):
         return self.verify(self.callback(self.start(purpose="connect_account")))
@@ -259,7 +260,6 @@ class Test_WebSocialAuthentication(TransactionTestCase):
             200,
         )
         self.assertFalse(SocialIdentity.objects.exists())
-        self.assertNotIn("web_social_pending", self.client.session)
 
     def test_native_identity_signs_in_without_another_account(self):
         user = User.objects.create_user("reader", "reader@example.com")
