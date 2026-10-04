@@ -118,6 +118,209 @@ class Test_SocialAuthentication(SimpleTestCase):
             )
             self.assertEqual(response.status_code, 400)
 
+    def test_complete_rejects_cross_site_browser_posts_before_consuming_valid_ticket(self):
+        headers = [
+            {"HTTP_ORIGIN": "https://attacker.example"},
+            {"HTTP_ORIGIN": "null"},
+            {"HTTP_ORIGIN": ""},
+            {"HTTP_ORIGIN": "https://newsblur.com.attacker.example"},
+            {"HTTP_ORIGIN": "https://newsblur.com@attacker.example"},
+            {"HTTP_ORIGIN": "https://attacker.example@newsblur.com"},
+            {"HTTP_ORIGIN": "https://newsblur.com:444"},
+            {"HTTP_ORIGIN": "http://newsblur.com"},
+            {"HTTP_ORIGIN": "https://newsblur.com/path"},
+            {"HTTP_ORIGIN": "https://newsblur.com\n"},
+            {"HTTP_ORIGIN": "https://newsblur.com:invalid"},
+            {"HTTP_SEC_FETCH_SITE": "cross-site"},
+            {"HTTP_SEC_FETCH_SITE": "same-site"},
+            {"HTTP_SEC_FETCH_SITE": "none"},
+            {"HTTP_SEC_FETCH_SITE": "unexpected"},
+            {"HTTP_REFERER": "https://attacker.example/form"},
+            {"HTTP_REFERER": "http://newsblur.com/form"},
+            {"HTTP_REFERER": "/relative"},
+            {"HTTP_ORIGIN": "null", "HTTP_REFERER": "https://newsblur.com/form"},
+            {"HTTP_ORIGIN": "https://attacker.example", "HTTP_SEC_FETCH_SITE": "same-origin"},
+            {"HTTP_ORIGIN": "https://newsblur.com", "HTTP_SEC_FETCH_SITE": "cross-site"},
+            {"HTTP_ORIGIN": "https://newsblur.com", "HTTP_REFERER": "https://attacker.example"},
+        ]
+        for metadata in headers:
+            with self.subTest(metadata=metadata):
+                ticket = social_auth.remember(
+                    "ticket",
+                    dict(
+                        challenge=hashlib.sha256(b"attacker-proof").hexdigest(),
+                        identity=dict(provider="google", subject="attacker", email="attacker@example.com"),
+                    ),
+                )
+                request = self.factory.post(
+                    "/api/social/complete",
+                    dict(ticket=ticket, verifier="attacker-proof"),
+                    secure=True,
+                    HTTP_HOST="newsblur.com",
+                    **metadata,
+                )
+                with patch.object(social_auth.SocialIdentity, "objects") as identities, patch.object(
+                    social_auth, "login"
+                ) as login:
+                    identities.filter.return_value.select_related.return_value.first.return_value = (
+                        SimpleNamespace(user=SimpleNamespace(is_active=True, username="attacker"))
+                    )
+                    response = social_auth.complete(request)
+                    self.assertEqual(response.status_code, 403)
+                    login.assert_not_called()
+                    identities.filter.assert_not_called()
+                    self.assertIsNotNone(social_auth.consume("ticket", ticket))
+
+    def test_complete_preserves_native_and_same_origin_browser_posts(self):
+        for metadata in (
+            {},
+            {"HTTP_ORIGIN": "https://newsblur.com"},
+            {"HTTP_ORIGIN": "https://newsblur.com:443"},
+            {"HTTP_SEC_FETCH_SITE": "same-origin"},
+            {"HTTP_REFERER": "https://newsblur.com/account/login?next=/reader"},
+            {"HTTP_ORIGIN": "https://newsblur.com", "HTTP_SEC_FETCH_SITE": "same-origin"},
+        ):
+            with self.subTest(metadata=metadata):
+                ticket = social_auth.remember(
+                    "ticket",
+                    dict(
+                        challenge=hashlib.sha256(b"proof").hexdigest(),
+                        identity=dict(provider="google", subject="reader", email="reader@example.com"),
+                    ),
+                )
+                request = self.factory.post(
+                    "/api/social/complete",
+                    dict(ticket=ticket, verifier="proof"),
+                    secure=True,
+                    HTTP_HOST="newsblur.com",
+                    **metadata,
+                )
+                with patch.object(social_auth.SocialIdentity, "objects") as identities, patch.object(
+                    social_auth, "login"
+                ) as login:
+                    identities.filter.return_value.select_related.return_value.first.return_value = (
+                        SimpleNamespace(user=SimpleNamespace(is_active=True, username="reader"))
+                    )
+                    response = social_auth.complete(request)
+                    self.assertEqual(response.status_code, 200)
+                    login.assert_called_once()
+                    self.assertIsNone(social_auth.consume("ticket", ticket))
+
+    @override_settings(
+        USE_X_FORWARDED_HOST=False,
+    )
+    def test_complete_uses_only_configured_proxy_scheme_for_origin_checks(self):
+        for proxy_setting, origin, status in (
+            (("HTTP_X_FORWARDED_PROTO", "https"), "https://newsblur.com", 200),
+            (("HTTP_X_FORWARDED_PROTO", "https"), "http://newsblur.com", 403),
+            (None, "https://newsblur.com", 403),
+            (None, "http://newsblur.com", 200),
+            (("HTTP_X_FORWARDED_PROTO", "https"), "https://attacker.example", 403),
+        ):
+            with self.subTest(proxy_setting=proxy_setting, origin=origin), override_settings(
+                SECURE_PROXY_SSL_HEADER=proxy_setting
+            ):
+                ticket = social_auth.remember(
+                    "ticket",
+                    dict(
+                        challenge=hashlib.sha256(b"proof").hexdigest(),
+                        identity=dict(provider="google", subject="reader", email="reader@example.com"),
+                    ),
+                )
+                request = self.factory.post(
+                    "/api/social/complete",
+                    dict(ticket=ticket, verifier="proof"),
+                    HTTP_HOST="newsblur.com",
+                    HTTP_ORIGIN=origin,
+                    HTTP_X_FORWARDED_PROTO="https",
+                    HTTP_X_FORWARDED_HOST="attacker.example",
+                )
+                with patch.object(social_auth.SocialIdentity, "objects") as identities, patch.object(
+                    social_auth, "login"
+                ) as login:
+                    identities.filter.return_value.select_related.return_value.first.return_value = (
+                        SimpleNamespace(user=SimpleNamespace(is_active=True, username="reader"))
+                    )
+                    self.assertEqual(social_auth.complete(request).status_code, status)
+                    self.assertEqual(login.call_count, int(status == 200))
+
+    @override_settings(
+        SOCIAL_APPLE_WEB_CLIENT_ID="com.newsblur.web",
+        SOCIAL_APPLE_REDIRECT_URI="https://staging.newsblur.com/api/social/apple/callback",
+    )
+    def test_android_apple_deletion_exchange_retains_original_authorization_redirect(self):
+        for platform in ("android", "android-alpha", "ios"):
+            with self.subTest(platform=platform):
+                user = Mock(pk=42, is_authenticated=True, is_active=True)
+                user.social_identities.filter.return_value.exists.return_value = True
+                request = self.factory.post(
+                    "/api/social/start",
+                    dict(
+                        provider="apple",
+                        platform=platform,
+                        purpose="delete_account",
+                        challenge=hashlib.sha256(b"proof").hexdigest(),
+                        redirect_uri="https://attacker.example/ignored",
+                    ),
+                )
+                request.user, request.session = user, SimpleNamespace(session_key="session")
+                started = json.loads(social_auth.start(request).content)
+                client_id = "com.newsblur.NewsBlur" if platform == "ios" else "com.newsblur.web"
+                if platform != "ios":
+                    redirect_uri = parse_qs(urlparse(started["url"]).query)["redirect_uri"][0]
+                token = jwt.encode(
+                    dict(self.claims, aud=client_id, nonce=started["nonce"]), self.key, algorithm="RS256"
+                )
+                exchange = Mock()
+                exchange.json.return_value = {"id_token": token, "refresh_token": "refresh-token"}
+                with override_settings(
+                    SOCIAL_APPLE_REDIRECT_URI="https://changed.newsblur.com/api/social/apple/callback"
+                ), patch.object(
+                    social_auth.APPLE_KEYS,
+                    "get_signing_key_from_jwt",
+                    return_value=SimpleNamespace(key=self.key.public_key()),
+                ), patch.object(
+                    social_auth, "apple_client_secret", return_value="client-secret"
+                ), patch.object(
+                    social_auth.requests, "post", return_value=exchange
+                ) as post, patch.object(
+                    social_auth.SocialIdentity, "objects"
+                ) as identities:
+                    callback_request = self.factory.post(
+                        "/api/social/apple" if platform == "ios" else "/api/social/apple/callback",
+                        dict(
+                            state=started["state"],
+                            id_token=token,
+                            code="authorization-code",
+                            authorization_code="authorization-code",
+                            redirect_uri="https://attacker.example/ignored",
+                        ),
+                    )
+                    if platform == "ios":
+                        ticket = json.loads(social_auth.apple(callback_request).content)["ticket"]
+                    else:
+                        callback = social_auth.apple_callback(callback_request)
+                        ticket = parse_qs(urlparse(callback.url).query)["ticket"][0]
+                    identities.filter.return_value.select_related.return_value.first.return_value = (
+                        SimpleNamespace(user_id=42, pk=8)
+                    )
+                    complete = self.factory.post(
+                        "/api/social/complete",
+                        dict(
+                            ticket=ticket, verifier="proof", redirect_uri="https://attacker.example/ignored"
+                        ),
+                    )
+                    complete.user, complete.session = user, request.session
+                    response = social_auth.complete(complete)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertIn("delete_token", json.loads(response.content))
+                    data = post.call_args.kwargs["data"]
+                    self.assertEqual(data["client_id"], client_id)
+                    if platform == "ios":
+                        self.assertNotIn("redirect_uri", data)
+                    else:
+                        self.assertEqual(data.get("redirect_uri"), redirect_uri)
+
     @override_settings(SOCIAL_APPLE_WEB_CLIENT_ID="com.newsblur.web")
     def test_android_apple_callback_requires_web_audience_and_one_use_state(self):
         for audience, accepted in [("com.newsblur.NewsBlur", False), ("com.newsblur.web", True)]:
