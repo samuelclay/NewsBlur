@@ -58,7 +58,16 @@ are real accounts. A successful staging login still requires provider-console se
 Start and account confirmation require CSRF-protected POSTs. Provider state, nonce,
 and a browser-session verifier bind each attempt to its initiating browser. Apple
 returns by cross-site POST; a 303 redirect restores the browser's SameSite=Lax session
-before code exchange. The callback alone is CSRF-exempt. Provider codes and identity
+before code exchange. Apple requests `response_type=code id_token` with `form_post`,
+as described in [Apple's authorization protocol](https://developer.apple.com/documentation/signinwithapple/incorporating-sign-in-with-apple-into-other-platforms).
+The callback caches the posted identity token with the one-use result. After browser
+binding, the shared verifier checks its signature, Services ID audience, nonce, and
+verified email. Only then does the server exchange the code using the exact configured
+redirect URI. The exchange token must have a valid signature, issuer, Services ID
+audience, and matching subject; email and nonce may be absent, but a supplied nonce
+must match. The authorization token is removed before storing the pending session or
+account ticket. Google continues using the authorization-code flow.
+The callback alone is CSRF-exempt. Provider codes and identity
 proofs stay server-side after callback, and state/result/ticket values expire after ten
 minutes and are consumed once. The web Apple token must name the Services ID as its audience;
 iOS's native endpoint continues requiring native app audiences. Android's Apple
@@ -86,6 +95,7 @@ docker exec -t newsblur_web_ftux-combined python manage.py test apps.api.test_so
 ```
 
 These tests cover the transport and real database account behavior with mocked provider
-responses. Real Apple and Google round trips still need verification after provider
+responses, including real signed Apple JWTs for authorization and exchange validation.
+Real Apple and Google round trips still need verification after provider
 console configuration: create an account, log out and return, sign in to an account
 created on iOS, connect an existing password account, cancel, and retry an expired flow.

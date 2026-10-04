@@ -2,9 +2,13 @@
 
 import hashlib
 import re
+import time
+from types import SimpleNamespace
 from unittest.mock import Mock, patch
 from urllib.parse import parse_qs, urlparse
 
+import jwt
+from cryptography.hazmat.primitives.asymmetric import rsa
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.template.loader import render_to_string
@@ -163,10 +167,164 @@ class Test_WebSocialAuthentication(TransactionTestCase):
     def test_apple_post_without_session_cookie_returns_to_initiating_browser(self):
         params = self.start("apple")
         self.assertEqual(params["response_mode"], ["form_post"])
-        callback = self.callback(params, "apple", Client(enforce_csrf_checks=True))
+        claims = self.apple_claims(params)
+        callback = self.callback(
+            params, "apple", Client(enforce_csrf_checks=True), id_token=self.sign_apple(claims)
+        )
         self.assertEqual(callback.status_code, 303)
         self.assertNotIn("sessionid", callback.cookies)
-        self.assertContains(self.verify(callback, "apple"), "Choose your username")
+        finished, exchange = self.finish_apple(callback, self.sign_apple(claims))
+        self.assertEqual(finished.status_code, 302)
+        self.assertContains(self.client.get(finished.url), "Choose your username")
+
+    def apple_claims(self, params):
+        self.apple_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        return dict(
+            sub="apple-subject",
+            aud="com.newsblur.web",
+            iss="https://appleid.apple.com",
+            iat=int(time.time()),
+            exp=int(time.time()) + 300,
+            nonce=params["nonce"][0],
+            email="apple-reader@example.com",
+            email_verified=True,
+        )
+
+    def sign_apple(self, claims, key=None):
+        return jwt.encode(claims, key or self.apple_key, algorithm="RS256", headers={"kid": "fixture"})
+
+    def finish_apple(self, callback, exchange_token, client=None):
+        token_response = Mock()
+        token_response.json.return_value = {"id_token": exchange_token}
+        # test_web_social_auth.py stubs transport/key discovery, never either JWT verification function.
+        with patch.object(
+            social_auth.APPLE_KEYS,
+            "get_signing_key_from_jwt",
+            return_value=SimpleNamespace(key=self.apple_key.public_key()),
+        ), patch.object(
+            web_social_auth.requests, "post", return_value=token_response
+        ) as exchange, patch.object(
+            social_auth, "apple_client_secret", return_value="apple-secret"
+        ):
+            finished = (client or self.client).get(callback.url)
+        return finished, exchange
+
+    def test_apple_requests_hybrid_authorization_while_google_keeps_code_flow(self):
+        self.assertEqual(self.start("apple")["response_type"], ["code id_token"])
+        self.assertEqual(self.start("google")["response_type"], ["code"])
+
+    def test_apple_signed_authorization_allows_exchange_without_nonce_or_email(self):
+        for include_nonce in (False, True):
+            with self.subTest(include_nonce=include_nonce):
+                params = self.start("apple")
+                claims = self.apple_claims(params)
+                authorization_token = self.sign_apple(claims)
+                exchange_claims = {
+                    k: v for k, v in claims.items() if k not in ("email", "email_verified", "nonce")
+                }
+                if include_nonce:
+                    exchange_claims["nonce"] = claims["nonce"]
+                exchange_token = self.sign_apple(exchange_claims)
+                callback = self.callback(params, "apple", Client(), id_token=authorization_token)
+                finished, exchange = self.finish_apple(callback, exchange_token)
+                self.assertEqual(finished.status_code, 302)
+                self.assertEqual(finished.url, "/account/social/continue")
+                self.assertEqual(
+                    exchange.call_args.kwargs["data"],
+                    dict(
+                        code="authorization-code",
+                        client_id="com.newsblur.web",
+                        client_secret="apple-secret",
+                        redirect_uri=web_social_auth.configuration("apple")[1],
+                        grant_type="authorization_code",
+                    ),
+                )
+                pending = self.client.session["web_social_pending"]
+                ticket = social_auth.consume("ticket", pending["ticket"])
+                self.assertEqual(
+                    ticket["identity"], dict(provider="apple", subject=claims["sub"], email=claims["email"])
+                )
+                for token in (authorization_token, exchange_token):
+                    for value in (
+                        callback.url,
+                        callback.content.decode(),
+                        finished.url,
+                        finished.content.decode(),
+                        str(pending),
+                        str(ticket),
+                    ):
+                        self.assertFalse(token in value, "Apple token leaked outside the callback cache")
+                self.assertNotIn("authorization_token", pending)
+                self.assertNotIn("authorization_token", ticket)
+                self.assertNotIn("authorization_code", pending)
+                replay, repeated_exchange = self.finish_apple(callback, exchange_token)
+                self.assertEqual(replay.status_code, 400)
+                repeated_exchange.assert_not_called()
+
+    def test_apple_rejects_signed_exchange_for_other_subject_audience_nonce_or_key(self):
+        for change in (
+            dict(sub="other-user"),
+            dict(aud="com.newsblur.NewsBlur"),
+            dict(nonce="other-attempt"),
+            dict(signature="wrong-key"),
+        ):
+            with self.subTest(change=change):
+                params = self.start("apple")
+                claims = self.apple_claims(params)
+                callback = self.callback(params, "apple", id_token=self.sign_apple(claims))
+                key = (
+                    rsa.generate_private_key(public_exponent=65537, key_size=2048)
+                    if "signature" in change
+                    else None
+                )
+                exchange_token = self.sign_apple(dict(claims, **change), key=key)
+                finished, exchange = self.finish_apple(callback, exchange_token)
+                self.assertEqual(finished.status_code, 400)
+                self.assertFalse(exchange_token in finished.content.decode(), "Apple token leaked into HTML")
+                exchange.assert_called_once()
+                self.assertNotIn("web_social_pending", self.client.session)
+                self.assertNotIn("_auth_user_id", self.client.session)
+                self.assertFalse(SocialIdentity.objects.exists())
+
+    def test_apple_rejects_unverified_authorization_before_exchanging_code(self):
+        for invalid in ("missing-token", "missing-nonce", "wrong-nonce", "wrong-audience", "wrong-key"):
+            with self.subTest(invalid=invalid):
+                params = self.start("apple")
+                claims = self.apple_claims(params)
+                posted_claims = dict(claims)
+                key = None
+                if invalid == "missing-nonce":
+                    posted_claims.pop("nonce")
+                elif invalid == "wrong-nonce":
+                    posted_claims["nonce"] = "other-attempt"
+                elif invalid == "wrong-audience":
+                    posted_claims["aud"] = "com.newsblur.NewsBlur"
+                elif invalid == "wrong-key":
+                    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+                token = "" if invalid == "missing-token" else self.sign_apple(posted_claims, key=key)
+                callback = self.callback(params, "apple", id_token=token)
+                finished, exchange = self.finish_apple(callback, self.sign_apple(claims))
+                self.assertEqual(finished.status_code, 400)
+                if token:
+                    self.assertFalse(token in finished.content.decode(), "Apple token leaked into HTML")
+                exchange.assert_not_called()
+                self.assertNotIn("web_social_pending", self.client.session)
+                self.assertFalse(SocialIdentity.objects.exists())
+
+    def test_apple_browser_binding_precedes_token_validation_and_exchange(self):
+        params = self.start("apple")
+        claims = self.apple_claims(params)
+        callback = self.callback(params, "apple", Client(), id_token=self.sign_apple(claims))
+        with patch.object(social_auth.APPLE_KEYS, "get_signing_key_from_jwt") as keys, patch.object(
+            web_social_auth.requests, "post"
+        ) as exchange:
+            response = Client().get(callback.url)
+        self.assertEqual(response.status_code, 400)
+        keys.assert_not_called()
+        exchange.assert_not_called()
+        response, exchange = self.finish_apple(callback, self.sign_apple(claims))
+        self.assertEqual(response.status_code, 400)
+        exchange.assert_not_called()
 
     def test_other_browser_cannot_complete_or_exchange_code(self):
         callback = self.callback(self.start())

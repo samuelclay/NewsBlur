@@ -88,6 +88,7 @@ def start(request):
         nonce=context["nonce"],
     )
     if provider == "apple":
+        params["response_type"] = "code id_token"
         params["response_mode"] = "form_post"
         endpoint = "https://appleid.apple.com/auth/authorize"
     else:
@@ -108,6 +109,8 @@ def callback(request, provider):
     context = social_auth.consume("web-state", data.get("state", ""))
     if not context or context["provider"] != provider:
         return page(request, "Sign-in expired. Please try again.")
+    if provider == "apple":
+        context["authorization_token"] = data.get("id_token", "")[:16384]
     result = social_auth.remember(
         "web-return",
         dict(context, authorization_code=data.get("code", "")[:4096], cancelled=bool(data.get("error"))),
@@ -136,6 +139,11 @@ def finish(request):
         )
     client_id, redirect_uri = configuration(provider)
     try:
+        if provider == "apple":
+            # web_social_auth.py verifies the nonce-bound authorization proof before exchanging the code.
+            identity = social_auth.verified_claims(
+                provider, context.pop("authorization_token"), context["nonce"], expected_audience=client_id
+            )
         client_secret = (
             social_auth.apple_client_secret(client_id)
             if provider == "apple"
@@ -155,9 +163,15 @@ def finish(request):
             ),
         )
         response.raise_for_status()
-        identity = social_auth.verified_claims(
-            provider, response.json()["id_token"], context["nonce"], expected_audience=client_id
-        )
+        if provider == "apple":
+            # web_social_auth.py binds the exchange to that identity; email/nonce may be absent here.
+            social_auth.verify_apple_exchange_token(
+                response.json()["id_token"], client_id, identity["subject"], context["nonce"]
+            )
+        else:
+            identity = social_auth.verified_claims(
+                provider, response.json()["id_token"], context["nonce"], expected_audience=client_id
+            )
     except (requests.RequestException, jwt.PyJWTError, OSError, ValueError, KeyError, TypeError):
         return page(request, "%s could not verify your account. Please try again." % provider.title())
     ticket = social_auth.remember("ticket", dict(context, identity=identity))
