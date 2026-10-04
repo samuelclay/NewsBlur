@@ -250,6 +250,13 @@ fun AccountScreen(
                             ) {
                                 Text("Connect an existing account", color = palette.link)
                             }
+                        } else if (state.continuation == "link") {
+                            TextButton(
+                                onClick = model::createNewAccountInstead,
+                                enabled = !state.busy,
+                            ) {
+                                Text("Create a new account instead", color = palette.link)
+                            }
                         }
                         if (state.busy) {
                             Row(

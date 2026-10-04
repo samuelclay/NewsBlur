@@ -248,27 +248,60 @@ import Combine
         }
     }
 
-    func test_socialUsernameCollisionStaysInSignupUntilLinkIsChosen() async throws {
-        var bodies: [[String: String]] = []
-        network { request in
-            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
-            bodies.append(Self.formBody(request))
-            return (400, ["code": -1, "username_required": true, "ticket": "signup-retry-ticket",
-                          "message": "That username is already taken."])
+    func test_socialUsernameCollisionCanReturnToSignupWithRetainedTicket() async throws {
+        for provider in ["apple", "google"] {
+            var bodies: [[String: String]] = []
+            network { request in
+                if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+                XCTAssertEqual(request.url?.path, "/api/social/complete")
+                bodies.append(Self.formBody(request))
+                switch bodies.count {
+                case 1:
+                    return (400, ["code": -1, "username_required": true, "ticket": "choose-username-ticket"])
+                case 2:
+                    return (400, ["code": -1, "link_required": true, "ticket": "collision-link-ticket",
+                                  "message": "Sign in to your existing NewsBlur account to connect this provider."])
+                default:
+                    // OnboardingTests.swift observes signup submission without authenticating the shared app.
+                    return (503, ["code": -1, "message": "Signup fixture stopped after request."])
+                }
+            }
+            let model = OnboardingAccountModel()
+            _ = try await model.prepareSocial(provider)
+            try await model.complete(ticket: "provider-ticket")
+            model.username = "someone-elses-username"
+            await submitAccount(model)
+            XCTAssertTrue(model.needsLink)
+            XCTAssertFalse(model.needsUsername)
+            XCTAssertEqual(model.username, "someone-elses-username")
+            XCTAssertNotNil(model.message)
+            model.password = "stale-link-password"
+
+            model.createNewAccountInstead()
+
+            XCTAssertTrue(model.needsUsername)
+            XCTAssertFalse(model.needsLink)
+            XCTAssertEqual(model.username, "")
+            XCTAssertEqual(model.password, "")
+            XCTAssertNil(model.message)
+            XCTAssertEqual(bodies.count, 2, "Returning to username selection must not consume the ticket.")
+            model.username = "available-new-reader"
+            await submitAccount(model)
+
+            XCTAssertEqual(bodies.count, 3)
+            guard bodies.count == 3 else { continue }
+            XCTAssertEqual(bodies[1]["username"], "someone-elses-username")
+            XCTAssertEqual(bodies[1]["ticket"], "choose-username-ticket")
+            XCTAssertEqual(bodies[2]["username"], "available-new-reader")
+            XCTAssertEqual(bodies[2]["ticket"], "collision-link-ticket")
+            XCTAssertEqual(bodies[2]["password"], "")
+            XCTAssertNil(bodies[2]["action"], "Choosing a new username must return to the default signup action.")
+            let verifier = try XCTUnwrap(bodies[0]["verifier"])
+            XCTAssertFalse(verifier.isEmpty)
+            XCTAssertEqual(bodies[1]["verifier"], verifier)
+            XCTAssertEqual(bodies[2]["verifier"], verifier)
+            XCTAssertEqual(model.message, "Signup fixture stopped after request.")
         }
-        let model = OnboardingAccountModel()
-        _ = try await model.prepareSocial("google")
-        try await model.complete(ticket: "provider-ticket")
-        model.username = "taken-username"
-        model.password = "stale-password"
-        await submitAccount(model)
-        XCTAssertTrue(model.needsUsername)
-        XCTAssertFalse(model.needsLink)
-        XCTAssertEqual(model.message, "That username is already taken.")
-        XCTAssertEqual(bodies.last?["username"], "taken-username")
-        XCTAssertEqual(bodies.last?["ticket"], "signup-retry-ticket")
-        XCTAssertEqual(bodies.last?["password"], "")
-        XCTAssertNil(bodies.last?["action"])
     }
 
     private func submitAccount(_ model: OnboardingAccountModel) async {
