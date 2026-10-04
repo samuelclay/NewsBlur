@@ -54,10 +54,14 @@ Register these additional return URLs with the same provider clients:
 
 - `https://staging.newsblur.com/account/social/google/callback`
 - `https://staging.newsblur.com/account/social/apple/callback`
+- `https://staging.newsblur.com/api/social/google/callback`
+- `https://staging.newsblur.com/api/social/apple/callback`
 
 Also register `staging.newsblur.com` on Apple's Services ID. The staging-specific
 configuration in `ansible/roles/web/tasks/main.yml` preserves these callbacks when
 server settings are recopied and sets `SOCIAL_WEB_ENABLED = True` only on staging.
+It overrides both native and browser redirect settings so mobile tests started on
+staging also return there, rather than sending their authorization codes to production.
 Keep this flag out of shared production settings until browser sign-in is ready to launch.
 For local testing, set it in the worktree's untracked `newsblur_web/local_settings.py`.
 Google credentials remain in the external common settings.
