@@ -1,5 +1,6 @@
 """Behavioral coverage for adding discovery bundles by feed ID without URL discovery."""
 
+import datetime
 import json
 from unittest.mock import PropertyMock, patch
 
@@ -34,6 +35,8 @@ class Test_BatchSubscriptions(TestCase):
         self.folders.folders = json.dumps([{"Keep": [1]}, {"Interests": [{"Science": [2]}]}])
         self.folders.save()
         self.maintenance = patch("apps.reader.tasks.MaintainFeedSubscriptions.delay").start()
+        self.setup_premium = Feed.setup_feed_for_premium_subscribers
+        self.count_subscribers = Feed.count_subscribers
         for target in [
             "apps.social.models.MActivity.new_feed_subscription",
             "apps.statistics.rtrending_subscriptions.RTrendingSubscription.add_subscription",
@@ -124,6 +127,57 @@ class Test_BatchSubscriptions(TestCase):
         self.assertEqual(-1, result["code"])
         self.assertFalse(UserSubscription.objects.filter(user=self.user, feed=self.first).exists())
         self.assertEqual(original, self.tree())
+
+    def test_uncatalogued_zero_and_one_subscriber_feeds_are_private(self):
+        original = self.tree()
+        Feed.objects.filter(pk=self.first.pk).update(num_subscribers=0)
+        Feed.objects.filter(pk=self.second.pk).update(num_subscribers=1)
+        result = self.post([self.first.pk, self.second.pk], folder_path="[]", new_folder="Private")
+        self.assertEqual([-1, -1], [item["code"] for item in result["results"]])
+        self.assertFalse(
+            UserSubscription.objects.filter(user=self.user, feed__in=[self.first, self.second]).exists()
+        )
+        self.assertEqual(original, self.tree())
+
+    def test_existing_private_subscriptions_can_be_placed_and_reactivated(self):
+        newsletter = Feed.objects.create(feed_address="newsletter:existing", num_subscribers=0)
+        branch = Feed.objects.create(
+            feed_address="https://private.example/existing", branch_from_feed=self.first, num_subscribers=1
+        )
+        Feed.objects.filter(pk=self.first.pk).update(num_subscribers=0)
+        Feed.objects.filter(pk=self.second.pk).update(num_subscribers=1)
+        feeds = [self.first, self.second, newsletter, branch]
+        for feed in feeds:
+            UserSubscription.objects.create(user=self.user, feed=feed, active=False)
+        result = self.post([feed.pk for feed in feeds], folder_path="[]", new_folder="Existing")
+        self.assertEqual([1] * len(feeds), [item["code"] for item in result["results"]])
+        self.assertTrue(all(not item["created"] for item in result["results"]))
+        self.assertEqual(
+            len(feeds), UserSubscription.objects.filter(user=self.user, feed__in=feeds, active=True).count()
+        )
+        self.assertIn({"Existing": [feed.pk for feed in feeds]}, self.tree())
+
+    def test_staff_can_add_uncatalogued_zero_and_one_subscriber_feeds(self):
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
+        Feed.objects.filter(pk=self.first.pk).update(num_subscribers=0)
+        Feed.objects.filter(pk=self.second.pk).update(num_subscribers=1)
+        result = self.post([self.first.pk, self.second.pk], folder_path="[]", new_folder="Staff")
+        self.assertEqual([1, 1], [item["code"] for item in result["results"]])
+        self.assertEqual(
+            2, UserSubscription.objects.filter(user=self.user, feed__in=[self.first, self.second]).count()
+        )
+
+    def test_multiple_invalid_inputs_each_receive_a_result(self):
+        invalid = ["garbage", "other", "garbage", 0, -1, True, "01", 2147483648]
+        result = self.post(
+            json.dumps([self.first.pk, *invalid, self.first.pk]), folder_path="[]", new_folder="Mixed"
+        )
+        self.assertEqual(0, result["code"])
+        self.assertEqual([self.first.pk, *invalid], [item["feed_id"] for item in result["results"]])
+        self.assertEqual([1] + [-1] * len(invalid), [item["code"] for item in result["results"]])
+        self.assertTrue(all(item["message"] == "Invalid feed ID." for item in result["results"][1:]))
+        self.assertEqual(1, UserSubscription.objects.filter(user=self.user, feed=self.first).count())
 
     def test_limit_applies_to_new_subscriptions_but_allows_existing_placement(self):
         UserSubscription.objects.create(user=self.user, feed=self.first, active=True)
@@ -279,6 +333,45 @@ class Test_BatchSubscriptions(TestCase):
         self.assertEqual(2, setup.call_count)
         index.assert_called_once_with([self.first.pk, self.second.pk], self.user.pk)
         redis_client.return_value.publish.assert_called_once_with(self.user.username, "reload:feeds")
+
+    def test_worker_refreshes_counts_before_scheduling_and_syncing_first_archive_subscriber(self):
+        self.user.profile.is_premium = True
+        self.user.profile.is_archive = True
+        self.user.profile.last_seen_on = datetime.datetime.now()
+        self.user.profile.save()
+        Feed.objects.filter(pk=self.first.pk).update(
+            num_subscribers=0, active_premium_subscribers=0, archive_count=1
+        )
+        UserSubscription.objects.create(user=self.user, feed=self.first, active=True)
+
+        def assert_current_counts(feed, **kwargs):
+            self.assertEqual(1, feed.num_subscribers)
+            self.assertEqual(1, feed.active_premium_subscribers)
+            self.assertEqual(1, feed.archive_subscribers)
+
+        # test_batch_subscriptions.py exercises the real setup/count methods, isolating external services.
+        with patch.object(Feed, "setup_feed_for_premium_subscribers", self.setup_premium), patch.object(
+            Feed, "count_subscribers", self.count_subscribers
+        ), patch.object(
+            Feed, "counts_converted_to_redis", new_callable=PropertyMock, return_value=False
+        ), patch.object(
+            Profile, "count_feed_subscribers"
+        ), patch.object(
+            Feed, "count_similar_feeds"
+        ), patch.object(
+            Feed, "set_next_scheduled_update", autospec=True, side_effect=assert_current_counts
+        ) as schedule, patch.object(
+            Feed, "sync_redis", autospec=True, side_effect=assert_current_counts
+        ) as sync, patch(
+            "apps.reader.tasks.redis.Redis"
+        ):
+            MaintainFeedSubscriptions.run(self.user.pk, [(self.first.pk, True)], [self.first.pk])
+        schedule.assert_called_once()
+        sync.assert_called_once()
+        self.assertFalse(sync.call_args.kwargs["allow_skip_resync"])
+        self.first.refresh_from_db()
+        self.assertEqual(1, self.first.num_subscribers)
+        self.assertEqual(1, self.first.archive_subscribers)
 
     def test_twitter_credentials_checked_once_before_folder_locks(self):
         feeds = [
