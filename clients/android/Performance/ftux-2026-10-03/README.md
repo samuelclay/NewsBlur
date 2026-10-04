@@ -51,10 +51,16 @@ Screenshots were captured during implementation; the final header also adds the 
 
 ## Provider setup before release
 
-The Android provider implementation and backend protocol are present, but real Apple and Google round trips have not been verified. These routes have not been deployed by this task.
+The Android provider implementation and backend protocol are present. The October 3 follow-up reproduced the production HTML 404 from `/api/social/start` on the Samsung tablet. Commit `8760ca767` replaces the misleading unreadable-response message for that specific missing endpoint. Four focused Android regression tests passed, and all 42 backend authentication tests passed again. These routes have not yet been deployed by this task.
+
+The existing Google OAuth client was enabled and had the correct callback, but its required branding fields were empty. Completing the NewsBlur name, support/developer contacts, homepage, privacy policy, and terms fields removed Google's `401 invalid_client` error. With the local backend selected temporarily, the tablet completed Google account selection and consent, then reached the production callback's 404. This proves the provider portion, not a completed NewsBlur login.
+
+Apple Services ID `com.newsblur.signin` is registered under the NewsBlur primary App ID with `newsblur.com` and `www.newsblur.com`, plus the native and browser callback URLs. The tablet now opens Apple's branded NewsBlur sign-in page. Apple credential entry and the final app round trip remain unverified. Private local and deployment settings contain the Services ID and team ID; no credentials are committed.
+
+Follow-up evidence: [original error](tablet-social-unavailable-before.png), [clear unavailable message](tablet-social-unavailable-after.png), [Apple provider page](tablet-apple-signin.png), and [Google callback awaiting deployment](tablet-google-callback-not-deployed.png).
 
 Apple browser sign-in requires an Apple Services ID associated with the NewsBlur primary App ID, domain `www.newsblur.com`, and return URL `https://www.newsblur.com/api/social/apple/callback`. Set `SOCIAL_APPLE_WEB_CLIENT_ID` to that Services ID outside the repository. The existing Apple team ID, key ID, and private-key path are also needed for deletion authorization-code exchange and revocation. Native iOS audiences remain separate.
 
 Google uses the existing server OAuth client and `https://www.newsblur.com/api/social/google/callback`. Deploy the platform-aware backend before testing Android: production callbacks use `newsblur-auth-android://complete`, and NB Alpha uses `newsblur-auth-android-alpha://complete`. Each ticket is bound to the app-generated verifier. Test sign-in, username selection, linking, cancellation, and provider-backed deletion after configuration/deployment.
 
-No Android version bump, Play upload, backend deployment, or provider-console configuration is included in this FTUX work.
+The Apple private signing key is still absent. Native Android sign-in validates Apple's signed identity token without it, but deletion authorization-code exchange/revocation and the separate browser implementation require that key. No Android version bump, Play upload, or backend deployment is included in this FTUX work so far.
