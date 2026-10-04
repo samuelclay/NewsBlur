@@ -33,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -63,7 +62,8 @@ import com.newsblur.R
 import com.newsblur.compose.AndroidShaderBackground
 import com.newsblur.compose.CustomServerDialog
 import com.newsblur.design.LoginAuthPalettes
-import com.newsblur.design.NbThemeVariant
+import com.newsblur.design.LoginAuthPalette
+import com.newsblur.design.toVariant
 
 @Composable
 fun AccountScreen(
@@ -72,14 +72,10 @@ fun AccountScreen(
     onForgot: () -> Unit,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    var username by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
-    // AccountScreen.kt deliberately keeps passwords out of saved instance state.
-    var password by remember { mutableStateOf("") }
     var customServer by rememberSaveable { mutableStateOf(false) }
-    val gold = Color(0xFFFBDB9B)
-    val palette = LoginAuthPalettes.of(NbThemeVariant.Light)
+    val palette = LoginAuthPalettes.of(model.theme().toVariant())
+    val gold = palette.link
     val heading = FontFamily(Font(R.font.gotham_narrow_book))
     LaunchedEffect(state.authenticated) { if (state.authenticated) onAuthenticated(state.setup) }
     SocialBrowserEffect(model, state)
@@ -179,42 +175,50 @@ fun AccountScreen(
                         if (state.signup &&
                             state.continuation == null
                         ) {
-                            AccountField("Email", email, { email = it }, !state.busy, KeyboardType.Email)
+                            AccountField("Email", email, { email = it }, !state.busy, palette, KeyboardType.Email)
+                        }
+                        if (state.continuation == "link") {
+                            Text(
+                                "Enter your existing NewsBlur username or email and NewsBlur password. Your Apple or Google email can be different.",
+                                color = palette.fieldText,
+                                fontSize = 14.sp,
+                            )
                         }
                         AccountField(
-                            if (state.signup ||
-                                state.continuation == "username"
+                            if (state.continuation == "username" ||
+                                (state.signup && state.continuation == null)
                             ) {
                                 "Username"
                             } else {
                                 "Username or email"
                             },
-                            username,
-                            { username = it },
+                            state.username,
+                            model::updateUsername,
                             !state.busy,
+                            palette,
                         )
                         if (state.continuation !=
                             "username"
                         ) {
-                            AccountField("Password", password, { password = it }, !state.busy, KeyboardType.Password)
+                            AccountField("Password", state.password, model::updatePassword, !state.busy, palette, KeyboardType.Password)
                         }
                         if (state.continuation == null &&
                             state.lastUsed == "email"
                         ) {
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) { LastUsed() }
                         }
-                        state.error?.let { Text(it, color = Color(0xFFFFD699), fontSize = 14.sp) }
+                        state.error?.let { Text(it, color = palette.error, fontSize = 14.sp) }
                         Button(
-                            onClick = { model.submit(username.trim(), password, email.trim()) },
+                            onClick = { model.submit(state.username.trim(), state.password, email.trim()) },
                             enabled =
-                                !state.busy && username.isNotBlank() && (state.continuation == "username" || password.isNotEmpty()),
+                                !state.busy && state.username.isNotBlank() && (state.continuation == "username" || state.password.isNotEmpty()),
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
                                     .heightIn(
                                         min = 50.dp,
                                     ).background(
-                                        Brush.verticalGradient(listOf(Color(0xFFD9A621), Color(0xFFB8890B))),
+                                        Brush.verticalGradient(listOf(palette.button, palette.buttonPressed)),
                                         RoundedCornerShape(12.dp),
                                     ),
                             colors =
@@ -238,6 +242,14 @@ fun AccountScreen(
                                 fontFamily = heading,
                                 fontSize = 17.sp,
                             )
+                        }
+                        if (state.continuation == "username") {
+                            TextButton(
+                                onClick = model::connectExistingAccount,
+                                enabled = !state.busy,
+                            ) {
+                                Text("Connect an existing account", color = palette.link)
+                            }
                         }
                         if (state.busy) {
                             Row(
@@ -307,17 +319,18 @@ fun AccountScreen(
     value: String,
     onChange: (String) -> Unit,
     enabled: Boolean,
+    palette: LoginAuthPalette,
     keyboard: KeyboardType = KeyboardType.Text,
 ) {
     BasicTextField(
         value,
         onChange,
-        Modifier.fillMaxWidth().background(Color.White.copy(alpha = .12f), RoundedCornerShape(12.dp)).padding(15.dp)
+        Modifier.fillMaxWidth().background(palette.fieldBackground, RoundedCornerShape(12.dp)).padding(15.dp)
             .semantics { contentDescription = label },
         enabled = enabled,
         singleLine = true,
-        textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
-        cursorBrush = SolidColor(Color(0xFFFBDB9B)),
+        textStyle = TextStyle(color = palette.fieldText, fontSize = 16.sp),
+        cursorBrush = SolidColor(palette.fieldCursor),
         keyboardOptions = KeyboardOptions(keyboardType = keyboard, autoCorrectEnabled = false, imeAction = ImeAction.Next),
         visualTransformation =
             if (keyboard ==
@@ -328,7 +341,7 @@ fun AccountScreen(
                 VisualTransformation.None
             },
         decorationBox = { inner ->
-            if (value.isEmpty()) Text(label, color = Color.White.copy(alpha = .65f), fontSize = 16.sp)
+            if (value.isEmpty()) Text(label, color = palette.fieldPlaceholder, fontSize = 16.sp)
             inner()
         },
     )
