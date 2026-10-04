@@ -846,6 +846,50 @@ class Test_SocialAuthenticationDatabase(TransactionTestCase):
             dict(ticket=ticket, verifier="proof", username=username, password=password, **data),
         )
 
+    def test_same_email_link_cannot_loop_back_to_username_selection(self):
+        social_auth.User.objects.create_user("reader", "reader@example.com", "password")
+        for provider in ("apple", "google"):
+            response = self.complete(provider=provider, username="")
+            self.assertTrue(response.json()["link_required"])
+            self.assertIs(response.json()["can_choose_username"], False)
+            retry = self.client.post(
+                "/api/social/complete",
+                dict(ticket=response.json()["ticket"], verifier="proof", action="choose_username"),
+            )
+            self.assertTrue(retry.json().get("link_required"), retry.content)
+            self.assertFalse(retry.json().get("username_required", False))
+            self.assertIs(retry.json()["can_choose_username"], False)
+            self.assertFalse(social_auth.SocialIdentity.objects.exists())
+            self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_username_collision_allows_choosing_another_username(self):
+        social_auth.User.objects.create_user("taken", "different@example.com", "password")
+        for provider in ("apple", "google"):
+            response = self.complete(provider=provider, username="taken")
+            self.assertTrue(response.json()["link_required"])
+            self.assertTrue(response.json().get("can_choose_username"), response.content)
+            retry = self.client.post(
+                "/api/social/complete",
+                dict(ticket=response.json()["ticket"], verifier="proof", action="choose_username"),
+            )
+            self.assertTrue(retry.json()["username_required"])
+            self.assertFalse(retry.json().get("link_required", False))
+            self.assertEqual(retry.json()["message"], "Choose your NewsBlur username.")
+            self.assertNotEqual(retry.json()["ticket"], response.json()["ticket"])
+            self.assertFalse(social_auth.SocialIdentity.objects.exists())
+            self.assertEqual(social_auth.User.objects.count(), 1)
+
+    def test_username_collision_cannot_offer_signup_when_provider_email_belongs_to_another_account(self):
+        social_auth.User.objects.create_user("taken", "other@example.com", "password")
+        social_auth.User.objects.create_user("owner", "READER@example.com", "owner-password")
+        for action in ("", "link", "choose_username"):
+            response = self.complete(username="taken", action=action)
+            self.assertTrue(response.json()["link_required"])
+            self.assertIs(response.json()["can_choose_username"], False)
+            self.assertFalse(response.json().get("username_required", False))
+            self.assertFalse(social_auth.SocialIdentity.objects.exists())
+            self.assertNotIn("_auth_user_id", self.client.session)
+
     def test_explicit_link_accepts_different_provider_email_only_after_password_proof(self):
         user = social_auth.User.objects.create_user("reader", "account@example.com", "existing-password")
         for provider in ("apple", "google"):

@@ -175,7 +175,7 @@ import Combine
                 if bodies.count == 1 {
                     return (200, ["username_required": true, "ticket": "choose-username-ticket"])
                 }
-                return (400, ["code": -1, "link_required": true, "ticket": "retry-link-ticket",
+                return (400, ["code": -1, "link_required": true, "can_choose_username": true, "ticket": "retry-link-ticket",
                               "message": "Incorrect NewsBlur password."])
             }
             let model = OnboardingAccountModel()
@@ -191,6 +191,7 @@ import Combine
 
             XCTAssertFalse(model.needsUsername)
             XCTAssertTrue(model.needsLink)
+            XCTAssertTrue(model.canChooseUsername)
             XCTAssertEqual(model.username, "existing-reader")
             XCTAssertEqual(model.password, "")
             XCTAssertNil(model.message)
@@ -201,6 +202,7 @@ import Combine
             XCTAssertEqual(model.message, "Incorrect NewsBlur password.")
             XCTAssertEqual(model.password, "")
             XCTAssertTrue(model.needsLink)
+            XCTAssertTrue(model.canChooseUsername)
             XCTAssertEqual(model.username, "existing-reader")
             model.username = "reader+news@example.net"
             model.password = "corrected+password"
@@ -222,6 +224,95 @@ import Combine
             XCTAssertEqual(bodies[1]["verifier"], verifier)
             XCTAssertEqual(bodies[2]["verifier"], verifier)
         }
+    }
+
+    func test_socialSameEmailLinkCannotReturnToSignup() async throws {
+        for provider in ["apple", "google"] {
+            for includesPermission in [true, false] {
+                var bodies: [[String: String]] = []
+                network { request in
+                    if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+                    XCTAssertEqual(request.url?.path, "/api/social/complete")
+                    bodies.append(Self.formBody(request))
+                    var response: [String: Any] = ["code": -1, "link_required": true,
+                                                  "ticket": "same-email-ticket", "message": "Connect your existing account."]
+                    if includesPermission { response["can_choose_username"] = false }
+                    return (400, response)
+                }
+                let model = OnboardingAccountModel()
+                _ = try await model.prepareSocial(provider)
+                try await model.complete(ticket: "provider-ticket")
+                model.username = "existing-reader"
+                model.password = "newsblur-password"
+
+                model.createNewAccountInstead()
+
+                XCTAssertTrue(model.needsLink, "A same-email link must not enter a signup loop.")
+                XCTAssertFalse(model.needsUsername)
+                XCTAssertFalse(model.canChooseUsername)
+                XCTAssertEqual(model.username, "existing-reader")
+                XCTAssertEqual(model.password, "newsblur-password")
+                XCTAssertEqual(model.message, "Connect your existing account.")
+                XCTAssertEqual(bodies.count, 1)
+                await submitAccount(model)
+                XCTAssertEqual(bodies.count, 2)
+                XCTAssertEqual(bodies.last?["action"], "link")
+                XCTAssertEqual(bodies.last?["ticket"], "same-email-ticket")
+                XCTAssertEqual(bodies.last?["username"], "existing-reader")
+                XCTAssertEqual(bodies.last?["password"], "newsblur-password")
+            }
+        }
+    }
+
+    func test_socialExplicitUsernameChoiceResetsAfterReturnCancelAndRestart() async throws {
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            return (400, ["code": -1, "username_required": true, "ticket": "choose-username-ticket"])
+        }
+        let model = OnboardingAccountModel()
+        _ = try await model.prepareSocial("google")
+        try await model.complete(ticket: "provider-ticket")
+        model.connectExistingAccount()
+        XCTAssertTrue(model.canChooseUsername)
+        model.createNewAccountInstead()
+        XCTAssertTrue(model.needsUsername, "Explicit linking must allow a local return before submitting credentials.")
+        XCTAssertFalse(model.needsLink)
+        XCTAssertFalse(model.canChooseUsername)
+        model.connectExistingAccount()
+        XCTAssertTrue(model.canChooseUsername)
+        model.cancelContinuation()
+        XCTAssertFalse(model.canChooseUsername)
+
+        _ = try await model.prepareSocial("apple")
+        try await model.complete(ticket: "another-provider-ticket")
+        model.connectExistingAccount()
+        XCTAssertTrue(model.canChooseUsername)
+        _ = try await model.prepareSocial("google")
+        XCTAssertFalse(model.canChooseUsername)
+    }
+
+    func test_socialLinkRetryCanRevokeUsernameChoice() async throws {
+        var completions = 0
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            completions += 1
+            if completions == 1 { return (400, ["username_required": true, "ticket": "choose-username-ticket"]) }
+            XCTAssertEqual(Self.formBody(request)["action"], "link")
+            return (400, ["link_required": true, "can_choose_username": false, "ticket": "same-email-ticket"])
+        }
+        let model = OnboardingAccountModel()
+        _ = try await model.prepareSocial("apple")
+        try await model.complete(ticket: "provider-ticket")
+        model.connectExistingAccount()
+        XCTAssertTrue(model.canChooseUsername)
+        model.username = "existing-reader"
+        model.password = "wrong-password"
+        await submitAccount(model)
+        XCTAssertFalse(model.canChooseUsername, "The server response must replace any previous local permission.")
+        model.createNewAccountInstead()
+        XCTAssertTrue(model.needsLink)
+        XCTAssertFalse(model.needsUsername)
+        XCTAssertEqual(model.username, "existing-reader")
     }
 
     func test_socialSameEmailLinkSendsExplicitAction() async throws {
@@ -259,7 +350,7 @@ import Combine
                 case 1:
                     return (400, ["code": -1, "username_required": true, "ticket": "choose-username-ticket"])
                 case 2:
-                    return (400, ["code": -1, "link_required": true, "ticket": "collision-link-ticket",
+                    return (400, ["code": -1, "link_required": true, "can_choose_username": true, "ticket": "collision-link-ticket",
                                   "message": "Sign in to your existing NewsBlur account to connect this provider."])
                 default:
                     // OnboardingTests.swift observes signup submission without authenticating the shared app.
@@ -273,6 +364,7 @@ import Combine
             await submitAccount(model)
             XCTAssertTrue(model.needsLink)
             XCTAssertFalse(model.needsUsername)
+            XCTAssertTrue(model.canChooseUsername)
             XCTAssertEqual(model.username, "someone-elses-username")
             XCTAssertNotNil(model.message)
             model.password = "stale-link-password"

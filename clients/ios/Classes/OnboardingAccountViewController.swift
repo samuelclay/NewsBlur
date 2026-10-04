@@ -61,6 +61,7 @@ import SwiftUI
     @Published var message: String?
     @Published var needsUsername = false
     @Published var needsLink = false
+    @Published private(set) var canChooseUsername = false
     weak var controller: UIViewController?
     private var provider = ""
     private var verifier = ""
@@ -142,6 +143,7 @@ import SwiftUI
         provider = name
         needsLink = false
         needsUsername = false
+        canChooseUsername = false
         // OnboardingAccountViewController.swift binds the callback ticket to this app session.
         verifier = UUID().uuidString + UUID().uuidString
         let challenge = SHA256.hash(data: Data(verifier.utf8)).map { String(format: "%02x", $0) }.joined()
@@ -202,14 +204,16 @@ import SwiftUI
         guard needsUsername, !busy else { return }
         needsUsername = false
         needsLink = true
+        canChooseUsername = true
         password = ""
         message = nil
     }
 
     func createNewAccountInstead() {
-        guard needsLink, !busy else { return }
+        guard needsLink, canChooseUsername, !busy else { return }
         needsLink = false
         needsUsername = true
+        canChooseUsername = false
         username = ""
         password = ""
         message = nil
@@ -234,6 +238,7 @@ import SwiftUI
             ticket = result["ticket"] as? String ?? ""
             needsLink = result["link_required"] as? Bool == true
             needsUsername = result["username_required"] as? Bool == true
+            canChooseUsername = needsLink && (result["can_choose_username"] as? Bool == true)
             message = result["message"] as? String
             password = ""
             return
@@ -253,6 +258,7 @@ import SwiftUI
     func cancelContinuation() {
         needsLink = false
         needsUsername = false
+        canChooseUsername = false
         ticket = ""
         password = ""
         message = nil
@@ -547,7 +553,7 @@ private struct OnboardingAccountView: View {
                             Button("Connect an existing account") { model.connectExistingAccount() }
                                 .accessibilityIdentifier("onboarding.connect-existing-account")
                         }
-                        if model.needsLink {
+                        if model.needsLink && model.canChooseUsername {
                             Button("Create a new account instead") { model.createNewAccountInstead() }
                                 .accessibilityIdentifier("onboarding.create-new-account")
                         }
