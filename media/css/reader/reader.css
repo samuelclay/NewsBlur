@@ -26251,9 +26251,17 @@ h5.NB-classifier-section-header {
 }
 .NB-account-connected-actions {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
-    width: 220px;
+    width: 100%;
     max-width: 100%;
+}
+.NB-account-connected-actions .NB-social-signin-button {
+    min-height: 40px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    flex-wrap: nowrap;
+    gap: 8px;
 }
 .NB-account-connected-actions:not(:empty) {
     margin-top: 14px;
