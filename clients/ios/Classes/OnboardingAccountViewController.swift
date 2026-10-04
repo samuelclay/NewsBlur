@@ -198,10 +198,20 @@ import SwiftUI
         try await complete()
     }
 
+    func connectExistingAccount() {
+        guard needsUsername, !busy else { return }
+        needsUsername = false
+        needsLink = true
+        password = ""
+        message = nil
+    }
+
     private func complete() async throws {
         try deletionSession?.validate()
-        let result = try await OnboardingAPI.request("/api/social/complete", body: ["ticket": ticket, "verifier": verifier,
-            "username": needsUsername || needsLink ? username : "", "password": needsLink ? password : ""])
+        var body = ["ticket": ticket, "verifier": verifier,
+                    "username": needsUsername || needsLink ? username : "", "password": needsLink ? password : ""]
+        if needsLink { body["action"] = "link" }
+        let result = try await OnboardingAPI.request("/api/social/complete", body: body)
         if let deletionSession {
             try deletionSession.validate()
             guard let token = result["delete_token"] as? String, !token.isEmpty else {
@@ -509,9 +519,14 @@ private struct OnboardingAccountView: View {
                         if model.signup && !continuation {
                             field("Email", text: $model.email).keyboardType(.emailAddress).textContentType(.emailAddress)
                         }
-                        field(model.signup || model.needsUsername ? "Username" : "Username or email", text: $model.username).textContentType(.username)
+                        if model.needsLink {
+                            Text("Enter your existing NewsBlur username or email and NewsBlur password.")
+                                .font(.subheadline)
+                        }
+                        field(model.needsUsername || (model.signup && !continuation) ? "Username" : "Username or email", text: $model.username).textContentType(.username)
                         if !model.needsUsername {
-                            SecureField("Password", text: $model.password, prompt: Text("Password").foregroundColor(.white.opacity(0.65))).textContentType(model.signup && !continuation ? .newPassword : .password)
+                            SecureField(model.needsLink ? "NewsBlur password" : "Password", text: $model.password,
+                                        prompt: Text(model.needsLink ? "NewsBlur password" : "Password").foregroundColor(.white.opacity(0.65))).textContentType(model.signup && !continuation ? .newPassword : .password)
                                 .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                         if !continuation && model.lastUsed == "email" { HStack { Spacer(); badge } }
@@ -519,6 +534,10 @@ private struct OnboardingAccountView: View {
                         Button(continuation ? "Continue" : model.signup ? "Create account" : "Sign in") { model.emailSignIn() }
                             .buttonStyle(OnboardingAccountButtonStyle())
                         if model.busy { ProgressView("Signing in…").tint(.white).frame(maxWidth: .infinity) }
+                        if model.needsUsername {
+                            Button("Connect an existing account") { model.connectExistingAccount() }
+                                .accessibilityIdentifier("onboarding.connect-existing-account")
+                        }
                         if continuation { Button("Use another sign-in method") { model.cancelContinuation() } }
                         if model.needsLink || (!continuation && !model.signup) {
                             Link("Forgot your password?", destination: URL(string: (NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com") + "/profile/forgot_password")!)
