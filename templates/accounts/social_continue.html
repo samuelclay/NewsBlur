@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load utils_tags social_auth_tags %}
+{% block bodyclass %}NB-static NB-static-oauth NB-static-login{% endblock %}
+{% block extra_head_js %}{% include_stylesheets "common" %}{% endblock %}
+{% block title %}Sign in to NewsBlur{% endblock %}
+{% block content %}
+{% autoescape on %}
+<div class="NB-static-card-wrapper">
+    <div class="NB-static-card">
+        <a href="{% url 'index' %}" class="NB-static-card-logo"><img src="{{ MEDIA_URL }}img/logo_512.png" alt="NewsBlur" /></a>
+        <h1 class="NB-static-card-title">{% if step == 'username' %}Choose your username{% elif step == 'link' %}Connect your account{% else %}Sign in to NewsBlur{% endif %}</h1>
+        <p class="NB-static-card-tagline" role="status">{{ message }}</p>
+        {% if step %}
+        <form method="post" action="{% url 'web-social-continue' %}">
+            {% csrf_token %}
+            <div class="NB-static-card-field">
+                <label for="social-username">{% if step == 'link' %}Username or email{% else %}NewsBlur username{% endif %}</label>
+                <input id="social-username" name="username" type="text" value="{{ username }}" autocomplete="username" required autofocus />
+            </div>
+            {% if step == 'link' %}
+            <div class="NB-static-card-field">
+                <label for="social-password">NewsBlur password</label>
+                <input id="social-password" name="password" type="password" autocomplete="current-password" required />
+            </div>
+            {% endif %}
+            <button type="submit" class="NB-static-card-submit">{% if step == 'link' %}Connect {{ provider|title }}{% else %}Create account{% endif %}</button>
+        </form>
+        {% if step == 'link' %}<a class="NB-static-card-altlink" href="{% url 'profile-forgot-password' %}">Forgot password?</a>{% endif %}
+        {% else %}
+        {% social_signin_buttons %}
+        {% endif %}
+        <a href="{% url 'login' %}" class="NB-static-card-altlink">Back to login</a>
+    </div>
+</div>
+{% endautoescape %}
+{% endblock %}

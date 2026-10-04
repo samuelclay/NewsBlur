@@ -62,6 +62,22 @@ class Test_SocialAuthentication(SimpleTestCase):
     def test_signed_verified_identity(self):
         self.assertEqual(self.verify()["subject"], "provider-subject")
 
+    def test_web_apple_token_requires_the_services_id_audience(self):
+        token = jwt.encode(dict(self.claims, aud="com.newsblur.web"), self.key, algorithm="RS256")
+        with patch.object(
+            social_auth.APPLE_KEYS,
+            "get_signing_key_from_jwt",
+            return_value=SimpleNamespace(key=self.key.public_key()),
+        ):
+            self.assertEqual(
+                social_auth.verified_claims("apple", token, "nonce", expected_audience="com.newsblur.web")[
+                    "subject"
+                ],
+                "provider-subject",
+            )
+            with self.assertRaises(jwt.InvalidAudienceError):
+                social_auth.verified_claims("apple", token, "nonce")
+
     @override_settings(SOCIAL_APPLE_CLIENT_IDS=base_settings.SOCIAL_APPLE_CLIENT_IDS)
     def test_alpha_apple_identity_is_accepted_without_allowing_other_app_audiences(self):
         self.assertEqual(self.verify(dict(aud="com.newsblur.NB-Alpha"))["subject"], "provider-subject")
