@@ -1,6 +1,8 @@
 package com.newsblur.onboarding
 
 import android.content.Context
+import android.content.ContentResolver
+import android.net.Uri
 import com.google.gson.JsonParser
 import com.newsblur.discover.DiscoveryFeed
 import com.newsblur.service.SyncServiceState
@@ -9,6 +11,7 @@ import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
+import kotlinx.coroutines.flow.first
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -36,6 +39,26 @@ class SetupQueueTest {
     private fun queue() = SetupQueue(api, mockk<SyncServiceState>(relaxed = true), mockk<Context>()).apply { bind(account) }
 
     private fun response(value: String) = SetupResponse(JsonParser.parseString(value).asJsonObject, null)
+
+    @Test fun internalOnlyImportExplainsExistingSubscriptionRequirementWithoutPromisingNewFeeds() = runTest(dispatcher) {
+        val bytes = """<opml><body><outline xmlUrl="newsletter:123:inbox"/><outline xmlUrl="webfeed:456"/></body></opml>""".toByteArray()
+        val uri = mockk<Uri>()
+        val resolver = mockk<ContentResolver>()
+        val context = mockk<Context>()
+        every { context.contentResolver } returns resolver
+        every { resolver.openInputStream(uri) } answers { bytes.inputStream() }
+        coEvery { api.import(any(), account) } returns com.google.gson.JsonObject()
+        val queue = SetupQueue(api, mockk<SyncServiceState>(relaxed = true), context).apply { bind(account) }
+
+        queue.import(uri)
+        val result = queue.state.first { !it.importing }
+
+        assertNull(result.importError)
+        assertTrue(result.added.isEmpty())
+        assertTrue(result.importMessage.orEmpty().contains("already subscribe"))
+        assertFalse(result.importMessage.orEmpty().contains("will appear"))
+        coVerify(exactly = 1) { api.import(match { it.contentEquals(bytes) }, account) }
+    }
 
     @Test fun loadingWaitsForTheRefreshedFeedCursor() = runTest(dispatcher) {
         val sync = mockk<SyncServiceState>(relaxed = true)

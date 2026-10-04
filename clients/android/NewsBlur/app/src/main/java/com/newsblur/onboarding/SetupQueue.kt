@@ -143,7 +143,14 @@ class SetupQueue
                         if (!api.isCurrent(account)) return@launch
                         imported(receipt)
                         mutable.value =
-                            mutable.value.copy(importMessage = "Import queued. Your feeds and folders will appear as they are processed.")
+                            mutable.value.copy(
+                                importMessage =
+                                    if (receipt.isEmpty()) {
+                                        "This file contains only NewsBlur newsletters and web feeds. They can only be imported if you already subscribe to them."
+                                    } else {
+                                        "Import queued. Your feeds and folders will appear as they are processed."
+                                    },
+                            )
                     } catch (cancel: CancellationException) {
                         throw cancel
                     } catch (e: Exception) {
