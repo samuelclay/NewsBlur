@@ -47,7 +47,10 @@ object SetupOpml {
                 val url = element.getAttribute("xmlUrl").ifBlank { element.getAttribute("xmlurl") }
                 val title = element.getAttribute("title").ifBlank { element.getAttribute("text") }
                 if (url.isNotBlank()) {
-                    require(url.startsWith("https://") || url.startsWith("http://")) { "The OPML file contains an invalid feed address." }
+                    // SetupOpml.kt leaves internal NewsBlur addresses to the backend importer's ownership checks.
+                    require(listOf("https://", "http://", "newsletter:", "webfeed:").any { url.startsWith(it) }) {
+                        "The OPML file contains an invalid feed address."
+                    }
                     folders.getOrPut(path.joinToString(" ▸ ")) { mutableListOf() }.add(DiscoveryFeed(url, title.ifBlank { url }))
                 } else if (title.isNotBlank()) {
                     next = path + title

@@ -7,6 +7,19 @@ import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class SetupOpmlTest {
+    @Test fun mixedNewsBlurExportKeepsOrdinaryAndInternalFeeds() {
+        val xml = """<opml><body><outline text="News"><outline text="RSS" xmlUrl="https://a.test/rss"/><outline text="Newsletter" xmlUrl="newsletter:123:inbox"/><outline text="Web feed" xmlUrl="webfeed:456"/></outline></body></opml>"""
+        val result = SetupOpml.parse(xml.toByteArray())
+        assertEquals(
+            listOf("https://a.test/rss", "newsletter:123:inbox", "webfeed:456"),
+            result["News"]!!.map { it.url },
+        )
+        listOf("file:///etc/passwd", "javascript:alert(1)", "data:text/plain,feed").forEach { url ->
+            val unsafe = xml.replace("webfeed:456", url)
+            assertTrue(runCatching { SetupOpml.parse(unsafe.toByteArray()) }.isFailure)
+        }
+    }
+
     @Test fun nestedFoldersAndDuplicateFeedsKeepTheirPaths() {
         val xml = """<opml><body><outline text="News"><outline text="Local"><outline text="A" xmlUrl="https://a.test/rss"/><outline text="A again" xmlUrl="https://a.test/rss"/></outline></outline><outline text="Root" xmlUrl="https://root.test/rss"/></body></opml>"""
         val result = SetupOpml.parse(xml.toByteArray())
