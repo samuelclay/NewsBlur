@@ -64,7 +64,7 @@ class AccountViewModel
                 AccountState(
                     signup = prefs.lastAuthProvider() == null,
                     lastUsed = prefs.lastAuthProvider(),
-                    activeProvider = saved["status_provider"],
+                    activeProvider = if (saved.get<String>("continuation") == null) saved["status_provider"] else null,
                     continuation = saved["continuation"],
                     canChooseUsername = saved.get<Boolean>("can_choose_username") == true,
                     username = saved.get<String>("username").orEmpty(),
@@ -116,8 +116,9 @@ class AccountViewModel
 
         // AccountViewModel.kt separates visible status ownership from the pending OAuth provider.
         private fun setActiveProvider(provider: String?) {
-            if (provider == null) saved.remove<String>("status_provider") else saved["status_provider"] = provider
-            mutable.update { it.copy(activeProvider = provider) }
+            val activeProvider = provider.takeIf { state.value.continuation == null }
+            if (activeProvider == null) saved.remove<String>("status_provider") else saved["status_provider"] = activeProvider
+            mutable.update { it.copy(activeProvider = activeProvider) }
         }
 
         fun updateUsername(value: String) {
@@ -244,6 +245,8 @@ class AccountViewModel
         fun callback(uri: Uri) {
             val expected = if (BuildConfig.APPLICATION_ID.endsWith(".alpha")) "newsblur-auth-android-alpha" else "newsblur-auth-android"
             if (uri.scheme != expected || uri.host != "complete") return
+            // AccountViewModel.kt keeps the continuation ticket when activity recreation replays the browser intent.
+            if (state.value.continuation != null) return
             val verifier: String? = saved["verifier"]
             val server: String? = saved["server"]
             if (verifier.isNullOrBlank() ||
@@ -263,6 +266,7 @@ class AccountViewModel
             saved["ticket"] = ticket
             viewModelScope.launch {
                 state.first { !it.busy }
+                if (state.value.continuation != null) return@launch
                 setActiveProvider(saved["provider"])
                 complete("", "")
             }

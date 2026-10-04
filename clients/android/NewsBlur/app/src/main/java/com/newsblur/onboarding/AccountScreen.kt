@@ -132,6 +132,7 @@ fun AccountScreen(
                             listOf("apple", "google").forEach { provider ->
                                 val providerName = if (provider == "apple") "Apple" else "Google"
                                 val signingIn = state.busy && state.activeProvider == provider
+                                val providerAlpha = if (state.busy && !signingIn) .38f else 1f
                                 Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Button(
                                         onClick = {
@@ -150,7 +151,7 @@ fun AccountScreen(
                                                 containerColor = Color.White,
                                                 contentColor = Color.Black,
                                                 disabledContainerColor = Color.White,
-                                                disabledContentColor = Color.Black,
+                                                disabledContentColor = Color.Black.copy(alpha = providerAlpha),
                                             ),
                                         shape = RoundedCornerShape(7.dp),
                                     ) {
@@ -166,6 +167,7 @@ fun AccountScreen(
                                             ),
                                             null,
                                             Modifier.size(20.dp),
+                                            alpha = providerAlpha,
                                         )
                                         Text(
                                             if (signingIn) "Signing in…" else "Sign in with $providerName",
@@ -263,7 +265,7 @@ fun AccountScreen(
                                 fontSize = 17.sp,
                             )
                         }
-                        if (state.activeProvider == null) {
+                        if (state.continuation != null || state.activeProvider == null) {
                             state.error?.let { AccountError(it, palette) }
                             if (state.busy) {
                                 Row(
