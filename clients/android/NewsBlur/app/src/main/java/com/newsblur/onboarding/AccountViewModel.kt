@@ -33,6 +33,8 @@ data class AccountState(
     val error: String? = null,
     val browserUrl: String? = null,
     val continuation: String? = null,
+    val username: String = "",
+    val password: String = "",
     val authenticated: Boolean = false,
     val setup: Boolean = false,
     val lastUsed: String? = null,
@@ -61,6 +63,7 @@ class AccountViewModel
                     signup = prefs.lastAuthProvider() == null,
                     lastUsed = prefs.lastAuthProvider(),
                     continuation = saved["continuation"],
+                    username = saved.get<String>("username").orEmpty(),
                     deleting = saved.get<Boolean>("manage_account") == true,
                 ),
             )
@@ -101,12 +104,37 @@ class AccountViewModel
         }
 
         fun mode() {
+            if (state.value.busy) return
+            resetContinuation()
+            mutable.update { it.copy(signup = !it.signup) }
+        }
+
+        fun updateUsername(value: String) {
+            saved["username"] = value
+            mutable.update { it.copy(username = value) }
+        }
+
+        // AccountViewModel.kt keeps passwords only in memory, never in SavedStateHandle.
+        fun updatePassword(value: String) {
+            mutable.update { it.copy(password = value) }
+        }
+
+        fun connectExistingAccount() {
+            if (state.value.busy || state.value.continuation != "username") return
+            saved["continuation"] = "link"
+            mutable.update { it.copy(continuation = "link", password = "", error = null) }
+        }
+
+        private fun resetContinuation() {
+            saved.remove<String>("verifier")
             saved.remove<String>("ticket")
             saved.remove<String>("continuation")
-            mutable.update { it.copy(signup = !it.signup, error = null, continuation = null) }
+            mutable.update { it.copy(error = null, continuation = null, password = "", browserUrl = null) }
         }
 
         fun customServer() = prefs.getCustomServer().orEmpty()
+
+        fun theme() = prefs.getResolvedTheme(context)
 
         fun server(value: String) {
             if (value.isBlank()) {
@@ -116,9 +144,7 @@ class AccountViewModel
                 APIConstants.setCustomServer(value)
                 prefs.saveCustomServer(value)
             }
-            saved.remove<String>("verifier")
-            saved.remove<String>("ticket")
-            mutable.update { it.copy(continuation = null, error = null) }
+            resetContinuation()
         }
 
         fun submit(
@@ -152,6 +178,8 @@ class AccountViewModel
 
         fun social(provider: String) =
             run {
+                resetContinuation()
+                updateUsername("")
                 val verifier =
                     Base64.encodeToString(
                         ByteArray(32).also { SecureRandom().nextBytes(it) },
@@ -218,12 +246,13 @@ class AccountViewModel
             password: String,
         ) = run {
             val values =
-                mapOf(
+                mutableMapOf(
                     "ticket" to saved.get<String>("ticket").orEmpty(),
                     "verifier" to saved.get<String>("verifier").orEmpty(),
                     "username" to username,
-                    "password" to password,
+                    "password" to if (state.value.continuation == "username") "" else password,
                 )
+            if (state.value.continuation == "link") values["action"] = "link"
             val response = api.request("/api/social/complete", values, true)!!
             val json = response.json
             if (state.value.deleting) {
@@ -242,7 +271,13 @@ class AccountViewModel
             if (continuation != null) {
                 saved["ticket"] = json.string("ticket")
                 saved["continuation"] = continuation
-                mutable.update { it.copy(continuation = continuation, error = json.string("message")) }
+                mutable.update {
+                    it.copy(
+                        continuation = continuation,
+                        error = json.string("message"),
+                        password = if (continuation != it.continuation) "" else it.password,
+                    )
+                }
             } else {
                 val cookie = response.cookie
                 check(!cookie.isNullOrBlank()) { "The server did not return a login session. Please try again." }
