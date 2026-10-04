@@ -236,6 +236,7 @@ def continue_signin(request):
             step=context["step"],
             provider=context["provider"],
             username=context.get("username", ""),
+            can_choose_username=context.get("can_choose_username", False),
         )
     if social_auth.rate_limited(request):
         return page(request, "Please wait a minute before trying again.", 429)
@@ -263,12 +264,18 @@ def continue_signin(request):
     step = "link" if result.get("link_required") else "username" if result.get("username_required") else None
     username = (
         ""
-        if request.POST.get("action") == "choose_username"
+        if request.POST.get("action") == "choose_username" and result.get("username_required")
         else request.POST.get("username", context.get("username", ""))
     )
+    can_choose_username = result.get("can_choose_username", False)
     if step:
         request.session["web_social_pending"] = dict(
-            context, ticket=result["ticket"], step=step, message=result["message"], username=username
+            context,
+            ticket=result["ticket"],
+            step=step,
+            message=result["message"],
+            username=username,
+            can_choose_username=can_choose_username,
         )
     else:
         request.session.pop("web_social_pending", None)
@@ -279,6 +286,7 @@ def continue_signin(request):
         step=step,
         provider=context["provider"],
         username=username,
+        can_choose_username=can_choose_username,
         connecting=context.get("purpose") == "connect_account",
     )
 

@@ -183,12 +183,14 @@
               onload="this.onload=null;this.rel='stylesheet'"
               type="text/css"
               href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
+        <noscript><link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></noscript>
       {% else %}
         <link rel="preload"
               as="style"
               onload="this.onload=null;this.rel='stylesheet'"
               type="text/css"
               href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+        <noscript><link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" /></noscript>
       {% endif %}
     </head>
     <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">

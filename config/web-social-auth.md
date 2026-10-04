@@ -3,8 +3,8 @@
 `apps/profile/web_social_auth.py` adds browser redirects around the account protocol in
 `apps/api/social_auth.py`, shared with iOS and Android. Provider buttons appear on `/account/login`,
 `/account/signup`, and both forms on `/welcome` when `SOCIAL_WEB_ENABLED = True` and
-that provider is configured. Browser sign-in is disabled by default, even when mobile
-provider credentials are configured. Disabled browser sign-in hides both buttons and
+that provider is configured. Browser sign-in is enabled by default. Set
+`SOCIAL_WEB_ENABLED = False` in server settings to disable it. Disabled browser sign-in hides both buttons and
 rejects new `/account/social/start` requests; existing in-flight attempts can finish.
 The switch does not affect iOS or Android's `/api/social/` endpoints.
 Username/password forms remain available. New provider users choose a username; existing
@@ -16,6 +16,14 @@ so Apple and Google can use different email addresses while connecting to the sa
 NewsBlur account. Linking keeps the NewsBlur account email unchanged. Unknown or
 incorrect credentials never create a new account, and an already linked provider
 identity cannot be moved to another account through this flow.
+Link responses include `can_choose_username`: it is true only when the provider email
+does not already belong to a NewsBlur account. In that case, clients may offer
+“Create a new account instead” and send `action=choose_username` to get a fresh username
+step and ticket. When the provider email already belongs to an account, the flag is
+false and `choose_username` keeps the password link step. The web continuation preserves
+this choice and the entered username on refresh; returning to username selection clears
+the entered username. A taken username never authenticates a different-email account
+from a signup submission, even if that submission includes its correct password.
 
 ## Server and provider configuration
 
@@ -65,11 +73,11 @@ Register these additional return URLs with the same provider clients:
 
 Also register `staging.newsblur.com` on Apple's Services ID. The staging-specific
 configuration in `ansible/roles/web/tasks/main.yml` preserves these callbacks when
-server settings are recopied and sets `SOCIAL_WEB_ENABLED = True` only on staging.
+server settings are recopied and explicitly enables `SOCIAL_WEB_ENABLED` on staging.
 It overrides both native and browser redirect settings so mobile tests started on
 staging also return there, rather than sending their authorization codes to production.
-Keep this flag out of shared production settings until browser sign-in is ready to launch.
-For local testing, set it in the worktree's untracked `newsblur_web/local_settings.py`.
+Production uses the enabled default; an explicit false override still disables it.
+Local callback overrides belong in the worktree's untracked `newsblur_web/local_settings.py`.
 Google credentials remain in the external common settings.
 Staging shares the NewsBlur database, so accounts and identity links created there
 are real accounts. A successful staging login still requires provider-console setup.

@@ -30,7 +30,7 @@
                 <p>Already have a NewsBlur account?</p>
                 <button type="submit" name="action" value="link" formnovalidate class="NB-social-signin-button">Connect an existing account</button>
             </div>
-            {% elif step == 'link' %}
+            {% elif step == 'link' and can_choose_username %}
             <button type="submit" name="action" value="choose_username" formnovalidate class="NB-static-card-altlink">Create a new account instead</button>
             {% endif %}
         </form>

@@ -1,8 +1,10 @@
 package com.newsblur.onboarding
 
 import android.util.Base64
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonParser
+import com.newsblur.BuildConfig
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import io.mockk.Runs
@@ -95,6 +97,7 @@ class Test_AccountSocialLink {
         every { Base64.encodeToString(any(), any()) } returns "new-verifier"
         coEvery { api.request("/api/social/start", any(), true, any(), any(), any()) } throws IOException("Offline")
         val saved = saved()
+        saved["can_choose_username"] = true
         val model = model(saved)
         model.updateUsername("previous-reader")
         model.updatePassword("previous-password")
@@ -107,6 +110,7 @@ class Test_AccountSocialLink {
         assertEquals("apple", saved.get<String>("provider"))
         assertEquals("", model.state.value.username)
         assertEquals("", model.state.value.password)
+        assertNotEquals(true, saved.get<Boolean>("can_choose_username"))
     }
 
     @Test fun test_switch_to_existing_account_preserves_identity_and_clears_stale_fields() = runTest(dispatcher) {
@@ -182,7 +186,7 @@ class Test_AccountSocialLink {
             requests.add(values.toMap())
             if (values["username"] == "taken-reader") {
                 SetupResponse(
-                    JsonParser.parseString("""{"link_required":true,"ticket":"collision-ticket","message":"Connect your existing account"}""").asJsonObject,
+                    JsonParser.parseString("""{"link_required":true,"can_choose_username":true,"ticket":"collision-ticket","message":"Connect your existing account"}""").asJsonObject,
                     null,
                 )
             } else {
@@ -196,6 +200,7 @@ class Test_AccountSocialLink {
         advanceUntilIdle()
         assertEquals("link", model.state.value.continuation)
         assertNotNull(model.state.value.error)
+        assertEquals(true, saved.get<Boolean>("can_choose_username"))
         model.updatePassword("stale-password")
 
         model.createNewAccountInstead()
@@ -223,5 +228,83 @@ class Test_AccountSocialLink {
         )
         verify { prefs.saveLogin("available-reader", "session-cookie") }
         verify { prefs.saveLastAuthProvider("google") }
+    }
+
+    @Test fun test_mode_switch_preserves_pending_oauth_for_both_provider_callbacks() = runTest(dispatcher) {
+        mockkStatic(Base64::class)
+        every { Base64.encodeToString(any(), any()) } returns "pending-verifier"
+        coEvery { api.request("/api/social/start", any(), true, any(), any(), any()) } returns
+            SetupResponse(JsonParser.parseString("""{"url":"https://provider.example/authorize"}""").asJsonObject, null)
+        coEvery { api.request("/api/social/complete", any(), true, any(), any(), any()) } answers {
+            requests.add(secondArg<Map<String, String>>().toMap())
+            SetupResponse(JsonParser.parseString("""{"username_required":true,"ticket":"continuation-ticket"}""").asJsonObject, null)
+        }
+        for (provider in listOf("apple", "google")) {
+            val saved = SavedStateHandle()
+            val model = model(saved)
+            model.social(provider)
+            advanceUntilIdle()
+            model.browserOpened()
+            model.browserUnavailable()
+            model.updatePassword("stale-password")
+            model.mode()
+            assertFalse(model.state.value.signup)
+            assertNull(model.state.value.error)
+            assertEquals("", model.state.value.password)
+            assertEquals("pending-verifier", saved.get<String>("verifier"))
+            assertEquals(provider, saved.get<String>("provider"))
+
+            val uri = mockk<Uri>()
+            every { uri.scheme } returns if (BuildConfig.APPLICATION_ID.endsWith(".alpha")) "newsblur-auth-android-alpha" else "newsblur-auth-android"
+            every { uri.host } returns "complete"
+            every { uri.getQueryParameter("error") } returns null
+            every { uri.getQueryParameter("ticket") } returns "browser-ticket"
+            model.callback(uri)
+            advanceUntilIdle()
+            assertEquals("username", model.state.value.continuation)
+            assertEquals("browser-ticket", requests.last()["ticket"])
+            assertEquals("pending-verifier", requests.last()["verifier"])
+        }
+        assertEquals(2, requests.size)
+    }
+
+    @Test fun test_server_required_link_blocks_signup_escape_after_recreation() = runTest(dispatcher) {
+        for (flag in listOf("", "\"can_choose_username\":false,")) {
+            coEvery { api.request("/api/social/complete", any(), true, any(), any(), any()) } returns
+                SetupResponse(JsonParser.parseString("""{${flag}"link_required":true,"ticket":"required-ticket","message":"Password required"}""").asJsonObject, null)
+            val saved = saved("username")
+            val model = model(saved)
+            model.updateUsername("existing-reader")
+            model.connectExistingAccount()
+            model.submit("existing-reader", "wrong-password", "")
+            advanceUntilIdle()
+            assertEquals(false, saved.get<Boolean>("can_choose_username"))
+            val recreated = model(SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) }))
+            recreated.createNewAccountInstead()
+            assertEquals("link", recreated.state.value.continuation)
+            assertEquals("existing-reader", recreated.state.value.username)
+        }
+    }
+
+    @Test fun test_explicit_link_and_server_permitted_link_allow_return_after_recreation() = runTest(dispatcher) {
+        for (serverPermission in listOf(false, true)) {
+            val saved = saved("username")
+            val model = model(saved)
+            if (serverPermission) {
+                coEvery { api.request("/api/social/complete", any(), true, any(), any(), any()) } returns
+                    SetupResponse(JsonParser.parseString("""{"link_required":true,"can_choose_username":true,"ticket":"provider-ticket"}""").asJsonObject, null)
+                model.submit("taken-reader", "", "")
+                advanceUntilIdle()
+            } else {
+                model.connectExistingAccount()
+            }
+            assertEquals(true, saved.get<Boolean>("can_choose_username"))
+            val restored = SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) })
+            val recreated = model(restored)
+            recreated.createNewAccountInstead()
+            assertEquals("username", recreated.state.value.continuation)
+            assertEquals("provider-ticket", restored.get<String>("ticket"))
+            assertEquals("provider-verifier", restored.get<String>("verifier"))
+        }
     }
 }

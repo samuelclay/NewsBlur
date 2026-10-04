@@ -312,6 +312,15 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         user = User.objects.create_user("reader", "reader@example.com", "existing-password")
         response = self.verify(self.callback(self.start()))
         self.assertContains(response, "Connect your account")
+        self.assertNotContains(response, "Create a new account instead")
+        self.assertNotContains(self.client.get("/account/social/continue"), "Create a new account instead")
+        response = self.client.post(
+            "/account/social/continue",
+            dict(action="choose_username", username="reader", password="existing-password"),
+        )
+        self.assertContains(response, "Connect your account")
+        self.assertNotContains(response, "Create a new account instead")
+        self.assertNotIn("_auth_user_id", self.client.session)
         self.assertFalse(SocialIdentity.objects.exists())
         response = self.client.post("/account/social/continue", dict(username="reader", password="wrong"))
         self.assertContains(response, "Connect your account")
@@ -330,9 +339,12 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         self.assertContains(response, "This account already exists. Log in to connect it to Google.")
         self.assertContains(response, 'value="taken"')
         self.assertContains(response, 'name="password"')
+        self.assertContains(response, "Create a new account instead")
+        self.assertContains(self.client.get("/account/social/continue"), "Create a new account instead")
         self.assertFalse(SocialIdentity.objects.exists())
         response = self.client.post("/account/social/continue", {"action": ["link", "choose_username"]})
         self.assertContains(response, "Choose your username")
+        self.assertNotContains(self.client.get("/account/social/continue"), 'value="taken"')
         response = self.client.post("/account/social/continue", {"username": "available"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(SocialIdentity.objects.get().user.username, "available")
@@ -372,6 +384,8 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         self.assertContains(response, "Connect an existing account")
         response = self.client.post("/account/social/continue", {"action": "link"})
         self.assertContains(response, "Connect your account")
+        self.assertContains(response, "Create a new account instead")
+        self.assertContains(self.client.get("/account/social/continue"), "Create a new account instead")
         self.assertContains(response, 'name="action" value="link"')
         self.assertFalse(SocialIdentity.objects.exists())
         for password in ("", "wrong"):
@@ -379,6 +393,8 @@ class Test_WebSocialAuthentication(TransactionTestCase):
                 "/account/social/continue", dict(action="link", username="reader", password=password)
             )
             self.assertContains(response, "Connect your account")
+            self.assertContains(response, "Create a new account instead")
+            self.assertContains(self.client.get("/account/social/continue"), "Create a new account instead")
             self.assertNotIn("_auth_user_id", self.client.session)
             self.assertFalse(SocialIdentity.objects.exists())
         response = self.client.post(
@@ -394,11 +410,24 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         for path in ("/account/login", "/account/social/continue"):
             with self.subTest(path=path):
                 response = self.client.get(path)
-                links = re.findall(r"<link\b[^>]*>", response.content.decode())
+                html = response.content.decode()
+                fallbacks = re.findall(r"<noscript\b[^>]*>(.*?)</noscript>", html, re.DOTALL)
+                scripted_html = re.sub(r"<noscript\b[^>]*>.*?</noscript>", "", html, flags=re.DOTALL)
+                links = re.findall(r"<link\b[^>]*>", scripted_html)
                 font_links = [link for link in links if "cloud.typography.com" in link]
                 self.assertTrue(font_links)
                 for link in font_links:
                     self.assertNotRegex(link, r'\brel="stylesheet"')
+                    self.assertIn('rel="preload"', link)
+                    self.assertIn('as="style"', link)
+                    self.assertIn("this.rel='stylesheet'", link)
+                    href = re.search(r'href="([^"]+)"', link).group(1)
+                    fallback_links = re.findall(r"<link\b[^>]*>", "".join(fallbacks))
+                    self.assertTrue(
+                        any(
+                            'rel="stylesheet"' in fallback and href in fallback for fallback in fallback_links
+                        )
+                    )
 
     def test_apple_post_without_session_cookie_returns_to_initiating_browser(self):
         params = self.start("apple")
@@ -448,6 +477,44 @@ class Test_WebSocialAuthentication(TransactionTestCase):
     def test_apple_requests_hybrid_authorization_while_google_keeps_code_flow(self):
         self.assertEqual(self.start("apple")["response_type"], ["code id_token"])
         self.assertEqual(self.start("google")["response_type"], ["code"])
+
+    def test_production_and_staging_keep_browser_and_mobile_callback_hosts_separate(self):
+        for host in ("www.newsblur.com", "staging.newsblur.com"):
+            callbacks = {
+                f"SOCIAL_{provider.upper()}{'_WEB' if browser else ''}_REDIRECT_URI": f"https://{host}/{'account' if browser else 'api'}/social/{provider}/callback"
+                for provider in ("apple", "google")
+                for browser in (False, True)
+            }
+            with self.subTest(host=host), override_settings(**callbacks):
+                for provider in ("apple", "google"):
+                    expected = callbacks["SOCIAL_%s_WEB_REDIRECT_URI" % provider.upper()]
+                    params = self.start(provider, redirect_uri="https://attacker.example/callback")
+                    self.assertEqual(params["redirect_uri"], [expected])
+                    if provider == "apple":
+                        claims = self.apple_claims(params)
+                        callback = self.callback(params, provider, id_token=self.sign_apple(claims))
+                        finished, exchange = self.finish_apple(callback, self.sign_apple(claims))
+                        self.assertEqual(finished.status_code, 302)
+                    else:
+                        callback = self.callback(params)
+                        token_response = Mock()
+                        token_response.json.return_value = {"id_token": "signed-token"}
+                        with patch.object(
+                            web_social_auth.requests, "post", return_value=token_response
+                        ) as exchange, patch.object(
+                            social_auth, "verified_claims", return_value=self.identity
+                        ):
+                            self.assertEqual(self.client.get(callback.url).status_code, 302)
+                    self.assertEqual(exchange.call_args.kwargs["data"]["redirect_uri"], expected)
+                    native = self.client.post(
+                        "/api/social/start",
+                        dict(provider=provider, platform="android", challenge="a" * 64),
+                    )
+                    self.assertEqual(native.status_code, 200, native.content)
+                    self.assertEqual(
+                        parse_qs(urlparse(native.json()["url"]).query)["redirect_uri"],
+                        [callbacks["SOCIAL_%s_REDIRECT_URI" % provider.upper()]],
+                    )
 
     def test_apple_signed_authorization_allows_exchange_without_nonce_or_email(self):
         for include_nonce in (False, True):

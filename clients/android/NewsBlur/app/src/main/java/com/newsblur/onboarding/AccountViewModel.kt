@@ -33,6 +33,7 @@ data class AccountState(
     val error: String? = null,
     val browserUrl: String? = null,
     val continuation: String? = null,
+    val canChooseUsername: Boolean = false,
     val username: String = "",
     val password: String = "",
     val authenticated: Boolean = false,
@@ -63,6 +64,7 @@ class AccountViewModel
                     signup = prefs.lastAuthProvider() == null,
                     lastUsed = prefs.lastAuthProvider(),
                     continuation = saved["continuation"],
+                    canChooseUsername = saved.get<Boolean>("can_choose_username") == true,
                     username = saved.get<String>("username").orEmpty(),
                     deleting = saved.get<Boolean>("manage_account") == true,
                 ),
@@ -105,8 +107,8 @@ class AccountViewModel
 
         fun mode() {
             if (state.value.busy) return
-            resetContinuation()
-            mutable.update { it.copy(signup = !it.signup) }
+            if (state.value.continuation != null) resetContinuation()
+            mutable.update { it.copy(signup = !it.signup, password = "", error = null) }
         }
 
         fun updateUsername(value: String) {
@@ -122,11 +124,12 @@ class AccountViewModel
         fun connectExistingAccount() {
             if (state.value.busy || state.value.continuation != "username") return
             saved["continuation"] = "link"
-            mutable.update { it.copy(continuation = "link", password = "", error = null) }
+            saved["can_choose_username"] = true
+            mutable.update { it.copy(continuation = "link", canChooseUsername = true, password = "", error = null) }
         }
 
         fun createNewAccountInstead() {
-            if (state.value.busy || state.value.continuation != "link") return
+            if (state.value.busy || state.value.continuation != "link" || !state.value.canChooseUsername) return
             saved["continuation"] = "username"
             saved["username"] = ""
             mutable.update { it.copy(continuation = "username", username = "", password = "", error = null) }
@@ -136,7 +139,8 @@ class AccountViewModel
             saved.remove<String>("verifier")
             saved.remove<String>("ticket")
             saved.remove<String>("continuation")
-            mutable.update { it.copy(error = null, continuation = null, password = "", browserUrl = null) }
+            saved.remove<Boolean>("can_choose_username")
+            mutable.update { it.copy(error = null, continuation = null, canChooseUsername = false, password = "", browserUrl = null) }
         }
 
         fun customServer() = prefs.getCustomServer().orEmpty()
@@ -276,11 +280,14 @@ class AccountViewModel
                     else -> null
                 }
             if (continuation != null) {
+                val canChooseUsername = json.string("can_choose_username") == "true"
                 saved["ticket"] = json.string("ticket")
                 saved["continuation"] = continuation
+                saved["can_choose_username"] = canChooseUsername
                 mutable.update {
                     it.copy(
                         continuation = continuation,
+                        canChooseUsername = canChooseUsername,
                         error = json.string("message"),
                         password = if (continuation != it.continuation) "" else it.password,
                     )
@@ -293,6 +300,8 @@ class AccountViewModel
                 saved.remove<String>("verifier")
                 saved.remove<String>("ticket")
                 saved.remove<String>("continuation")
+                saved.remove<Boolean>("can_choose_username")
+                mutable.update { it.copy(canChooseUsername = false) }
             }
         }
 

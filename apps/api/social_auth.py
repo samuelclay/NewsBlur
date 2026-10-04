@@ -520,7 +520,16 @@ def complete_ticket(request, ticket, verifier):
     if existing:
         user = existing.user
     else:
+        email_matches = list(User.objects.filter(email__iexact=identity["email"])[:2])
+        can_choose_username = not email_matches
         if request.POST.get("action") == "choose_username":
+            if not can_choose_username:
+                return failure(
+                    "Sign in to your existing NewsBlur account to connect this provider.",
+                    link_required=True,
+                    can_choose_username=False,
+                    ticket=remember("ticket", ticket),
+                )
             return failure(
                 "Choose your NewsBlur username.",
                 username_required=True,
@@ -539,6 +548,7 @@ def complete_ticket(request, ticket, verifier):
             return failure(
                 "This account already exists. Log in to connect it to %s." % identity["provider"].title(),
                 link_required=True,
+                can_choose_username=can_choose_username,
                 ticket=remember("ticket", ticket),
             )
         if explicit_link:
@@ -547,7 +557,7 @@ def complete_ticket(request, ticket, verifier):
             if identifier and not matches:
                 matches = list(User.objects.filter(email__iexact=identifier)[:2])
         else:
-            matches = list(User.objects.filter(email__iexact=identity["email"])[:2])
+            matches = email_matches
         if matches or explicit_link:
             if len(matches) > 1 and not explicit_link:
                 return failure(
@@ -582,6 +592,7 @@ def complete_ticket(request, ticket, verifier):
                 return failure(
                     "Sign in to your existing NewsBlur account to connect this provider.",
                     link_required=True,
+                    can_choose_username=can_choose_username,
                     ticket=remember("ticket", ticket),
                 )
         else:
