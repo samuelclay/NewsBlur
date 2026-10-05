@@ -11,7 +11,7 @@ NewsBlur ships its translations with the application. Reading stories never call
 - iOS: `NBLocalization.text("Save story")` in Swift, `[NBLocalization text:@"Save story"]` in Objective-C. New Swift files must belong to both app targets. The source scanner extracts explicit calls; never pass user content to the helper.
 - Android: add strings or plurals in `res/values/strings.xml`, then use `stringResource`, `getString`, or `getQuantityString`. Stable preference values, URLs and identifiers must be `translatable="false"`. Arrays ending in `_values` are excluded.
 
-The extractor reads all three source formats and keeps a translation memory under `translations/`. Entries are keyed by platform, context and English source text. Editing English invalidates only that message; existing translations are reused. Plurals use the target language's grammatical categories. Generated files are standard Django gettext catalogs, iOS `.strings`, and Android resource XML.
+The extractor reads all three source formats and keeps a translation memory under `translations/`. Entries are keyed by platform, context and English source text. Editing English invalidates only that message; existing translations are reused. Plurals use the target language's grammatical categories. Generated files are standard Django gettext catalogs, iOS `.strings` and `.stringsdict`, and Android resource XML. iOS plural sources live in `clients/ios/Resources/Localizable.stringsdict`; format them with `NBLocalization.plural(_:count:)` so the account override controls both wording and plural rules.
 
 Run Python commands inside the worktree container:
 

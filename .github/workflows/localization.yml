@@ -16,6 +16,7 @@ on:
       - 'templates/**'
       - 'media/js/newsblur/**'
       - 'clients/ios/Classes/**'
+      - 'clients/ios/Resources/Localizable.stringsdict'
       - 'clients/android/NewsBlur/app/src/main/**'
       - 'apps/**'
       - 'localization/languages.json'
