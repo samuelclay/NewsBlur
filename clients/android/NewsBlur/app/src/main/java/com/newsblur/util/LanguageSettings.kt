@@ -13,6 +13,8 @@ object LanguageSettings {
 
     fun selected(context: Context): String = prefs(context).getString(KEY, "auto") ?: "auto"
     fun pending(context: Context): Boolean = prefs(context).getBoolean(PENDING, false)
+    fun requestLanguages(context: Context): String =
+        selected(context).let { if (it == "auto") context.resources.configuration.locales.toLanguageTags() else it }
     private fun prefs(context: Context) = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
 
     fun select(context: Context, language: String, pending: Boolean = false) {

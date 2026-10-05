@@ -2026,15 +2026,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                                 objectForKey:@"CFBundleVersion"];
     NSString *UA;
     if (self.isMac) {
-        UA = [NSString stringWithFormat:[NBLocalization text:@"NewsBlur Mac App v%@"], currentVersion];
+        UA = [NSString stringWithFormat:@"NewsBlur Mac App v%@", currentVersion];
     } else if (self.isVision) {
-        UA = [NSString stringWithFormat:[NBLocalization text:@"NewsBlur Vision App v%@"], currentVersion];
+        UA = [NSString stringWithFormat:@"NewsBlur Vision App v%@", currentVersion];
     } else if (self.isPhone) {
-        UA = [NSString stringWithFormat:[NBLocalization text:@"NewsBlur iPhone App v%@"], currentVersion];
+        UA = [NSString stringWithFormat:@"NewsBlur iPhone App v%@", currentVersion];
     } else {
-        UA = [NSString stringWithFormat:[NBLocalization text:@"NewsBlur iPad App v%@"], currentVersion];
+        UA = [NSString stringWithFormat:@"NewsBlur iPad App v%@", currentVersion];
     }
     [networkManager.requestSerializer setValue:UA forHTTPHeaderField:@"User-Agent"];
+    [networkManager.requestSerializer setValue:[NBLocalization resolvedLanguage] forHTTPHeaderField:@"Accept-Language"];
 }
 
 - (NSString *)beginNetworkOperation {

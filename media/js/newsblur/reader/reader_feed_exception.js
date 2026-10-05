@@ -1601,7 +1601,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         // Calculate default values
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
         var default_days = site_wide_days;
-        var default_source = 'site-wide preference';
+        var default_source = gettext('site-wide preference');
 
         var auto_mark_days;
         if (this.folder) {
@@ -1704,7 +1704,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     get_auto_mark_read_defaults: function () {
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
         var default_days = site_wide_days;
-        var default_source = 'site-wide preference';
+        var default_source = gettext('site-wide preference');
 
         if (this.folder) {
             var parent_folder_title = this.get_parent_folder_title(this.folder_title);
