@@ -35,7 +35,9 @@ MODEL = "gemini-2.5-flash-lite"
 PRINTF = re.compile(
     r"%(?:\([\w]+\)|\d+\$)?[-+#0 ]*(?:\d+|\*)?(?:\.(?:\d+|\*))?(?:hh|ll|[hlLzjt])?[@diuoxXfFeEgGcsSpaA%]"
 )
-TOKENS = re.compile(r"\bNewsBlur\b|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|\\[nrt]|https?://[^\s<>\"'\\]*")
+TOKENS = re.compile(
+    r"NewsBlur|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|\\[nrt]|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
+)
 APPLE_STRING = re.compile(r'"((?:\\.|[^"\\])*)"\s*=\s*"((?:\\.|[^"\\])*)"\s*;')
 
 
