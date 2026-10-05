@@ -4,6 +4,11 @@
 {% load recommendations_tags utils_tags statistics_tags %}
 
 {% block title %}{% trans "NewsBlur — Personal News Reader with Intelligence Training" %}{% endblock %}
+{% block nav_language %}
+    <div class="NB-welcome-language">
+        {% include "includes/language_selector.html" %}
+    </div>
+{% endblock %}
 {% block head %}
     <meta name="description" content="NewsBlur is a personal news reader that brings people together to talk about the world. Follow RSS feeds, train stories with intelligence filters, and read smarter with AI.">
     <meta property="og:title" content="NewsBlur - A Personal News Reader">
@@ -1788,7 +1793,7 @@
             </a>
         </div>
         
-        {% render_footer "welcome" %}
+        {% render_footer "welcome" show_language=False %}
         
     </footer>
 {% endblock footer %}

@@ -245,6 +245,59 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
 }
 
 
+/* welcome.xhtml: language and theme controls bookend the navigation. */
+.NB-welcome-language {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.NB-welcome-language .NB-language-selector {
+    margin: 0;
+}
+
+.NB-welcome-language .NB-language-selector select {
+    appearance: auto;
+    width: auto;
+    max-width: 190px;
+    min-height: 32px;
+    margin: 0;
+    padding: 5px 10px;
+    border: 1px solid rgba(45, 38, 26, 0.15);
+    border-radius: 16px;
+    background: rgba(45, 38, 26, 0.04);
+    color: rgba(45, 38, 26, 0.7);
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.NB-welcome-language .NB-language-selector select:hover {
+    background: rgba(45, 38, 26, 0.08);
+    border-color: rgba(45, 38, 26, 0.25);
+}
+
+body.NB-dark .NB-welcome-language select {
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.NB-dark .NB-welcome-language select:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.NB-welcome-language .NB-language-selector select:focus-visible {
+    outline: 2px solid #b8960a;
+    outline-offset: 2px;
+}
+
 /* ---- Navigation Dropdown Menus ---- */
 
 .NB-splash-nav-has-dropdown {
@@ -3375,6 +3428,29 @@ a.NB-faq-button-secondary:hover {
     }
 
     /* Hide the NewsBlur text logo on mobile */
+    .NB-welcome .NB-splash-top-nav {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: "language theme" "links links";
+        row-gap: 6px;
+    }
+
+    .NB-welcome-language {
+        grid-area: language;
+        position: static;
+        height: auto;
+    }
+
+    .NB-welcome .NB-splash-top-logo {
+        grid-area: theme;
+    }
+
+    .NB-welcome .NB-splash-top-links {
+        grid-area: links;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
     .NB-static .NB-splash-top-logo .NB-splash-blurred-logo {
         display: none;
     }

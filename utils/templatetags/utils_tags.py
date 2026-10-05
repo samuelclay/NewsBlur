@@ -198,9 +198,10 @@ def render_manage_module(context):
 
 
 @register.inclusion_tag("reader/footer.xhtml", takes_context=True)
-def render_footer(context, page=None):
+def render_footer(context, page=None, show_language=True):
     return {
         "page": page,
+        "show_language": show_language,
         "MEDIA_URL": settings.MEDIA_URL,
         "request": context.get("request"),
         "user": context.get("user"),
