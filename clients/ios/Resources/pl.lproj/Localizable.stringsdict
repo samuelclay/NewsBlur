@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%@ opens</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_opens@</string>
+		<key>feed_opens</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ otwarcia</string>
+			<key>many</key>
+			<string>%@ otwarć</string>
+			<key>one</key>
+			<string>%@ otwarcie</string>
+			<key>other</key>
+			<string>%@ otwarć</string>
+		</dict>
+	</dict>
+	<key>%@ stories/month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@average_stories_per_month@</string>
+		<key>average_stories_per_month</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ artykuły/miesiąc</string>
+			<key>many</key>
+			<string>%@ artykułów/miesiąc</string>
+			<key>one</key>
+			<string>%@ artykuł/miesiąc</string>
+			<key>other</key>
+			<string>%@ artykułów/miesiąc</string>
+		</dict>
+	</dict>
+	<key>%@ subscribers</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@num_subscribers@</string>
+		<key>num_subscribers</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ subskrybentów</string>
+			<key>many</key>
+			<string>%@ subskrybentów</string>
+			<key>one</key>
+			<string>%@ subskrybent</string>
+			<key>other</key>
+			<string>%@ subskrybentów</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

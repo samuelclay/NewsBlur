@@ -11,6 +11,7 @@ import html
 import io
 import json
 import os
+import plistlib
 import re
 import sys
 import threading
@@ -113,9 +114,28 @@ def source_entries(code="en"):
             if not source.strip() or source.startswith("@"):
                 continue
             entries.append(entry("android", f"{name}:{suffix}", source, kind=node.tag))
+    entries.extend(ios_plural_entries(code))
     entries.extend(common_entries())
     unique = {item["id"]: item for item in entries}
     return sorted(unique.values(), key=lambda item: item["id"])
+
+
+def ios_plural_entries(code):
+    originals = plistlib.loads((IOS / "Localizable.stringsdict").read_bytes())
+    quantities = sorted(Locale.parse(locale_name(code)).plural_form.tags | {"other"})
+    for key, definition in originals.items():
+        for variable, forms in definition.items():
+            if not isinstance(forms, dict):
+                continue
+            for quantity in quantities:
+                yield entry(
+                    "ios_plural",
+                    f"{key}:{variable}:{quantity}",
+                    forms.get(quantity, forms["other"]),
+                    key=key,
+                    variable=variable,
+                    quantity=quantity,
+                )
 
 
 @lru_cache(maxsize=1)
@@ -124,7 +144,7 @@ def common_entries():
     entries = []
     ios_strings = set()
     pattern = re.compile(
-        r'(?:NBLocalization\.text\(\s*|\[NBLocalization text:@|NSLocalizedString\(@?)("(?:\\.|[^"\\])*")'
+        r'(?:NBLocalization\.(?:text|plural)\(\s*|\[NBLocalization (?:text|plural):@|NSLocalizedString\(@?)("(?:\\.|[^"\\])*")'
     )
     for path in sorted((ROOT / "clients/ios/Classes").rglob("*")):
         if path.suffix not in (".swift", ".m") or "TestHarness" in path.name:
@@ -441,6 +461,20 @@ def compile_catalogs(code, entries, memory):
             for item in sorted(ios, key=lambda item: item["context"])
         )
     )
+    # Localizable.stringsdict retains Apple's plural metadata while replacing every grammatical form.
+    originals = plistlib.loads((IOS / "Localizable.stringsdict").read_bytes())
+    plural_catalog = copy.deepcopy(originals)
+    for definition in plural_catalog.values():
+        for forms in definition.values():
+            if isinstance(forms, dict):
+                for quantity in list(forms):
+                    if not quantity.startswith("NSString"):
+                        del forms[quantity]
+    for item in entries:
+        if item["platform"] == "ios_plural":
+            plural_catalog[item["key"]][item["variable"]][item["quantity"]] = translated(memory, item)
+    (IOS / f"{code}.lproj/Localizable.stringsdict").write_bytes(plistlib.dumps(plural_catalog))
+    (IOS / "en.lproj/Localizable.stringsdict").write_bytes(plistlib.dumps(originals))
     for domain in ("django", "djangojs"):
         catalog = Catalog(locale=locale_name(code), domain=domain, project="NewsBlur", charset="utf-8")
         for item in entries:

@@ -1,7 +1,14 @@
 import unittest
 from unittest.mock import patch
 
-from localization.manage import Translator, entry, protected, source_entries, validate
+from localization.manage import (
+    Translator,
+    entry,
+    ios_plural_entries,
+    protected,
+    source_entries,
+    validate,
+)
 
 
 class Test_Translation(unittest.TestCase):
@@ -45,3 +52,13 @@ class Test_Translation(unittest.TestCase):
         contexts = {item["context"] for item in entries if item["platform"] == "android"}
         for quantity in ("zero", "one", "two", "few", "many", "other"):
             self.assertIn("discover_subscribers:" + quantity, contexts)
+
+    def test_ios_plural_entries_preserve_counts_and_all_arabic_forms(self):
+        entries = list(ios_plural_entries("ar"))
+        subscribers = [item for item in entries if item["key"] == "%@ subscribers"]
+        self.assertEqual(
+            {item["quantity"] for item in subscribers}, {"zero", "one", "two", "few", "many", "other"}
+        )
+        self.assertTrue(all(protected(item["source"])["%@"] == 1 for item in subscribers))
+        singular = next(item for item in subscribers if item["quantity"] == "one")
+        self.assertEqual(singular["source"], "%@ subscriber")

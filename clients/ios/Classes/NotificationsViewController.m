@@ -196,7 +196,7 @@ viewForHeaderInSection:(NSInteger)section {
     cell.feedId = feedIdStr;
     cell.textLabel.text = [feed objectForKey:@"feed_title"];
     cell.imageView.image = [self.appDelegate getFavicon:feedIdStr isSocial:NO isSaved:NO];
-    cell.detailTextLabel.text = [NSString localizedStringWithFormat:NSLocalizedString(@"%@ stories/month", @"average stories per month"), feed[@"average_stories_per_month"]];
+    cell.detailTextLabel.text = [NBLocalization plural:@"%@ stories/month" count:feed[@"average_stories_per_month"]];
     
     return cell;
 }
