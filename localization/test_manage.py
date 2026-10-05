@@ -17,6 +17,7 @@ class Test_Translation(unittest.TestCase):
     def test_unicode_and_preserved_placeholders_are_accepted(self):
         validate("%1$d stories", "%1$d ストーリー")
         validate("<b>Read</b>", "<b>Lire</b>")
+        validate("Expected 'https://' in URL", "URL에 'https://'이(가) 필요합니다")
 
     def test_unnumbered_format_arguments_cannot_change_order(self):
         with self.assertRaises(ValueError):

@@ -541,7 +541,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         // Calculate the default/inherited value
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
         var default_days = site_wide_days;
-        var default_source = 'site-wide';
+        var default_source = gettext('site-wide');
 
         if (!is_river && feed) {
             var folders = NEWSBLUR.assets.get_feed_folders(feed.id);
@@ -856,7 +856,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         // Calculate default values for slider positioning
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
         var default_days = site_wide_days;
-        var default_source = 'site-wide';
+        var default_source = gettext('site-wide');
 
         var is_river = _.string.contains(this.options.feed_id, 'river:');
         var folder_title = is_river ? this.options.feed_id.replace('river:', '') : null;
@@ -931,7 +931,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         // Calculate default source for status text
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
-        var default_source = 'site-wide';
+        var default_source = gettext('site-wide');
 
         if (!NEWSBLUR.Globals.is_archive) {
             // Let them see the slider move but snap back after a moment

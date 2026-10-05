@@ -34,6 +34,7 @@ import UIKit
         NotificationCenter.default.post(name: changed, object: nil)
     }
     static func configureDirection() {
+        NewsBlurAppDelegate.shared?.networkManager?.requestSerializer.setValue(resolvedLanguage, forHTTPHeaderField: "Accept-Language")
         let direction: UISemanticContentAttribute = ["ar", "he"].contains(resolvedLanguage) ? .forceRightToLeft : .forceLeftToRight
         UIView.appearance().semanticContentAttribute = direction
         for scene in UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }) {
