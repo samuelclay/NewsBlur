@@ -18,6 +18,8 @@ class Test_Translation(unittest.TestCase):
         validate("%1$d stories", "%1$d ストーリー")
         validate("<b>Read</b>", "<b>Lire</b>")
         validate("Expected 'https://' in URL", "URL에 'https://'이(가) 필요합니다")
+        validate("NewsBlur is a reader", "NewsBlurはリーダーです")
+        validate("Visit https://newsblur.com", "https://newsblur.comを開く")
 
     def test_unnumbered_format_arguments_cannot_change_order(self):
         with self.assertRaises(ValueError):
