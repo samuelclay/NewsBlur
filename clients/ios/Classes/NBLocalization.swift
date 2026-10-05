@@ -26,9 +26,11 @@ import UIKit
     static func text(_ source: String) -> String {
         bundle.localizedString(forKey: source, value: source, table: nil)
     }
-    static func plural(_ source: String, count: NSNumber) -> String {
+    static func plural(_ source: String, count: NSNumber?) -> String {
+        // NotificationsViewController.m can receive feeds without monthly story statistics.
+        guard let count else { return "" }
         // NBLocalization.swift must use the override's plural rules, not the system locale's rules.
-        String(format: text(source), locale: Locale(identifier: resolvedLanguage), arguments: [count])
+        return String(format: text(source), locale: Locale(identifier: resolvedLanguage), arguments: [count])
     }
     static func apply(_ value: String, pending: Bool) {
         guard value == "auto" || languages.contains(where: { $0.0 == value }) else { return }

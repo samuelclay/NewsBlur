@@ -4,6 +4,13 @@ import XCTest
 
 @MainActor
 final class Test_Localization: XCTestCase {
+    func test_missingObjectiveCCountOmitsTheStatistic() {
+        // LocalizationTests.swift reproduces NotificationsViewController.m passing a missing feed statistic.
+        let result = NBLocalization.perform(#selector(NBLocalization.plural(_:count:)),
+                                            with: "%@ stories/month", with: nil)
+        XCTAssertEqual(result?.takeUnretainedValue() as? String, "")
+    }
+
     func test_accountOverrideControlsPluralRules() {
         let defaults = UserDefaults.standard
         let previous = defaults.object(forKey: NBLocalization.preferenceKey)
