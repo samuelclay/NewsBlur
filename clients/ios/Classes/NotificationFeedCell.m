@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  NotificationFeedCell.m
 //  NewsBlur
@@ -30,13 +31,13 @@
         [self setSelectedBackgroundView:selectedBackground];
         
         NSDictionary *controlAttrs = @{NSForegroundColorAttributeName: [UIColor lightGrayColor]};
-        self.filterControl = [[UISegmentedControl alloc] initWithItems:@[@"Unread Stories",
-                                                                         @"Focus Stories"]];
+        self.filterControl = [[UISegmentedControl alloc] initWithItems:@[[NBLocalization text:@"Unread Stories"],
+                                                                         [NBLocalization text:@"Focus Stories"]]];
         self.filterControl.tintColor = UIColorFromRGB(0x8F918B);
-        [self.filterControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus Stories";
-        [self.filterControl.subviews objectAtIndex:0].accessibilityLabel = @"Unread Stories";
-        [self.filterControl setTitle:@"Unread Stories" forSegmentAtIndex:0];
-        [self.filterControl setTitle:@"Focus Stories" forSegmentAtIndex:1];
+        [self.filterControl.subviews objectAtIndex:1].accessibilityLabel = [NBLocalization text:@"Focus Stories"];
+        [self.filterControl.subviews objectAtIndex:0].accessibilityLabel = [NBLocalization text:@"Unread Stories"];
+        [self.filterControl setTitle:[NBLocalization text:@"Unread Stories"] forSegmentAtIndex:0];
+        [self.filterControl setTitle:[NBLocalization text:@"Focus Stories"] forSegmentAtIndex:1];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:0];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
         [self.filterControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];

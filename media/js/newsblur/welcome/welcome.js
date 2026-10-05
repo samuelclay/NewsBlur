@@ -387,10 +387,10 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var $banner = $.make('div', { className: 'NB-tryout-signup-banner' }, [
             $.make('div', { className: 'NB-tryout-signup-banner-logo' }),
             $.make('div', { className: 'NB-tryout-signup-banner-content' }, [
-                $.make('div', { className: 'NB-tryout-signup-banner-text' }, 'This is just the demo.'),
-                $.make('div', { className: 'NB-tryout-signup-banner-subtext' }, 'Sign up to read your own feeds.')
+                $.make('div', { className: 'NB-tryout-signup-banner-text' }, gettext('This is just the demo.')),
+                $.make('div', { className: 'NB-tryout-signup-banner-subtext' }, gettext('Sign up to read your own feeds.'))
             ]),
-            $.make('div', { className: 'NB-tryout-signup-banner-button' }, 'Sign up')
+            $.make('div', { className: 'NB-tryout-signup-banner-button' }, gettext('Sign up'))
         ]);
 
         $banner.on('click', function () {
@@ -415,9 +415,9 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var $banner = $.make('div', { className: 'NB-tryout-back-banner' }, [
             $.make('div', { className: 'NB-tryout-back-banner-arrow' }),
             $.make('div', { className: 'NB-tryout-back-banner-content' }, [
-                $.make('div', { className: 'NB-tryout-back-banner-text' }, 'Log In or Sign Up')
+                $.make('div', { className: 'NB-tryout-back-banner-text' }, gettext('Log In or Sign Up'))
             ]),
-            $.make('div', { className: 'NB-tryout-back-banner-cta' }, 'Create Account')
+            $.make('div', { className: 'NB-tryout-back-banner-cta' }, gettext('Create Account'))
         ]);
 
         $banner.on('click', function () {
@@ -441,7 +441,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var self = this;
         var $toolbar = $.make('div', { className: 'NB-mobile-back-toolbar NB-mobile-back-toolbar-feeds' }, [
             $.make('div', { className: 'NB-mobile-back-toolbar-arrow' }),
-            $.make('div', { className: 'NB-mobile-back-toolbar-text' }, 'Back to feeds')
+            $.make('div', { className: 'NB-mobile-back-toolbar-text' }, gettext('Back to feeds'))
         ]);
 
         $toolbar.on('click', function () {
@@ -520,7 +520,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var self = this;
         var $toolbar = $.make('div', { className: 'NB-mobile-back-toolbar NB-mobile-back-toolbar-stories' }, [
             $.make('div', { className: 'NB-mobile-back-toolbar-arrow' }),
-            $.make('div', { className: 'NB-mobile-back-toolbar-text' }, 'Back to stories')
+            $.make('div', { className: 'NB-mobile-back-toolbar-text' }, gettext('Back to stories'))
         ]);
 
         $toolbar.on('click', function () {
@@ -545,10 +545,10 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var $banner = $.make('div', { className: 'NB-tryout-signup-banner' }, [
             $.make('div', { className: 'NB-tryout-signup-banner-logo' }),
             $.make('div', { className: 'NB-tryout-signup-banner-content' }, [
-                $.make('div', { className: 'NB-tryout-signup-banner-text' }, 'This is just the demo.'),
-                $.make('div', { className: 'NB-tryout-signup-banner-subtext' }, 'Sign up to read your own feeds.')
+                $.make('div', { className: 'NB-tryout-signup-banner-text' }, gettext('This is just the demo.')),
+                $.make('div', { className: 'NB-tryout-signup-banner-subtext' }, gettext('Sign up to read your own feeds.'))
             ]),
-            $.make('div', { className: 'NB-tryout-signup-banner-button' }, 'Sign up')
+            $.make('div', { className: 'NB-tryout-signup-banner-button' }, gettext('Sign up'))
         ]);
 
         $banner.on('click', function () {

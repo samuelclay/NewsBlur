@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  UnreadCountView.m
 //  NewsBlur

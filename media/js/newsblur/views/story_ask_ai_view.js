@@ -688,8 +688,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.voice_recorder = new NEWSBLUR.VoiceRecorder({
                 on_recording_start: function () {
                     $voice_button.addClass('NB-recording');
-                    $input.attr('placeholder', 'Recording...');
-                    $voice_button.attr('title', 'Stop recording');
+                    $input.attr('placeholder', gettext('Recording...'));
+                    $voice_button.attr('title', gettext('Stop recording'));
                     // Hide Re-ask and Send, show Finish Recording during recording
                     self.$('.NB-story-ask-ai-reask-menu').hide();
                     self.$('.NB-story-ask-ai-send-menu').hide();
@@ -698,15 +698,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 on_recording_stop: function () {
                     $voice_button.removeClass('NB-recording');
                     $voice_button.addClass('NB-transcribing');
-                    $input.attr('placeholder', 'Transcribing...');
-                    $voice_button.attr('title', 'Transcribing audio');
+                    $input.attr('placeholder', gettext('Transcribing...'));
+                    $voice_button.attr('title', gettext('Transcribing audio'));
                     // Hide finish recording menu during transcription
                     self.$('.NB-story-ask-ai-finish-recording-menu').hide();
                 },
                 on_recording_cancel: function () {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Follow up...');
+                    $voice_button.attr('title', gettext('Record voice question'));
+                    $input.attr('placeholder', gettext('Follow up...'));
                     // Reset button visibility
                     self.$('.NB-story-ask-ai-finish-recording-menu').hide();
                     if (!$input.val().trim()) {
@@ -722,8 +722,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 },
                 on_transcription_complete: function (text) {
                     $voice_button.removeClass('NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Follow up...');
+                    $voice_button.attr('title', gettext('Record voice question'));
+                    $input.attr('placeholder', gettext('Follow up...'));
 
                     // Set the transcribed text and submit the question automatically
                     $input.val(text);
@@ -735,7 +735,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 },
                 on_transcription_error: function (error) {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
+                    $voice_button.attr('title', gettext('Record voice question'));
 
                     // Check if this is a quota/limit error
                     var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
@@ -744,10 +744,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         // Show quota error in the usage message box (blue box)
                         self.show_usage_message(error);
                         // Put a subtle placeholder in the input
-                        $input.attr('placeholder', 'Quota exceeded');
+                        $input.attr('placeholder', gettext('Quota exceeded'));
                     } else {
                         // Show other errors as notifications
-                        $input.attr('placeholder', 'Follow up...');
+                        $input.attr('placeholder', gettext('Follow up...'));
                         NEWSBLUR.reader.show_feed_hidden_story_title_indicator(error, false);
                     }
                     // Reset buttons if no text

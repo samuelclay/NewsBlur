@@ -123,11 +123,11 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
                 $.make('div', { className: 'NB-story-comments-public-teaser NB-module-header' }, [
                     $.make('div', { className: 'NB-story-comments-expand-icon' }),
-                    'There ',
+                    gettext('There '),
                     Inflector.pluralize('is', this.model.get('comment_count_public')),
                     ' ',
                     $.make('b', this.model.get('comment_count_public')),
-                    ' public ',
+                    gettext(' public '),
                     Inflector.pluralize('comment', this.model.get('comment_count_public'))
                 ])
             ]);

@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils_tags typogrify_tags statistics_tags %}
 
 <div class="NB-module NB-module-features">
@@ -6,18 +7,18 @@
     <div class="NB-module-header-right">
       {% if user.is_staff %}
         <div class="NB-features-add">
-          <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
+          <a href="#" id="add-feature-button" class="NB-splash-link">{% trans "Add" %}</a>
         </div>
       {% endif %}
       <div class="NB-spinner NB-left"></div>
       <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
       <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
     </div>
-    <div class="NB-module-header-text">What's New</div>
+    <div class="NB-module-header-text">{% trans "What's New" %}</div>
   </h5>
 
   <h3 class="NB-module-content-header">
-    New Features
+    {% trans "New Features" %}
   </h3>
   
   <table class="NB-features" cellpadding="0" cellspacing="0">
@@ -36,7 +37,7 @@
   {% endif %}
 
   <h3 class="NB-module-content-header">
-    Community Feedback
+    {% trans "Community Feedback" %}
   </h3>
 
   {% render_feedback_table %}

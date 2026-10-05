@@ -484,7 +484,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'new_tag_name': new_tag_name
             }, callback, error_callback);
         } else {
-            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+            if ($.isFunction(callback)) callback({ code: -1, message: gettext('Not authenticated') });
         }
     },
 
@@ -494,7 +494,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'tag_name': tag_name
             }, callback, error_callback);
         } else {
-            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+            if ($.isFunction(callback)) callback({ code: -1, message: gettext('Not authenticated') });
         }
     },
 
@@ -1643,7 +1643,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'url': url,
             'in_folder': in_folder || ''
         }, callback, function () {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : gettext('There was a problem trying to add this site. Please try a different URL.') });
         });
     },
 
@@ -1728,7 +1728,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'folder': folder,
             'auto_active': options.auto_active
         }, callback, function (data) {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this site. Please try a different URL.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : data.message || 'There was a problem trying to add this site. Please try a different URL.' });
         });
     },
 
@@ -1737,7 +1737,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'folder': folder,
             'parent_folder': parent_folder
         }, callback, function (data) {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this folder.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : data.message || 'There was a problem trying to add this folder.' });
         });
     },
 
@@ -2192,7 +2192,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/send_story_email', data, callback, error_callback, { 'timeout': 6000 });
         } else {
-            callback({ 'code': -1, 'message': 'You must be logged in to send a story over email.' });
+            callback({ 'code': -1, 'message': gettext('You must be logged in to send a story over email.') });
         }
     },
 

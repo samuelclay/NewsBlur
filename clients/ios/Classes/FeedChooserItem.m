@@ -58,7 +58,7 @@
     NSString *title = self.info[@"feed_title"];
     
     if (self.search != nil) {
-        return [NSString stringWithFormat:@"\"%@\" in %@", self.search, title];
+        return [NSString stringWithFormat:[NBLocalization text:@"\"%@\" in %@"], self.search, title];
     }
     
     if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
@@ -163,7 +163,7 @@
             
             NSDate *date = [dateFormatter dateFromString:self.info[@"last_story_date"]];
             
-            return [NSString stringWithFormat:@"%@ ago",  [componentsFormatter stringFromTimeInterval:-date.timeIntervalSinceNow]];
+            return [NSString stringWithFormat:[NBLocalization text:@"%@ ago"],  [componentsFormatter stringFromTimeInterval:-date.timeIntervalSinceNow]];
             break;
         }
         
@@ -175,7 +175,7 @@
 
 - (NSString *)description {
     if (self.contents) {
-        return [NSString stringWithFormat:@"%@ %@ (contains %@ items)", [super description], self.title, @(self.contents.count)];
+        return [NSString stringWithFormat:[NBLocalization text:@"%@ %@ (contains %@ items)"], [super description], self.title, @(self.contents.count)];
     } else {
         return [NSString stringWithFormat:@"%@ %@ (%@)", [super description], self.title, self.identifier];
     }

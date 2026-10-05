@@ -1,9 +1,11 @@
+{% load i18n %}
 {% load utils_tags social_tags %}
 
 <!DOCTYPE html>
-<html>
+<html lang="{{ ui_language }}" dir="{% if ui_language_rtl %}rtl{% else %}ltr{% endif %}">
 
 <head>
+  {% include "includes/i18n_scripts.html" %}
     <title>{{ social_profile.title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url "shared-stories-rss-feed" social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
     {% if social_profile.photo_url %}
@@ -118,19 +120,19 @@
             <a class="NB-header-tab NB-blurblog-tab {% if current_tab == "blurblogs" %}NB-active{% endif %}" href="{% if user_social_profile %}{{ user_social_profile.blurblog_url }}{% endif %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
-                    Blurblogs
+                    {% trans "Blurblogs" %}
                 </div>
             </a>
             <a class="NB-header-tab NB-following-tab {% if current_tab == "global" %}NB-active{% endif %}" href="http://popular.global.{% current_domain strip_www=True %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
-                    Global
+                    {% trans "Global" %}
                 </div>
             </a>
             <a class="NB-header-tab NB-trending-tab {% if current_tab == "popular" %}NB-active{% endif %}" href="http://popular.{% current_domain strip_www=True %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
-                    Popular
+                    {% trans "Popular" %}
                 </div>
             </a>
             {% if user.is_authenticated %}
@@ -141,9 +143,9 @@
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
                     </div>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-menu-newsblur">View on NewsBlur</a></li>
+                        <li><a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-menu-newsblur">{% trans "View on NewsBlur" %}</a></li>
                         <li class="divider"></li>
-                        <li><a href="#" class="NB-menu-logout">Logout</a></li>
+                        <li><a href="#" class="NB-menu-logout">{% trans "Logout" %}</a></li>
                     </ul>
                 </div>
             {% else %}
@@ -151,25 +153,25 @@
                     <div class="NB-tab-inner">
                         <span class="NB-icon"></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
-                        Log in
+                        {% trans "Log in" %}
 
                     </div>
                     <div class="NB-circular-popover-title NB-hidden">
                         <div class="NB-login">
-                            <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
-                            <input placeholder="Password" type="password" name="login_password" class="NB-input" />
-                            <div class="NB-login-button NB-blue-button">Sign in</div>
+                            <input type="text" placeholder="{% trans 'Username or email' %}" name="login_username" class="NB-input" />
+                            <input placeholder="{% trans 'Password' %}" type="password" name="login_password" class="NB-input" />
+                            <div class="NB-login-button NB-blue-button">{% trans "Sign in" %}</div>
                         </div>
                         <div class="NB-signup">
-                            <input type="text" placeholder="Username" name="signup_username" class="NB-input" />
-                            <input type="text" placeholder="Email address" name="signup_email" class="NB-input" />
-                            <input placeholder="Password" type="password" name="signup_password" class="NB-input" />
-                            <div class="NB-signup-button NB-blue-button">Create account</div>
+                            <input type="text" placeholder="{% trans 'Username' %}" name="signup_username" class="NB-input" />
+                            <input type="text" placeholder="{% trans 'Email address' %}" name="signup_email" class="NB-input" />
+                            <input placeholder="{% trans 'Password' %}" type="password" name="signup_password" class="NB-input" />
+                            <div class="NB-signup-button NB-blue-button">{% trans "Create account" %}</div>
                         </div>
                     </div>
                     <div class="NB-circular-popover-content NB-hidden">
-                        <div class="NB-switch-button NB-switch-signup-button NB-grey-button">Create an account</div>
-                        <div class="NB-switch-button NB-switch-login-button NB-grey-button">Log in</div>
+                        <div class="NB-switch-button NB-switch-signup-button NB-grey-button">{% trans "Create an account" %}</div>
+                        <div class="NB-switch-button NB-switch-login-button NB-grey-button">{% trans "Log in" %}</div>
                         <div class="NB-arrow"></div>
                     </div>
                 </a>
@@ -190,7 +192,7 @@
                         <div class="NB-banner-following-user">
                             {% if user_following_social_profile %}
                                 {% if social_profile.user_id != user.pk %}
-                                    <div class="NB-button NB-grey-button NB-button-following">Following</div>
+                                    <div class="NB-button NB-grey-button NB-button-following">{% trans "Following" %}</div>
                                 {% endif %}
                             {% else %}
                                 <div class="NB-button NB-blue-button NB-button-follow">Follow {{ social_profile.username }}</div>
@@ -218,7 +220,7 @@
             </tr>
         </table>
         <div class="NB-banner-feed">
-            {# <a type="application/rss+xml" href="{% url "shared-stories-rss-feed" social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}
+            {# <a type="application/rss+xml" href="{% url "shared-stories-rss-feed" social_profile.user_id social_profile.username|slugify %}">{% trans "RSS feed for this page" %}</a> #}
         </div>
     </div>
 
@@ -229,7 +231,7 @@
     {% if not stories and social_profile.private %}
         <div class="NB-warning-private">
             <div class="NB-icon-lock"></div>
-            This user has limited their shared stories only to followers.
+            {% trans "This user has limited their shared stories only to followers." %}
         </div>
     {% endif %}
     
@@ -243,7 +245,7 @@
     <div class="NB-page-controls">
         <div class="NB-page-controls-next">
             <div class="NB-page-controls-text NB-page-controls-text-next">
-                Next Page of Stories
+                {% trans "Next Page of Stories" %}
             </div>
             <div class="NB-page-controls-text NB-page-controls-text-loading"></div>
             <div class="NB-page-controls-text NB-page-controls-text-loaded">

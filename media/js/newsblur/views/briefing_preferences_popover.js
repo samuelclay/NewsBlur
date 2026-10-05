@@ -149,7 +149,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var selected_folder = sources.indexOf('folder:') === 0 ? sources.slice(7) : null;
 
         // briefing_preferences_popover.js: Folder-only chooser
-        var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, "All Site Stories", 'feed', false);
+        var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, gettext("All Site Stories"), 'feed', false);
         $folder_chooser.addClass('NB-modal-feed-chooser');
 
         var sections = [
@@ -371,7 +371,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         ]);
         $section.find('.NB-popover-section-label').append(
             $.make('div', { className: 'NB-briefing-notification-hint' },
-                'Drag to reorder priority. Only shown when matching stories are found.')
+                gettext('Drag to reorder priority. Only shown when matching stories are found.'))
         );
         return $section;
     },
@@ -389,7 +389,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS) {
             items.push($.make('div', { className: 'NB-briefing-add-keyword-section', role: 'button' }, [
                 $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
-                'Add keyword section'
+                gettext('Add keyword section')
             ]));
         }
 
@@ -404,7 +404,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             className: 'NB-briefing-section-item' + (is_enabled ? ' NB-active' : ''),
             'data-section': def.key
         }, [
-            $.make('div', { className: 'NB-briefing-drag-handle', title: 'Drag to reorder' }, this.SVG_DRAG_HANDLE),
+            $.make('div', { className: 'NB-briefing-drag-handle', title: gettext('Drag to reorder') }, this.SVG_DRAG_HANDLE),
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
             $.make('img', { className: 'NB-briefing-section-item-icon', src: icon_url }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
@@ -463,15 +463,15 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
                 $.make('div', { className: 'NB-briefing-section-name' }, [
-                    'Keyword section ' + index,
+                    interpolate(gettext("Keyword section %(value_1)s"), {value_1: index}, true),
                     $.make('img', {
                         className: 'NB-briefing-remove-custom-section',
                         'data-custom-index': index,
-                        title: 'Remove',
+                        title: gettext('Remove'),
                         src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/close.svg'
                     })
                 ]),
-                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Matches story titles containing all keywords')
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, gettext('Matches story titles containing all keywords'))
             ])
         ]);
 
@@ -498,10 +498,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     make_hint_popover: function () {
         return $.make('div', { className: 'NB-briefing-section-hint-popover' }, [
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
-                $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Keyword Section'),
+                $.make('div', { className: 'NB-briefing-section-hint-title' }, gettext('Keyword Section')),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.'),
-                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
+                    gettext('Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.')),
+                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, gettext('Examples')),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' },
                     _.shuffle(NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES).slice(0, 4).map(function (ex) {
                         return $.make('li', ex);
@@ -758,7 +758,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS && !$sections_container.find('.NB-briefing-add-keyword-section').length) {
             $sections_container.append($.make('div', { className: 'NB-briefing-add-keyword-section' }, [
                 $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
-                'Add keyword section'
+                gettext('Add keyword section')
             ]));
         }
 

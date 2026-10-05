@@ -443,13 +443,13 @@ final class DetailNavigationController: UINavigationController {
         originalSourceFrame = sourceTitle?.frame
         super.init(frame: .zero)
         var configuration = UIButton.Configuration.plain()
-        configuration.title = "Feeds"
+        configuration.title = NBLocalization.text("Feeds")
         configuration.image = UIImage(systemName: "chevron.backward")
         configuration.imagePadding = 6
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4)
         feedsButton.configuration = configuration
         feedsButton.accessibilityIdentifier = "expanded-feeds-back"
-        feedsButton.accessibilityLabel = "Feeds"
+        feedsButton.accessibilityLabel = NBLocalization.text("Feeds")
         feedsButton.addAction(UIAction { _ in showFeeds() }, for: .touchUpInside)
         addSubview(feedsButton)
         plainTitleLabel.font = .systemFont(ofSize: 17, weight: .semibold)

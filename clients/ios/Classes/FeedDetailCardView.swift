@@ -90,7 +90,7 @@ struct CardView: View {
                 Button {
                     shareStory()
                 } label: {
-                    Label("Share", image: "email")
+                    Label(NBLocalization.text("Share"), image: "email")
                 }
                 .tint(Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]))
             }
@@ -403,7 +403,7 @@ struct CardView: View {
                                                   story.isSaved ? 0x004A52 : 0x0B8FA0]),
                               action: toggleSavedState)
 
-            swipeActionButton(title: "Share",
+            swipeActionButton(title: NBLocalization.text("Share"),
                               imageName: "email",
                               tint: Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]),
                               action: shareStory)

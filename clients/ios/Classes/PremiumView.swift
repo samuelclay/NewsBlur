@@ -111,63 +111,63 @@ struct PremiumView: View {
     var scrollToPro: Bool = false
 
     private let premiumFeatures: [PremiumFeature] = [
-        PremiumFeature(title: "Follow up to 1,024 sites", icon: "square.stack.3d.up.fill", iconColor: .blue),
-        PremiumFeature(title: "Sites updated up to 5x more often", icon: "bolt.fill", iconColor: .yellow),
-        PremiumFeature(title: "River of News (reading by folder)", icon: "newspaper.fill", iconColor: .orange),
-        PremiumFeature(title: "Search sites and folders", icon: "magnifyingglass", iconColor: .purple),
-        PremiumFeature(title: "Save stories with searchable tags", icon: "tag.fill", iconColor: .pink),
-        PremiumFeature(title: "Privacy options for your blurblog", icon: "lock.shield.fill", iconColor: .green),
-        PremiumFeature(title: "Custom RSS feeds for saved stories", icon: "dot.radiowaves.up.forward", iconColor: .orange),
-        PremiumFeature(title: "Text view conveniently extracts the story", icon: "doc.text.fill", iconColor: .cyan),
-        PremiumFeature(title: "Discover related stories and sites", icon: "arrow.triangle.branch", iconColor: .teal),
-        PremiumFeature(title: "Natural language text and image classifiers", icon: "pencil.line", iconColor: .purple),
-        PremiumFeature(title: "You feed Lyric, NewsBlur's hungry hound, for 6 days", icon: "fork.knife", iconColor: .brown)
+        PremiumFeature(title: NBLocalization.text("Follow up to 1,024 sites"), icon: "square.stack.3d.up.fill", iconColor: .blue),
+        PremiumFeature(title: NBLocalization.text("Sites updated up to 5x more often"), icon: "bolt.fill", iconColor: .yellow),
+        PremiumFeature(title: NBLocalization.text("River of News (reading by folder)"), icon: "newspaper.fill", iconColor: .orange),
+        PremiumFeature(title: NBLocalization.text("Search sites and folders"), icon: "magnifyingglass", iconColor: .purple),
+        PremiumFeature(title: NBLocalization.text("Save stories with searchable tags"), icon: "tag.fill", iconColor: .pink),
+        PremiumFeature(title: NBLocalization.text("Privacy options for your blurblog"), icon: "lock.shield.fill", iconColor: .green),
+        PremiumFeature(title: NBLocalization.text("Custom RSS feeds for saved stories"), icon: "dot.radiowaves.up.forward", iconColor: .orange),
+        PremiumFeature(title: NBLocalization.text("Text view conveniently extracts the story"), icon: "doc.text.fill", iconColor: .cyan),
+        PremiumFeature(title: NBLocalization.text("Discover related stories and sites"), icon: "arrow.triangle.branch", iconColor: .teal),
+        PremiumFeature(title: NBLocalization.text("Natural language text and image classifiers"), icon: "pencil.line", iconColor: .purple),
+        PremiumFeature(title: NBLocalization.text("You feed Lyric, NewsBlur's hungry hound, for 6 days"), icon: "fork.knife", iconColor: .brown)
     ]
 
     private let archiveFeatures: [PremiumFeature] = [
-        PremiumFeature(title: "Everything in the premium subscription, of course", icon: "sparkles", iconColor: .yellow),
-        PremiumFeature(title: "Follow up to 4,096 sites", icon: "square.stack.3d.up.fill", iconColor: .blue),
-        PremiumFeature(title: "Web Feeds from any website, even without RSS", icon: "web-feed-100", iconColor: .purple, isCustomImage: true),
-        PremiumFeature(title: "Cluster duplicate stories across all your feeds", icon: "circle.grid.2x2.fill", iconColor: .green),
-        PremiumFeature(title: "Choose when stories are automatically marked as read", icon: "book.fill", iconColor: .blue),
-        PremiumFeature(title: "Customize auto-read by site or folder", icon: "slider.horizontal.3", iconColor: .green),
-        PremiumFeature(title: "Every story from every site is archived and searchable forever", icon: "archivebox.fill", iconColor: .purple),
-        PremiumFeature(title: "Feeds that support paging are back-filled in for a complete archive", icon: "arrow.clockwise.circle.fill", iconColor: .teal),
-        PremiumFeature(title: "Train stories on full text content", icon: "doc.text.fill", iconColor: .cyan),
-        PremiumFeature(title: "Discover related stories across your archive", icon: "arrow.triangle.branch", iconColor: .teal),
-        PremiumFeature(title: "Export trained stories from folders as RSS feeds", icon: "square.and.arrow.up.fill", iconColor: .orange),
-        PremiumFeature(title: "Stories can stay unread forever", icon: "calendar.badge.clock", iconColor: .red),
-        PremiumFeature(title: "Ask AI questions about stories", icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
-        PremiumFeature(title: "Filter stories by date range", icon: "calendar", iconColor: .pink),
-        PremiumFeature(title: "Apply training across a folder", icon: "folder.fill", iconColor: .mint),
-        PremiumFeature(title: "Apply training globally", icon: "globe", iconColor: .indigo),
-        PremiumFeature(title: "Connect AI agents with MCP server and CLI", icon: "cable.connector", iconColor: .indigo)
+        PremiumFeature(title: NBLocalization.text("Everything in the premium subscription, of course"), icon: "sparkles", iconColor: .yellow),
+        PremiumFeature(title: NBLocalization.text("Follow up to 4,096 sites"), icon: "square.stack.3d.up.fill", iconColor: .blue),
+        PremiumFeature(title: NBLocalization.text("Web Feeds from any website, even without RSS"), icon: "web-feed-100", iconColor: .purple, isCustomImage: true),
+        PremiumFeature(title: NBLocalization.text("Cluster duplicate stories across all your feeds"), icon: "circle.grid.2x2.fill", iconColor: .green),
+        PremiumFeature(title: NBLocalization.text("Choose when stories are automatically marked as read"), icon: "book.fill", iconColor: .blue),
+        PremiumFeature(title: NBLocalization.text("Customize auto-read by site or folder"), icon: "slider.horizontal.3", iconColor: .green),
+        PremiumFeature(title: NBLocalization.text("Every story from every site is archived and searchable forever"), icon: "archivebox.fill", iconColor: .purple),
+        PremiumFeature(title: NBLocalization.text("Feeds that support paging are back-filled in for a complete archive"), icon: "arrow.clockwise.circle.fill", iconColor: .teal),
+        PremiumFeature(title: NBLocalization.text("Train stories on full text content"), icon: "doc.text.fill", iconColor: .cyan),
+        PremiumFeature(title: NBLocalization.text("Discover related stories across your archive"), icon: "arrow.triangle.branch", iconColor: .teal),
+        PremiumFeature(title: NBLocalization.text("Export trained stories from folders as RSS feeds"), icon: "square.and.arrow.up.fill", iconColor: .orange),
+        PremiumFeature(title: NBLocalization.text("Stories can stay unread forever"), icon: "calendar.badge.clock", iconColor: .red),
+        PremiumFeature(title: NBLocalization.text("Ask AI questions about stories"), icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
+        PremiumFeature(title: NBLocalization.text("Filter stories by date range"), icon: "calendar", iconColor: .pink),
+        PremiumFeature(title: NBLocalization.text("Apply training across a folder"), icon: "folder.fill", iconColor: .mint),
+        PremiumFeature(title: NBLocalization.text("Apply training globally"), icon: "globe", iconColor: .indigo),
+        PremiumFeature(title: NBLocalization.text("Connect AI agents with MCP server and CLI"), icon: "cable.connector", iconColor: .indigo)
     ]
 
     @available(iOS 15.0, *)
     private var proFeatures: [PremiumFeature] {
         [
-            PremiumFeature(title: "Everything in the archive subscription, of course", icon: "sparkles", iconColor: .yellow),
-            PremiumFeature(title: "Follow up to 10,000 sites", icon: "square.stack.3d.up.fill", iconColor: .green),
-            PremiumFeature(title: "All feeds fetched every 5-15 minutes", icon: "bolt.fill", iconColor: PremiumColors.proOrange),
-            PremiumFeature(title: "Train stories with regular expressions", icon: "textformat.abc", iconColor: .yellow),
-            PremiumFeature(title: "Priority support", icon: "headphones", iconColor: .yellow)
+            PremiumFeature(title: NBLocalization.text("Everything in the archive subscription, of course"), icon: "sparkles", iconColor: .yellow),
+            PremiumFeature(title: NBLocalization.text("Follow up to 10,000 sites"), icon: "square.stack.3d.up.fill", iconColor: .green),
+            PremiumFeature(title: NBLocalization.text("All feeds fetched every 5-15 minutes"), icon: "bolt.fill", iconColor: PremiumColors.proOrange),
+            PremiumFeature(title: NBLocalization.text("Train stories with regular expressions"), icon: "textformat.abc", iconColor: .yellow),
+            PremiumFeature(title: NBLocalization.text("Priority support"), icon: "headphones", iconColor: .yellow)
         ]
     }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Button("Done") {
+                Button(NBLocalization.text("Done")) {
                     onDismiss()
                 }
                 .foregroundColor(PremiumColors.newsblurGreen)
                 Spacer()
-                Text("NewsBlur Premium")
+                Text(NBLocalization.text("NewsBlur Premium"))
                     .font(.headline)
                     .foregroundColor(PremiumColors.textPrimary)
                 Spacer()
-                Button("Restore") {
+                Button(NBLocalization.text("Restore")) {
                     onRestore()
                 }
                 .foregroundColor(PremiumColors.newsblurGreen)
@@ -221,7 +221,7 @@ struct PremiumView: View {
         VStack(spacing: 0) {
             // Header with gradient
             sectionHeader(
-                title: "Premium Subscription",
+                title: NBLocalization.text("Premium Subscription"),
                 gradient: [PremiumColors.premiumGold, PremiumColors.premiumGoldLight],
                 icon: "star.fill"
             )
@@ -256,7 +256,7 @@ struct PremiumView: View {
         VStack(spacing: 0) {
             // Header with gradient
             sectionHeader(
-                title: "Premium Archive",
+                title: NBLocalization.text("Premium Archive"),
                 gradient: [PremiumColors.archivePurple, PremiumColors.archivePurpleLight],
                 icon: "archivebox.fill"
             )
@@ -288,7 +288,7 @@ struct PremiumView: View {
         VStack(spacing: 0) {
             // Header with gradient
             sectionHeader(
-                title: "Premium Pro",
+                title: NBLocalization.text("Premium Pro"),
                 gradient: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
                 icon: "crown.fill"
             )
@@ -373,7 +373,7 @@ struct PremiumView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 if feature.isUpcoming {
-                    Text("Coming soon")
+                    Text(NBLocalization.text("Coming soon"))
                         .font(.system(size: 11, weight: .medium))
                         .foregroundColor(PremiumColors.textSecondary)
                         .opacity(0.7)
@@ -443,13 +443,13 @@ struct PremiumView: View {
         Group {
             if viewModel.isPremiumPro {
                 subscribedView(
-                    message: "Your premium pro subscription includes everything above",
+                    message: NBLocalization.text("Your premium pro subscription includes everything above"),
                     gradientColors: [PremiumColors.archivePurple, PremiumColors.archivePurpleLight],
                     showManage: false
                 )
             } else if viewModel.isPremiumArchive {
                 subscribedView(
-                    message: "Your premium archive subscription is active",
+                    message: NBLocalization.text("Your premium archive subscription is active"),
                     gradientColors: [PremiumColors.archivePurple, PremiumColors.archivePurpleLight],
                     showManage: true
                 )
@@ -457,7 +457,7 @@ struct PremiumView: View {
                 purchaseButton(
                     product: viewModel.archiveProduct,
                     gradientColors: [PremiumColors.archivePurple, PremiumColors.archivePurpleLight],
-                    subtitle: "Upgrade from Premium"
+                    subtitle: NBLocalization.text("Upgrade from Premium")
                 )
             } else {
                 purchaseButton(
@@ -474,7 +474,7 @@ struct PremiumView: View {
         Group {
             if viewModel.isPremiumPro {
                 subscribedView(
-                    message: "Your premium pro subscription is active",
+                    message: NBLocalization.text("Your premium pro subscription is active"),
                     gradientColors: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
                     showManage: true
                 )
@@ -482,14 +482,14 @@ struct PremiumView: View {
                 purchaseButton(
                     product: viewModel.proProduct,
                     gradientColors: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
-                    subtitle: "Upgrade from Archive",
+                    subtitle: NBLocalization.text("Upgrade from Archive"),
                     isMonthly: true
                 )
             } else if viewModel.isPremium {
                 purchaseButton(
                     product: viewModel.proProduct,
                     gradientColors: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
-                    subtitle: "Upgrade from Premium",
+                    subtitle: NBLocalization.text("Upgrade from Premium"),
                     isMonthly: true
                 )
             } else {
@@ -526,7 +526,7 @@ struct PremiumView: View {
 
             if showManage {
                 Button(action: openSubscriptionManagement) {
-                    Text("Manage Subscription")
+                    Text(NBLocalization.text("Manage Subscription"))
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -582,7 +582,7 @@ struct PremiumView: View {
                     .shadow(color: gradientColors[0].opacity(0.4), radius: 8, x: 0, y: 4)
                 }
             } else {
-                Text("Loading...")
+                Text(NBLocalization.text("Loading..."))
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(PremiumColors.textSecondary)
                     .frame(maxWidth: .infinity)
@@ -599,8 +599,8 @@ struct PremiumView: View {
 
     private var footerSection: some View {
         VStack(spacing: 12) {
-            linkButton(title: "Privacy Policy", url: "https://newsblur.com/privacy/")
-            linkButton(title: "Terms of Use", url: "https://newsblur.com/tos/")
+            linkButton(title: NBLocalization.text("Privacy Policy"), url: "https://newsblur.com/privacy/")
+            linkButton(title: NBLocalization.text("Terms of Use"), url: "https://newsblur.com/tos/")
         }
     }
 

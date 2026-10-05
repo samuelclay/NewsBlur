@@ -29,7 +29,7 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
         var is_archive = NEWSBLUR.Globals.is_archive;
         var $content = $.make('div', { className: 'NB-classifier-notif-controls' + (!is_archive ? ' NB-notif-gated' : '') }, [
             $.make('div', { className: 'NB-classifier-notif-header' }, [
-                $.make('span', { className: 'NB-classifier-notif-label' }, 'Notify on match')
+                $.make('span', { className: 'NB-classifier-notif-label' }, gettext('Notify on match'))
             ]),
             $.make('ul', { className: 'segmented-control NB-classifier-notif-types' }, [
                 $.make('li', {

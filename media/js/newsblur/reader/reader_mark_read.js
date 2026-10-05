@@ -38,11 +38,11 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-markread NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Mark Everything Read / Unread',
+                gettext('Mark Everything Read / Unread'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-fieldset NB-markread-section-read' }, [
-                $.make('h5', 'Mark Stories as Read'),
+                $.make('h5', gettext('Mark Stories as Read')),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('form', { className: 'NB-markread-form' }, [
                         $.make('div', { className: 'NB-markread-slider-container' }, [
@@ -69,7 +69,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-markread-section-unread' }, [
-                $.make('h5', 'Mark Stories as Unread'),
+                $.make('h5', gettext('Mark Stories as Unread')),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('form', { className: 'NB-markunread-form' }, [
                         $.make('div', { className: 'NB-mark-unread-slider-container' }, [
@@ -122,9 +122,9 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 100%)');
 
         if (value == 0) {
-            $slider_value.html('Mark <b>every story</b> as read');
+            $slider_value.html(gettext('Mark <b>every story</b> as read'));
         } else {
-            $slider_value.html('Mark all stories older than <b>' + value + ' day' + (value == 1 ? '' : 's') + '</b> old as read');
+            $slider_value.html(interpolate(ngettext("Mark all stories older than <b>%(value_1)s day</b> old as read", "Mark all stories older than <b>%(value_1)s days</b> old as read", value), {value_1: value}, true));
         }
     },
 
@@ -190,26 +190,26 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
 
         if (value > max_days) {
             $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + limit_percent + '%, #f5a623 ' + limit_percent + '%, #f5a623 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 100%)');
-            $slider_value.html('<b>' + value + ' day' + (value !== 1 ? 's' : '') + '</b> &mdash; exceeds your plan limit of ' + max_days + ' days');
+            $slider_value.html(interpolate(ngettext("<b>%(value_1)s day</b> &mdash; exceeds your plan limit of %(value_3)s days", "<b>%(value_1)s days</b> &mdash; exceeds your plan limit of %(value_3)s days", value), {value_1: value, value_3: max_days}, true));
             $button.addClass('NB-disabled').attr('disabled', true);
             if (NEWSBLUR.Globals.is_premium) {
                 $notice.html('').append(
                     $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
-                        $.make('span', { className: 'NB-archive-badge' }, 'Upgrade to Premium Archive'),
-                        ' for up to 365 days'
+                        $.make('span', { className: 'NB-archive-badge' }, gettext('Upgrade to Premium Archive')),
+                        gettext(' for up to 365 days')
                     ])
                 ).show();
             } else {
                 $notice.html('').append(
                     $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
-                        $.make('span', { className: 'NB-premium-badge' }, 'Upgrade to Premium'),
-                        ' for up to ' + NEWSBLUR.Globals.default_days_of_unread + ' days'
+                        $.make('span', { className: 'NB-premium-badge' }, gettext('Upgrade to Premium')),
+                        interpolate(gettext(" for up to %(value_1)s days"), {value_1: NEWSBLUR.Globals.default_days_of_unread}, true)
                     ])
                 ).show();
             }
         } else {
             $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 100%)');
-            $slider_value.html('Mark stories from the last <b>' + value + ' day' + (value !== 1 ? 's' : '') + '</b> as unread');
+            $slider_value.html(interpolate(ngettext("Mark stories from the last <b>%(value_1)s day</b> as unread", "Mark stories from the last <b>%(value_1)s days</b> as unread", value), {value_1: value}, true));
             $notice.hide();
             $button.removeClass('NB-disabled').removeAttr('disabled');
         }

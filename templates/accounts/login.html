@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load typogrify_tags utils_tags zebra_tags %}
 
@@ -16,7 +17,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 {% endblock %}
 
-{% block title %}Login{% endblock %}
+{% block title %}{% trans "Login" %}{% endblock %}
 
 {% block content %}
 
@@ -25,8 +26,8 @@
         <a href="{% url "index" %}" class="NB-static-card-logo">
             <img src="{{ MEDIA_URL }}img/logo_512.png" />
         </a>
-        <h1 class="NB-static-card-title">Log In</h1>
-        <p class="NB-static-card-tagline">A personal news reader bringing people together to talk about the world</p>
+        <h1 class="NB-static-card-title">{% trans "Log In" %}</h1>
+        <p class="NB-static-card-tagline">{% trans "A personal news reader bringing people together to talk about the world" %}</p>
 
         <form method="post" action="{% url "login" %}">
             {% if form.errors %}
@@ -36,7 +37,7 @@
                     {% endfor %}
                 </div>
             {% else %}{% if next %}
-                <div class="NB-static-card-error">Please login to continue.</div>
+                <div class="NB-static-card-error">{% trans "Please login to continue." %}</div>
             {% endif %}{% endif %}
 
             {% csrf_token %}
@@ -47,11 +48,11 @@
                 {{ form.password }}
             </div>
 
-            <button type="submit" class="NB-static-card-submit">Log In</button>
+            <button type="submit" class="NB-static-card-submit">{% trans "Log In" %}</button>
             <input type="hidden" name="next" value="{{ next }}" />
         </form>
 
-        <a href="{% url "signup" %}?next={{ next|urlencode }}" class="NB-static-card-altlink">Create an account</a>
+        <a href="{% url "signup" %}?next={{ next|urlencode }}" class="NB-static-card-altlink">{% trans "Create an account" %}</a>
     </div>
 </div>
 

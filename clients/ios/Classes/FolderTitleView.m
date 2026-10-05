@@ -96,7 +96,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
         
-        accessibilityCount = [NSString stringWithFormat:@", %@ stories", @(appDelegate.savedStoriesCount)];
+        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", %@ stories"], @(appDelegate.savedStoriesCount)];
     } else if ([folderName isEqual:@"saved_searches"]) {
         NSInteger count = appDelegate.savedSearchesCount;
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
@@ -109,7 +109,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
         
-        accessibilityCount = [NSString stringWithFormat:@", %@ searches", @(count)];
+        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", %@ searches"], @(count)];
     } else if (isFolderCollapsed && !isSavedStoriesFeed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(rect.origin.x, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
@@ -122,11 +122,11 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
         
-        accessibilityCount = [NSString stringWithFormat:@", collapsed, %@ unread stories", @(counts.nt)];
+        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", collapsed, %@ unread stories"], @(counts.nt)];
     } else if (UIAccessibilityIsVoiceOverRunning()) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         
-        accessibilityCount = [NSString stringWithFormat:@", %@ unread stories", @(counts.nt)];
+        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", %@ unread stories"], @(counts.nt)];
     }
     
     // create the parent view that will hold header Label
@@ -140,35 +140,35 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
     if (section == NewsBlurTopSectionDashboard) {
-        folderTitle = @"NewsBlur Dashboard";
+        folderTitle = [NBLocalization text:@"NewsBlur Dashboard"];
     } else if (section == NewsBlurTopSectionDiscoverSites) {
-        folderTitle = @"Add + Discover Sites";
+        folderTitle = [NBLocalization text:@"Add + Discover Sites"];
     } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
-        folderTitle = @"Infrequent Site Stories";
+        folderTitle = [NBLocalization text:@"Infrequent Site Stories"];
     } else if (section == NewsBlurTopSectionAllStories) {
-        folderTitle = @"All Site Stories";
+        folderTitle = [NBLocalization text:@"All Site Stories"];
     } else if ([folderName isEqual:@"daily_briefing"]) {
-        folderTitle = @"Daily Briefing";
+        folderTitle = [NBLocalization text:@"Daily Briefing"];
     } else if ([folderName isEqual:@"widget_stories"]) {
-        folderTitle = @"Widget Site Stories";
+        folderTitle = [NBLocalization text:@"Widget Site Stories"];
     } else if ([folderName isEqual:@"read_stories"]) {
-        folderTitle = @"Read Stories";
+        folderTitle = [NBLocalization text:@"Read Stories"];
     } else if ([folderName isEqual:@"river_global"]) {
-        folderTitle = @"Global Shared Stories";
+        folderTitle = [NBLocalization text:@"Global Shared Stories"];
     } else if ([folderName isEqual:@"trending:well_read"]) {
-        folderTitle = @"Widely Read Stories";
+        folderTitle = [NBLocalization text:@"Widely Read Stories"];
     } else if ([folderName isEqual:@"trending:long_reads"]) {
-        folderTitle = @"Long Reads";
+        folderTitle = [NBLocalization text:@"Long Reads"];
     } else if ([folderName isEqual:@"trending:good_reads"]) {
-        folderTitle = @"Good Reads";
+        folderTitle = [NBLocalization text:@"Good Reads"];
     } else if ([folderName isEqual:@"river_blurblogs"]) {
-        folderTitle = @"All Shared Stories";
+        folderTitle = [NBLocalization text:@"All Shared Stories"];
     } else if ([folderName isEqual:@"saved_stories"]) {
-        folderTitle = @"Saved Stories";
+        folderTitle = [NBLocalization text:@"Saved Stories"];
     } else if ([folderName isEqual:@"saved_searches"]) {
-        folderTitle = @"Saved Searches";
+        folderTitle = [NBLocalization text:@"Saved Searches"];
     } else if ([folderName isEqual:@"try_feed"]) {
-        folderTitle = @"Trying Feed";
+        folderTitle = [NBLocalization text:@"Trying Feed"];
     } else {
         folderTitle = folderDisplayName;
         backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xF0F2ED, 0xF3E2CB, 0x414143, 0x323234);
@@ -198,7 +198,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityIdentifier = [NSString stringWithFormat:@"folder-header-%@",
                                                      NBAccessibilitySlug(folderName)];
-    invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
+    invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ folder%@"], folderTitle, accessibilityCount];
     invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController
                               action:@selector(didSelectSectionHeader:)

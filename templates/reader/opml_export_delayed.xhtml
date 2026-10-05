@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load utils_tags %}
 
@@ -52,23 +53,23 @@
 {% block content %}
 <div class="NB-opml-export-delayed">
     <div class="NB-logo">
-        <img src="{{ MEDIA_URL }}img/logo_512.png" style="height: 128px;" alt="NewsBlur" />
+        <img src="{{ MEDIA_URL }}img/logo_512.png" style="height: 128px;" alt="{% trans 'NewsBlur' %}" />
     </div>
     
-    <h1>Your OPML export is being processed</h1>
+    <h1>{% trans "Your OPML export is being processed" %}</h1>
     
     <p>
-        You have a lot of subscriptions! We're preparing your OPML export file now.
+        {% trans "You have a lot of subscriptions! We're preparing your OPML export file now." %}
     </p>
     
     <p>
-        <strong>You will receive an email shortly with your subscription backup attached.</strong>
+        <strong>{% trans "You will receive an email shortly with your subscription backup attached." %}</strong>
     </p>
     
     <p>
-        The email will be sent to: <strong>{{ user.email|safe }}</strong>
+        {% trans "The email will be sent to:" %} <strong>{{ user.email|safe }}</strong>
     </p>
     
-    <a href="/" class="NB-button">Return to NewsBlur</a>
+    <a href="/" class="NB-button">{% trans "Return to NewsBlur" %}</a>
 </div>
 {% endblock %}

@@ -1,3 +1,4 @@
+{% load i18n %}
 <html>
 <head>
     <title>Invoice {{ invoice_number }} - NewsBlur</title>
@@ -289,30 +290,30 @@
 </head>
 <body>
 
-<button class="print-button" onclick="print_document()">Print Invoice</button>
+<button class="print-button" onclick="print_document()">{% trans "Print Invoice" %}</button>
 
 <div class="invoice-header">
     <div class="company">
         <div class="company-logo">
-            <img src="/media/img/logo_newsblur.svg" alt="NewsBlur">
+            <img src="/media/img/logo_newsblur.svg" alt="{% trans 'NewsBlur' %}">
         </div>
-        <div class="company-name">NewsBlur Inc.</div>
+        <div class="company-name">{% trans "NewsBlur Inc." %}</div>
     </div>
     <div class="invoice-title">
-        <h1>Invoice</h1>
+        <h1>{% trans "Invoice" %}</h1>
         <div class="invoice-number">{{ invoice_number }}</div>
     </div>
 </div>
 
 <div class="invoice-details">
     <div class="section">
-        <h3>Bill To</h3>
+        <h3>{% trans "Bill To" %}</h3>
         <p class="name">{{ user.username }}</p>
         <p>{{ user.email }}</p>
     </div>
 
     <div class="section section-right">
-        <h3>Invoice Date</h3>
+        <h3>{% trans "Invoice Date" %}</h3>
         <p class="name">{{ payment.payment_date|date:"F j, Y" }}</p>
     </div>
 </div>
@@ -320,14 +321,14 @@
 <table class="invoice-table">
     <thead>
         <tr>
-            <th>Description</th>
-            <th>Amount</th>
+            <th>{% trans "Description" %}</th>
+            <th>{% trans "Amount" %}</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>
-                <div class="description">NewsBlur Premium Subscription</div>
+                <div class="description">{% trans "NewsBlur Premium Subscription" %}</div>
                 <div class="description-sub">Coverage period: {{ coverage_start|date:"F j, Y" }} &ndash; {{ coverage_end|date:"F j, Y" }}</div>
             </td>
             <td class="amount">${{ payment.payment_amount }}.00</td>
@@ -338,11 +339,11 @@
 <div class="invoice-total-section">
     <div class="invoice-total">
         <div class="row">
-            <span class="label">Subtotal</span>
+            <span class="label">{% trans "Subtotal" %}</span>
             <span class="value">${{ payment.payment_amount }}.00</span>
         </div>
         <div class="row total">
-            <span class="label">Total Paid</span>
+            <span class="label">{% trans "Total Paid" %}</span>
             <span class="value">${{ payment.payment_amount }}.00</span>
         </div>
     </div>
@@ -350,18 +351,18 @@
 
 {% if payment.refunded %}
 <div class="refund-notice">
-    This payment has been refunded.
+    {% trans "This payment has been refunded." %}
 </div>
 {% endif %}
 
 <div class="payment-info">
-    <div class="label">Payment Method</div>
+    <div class="label">{% trans "Payment Method" %}</div>
     <div class="value">{{ payment.payment_provider|title }}</div>
 </div>
 
 <div class="invoice-footer">
-    <div class="thanks">Thank you for supporting NewsBlur!</div>
-    <div class="company-info">NewsBlur Inc. &middot; https://newsblur.com</div>
+    <div class="thanks">{% trans "Thank you for supporting NewsBlur!" %}</div>
+    <div class="company-info">{% trans "NewsBlur Inc." %} &middot; {% trans "https://newsblur.com" %}</div>
 </div>
 
 <script>

@@ -84,30 +84,30 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-icon' }),
-                'Notifications',
+                gettext('Notifications'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'Notification Preferences'),
+                    $.make('legend', gettext('Notification Preferences')),
                     $.make('div', { className: 'NB-modal-section NB-modal-section-preferences' }, [
                         $.make('div', { className: 'NB-preference NB-preference-notification-title-only' }, [
                             $.make('div', { className: 'NB-preference-options' }, [
                                 $.make('div', [
                                     $.make('input', { id: 'NB-preference-notificationtitleonly-1', type: 'radio', name: 'notification_title_only', value: 0 }),
                                     $.make('label', { 'for': 'NB-preference-notificationtitleonly-1' }, [
-                                        'See the story title and a short content preview'
+                                        gettext('See the story title and a short content preview')
                                     ])
                                 ]),
                                 $.make('div', [
                                     $.make('input', { id: 'NB-preference-notificationtitleonly-2', type: 'radio', name: 'notification_title_only', value: 1 }),
                                     $.make('label', { 'for': 'NB-preference-notificationtitleonly-2' }, [
-                                        'Only see the full story title'
+                                        gettext('Only see the full story title')
                                     ])
                                 ])
                             ]),
                             $.make('div', { className: 'NB-preference-label' }, [
-                                'Story preview',
+                                gettext('Story preview'),
                                 $.make('div', { className: 'NB-preference-sublabel' }, '')
                             ])
                         ])
@@ -116,7 +116,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             ]),
             (this.feed && $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'Site Notifications'),
+                    $.make('legend', gettext('Site Notifications')),
                     $.make('div', { className: 'NB-modal-section NB-modal-section-site' }, [
                         this.make_site_notification()
                     ])
@@ -124,7 +124,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             ])),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'All Notifications'),
+                    $.make('legend', gettext('All Notifications')),
                     $.make('div', { className: 'NB-modal-section NB-modal-section-all' }, [
                         this.make_feed_notifications()
                     ])
@@ -194,7 +194,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
                 return self.make_classifier_notification_row(notif);
             });
             $elements.push($.make('div', { className: 'NB-notification-scope-section' }, [
-                $.make('div', { className: 'NB-notification-scope-label' }, 'Global')
+                $.make('div', { className: 'NB-notification-scope-label' }, gettext('Global'))
             ].concat($global_rows)));
         }
 
@@ -315,7 +315,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
 
     animate_saved: function () {
         var $status = $('.NB-exception-option-view .NB-exception-option-status', this.$modal);
-        $status.text('Saved').animate({
+        $status.text(gettext('Saved')).animate({
             'opacity': 1
         }, {
             'queue': false,

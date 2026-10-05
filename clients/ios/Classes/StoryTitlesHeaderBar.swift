@@ -204,10 +204,10 @@ class StoryTitlesHeaderBar: NSObject {
     private var appliedDiscoverLayout: String?
     private lazy var optionsIconWidth = measuredPillWidth(title: nil, image: sym("chevron.down", size: 8, weight: .bold), leadingInset: 12, trailingInset: 12)
     private lazy var relatedIconWidth = measuredPillWidth(title: nil, image: discoverImage, leadingInset: 14, trailingInset: 14)
-    private lazy var relatedTextWidth = measuredPillWidth(title: "RELATED SITES", image: discoverImage, leadingInset: 14, trailingInset: 12)
-    private lazy var briefingTextWidth = measuredPillWidth(title: "BRIEFING SETTINGS", image: dailyBriefingPillImage(), leadingInset: 14, trailingInset: 12)
+    private lazy var relatedTextWidth = measuredPillWidth(title: NBLocalization.text("RELATED SITES"), image: discoverImage, leadingInset: 14, trailingInset: 12)
+    private lazy var briefingTextWidth = measuredPillWidth(title: NBLocalization.text("BRIEFING SETTINGS"), image: dailyBriefingPillImage(), leadingInset: 14, trailingInset: 12)
     private lazy var searchIconWidth = measuredPillWidth(title: nil, image: sym("magnifyingglass", size: 12), leadingInset: 14, trailingInset: 14)
-    private lazy var searchTextWidth = measuredPillWidth(title: "SEARCH", image: sym("magnifyingglass", size: 11), leadingInset: 14, trailingInset: 14)
+    private lazy var searchTextWidth = measuredPillWidth(title: NBLocalization.text("SEARCH"), image: sym("magnifyingglass", size: 11), leadingInset: 14, trailingInset: 14)
     private lazy var discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
 
     // MARK: - State
@@ -286,7 +286,7 @@ class StoryTitlesHeaderBar: NSObject {
             lineBreakMode: .byClipping
         )
         discoverPill.contentHorizontalAlignment = .center
-        discoverPill.accessibilityLabel = "Daily Briefing Settings"
+        discoverPill.accessibilityLabel = NBLocalization.text("Daily Briefing Settings")
     }
 
     // MARK: - Platform-Adaptive Pill API
@@ -532,10 +532,10 @@ class StoryTitlesHeaderBar: NSObject {
 
     private func buildDiscoverPill() {
         let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-        setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
+        setPillContent(discoverPill, title: NBLocalization.text("RELATED SITES"), image: discoverImage,
                        leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
         configurePillAppearance(discoverPill)
-        discoverPill.accessibilityLabel = "Related Sites"
+        discoverPill.accessibilityLabel = NBLocalization.text("Related Sites")
         discoverPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         leadingControls.addArrangedSubview(discoverPill)
 
@@ -559,11 +559,11 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     private func buildSearchPill() {
-        setPillContent(searchPill, title: "SEARCH",
+        setPillContent(searchPill, title: NBLocalization.text("SEARCH"),
                        image: sym("magnifyingglass", size: 11),
                        leadingInset: 14, trailingInset: 14)
         configurePillAppearance(searchPill)
-        searchPill.accessibilityLabel = "Search stories"
+        searchPill.accessibilityLabel = NBLocalization.text("Search stories")
         searchPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         leadingControls.addArrangedSubview(searchPill)
 
@@ -592,7 +592,7 @@ class StoryTitlesHeaderBar: NSObject {
         #else
         markReadExpandButton.addTarget(self, action: #selector(handleMarkReadExpand), for: .touchUpInside)
         #endif
-        markReadExpandButton.accessibilityLabel = "Mark Read options"
+        markReadExpandButton.accessibilityLabel = NBLocalization.text("Mark Read options")
         addCatalystHighlight(markReadExpandButton)
         markReadContainer.addSubview(markReadExpandButton)
 
@@ -606,7 +606,7 @@ class StoryTitlesHeaderBar: NSObject {
                        leadingInset: 15, trailingInset: 15)
         markReadPill.translatesAutoresizingMaskIntoConstraints = false
         addCatalystHighlight(markReadPill)
-        markReadPill.accessibilityLabel = "Mark all read and return"
+        markReadPill.accessibilityLabel = NBLocalization.text("Mark all read and return")
         #if !targetEnvironment(macCatalyst)
         markReadPill.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleMarkReadLongPress(_:))))
         #endif
@@ -638,7 +638,7 @@ class StoryTitlesHeaderBar: NSObject {
             markReadPill.trailingAnchor.constraint(equalTo: markReadContainer.trailingAnchor),
         ])
 
-        updateMarkReadMenu(title: "all stories")
+        updateMarkReadMenu(title: NBLocalization.text("all stories"))
     }
 
     @objc private func handleMarkReadTap() {
@@ -705,7 +705,7 @@ class StoryTitlesHeaderBar: NSObject {
         searchCancelButton.configuration = cancelConfig
         #endif
         searchCancelButton.translatesAutoresizingMaskIntoConstraints = false
-        searchCancelButton.accessibilityLabel = "Close search"
+        searchCancelButton.accessibilityLabel = NBLocalization.text("Close search")
         addCatalystHighlight(searchCancelButton)
         searchContainer.addSubview(searchCancelButton)
 
@@ -834,9 +834,9 @@ class StoryTitlesHeaderBar: NSObject {
             markReadContainer.isHidden = false
         } else {
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-            setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
+            setPillContent(discoverPill, title: NBLocalization.text("RELATED SITES"), image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
-            discoverPill.accessibilityLabel = "Related Sites"
+            discoverPill.accessibilityLabel = NBLocalization.text("Related Sites")
             discoverPill.isHidden = false
             optionsPill.isHidden = false
             searchPill.isHidden = false
@@ -1032,7 +1032,7 @@ class StoryTitlesHeaderBar: NSObject {
         } else if showText {
             // Text mode: icon + "RELATED SITES"
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-            setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
+            setPillContent(discoverPill, title: NBLocalization.text("RELATED SITES"), image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
             discoverPill.contentHorizontalAlignment = .center
         } else {

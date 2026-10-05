@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
 
@@ -75,14 +76,14 @@
         <img class="NB-loader" src="{{ MEDIA_URL }}img/logo_512.png">
         
         <form class="NB-demo" method="post" action="">
-            <label class="NB-demo-label" for="username">Put your Email<br>in the box</label>
+            <label class="NB-demo-label" for="username">{% trans "Put your Email" %}<br>{% trans "in the box" %}</label>
             <input class="NB-input" name="username" type="text" id="username">
             <input type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="Request an invite">
         </form>
         
         <div class="NB-thanks" style="display: none">
-            <div style="color: #175700"><b><em>Thanks!</em></b></div>
-            <div>Stay tuned...</div>
+            <div style="color: #175700"><b><em>{% trans "Thanks!" %}</em></b></div>
+            <div>{% trans "Stay tuned..." %}</div>
         </div>
 
     </div>

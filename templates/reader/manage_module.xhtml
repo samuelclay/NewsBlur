@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils_tags %}
 
 <div class="NB-module NB-module-manage">
@@ -5,7 +6,7 @@
 	 	Manage NewsBlur
     </h5> -->
 	<h3 class="NB-module-content-header">
-		Manage NewsBlur
+		{% trans "Manage NewsBlur" %}
 	</h3>
 
     <div class="NB-module-item">
@@ -15,13 +16,13 @@
 					<div class="NB-menu-manage-image"></div>
 					<ul class="segmented-control NB-options-theme">
 						<li class="NB-taskbar-button NB-theme-option NB-options-theme-light">
-							<span class="NB-task-title">Light</span>
+							<span class="NB-task-title">{% trans "Light" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-theme-option NB-options-theme-dark">
-							<span class="NB-task-title">Dark</span>
+							<span class="NB-task-title">{% trans "Dark" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-theme-option NB-options-theme-auto">
-							<span class="NB-task-title">Auto</span>
+							<span class="NB-task-title">{% trans "Auto" %}</span>
 						</li>
 					</ul>
 				</li>
@@ -29,19 +30,19 @@
 					<div class="NB-menu-manage-image"></div>
 					<ul class="segmented-control NB-options-size">
 						<li class="NB-taskbar-button NB-feed-size-option NB-options-feed-size-xs">
-							<span class="NB-task-title">XS</span>
+							<span class="NB-task-title">{% trans "XS" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-feed-size-option NB-options-feed-size-s">
-							<span class="NB-task-title">S</span>
+							<span class="NB-task-title">{% trans "S" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-feed-size-option NB-options-feed-size-m">
-							<span class="NB-task-title">M</span>
+							<span class="NB-task-title">{% trans "M" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-feed-size-option NB-options-feed-size-l">
-							<span class="NB-task-title">L</span>
+							<span class="NB-task-title">{% trans "L" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-feed-size-option NB-options-feed-size-xl">
-							<span class="NB-task-title">XL</span>
+							<span class="NB-task-title">{% trans "XL" %}</span>
 						</li>
 					</ul>
 				</li>
@@ -49,13 +50,13 @@
 					<div class="NB-menu-manage-image"></div>
 					<ul class="segmented-control NB-options-font">
 						<li class="NB-taskbar-button NB-feed-font-option NB-options-feed-font-whitney NB-theme-feed-font-whitney">
-							<span class="NB-task-title">Whitney</span>
+							<span class="NB-task-title">{% trans "Whitney" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-feed-font-option NB-options-feed-font-lucida NB-theme-feed-font-lucida">
-							<span class="NB-task-title">Lucida Grande</span>
+							<span class="NB-task-title">{% trans "Lucida Grande" %}</span>
 						</li>
 						<li class="NB-taskbar-button NB-feed-font-option NB-options-feed-font-gotham NB-theme-feed-font-gotham">
-							<span class="NB-task-title">Gotham</span>
+							<span class="NB-task-title">{% trans "Gotham" %}</span>
 						</li>
 					</ul>
 				</li>
@@ -63,83 +64,83 @@
 				<li class="NB-menu-item NB-menu-manage-preferences">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Preferences
+						{% trans "Preferences" %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-friends">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Followers
+						{% trans "Followers" %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-profile-editor">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Blurblog Profile
+						{% trans "Blurblog Profile" %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-account">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-logout NB-modal-submit-grey NB-modal-submit-button">
-						Logout
+						{% trans "Logout" %}
 					</div>
 					<div class="NB-menu-manage-title">
-						Account
+						{% trans "Account" %}
 					</div>
 				</li>
 				<li class="NB-menu-separator"></li>
 				<li class="NB-menu-item NB-menu-manage-import">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Import sites
+						{% trans "Import sites" %}
 					</div>
 				</li>
                 <li class="NB-menu-item NB-menu-manage-faq">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">
-                        FAQ
+                        {% trans "FAQ" %}
                     </div>
                 </li>
                 <li class="NB-menu-item NB-menu-manage-goodies">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">
-                        Goodies &amp; Apps
+                        {% trans "Goodies" %} &amp; {% trans "Apps" %}
                     </div>
                 </li>
                 <li class="NB-menu-item NB-menu-manage-statistics">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">
-                        Statistics &amp; History
+                        {% trans "Statistics" %} &amp; {% trans "History" %}
                     </div>
                 </li>
                 <li class="NB-menu-item NB-menu-manage-notifications">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">
-                        Notifications
+                        {% trans "Notifications" %}
                     </div>
                 </li>
                 <li class="NB-menu-item NB-menu-manage-newsletters">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">
-                        Email Newsletters
+                        {% trans "Email Newsletters" %}
                     </div>
                 </li>
                 <li class="NB-menu-item NB-menu-manage-referrals">
                     <div class="NB-menu-manage-image"></div>
                     <div class="NB-menu-manage-title">
-                        Refer &amp; Gift
+                        {% trans "Refer" %} &amp; {% trans "Gift" %}
                     </div>
                 </li>
 				<li class="NB-menu-item NB-menu-manage-features">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Features &amp; Tips
+						{% trans "Features" %} &amp; {% trans "Tips" %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-keyboard">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Keyboard
+						{% trans "Keyboard" %}
 					</div>
 				</li>
 				<li class="NB-menu-separator"></li>
@@ -147,40 +148,40 @@
 				<li class="NB-menu-item NB-menu-manage-premium">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Premium upgrade
+						{% trans "Premium upgrade" %}
 					</div>
 				</li>
 				{% endif %}
 				<li class="NB-menu-item NB-menu-manage-organizer">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Organize Sites
+						{% trans "Organize Sites" %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-feedchooser">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
 						{% if not user.profile.is_premium %}
-							Choose Your 64
+							{% trans "Choose Your 64" %}
 						{% else %}
-							Mute Sites
+							{% trans "Mute Sites" %}
 						{% endif %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-trainer">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Trainer
+						{% trans "Trainer" %}
 					</div>
 				</li>
 				<li class="NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read">
 					<div class="NB-menu-manage-image"></div>
 					<div class="NB-menu-manage-title">
-						Mark all as read
+						{% trans "Mark all as read" %}
 					</div>
 				</li>
 				<li class="NB-menu-manage-site-info" style="border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; display: none;">
-					<div class="NB-menu-manage-image"></div><span class="NB-menu-manage-title">Manage NewsBlur</span>
+					<div class="NB-menu-manage-image"></div><span class="NB-menu-manage-title">{% trans "Manage NewsBlur" %}</span>
 				</li>
 			</ul>
 

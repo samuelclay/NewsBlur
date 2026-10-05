@@ -56,25 +56,36 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, 'General'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, 'Feeds'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, 'Stories'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-keyboard' }, 'Keyboard')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, gettext('General')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, gettext('Feeds')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, gettext('Stories')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-keyboard' }, gettext('Keyboard'))
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Preferences',
+                gettext('Preferences'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [
+                    $.make('div', { className: 'NB-preference' }, [
+                        $.make('label', { className: 'NB-preference-label', 'for': 'NB-preference-language' }, gettext('Language')),
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('select', { id: 'NB-preference-language', name: 'language' },
+                                [$.make('option', { value: 'auto' }, gettext('Automatic (device language)'))].concat(
+                                    NEWSBLUR.languages.map(function (language) {
+                                        return $.make('option', { value: language[0] }, language[1]);
+                                    })
+                                ))
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-daysofunread' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('ul', { className: 'segmented-control NB-preference-daysofunread-control' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
-                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-default', 'data-value': 'default', role: 'button' }, 'Default'),
-                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-days', 'data-value': 'days', role: 'button' }, 'Days'),
-                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-never', 'data-value': 'never', role: 'button' }, 'Never')
+                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-default', 'data-value': 'default', role: 'button' }, gettext('Default')),
+                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-days', 'data-value': 'days', role: 'button' }, gettext('Days')),
+                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-never', 'data-value': 'never', role: 'button' }, gettext('Never'))
                             ]),
                             $.make('div', { className: 'NB-daysofunread-slider-container' }, [
                                 $.make('input', {
@@ -89,108 +100,108 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('div', { className: 'NB-daysofunread-slider-value' })
                             ]),
                             (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#', 'data-feature': 'stay-unread' }, [
-                                $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
-                                ' Customize days of unreads'
+                                $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive')),
+                                gettext(' Customize days of unreads')
                             ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Days of unreads'
+                            gettext('Days of unreads')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('select', { id: 'NB-preference-timezone-1', name: 'timezone' }, [
-                                    $.make('option', { value: 'Pacific/Midway' }, '(GMT-11:00) Midway Island, Samoa'),
-                                    $.make('option', { value: 'America/Adak' }, '(GMT-10:00) Hawaii-Aleutian'),
-                                    $.make('option', { value: 'Etc/GMT+10' }, '(GMT-10:00) Hawaii'),
-                                    $.make('option', { value: 'Pacific/Marquesas' }, '(GMT-09:30) Marquesas Islands'),
-                                    $.make('option', { value: 'Pacific/Gambier' }, '(GMT-09:00) Gambier Islands'),
-                                    $.make('option', { value: 'America/Anchorage' }, '(GMT-09:00) Alaska'),
-                                    $.make('option', { value: 'America/Ensenada' }, '(GMT-08:00) Tijuana, Baja California'),
-                                    $.make('option', { value: 'Etc/GMT+8' }, '(GMT-08:00) Pitcairn Islands'),
-                                    $.make('option', { value: 'America/Los_Angeles' }, '(GMT-08:00) Pacific Time (US & Canada)'),
-                                    $.make('option', { value: 'America/Denver' }, '(GMT-07:00) Mountain Time (US & Canada)'),
-                                    $.make('option', { value: 'America/Chihuahua' }, '(GMT-07:00) Chihuahua, La Paz, Mazatlan'),
-                                    $.make('option', { value: 'America/Dawson_Creek' }, '(GMT-07:00) Arizona'),
-                                    $.make('option', { value: 'America/Belize' }, '(GMT-06:00) Saskatchewan, Central America'),
-                                    $.make('option', { value: 'America/Cancun' }, '(GMT-06:00) Guadalajara, Mexico City'),
-                                    $.make('option', { value: 'Chile/EasterIsland' }, '(GMT-06:00) Easter Island'),
-                                    $.make('option', { value: 'America/Chicago' }, '(GMT-06:00) Central Time (US & Canada)'),
-                                    $.make('option', { value: 'America/New_York' }, '(GMT-05:00) Eastern Time (US & Canada)'),
-                                    $.make('option', { value: 'America/Havana' }, '(GMT-05:00) Cuba'),
-                                    $.make('option', { value: 'America/Bogota' }, '(GMT-05:00) Bogota, Lima, Quito, Rio Branco'),
-                                    $.make('option', { value: 'America/Caracas' }, '(GMT-04:30) Caracas'),
-                                    $.make('option', { value: 'America/Santiago' }, '(GMT-04:00) Santiago'),
-                                    $.make('option', { value: 'America/La_Paz' }, '(GMT-04:00) La Paz'),
-                                    $.make('option', { value: 'Atlantic/Stanley' }, '(GMT-04:00) Faukland Islands'),
-                                    $.make('option', { value: 'America/Campo_Grande' }, '(GMT-04:00) Brazil'),
-                                    $.make('option', { value: 'America/Goose_Bay' }, '(GMT-04:00) Atlantic Time (Goose Bay)'),
-                                    $.make('option', { value: 'America/Glace_Bay' }, '(GMT-04:00) Atlantic Time (Canada)'),
-                                    $.make('option', { value: 'America/St_Johns' }, '(GMT-03:30) Newfoundland'),
-                                    $.make('option', { value: 'America/Araguaina' }, '(GMT-03:00) UTC-3'),
-                                    $.make('option', { value: 'America/Montevideo' }, '(GMT-03:00) Montevideo'),
-                                    $.make('option', { value: 'America/Miquelon' }, '(GMT-03:00) Miquelon, St. Pierre'),
-                                    $.make('option', { value: 'America/Godthab' }, '(GMT-03:00) Greenland'),
-                                    $.make('option', { value: 'America/Argentina/Buenos_Aires' }, '(GMT-03:00) Buenos Aires'),
-                                    $.make('option', { value: 'America/Sao_Paulo' }, '(GMT-03:00) Brasilia'),
-                                    $.make('option', { value: 'America/Noronha' }, '(GMT-02:00) Mid-Atlantic'),
-                                    $.make('option', { value: 'Atlantic/Cape_Verde' }, '(GMT-01:00) Cape Verde Is.'),
-                                    $.make('option', { value: 'Atlantic/Azores' }, '(GMT-01:00) Azores'),
-                                    $.make('option', { value: 'Europe/Belfast' }, '(GMT) Greenwich Mean Time : Belfast'),
-                                    $.make('option', { value: 'Europe/Dublin' }, '(GMT) Greenwich Mean Time : Dublin'),
-                                    $.make('option', { value: 'Europe/Lisbon' }, '(GMT) Greenwich Mean Time : Lisbon'),
-                                    $.make('option', { value: 'Europe/London' }, '(GMT) Greenwich Mean Time : London'),
-                                    $.make('option', { value: 'Africa/Abidjan' }, '(GMT) Monrovia, Reykjavik'),
-                                    $.make('option', { value: 'Europe/Amsterdam' }, '(GMT+01:00) Amsterdam, Berlin, Stockholm'),
-                                    $.make('option', { value: 'Europe/Belgrade' }, '(GMT+01:00) Belgrade, Budapest, Prague'),
-                                    $.make('option', { value: 'Europe/Brussels' }, '(GMT+01:00) Brussels, Copenhagen, Paris'),
-                                    $.make('option', { value: 'Africa/Algiers' }, '(GMT+01:00) West Central Africa'),
-                                    $.make('option', { value: 'Africa/Windhoek' }, '(GMT+01:00) Windhoek'),
-                                    $.make('option', { value: 'Asia/Beirut' }, '(GMT+02:00) Beirut'),
-                                    $.make('option', { value: 'Africa/Cairo' }, '(GMT+02:00) Cairo'),
-                                    $.make('option', { value: 'Asia/Gaza' }, '(GMT+02:00) Gaza'),
-                                    $.make('option', { value: 'Africa/Blantyre' }, '(GMT+02:00) Harare, Pretoria'),
-                                    $.make('option', { value: 'Asia/Jerusalem' }, '(GMT+02:00) Jerusalem'),
-                                    $.make('option', { value: 'Europe/Minsk' }, '(GMT+02:00) Minsk, Kyiv'),
-                                    $.make('option', { value: 'Asia/Damascus' }, '(GMT+02:00) Syria'),
-                                    $.make('option', { value: 'Europe/Moscow' }, '(GMT+03:00) Moscow, St. Petersburg'),
-                                    $.make('option', { value: 'Africa/Addis_Ababa' }, '(GMT+03:00) Nairobi'),
-                                    $.make('option', { value: 'Asia/Tehran' }, '(GMT+03:30) Tehran'),
-                                    $.make('option', { value: 'Asia/Dubai' }, '(GMT+04:00) Abu Dhabi, Muscat'),
-                                    $.make('option', { value: 'Asia/Yerevan' }, '(GMT+04:00) Yerevan'),
-                                    $.make('option', { value: 'Asia/Kabul' }, '(GMT+04:30) Kabul'),
-                                    $.make('option', { value: 'Asia/Yekaterinburg' }, '(GMT+05:00) Ekaterinburg'),
-                                    $.make('option', { value: 'Asia/Tashkent' }, '(GMT+05:00) Tashkent'),
-                                    $.make('option', { value: 'Asia/Kolkata' }, '(GMT+05:30) Chennai, Mumbai, New Delhi'),
-                                    $.make('option', { value: 'Asia/Katmandu' }, '(GMT+05:45) Kathmandu'),
-                                    $.make('option', { value: 'Asia/Dhaka' }, '(GMT+06:00) Astana, Dhaka'),
-                                    $.make('option', { value: 'Asia/Novosibirsk' }, '(GMT+06:00) Novosibirsk'),
-                                    $.make('option', { value: 'Asia/Rangoon' }, '(GMT+06:30) Yangon (Rangoon)'),
-                                    $.make('option', { value: 'Asia/Bangkok' }, '(GMT+07:00) Bangkok, Hanoi, Jakarta'),
-                                    $.make('option', { value: 'Asia/Krasnoyarsk' }, '(GMT+07:00) Krasnoyarsk'),
-                                    $.make('option', { value: 'Asia/Hong_Kong' }, '(GMT+08:00) Beijing, Chongqing, Hong Kong'),
-                                    $.make('option', { value: 'Asia/Irkutsk' }, '(GMT+08:00) Irkutsk, Ulaan Bataar'),
-                                    $.make('option', { value: 'Australia/Perth' }, '(GMT+08:00) Perth'),
-                                    $.make('option', { value: 'Australia/Eucla' }, '(GMT+08:45) Eucla'),
-                                    $.make('option', { value: 'Asia/Tokyo' }, '(GMT+09:00) Osaka, Sapporo, Tokyo'),
-                                    $.make('option', { value: 'Asia/Seoul' }, '(GMT+09:00) Seoul'),
-                                    $.make('option', { value: 'Asia/Yakutsk' }, '(GMT+09:00) Yakutsk'),
-                                    $.make('option', { value: 'Australia/Adelaide' }, '(GMT+09:30) Adelaide'),
-                                    $.make('option', { value: 'Australia/Darwin' }, '(GMT+09:30) Darwin'),
-                                    $.make('option', { value: 'Australia/Brisbane' }, '(GMT+10:00) Brisbane'),
-                                    $.make('option', { value: 'Australia/Sydney' }, '(GMT+10:00) Sydney, Hobart'),
-                                    $.make('option', { value: 'Asia/Vladivostok' }, '(GMT+10:00) Vladivostok'),
-                                    $.make('option', { value: 'Australia/Lord_Howe' }, '(GMT+10:30) Lord Howe Island'),
-                                    $.make('option', { value: 'Etc/GMT-11' }, '(GMT+11:00) Solomon Is., New Caledonia'),
-                                    $.make('option', { value: 'Asia/Magadan' }, '(GMT+11:00) Magadan'),
-                                    $.make('option', { value: 'Pacific/Norfolk' }, '(GMT+11:30) Norfolk Island'),
-                                    $.make('option', { value: 'Asia/Anadyr' }, '(GMT+12:00) Anadyr, Kamchatka'),
-                                    $.make('option', { value: 'Pacific/Auckland' }, '(GMT+12:00) Auckland, Wellington'),
-                                    $.make('option', { value: 'Etc/GMT-12' }, '(GMT+12:00) Fiji, Kamchatka, Marshall Is.'),
-                                    $.make('option', { value: 'Pacific/Chatham' }, '(GMT+12:45) Chatham Islands'),
-                                    $.make('option', { value: 'Pacific/Tongatapu' }, '(GMT+13:00) Nuku\'alofa'),
-                                    $.make('option', { value: 'Pacific/Kiritimati' }, '(GMT+14:00) Kiritimati')
+                                    $.make('option', { value: 'Pacific/Midway' }, gettext('(GMT-11:00) Midway Island, Samoa')),
+                                    $.make('option', { value: 'America/Adak' }, gettext('(GMT-10:00) Hawaii-Aleutian')),
+                                    $.make('option', { value: 'Etc/GMT+10' }, gettext('(GMT-10:00) Hawaii')),
+                                    $.make('option', { value: 'Pacific/Marquesas' }, gettext('(GMT-09:30) Marquesas Islands')),
+                                    $.make('option', { value: 'Pacific/Gambier' }, gettext('(GMT-09:00) Gambier Islands')),
+                                    $.make('option', { value: 'America/Anchorage' }, gettext('(GMT-09:00) Alaska')),
+                                    $.make('option', { value: 'America/Ensenada' }, gettext('(GMT-08:00) Tijuana, Baja California')),
+                                    $.make('option', { value: 'Etc/GMT+8' }, gettext('(GMT-08:00) Pitcairn Islands')),
+                                    $.make('option', { value: 'America/Los_Angeles' }, gettext('(GMT-08:00) Pacific Time (US & Canada)')),
+                                    $.make('option', { value: 'America/Denver' }, gettext('(GMT-07:00) Mountain Time (US & Canada)')),
+                                    $.make('option', { value: 'America/Chihuahua' }, gettext('(GMT-07:00) Chihuahua, La Paz, Mazatlan')),
+                                    $.make('option', { value: 'America/Dawson_Creek' }, gettext('(GMT-07:00) Arizona')),
+                                    $.make('option', { value: 'America/Belize' }, gettext('(GMT-06:00) Saskatchewan, Central America')),
+                                    $.make('option', { value: 'America/Cancun' }, gettext('(GMT-06:00) Guadalajara, Mexico City')),
+                                    $.make('option', { value: 'Chile/EasterIsland' }, gettext('(GMT-06:00) Easter Island')),
+                                    $.make('option', { value: 'America/Chicago' }, gettext('(GMT-06:00) Central Time (US & Canada)')),
+                                    $.make('option', { value: 'America/New_York' }, gettext('(GMT-05:00) Eastern Time (US & Canada)')),
+                                    $.make('option', { value: 'America/Havana' }, gettext('(GMT-05:00) Cuba')),
+                                    $.make('option', { value: 'America/Bogota' }, gettext('(GMT-05:00) Bogota, Lima, Quito, Rio Branco')),
+                                    $.make('option', { value: 'America/Caracas' }, gettext('(GMT-04:30) Caracas')),
+                                    $.make('option', { value: 'America/Santiago' }, gettext('(GMT-04:00) Santiago')),
+                                    $.make('option', { value: 'America/La_Paz' }, gettext('(GMT-04:00) La Paz')),
+                                    $.make('option', { value: 'Atlantic/Stanley' }, gettext('(GMT-04:00) Faukland Islands')),
+                                    $.make('option', { value: 'America/Campo_Grande' }, gettext('(GMT-04:00) Brazil')),
+                                    $.make('option', { value: 'America/Goose_Bay' }, gettext('(GMT-04:00) Atlantic Time (Goose Bay)')),
+                                    $.make('option', { value: 'America/Glace_Bay' }, gettext('(GMT-04:00) Atlantic Time (Canada)')),
+                                    $.make('option', { value: 'America/St_Johns' }, gettext('(GMT-03:30) Newfoundland')),
+                                    $.make('option', { value: 'America/Araguaina' }, gettext('(GMT-03:00) UTC-3')),
+                                    $.make('option', { value: 'America/Montevideo' }, gettext('(GMT-03:00) Montevideo')),
+                                    $.make('option', { value: 'America/Miquelon' }, gettext('(GMT-03:00) Miquelon, St. Pierre')),
+                                    $.make('option', { value: 'America/Godthab' }, gettext('(GMT-03:00) Greenland')),
+                                    $.make('option', { value: 'America/Argentina/Buenos_Aires' }, gettext('(GMT-03:00) Buenos Aires')),
+                                    $.make('option', { value: 'America/Sao_Paulo' }, gettext('(GMT-03:00) Brasilia')),
+                                    $.make('option', { value: 'America/Noronha' }, gettext('(GMT-02:00) Mid-Atlantic')),
+                                    $.make('option', { value: 'Atlantic/Cape_Verde' }, gettext('(GMT-01:00) Cape Verde Is.')),
+                                    $.make('option', { value: 'Atlantic/Azores' }, gettext('(GMT-01:00) Azores')),
+                                    $.make('option', { value: 'Europe/Belfast' }, gettext('(GMT) Greenwich Mean Time : Belfast')),
+                                    $.make('option', { value: 'Europe/Dublin' }, gettext('(GMT) Greenwich Mean Time : Dublin')),
+                                    $.make('option', { value: 'Europe/Lisbon' }, gettext('(GMT) Greenwich Mean Time : Lisbon')),
+                                    $.make('option', { value: 'Europe/London' }, gettext('(GMT) Greenwich Mean Time : London')),
+                                    $.make('option', { value: 'Africa/Abidjan' }, gettext('(GMT) Monrovia, Reykjavik')),
+                                    $.make('option', { value: 'Europe/Amsterdam' }, gettext('(GMT+01:00) Amsterdam, Berlin, Stockholm')),
+                                    $.make('option', { value: 'Europe/Belgrade' }, gettext('(GMT+01:00) Belgrade, Budapest, Prague')),
+                                    $.make('option', { value: 'Europe/Brussels' }, gettext('(GMT+01:00) Brussels, Copenhagen, Paris')),
+                                    $.make('option', { value: 'Africa/Algiers' }, gettext('(GMT+01:00) West Central Africa')),
+                                    $.make('option', { value: 'Africa/Windhoek' }, gettext('(GMT+01:00) Windhoek')),
+                                    $.make('option', { value: 'Asia/Beirut' }, gettext('(GMT+02:00) Beirut')),
+                                    $.make('option', { value: 'Africa/Cairo' }, gettext('(GMT+02:00) Cairo')),
+                                    $.make('option', { value: 'Asia/Gaza' }, gettext('(GMT+02:00) Gaza')),
+                                    $.make('option', { value: 'Africa/Blantyre' }, gettext('(GMT+02:00) Harare, Pretoria')),
+                                    $.make('option', { value: 'Asia/Jerusalem' }, gettext('(GMT+02:00) Jerusalem')),
+                                    $.make('option', { value: 'Europe/Minsk' }, gettext('(GMT+02:00) Minsk, Kyiv')),
+                                    $.make('option', { value: 'Asia/Damascus' }, gettext('(GMT+02:00) Syria')),
+                                    $.make('option', { value: 'Europe/Moscow' }, gettext('(GMT+03:00) Moscow, St. Petersburg')),
+                                    $.make('option', { value: 'Africa/Addis_Ababa' }, gettext('(GMT+03:00) Nairobi')),
+                                    $.make('option', { value: 'Asia/Tehran' }, gettext('(GMT+03:30) Tehran')),
+                                    $.make('option', { value: 'Asia/Dubai' }, gettext('(GMT+04:00) Abu Dhabi, Muscat')),
+                                    $.make('option', { value: 'Asia/Yerevan' }, gettext('(GMT+04:00) Yerevan')),
+                                    $.make('option', { value: 'Asia/Kabul' }, gettext('(GMT+04:30) Kabul')),
+                                    $.make('option', { value: 'Asia/Yekaterinburg' }, gettext('(GMT+05:00) Ekaterinburg')),
+                                    $.make('option', { value: 'Asia/Tashkent' }, gettext('(GMT+05:00) Tashkent')),
+                                    $.make('option', { value: 'Asia/Kolkata' }, gettext('(GMT+05:30) Chennai, Mumbai, New Delhi')),
+                                    $.make('option', { value: 'Asia/Katmandu' }, gettext('(GMT+05:45) Kathmandu')),
+                                    $.make('option', { value: 'Asia/Dhaka' }, gettext('(GMT+06:00) Astana, Dhaka')),
+                                    $.make('option', { value: 'Asia/Novosibirsk' }, gettext('(GMT+06:00) Novosibirsk')),
+                                    $.make('option', { value: 'Asia/Rangoon' }, gettext('(GMT+06:30) Yangon (Rangoon)')),
+                                    $.make('option', { value: 'Asia/Bangkok' }, gettext('(GMT+07:00) Bangkok, Hanoi, Jakarta')),
+                                    $.make('option', { value: 'Asia/Krasnoyarsk' }, gettext('(GMT+07:00) Krasnoyarsk')),
+                                    $.make('option', { value: 'Asia/Hong_Kong' }, gettext('(GMT+08:00) Beijing, Chongqing, Hong Kong')),
+                                    $.make('option', { value: 'Asia/Irkutsk' }, gettext('(GMT+08:00) Irkutsk, Ulaan Bataar')),
+                                    $.make('option', { value: 'Australia/Perth' }, gettext('(GMT+08:00) Perth')),
+                                    $.make('option', { value: 'Australia/Eucla' }, gettext('(GMT+08:45) Eucla')),
+                                    $.make('option', { value: 'Asia/Tokyo' }, gettext('(GMT+09:00) Osaka, Sapporo, Tokyo')),
+                                    $.make('option', { value: 'Asia/Seoul' }, gettext('(GMT+09:00) Seoul')),
+                                    $.make('option', { value: 'Asia/Yakutsk' }, gettext('(GMT+09:00) Yakutsk')),
+                                    $.make('option', { value: 'Australia/Adelaide' }, gettext('(GMT+09:30) Adelaide')),
+                                    $.make('option', { value: 'Australia/Darwin' }, gettext('(GMT+09:30) Darwin')),
+                                    $.make('option', { value: 'Australia/Brisbane' }, gettext('(GMT+10:00) Brisbane')),
+                                    $.make('option', { value: 'Australia/Sydney' }, gettext('(GMT+10:00) Sydney, Hobart')),
+                                    $.make('option', { value: 'Asia/Vladivostok' }, gettext('(GMT+10:00) Vladivostok')),
+                                    $.make('option', { value: 'Australia/Lord_Howe' }, gettext('(GMT+10:30) Lord Howe Island')),
+                                    $.make('option', { value: 'Etc/GMT-11' }, gettext('(GMT+11:00) Solomon Is., New Caledonia')),
+                                    $.make('option', { value: 'Asia/Magadan' }, gettext('(GMT+11:00) Magadan')),
+                                    $.make('option', { value: 'Pacific/Norfolk' }, gettext('(GMT+11:30) Norfolk Island')),
+                                    $.make('option', { value: 'Asia/Anadyr' }, gettext('(GMT+12:00) Anadyr, Kamchatka')),
+                                    $.make('option', { value: 'Pacific/Auckland' }, gettext('(GMT+12:00) Auckland, Wellington')),
+                                    $.make('option', { value: 'Etc/GMT-12' }, gettext('(GMT+12:00) Fiji, Kamchatka, Marshall Is.')),
+                                    $.make('option', { value: 'Pacific/Chatham' }, gettext('(GMT+12:45) Chatham Islands')),
+                                    $.make('option', { value: 'Pacific/Tongatapu' }, gettext('(GMT+13:00) Nuku\'alofa')),
+                                    $.make('option', { value: 'Pacific/Kiritimati' }, gettext('(GMT+14:00) Kiritimati'))
                                 ])
                             ])
                         ]),
@@ -198,18 +209,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-dateformat-1', type: 'radio', name: 'dateformat', value: '12' }),
                                 $.make('label', { 'for': 'NB-preference-dateformat-1' }, [
-                                    'Use 12-hour clock'
+                                    gettext('Use 12-hour clock')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-dateformat-2', type: 'radio', name: 'dateformat', value: '24' }),
                                 $.make('label', { 'for': 'NB-preference-dateformat-2' }, [
-                                    'Use 24-hour clock'
+                                    gettext('Use 24-hour clock')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Timezone'
+                            gettext('Timezone')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-showunreadcountsintitle' }, [
@@ -217,12 +228,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showunreadcountsintitle-1', type: 'checkbox', name: 'title_counts', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showunreadcountsintitle-1' }, [
-                                    'Show unread counts in the window title'
+                                    gettext('Show unread counts in the window title')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Window title'
+                            gettext('Window title')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-showglobalsharedstories' }, [
@@ -230,36 +241,36 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showglobalsharedstories-1', type: 'checkbox', name: 'show_global_shared_stories', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showglobalsharedstories-1' }, [
-                                    'Show Global Shared Stories'
+                                    gettext('Show Global Shared Stories')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showinfrequentsitestories-1', type: 'checkbox', name: 'show_infrequent_site_stories', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showinfrequentsitestories-1' }, [
-                                    'Show Infrequent Site Stories'
+                                    gettext('Show Infrequent Site Stories')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showwidelyreadstories-1', type: 'checkbox', name: 'show_widely_read_stories', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showwidelyreadstories-1' }, [
-                                    'Show Widely Read Stories'
+                                    gettext('Show Widely Read Stories')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showlongreads-1', type: 'checkbox', name: 'show_long_reads', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showlongreads-1' }, [
-                                    'Show Long Reads'
+                                    gettext('Show Long Reads')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showgoodreads-1', type: 'checkbox', name: 'show_good_reads', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showgoodreads-1' }, [
-                                    'Show Good Reads'
+                                    gettext('Show Good Reads')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Special Folders'
+                            gettext('Special Folders')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-autoopenfolder' }, [
@@ -267,7 +278,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-autoopenfolder-1', type: 'radio', name: 'autoopen_folder', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-autoopenfolder-1' }, [
-                                    'Show the dashboard when loading NewsBlur'
+                                    gettext('Show the dashboard when loading NewsBlur')
                                 ])
                             ]),
                             $.make('div', [
@@ -278,7 +289,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Default folder'
+                            gettext('Default folder')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-animations' }, [
@@ -287,19 +298,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-animations-1', type: 'radio', name: 'animations', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-animations-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/arrow_in.png' }),
-                                    'Show all animations'
+                                    gettext('Show all animations')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-animations-2', type: 'radio', name: 'animations', value: 'false' }),
                                 $.make('label', { 'for': 'NB-preference-animations-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/arrow_right.png' }),
-                                    'Jump immediately with no animations'
+                                    gettext('Jump immediately with no animations')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Animations'
+                            gettext('Animations')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-feedorder' }, [
@@ -308,19 +319,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-feedorder-1', type: 'radio', name: 'feed_order', value: 'ALPHABETICAL' }),
                                 $.make('label', { 'for': 'NB-preference-feedorder-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/pilcrow.png' }),
-                                    'Alphabetical'
+                                    gettext('Alphabetical')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-feedorder-2', type: 'radio', name: 'feed_order', value: 'MOSTUSED' }),
                                 $.make('label', { 'for': 'NB-preference-feedorder-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/report_user.png' }),
-                                    'Most used at top, then alphabetical'
+                                    gettext('Most used at top, then alphabetical')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Site sidebar order'
+                            gettext('Site sidebar order')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-folder-counts' }, [
@@ -328,18 +339,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-folder-counts-1', type: 'radio', name: 'folder_counts', value: 'false' }),
                                 $.make('label', { 'for': 'NB-preference-folder-counts-1' }, [
-                                    'Only show counts on collapsed folders'
+                                    gettext('Only show counts on collapsed folders')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-folder-counts-2', type: 'radio', name: 'folder_counts', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-folder-counts-2' }, [
-                                    'Always show unread counts on folders'
+                                    gettext('Always show unread counts on folders')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Folder unread counts'
+                            gettext('Folder unread counts')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-tooltips' }, [
@@ -347,21 +358,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-tooltips-1', type: 'radio', name: 'show_tooltips', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-tooltips-1' }, [
-                                    'Show tooltips'
+                                    gettext('Show tooltips')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-tooltips-2', type: 'radio', name: 'show_tooltips', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-tooltips-2' }, [
-                                    'Don\'t bother showing tooltips'
+                                    gettext('Don\'t bother showing tooltips')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Tooltips',
+                            gettext('Tooltips'),
                             $.make('div', { className: 'tipsy tipsy-n' }, [
                                 $.make('div', { className: 'tipsy-arrow' }),
-                                $.make('div', { className: 'tipsy-inner' }, 'Tooltips like this')
+                                $.make('div', { className: 'tipsy-inner' }, gettext('Tooltips like this'))
                             ]).css({
                                 'display': 'block',
                                 'top': 24,
@@ -374,19 +385,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-contextmenus-1', type: 'radio', name: 'show_contextmenus', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-contextmenus-1' }, [
-                                    'Open the feed and story title menu'
+                                    gettext('Open the feed and story title menu')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-contextmenus-2', type: 'radio', name: 'show_contextmenus', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-contextmenus-2' }, [
-                                    'Use the native browser context menu'
+                                    gettext('Use the native browser context menu')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Right-clicking',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
+                            gettext('Right-clicking'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Folders, feeds, and story titles'))
                         ])
                     ]),
                     ($.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
@@ -394,25 +405,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
                                 $.make('input', { id: 'NB-preference-briefing-enabled-1', type: 'radio', name: 'briefing_enabled', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-briefing-enabled-1', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Enable daily briefings'),
+                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Enable daily briefings')),
                                     $.make('ul', { className: 'NB-social-features-list' }, [
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'AI-curated summary of your top stories']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Customizable writing style and length']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Scheduled delivery (daily or twice daily)']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Choose which feeds to include'])
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('AI-curated summary of your top stories')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Customizable writing style and length')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Scheduled delivery (daily or twice daily)')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Choose which feeds to include')])
                                     ])
                                 ])
                             ]),
                             $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
                                 $.make('input', { id: 'NB-preference-briefing-enabled-2', type: 'radio', name: 'briefing_enabled', value: 'false' }),
                                 $.make('label', { 'for': 'NB-preference-briefing-enabled-2', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Disable daily briefings'),
-                                    $.make('span', { className: 'NB-social-card-desc' }, 'Turn off automatic briefing generation')
+                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Disable daily briefings')),
+                                    $.make('span', { className: 'NB-social-card-desc' }, gettext('Turn off automatic briefing generation'))
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Daily Briefing'
+                            gettext('Daily Briefing')
                         ])
                     ])),
                     ($.make('div', { className: 'NB-preference NB-preference-clustering-enabled' }, [
@@ -420,17 +431,17 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
                                 $.make('input', { id: 'NB-preference-clustering-enabled-1', type: 'radio', name: 'story_clustering', value: 'true' }),
                                 $.make('label', { 'for': 'NB-preference-clustering-enabled-1', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Enable story clustering'),
+                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Enable story clustering')),
                                     $.make('ul', { className: 'NB-social-features-list' }, [
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Group duplicate stories across your feeds']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'See which feeds cover the same story']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Reduce clutter in your river of stories'])
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Group duplicate stories across your feeds')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('See which feeds cover the same story')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Reduce clutter in your river of stories')])
                                     ]),
                                     $.make('div', { className: 'NB-clustering-mark-read-option' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
                                         $.make('input', { id: 'NB-preference-cluster-mark-read', type: 'checkbox', name: 'cluster_mark_read', value: 'true', disabled: !NEWSBLUR.Globals.is_archive }),
-                                        $.make('label', { 'for': 'NB-preference-cluster-mark-read' }, 'Mark duplicates as read'),
+                                        $.make('label', { 'for': 'NB-preference-cluster-mark-read' }, gettext('Mark duplicates as read')),
                                         (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-premium-archive-upgrade-notice NB-premium-link', 'data-feature': 'clustering' }, [
-                                            $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                                            $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                                         ]))
                                     ])
                                 ])
@@ -438,33 +449,33 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
                                 $.make('input', { id: 'NB-preference-clustering-enabled-2', type: 'radio', name: 'story_clustering', value: 'false' }),
                                 $.make('label', { 'for': 'NB-preference-clustering-enabled-2', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Disable story clustering'),
-                                    $.make('span', { className: 'NB-social-card-desc' }, 'Show every story individually without grouping')
+                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Disable story clustering')),
+                                    $.make('span', { className: 'NB-social-card-desc' }, gettext('Show every story individually without grouping'))
                                 ])
                             ]),
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Story Clustering',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Groups similar stories from different feeds')
+                            gettext('Story Clustering'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Groups similar stories from different feeds'))
                         ])
                     ])),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
+                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, gettext('Download OPML'))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Backup your sites',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
+                            gettext('Backup your sites'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Download this XML file as a backup'))
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-email-settings' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link NB-link-account-email-settings', href: '#' }, 'Manage email settings'),
-                            $.make('div', { className: 'NB-preference-email-status' }, 'You are unsubscribed from all NewsBlur emails').toggle(!NEWSBLUR.assets.preference('send_emails'))
+                            $.make('a', { className: 'NB-splash-link NB-link-account-email-settings', href: '#' }, gettext('Manage email settings')),
+                            $.make('div', { className: 'NB-preference-email-status' }, gettext('You are unsubscribed from all NewsBlur emails')).toggle(!NEWSBLUR.assets.preference('send_emails'))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Emails',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Found in the Account dialog')
+                            gettext('Emails'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Found in the Account dialog'))
                         ])
                     ])
                 ]),
@@ -475,42 +486,42 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-layout-1' }, [
                                     $.make('input', { id: 'NB-preference-layout-1', type: 'radio', name: 'story_layout', value: 'full' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_full_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, "Full")
+                                    $.make("div", { className: "NB-layout-title" }, gettext("Full"))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-layout-2' }, [
                                     $.make('input', { id: 'NB-preference-layout-2', type: 'radio', name: 'story_layout', value: 'split' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_split_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, "Split")
+                                    $.make("div", { className: "NB-layout-title" }, gettext("Split"))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-layout-3' }, [
                                     $.make('input', { id: 'NB-preference-layout-3', type: 'radio', name: 'story_layout', value: 'list' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_list_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, "List")
+                                    $.make("div", { className: "NB-layout-title" }, gettext("List"))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-layout-4' }, [
                                     $.make('input', { id: 'NB-preference-layout-4', type: 'radio', name: 'story_layout', value: 'grid' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_grid_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, "Grid")
+                                    $.make("div", { className: "NB-layout-title" }, gettext("Grid"))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-layout-5' }, [
                                     $.make('input', { id: 'NB-preference-layout-5', type: 'radio', name: 'story_layout', value: 'magazine' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_magazine_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, "Magazine")
+                                    $.make("div", { className: "NB-layout-title" }, gettext("Magazine"))
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Default layout',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.'),
-                            $.make('div', { className: 'NB-clear-overrides-layout NB-preference-sublabel-link NB-splash-link' }, "Clear all overrides")
+                            gettext('Default layout'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('You can override this on a per-site basis.')),
+                            $.make('div', { className: 'NB-clear-overrides-layout NB-preference-sublabel-link NB-splash-link' }, gettext("Clear all overrides"))
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-view' }, [
@@ -519,52 +530,52 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-view-1' }, [
                                     $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'default_view', value: 'page' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_original_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, "Original")
+                                    $.make("div", { className: "NB-view-title" }, gettext("Original"))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-view-2' }, [
                                     $.make('input', { id: 'NB-preference-view-2', type: 'radio', name: 'default_view', value: 'feed' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_feed_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, "Feed")
+                                    $.make("div", { className: "NB-view-title" }, gettext("Feed"))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-view-3' }, [
                                     $.make('input', { id: 'NB-preference-view-3', type: 'radio', name: 'default_view', value: 'text' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_text_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, "Text")
+                                    $.make("div", { className: "NB-view-title" }, gettext("Text"))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('label', { 'for': 'NB-preference-view-4' }, [
                                     $.make('input', { id: 'NB-preference-view-4', type: 'radio', name: 'default_view', value: 'story' }),
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_story_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, "Story")
+                                    $.make("div", { className: "NB-view-title" }, gettext("Story"))
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Default view',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.'),
-                            $.make('div', { className: 'NB-clear-overrides-view NB-preference-sublabel-link NB-splash-link' }, "Clear all overrides")
+                            gettext('Default view'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('You can override this on a per-site basis.')),
+                            $.make('div', { className: 'NB-clear-overrides-view NB-preference-sublabel-link NB-splash-link' }, gettext("Clear all overrides"))
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-view-setting' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('ul', { className: 'segmented-control NB-preference-view-setting-order' }, [
-                                $.make('li', { className: 'NB-preference-view-setting-order-newest NB-active' }, 'Newest first'),
-                                $.make('li', { className: 'NB-preference-view-setting-order-oldest' }, 'Oldest')
+                                $.make('li', { className: 'NB-preference-view-setting-order-newest NB-active' }, gettext('Newest first')),
+                                $.make('li', { className: 'NB-preference-view-setting-order-oldest' }, gettext('Oldest'))
                             ]),
                             $.make('ul', { className: 'segmented-control NB-preference-view-setting-read-filter' }, [
-                                $.make('li', { className: 'NB-preference-view-setting-read-filter-all  NB-active' }, 'All stories'),
-                                $.make('li', { className: 'NB-preference-view-setting-read-filter-unread' }, 'Unread only')
+                                $.make('li', { className: 'NB-preference-view-setting-read-filter-all  NB-active' }, gettext('All stories')),
+                                $.make('li', { className: 'NB-preference-view-setting-read-filter-unread' }, gettext('Unread only'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Default story order',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site and per-folder basis.'),
-                            $.make('div', { className: 'NB-clear-overrides-order NB-preference-sublabel-link NB-splash-link' }, "Clear all overrides")
+                            gettext('Default story order'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('You can override this on a per-site and per-folder basis.')),
+                            $.make('div', { className: 'NB-clear-overrides-order NB-preference-sublabel-link NB-splash-link' }, gettext("Clear all overrides"))
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
@@ -572,18 +583,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-openfeedaction-1', type: 'radio', name: 'open_feed_action', value: 'newest' }),
                                 $.make('label', { 'for': 'NB-preference-openfeedaction-1' }, [
-                                    'Open the first story'
+                                    gettext('Open the first story')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-openfeedaction-0', type: 'radio', name: 'open_feed_action', value: 0, checked: true }),
                                 $.make('label', { 'for': 'NB-preference-openfeedaction-0' }, [
-                                    'Show all stories'
+                                    gettext('Show all stories')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'When opening a site'
+                            gettext('When opening a site')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-markreadstoryscroll' }, [
@@ -591,18 +602,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadstoryscroll-1', type: 'radio', name: 'mark_read_on_scroll_titles', value: "true" }),
                                 $.make('label', { 'for': 'NB-preference-markreadstoryscroll-1' }, [
-                                    'Mark stories as read when scrolled past'
+                                    gettext('Mark stories as read when scrolled past')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadstoryscroll-0', type: 'radio', name: 'mark_read_on_scroll_titles', value: "false" }),
                                 $.make('label', { 'for': 'NB-preference-markreadstoryscroll-0' }, [
-                                    'Don\'t automatically mark stories as read'
+                                    gettext('Don\'t automatically mark stories as read')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Mark stories read on scroll'
+                            gettext('Mark stories read on scroll')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-density' }, [
@@ -610,18 +621,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-density-compact', type: 'radio', name: 'density', value: "compact" }),
                                 $.make('label', { 'for': 'NB-preference-density-compact' }, [
-                                    'Compact spacing: more dense'
+                                    gettext('Compact spacing: more dense')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-density-comfortable', type: 'radio', name: 'density', value: "comfortable" }),
                                 $.make('label', { 'for': 'NB-preference-density-comfortable' }, [
-                                    'Comfortable spacing: less dense'
+                                    gettext('Comfortable spacing: less dense')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Spacing between feeds and story titles'
+                            gettext('Spacing between feeds and story titles')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-showcontentpreview' }, [
@@ -629,18 +640,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showcontentpreview-1', type: 'radio', name: 'show_content_preview', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-showcontentpreview-1' }, [
-                                    'Show a preview of the story'
+                                    gettext('Show a preview of the story')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showcontentpreview-0', type: 'radio', name: 'show_content_preview', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showcontentpreview-0' }, [
-                                    'Don\'t show a preview, only show the story title'
+                                    gettext('Don\'t show a preview, only show the story title')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Story content preview'
+                            gettext('Story content preview')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-showimagepreview' }, [
@@ -648,36 +659,36 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-sl', type: 'radio', name: 'image_preview', value: "small-left" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-sl' }, [
-                                    'Small image thumbnail on the left'
+                                    gettext('Small image thumbnail on the left')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-sr', type: 'radio', name: 'image_preview', value: "small-right" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-sr' }, [
-                                    'Small image thumbnail on the right'
+                                    gettext('Small image thumbnail on the right')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-ll', type: 'radio', name: 'image_preview', value: "large-left" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-ll' }, [
-                                    'Large image thumbnail on the left'
+                                    gettext('Large image thumbnail on the left')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-lr', type: 'radio', name: 'image_preview', value: "large-right" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-lr' }, [
-                                    'Large image thumbnail on the right'
+                                    gettext('Large image thumbnail on the right')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-0', type: 'radio', name: 'image_preview', value: "none" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-0' }, [
-                                    'Don\'t show a thumbnail'
+                                    gettext('Don\'t show a thumbnail')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Image preview'
+                            gettext('Image preview')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-doubleclickfeed' }, [
@@ -685,24 +696,24 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickfeed-1', type: 'radio', name: 'doubleclick_feed', value: 'open' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickfeed-1' }, [
-                                    'Open the site in a new window'
+                                    gettext('Open the site in a new window')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickfeed-0', type: 'radio', name: 'doubleclick_feed', value: 'open_and_read' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickfeed-0' }, [
-                                    'Open the site in a new window and mark it as read'
+                                    gettext('Open the site in a new window and mark it as read')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickfeed-2', type: 'radio', name: 'doubleclick_feed', value: 'ignore' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickfeed-2' }, [
-                                    'Don\'t do anything on double-clicks'
+                                    gettext('Don\'t do anything on double-clicks')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Double-clicking a site'
+                            gettext('Double-clicking a site')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-doubleclickunread' }, [
@@ -710,18 +721,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickunread-1', type: 'radio', name: 'doubleclick_unread', value: 'markread' }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickunread-1' }, [
-                                    'Mark the site as read'
+                                    gettext('Mark the site as read')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-doubleclickunread-0', type: 'radio', name: 'doubleclick_unread', value: "ignore" }),
                                 $.make('label', { 'for': 'NB-preference-doubleclickunread-0' }, [
-                                    'Don\'t do anything on double-clicks'
+                                    gettext('Don\'t do anything on double-clicks')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Double-clicking an unread count'
+                            gettext('Double-clicking an unread count')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-markreadconfirm' }, [
@@ -729,24 +740,24 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadconfirm-1', type: 'radio', name: 'mark_read_river_confirm', value: 'feeds_folders' }),
                                 $.make('label', { 'for': 'NB-preference-markreadconfirm-1' }, [
-                                    'Show confirmation when marking feeds or folders as read'
+                                    gettext('Show confirmation when marking feeds or folders as read')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadconfirm-2', type: 'radio', name: 'mark_read_river_confirm', value: 'folders_only' }),
                                 $.make('label', { 'for': 'NB-preference-markreadconfirm-2' }, [
-                                    'Show confirmation only when marking folders as read'
+                                    gettext('Show confirmation only when marking folders as read')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadconfirm-0', type: 'radio', name: 'mark_read_river_confirm', value: 'never' }),
                                 $.make('label', { 'for': 'NB-preference-markreadconfirm-0' }, [
-                                    'Mark as read without confirmation'
+                                    gettext('Mark as read without confirmation')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Confirming mark as read'
+                            gettext('Confirming mark as read')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
@@ -754,46 +765,46 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-1', type: 'radio', name: 'read_story_delay', value: '0' }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-1' }, [
-                                    'Immediately'
+                                    gettext('Immediately')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-2', type: 'radio', name: 'read_story_delay', value: '1' }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-2' }, [
-                                    'After ',
+                                    gettext('After '),
                                     $.make('span', { className: 'NB-tangle-readstorydelay', 'data-var': 'delay' }),
-                                    $.make('span', { className: 'NB-tangle-seconds' }, ' second')
+                                    $.make('span', { className: 'NB-tangle-seconds' }, gettext(' second'))
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-3', type: 'radio', name: 'read_story_delay', value: "-2" }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-3' }, [
-                                    'Manually or by clicking in the story'
+                                    gettext('Manually or by clicking in the story')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-0', type: 'radio', name: 'read_story_delay', value: "-1" }),
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-0' }, [
-                                    'Manually by hitting ',
+                                    gettext('Manually by hitting '),
                                     $.make('div', {
                                         className: 'NB-keyboard-shortcut-key',
                                         style: 'display: inline; float: none;margin: 0 4px'
                                     }, [
-                                        'u'
+                                        gettext('u')
                                     ]),
-                                    'or',
+                                    gettext('or'),
                                     $.make('div', {
                                         className: 'NB-keyboard-shortcut-key',
                                         style: 'display: inline; float: none;margin: 0 4px'
                                     }, [
-                                        'm'
+                                        gettext('m')
                                     ])
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Mark a story as read',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'Selecting a story in the story titles marks it as read.')
+                            gettext('Mark a story as read'),
+                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Selecting a story in the story titles marks it as read.'))
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-markreadnextfeed' }, [
@@ -801,18 +812,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadnextfeed-1', type: 'radio', name: 'markread_nextfeed', value: 'nextfeed' }),
                                 $.make('label', { 'for': 'NB-preference-markreadnextfeed-1' }, [
-                                    'Open the next site/folder'
+                                    gettext('Open the next site/folder')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-markreadnextfeed-0', type: 'radio', name: 'markread_nextfeed', value: "nothing" }),
                                 $.make('label', { 'for': 'NB-preference-markreadnextfeed-0' }, [
-                                    'Stay on the same feed/folder'
+                                    gettext('Stay on the same feed/folder')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'After marking feed/folder read'
+                            gettext('After marking feed/folder read')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-showdiscover' }, [
@@ -820,18 +831,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showdiscover-1', type: 'radio', name: 'show_discover', value: "true" }),
                                 $.make('label', { 'for': 'NB-preference-showdiscover-1' }, [
-                                    'Show discover sites popover above story titles'
+                                    gettext('Show discover sites popover above story titles')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showdiscover-0', type: 'radio', name: 'show_discover', value: "false" }),
                                 $.make('label', { 'for': 'NB-preference-showdiscover-0' }, [
-                                    'Hide discover sites popover'
+                                    gettext('Hide discover sites popover')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Discover sites'
+                            gettext('Discover sites')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-disablesocial' }, [
@@ -840,13 +851,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-disablesocial-0', type: 'radio', name: 'disable_social', value: "false" }),
                                 $.make('label', { 'for': 'NB-preference-disablesocial-0', className: 'NB-social-card-content' }, [
                                     $.make('span', { className: 'NB-social-card-icon' }, ''),
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Enable social features'),
+                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Enable social features')),
                                     $.make('ul', { className: 'NB-social-features-list' }, [
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Blurblogs']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Share stories']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Comment on stories']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'See shared stories']),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Public comments'])
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Blurblogs')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Share stories')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Comment on stories')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('See shared stories')]),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Public comments')])
                                     ])
                                 ])
                             ]),
@@ -854,13 +865,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-disablesocial-1', type: 'radio', name: 'disable_social', value: "true" }),
                                 $.make('label', { 'for': 'NB-preference-disablesocial-1', className: 'NB-social-card-content' }, [
                                     $.make('span', { className: 'NB-social-card-icon' }, ''),
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Disable social features'),
-                                    $.make('span', { className: 'NB-social-card-desc' }, 'Hide all sharing, comments, and blurblog features')
+                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Disable social features')),
+                                    $.make('span', { className: 'NB-social-card-desc' }, gettext('Hide all sharing, comments, and blurblog features'))
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Sharing'
+                            gettext('Sharing')
                         ])
                     ])
                 ]),
@@ -873,7 +884,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         })),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Sharing services'
+                            gettext('Sharing services')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-window' }, [
@@ -882,19 +893,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-window-1' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_view_gallery.png' }),
-                                    'In this window'
+                                    gettext('In this window')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-window-2', type: 'radio', name: 'new_window', value: 1 }),
                                 $.make('label', { 'for': 'NB-preference-window-2' }, [
                                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_side_expand.png' }),
-                                    'In a new window'
+                                    gettext('In a new window')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Open links'
+                            gettext('Open links')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-truncatestory' }, [
@@ -902,63 +913,63 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-truncatestory-1', type: 'radio', name: 'truncate_story', value: 'social' }),
                                 $.make('label', { 'for': 'NB-preference-truncatestory-1' }, [
-                                    'Only truncate long shared stories in blurblogs'
+                                    gettext('Only truncate long shared stories in blurblogs')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-truncatestory-2', type: 'radio', name: 'truncate_story', value: 'all' }),
                                 $.make('label', { 'for': 'NB-preference-truncatestory-2' }, [
-                                    'Force all tall stories to have a max height'
+                                    gettext('Force all tall stories to have a max height')
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-truncatestory-3', type: 'radio', name: 'truncate_story', value: 'none' }),
                                 $.make('label', { 'for': 'NB-preference-truncatestory-3' }, [
-                                    'Show the entire story, even if really, really long'
+                                    gettext('Show the entire story, even if really, really long')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Truncate stories'
+                            gettext('Truncate stories')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-public-comments' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-1', type: 'radio', name: 'hide_public_comments', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, 'Show from both friends and the public')
+                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, gettext('Show from both friends and the public'))
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-public-comments-2', type: 'radio', name: 'hide_public_comments', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, 'Only show comments from friends')
+                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, gettext('Only show comments from friends'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Show all comments'
+                            gettext('Show all comments')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-button-placement' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-button-placement-1', type: 'radio', name: 'story_button_placement', value: 'bottom' }),
-                                $.make('label', { 'for': 'NB-preference-story-button-placement-1' }, 'Always show Train/Save/Share buttons below stories')
+                                $.make('label', { 'for': 'NB-preference-story-button-placement-1' }, gettext('Always show Train/Save/Share buttons below stories'))
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-button-placement-2', type: 'radio', name: 'story_button_placement', value: 'right' }),
-                                $.make('label', { 'for': 'NB-preference-story-button-placement-2' }, 'Show buttons on the right (when there is room)')
+                                $.make('label', { 'for': 'NB-preference-story-button-placement-2' }, gettext('Show buttons on the right (when there is room)'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Story side options placement'
+                            gettext('Story side options placement')
                         ]),
                         $.make('div', { className: 'NB-preference-options NB-preference-story-sideoption-sticky' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-story-sideoption-sticky', type: 'checkbox', name: 'sticky_story_sideoptions' }),
-                                $.make('label', { 'for': 'NB-preference-story-sideoption-sticky' }, 'Keep right-side buttons visible while reading')
+                                $.make('label', { 'for': 'NB-preference-story-sideoption-sticky' }, gettext('Keep right-side buttons visible while reading'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label NB-preference-story-sideoption-sticky' }, [
-                            'Story side options'
+                            gettext('Story side options')
                         ]),
                         $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai"], function (label) {
                             var label_title = label.charAt(0).toUpperCase() + label.slice(1);
@@ -971,41 +982,41 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         })),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Story side options buttons'
+                            gettext('Story side options buttons')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-youtube-captions' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-youtube-captions', type: 'checkbox', name: 'youtube_captions' }),
-                                $.make('label', { 'for': 'NB-preference-youtube-captions' }, 'Enable captions/subtitles for YouTube videos')
+                                $.make('label', { 'for': 'NB-preference-youtube-captions' }, gettext('Enable captions/subtitles for YouTube videos'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'YouTube Captions'
+                            gettext('YouTube Captions')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-highlights' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-highlights-1', type: 'radio', name: 'highlights', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-highlights-1' }, 'Show highlighter when selecting text')
+                                $.make('label', { 'for': 'NB-preference-highlights-1' }, gettext('Show highlighter when selecting text'))
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-highlights-2', type: 'radio', name: 'highlights', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-highlights-2' }, 'Disable the highlighter')
+                                $.make('label', { 'for': 'NB-preference-highlights-2' }, gettext('Disable the highlighter'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Enable highlighting'
+                            gettext('Enable highlighting')
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
                     (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' }, [
-                        'You must have a ',
-                        $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium account'),
-                        ' to change keyboard shortcuts.'
+                        gettext('You must have a '),
+                        $.make('span', { className: 'NB-splash-link NB-premium-link' }, gettext('premium account')),
+                        gettext(' to change keyboard shortcuts.')
                     ])),
                     $.make('div', { className: 'NB-preference NB-preference-keyboard-horizontalarrows' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
@@ -1017,7 +1028,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     value: 'view',
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-1' }, 'Switch between views (original, feed, text, story)')
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-1' }, gettext('Switch between views (original, feed, text, story)'))
                             ]),
                             $.make('div', [
                                 $.make('input', {
@@ -1027,15 +1038,15 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     value: 'site',
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-2' }, 'Open the next site/folder')
+                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-2' }, gettext('Open the next site/folder'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2190;'
+                                gettext('&#x2190;')
                             ]),
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2192;'
+                                gettext('&#x2192;')
                             ])
                         ])
                     ]),
@@ -1049,7 +1060,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     value: 'story',
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-1' }, 'Navigate between stories')
+                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-1' }, gettext('Navigate between stories'))
                             ]),
                             $.make('div', [
                                 $.make('input', {
@@ -1060,31 +1071,31 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
                                 $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-2' }, [
-                                    'Scroll up/down in story by ',
+                                    gettext('Scroll up/down in story by '),
                                     $.make('span', { className: 'NB-tangle-arrowscrollspacing-control NB-preference-slider', 'data-var': 'arrow' }),
                                     $.make('span', { className: 'NB-tangle-arrowscrollspacing' }, '100'),
-                                    'px.',
+                                    gettext('px.'),
                                     $.make('input', { name: 'arrow_scroll_spacing', value: NEWSBLUR.Preferences.arrow_scroll_spacing, type: 'hidden' })
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2193;'
+                                gettext('&#x2193;')
                             ]),
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2191;'
+                                gettext('&#x2191;')
                             ])
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-keyboard-spacebar' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
-                                'Page down by ',
+                                gettext('Page down by '),
                                 $.make('span', { className: 'NB-tangle-spacescrollspacing-control NB-preference-slider', 'data-var': 'space' }),
                                 ' ',
                                 $.make('span', { className: 'NB-tangle-spacescrollspacing' }, '40%'),
-                                ' of the screen',
+                                gettext(' of the screen'),
                                 $.make('input', { name: 'space_scroll_spacing', value: NEWSBLUR.Preferences.space_scroll_spacing, type: 'hidden' })
                             ]),
                             $.make('div', { className: 'NB-preference-keyboard-spacebaraction' }, [
@@ -1094,7 +1105,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     name: 'space_bar_action',
                                     value: 'next_unread'
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-1' }, 'Open next unread story when bottom of story is visible')
+                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-1' }, gettext('Open next unread story when bottom of story is visible'))
                             ]),
                             $.make('div', { className: 'NB-preference-keyboard-spacebaraction' }, [
                                 $.make('input', {
@@ -1103,7 +1114,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     name: 'space_bar_action',
                                     value: 'next_unread_50'
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-2' }, 'Open next unread story when story is half-way up')
+                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-2' }, gettext('Open next unread story when story is half-way up'))
                             ]),
                             $.make('div', [
                                 $.make('input', {
@@ -1112,26 +1123,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     name: 'space_bar_action',
                                     value: 'scroll_only'
                                 }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-3' }, 'Only page down in story, do not open next unread story')
+                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-3' }, gettext('Only page down in story, do not open next unread story'))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                'space'
+                                gettext('space')
                             ])
                         ])
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
-                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Make changes above...')
+                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, gettext('Make changes above...'))
             ])
         ]);
     },
 
     make_autoopen_folders: function () {
         var autoopen_folder = NEWSBLUR.Preferences.autoopen_folder;
-        var $folders = NEWSBLUR.utils.make_folders(autoopen_folder, "All Site Stories", 'default_folder');
+        var $folders = NEWSBLUR.utils.make_folders(autoopen_folder, gettext("All Site Stories"), 'default_folder');
         return $folders;
     },
 
@@ -1153,6 +1164,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
     select_preferences: function () {
         var $modal = this.$modal;
+        $('select[name=language]', $modal).val(NEWSBLUR.language_preference || 'auto');
 
         if (NEWSBLUR.Preferences.timezone) {
             $('select[name=timezone] option', $modal).each(function () {
@@ -1612,14 +1624,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var html = '';
         if (mode === 'default') {
             if (days >= 9999) {
-                html = 'Using default: stories will <b>never</b> be auto-marked as read';
+                html = gettext('Using default: stories will <b>never</b> be auto-marked as read');
             } else {
-                html = 'Using default: <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
+                html = interpolate(ngettext("Using default: <b>%(days)s day</b>", "Using default: <b>%(days)s days</b>", days), {days: days}, true);
             }
         } else if (mode === 'never') {
-            html = 'Stories will <b>never</b> be auto-marked as read';
+            html = gettext('Stories will <b>never</b> be auto-marked as read');
         } else {
-            html = 'Stories marked as read at <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
+            html = interpolate(ngettext("Stories marked as read at <b>%(days)s day</b>", "Stories marked as read at <b>%(days)s days</b>", days), {days: days}, true);
         }
         $slider_value.html(html);
     },
@@ -1635,7 +1647,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     slide_read_story_delay_slider: function (e, ui) {
         var value = (ui && ui.value) ||
             (NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1);
-        $(".NB-tangle-seconds", this.$modal).text(value == 1 ? value + ' second.' : value + ' seconds.');
+        $(".NB-tangle-seconds", this.$modal).text(value == 1 ? interpolate(gettext("%(value_1)s second."), {value_1: value}, true) : interpolate(gettext("%(value_1)s seconds."), {value_1: value}, true));
         if (NEWSBLUR.Preferences.read_story_delay > 0 || ui) {
             $("#NB-preference-readstorydelay-2", this.$modal).prop('checked', true).val(value);
             if (ui) {
@@ -1712,9 +1724,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var self = this;
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
-        $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
+        $('.NB-modal-submit-button', this.$modal).text(gettext('Saving...')).attr('disabled', true).addClass('NB-disabled');
 
         this.model.save_preferences(form, function (data) {
+            if (data && data.code < 0) return;
+            if (form.language !== NEWSBLUR.language_preference) { window.location.reload(); return; }
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
@@ -1796,9 +1810,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
     clear_overrides: function (type) {
         var $sublabel = $('.NB-clear-overrides-' + type, this.$modal);
-        $sublabel.text('Resetting...').removeClass('NB-splash-link');
+        $sublabel.text(gettext('Resetting...')).removeClass('NB-splash-link');
         NEWSBLUR.assets.clear_view_settings(type, _.bind(function (data) {
-            $sublabel.text('Cleared ' + Inflector.pluralize('override', data.removed, true) + '.');
+            $sublabel.text(interpolate(gettext("Cleared %(value_1)s."), {value_1: Inflector.pluralize('override', data.removed, true)}, true));
         }, this));
     },
 
@@ -1909,11 +1923,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
 
     enable_save: function () {
-        $('.NB-modal-submit-button', this.$modal).removeAttr('disabled').removeClass('NB-disabled').text('Save Preferences');
+        $('.NB-modal-submit-button', this.$modal).removeAttr('disabled').removeClass('NB-disabled').text(gettext('Save Preferences'));
     },
 
     disable_save: function () {
-        $('.NB-modal-submit-button', this.$modal).attr('disabled', true).addClass('NB-disabled').text('Make changes above...');
+        $('.NB-modal-submit-button', this.$modal).attr('disabled', true).addClass('NB-disabled').text(gettext('Make changes above...'));
     }
 
 });

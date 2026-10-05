@@ -1,63 +1,53 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load utils_tags %}
 
 {% block bodyclass %}NB-static NB-static-api{% endblock %}
 
-{% block title %}The NewsBlur API{% endblock %}
-{% block nav_title %}API{% endblock %}
+{% block title %}{% trans "The NewsBlur API" %}{% endblock %}
+{% block nav_title %}{% trans "API" %}{% endblock %}
 
 {% block content %}
 
 <div class="NB-api-container">
 
   <div class="NB-api-hero">
-    <h1 class="NB-api-hero-title">The NewsBlur API</h1>
-    <p class="NB-api-hero-subtitle">Retrieve feeds, stories, and stats. Open source, no API key required.</p>
+    <h1 class="NB-api-hero-title">{% trans "The NewsBlur API" %}</h1>
+    <p class="NB-api-hero-subtitle">{% trans "Retrieve feeds, stories, and stats. Open source, no API key required." %}</p>
   </div>
 
   <div class="NB-api-section">
-    <h2 class="NB-api-section-title">Introduction to the API</h2>
+    <h2 class="NB-api-section-title">{% trans "Introduction to the API" %}</h2>
     <div class="NB-api-section-content">
-      <p><a href="/">NewsBlur</a> is a personal news reader that brings people together to
-      talk about the world. A new sound of an old instrument.</p>
-      <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
-      statistics, and individual feed stories. No API key is required, but you are required
-      to authenticate before using any of the API endpoints. Please be considerate, and don't
-      hammer our servers.</p>
-      <p>We're quite pleased to point out that this entire API is open-source, including
-      the implementation of the endpoints. You can find the source of the
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py">/reader/ views source</a>,
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py">/social/ views source</a>,
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py">/rss_feeds/ views source</a>,
-      as well as
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml">the API definitions in YAML</a>.</p>
-      <p>We love pull requests. If you want to add an endpoint, modify output, or make
-      something better, <a href="http://github.com/samuelclay/NewsBlur">NewsBlur's repo
-      on Github</a> is the place to make that happen.</p>
+      <p><a href="/">NewsBlur</a> {% trans "is a personal news reader that brings people together to talk about the world. A new sound of an old instrument." %}</p>
+      <p>{% trans "NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed statistics, and individual feed stories. No API key is required, but you are required to authenticate before using any of the API endpoints. Please be considerate, and don't hammer our servers." %}</p>
+      <p>{% trans "We're quite pleased to point out that this entire API is open-source, including the implementation of the endpoints. You can find the source of the" %}
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py">{% trans "/reader/ views source" %}</a>,
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py">{% trans "/social/ views source" %}</a>,
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py">{% trans "/rss_feeds/ views source" %}</a>{% trans ", as well as" %}
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml">{% trans "the API definitions in YAML" %}</a>.</p>
+      <p>{% trans "We love pull requests. If you want to add an endpoint, modify output, or make something better," %} <a href="http://github.com/samuelclay/NewsBlur">{% trans "NewsBlur's repo on Github" %}</a> {% trans "is the place to make that happen." %}</p>
     </div>
   </div>
 
   <div class="NB-api-section">
-    <h2 class="NB-api-section-title">A Note about OAuth</h2>
+    <h2 class="NB-api-section-title">{% trans "A Note about OAuth" %}</h2>
     <div class="NB-api-section-content">
-      <p>NewsBlur supports OAuth but to have an OAuth enabled client you must
-          <a href="mailto:samuel@newsblur.com">email Samuel</a> to request a client ID and
-          secret. You will need to provide your NewsBlur username, redirect URI (often just your
-          client app's website), and app name.</p>
+      <p>{% trans "NewsBlur supports OAuth but to have an OAuth enabled client you must" %}
+          <a href="mailto:samuel@newsblur.com">{% trans "email Samuel" %}</a> {% trans "to request a client ID and secret. You will need to provide your NewsBlur username, redirect URI (often just your client app's website), and app name." %}</p>
 
-      <p>To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with
-          every request, just as you would on any other OAuth API. Use the <code>/oauth/authorize</code>
-          endpoint to begin the OAuth authentication procedure. Use the <code>/oauth/token</code>
-          endpoint to receive your authorized token, which you can pass in with every request.</p>
+      <p>{% trans "To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with every request, just as you would on any other OAuth API. Use the" %} <code>/oauth/authorize</code>
+          {% trans "endpoint to begin the OAuth authentication procedure. Use the" %} <code>/oauth/token</code>
+          {% trans "endpoint to receive your authorized token, which you can pass in with every request." %}</p>
 
-      <p>You are not required to use OAuth, in which case you will need to pass the <code>newsblur_sessionid</code>
-          cookie with every request. This cookie is set on <a href="#/api/login">login</a>.</p>
+      <p>{% trans "You are not required to use OAuth, in which case you will need to pass the" %} <code>newsblur_sessionid</code>
+          {% trans "cookie with every request. This cookie is set on" %} <a href="#/api/login">{% trans "login" %}</a>.</p>
     </div>
   </div>
 
   <div class="NB-api-section">
-    <h2 class="NB-api-section-title">API Table of Contents</h2>
+    <h2 class="NB-api-section-title">{% trans "API Table of Contents" %}</h2>
 
     <div class="NB-api-section-content">
       <div class="NB-api-endpoint">
@@ -98,19 +88,19 @@
             {% if endpoint.params %}
               <table>
                 <tr>
-                  <th>Parameter</th>
-                  <th>Description</th>
-                  <th>Default</th>
-                  <th>Example</th>
+                  <th>{% trans "Parameter" %}</th>
+                  <th>{% trans "Description" %}</th>
+                  <th>{% trans "Default" %}</th>
+                  <th>{% trans "Example" %}</th>
                 </tr>
                 {% for param in endpoint.params %}
                   <tr>
                     <td>{{ param.key }}</td>
                     <td class="NB-api-endpoint-param-desc">
                       {% if param.optional %}
-                        <span class="optional">Optional</span>
+                        <span class="optional">{% trans "Optional" %}</span>
                       {% else %}{% if param.required %}
-                        <span class="required">Required</span>
+                        <span class="required">{% trans "Required" %}</span>
                       {% endif %}{% endif %}
                       {{ param.desc|safe }}
                     </td>
@@ -122,7 +112,7 @@
             {% endif %}
 
             {% if endpoint.tips %}
-              <h4>Tips</h4>
+              <h4>{% trans "Tips" %}</h4>
               <ul>
                 {% for tip in endpoint.tips %}
                   <li>{{ tip|safe }}</li>
@@ -137,23 +127,15 @@
 
 
   <div class="NB-api-section">
-    <h2 class="NB-api-section-title">API Guidelines and Terms of Service</h2>
+    <h2 class="NB-api-section-title">{% trans "API Guidelines and Terms of Service" %}</h2>
     <div class="NB-api-section-content">
-      <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
-      statistics, and individual feed stories. No API key is required, but you are required
-      to authenticate before using any of the API endpoints. Please be considerate, and don't
-      hammer our servers.</p>
+      <p>{% trans "NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed statistics, and individual feed stories. No API key is required, but you are required to authenticate before using any of the API endpoints. Please be considerate, and don't hammer our servers." %}</p>
 
-       <p>If your project or application allows users to interact with data from NewsBlur,
-      you must cite NewsBlur as the source of your data.</p>
+       <p>{% trans "If your project or application allows users to interact with data from NewsBlur, you must cite NewsBlur as the source of your data." %}</p>
 
-       <p>You may use the API commercially, by which we mean you may charge people money to
-      use your project which itself uses the API. You may not, however, sell advertising
-      against any data retrieved from NewsBlur's API. Essentially, you can charge money for
-      your application or service, but not wrap NewsBlur in advertisements.</p>
+       <p>{% trans "You may use the API commercially, by which we mean you may charge people money to use your project which itself uses the API. You may not, however, sell advertising against any data retrieved from NewsBlur's API. Essentially, you can charge money for your application or service, but not wrap NewsBlur in advertisements." %}</p>
 
-       <p><i>We reserve the right to revise these guidelines. If you violate the spirit of
-      these terms, expect to be blocked without advance warning.</i></p>
+       <p><i>{% trans "We reserve the right to revise these guidelines. If you violate the spirit of these terms, expect to be blocked without advance warning." %}</i></p>
     </div>
   </div>
 

@@ -94,9 +94,9 @@ private enum NewsBlurAppIconAppearanceMode: String, CaseIterable, Identifiable {
     /// Label shown in the chooser's segmented control.
     var title: String {
         switch self {
-        case .light: return "Light"
-        case .auto: return "Use both"
-        case .dark: return "Dark"
+        case .light: return NBLocalization.text("Light")
+        case .auto: return NBLocalization.text("Use both")
+        case .dark: return NBLocalization.text("Dark")
         }
     }
 
@@ -112,9 +112,9 @@ private enum NewsBlurAppIconAppearanceMode: String, CaseIterable, Identifiable {
     /// One-line explanation shown beneath the segmented control.
     var caption: String {
         switch self {
-        case .light: return "Keeps the light icon no matter how your device is set."
-        case .auto: return "The icon follows your device's light and dark appearance."
-        case .dark: return "Keeps the dark icon no matter how your device is set."
+        case .light: return NBLocalization.text("Keeps the light icon no matter how your device is set.")
+        case .auto: return NBLocalization.text("The icon follows your device's light and dark appearance.")
+        case .dark: return NBLocalization.text("Keeps the dark icon no matter how your device is set.")
         }
     }
 
@@ -167,29 +167,29 @@ private struct NewsBlurAppIconFlavorGroup: Identifiable {
 @available(iOS 15.0, *)
 private enum NewsBlurAppIconLibrary {
     static let groups: [NewsBlurAppIconFlavorGroup] = [
-        group("sunrise-gold", title: "Sunrise Gold", assetBaseName: "AppIconSunriseGold",
+        group("sunrise-gold", title: NBLocalization.text("Sunrise Gold"), assetBaseName: "AppIconSunriseGold",
               isPrimary: true, lightTint: 0xD88A26, darkTint: 0xDDA033),
-        group("meadow-sage", title: "Meadow Sage", assetBaseName: "AppIconMeadowSage",
+        group("meadow-sage", title: NBLocalization.text("Meadow Sage"), assetBaseName: "AppIconMeadowSage",
               isPrimary: false, lightTint: 0x6F9E5B, darkTint: 0x7DBD63),
-        group("atlantic-blue", title: "Atlantic Blue", assetBaseName: "AppIconAtlanticBlue",
+        group("atlantic-blue", title: NBLocalization.text("Atlantic Blue"), assetBaseName: "AppIconAtlanticBlue",
               isPrimary: false, lightTint: 0x3F85BC, darkTint: 0x4FA2D9),
-        group("coral-rose", title: "Coral Rose", assetBaseName: "AppIconCoralRose",
+        group("coral-rose", title: NBLocalization.text("Coral Rose"), assetBaseName: "AppIconCoralRose",
               isPrimary: false, lightTint: 0xD86868, darkTint: 0xE96E76),
-        group("ruby-red", title: "Ruby Red", assetBaseName: "AppIconRubyRed",
+        group("ruby-red", title: NBLocalization.text("Ruby Red"), assetBaseName: "AppIconRubyRed",
               isPrimary: false, lightTint: 0xCC3147, darkTint: 0xE5475C),
-        group("ember-orange", title: "Ember Orange", assetBaseName: "AppIconEmberOrange",
+        group("ember-orange", title: NBLocalization.text("Ember Orange"), assetBaseName: "AppIconEmberOrange",
               isPrimary: false, lightTint: 0xD96B27, darkTint: 0xE56F28),
-        group("teal-mint", title: "Teal Mint", assetBaseName: "AppIconTealMint",
+        group("teal-mint", title: NBLocalization.text("Teal Mint"), assetBaseName: "AppIconTealMint",
               isPrimary: false, lightTint: 0x2FA28E, darkTint: 0x3CC3AD),
-        group("lavender-iris", title: "Lavender Iris", assetBaseName: "AppIconLavenderIris",
+        group("lavender-iris", title: NBLocalization.text("Lavender Iris"), assetBaseName: "AppIconLavenderIris",
               isPrimary: false, lightTint: 0x8261CE, darkTint: 0x9879EA),
-        group("slate-gray", title: "Slate Gray", assetBaseName: "AppIconSlateGray",
+        group("slate-gray", title: NBLocalization.text("Slate Gray"), assetBaseName: "AppIconSlateGray",
               isPrimary: false, lightTint: 0x6C7D8A, darkTint: 0x81919D),
-        group("sepia-cocoa", title: "Sepia Cocoa", assetBaseName: "AppIconSepiaCocoa",
+        group("sepia-cocoa", title: NBLocalization.text("Sepia Cocoa"), assetBaseName: "AppIconSepiaCocoa",
               isPrimary: false, lightTint: 0xA16E44, darkTint: 0xB87945),
-        group("arctic-cyan", title: "Arctic Cyan", assetBaseName: "AppIconArcticCyan",
+        group("arctic-cyan", title: NBLocalization.text("Arctic Cyan"), assetBaseName: "AppIconArcticCyan",
               isPrimary: false, lightTint: 0x37A8CA, darkTint: 0x44BADB),
-        group("plum-berry", title: "Plum Berry", assetBaseName: "AppIconPlumBerry",
+        group("plum-berry", title: NBLocalization.text("Plum Berry"), assetBaseName: "AppIconPlumBerry",
               isPrimary: false, lightTint: 0xA74A98, darkTint: 0xC060B2)
     ]
 
@@ -469,181 +469,181 @@ class PreferencesViewModel: ObservableObject {
         sections = [
             // MARK: Story List Section
             PreferenceSection(
-                title: "Story List",
+                title: NBLocalization.text("Story List"),
                 icon: "list.bullet.rectangle",
                 iconColor: .blue,
                 items: [
                     PreferenceItem(
-                        title: "Story order",
+                        title: NBLocalization.text("Story order"),
                         icon: "arrow.up.arrow.down",
                         iconColor: .blue,
                         type: .multiValue(
                             key: "default_order",
-                            titles: ["Newest first", "Oldest first"],
+                            titles: [NBLocalization.text("Newest first"), NBLocalization.text("Oldest first")],
                             values: ["newest", "oldest"],
                             defaultValue: "newest"
                         )
                     ),
                     PreferenceItem(
-                        title: "Stories in a folder",
+                        title: NBLocalization.text("Stories in a folder"),
                         icon: "folder",
                         iconColor: .orange,
                         type: .multiValue(
                             key: "default_folder_read_filter",
-                            titles: ["All stories", "Unread only"],
+                            titles: [NBLocalization.text("All stories"), NBLocalization.text("Unread only")],
                             values: ["all", "unread"],
                             defaultValue: "unread"
                         )
                     ),
                     PreferenceItem(
-                        title: "Stories in a site",
+                        title: NBLocalization.text("Stories in a site"),
                         icon: "newspaper",
                         iconColor: .purple,
                         type: .multiValue(
                             key: "default_feed_read_filter",
-                            titles: ["All stories", "Unread only"],
+                            titles: [NBLocalization.text("All stories"), NBLocalization.text("Unread only")],
                             values: ["all", "unread"],
                             defaultValue: "all"
                         )
                     ),
                     PreferenceItem(
-                        title: "Confirm mark read",
+                        title: NBLocalization.text("Confirm mark read"),
                         icon: "checkmark.circle",
                         iconColor: .green,
                         type: .multiValue(
                             key: "default_confirm_read_filter",
-                            titles: ["On folders and sites", "On folders only", "Never"],
+                            titles: [NBLocalization.text("On folders and sites"), NBLocalization.text("On folders only"), NBLocalization.text("Never")],
                             values: ["all", "folders", "never"],
                             defaultValue: "folders"
                         ),
-                        footerText: "Mark read options are always available via long press on the mark read button."
+                        footerText: NBLocalization.text("Mark read options are always available via long press on the mark read button.")
                     ),
                     PreferenceItem(
-                        title: "After mark read",
+                        title: NBLocalization.text("After mark read"),
                         icon: "arrow.right.circle",
                         iconColor: .teal,
                         type: .multiValue(
                             key: "after_mark_read",
-                            titles: ["Open the next site/folder", "Stay on the feeds list"],
+                            titles: [NBLocalization.text("Open the next site/folder"), NBLocalization.text("Stay on the feeds list")],
                             values: ["next", "stay"],
                             defaultValue: "next"
                         )
                     ),
                     PreferenceItem(
-                        title: "When opening a site",
+                        title: NBLocalization.text("When opening a site"),
                         icon: "rectangle.and.text.magnifyingglass",
                         iconColor: .indigo,
                         type: .multiValue(
                             key: "feed_opening",
-                            titles: ["Open first story", "Show stories"],
+                            titles: [NBLocalization.text("Open first story"), NBLocalization.text("Show stories")],
                             values: ["story", "list"],
                             defaultValue: "list"
                         )
                     ),
                     PreferenceItem(
-                        title: "Mark stories read",
+                        title: NBLocalization.text("Mark stories read"),
                         icon: "scroll",
                         iconColor: .cyan,
                         type: .multiValue(
                             key: "default_mark_read_filter",
-                            titles: ["On scroll or selection", "Only on selection", "After 1 second", "After 2 seconds", "After 3 seconds", "After 4 seconds", "After 5 seconds", "After 10 seconds", "After 15 seconds", "After 30 seconds", "After 45 seconds", "After 60 seconds", "Manually"],
+                            titles: [NBLocalization.text("On scroll or selection"), NBLocalization.text("Only on selection"), NBLocalization.text("After 1 second"), NBLocalization.text("After 2 seconds"), NBLocalization.text("After 3 seconds"), NBLocalization.text("After 4 seconds"), NBLocalization.text("After 5 seconds"), NBLocalization.text("After 10 seconds"), NBLocalization.text("After 15 seconds"), NBLocalization.text("After 30 seconds"), NBLocalization.text("After 45 seconds"), NBLocalization.text("After 60 seconds"), NBLocalization.text("Manually")],
                             values: ["scroll", "selection", "after1", "after2", "after3", "after4", "after5", "after10", "after15", "after30", "after45", "after60", "manually"],
                             defaultValue: "scroll"
                         )
                     ),
                     PreferenceItem(
-                        title: "Discover sites",
+                        title: NBLocalization.text("Discover sites"),
                         icon: "sparkle.magnifyingglass",
                         iconColor: .orange,
                         type: .multiValue(
                             key: "discover_display",
-                            titles: ["Show with feed icons", "Show without icons", "Hidden"],
+                            titles: [NBLocalization.text("Show with feed icons"), NBLocalization.text("Show without icons"), NBLocalization.text("Hidden")],
                             values: ["with_icons", "without_icons", "hidden"],
                             defaultValue: "with_icons"
                         ),
-                        subtitle: "Show related feeds in the story list header"
+                        subtitle: NBLocalization.text("Show related feeds in the story list header")
                     ),
                     PreferenceItem(
-                        title: "Cluster related stories",
+                        title: NBLocalization.text("Cluster related stories"),
                         icon: "square.stack.3d.down.right",
                         iconColor: .indigo,
                         type: .toggle(key: "story_clustering", defaultValue: true),
-                        subtitle: "Show duplicate stories from other feeds beneath a story title"
+                        subtitle: NBLocalization.text("Show duplicate stories from other feeds beneath a story title")
                     ),
                     PreferenceItem(
-                        title: "Cluster matches",
+                        title: NBLocalization.text("Cluster matches"),
                         icon: "tag",
                         iconColor: .green,
                         type: .multiValue(
                             key: "cluster_mode",
-                            titles: ["Title match only", "Title match plus related"],
+                            titles: [NBLocalization.text("Title match only"), NBLocalization.text("Title match plus related")],
                             values: ["title", "related"],
                             defaultValue: "related"
                         ),
-                        subtitle: "Choose whether clusters show only duplicate titles or also related stories"
+                        subtitle: NBLocalization.text("Choose whether clusters show only duplicate titles or also related stories")
                     )
                 ]
             ),
 
             // MARK: Story Layout Section
             PreferenceSection(
-                title: "Story Layout",
+                title: NBLocalization.text("Story Layout"),
                 icon: "rectangle.3.group",
                 iconColor: .purple,
                 items: [
                     PreferenceItem(
-                        title: "Story list toolbar position",
+                        title: NBLocalization.text("Story list toolbar position"),
                         icon: "rectangle.bottomthird.inset.filled",
                         iconColor: .blue,
                         type: .multiValue(
                             key: "story_toolbar_position",
-                            titles: ["Top", "Bottom"],
+                            titles: [NBLocalization.text("Top"), NBLocalization.text("Bottom")],
                             values: ["top", "bottom"],
                             defaultValue: "bottom"
                         ),
-                        subtitle: "Place the story list controls above or below the stories"
+                        subtitle: NBLocalization.text("Place the story list controls above or below the stories")
                     ),
                     PreferenceItem(
-                        title: "Story titles layout",
+                        title: NBLocalization.text("Story titles layout"),
 
                         icon: "rectangle.split.3x1",
                         iconColor: .purple,
                         type: .multiValue(
                             key: "story_titles_position",
-                            titles: ["Titles in list", "Titles in grid"],
+                            titles: [NBLocalization.text("Titles in list"), NBLocalization.text("Titles in grid")],
                             values: ["titles_on_left", "titles_in_grid"],
                             defaultValue: "titles_on_left"
                         )
                     ),
                     PreferenceItem(
-                        title: "List style",
+                        title: NBLocalization.text("List style"),
                         icon: "list.bullet",
                         iconColor: .blue,
                         type: .multiValue(
                             key: "story_titles_style",
-                            titles: ["Standard", "Experimental"],
+                            titles: [NBLocalization.text("Standard"), NBLocalization.text("Experimental")],
                             values: ["standard", "experimental"],
                             defaultValue: "standard"
                         )
                     ),
                     PreferenceItem(
-                        title: "Story title preview",
+                        title: NBLocalization.text("Story title preview"),
                         icon: "doc.text",
                         iconColor: .orange,
                         type: .multiValue(
                             key: "story_list_preview_text_size",
-                            titles: ["Title only", "Short", "Medium", "Long"],
+                            titles: [NBLocalization.text("Title only"), NBLocalization.text("Short"), NBLocalization.text("Medium"), NBLocalization.text("Long")],
                             values: ["title", "short", "medium", "long"],
                             defaultValue: "short"
                         )
                     ),
                     PreferenceItem(
-                        title: "Preview images",
+                        title: NBLocalization.text("Preview images"),
                         icon: "photo",
                         iconColor: .green,
                         type: .multiValue(
                             key: "story_list_preview_images_size",
-                            titles: ["None", "Small Left", "Large Left", "Large Right", "Small Right"],
+                            titles: [NBLocalization.text("None"), NBLocalization.text("Small Left"), NBLocalization.text("Large Left"), NBLocalization.text("Large Right"), NBLocalization.text("Small Right")],
                             values: ["none", "small_left", "large_left", "large_right", "small_right"],
                             defaultValue: "large_right"
                         )
@@ -653,75 +653,75 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: Feed List Section
             PreferenceSection(
-                title: "Feed List",
+                title: NBLocalization.text("Feed List"),
                 icon: "list.star",
                 iconColor: .orange,
                 items: [
                     PreferenceItem(
-                        title: "Feed list order",
+                        title: NBLocalization.text("Feed list order"),
                         icon: "arrow.up.arrow.down.circle",
                         iconColor: .orange,
                         type: .multiValue(
                             key: "feed_list_sort_order",
-                            titles: ["Alphabetical", "Most used first"],
+                            titles: [NBLocalization.text("Alphabetical"), NBLocalization.text("Most used first")],
                             values: ["title", "usage"],
                             defaultValue: "title"
                         )
                     ),
                     PreferenceItem(
-                        title: "Show feeds after being read",
+                        title: NBLocalization.text("Show feeds after being read"),
                         icon: "eye",
                         iconColor: .blue,
                         type: .toggle(key: "show_feeds_after_being_read", defaultValue: false)
                     ),
                     PreferenceItem(
-                        title: "When opening app",
+                        title: NBLocalization.text("When opening app"),
                         icon: "app.badge",
                         iconColor: .green,
                         type: .multiValue(
                             key: "app_opening",
-                            titles: ["Show feed list", "Open All Stories"],
+                            titles: [NBLocalization.text("Show feed list"), NBLocalization.text("Open All Stories")],
                             values: ["feeds", "everything"],
                             defaultValue: "feeds"
                         )
                     ),
                     PreferenceItem(
-                        title: "Show Infrequent Site Stories",
+                        title: NBLocalization.text("Show Infrequent Site Stories"),
                         icon: "calendar.badge.clock",
                         iconColor: .teal,
                         type: .toggle(key: "show_infrequent_site_stories", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Infrequent stories per month",
+                        title: NBLocalization.text("Infrequent stories per month"),
                         icon: "chart.bar.doc.horizontal",
                         iconColor: .indigo,
                         type: .multiValue(
                             key: "infrequent_stories_per_month",
-                            titles: ["< 5/month", "< 15/month", "< 30/month", "< 60/month", "< 90/month"],
+                            titles: [NBLocalization.text("< 5/month"), NBLocalization.text("< 15/month"), NBLocalization.text("< 30/month"), NBLocalization.text("< 60/month"), NBLocalization.text("< 90/month")],
                             values: [5, 15, 30, 60, 90],
                             defaultValue: 30
                         )
                     ),
                     PreferenceItem(
-                        title: "Show Global Shared Stories",
+                        title: NBLocalization.text("Show Global Shared Stories"),
                         icon: "globe",
                         iconColor: .purple,
                         type: .toggle(key: "show_global_shared_stories", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Show Widely Read Stories",
+                        title: NBLocalization.text("Show Widely Read Stories"),
                         icon: "flame",
                         iconColor: .orange,
                         type: .toggle(key: "show_widely_read_stories", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Show Long Reads",
+                        title: NBLocalization.text("Show Long Reads"),
                         icon: "moon",
                         iconColor: .indigo,
                         type: .toggle(key: "show_long_reads", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Show Good Reads",
+                        title: NBLocalization.text("Show Good Reads"),
                         icon: "star.fill",
                         iconColor: .yellow,
                         type: .toggle(key: "show_good_reads", defaultValue: true)
@@ -731,34 +731,34 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: Text Size Section
             PreferenceSection(
-                title: "Text Size",
+                title: NBLocalization.text("Text Size"),
                 icon: "textformat.size",
                 iconColor: .cyan,
                 items: [
                     PreferenceItem(
-                        title: "Use system size",
+                        title: NBLocalization.text("Use system size"),
                         icon: "textformat",
                         iconColor: .cyan,
                         type: .toggle(key: "use_system_font_size", defaultValue: false)
                     ),
                     PreferenceItem(
-                        title: "Feed and story list",
+                        title: NBLocalization.text("Feed and story list"),
                         icon: "list.bullet.rectangle",
                         iconColor: .blue,
                         type: .multiValue(
                             key: "feed_list_font_size",
-                            titles: ["Extra small", "Small", "Medium", "Large", "Extra Large"],
+                            titles: [NBLocalization.text("Extra small"), NBLocalization.text("Small"), NBLocalization.text("Medium"), NBLocalization.text("Large"), NBLocalization.text("Extra Large")],
                             values: ["xs", "small", "medium", "large", "xl"],
                             defaultValue: "medium"
                         )
                     ),
                     PreferenceItem(
-                        title: "Story detail",
+                        title: NBLocalization.text("Story detail"),
                         icon: "doc.richtext",
                         iconColor: .purple,
                         type: .multiValue(
                             key: "story_font_size",
-                            titles: ["Extra small", "Small", "Medium", "Large", "Extra Large"],
+                            titles: [NBLocalization.text("Extra small"), NBLocalization.text("Small"), NBLocalization.text("Medium"), NBLocalization.text("Large"), NBLocalization.text("Extra Large")],
                             values: ["xs", "small", "medium", "large", "xl"],
                             defaultValue: "medium"
                         )
@@ -768,89 +768,89 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: Theme Section
             PreferenceSection(
-                title: "Theme",
+                title: NBLocalization.text("Theme"),
                 icon: "paintbrush",
                 iconColor: .pink,
                 items: [
                     PreferenceItem(
-                        title: "Theme",
+                        title: NBLocalization.text("Theme"),
                         icon: "paintpalette",
                         iconColor: .pink,
                         type: .multiValue(
                             key: "theme_style",
-                            titles: ["Auto", "Light", "Dark"],
+                            titles: [NBLocalization.text("Auto"), NBLocalization.text("Light"), NBLocalization.text("Dark")],
                             values: ["auto", "light", "dark"],
                             defaultValue: "auto"
                         ),
-                        subtitle: "Auto follows system appearance"
+                        subtitle: NBLocalization.text("Auto follows system appearance")
                     ),
                     PreferenceItem(
-                        title: "Light appearance",
+                        title: NBLocalization.text("Light appearance"),
                         icon: "sun.max",
                         iconColor: .orange,
                         type: .multiValue(
                             key: "theme_light",
-                            titles: ["Normal", "Warm"],
+                            titles: [NBLocalization.text("Normal"), NBLocalization.text("Warm")],
                             values: ["light", "sepia"],
                             defaultValue: "light"
                         ),
-                        subtitle: "Theme variant for light mode"
+                        subtitle: NBLocalization.text("Theme variant for light mode")
                     ),
                     PreferenceItem(
-                        title: "Dark appearance",
+                        title: NBLocalization.text("Dark appearance"),
                         icon: "moon.fill",
                         iconColor: .indigo,
                         type: .multiValue(
                             key: "theme_dark",
-                            titles: ["Gray", "Black"],
+                            titles: [NBLocalization.text("Gray"), NBLocalization.text("Black")],
                             values: ["medium", "dark"],
                             defaultValue: "dark"
                         ),
-                        subtitle: "Theme variant for dark mode"
+                        subtitle: NBLocalization.text("Theme variant for dark mode")
                     ),
                     PreferenceItem(
-                        title: "Two-finger swipe to switch",
+                        title: NBLocalization.text("Two-finger swipe to switch"),
                         icon: "hand.draw",
                         iconColor: .purple,
                         type: .toggle(key: "theme_gesture", defaultValue: true),
-                        subtitle: "Swipe up/down with two fingers to change theme"
+                        subtitle: NBLocalization.text("Swipe up/down with two fingers to change theme")
                     )
                 ]
             ),
 
             // MARK: App Icon Section
             PreferenceSection(
-                title: "App Icon",
+                title: NBLocalization.text("App Icon"),
                 icon: "app",
                 iconColor: PreferencesColors.newsblurGreen,
-                footerText: "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants.",
+                footerText: NBLocalization.text("Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants."),
                 items: [
                     PreferenceItem(
-                        title: "Choose Icon",
+                        title: NBLocalization.text("Choose Icon"),
                         icon: "sun.max",
                         iconColor: PreferencesColors.newsblurGreen,
                         type: .appIcon,
-                        subtitle: "12 color flavors with light and dark variants."
+                        subtitle: NBLocalization.text("12 color flavors with light and dark variants.")
                     )
                 ]
             ),
 
             // MARK: Brightness Override Section
             PreferenceSection(
-                title: "Brightness Override",
+                title: NBLocalization.text("Brightness Override"),
                 icon: "sun.max.trianglebadge.exclamationmark",
                 iconColor: .orange,
-                footerText: "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting.",
+                footerText: NBLocalization.text("Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting."),
                 items: [
                     PreferenceItem(
-                        title: "Override system with brightness",
+                        title: NBLocalization.text("Override system with brightness"),
                         icon: "light.max",
                         iconColor: .yellow,
                         type: .toggle(key: "theme_auto_toggle", defaultValue: false),
-                        subtitle: "Ignore system theme, use screen brightness instead"
+                        subtitle: NBLocalization.text("Ignore system theme, use screen brightness instead")
                     ),
                     PreferenceItem(
-                        title: "Brightness threshold",
+                        title: NBLocalization.text("Brightness threshold"),
                         icon: "slider.horizontal.3",
                         iconColor: .orange,
                         type: .slider(
@@ -861,60 +861,60 @@ class PreferencesViewModel: ObservableObject {
                             minImage: "moon.fill",
                             maxImage: "sun.max.fill"
                         ),
-                        subtitle: "Dark theme below, light theme above"
+                        subtitle: NBLocalization.text("Dark theme below, light theme above")
                     )
                 ]
             ),
 
             // MARK: Offline Stories Section
             PreferenceSection(
-                title: "Offline Stories",
+                title: NBLocalization.text("Offline Stories"),
                 icon: "icloud.and.arrow.down",
                 iconColor: .teal,
-                footerText: "More stories take more disk space, but otherwise have no noticeable effect on performance.",
+                footerText: NBLocalization.text("More stories take more disk space, but otherwise have no noticeable effect on performance."),
                 items: [
                     PreferenceItem(
-                        title: "Download stories",
+                        title: NBLocalization.text("Download stories"),
                         icon: "arrow.down.circle",
                         iconColor: .teal,
                         type: .toggle(key: "offline_allowed", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Download text",
+                        title: NBLocalization.text("Download text"),
                         icon: "doc.text",
                         iconColor: .blue,
                         type: .toggle(key: "offline_text_download", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Download images",
+                        title: NBLocalization.text("Download images"),
                         icon: "photo",
                         iconColor: .green,
                         type: .toggle(key: "offline_image_download", defaultValue: false)
                     ),
                     PreferenceItem(
-                        title: "Download using",
+                        title: NBLocalization.text("Download using"),
                         icon: "wifi",
                         iconColor: .purple,
                         type: .multiValue(
                             key: "offline_download_connection",
-                            titles: ["WiFi + Cellular", "WiFi only"],
+                            titles: [NBLocalization.text("WiFi + Cellular"), NBLocalization.text("WiFi only")],
                             values: ["cellular", "wifi"],
                             defaultValue: "cellular"
                         )
                     ),
                     PreferenceItem(
-                        title: "Stories to store",
+                        title: NBLocalization.text("Stories to store"),
                         icon: "internaldrive",
                         iconColor: .orange,
                         type: .multiValue(
                             key: "offline_store_limit",
-                            titles: ["100 stories", "500 stories", "1,000 stories", "2,000 stories", "5,000 stories", "10,000 stories"],
+                            titles: [NBLocalization.text("100 stories"), NBLocalization.text("500 stories"), NBLocalization.text("1,000 stories"), NBLocalization.text("2,000 stories"), NBLocalization.text("5,000 stories"), NBLocalization.text("10,000 stories")],
                             values: [100, 500, 1000, 2000, 5000, 10000],
                             defaultValue: 1000
                         )
                     ),
                     PreferenceItem(
-                        title: "Delete offline stories",
+                        title: NBLocalization.text("Delete offline stories"),
                         icon: "trash",
                         iconColor: .red,
                         type: .button(key: "offline_cache_empty_stories", action: "deleteOfflineStories")
@@ -927,55 +927,55 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: Reading Stories Section
             PreferenceSection(
-                title: "Reading Stories",
+                title: NBLocalization.text("Reading Stories"),
                 icon: "book",
                 iconColor: .green,
                 items: [
                     PreferenceItem(
-                        title: "Scroll horizontally",
+                        title: NBLocalization.text("Scroll horizontally"),
                         icon: "arrow.left.arrow.right.square",
                         iconColor: .green,
                         type: .toggle(key: "scroll_stories_horizontally", defaultValue: true),
-                        subtitle: "Swipe left/right between stories"
+                        subtitle: NBLocalization.text("Swipe left/right between stories")
                     ),
                     PreferenceItem(
-                        title: "Show public comments",
+                        title: NBLocalization.text("Show public comments"),
                         icon: "bubble.left.and.bubble.right",
                         iconColor: .blue,
                         type: .toggle(key: "show_public_comments", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Default browser",
+                        title: NBLocalization.text("Default browser"),
                         icon: "safari",
                         iconColor: .cyan,
                         type: .multiValue(
                             key: "story_browser",
-                            titles: ["In-app browser", "In-app Safari", "Safari Reader Mode", "Safari", "Chrome", "Opera Mini", "Firefox", "Edge", "Brave"],
+                            titles: [NBLocalization.text("In-app browser"), NBLocalization.text("In-app Safari"), NBLocalization.text("Safari Reader Mode"), NBLocalization.text("Safari"), NBLocalization.text("Chrome"), NBLocalization.text("Opera Mini"), NBLocalization.text("Firefox"), NBLocalization.text("Edge"), NBLocalization.text("Brave")],
                             values: ["inapp", "inappsafari", "inappsafarireader", "safari", "chrome", "opera_mini", "firefox", "edge", "brave"],
                             defaultValue: "inappsafari"
                         )
                     ),
                     PreferenceItem(
-                        title: "Full screen",
+                        title: NBLocalization.text("Full screen"),
                         icon: "arrow.up.left.and.arrow.down.right",
                         iconColor: .purple,
                         type: .toggle(key: "story_full_screen", defaultValue: true),
-                        subtitle: "Hide toolbars when reading"
+                        subtitle: NBLocalization.text("Hide toolbars when reading")
                     ),
                     PreferenceItem(
-                        title: "Hide status bar",
+                        title: NBLocalization.text("Hide status bar"),
                         icon: "rectangle.topthird.inset.filled",
                         iconColor: .indigo,
                         type: .toggle(key: "story_hide_status_bar", defaultValue: true)
                     ),
                     PreferenceItem(
-                        title: "Show autoscroll",
+                        title: NBLocalization.text("Show autoscroll"),
                         icon: "arrow.down.to.line.compact",
                         iconColor: .orange,
                         type: .toggle(key: "story_autoscroll", defaultValue: false)
                     ),
                     PreferenceItem(
-                        title: "Show Ask AI",
+                        title: NBLocalization.text("Show Ask AI"),
                         icon: "sparkles",
                         iconColor: Color(red: 0.85, green: 0.45, blue: 0.37),
                         type: .toggle(key: "show_ask_ai", defaultValue: true)
@@ -985,17 +985,17 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: App Badge Section
             PreferenceSection(
-                title: "App Badge",
+                title: NBLocalization.text("App Badge"),
                 icon: "app.badge",
                 iconColor: .red,
                 items: [
                     PreferenceItem(
-                        title: "Show unread count",
+                        title: NBLocalization.text("Show unread count"),
                         icon: "number.circle",
                         iconColor: .red,
                         type: .multiValue(
                             key: "app_unread_badge",
-                            titles: ["Off", "Unread + Focus", "Focus only"],
+                            titles: [NBLocalization.text("Off"), NBLocalization.text("Unread + Focus"), NBLocalization.text("Focus only")],
                             values: ["off", "unread", "focus"],
                             defaultValue: "off"
                         )
@@ -1005,13 +1005,13 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: Custom Domain Section
             PreferenceSection(
-                title: "Custom Domain",
+                title: NBLocalization.text("Custom Domain"),
                 icon: "server.rack",
                 iconColor: .gray,
-                footerText: "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened.",
+                footerText: NBLocalization.text("Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened."),
                 items: [
                     PreferenceItem(
-                        title: "Server URL",
+                        title: NBLocalization.text("Server URL"),
                         icon: "link",
                         iconColor: .gray,
                         type: .textField(key: "custom_domain", placeholder: "https://www.domain.com", keyboardType: .URL)
@@ -1021,18 +1021,18 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: Import & Export Section
             PreferenceSection(
-                title: "Import & Export",
+                title: NBLocalization.text("Import & Export"),
                 icon: "square.and.arrow.up.on.square",
                 iconColor: .blue,
                 items: [
                     PreferenceItem(
-                        title: "Import Preferences",
+                        title: NBLocalization.text("Import Preferences"),
                         icon: "square.and.arrow.down",
                         iconColor: .blue,
                         type: .button(key: "import_prefs", action: "importPreferences")
                     ),
                     PreferenceItem(
-                        title: "Export Preferences",
+                        title: NBLocalization.text("Export Preferences"),
                         icon: "square.and.arrow.up",
                         iconColor: .green,
                         type: .button(key: "export_prefs", action: "exportPreferences")
@@ -1042,45 +1042,45 @@ class PreferencesViewModel: ObservableObject {
 
             // MARK: About Section
             PreferenceSection(
-                title: "About NewsBlur",
+                title: NBLocalization.text("About NewsBlur"),
                 icon: "info.circle",
                 iconColor: .gray,
                 items: [
                     PreferenceItem(
-                        title: "Version",
+                        title: NBLocalization.text("Version"),
                         icon: "number",
                         iconColor: .gray,
                         type: .staticValue(key: "version", value: getAppVersion())
                     ),
                     PreferenceItem(
-                        title: "Copyright",
+                        title: NBLocalization.text("Copyright"),
                         icon: "c.circle",
                         iconColor: .gray,
                         type: .staticValue(key: "copyright", value: "NewsBlur, Inc.")
                     ),
                     PreferenceItem(
-                        title: "Privacy Policy",
+                        title: NBLocalization.text("Privacy Policy"),
                         icon: "hand.raised",
                         iconColor: .blue,
-                        type: .link(title: "Privacy Policy", url: "https://www.newsblur.com/privacy")
+                        type: .link(title: NBLocalization.text("Privacy Policy"), url: "https://www.newsblur.com/privacy")
                     ),
                     PreferenceItem(
-                        title: "Terms of Use",
+                        title: NBLocalization.text("Terms of Use"),
                         icon: "doc.text",
                         iconColor: .purple,
-                        type: .link(title: "Terms of Use", url: "https://www.newsblur.com/tos")
+                        type: .link(title: NBLocalization.text("Terms of Use"), url: "https://www.newsblur.com/tos")
                     )
                 ]
             ),
 
             // MARK: Account Section
             PreferenceSection(
-                title: "Account",
+                title: NBLocalization.text("Account"),
                 icon: "person.circle",
                 iconColor: .red,
                 items: [
                     PreferenceItem(
-                        title: "Delete Account",
+                        title: NBLocalization.text("Delete Account"),
                         icon: "trash",
                         iconColor: .red,
                         type: .button(key: "delete_account", action: "deleteAccount"),
@@ -1104,44 +1104,44 @@ class PreferencesViewModel: ObservableObject {
                 ), pickerTitle: "Swipe \(direction) on \(onFeeds ? "feeds" : "story titles")"
             )
         }
-        let tapTitles = ["Open original story", "Show original text", "Mark as unread", "Save story", "Do nothing"]
+        let tapTitles = [NBLocalization.text("Open original story"), NBLocalization.text("Show original text"), NBLocalization.text("Mark as unread"), NBLocalization.text("Save story"), NBLocalization.text("Do nothing")]
         let tapValues = ["open_original_story", "show_original_text", "mark_unread", "save_story", "nothing"]
-        return PreferenceSection(title: "Gestures", icon: "hand.tap", iconColor: .indigo, groups: [
-            PreferenceGroup(title: "Feed list", footer: nil, items: [
-                PreferenceItem(title: "Swipe on feeds", icon: "arrow.left.arrow.right", iconColor: .indigo,
+        return PreferenceSection(title: NBLocalization.text("Gestures"), icon: "hand.tap", iconColor: .indigo, groups: [
+            PreferenceGroup(title: NBLocalization.text("Feed list"), footer: nil, items: [
+                PreferenceItem(title: NBLocalization.text("Swipe on feeds"), icon: "arrow.left.arrow.right", iconColor: .indigo,
                                type: .toggle(key: "enable_feed_swipes", defaultValue: true)),
                 swipe("left", onFeeds: true),
                 swipe("right", onFeeds: true),
-                PreferenceItem(title: "Long press", icon: "hand.raised", iconColor: .orange,
+                PreferenceItem(title: NBLocalization.text("Long press"), icon: "hand.raised", iconColor: .orange,
                                type: .multiValue(key: "long_press_feed_title",
-                                                 titles: ["Show actions", "Choose how far back to mark read", "Mark all stories read", "Do nothing"],
+                                                 titles: [NBLocalization.text("Show actions"), NBLocalization.text("Choose how far back to mark read"), NBLocalization.text("Mark all stories read"), NBLocalization.text("Do nothing")],
                                                  values: ["show_actions", "mark_read_choose_days", "mark_read_immediate", "nothing"],
                                                  defaultValue: "show_actions"),
-                               pickerTitle: "Long press on feeds and folders")
+                               pickerTitle: NBLocalization.text("Long press on feeds and folders"))
             ]),
-            PreferenceGroup(title: "Story titles", footer: "Swiping from the left edge always returns to feeds, even when story swipes are off.", items: [
-                PreferenceItem(title: "Swipe on stories", icon: "arrow.left.arrow.right", iconColor: .indigo,
+            PreferenceGroup(title: NBLocalization.text("Story titles"), footer: "Swiping from the left edge always returns to feeds, even when story swipes are off.", items: [
+                PreferenceItem(title: NBLocalization.text("Swipe on stories"), icon: "arrow.left.arrow.right", iconColor: .indigo,
                                type: .toggle(key: "enable_story_swipes", defaultValue: true)),
                 swipe("left", onFeeds: false),
                 swipe("right", onFeeds: false),
-                PreferenceItem(title: "Long press", icon: "hand.raised", iconColor: .orange,
+                PreferenceItem(title: NBLocalization.text("Long press"), icon: "hand.raised", iconColor: .orange,
                                type: .multiValue(key: "long_press_story_title",
-                                                 titles: ["Show actions", "Mark older or newer stories read", "Share", "Mark as unread", "Save story", "Train intelligence", "Do nothing"],
+                                                 titles: [NBLocalization.text("Show actions"), NBLocalization.text("Mark older or newer stories read"), NBLocalization.text("Share"), NBLocalization.text("Mark as unread"), NBLocalization.text("Save story"), NBLocalization.text("Train intelligence"), NBLocalization.text("Do nothing")],
                                                  values: ["show_actions", "ask", "open_send_to", "mark_unread", "save_story", "train_story", "nothing"],
-                                                 defaultValue: "show_actions"), pickerTitle: "Long press on story titles")
+                                                 defaultValue: "show_actions"), pickerTitle: NBLocalization.text("Long press on story titles"))
             ]),
-            PreferenceGroup(title: "Reading a story", footer: nil, items: [
-                PreferenceItem(title: "Double tap", icon: "hand.tap", iconColor: .blue,
+            PreferenceGroup(title: NBLocalization.text("Reading a story"), footer: nil, items: [
+                PreferenceItem(title: NBLocalization.text("Double tap"), icon: "hand.tap", iconColor: .blue,
                                type: .multiValue(key: "double_tap_story", titles: tapTitles, values: tapValues,
-                                                 defaultValue: "open_original_story"), pickerTitle: "Double tap a story"),
-                PreferenceItem(title: "Two finger double tap", icon: "hand.point.up.braille", iconColor: .purple,
+                                                 defaultValue: "open_original_story"), pickerTitle: NBLocalization.text("Double tap a story")),
+                PreferenceItem(title: NBLocalization.text("Two finger double tap"), icon: "hand.point.up.braille", iconColor: .purple,
                                type: .multiValue(key: "two_finger_double_tap", titles: tapTitles, values: tapValues,
                                                  defaultValue: "show_original_text")),
-                PreferenceItem(title: "Swipe from left edge", icon: "arrow.backward.to.line", iconColor: .cyan,
+                PreferenceItem(title: NBLocalization.text("Swipe from left edge"), icon: "arrow.backward.to.line", iconColor: .cyan,
                                type: .multiValue(key: "story_detail_swipe_left_edge",
-                                                 titles: ["Back to story titles", "Previous story"],
+                                                 titles: [NBLocalization.text("Back to story titles"), NBLocalization.text("Previous story")],
                                                  values: ["pop_to_story_list", "previous_story"], defaultValue: "pop_to_story_list"),
-                               pickerTitle: "Swipe from the left edge while reading")
+                               pickerTitle: NBLocalization.text("Swipe from the left edge while reading"))
             ])
         ])
     }
@@ -1195,13 +1195,13 @@ struct PreferencesView: View {
             // Custom header
             HStack {
                 Spacer()
-                Text("Preferences")
+                Text(NBLocalization.text("Preferences"))
                     .font(.headline)
                     .foregroundColor(PreferencesColors.textPrimary)
                 Spacer()
             }
             .overlay(alignment: .trailing) {
-                Button("Done") {
+                Button(NBLocalization.text("Done")) {
                     onDismiss()
                 }
                 .font(.body.bold())
@@ -1213,6 +1213,7 @@ struct PreferencesView: View {
 
             ScrollView {
                 LazyVStack(spacing: 16) {
+                    NBLanguagePicker()
                     ForEach(viewModel.sections) { section in
                         PreferenceSectionView(
                             section: section,
@@ -1224,6 +1225,11 @@ struct PreferencesView: View {
                 .padding(.vertical, 12)
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: NBLocalization.changed)) { _ in
+            viewModel.buildSections()
+        }
+        .environment(\.locale, Locale(identifier: NBLocalization.resolvedLanguage))
+        .environment(\.layoutDirection, ["ar", "he"].contains(NBLocalization.resolvedLanguage) ? .rightToLeft : .leftToRight)
         .background(PreferencesColors.background.ignoresSafeArea())
         .onAppear {
             // Refresh state when view appears
@@ -1376,13 +1382,13 @@ struct ClusterModePreviewView: View {
 
     var body: some View {
         HStack(spacing: compact ? 4 : 6) {
-            ClusterTierPillView(label: "Match", tier: "title", compact: compact)
+            ClusterTierPillView(label: NBLocalization.text("Match"), tier: "title", compact: compact)
 
             if mode != "title" {
                 Text("+")
                     .font(.system(size: compact ? 10 : 11, weight: .semibold))
                     .foregroundColor(PreferencesColors.textSecondary)
-                ClusterTierPillView(label: "Related", tier: "related", compact: compact)
+                ClusterTierPillView(label: NBLocalization.text("Related"), tier: "related", compact: compact)
             }
         }
         .fixedSize(horizontal: true, vertical: true)
@@ -1396,10 +1402,10 @@ struct ClusterSettingStateView: View {
 
     private var stateTitle: String {
         if !isEnabled {
-            return "Title only"
+            return NBLocalization.text("Title only")
         }
 
-        return mode == "title" ? "Title match only" : "Title match plus related"
+        return mode == "title" ? NBLocalization.text("Title match only") : NBLocalization.text("Title match plus related")
     }
 
     var body: some View {
@@ -1725,7 +1731,7 @@ struct PickerSheet: View {
                 Spacer()
             }
             .overlay(alignment: .trailing) {
-                Button("Done") {
+                Button(NBLocalization.text("Done")) {
                     dismiss()
                 }
                 .font(.body.bold())
@@ -2175,7 +2181,7 @@ private struct AppIconChooserView: View {
 
     private var header: some View {
         ZStack {
-            Text("App Icon")
+            Text(NBLocalization.text("App Icon"))
                 .font(.headline)
                 .foregroundColor(PreferencesColors.textPrimary)
 
@@ -2187,7 +2193,7 @@ private struct AppIconChooserView: View {
                         .controlSize(.small)
                         .frame(width: 64, height: 36, alignment: .trailing)
                 } else {
-                    Text("Done")
+                    Text(NBLocalization.text("Done"))
                         .font(.body.bold())
                         .foregroundColor(PreferencesColors.newsblurGreen)
                         .frame(width: 64, height: 36, alignment: .trailing)
@@ -2231,7 +2237,7 @@ private struct AppIconChooserView: View {
 
                 if let error {
                     if NewsBlurAppIconLibrary.shouldIgnoreSimulatorIconChangeError(error) {
-                        errorMessage = "The iOS simulator could not change the Home Screen icon. Try this on a device."
+                        errorMessage = NBLocalization.text("The iOS simulator could not change the Home Screen icon. Try this on a device.")
                         return
                     }
 

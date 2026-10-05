@@ -3723,7 +3723,7 @@
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;  
-    self.storyHUD.labelText = @"Followed";
+    self.storyHUD.labelText = [NBLocalization text:@"Followed"];
     [self.storyHUD hide:YES afterDelay:1];
     appDelegate.storyPagesViewController.navigationItem.leftBarButtonItem = nil;
     [appDelegate reloadFeedsView:NO];
@@ -3777,29 +3777,29 @@
     self.storyHUD.removeFromSuperViewOnHide = YES;
     
     if ([messageType isEqualToString:@"reply"]) {
-        self.storyHUD.labelText = @"Replied";
+        self.storyHUD.labelText = [NBLocalization text:@"Replied"];
     } else if ([messageType isEqualToString:@"edit-reply"]) {
-        self.storyHUD.labelText = @"Edited Reply";
+        self.storyHUD.labelText = [NBLocalization text:@"Edited Reply"];
     } else if ([messageType isEqualToString:@"edit-share"]) {
-        self.storyHUD.labelText = @"Edited Comment";
+        self.storyHUD.labelText = [NBLocalization text:@"Edited Comment"];
     } else if ([messageType isEqualToString:@"share"]) {
-        self.storyHUD.labelText = @"Shared";
+        self.storyHUD.labelText = [NBLocalization text:@"Shared"];
     } else if ([messageType isEqualToString:@"like-comment"]) {
-        self.storyHUD.labelText = @"Favorited";
+        self.storyHUD.labelText = [NBLocalization text:@"Favorited"];
     } else if ([messageType isEqualToString:@"unlike-comment"]) {
-        self.storyHUD.labelText = @"Unfavorited";
+        self.storyHUD.labelText = [NBLocalization text:@"Unfavorited"];
     } else if ([messageType isEqualToString:@"saved"]) {
-        self.storyHUD.labelText = @"Saved";
+        self.storyHUD.labelText = [NBLocalization text:@"Saved"];
     } else if ([messageType isEqualToString:@"unsaved"]) {
-        self.storyHUD.labelText = @"No longer saved";
+        self.storyHUD.labelText = [NBLocalization text:@"No longer saved"];
     } else if ([messageType isEqualToString:@"unread"]) {
-        self.storyHUD.labelText = @"Unread";
+        self.storyHUD.labelText = [NBLocalization text:@"Unread"];
     } else if ([messageType isEqualToString:@"added"]) {
-        self.storyHUD.labelText = @"Added";
+        self.storyHUD.labelText = [NBLocalization text:@"Added"];
     } else if ([messageType isEqualToString:@"copied"]) {
-        self.storyHUD.labelText = @"Copied";
+        self.storyHUD.labelText = [NBLocalization text:@"Copied"];
     } else if ([messageType isEqualToString:@"saved"]) {
-        self.storyHUD.labelText = @"Saved";
+        self.storyHUD.labelText = [NBLocalization text:@"Saved"];
     }
     [self.storyHUD hide:YES afterDelay:1];
 }

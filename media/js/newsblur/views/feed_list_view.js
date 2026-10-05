@@ -23,7 +23,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             return;
         }
 
-        $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
+        $('.NB-callout-ftux .NB-callout-text').text(gettext('Loading feeds...'));
         this.$s.$feed_link_loader.css({ 'display': 'block' });
         this.$s.$feed_link_error.css({ 'display': 'none' });
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function (options) {

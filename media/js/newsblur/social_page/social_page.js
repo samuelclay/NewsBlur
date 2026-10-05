@@ -131,7 +131,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         var innerheight = $button.height();
 
         $loaded.animate({ 'bottom': height }, this.next_animation_options);
-        $loading.text('Loading...').css('bottom', height).animate({ 'bottom': innerheight }, this.next_animation_options);
+        $loading.text(gettext('Loading...')).css('bottom', height).animate({ 'bottom': innerheight }, this.next_animation_options);
         $next.animate({ 'bottom': -1 * innerheight }, this.next_animation_options);
         $button.addClass('NB-loading');
 
@@ -170,7 +170,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         $button.removeClass('NB-loading').addClass('NB-loaded');
         $button.stop(true).animate({ 'backgroundColor': '#86B86B' }, { 'duration': 750, 'easing': 'easeOutExpo', 'queue': false });
 
-        $loaded.text('Page ' + this.page).css('bottom', height).animate({ 'bottom': innerheight }, this.next_animation_options);
+        $loaded.text(interpolate(gettext("Page %(value_1)s"), {value_1: this.page}, true)).css('bottom', height).animate({ 'bottom': innerheight }, this.next_animation_options);
         $loading.animate({ 'bottom': -1 * innerheight }, this.next_animation_options);
 
         clearInterval(this.feed_stories_loading);
@@ -198,7 +198,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         this.page -= 1;
         this.flags.loading_page = false;
 
-        $next.text('Whoops! Something went wrong. Try again.')
+        $next.text(gettext('Whoops! Something went wrong. Try again.'))
             .animate({ 'bottom': innerheight }, this.next_animation_options);
         $loading.animate({ 'bottom': height }, this.next_animation_options);
 
@@ -207,13 +207,13 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
 
     follow_user: function () {
         var $button = this.$(".NB-button-follow");
-        $button.html('Following...');
+        $button.html(gettext('Following...'));
         NEWSBLUR.assets.follow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function (data) {
             var message = 'You are now following ' + NEWSBLUR.Globals.blurblog_username;
             if (data.follow_profile.requested_follow) {
                 message = 'Your request to follow ' + NEWSBLUR.Globals.blurblog_username + ' has been sent';
             }
-            $button.html('Following').removeClass('NB-button-follow')
+            $button.html(gettext('Following')).removeClass('NB-button-follow')
                 .removeClass('NB-blue-button')
                 .addClass('NB-grey-button')
                 .addClass('NB-button-following');
@@ -223,9 +223,9 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
 
     unfollow_user: function () {
         var $button = this.$(".NB-button-following");
-        $button.html('Unfollowing...');
+        $button.html(gettext('Unfollowing...'));
         NEWSBLUR.assets.unfollow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function (data) {
-            $button.html('Follow ' + NEWSBLUR.Globals.blurblog_username).removeClass('NB-button-following')
+            $button.html(interpolate(gettext("Follow %(value_1)s"), {value_1: NEWSBLUR.Globals.blurblog_username}, true)).removeClass('NB-button-following')
                 .removeClass('NB-grey-button')
                 .addClass('NB-button-follow')
                 .addClass('NB-blue-button');

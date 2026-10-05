@@ -45,13 +45,13 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-category-manager' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-merge' }, 'Merge'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-split' }, 'Split'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-all' }, 'All Categories')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-merge' }, gettext('Merge')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-split' }, gettext('Split')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-all' }, gettext('All Categories'))
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Manage Categories',
+                gettext('Manage Categories'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-modal-content' }, [
@@ -86,7 +86,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
 
         if (this.merge_groups.length === 0) {
             $tab.append($.make('div', { className: 'NB-category-empty' },
-                'No merge suggestions available. Categories are analyzed for similarity.'));
+                gettext('No merge suggestions available. Categories are analyzed for similarity.')));
             return;
         }
 
@@ -101,13 +101,13 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
                         className: 'NB-merge-target-input',
                         value: group.target,
                         'data-group-id': group.id,
-                        placeholder: 'Target category name'
+                        placeholder: gettext('Target category name')
                     }),
                     $.make('span', {
                         className: 'NB-merge-group-remove',
                         'data-group-id': group.id,
-                        title: 'Remove this merge group'
-                    }, '&times;')
+                        title: gettext('Remove this merge group')
+                    }, gettext('&times;'))
                 ]),
                 $.make('div', { className: 'NB-merge-group-pills', 'data-group-id': group.id },
                     _.map(group.categories, function (cat) {
@@ -122,13 +122,13 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
 
         // Unassigned drop zone
         $tab.append($.make('div', { className: 'NB-unassigned-zone' }, [
-            $.make('div', { className: 'NB-unassigned-label' }, 'Excluded from merges'),
+            $.make('div', { className: 'NB-unassigned-label' }, gettext('Excluded from merges')),
             $.make('div', { className: 'NB-unassigned-pills' },
                 this.unassigned_categories.length > 0 ?
                     _.map(this.unassigned_categories, function (cat) {
                         return self.make_category_pill(cat, null);
                     }) :
-                    $.make('span', { className: 'NB-unassigned-hint' }, 'Drag categories here to exclude them')
+                    $.make('span', { className: 'NB-unassigned-hint' }, gettext('Drag categories here to exclude them'))
             )
         ]));
 
@@ -138,7 +138,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
             $tab.append($.make('div', { className: 'NB-merge-footer' }, [
                 $.make('div', { className: 'NB-merge-summary' }, summary),
                 $.make('div', { className: 'NB-merge-actions' }, [
-                    $.make('button', { className: 'NB-modal-submit-button NB-modal-submit-green NB-apply-all-merges' }, 'Apply All Merges')
+                    $.make('button', { className: 'NB-modal-submit-button NB-modal-submit-green NB-apply-all-merges' }, gettext('Apply All Merges'))
                 ])
             ]));
         }
@@ -186,7 +186,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
 
         if (this.split_candidates.length === 0) {
             $tab.append($.make('div', { className: 'NB-category-empty' },
-                'No categories with 10+ stories available for splitting.'));
+                gettext('No categories with 10+ stories available for splitting.')));
             return;
         }
 
@@ -200,7 +200,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
             }, [
                 $.make('span', { className: 'NB-split-item-name' }, cat._id),
                 $.make('span', { className: 'NB-split-item-count' }, cat.count),
-                $.make('span', { className: 'NB-split-item-action' }, 'Get AI Suggestions')
+                $.make('span', { className: 'NB-split-item-action' }, gettext('Get AI Suggestions'))
             ]));
         });
         $tab.append($list);
@@ -209,12 +209,12 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
         if (this.split_loading) {
             $tab.append($.make('div', { className: 'NB-split-panel NB-loading' }, [
                 $.make('div', { className: 'NB-modal-loading NB-active' }),
-                $.make('span', 'Getting AI suggestions...')
+                $.make('span', gettext('Getting AI suggestions...'))
             ]));
         } else if (this.split_suggestions) {
             var $panel = $.make('div', { className: 'NB-split-panel' }, [
                 $.make('div', { className: 'NB-split-panel-header' },
-                    'Split "' + this.selected_split_category + '" into:')
+                    interpolate(gettext("Split \"%(value_1)s\" into:"), {value_1: this.selected_split_category}, true))
             ]);
 
             var $suggestions = $.make('div', { className: 'NB-split-suggestions' });
@@ -233,14 +233,14 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
                         'data-index': i
                     }),
                     $.make('span', { className: 'NB-split-count' },
-                        (suggestion.story_ids ? suggestion.story_ids.length : 0) + ' stories')
+                        interpolate(gettext("%(value_1)s stories"), {value_1: suggestion.story_ids ? suggestion.story_ids.length : 0}, true))
                 ]));
             });
             $panel.append($suggestions);
 
             $panel.append($.make('div', { className: 'NB-split-actions' }, [
-                $.make('button', { className: 'NB-modal-submit-button NB-modal-submit-green NB-apply-split' }, 'Apply Split'),
-                $.make('button', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-cancel-split' }, 'Cancel')
+                $.make('button', { className: 'NB-modal-submit-button NB-modal-submit-green NB-apply-split' }, gettext('Apply Split')),
+                $.make('button', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-cancel-split' }, gettext('Cancel'))
             ]));
 
             $tab.append($panel);
@@ -265,8 +265,8 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
                 $.make('span', {
                     className: 'NB-all-item-edit',
                     'data-category': cat._id,
-                    title: 'Rename category'
-                }, 'Rename')
+                    title: gettext('Rename category')
+                }, gettext('Rename'))
             ]));
         });
         $tab.append($list);
@@ -371,7 +371,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
     apply_all_merges: function () {
         var self = this;
         var $button = this.$modal.find('.NB-apply-all-merges');
-        $button.text('Applying...').prop('disabled', true);
+        $button.text(gettext('Applying...')).prop('disabled', true);
 
         var merges_to_apply = [];
         _.each(this.merge_groups, function (group) {
@@ -384,7 +384,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
         });
 
         if (merges_to_apply.length === 0) {
-            $button.text('Apply All Merges').prop('disabled', false);
+            $button.text(gettext('Apply All Merges')).prop('disabled', false);
             return;
         }
 
@@ -405,10 +405,10 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
                 if (data.code === 0) {
                     apply_next(index + 1);
                 } else {
-                    $button.text('Error - Try Again').prop('disabled', false);
+                    $button.text(gettext('Error - Try Again')).prop('disabled', false);
                 }
             }, function () {
-                $button.text('Error - Try Again').prop('disabled', false);
+                $button.text(gettext('Error - Try Again')).prop('disabled', false);
             }, { method: 'POST' });
         };
 
@@ -460,7 +460,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
     apply_split: function () {
         var self = this;
         var $button = this.$modal.find('.NB-apply-split');
-        $button.text('Applying...').prop('disabled', true);
+        $button.text(gettext('Applying...')).prop('disabled', true);
 
         var splits = [];
         this.$modal.find('.NB-split-suggestion').each(function () {
@@ -485,10 +485,10 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
                 self.archive_view.load_categories();
                 self.cancel_split();
             } else {
-                $button.text('Error - Try Again').prop('disabled', false);
+                $button.text(gettext('Error - Try Again')).prop('disabled', false);
             }
         }, function () {
-            $button.text('Error - Try Again').prop('disabled', false);
+            $button.text(gettext('Error - Try Again')).prop('disabled', false);
         }, { method: 'POST' });
     },
 

@@ -49,8 +49,8 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
                 this.$results.html($.make('div', {
                     className: 'NB-friends-search-badges-empty NB-feed-badge'
                 }, [
-                    $.make('div', { className: 'NB-raquo' }, '&raquo;'),
-                    'Sorry, nothing matches "' + query + '".'
+                    $.make('div', { className: 'NB-raquo' }, gettext('&raquo;')),
+                    interpolate(gettext("Sorry, nothing matches \"%(value_1)s\"."), {value_1: query}, true)
                 ]));
             } else {
                 this.$results.html($.make('div', _.map(data.feeds, function (feed) {
@@ -61,7 +61,7 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
 
             if (query.indexOf('.') != -1) {
                 this.$results.append($.make('div', { className: 'NB-feed-badge' }, [
-                    $.make('div', { className: 'NB-module-search-add-url NB-badge-action-add NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to ' + query)
+                    $.make('div', { className: 'NB-module-search-add-url NB-badge-action-add NB-modal-submit-button NB-modal-submit-green' }, interpolate(gettext("Subscribe to %(value_1)s"), {value_1: query}, true))
                 ]));
             }
         }, this));
@@ -92,8 +92,8 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
                 this.$results.html($.make('div', {
                     className: 'NB-friends-search-badges-empty'
                 }, [
-                    $.make('div', { className: 'NB-raquo' }, '&raquo;'),
-                    'Sorry, nobody matches "' + query + '".'
+                    $.make('div', { className: 'NB-raquo' }, gettext('&raquo;')),
+                    interpolate(gettext("Sorry, nobody matches \"%(value_1)s\"."), {value_1: query}, true)
                 ]));
                 return;
             }

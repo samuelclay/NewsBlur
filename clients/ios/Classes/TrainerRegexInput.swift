@@ -145,7 +145,7 @@ struct TrainerRegexInput: View {
             Button {
                 isRegex = false
             } label: {
-                Text("Exact phrase")
+                Text(NBLocalization.text("Exact phrase"))
                     .font(fontBuilder("WhitneySSm-Medium", 11))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 5)
@@ -158,7 +158,7 @@ struct TrainerRegexInput: View {
             Button {
                 isRegex = true
             } label: {
-                Text("Regex")
+                Text(NBLocalization.text("Regex"))
                     .font(fontBuilder("WhitneySSm-Medium", 11))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 5)
@@ -319,7 +319,7 @@ struct TrainerRegexInput: View {
 
     var regexHelpContent: some View {
         VStack(spacing: 0) {
-            Text("Regex Patterns")
+            Text(NBLocalization.text("Regex Patterns"))
                 .font(.system(size: 20, weight: .bold))
                 .foregroundColor(purpleAccent)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -356,7 +356,7 @@ struct TrainerRegexInput: View {
 
             Spacer()
 
-            Text("All patterns are case-insensitive by default")
+            Text(NBLocalization.text("All patterns are case-insensitive by default"))
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
                 .padding(.bottom, 16)

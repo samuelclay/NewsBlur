@@ -188,7 +188,7 @@ class DetailViewController: BaseViewController {
 
     @objc func addDiscoverPreviewBackButton() {
         guard canReturnToDiscoverSites, !isPhoneOrCompact else { return }
-        let button = UIBarButtonItem(title: "Discover", style: .plain, target: self, action: #selector(returnToDiscoverSites))
+        let button = UIBarButtonItem(title: NBLocalization.text("Discover"), style: .plain, target: self, action: #selector(returnToDiscoverSites))
         button.accessibilityIdentifier = "discover-preview-back"
         var items = feedDetailNavigationItem.leftBarButtonItems ?? []
         items.removeAll { $0.accessibilityIdentifier == button.accessibilityIdentifier }

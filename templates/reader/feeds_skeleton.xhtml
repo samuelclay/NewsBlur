@@ -1,3 +1,4 @@
+{% load i18n %}
 <script type="text/javascript" charset="utf-8">
 // Ask AI prompt templates
 NEWSBLUR.Globals.ask_ai_prompts = {{ ask_ai_prompts_json|safe }};
@@ -40,17 +41,17 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
         <div class="left-center">
 
             <div class="left-center-content NB-sidebar NB-feedlists">
-                <div class="NB-feeds-list-loader">Everything is on its way...</div>
+                <div class="NB-feeds-list-loader">{% trans "Everything is on its way..." %}</div>
                 <div class="NB-feeds-list-error">
-                    Something went wrong...
-                    <div class="NB-button NB-feeds-list-retry">Retry</div>
+                    {% trans "Something went wrong..." %}
+                    <div class="NB-button NB-feeds-list-retry">{% trans "Retry" %}</div>
                 </div>
 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-dashboard-container NB-sticky-sidebar-primary">
                     <div class="NB-feeds-header NB-feeds-header-river-dashboard NB-empty" role="link">
                         <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/home.svg" />
                         <div class="NB-feeds-header-title">
-                            NewsBlur Dashboard
+                            {% trans "NewsBlur Dashboard" %}
                         </div>
                     </div>
                 </div>
@@ -68,7 +69,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header NB-feeds-header-add-site NB-empty" role="link">
                             <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/add.svg" />
                             <div class="NB-feeds-header-title">
-                                Add + Discover Sites
+                                {% trans "Add + Discover Sites" %}
                             </div>
                         </div>
                     </div>
@@ -78,7 +79,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                             <div class="NB-feeds-header-count unread_count"></div>
                             <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/briefing.svg" />
                             <div class="NB-feeds-header-title">
-                                Daily Briefing
+                                {% trans "Daily Briefing" %}
                             </div>
                         </div>
                     </div>
@@ -87,9 +88,9 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header NB-feeds-header-river-briefing-admin NB-empty" role="link">
                             <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/briefing.svg" />
                             <div class="NB-feeds-header-title">
-                                Briefing Admin
+                                {% trans "Briefing Admin" %}
                             </div>
-                            <span class="NB-staff-badge">Staff Only</span>
+                            <span class="NB-staff-badge">{% trans "Staff Only" %}</span>
                         </div>
                     </div>
 
@@ -98,7 +99,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                             <div class="NB-feeds-header-count unread_count"></div>
                             <img class="NB-feeds-header-icon" src="" />
                             <div class="NB-feeds-header-title">
-                                Infrequent Site Stories
+                                {% trans "Infrequent Site Stories" %}
                             </div>
                         </div>
                     </div>
@@ -110,9 +111,9 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            All Site Stories
+                            {% trans "All Site Stories" %}
                         </div>
-                        <div class="NB-feedlist-toggle-all-icon" title="Collapse All Folders"></div>
+                        <div class="NB-feedlist-toggle-all-icon" title="{% trans 'Collapse All Folders' %}"></div>
                     </div>
                 </div>
 
@@ -122,7 +123,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     <div class="NB-feeds-header NB-feeds-header-read" role="link">
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            Read Stories
+                            {% trans "Read Stories" %}
                         </div>
                     </div>
                 </div>
@@ -131,9 +132,9 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     <div class="NB-feeds-header NB-feeds-header-archive NB-empty" role="link">
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            Reading Archive
+                            {% trans "Reading Archive" %}
                         </div>
-                        <span class="NB-staff-badge">Staff Only</span>
+                        <span class="NB-staff-badge">{% trans "Staff Only" %}</span>
                     </div>
                 </div>
 
@@ -142,7 +143,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            Global Shared Stories
+                            {% trans "Global Shared Stories" %}
                         </div>
                     </div>
                 </div>
@@ -152,7 +153,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            Widely Read Stories
+                            {% trans "Widely Read Stories" %}
                         </div>
                     </div>
                 </div>
@@ -162,7 +163,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            Long Reads
+                            {% trans "Long Reads" %}
                         </div>
                     </div>
                 </div>
@@ -172,7 +173,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            Good Reads
+                            {% trans "Good Reads" %}
                         </div>
                     </div>
                 </div>
@@ -183,7 +184,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feedlist-collapse-icon"></div>
                         <div class="NB-feeds-header-title">
-                            All Shared Stories
+                            {% trans "All Shared Stories" %}
                         </div>
                     </div>
                 </div>
@@ -197,7 +198,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                     <div class="NB-feeds-header NB-feeds-header-searches">
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
-                            Saved Searches
+                            {% trans "Saved Searches" %}
                         </div>
                     </div>
                 </div>
@@ -212,7 +213,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feedlist-collapse-icon"></div>
                         <div class="NB-feeds-header-title">
-                            Saved Stories
+                            {% trans "Saved Stories" %}
                         </div>
                     </div>
                 </div>
@@ -227,7 +228,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                 <div id="NB-progress">
                     <div class="NB-progress-container">
                         <div class="NB-progress-close"></div>
-                        <div class="NB-progress-title">Fetching your feeds</div>
+                        <div class="NB-progress-title">{% trans "Fetching your feeds" %}</div>
                         <div class="NB-progress-percentage"></div>
                         <div class="NB-progress-link"></div>
                         <div class="NB-progress-counts">
@@ -263,19 +264,19 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-intelligence-slider">
                             <ul class="segmented-control">
                                 <li class="NB-intelligence-slider-control NB-intelligence-slider-red" role="button">
-                                    All
+                                    {% trans "All" %}
                                 </li>
                                 <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/nouns/indicator-unread.svg">
-                                    <span class="NB-intelligence-label">Unread</span>
+                                    <span class="NB-intelligence-label">{% trans "Unread" %}</span>
                                 </li>
                                 <li class="NB-intelligence-slider-control NB-intelligence-slider-green" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/nouns/indicator-focus.svg">
-                                    <span class="NB-intelligence-label">Focus</span>
+                                    <span class="NB-intelligence-label">{% trans "Focus" %}</span>
                                 </li>
                                 <li class="NB-intelligence-slider-control NB-intelligence-slider-blue" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/nouns/saved-stories.svg">
-                                    <span class="NB-intelligence-label">Saved</span>
+                                    <span class="NB-intelligence-label">{% trans "Saved" %}</span>
                                 </li>
                             </ul>
                         </div>
@@ -288,7 +289,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
 
     <div class="NB-menu-manage-container"></div>
 
-    <div class="NB-taskbar-sidebar-toggle-open" title="Show sidebar"><div class="NB-taskbar-sidebar-toggle-open-image"></div></div>
+    <div class="NB-taskbar-sidebar-toggle-open" title="{% trans 'Show sidebar' %}"><div class="NB-taskbar-sidebar-toggle-open-image"></div></div>
 
     <div class="right-pane">
 
@@ -300,7 +301,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                 </li>
                 <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive" role="button">
                     <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Next unread</span>
+                    <span class="NB-task-title">{% trans "Next unread" %}</span>
                 </li>
                 <li class="NB-taskbar-button NB-task-story-next" role="button">
                     <div class="NB-task-image"></div>
@@ -316,27 +317,27 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
         <div id="story_taskbar" class="NB-taskbar-container content-south">
             <div class="NB-taskbar-flex">
                 <ul class="segmented-control NB-taskbar NB-taskbar-view">
-                    <li class="NB-taskbar-button task_view_page NB-tipsy" tipsy-title="Original">
+                    <li class="NB-taskbar-button task_view_page NB-tipsy" tipsy-title="{% trans 'Original' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Original</span>
+                        <span class="NB-task-title">{% trans "Original" %}</span>
                         <span class="NB-task-original-return NB-task-title">
-                            Return
+                            {% trans "Return" %}
                         </span>
                         <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
                     </li>
-                    <li class="NB-taskbar-button task_view_feed NB-active NB-tipsy" tipsy-title="Feed">
+                    <li class="NB-taskbar-button task_view_feed NB-active NB-tipsy" tipsy-title="{% trans 'Feed' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Feed</span>
+                        <span class="NB-task-title">{% trans "Feed" %}</span>
                         <div class="NB-task-view-switch-arrow NB-task-view-to-feed-arrow"></div>
                     </li>
-                    <li class="NB-taskbar-button task_view_text NB-tipsy" tipsy-title="Text">
+                    <li class="NB-taskbar-button task_view_text NB-tipsy" tipsy-title="{% trans 'Text' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Text</span>
+                        <span class="NB-task-title">{% trans "Text" %}</span>
                         <div class="NB-task-view-switch-arrow NB-task-view-to-text-arrow"></div>
                     </li>
-                    <li class="NB-taskbar-button task_view_story NB-tipsy" tipsy-title="Story">
+                    <li class="NB-taskbar-button task_view_story NB-tipsy" tipsy-title="{% trans 'Story' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Story</span>
+                        <span class="NB-task-title">{% trans "Story" %}</span>
                         <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
                     </li>
                 </ul>
@@ -344,7 +345,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                 <div class="NB-taskbar-options-container">
                     <span class="NB-taskbar-options" role="button">
                         <div class="NB-icon"></div>
-                        Style
+                        {% trans "Style" %}
                     </span>
                 </div>
                 
@@ -358,25 +359,25 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                 {% endif %}
 
                 <ul class="segmented-control NB-taskbar NB-taskbar-layout">
-                    <li class="NB-taskbar-button NB-task-layout-full NB-tipsy" tipsy-title="Full">
+                    <li class="NB-taskbar-button NB-task-layout-full NB-tipsy" tipsy-title="{% trans 'Full' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Full</span>
+                        <span class="NB-task-title">{% trans "Full" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-split NB-active NB-tipsy" tipsy-title="Split">
+                    <li class="NB-taskbar-button NB-task-layout-split NB-active NB-tipsy" tipsy-title="{% trans 'Split' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Split</span>
+                        <span class="NB-task-title">{% trans "Split" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-list NB-tipsy" tipsy-title="List">
+                    <li class="NB-taskbar-button NB-task-layout-list NB-tipsy" tipsy-title="{% trans 'List' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">List</span>
+                        <span class="NB-task-title">{% trans "List" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-magazine NB-tipsy" tipsy-title="Magazine">
+                    <li class="NB-taskbar-button NB-task-layout-magazine NB-tipsy" tipsy-title="{% trans 'Magazine' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Magazine</span>
+                        <span class="NB-task-title">{% trans "Magazine" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-grid NB-tipsy" tipsy-title="Grid">
+                    <li class="NB-taskbar-button NB-task-layout-grid NB-tipsy" tipsy-title="{% trans 'Grid' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">Grid</span>
+                        <span class="NB-task-title">{% trans "Grid" %}</span>
                     </li>
                 </ul>
             </div>

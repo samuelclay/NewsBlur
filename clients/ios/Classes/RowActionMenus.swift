@@ -231,8 +231,8 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
     private func renameMenuTarget(title: String, path: String, parameters: [String: Any], nameKey: String) {
         let alert = UIAlertController(title: "Rename \(title)", message: nil, preferredStyle: .alert)
         alert.addTextField { $0.text = title }
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Rename", style: .default) { [weak self, weak alert] _ in
+        alert.addAction(UIAlertAction(title: NBLocalization.text("Cancel"), style: .cancel))
+        alert.addAction(UIAlertAction(title: NBLocalization.text("Rename"), style: .default) { [weak self, weak alert] _ in
             guard let name = alert?.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else { return }
             var values = parameters
             values[nameKey] = name
@@ -244,8 +244,8 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
     private func confirmMenuDeletion(title: String, path: String, parameters: [String: Any]) {
         let message = path == "/reader/delete_folder" ? "This deletes the folder and unsubscribes from sites that are not in another folder." : "This removes the subscription from your feeds."
         let alert = UIAlertController(title: "Delete \(title)?", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: NBLocalization.text("Cancel"), style: .cancel))
+        alert.addAction(UIAlertAction(title: NBLocalization.text("Delete"), style: .destructive) { [weak self] _ in
             self?.submitMenuAction(path, parameters: parameters)
         })
         present(alert, animated: true)

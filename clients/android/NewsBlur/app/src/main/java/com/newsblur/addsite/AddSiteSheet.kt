@@ -1,5 +1,6 @@
 package com.newsblur.addsite
 
+import androidx.compose.ui.res.stringResource
 import android.widget.ImageView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -121,7 +122,7 @@ fun AddSiteSheet(
             Row(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Rounded.Public, null, tint = colors.textSecondary, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(9.dp))
-                Text("Add site", color = colors.textPrimary, fontSize = 18.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.i18n_add_site), color = colors.textPrimary, fontSize = 18.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
             }
         }
         // AddSiteSheet.kt scrolls the whole form so folder creation and shortcuts stay reachable above the keyboard.
@@ -238,7 +239,7 @@ fun AddSiteSheet(
                                     strokeWidth = 2.dp,
                                 )
                             } else {
-                                Text(if (folderOnly) "Add folder" else "Add site", color = Color.White, fontSize = 16.sp, lineHeight = 20.sp)
+                                Text(if (folderOnly) "Add folder" else stringResource(R.string.i18n_add_site), color = Color.White, fontSize = 16.sp, lineHeight = 20.sp)
                             }
                         }
                         Box(
@@ -279,7 +280,7 @@ fun AddSiteSheet(
             if (state.query.isEmpty()) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        "Discover more to read",
+                        stringResource(R.string.i18n_discover_more_to_read),
                         color = colors.textSecondary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -303,7 +304,7 @@ fun AddSiteSheet(
             } else if (state.searched && !state.searching && state.error == null) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        "No sites found. You can also add a site by URL.",
+                        stringResource(R.string.i18n_no_sites_found_you_can_also_add_a_site_by_url),
                         Modifier.padding(16.dp),
                         color = colors.textSecondary,
                         fontSize = 14.sp,

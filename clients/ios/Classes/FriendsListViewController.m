@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  FriendsListViewController.m
 //  NewsBlur
@@ -271,7 +272,7 @@ viewForHeaderInSection:(NSInteger)section {
     headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-    headerLabel.text = @"RECOMMENDED PEOPLE TO FOLLOW";
+    headerLabel.text = [NBLocalization text:@"RECOMMENDED PEOPLE TO FOLLOW"];
     
     customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
                                   colorWithAlphaComponent:0.8];
@@ -369,7 +370,7 @@ viewForHeaderInSection:(NSInteger)section {
     
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close" 
+                                   initWithTitle:[NBLocalization text:@"Close"]
                                    style:UIBarButtonItemStyleDone 
                                    target:self 
                                    action:@selector(hideUserProfileModal)];

@@ -28,9 +28,9 @@ struct DiscoverSitesView: View {
 
             if viewModel.addedSuccess {
                 HStack {
-                    Label("Site added", systemImage: "checkmark.circle.fill")
+                    Label(NBLocalization.text("Site added"), systemImage: "checkmark.circle.fill")
                     Spacer()
-                    Button("Dismiss") { viewModel.addedSuccess = false }
+                    Button(NBLocalization.text("Dismiss")) { viewModel.addedSuccess = false }
                 }
                 .font(.subheadline)
                 .foregroundColor(DiscoverColors.accent)
@@ -120,7 +120,7 @@ struct DiscoverResultsStatusView: View {
             } else if let error {
                 Image(systemName: "wifi.exclamationmark").font(.title2)
                 Text(error).multilineTextAlignment(.center)
-                Button("Try again", action: retry).frame(minHeight: 44)
+                Button(NBLocalization.text("Try again"), action: retry).frame(minHeight: 44)
             } else if isEmpty {
                 Image(systemName: "magnifyingglass").font(.title2)
                 Text(isSearching ? "No matching sites" : "No sites in this category")

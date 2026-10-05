@@ -145,7 +145,7 @@
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:appDelegate.detailViewController
                                                                      action:@selector(toggleTemporaryFullScreen:)];
-    self.temporaryFullScreenButton.accessibilityLabel = @"Toggle Full Screen";
+    self.temporaryFullScreenButton.accessibilityLabel = [NBLocalization text:@"Toggle Full Screen"];
     self.temporaryFullScreenButton.accessibilityIdentifier = @"reader-fullscreen";
 }
 
@@ -392,24 +392,24 @@
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
-    fontSettingsButton.accessibilityLabel = @"Story settings";
+    fontSettingsButton.accessibilityLabel = [NBLocalization text:@"Story settings"];
     
     UIImage *markreadImage = [Utilities imageNamed:@"original_button.png" sized:self.isMac ? 24 : 30];
     markreadImage = [markreadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
-    originalStoryButton.accessibilityLabel = @"Show original story";
+    originalStoryButton.accessibilityLabel = [NBLocalization text:@"Show original story"];
 
     UIImage *markReadImage = [UIImage imageNamed:@"markread.png"];
     markReadImage = [markReadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     markReadBarButton = [UIBarButtonItem barItemWithImage:markReadImage
                                                                     target:self
                                                                     action:@selector(markAllRead:)];
-    markReadBarButton.accessibilityLabel = @"Mark all as read";
+    markReadBarButton.accessibilityLabel = [NBLocalization text:@"Mark all as read"];
 
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
-                                     initWithTitle:@"Follow User"
+                                     initWithTitle:[NBLocalization text:@"Follow User"]
                                      style:UIBarButtonItemStylePlain
                                      target:self
                                      action:@selector(subscribeToBlurblog)
@@ -419,7 +419,7 @@
 
     [self updateTheme];
     
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
+    self.notifier = [[NBNotifier alloc] initWithTitle:[NBLocalization text:@"Fetching text..."]
                                            withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
     [self.view addSubview:self.notifier];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
@@ -465,7 +465,7 @@
         probeView.isAccessibilityElement = YES;
         probeView.accessibilityTraits = UIAccessibilityTraitStaticText;
         probeView.accessibilityIdentifier = @"story-current-story";
-        probeView.accessibilityLabel = @"No story selected";
+        probeView.accessibilityLabel = [NBLocalization text:@"No story selected"];
         probeView.alpha = 0.01;
         [self.view addSubview:probeView];
         [NSLayoutConstraint activateConstraints:@[
@@ -483,7 +483,7 @@
         probeView.isAccessibilityElement = YES;
         probeView.accessibilityTraits = UIAccessibilityTraitStaticText;
         probeView.accessibilityIdentifier = @"story-traverse-fade-state";
-        probeView.accessibilityLabel = @"Traverse fade state";
+        probeView.accessibilityLabel = [NBLocalization text:@"Traverse fade state"];
         probeView.alpha = 0.01;
         [self.view addSubview:probeView];
         [NSLayoutConstraint activateConstraints:@[
@@ -721,7 +721,7 @@
     if (appDelegate.isTryFeedView && !self.isPhoneOrCompact &&
         ![[appDelegate.storiesCollection.activeFeed objectForKey:@"username"] isKindOfClass:[NSNull class]] &&
         [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]) {
-        self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
+        self.subscribeButton.title = [NSString stringWithFormat:[NBLocalization text:@"Follow %@"],
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         appDelegate.detailViewController.navigationItem.leftBarButtonItem = self.subscribeButton;
     }
@@ -1420,55 +1420,55 @@
         if (appDelegate.storiesCollection.isSocialRiverView &&
             [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleImage = [UIImage imageNamed:@"global-shares"];
-            titleText = @"Global Shared Stories";
+            titleText = [NBLocalization text:@"Global Shared Stories"];
         } else if (appDelegate.storiesCollection.isSocialRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
             titleImage = [UIImage imageNamed:@"all-shares"];
-            titleText = @"All Shared Stories";
+            titleText = [NBLocalization text:@"All Shared Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
-            titleText = @"All Site Stories";
+            titleText = [NBLocalization text:@"All Site Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
-            titleText = @"Dashboard";
+            titleText = [NBLocalization text:@"Dashboard"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
-            titleText = @"Infrequent Stories";
+            titleText = [NBLocalization text:@"Infrequent Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
             titleImage = [UIImage imageNamed:@"trending-well-read"];
-            titleText = @"Widely Read Stories";
+            titleText = [NBLocalization text:@"Widely Read Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
             titleImage = [UIImage imageNamed:@"trending-long-reads"];
-            titleText = @"Long Reads";
+            titleText = [NBLocalization text:@"Long Reads"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
             titleImage = [UIImage systemImageNamed:@"star.fill"];
-            titleText = @"Good Reads";
+            titleText = [NBLocalization text:@"Good Reads"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
             titleImage = [UIImage imageNamed:@"briefing"];
-            titleText = @"Daily Briefing";
+            titleText = [NBLocalization text:@"Daily Briefing"];
         } else if (appDelegate.storiesCollection.isSavedView &&
                    appDelegate.storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
             titleText = appDelegate.storiesCollection.activeSavedStoryTag;
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
             titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
-            titleText = @"Widget Stories";
+            titleText = [NBLocalization text:@"Widget Stories"];
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
             titleImage = [UIImage imageNamed:@"indicator-unread"];
-            titleText = @"Read Stories";
+            titleText = [NBLocalization text:@"Read Stories"];
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
             titleImage = [UIImage imageNamed:@"search"];
-            titleText = @"Saved Searches";
+            titleText = [NBLocalization text:@"Saved Searches"];
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
-            titleText = @"Saved Stories";
+            titleText = [NBLocalization text:@"Saved Stories"];
         } else if (appDelegate.storiesCollection.isRiverView) {
             NSString *folderName = appDelegate.storiesCollection.activeFolder;
             NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
@@ -3404,7 +3404,7 @@
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
     [self.traverseBar updateProgress:progress];
-    self.verticalProgressButton.title = [NSString stringWithFormat:@"%ld unread %@", (long)unreadCount, unreadCount == 1 ? @"story" : @"stories"];
+    self.verticalProgressButton.title = [NSString stringWithFormat:[NBLocalization text:@"%ld unread %@"], (long)unreadCount, unreadCount == 1 ? @"story" : @"stories"];
     self.verticalProgressButton.accessibilityLabel = self.verticalProgressButton.title;
 }
 
@@ -3540,11 +3540,11 @@
 	hud.removeFromSuperViewOnHide = YES;
     NSInteger unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
-        hud.labelText = @"No unread stories";
+        hud.labelText = [NBLocalization text:@"No unread stories"];
     } else if (unreadCount == 1) {
-        hud.labelText = @"1 story left";
+        hud.labelText = [NBLocalization text:@"1 story left"];
     } else {
-        hud.labelText = [NSString stringWithFormat:@"%li stories left", (long)unreadCount];
+        hud.labelText = [NSString stringWithFormat:[NBLocalization text:@"%li stories left"], (long)unreadCount];
     }
 	[hud hide:YES afterDelay:0.8];
 }
@@ -3761,7 +3761,7 @@
 
 - (void)showFetchingTextNotifier {
     self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"Fetching text...";
+    self.notifier.title = [NBLocalization text:@"Fetching text..."];
     [self.notifier setProgress:0];
     [self.notifier show];
 }

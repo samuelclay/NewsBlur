@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  FeedChooserViewController.m
 //  NewsBlur
@@ -154,7 +155,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)performGetInactiveFeeds {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Loading...";
+    HUD.labelText = [NBLocalization text:@"Loading..."];
     
     NSArray *selection = self.tableView.indexPathsForSelectedRows;
     NSMutableArray *feedsByFolder = [NSMutableArray arrayWithCapacity:selection.count];
@@ -212,11 +213,11 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     if (self.flat) {
         if (isDashboard) {
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:folders" title:@"Folders"]];
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:feeds" title:@"Sites"]];
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:@"All Shared Stories"]];
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_searches" title:@"Saved Searches"]];
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_stories" title:@"Saved Stories"]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:folders" title:[NBLocalization text:@"Folders"]]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:feeds" title:[NBLocalization text:@"Sites"]]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:[NBLocalization text:@"All Shared Stories"]]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_searches" title:[NBLocalization text:@"Saved Searches"]]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_stories" title:[NBLocalization text:@"Saved Stories"]]];
         } else {
             section = [FeedChooserItem makeFolderWithIdentifier:@"" title:@""];
             [sections addObject:section];
@@ -517,25 +518,25 @@ static const CGFloat kFolderTitleHeight = 36.0;
         NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
         
         if (count == 0) {
-            self.navigationItem.title = @"Mute Sites";
+            self.navigationItem.title = [NBLocalization text:@"Mute Sites"];
         } else if (count == 1) {
-            self.navigationItem.title = @"Mute 1 Site";
+            self.navigationItem.title = [NBLocalization text:@"Mute 1 Site"];
         } else {
-            self.navigationItem.title = [NSString stringWithFormat:@"Mute %@ Sites", @(count)];
+            self.navigationItem.title = [NSString stringWithFormat:[NBLocalization text:@"Mute %@ Sites"], @(count)];
         }
     } else if (self.operation == FeedChooserOperationOrganizeSites) {
-        self.navigationItem.title = @"Organize Sites";
+        self.navigationItem.title = [NBLocalization text:@"Organize Sites"];
     } else if (self.operation == FeedChooserOperationDashboardSites) {
-        self.navigationItem.title = @"Choose Story List";
+        self.navigationItem.title = [NBLocalization text:@"Choose Story List"];
     } else {
         NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
         
         if (count == 0) {
-            self.navigationItem.title = @"No Widget Sites";
+            self.navigationItem.title = [NBLocalization text:@"No Widget Sites"];
         } else if (count == 1) {
-            self.navigationItem.title = @"1 Widget Site";
+            self.navigationItem.title = [NBLocalization text:@"1 Widget Site"];
         } else {
-            self.navigationItem.title = [NSString stringWithFormat:@"%@ Widget Sites", @(count)];
+            self.navigationItem.title = [NSString stringWithFormat:[NBLocalization text:@"%@ Widget Sites"], @(count)];
         }
     }
 }
@@ -712,23 +713,23 @@ static const CGFloat kFolderTitleHeight = 36.0;
     MenuViewController *viewController = [MenuViewController new];
     BOOL isMute = self.operation == FeedChooserOperationMuteSites;
     
-    [viewController addTitle:@"Name" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:[NBLocalization text:@"Name"] iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortName];
     }];
     
-    [viewController addTitle:@"Subscribers" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:[NBLocalization text:@"Subscribers"] iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortSubscribers];
     }];
     
-    [viewController addTitle:@"Stories per Month" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:[NBLocalization text:@"Stories per Month"] iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortFrequency];
     }];
     
-    [viewController addTitle:@"Most Recent Story" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:[NBLocalization text:@"Most Recent Story"] iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortRecency];
     }];
     
-    [viewController addTitle:@"Number of Opens" iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:[NBLocalization text:@"Number of Opens"] iconTemplateName:[self sortIconName] selectionShouldDismiss:YES handler:^{
         [self sort:FeedChooserSortOpens];
     }];
     
@@ -767,11 +768,11 @@ static const CGFloat kFolderTitleHeight = 36.0;
     };
     
     if (isMute) {
-        [viewController addTitle:@"Mute All" iconName:@"mute_feed_off.png" selectionShouldDismiss:YES handler:selectAllHandler];
-        [viewController addTitle:@"Unmute All" iconName:@"mute_feed_on.png" selectionShouldDismiss:YES handler:selectNoneHandler];
+        [viewController addTitle:[NBLocalization text:@"Mute All"] iconName:@"mute_feed_off.png" selectionShouldDismiss:YES handler:selectAllHandler];
+        [viewController addTitle:[NBLocalization text:@"Unmute All"] iconName:@"mute_feed_on.png" selectionShouldDismiss:YES handler:selectNoneHandler];
     } else if (self.operation != FeedChooserOperationDashboardSites) {
-        [viewController addTitle:@"Select All" iconTemplateName:@"barbutton_selection.png" selectionShouldDismiss:YES handler:selectAllHandler];
-        [viewController addTitle:@"Select None" iconTemplateName:@"barbutton_selection_off.png" selectionShouldDismiss:YES handler:selectNoneHandler];
+        [viewController addTitle:[NBLocalization text:@"Select All"] iconTemplateName:@"barbutton_selection.png" selectionShouldDismiss:YES handler:selectAllHandler];
+        [viewController addTitle:[NBLocalization text:@"Select None"] iconTemplateName:@"barbutton_selection_off.png" selectionShouldDismiss:YES handler:selectNoneHandler];
     }
     
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.optionsItem];
@@ -780,7 +781,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)performMoveToFolder:(FeedChooserItem *)toFolder {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Moving...";
+    HUD.labelText = [NBLocalization text:@"Moving..."];
     
     NSArray *selection = self.tableView.indexPathsForSelectedRows;
     NSMutableArray *feedsByFolder = [NSMutableArray arrayWithCapacity:selection.count];
@@ -797,7 +798,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
     [params setObject:toFolder.identifier forKey:@"to_folder"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        HUD.labelText = @"Reloading...";
+        HUD.labelText = [NBLocalization text:@"Reloading..."];
         [self.appDelegate reloadFeedsView:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self finishedWithError:error];
@@ -834,7 +835,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)performDeleteFeeds {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Deleting...";
+    HUD.labelText = [NBLocalization text:@"Deleting..."];
     
     NSArray *selection = self.tableView.indexPathsForSelectedRows;
     NSMutableArray *feedsByFolder = [NSMutableArray arrayWithCapacity:selection.count];
@@ -850,7 +851,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        HUD.labelText = @"Reloading...";
+        HUD.labelText = [NBLocalization text:@"Reloading..."];
         [self.appDelegate reloadFeedsView:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self finishedWithError:error];
@@ -905,7 +906,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)performSaveActiveFeeds {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Updating...";
+    HUD.labelText = [NBLocalization text:@"Updating..."];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
     NSArray *mutedIndexPaths = self.tableView.indexPathsForSelectedRows;

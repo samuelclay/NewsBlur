@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -54,17 +55,17 @@
             color: #516BB7;
         }
         </style>
-        <title>NewsBlur experienced an error</title>
+        <title>{% trans "NewsBlur experienced an error" %}</title>
     </head>
     <body>
         <table height="100%" width="100%">
             <tr>
                 <td align="center" valign="middle">
                     <div id="container">
-                        <h1>NewsBlur experienced an error</h1>
+                        <h1>{% trans "NewsBlur experienced an error" %}</h1>
                         <div class="description">
-                            <p>The error has been logged and will be fixed soon so you won't have to see this message again.</p>
-                            <p><a href="{% url "index" %}">Return to NewsBlur</a></p>
+                            <p>{% trans "The error has been logged and will be fixed soon so you won't have to see this message again." %}</p>
+                            <p><a href="{% url "index" %}">{% trans "Return to NewsBlur" %}</a></p>
                         </div>
                     </div>
                 </td>

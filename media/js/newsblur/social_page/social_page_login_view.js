@@ -125,7 +125,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
 
     logout_error: function (data) {
-        alert('There was an error trying to logout, ouch.');
+        alert(gettext('There was an error trying to logout, ouch.'));
     },
 
     signup: function () {

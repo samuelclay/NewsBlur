@@ -29,31 +29,31 @@ _.extend(NEWSBLUR.ReaderNewsletters.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-newsletters NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Email Newsletters',
+                gettext('Email Newsletters'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
 
             $.make('fieldset', [
-                $.make('legend', 'Forwarding email address')
+                $.make('legend', gettext('Forwarding email address'))
             ]),
             $.make('div', { className: 'NB-newsletters-group' }, [
                 $.make('input', { type: 'text', value: email, className: 'NB-newsletters-email' })
             ]),
 
             $.make('fieldset', [
-                $.make('legend', 'Setup instructions')
+                $.make('legend', gettext('Setup instructions'))
             ]),
             $.make('div', { className: 'NB-newsletters-group' }, [
-                $.make('p', 'To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown above.'),
+                $.make('p', gettext('To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown above.')),
                 $.make('p', [
-                    'In Gmail, go to ',
-                    $.make('b', 'Settings &gt; Forwarding'),
-                    ' and click on ',
-                    $.make('b', 'Add a forwarding address'),
+                    gettext('In Gmail, go to '),
+                    $.make('b', gettext('Settings &gt; Forwarding')),
+                    gettext(' and click on '),
+                    $.make('b', gettext('Add a forwarding address')),
                     '. Add your custom NewsBlur email address.'
                 ]),
-                $.make('p', 'Gmail will walk you through confirming the email address. You\'ll want to come back to NewsBlur and look for the confirmation email under the "Newsletters" folder.'),
-                $.make('p', 'Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur.'),
+                $.make('p', gettext('Gmail will walk you through confirming the email address. You\'ll want to come back to NewsBlur and look for the confirmation email under the "Newsletters" folder.')),
+                $.make('p', gettext('Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur.')),
                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/newsletters_gmail.png", className: 'NB-newsletters-gmail' })
             ])
         ]);

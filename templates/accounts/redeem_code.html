@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load typogrify_tags utils_tags zebra_tags %}
 
@@ -16,12 +17,12 @@
   <meta name="viewport" content="width=320, initial-scale=.85">
 {% endblock %}
 
-{% block title %}Redeem a Gift Code{% endblock %}
+{% block title %}{% trans "Redeem a Gift Code" %}{% endblock %}
 
 {% block content %}
 
 <div class="NB-static-title">
-    Redeem a Gift Code
+    {% trans "Redeem a Gift Code" %}
 </div>
 
 <div class="NB-static-form-wrapper" style="overflow:hidden">
@@ -41,8 +42,8 @@
         <input type="submit" value="Redeem Code" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
         <input type="hidden" name="next" value="{{ next }}" />
         <p class="NB-static-form-alttext">
-            Logged in as <b>{{ user.username }}</b><br /><br />
-            <a href="{% url "logout" %}?next={% url "login" %}?next={% url "redeem-code" %}?code={{ code }}">Login to a different account</a></a>
+            {% trans "Logged in as" %} <b>{{ user.username }}</b><br /><br />
+            <a href="{% url "logout" %}?next={% url "login" %}?next={% url "redeem-code" %}?code={{ code }}">{% trans "Login to a different account" %}</a></a>
 
     </form>
 

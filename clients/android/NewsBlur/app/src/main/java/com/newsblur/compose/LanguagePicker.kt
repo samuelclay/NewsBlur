@@ -2,6 +2,8 @@ package com.newsblur.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,7 +25,10 @@ fun LanguagePicker(onSelected: (String) -> Unit) {
     val automatic = stringResource(R.string.language_automatic)
     val current = LanguageSettings.selected(context)
     Box {
-        TextButton(onClick = { expanded = true }) {
+        TextButton(
+            onClick = { expanded = true },
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+        ) {
             Text(stringResource(R.string.language_current, LanguageSettings.names[current] ?: automatic))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

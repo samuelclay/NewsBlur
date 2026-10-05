@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils_tags statistics_tags %}
 <div class="NB-module NB-module-stats NB-module-site-stats">
   <!-- <h5 class="NB-module-header">
@@ -6,28 +7,28 @@
   
   <div class="NB-splash-module-section">
       <h3 class="NB-module-content-header">
-        Past day
+        {% trans "Past day" %}
       </h3>
   
       <div class="NB-module-stats-counts">
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-number">{{ statistics.premium_users|commify }}</div>
-            <div class="NB-module-stats-count-description">Premium Users</div>
+            <div class="NB-module-stats-count-description">{% trans "Premium Users" %}</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-number">{{ statistics.standard_users|commify }}</div>
-            <div class="NB-module-stats-count-description">Standard Users</div>
+            <div class="NB-module-stats-count-description">{% trans "Standard Users" %}</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-number">{{ statistics.feeds_fetched|commify }}</div>
-            <div class="NB-module-stats-count-description">Feeds fetched</div>
+            <div class="NB-module-stats-count-description">{% trans "Feeds fetched" %}</div>
           </div>
       </div>
   </div>
   
   <div class="NB-splash-module-section">
       <h3 class="NB-module-content-header NB-module-content-header-hour">
-        Past day by hour
+        {% trans "Past day by hour" %}
       </h3>
   
       <div class="NB-module-stats-counts">
@@ -39,7 +40,7 @@
               </div>{% endfor %}
             </div>
             <div class="NB-module-stats-count-number">{{ statistics.total_sites_loaded|commify }}</div>
-            <div class="NB-module-stats-count-description">Sites loaded</div>
+            <div class="NB-module-stats-count-description">{% trans "Sites loaded" %}</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-graph">
@@ -50,8 +51,8 @@
               </div>
               {% endfor %}
             </div>
-            <div class="NB-module-stats-count-number">{{ statistics.last_1_min_time_taken|floatformat:2 }} <small>sec</small></div>
-            <div class="NB-module-stats-count-description">Avg. load time</div>
+            <div class="NB-module-stats-count-number">{{ statistics.last_1_min_time_taken|floatformat:2 }} <small>{% trans "sec" %}</small></div>
+            <div class="NB-module-stats-count-description">{% trans "Avg. load time" %}</div>
           </div>
           <div class="NB-module-stats-count">
             <div class="NB-module-stats-count-graph">
@@ -64,7 +65,7 @@
             </div>
             <div class="NB-module-stats-count-number">{{ statistics.total_stories_shared|commify }}</div>
             <div class="NB-module-stats-count-description">
-                {% if statistics.latest_stories_shared == 1 %}Story{% else %}Stories{% endif %} Shared
+                {% if statistics.latest_stories_shared == 1 %}{% trans "Story" %}{% else %}{% trans "Stories" %}{% endif %} {% trans "Shared" %}
             </div>
           </div>
       </div>

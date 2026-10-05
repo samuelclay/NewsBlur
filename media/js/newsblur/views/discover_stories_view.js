@@ -152,7 +152,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                                 className: 'segmented-control-item NB-sideoption-discover-control-item',
                                 'data-selected-feed': 'feed:' + this.model.get("story_feed_id")
                             }, [
-                                $.make('a', { href: '#' }, 'This site')
+                                $.make('a', { href: '#' }, gettext('This site'))
                             ]),
                             // Folder options
                             _.map(NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')).in_folders(), function (folder) {
@@ -169,13 +169,13 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                                 className: 'segmented-control-item NB-sideoption-discover-control-item',
                                 'data-selected-feed': 'all'
                             }, [
-                                $.make('a', { href: '#' }, 'All sites')
+                                $.make('a', { href: '#' }, gettext('All sites'))
                             ]),
                             $.make('li', {
                                 className: 'segmented-control-item NB-sideoption-discover-control-item',
                                 'data-selected-feed': 'global'
                             }, [
-                                $.make('a', { href: '#' }, 'Global')
+                                $.make('a', { href: '#' }, gettext('Global'))
                             ])
                         ])
                     ]),
@@ -184,7 +184,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                         !NEWSBLUR.Globals.is_premium ?
                             this.render_premium_only_message() :
                             !this.discover_stories.length ?
-                                $.make('div', { className: 'NB-discover-empty' }, 'No similar stories found') :
+                                $.make('div', { className: 'NB-discover-empty' }, gettext('No similar stories found')) :
                                 (function () {
                                     var $story_titles = $.make('div', {
                                         className: 'NB-story-titles NB-discover-story-titles'
@@ -205,7 +205,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                     (this.discover_stories.length && !this.is_loading && $.make('div', { className: 'NB-discover-load-more-container' }, [
                         this.has_more_results ?
                             $.make('div', { className: 'NB-discover-load-more NB-modal-submit-button NB-modal-submit-green' }, [
-                                $.make('div', { className: 'NB-discover-load-more-text' }, 'Show more related stories')
+                                $.make('div', { className: 'NB-discover-load-more-text' }, gettext('Show more related stories'))
                             ]) :
                             (this.page > 1 ? $.make('div', { className: 'NB-end-line' }, [
                                 $.make('div', { className: 'NB-fleuron' })
@@ -303,11 +303,11 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     render_premium_only_message: function () {
         return $.make('div', { className: 'NB-discover-empty' }, [
-            'Related stories are only available for premium subscribers.',
+            gettext('Related stories are only available for premium subscribers.'),
             $.make('div', {
                 className: 'NB-discover-upgrade NB-modal-submit-button NB-modal-submit-green',
             }, [
-                'Upgrade to Premium'
+                gettext('Upgrade to Premium')
             ])
         ]);
     },
@@ -449,9 +449,9 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         this.$('.NB-discover-error').remove();
 
         var $error = $.make('div', { className: 'NB-discover-error NB-discover-empty' }, [
-            $.make('div', 'Failed to load stories'),
+            $.make('div', gettext('Failed to load stories')),
             $.make('div', { className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green' }, [
-                'Try again'
+                gettext('Try again')
             ])
         ]);
 

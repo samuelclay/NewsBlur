@@ -60,7 +60,7 @@ struct DiscoverFeedCardView: View {
             Divider()
             HStack(spacing: 8) {
                 Button(action: { onTryFeed?(feed) }) {
-                    Label("Try", systemImage: "doc.text.magnifyingglass")
+                    Label(NBLocalization.text("Try"), systemImage: "doc.text.magnifyingglass")
                         .frame(minWidth: 62, minHeight: 44)
                 }
                 .fixedSize(horizontal: true, vertical: false)
@@ -70,7 +70,7 @@ struct DiscoverFeedCardView: View {
                 .foregroundColor(DiscoverColors.tryButtonText)
                 if isSubscribed {
                     Spacer(minLength: 0)
-                    Label("Subscribed", systemImage: "checkmark.circle.fill")
+                    Label(NBLocalization.text("Subscribed"), systemImage: "checkmark.circle.fill")
                         .foregroundColor(DiscoverColors.accent)
                         .frame(minHeight: 44)
                 } else {
@@ -78,7 +78,7 @@ struct DiscoverFeedCardView: View {
                     DiscoverFolderPicker(viewModel: discovery,
                                          identifier: "discover-folder-picker-\(feed.id)")
                     Button(action: { onAddFeed?(feed) }) {
-                        Label("Add", systemImage: "plus")
+                        Label(NBLocalization.text("Add"), systemImage: "plus")
                             .padding(.horizontal, 16)
                             .frame(minHeight: 44)
                             .foregroundColor(.white)
@@ -306,7 +306,7 @@ struct DiscoverFolderPicker: View {
     var body: some View {
         Menu {
             Button { viewModel.selectedFolder = "" } label: {
-                Label("Top Level", systemImage: viewModel.selectedFolder.isEmpty ? "checkmark" : "folder")
+                Label(NBLocalization.text("Top Level"), systemImage: viewModel.selectedFolder.isEmpty ? "checkmark" : "folder")
             }
             ForEach(viewModel.folders, id: \.self) { folder in
                 Button { viewModel.selectedFolder = folder } label: {
@@ -330,7 +330,7 @@ struct DiscoverFolderPicker: View {
             .overlay(RoundedRectangle(cornerRadius: 8).stroke(DiscoverColors.border, lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Add to folder")
+        .accessibilityLabel(NBLocalization.text("Add to folder"))
         .accessibilityValue(viewModel.displayFolder)
         .accessibilityIdentifier(identifier)
     }

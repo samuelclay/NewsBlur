@@ -66,12 +66,12 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-referrals NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-refer' }, 'Refer'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-gift' }, 'Gift')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-refer' }, gettext('Refer')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-gift' }, gettext('Gift'))
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Refer &amp; Gift',
+                gettext('Refer &amp; Gift'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
 
@@ -81,15 +81,15 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                 $.make('div', { className: 'NB-referral-hero' }, [
                     $.make('div', { className: 'NB-referral-hero-illustration' }),
                     $.make('div', { className: 'NB-referral-hero-text' }, [
-                        $.make('div', { className: 'NB-referral-hero-headline' }, 'Earn Free Premium'),
+                        $.make('div', { className: 'NB-referral-hero-headline' }, gettext('Earn Free Premium')),
                         $.make('div', { className: 'NB-referral-hero-subtext' },
-                            'Earn free time on your subscription for every person who signs up and subscribes. The credit scales with what they pick \u2014 no cap.'
+                            gettext('Earn free time on your subscription for every person who signs up and subscribes. The credit scales with what they pick \u2014 no cap.')
                         )
                     ])
                 ]),
 
                 $.make('fieldset', [
-                    $.make('legend', 'Your Referral Link')
+                    $.make('legend', gettext('Your Referral Link'))
                 ]),
                 $.make('div', { className: 'NB-referral-url-container' }, [
                     $.make('input', {
@@ -100,35 +100,35 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                     }),
                     $.make('div', {
                         className: 'NB-referral-copy-button NB-modal-submit-button NB-modal-submit-green'
-                    }, 'Copy')
+                    }, gettext('Copy'))
                 ]),
                 $.make('div', { className: 'NB-referral-url-description' },
-                    'Share this link. When someone signs up and subscribes to premium, you earn a free year.'
+                    gettext('Share this link. When someone signs up and subscribes to premium, you earn a free year.')
                 ),
 
                 $.make('fieldset', [
-                    $.make('legend', 'Your Referral Stats')
+                    $.make('legend', gettext('Your Referral Stats'))
                 ]),
                 $.make('div', { className: 'NB-referral-stats' }, [
                     $.make('div', { className: 'NB-referral-stat' }, [
                         $.make('div', { className: 'NB-referral-stat-value NB-referral-stat-pending' }, '0'),
-                        $.make('div', { className: 'NB-referral-stat-label' }, 'Pending')
+                        $.make('div', { className: 'NB-referral-stat-label' }, gettext('Pending'))
                     ]),
                     $.make('div', { className: 'NB-referral-stat' }, [
                         $.make('div', { className: 'NB-referral-stat-value NB-referral-stat-converted' }, '0'),
-                        $.make('div', { className: 'NB-referral-stat-label' }, 'Subscribed')
+                        $.make('div', { className: 'NB-referral-stat-label' }, gettext('Subscribed'))
                     ]),
                     $.make('div', { className: 'NB-referral-stat' }, [
                         $.make('div', { className: 'NB-referral-stat-value NB-referral-stat-earned' }, '0'),
-                        $.make('div', { className: 'NB-referral-stat-label NB-referral-stat-earned-label' }, 'Years Earned')
+                        $.make('div', { className: 'NB-referral-stat-label NB-referral-stat-earned-label' }, gettext('Years Earned'))
                     ])
                 ]),
 
                 $.make('fieldset', [
-                    $.make('legend', 'Referral History')
+                    $.make('legend', gettext('Referral History'))
                 ]),
                 $.make('div', { className: 'NB-referral-table-container' }, [
-                    $.make('div', { className: 'NB-referral-empty' }, 'No referrals yet. Share your link to get started!')
+                    $.make('div', { className: 'NB-referral-empty' }, gettext('No referrals yet. Share your link to get started!'))
                 ])
             ]),
 
@@ -138,62 +138,62 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                 $.make('div', { className: 'NB-gift-hero' }, [
                     $.make('div', { className: 'NB-gift-hero-header' }, [
                         $.make('div', { className: 'NB-gift-hero-illustration' }),
-                        $.make('div', { className: 'NB-gift-hero-headline' }, 'How Gifting Works')
+                        $.make('div', { className: 'NB-gift-hero-headline' }, gettext('How Gifting Works'))
                     ]),
                     $.make('div', { className: 'NB-gift-hero-steps' }, [
                         $.make('div', { className: 'NB-gift-hero-step' }, [
                             $.make('div', { className: 'NB-gift-hero-step-number' }, '1'),
                             $.make('div', { className: 'NB-gift-hero-step-text' }, [
-                                $.make('b', 'Pick a tier & pay.'),
-                                ' Choose Premium, Archive, or Pro and check out.'
+                                $.make('b', gettext('Pick a tier & pay.')),
+                                gettext(' Choose Premium, Archive, or Pro and check out.')
                             ])
                         ]),
                         $.make('div', { className: 'NB-gift-hero-step' }, [
                             $.make('div', { className: 'NB-gift-hero-step-number' }, '2'),
                             $.make('div', { className: 'NB-gift-hero-step-text' }, [
-                                $.make('b', 'Share the link.'),
-                                ' Send the gift link to anyone.'
+                                $.make('b', gettext('Share the link.')),
+                                gettext(' Send the gift link to anyone.')
                             ])
                         ]),
                         $.make('div', { className: 'NB-gift-hero-step' }, [
                             $.make('div', { className: 'NB-gift-hero-step-number' }, '3'),
                             $.make('div', { className: 'NB-gift-hero-step-text' }, [
-                                $.make('b', 'They redeem it.'),
-                                ' One click and they have premium.'
+                                $.make('b', gettext('They redeem it.')),
+                                gettext(' One click and they have premium.')
                             ])
                         ]),
                         $.make('div', { className: 'NB-gift-hero-step NB-gift-hero-step-refund' }, [
                             $.make('div', { className: 'NB-gift-hero-step-number' }, '\u21A9'),
                             $.make('div', { className: 'NB-gift-hero-step-text' }, [
-                                $.make('b', 'Not redeemed in 90 days?'),
-                                ' You get a full refund, automatically.'
+                                $.make('b', gettext('Not redeemed in 90 days?')),
+                                gettext(' You get a full refund, automatically.')
                             ])
                         ])
                     ])
                 ]),
 
                 $.make('fieldset', [
-                    $.make('legend', 'Gift a Subscription')
+                    $.make('legend', gettext('Gift a Subscription'))
                 ]),
                 $.make('div', { className: 'NB-gift-tier-selector' }, [
                     $.make('div', { className: 'NB-gift-tier NB-gift-tier-premium NB-active', 'data-tier': 'premium' }, [
-                        $.make('div', { className: 'NB-gift-tier-name' }, 'Premium'),
-                        $.make('div', { className: 'NB-gift-tier-price' }, '$36/year')
+                        $.make('div', { className: 'NB-gift-tier-name' }, gettext('Premium')),
+                        $.make('div', { className: 'NB-gift-tier-price' }, gettext('$36/year'))
                     ]),
                     $.make('div', { className: 'NB-gift-tier NB-gift-tier-archive', 'data-tier': 'archive' }, [
-                        $.make('div', { className: 'NB-gift-tier-name' }, 'Archive'),
-                        $.make('div', { className: 'NB-gift-tier-price' }, '$99/year')
+                        $.make('div', { className: 'NB-gift-tier-name' }, gettext('Archive')),
+                        $.make('div', { className: 'NB-gift-tier-price' }, gettext('$99/year'))
                     ]),
                     $.make('div', { className: 'NB-gift-tier NB-gift-tier-pro', 'data-tier': 'pro' }, [
-                        $.make('div', { className: 'NB-gift-tier-name' }, 'Pro'),
-                        $.make('div', { className: 'NB-gift-tier-price' }, '$29/month')
+                        $.make('div', { className: 'NB-gift-tier-name' }, gettext('Pro')),
+                        $.make('div', { className: 'NB-gift-tier-price' }, gettext('$29/month'))
                     ])
                 ]),
 
                 (NEWSBLUR.Globals.is_staff ? $.make('div', { className: 'NB-gift-staff-option' }, [
                     $.make('label', [
                         $.make('input', { type: 'checkbox', className: 'NB-gift-staff-free', checked: 'checked' }),
-                        ' Gift for free (staff)'
+                        gettext(' Gift for free (staff)')
                     ])
                 ]) : false),
 
@@ -201,11 +201,11 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                     $.make('div', { className: 'NB-gift-send-container NB-modal-submit' }, [
                         $.make('div', {
                             className: 'NB-gift-send-button NB-modal-submit-button NB-modal-submit-green'
-                        }, 'Create Gift Link'),
+                        }, gettext('Create Gift Link')),
                         $.make('div', { className: 'NB-gift-send-loading NB-modal-loading', style: 'display: none' })
                     ]),
                     $.make('div', { className: 'NB-gift-result', style: 'display: none' }, [
-                        $.make('div', { className: 'NB-gift-result-label' }, 'Gift link created:'),
+                        $.make('div', { className: 'NB-gift-result-label' }, gettext('Gift link created:')),
                         $.make('input', {
                             className: 'NB-gift-result-url',
                             type: 'text',
@@ -213,16 +213,16 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                         }),
                         $.make('div', {
                             className: 'NB-gift-result-copy NB-modal-submit-button NB-modal-submit-green'
-                        }, 'Copy')
+                        }, gettext('Copy'))
                     ]),
                     $.make('div', { className: 'NB-gift-error', style: 'display: none' })
                 ]),
 
                 $.make('fieldset', [
-                    $.make('legend', 'Gifts Sent')
+                    $.make('legend', gettext('Gifts Sent'))
                 ]),
                 $.make('div', { className: 'NB-gift-table-container' }, [
-                    $.make('div', { className: 'NB-gift-empty' }, 'No gifts sent yet.')
+                    $.make('div', { className: 'NB-gift-empty' }, gettext('No gifts sent yet.'))
                 ])
             ])
         ]);
@@ -273,10 +273,10 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
             var $table = $.make('table', { className: 'NB-referral-table' }, [
                 $.make('thead', [
                     $.make('tr', [
-                        $.make('th', 'Username'),
-                        $.make('th', 'Date'),
-                        $.make('th', 'Status'),
-                        $.make('th', 'Credit')
+                        $.make('th', gettext('Username')),
+                        $.make('th', gettext('Date')),
+                        $.make('th', gettext('Status')),
+                        $.make('th', gettext('Credit'))
                     ])
                 ]),
                 $.make('tbody')
@@ -308,7 +308,7 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
             $container.append($table);
         } else {
             $container.append($.make('div', { className: 'NB-referral-empty' },
-                'No referrals yet. Share your link to get started!'));
+                gettext('No referrals yet. Share your link to get started!')));
         }
     },
 
@@ -318,10 +318,10 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
             var $table = $.make('table', { className: 'NB-gift-table' }, [
                 $.make('thead', [
                     $.make('tr', [
-                        $.make('th', 'Tier'),
-                        $.make('th', 'Date'),
-                        $.make('th', 'Status'),
-                        $.make('th', 'Link')
+                        $.make('th', gettext('Tier')),
+                        $.make('th', gettext('Date')),
+                        $.make('th', gettext('Status')),
+                        $.make('th', gettext('Link'))
                     ])
                 ]),
                 $.make('tbody')
@@ -338,13 +338,13 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                         $.make('span', { className: 'NB-gift-status ' + status_class }, status)
                     ]),
                     $.make('td', [
-                        $.make('a', { href: gift.gift_url, target: '_blank', className: 'NB-gift-link' }, 'Link')
+                        $.make('a', { href: gift.gift_url, target: '_blank', className: 'NB-gift-link' }, gettext('Link'))
                     ])
                 ]));
             });
             $container.append($table);
         } else {
-            $container.append($.make('div', { className: 'NB-gift-empty' }, 'No gifts sent yet.'));
+            $container.append($.make('div', { className: 'NB-gift-empty' }, gettext('No gifts sent yet.')));
         }
     },
 
@@ -399,7 +399,7 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
             }
         }, function (data) {
             $loading.hide();
-            $error.text('An error occurred. Please try again.').show();
+            $error.text(gettext('An error occurred. Please try again.')).show();
             $button.show();
         });
     },
@@ -424,8 +424,8 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
             e.preventDefault();
             var url = $('.NB-referral-url-input', self.$modal).val();
             self.copy_to_clipboard(url);
-            $t.text('Copied!');
-            _.delay(function () { $t.text('Copy'); }, 2000);
+            $t.text(gettext('Copied!'));
+            _.delay(function () { $t.text(gettext('Copy')); }, 2000);
         });
 
         // Copy gift URL
@@ -433,8 +433,8 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
             e.preventDefault();
             var url = $('.NB-gift-result-url', self.$modal).val();
             self.copy_to_clipboard(url);
-            $t.text('Copied!');
-            _.delay(function () { $t.text('Copy'); }, 2000);
+            $t.text(gettext('Copied!'));
+            _.delay(function () { $t.text(gettext('Copy')); }, 2000);
         });
 
         // Select URL input on click

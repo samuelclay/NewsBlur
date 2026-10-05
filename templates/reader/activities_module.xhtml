@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils_tags typogrify_tags statistics_tags %}
 
 <ul class="NB-interactions">
@@ -45,7 +46,7 @@
         {% if activity.category == 'comment_like' %}
             <img class="NB-interaction-photo" src="{{ activity.photo_url }}"  data-user-id="{{ activity.with_user_id }}">
             <div class="NB-interaction-title">
-                {{ username }} favorited <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>'s comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>:
+                {{ username }} favorited <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>{% trans "'s comments on" %} <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>:
             </div>
             <div class="NB-interaction-content">
                 "<span class="NB-interaction-sharedstory-content">{{ activity.content|truncatewords:8 }}</span>"
@@ -83,7 +84,7 @@
         {% if activity.category == 'feedsub' %}
             <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}">
             <div class="NB-interaction-title">
-                You subscribed to <span class="NB-interaction-feed-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>.
+                {% trans "You subscribed to" %} <span class="NB-interaction-feed-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>.
             </div>
             <div class="NB-interaction-date">
                 {{ activity.time_since }} ago

@@ -694,7 +694,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         title = nil
         navigationItem.titleView = nil
         // FeedDetailObjCViewController.m uses this same state before any feed is selected.
-        messageLabel.text = "Select a feed or folder"
+        messageLabel.text = NBLocalization.text("Select a feed or folder")
         messageView.isHidden = false
         reloadImmediately()
     }
@@ -1266,19 +1266,19 @@ private final class DailyBriefingStore: ObservableObject {
     }
 
     static let builtInSections = [
-        SectionDefinition(key: "top_stories", name: "Top stories", subtitle: "The most important stories from your feeds"),
-        SectionDefinition(key: "infrequent", name: "From infrequent sites", subtitle: "Stories from feeds that rarely publish"),
-        SectionDefinition(key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"),
-        SectionDefinition(key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"),
-        SectionDefinition(key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"),
-        SectionDefinition(key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"),
+        SectionDefinition(key: "top_stories", name: "Top stories", subtitle: NBLocalization.text("The most important stories from your feeds")),
+        SectionDefinition(key: "infrequent", name: "From infrequent sites", subtitle: NBLocalization.text("Stories from feeds that rarely publish")),
+        SectionDefinition(key: "long_read", name: "Long reads for later", subtitle: NBLocalization.text("Longer articles worth setting time aside for")),
+        SectionDefinition(key: "classifier_match", name: "Based on your interests", subtitle: NBLocalization.text("Stories matching your trained topics and authors")),
+        SectionDefinition(key: "follow_up", name: "Follow-ups", subtitle: NBLocalization.text("New posts from feeds you recently read")),
+        SectionDefinition(key: "widely_covered", name: "Widely covered", subtitle: NBLocalization.text("Stories covered by 3+ feeds")),
     ]
 
     static let notificationOptions = [
-        DailyBriefingOption(value: "email", title: "Email"),
-        DailyBriefingOption(value: "web", title: "Web"),
-        DailyBriefingOption(value: "ios", title: "iOS"),
-        DailyBriefingOption(value: "android", title: "Android"),
+        DailyBriefingOption(value: "email", title: NBLocalization.text("Email")),
+        DailyBriefingOption(value: "web", title: NBLocalization.text("Web")),
+        DailyBriefingOption(value: "ios", title: NBLocalization.text("iOS")),
+        DailyBriefingOption(value: "android", title: NBLocalization.text("Android")),
     ]
 
     weak var controller: FeedDetailViewController?
@@ -1501,7 +1501,7 @@ private final class DailyBriefingStore: ObservableObject {
         requestToken = token
         let requestStartedAt = Self.timingNow()
         guard let url = requestURL(path: "/briefing/stories?page=\(page)") else {
-            finishFailedRequest(message: "Unable to load Daily Briefing.", callback: callback)
+            finishFailedRequest(message: NBLocalization.text("Unable to load Daily Briefing."), callback: callback)
             return
         }
 
@@ -1510,7 +1510,7 @@ private final class DailyBriefingStore: ObservableObject {
             guard self.requestToken == token else { return }
             guard self.controller?.storiesCollection.isDailyBriefing == true else { return }
             guard let data = responseObject as? [String: Any] else {
-                self.finishFailedRequest(message: "Unable to load Daily Briefing.", callback: callback)
+                self.finishFailedRequest(message: NBLocalization.text("Unable to load Daily Briefing."), callback: callback)
                 return
             }
 
@@ -2235,7 +2235,7 @@ private struct DailyBriefingRootView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 if let errorMessage = store.errorMessage {
-                    DailyBriefingStatusCard(title: "Unable to load Daily Briefing", message: errorMessage, isError: true)
+                    DailyBriefingStatusCard(title: NBLocalization.text("Unable to load Daily Briefing"), message: errorMessage, isError: true)
                 }
 
                 switch store.presentationState {
@@ -2245,7 +2245,7 @@ private struct DailyBriefingRootView: View {
                     DailyBriefingSetupView(store: store)
                 case .empty:
                     if let progressMessage = store.progressMessage {
-                        DailyBriefingStatusCard(title: "Working…", message: progressMessage, isError: false)
+                        DailyBriefingStatusCard(title: NBLocalization.text("Working…"), message: progressMessage, isError: false)
                     }
                     DailyBriefingEmptyView(store: store)
                 case .stories:
@@ -2269,17 +2269,17 @@ private struct DailyBriefingEmptyView: View {
                 .frame(width: 44, height: 44)
                 .foregroundColor(Color.themed([0x95968E, 0x8B7B6B, 0xAAAAAA, 0xAAAAAA]))
 
-            Text("No briefings yet")
+            Text(NBLocalization.text("No briefings yet"))
                 .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 22))
                 .foregroundColor(Color.themed([0x333333, 0x3C3226, 0xE0E0E0, 0xE0E0E0]))
 
-            Text("Set up Daily Briefing to generate a summary of the stories that matter most to you.")
+            Text(NBLocalization.text("Set up Daily Briefing to generate a summary of the stories that matter most to you."))
                 .font(dailyBriefingFont(named: "WhitneySSm-Book", size: 15))
                 .foregroundColor(Color.themed([0x666666, 0x8B7B6B, 0xA0A0A0, 0xA0A0A0]))
                 .multilineTextAlignment(.center)
 
             if let preferences = store.preferences {
-                Button("Generate Daily Briefing") {
+                Button(NBLocalization.text("Generate Daily Briefing")) {
                     store.save(preferences: preferences, generate: true)
                 }
                 .buttonStyle(DailyBriefingPrimaryButtonStyle())
@@ -2305,11 +2305,11 @@ private struct DailyBriefingSetupView: View {
                     .frame(width: 42, height: 42)
                     .foregroundColor(Color.themed([0x95968E, 0x8B7B6B, 0xAAAAAA, 0xAAAAAA]))
 
-                Text("Daily Briefing")
+                Text(NBLocalization.text("Daily Briefing"))
                     .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 26))
                     .foregroundColor(Color.themed([0x333333, 0x3C3226, 0xF2F2F7, 0xF2F2F7]))
 
-                Text("Get a summary of your top stories, delivered on your schedule.")
+                Text(NBLocalization.text("Get a summary of your top stories, delivered on your schedule."))
                     .font(dailyBriefingFont(named: "WhitneySSm-Book", size: 16))
                     .foregroundColor(Color.themed([0x666666, 0x8B7B6B, 0xA0A0A0, 0xA0A0A0]))
             }
@@ -2340,19 +2340,19 @@ private struct DailyBriefingSettingsPopoverView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Daily Briefing Settings")
+                Text(NBLocalization.text("Daily Briefing Settings"))
                     .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 24))
                     .foregroundColor(Color.themed([0x333333, 0x3C3226, 0xF2F2F7, 0xF2F2F7]))
                     .padding(.bottom, 4)
 
                 if let errorMessage = store.errorMessage {
-                    DailyBriefingStatusCard(title: "Save failed", message: errorMessage, isError: true)
+                    DailyBriefingStatusCard(title: NBLocalization.text("Save failed"), message: errorMessage, isError: true)
                 }
 
                 if store.preferences == nil || !store.hasLoadedPreferenceDetails {
                     HStack(spacing: 12) {
                         ProgressView()
-                        Text("Loading settings…")
+                        Text(NBLocalization.text("Loading settings…"))
                             .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 14))
                     }
                     .padding(18)
@@ -2388,26 +2388,26 @@ private struct DailyBriefingSettingsForm: View {
     let showsSaveButton: Bool
 
     private let frequencyOptions = [
-        DailyBriefingOption(value: "thrice_daily", title: "3x daily"),
-        DailyBriefingOption(value: "twice_daily", title: "2x daily"),
-        DailyBriefingOption(value: "daily", title: "Daily"),
-        DailyBriefingOption(value: "weekly", title: "Weekly"),
+        DailyBriefingOption(value: "thrice_daily", title: NBLocalization.text("3x daily")),
+        DailyBriefingOption(value: "twice_daily", title: NBLocalization.text("2x daily")),
+        DailyBriefingOption(value: "daily", title: NBLocalization.text("Daily")),
+        DailyBriefingOption(value: "weekly", title: NBLocalization.text("Weekly")),
     ]
 
     private let timeOptions = [
-        DailyBriefingOption(value: "morning", title: "Morning"),
-        DailyBriefingOption(value: "afternoon", title: "Afternoon"),
-        DailyBriefingOption(value: "evening", title: "Evening"),
+        DailyBriefingOption(value: "morning", title: NBLocalization.text("Morning")),
+        DailyBriefingOption(value: "afternoon", title: NBLocalization.text("Afternoon")),
+        DailyBriefingOption(value: "evening", title: NBLocalization.text("Evening")),
     ]
 
     private let dayOptions = [
-        DailyBriefingOption(value: "sun", title: "Sunday"),
-        DailyBriefingOption(value: "mon", title: "Monday"),
-        DailyBriefingOption(value: "tue", title: "Tuesday"),
-        DailyBriefingOption(value: "wed", title: "Wednesday"),
-        DailyBriefingOption(value: "thu", title: "Thursday"),
-        DailyBriefingOption(value: "fri", title: "Friday"),
-        DailyBriefingOption(value: "sat", title: "Saturday"),
+        DailyBriefingOption(value: "sun", title: NBLocalization.text("Sunday")),
+        DailyBriefingOption(value: "mon", title: NBLocalization.text("Monday")),
+        DailyBriefingOption(value: "tue", title: NBLocalization.text("Tuesday")),
+        DailyBriefingOption(value: "wed", title: NBLocalization.text("Wednesday")),
+        DailyBriefingOption(value: "thu", title: NBLocalization.text("Thursday")),
+        DailyBriefingOption(value: "fri", title: NBLocalization.text("Friday")),
+        DailyBriefingOption(value: "sat", title: NBLocalization.text("Saturday")),
     ]
 
     private let storyCountOptions = [
@@ -2419,52 +2419,52 @@ private struct DailyBriefingSettingsForm: View {
     ]
 
     private let summaryStyleOptions = [
-        DailyBriefingOption(value: "bullets", title: "Bullets"),
-        DailyBriefingOption(value: "editorial", title: "Editorial"),
-        DailyBriefingOption(value: "headlines", title: "Headlines"),
+        DailyBriefingOption(value: "bullets", title: NBLocalization.text("Bullets")),
+        DailyBriefingOption(value: "editorial", title: NBLocalization.text("Editorial")),
+        DailyBriefingOption(value: "headlines", title: NBLocalization.text("Headlines")),
     ]
 
     private let readFilterOptions = [
-        DailyBriefingOption(value: "unread", title: "Unread"),
-        DailyBriefingOption(value: "focus", title: "Focus"),
+        DailyBriefingOption(value: "unread", title: NBLocalization.text("Unread")),
+        DailyBriefingOption(value: "focus", title: NBLocalization.text("Focus")),
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            DailyBriefingSettingsCard(title: "Auto-generate", subtitle: "Automatically create briefings on your schedule") {
+            DailyBriefingSettingsCard(title: NBLocalization.text("Auto-generate"), subtitle: NBLocalization.text("Automatically create briefings on your schedule")) {
                 Toggle("Enabled", isOn: $draft.enabled)
                     .toggleStyle(.switch)
             }
 
-            DailyBriefingSettingsCard(title: "Schedule", subtitle: "Choose how often and when your briefing is generated") {
-                DailyBriefingMenuRow(title: "Frequency", selection: $draft.frequency, options: frequencyOptions)
-                DailyBriefingMenuRow(title: "Preferred time", selection: $draft.preferredTime, options: timeOptions)
+            DailyBriefingSettingsCard(title: NBLocalization.text("Schedule"), subtitle: NBLocalization.text("Choose how often and when your briefing is generated")) {
+                DailyBriefingMenuRow(title: NBLocalization.text("Frequency"), selection: $draft.frequency, options: frequencyOptions)
+                DailyBriefingMenuRow(title: NBLocalization.text("Preferred time"), selection: $draft.preferredTime, options: timeOptions)
                 if draft.frequency == "weekly" {
-                    DailyBriefingMenuRow(title: "Preferred day", selection: $draft.preferredDay, options: dayOptions)
+                    DailyBriefingMenuRow(title: NBLocalization.text("Preferred day"), selection: $draft.preferredDay, options: dayOptions)
                 }
             }
 
-            DailyBriefingSettingsCard(title: "Length & Style", subtitle: "Control how much is included and how it is written") {
-                DailyBriefingMenuRow(title: "Story count", selection: $draft.storyCount, options: storyCountOptions)
-                DailyBriefingMenuRow(title: "Writing style", selection: $draft.summaryStyle, options: summaryStyleOptions)
+            DailyBriefingSettingsCard(title: NBLocalization.text("Length & Style"), subtitle: NBLocalization.text("Control how much is included and how it is written")) {
+                DailyBriefingMenuRow(title: NBLocalization.text("Story count"), selection: $draft.storyCount, options: storyCountOptions)
+                DailyBriefingMenuRow(title: NBLocalization.text("Writing style"), selection: $draft.summaryStyle, options: summaryStyleOptions)
             }
 
-            DailyBriefingSettingsCard(title: "Sources", subtitle: "Choose which stories are eligible for Daily Briefing") {
+            DailyBriefingSettingsCard(title: NBLocalization.text("Sources"), subtitle: NBLocalization.text("Choose which stories are eligible for Daily Briefing")) {
                 DailyBriefingMenuRow(
-                    title: "Feed source",
+                    title: NBLocalization.text("Feed source"),
                     selection: Binding(
                         get: { draft.selectedFolder ?? "__all__" },
                         set: { draft.selectedFolder = $0 == "__all__" ? nil : $0 }
                     ),
-                    options: [DailyBriefingOption(value: "__all__", title: "All Site Stories")] + draft.folders.map {
+                    options: [DailyBriefingOption(value: "__all__", title: NBLocalization.text("All Site Stories"))] + draft.folders.map {
                         DailyBriefingOption(value: $0, title: $0)
                     }
                 )
-                DailyBriefingMenuRow(title: "Filter", selection: $draft.readFilter, options: readFilterOptions)
+                DailyBriefingMenuRow(title: NBLocalization.text("Filter"), selection: $draft.readFilter, options: readFilterOptions)
                 Toggle("Include already-read stories", isOn: $draft.includeRead)
             }
 
-            DailyBriefingSettingsCard(title: "Sections", subtitle: "Only sections with matching stories will be included") {
+            DailyBriefingSettingsCard(title: NBLocalization.text("Sections"), subtitle: NBLocalization.text("Only sections with matching stories will be included")) {
                 ForEach(DailyBriefingStore.builtInSections) { definition in
                     Toggle(isOn: Binding(
                         get: { draft.builtInSections[definition.key] ?? true },
@@ -2481,7 +2481,7 @@ private struct DailyBriefingSettingsForm: View {
                 }
             }
 
-            DailyBriefingSettingsCard(title: "Keyword Sections", subtitle: "Add custom keyword filters that become their own briefing sections") {
+            DailyBriefingSettingsCard(title: NBLocalization.text("Keyword Sections"), subtitle: NBLocalization.text("Add custom keyword filters that become their own briefing sections")) {
                 ForEach(Array(draft.customSectionPrompts.indices), id: \.self) { index in
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -2501,7 +2501,7 @@ private struct DailyBriefingSettingsForm: View {
                             }
                         }
 
-                        TextField("Keywords", text: Binding(
+                        TextField(NBLocalization.text("Keywords"), text: Binding(
                             get: { draft.customSectionPrompts[index] },
                             set: { draft.customSectionPrompts[index] = $0 }
                         ))
@@ -2514,13 +2514,13 @@ private struct DailyBriefingSettingsForm: View {
                     Button {
                         draft.addKeywordSection()
                     } label: {
-                        Label("Add keyword section", systemImage: "plus.circle")
+                        Label(NBLocalization.text("Add keyword section"), systemImage: "plus.circle")
                     }
                     .buttonStyle(.plain)
                 }
             }
 
-            DailyBriefingSettingsCard(title: "Notifications", subtitle: "Choose where Daily Briefing alerts should go") {
+            DailyBriefingSettingsCard(title: NBLocalization.text("Notifications"), subtitle: NBLocalization.text("Choose where Daily Briefing alerts should go")) {
                 ForEach(DailyBriefingStore.notificationOptions) { option in
                     Toggle(option.title, isOn: Binding(
                         get: { draft.notificationTypes.contains(option.value) },
@@ -2536,9 +2536,9 @@ private struct DailyBriefingSettingsForm: View {
             }
 
             if draft.briefingModels.count > 1 {
-                DailyBriefingSettingsCard(title: "Model", subtitle: "Pick which model writes your Daily Briefing") {
+                DailyBriefingSettingsCard(title: NBLocalization.text("Model"), subtitle: NBLocalization.text("Pick which model writes your Daily Briefing")) {
                     DailyBriefingMenuRow(
-                        title: "Model",
+                        title: NBLocalization.text("Model"),
                         selection: $draft.briefingModel,
                         options: draft.briefingModels.map { DailyBriefingOption(value: $0.key, title: $0.displayName) }
                     )
@@ -2547,7 +2547,7 @@ private struct DailyBriefingSettingsForm: View {
 
             HStack(spacing: 12) {
                 if showsSaveButton {
-                    Button("Save") {
+                    Button(NBLocalization.text("Save")) {
                         store.save(preferences: draft, generate: false)
                     }
                     .buttonStyle(DailyBriefingSecondaryButtonStyle())
@@ -2615,10 +2615,10 @@ private struct DailyBriefingGroupView: View {
                             feedDetailInteraction.openPremiumDialog()
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("Premium Archive")
+                                Text(NBLocalization.text("Premium Archive"))
                                     .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 13))
                                     .foregroundColor(Color.themed([0x2030C0, 0x2030C0, 0x8FB3FF, 0x8FB3FF]))
-                                Text("Get Daily Briefing with all of your top stories.")
+                                Text(NBLocalization.text("Get Daily Briefing with all of your top stories."))
                                     .font(dailyBriefingFont(named: "WhitneySSm-Book", size: 14))
                                     .foregroundColor(Color.themed([0x333333, 0x3C3226, 0xE0E0E0, 0xE0E0E0]))
                             }
@@ -2658,7 +2658,7 @@ private struct DailyBriefingStoryRowView: View {
             } label: {
                 VStack(alignment: .leading, spacing: 8) {
                     if isSummary {
-                        Text("Daily Briefing")
+                        Text(NBLocalization.text("Daily Briefing"))
                             .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 12))
                             .foregroundColor(Color.themed([0x2030C0, 0x7D5A1A, 0x8FB3FF, 0x8FB3FF]))
                     } else if let feedName = story.feed?.name, !feedName.isEmpty {

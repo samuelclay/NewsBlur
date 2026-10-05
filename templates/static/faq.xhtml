@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-faq{% endblock %}
-{% block title %}FAQ - Frequently Asked Questions About NewsBlur{% endblock %}
-{% block nav_title %}FAQ{% endblock %}
+{% block title %}{% trans "FAQ - Frequently Asked Questions About NewsBlur" %}{% endblock %}
+{% block nav_title %}{% trans "FAQ" %}{% endblock %}
 {% block head %}
     <meta name="description" content="Frequently asked questions about NewsBlur: intelligence training, Ask AI, full-text search, views, layouts, notifications, keyboard shortcuts, pricing, and more.">
     <meta property="og:title" content="NewsBlur FAQ - Frequently Asked Questions">
@@ -22,20 +23,20 @@
 <div class="NB-faq-container">
 
     <div class="NB-faq-hero">
-        <h1 class="NB-faq-hero-title" data-faq-hero-title>Everything you need to know about NewsBlur</h1>
-        <p class="NB-faq-hero-subtitle" data-faq-hero-subtitle>Find answers to common questions about features, pricing, training, AI, and more.</p>
+        <h1 class="NB-faq-hero-title" data-faq-hero-title>{% trans "Everything you need to know about NewsBlur" %}</h1>
+        <p class="NB-faq-hero-subtitle" data-faq-hero-subtitle>{% trans "Find answers to common questions about features, pricing, training, AI, and more." %}</p>
     </div>
 
     <div class="NB-faq-body" data-faq-body>
-        <div class="NB-faq-loading">Loading&hellip;</div>
+        <div class="NB-faq-loading">{% trans "Loading" %}&hellip;</div>
     </div>
 
     <!-- Bottom CTA -->
     <div class="NB-faq-bottom-cta">
-        <div class="NB-faq-bottom-cta-text">Still have questions?</div>
-        <p class="NB-faq-bottom-cta-subtext">Ask the community or try NewsBlur for yourself.</p>
-        <a href="https://forum.newsblur.com" class="NB-pricing-cta NB-pricing-cta-free">Visit the forum</a>
-        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-archive">Try it free</a>
+        <div class="NB-faq-bottom-cta-text">{% trans "Still have questions?" %}</div>
+        <p class="NB-faq-bottom-cta-subtext">{% trans "Ask the community or try NewsBlur for yourself." %}</p>
+        <a href="https://forum.newsblur.com" class="NB-pricing-cta NB-pricing-cta-free">{% trans "Visit the forum" %}</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-archive">{% trans "Try it free" %}</a>
     </div>
 
     {% include "static/_compare_links.xhtml" %}

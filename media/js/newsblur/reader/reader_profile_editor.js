@@ -35,47 +35,47 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-profile-editor' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-profile' }, 'Profile'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-blurblog' }, 'Blurblog')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-profile' }, gettext('Profile')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-blurblog' }, gettext('Blurblog'))
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Profile',
+                gettext('Profile'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-tab NB-tab-profile NB-active' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'Preview'),
+                    $.make('legend', gettext('Preview')),
                     $.make('div', { className: 'NB-modal-section NB-friends-findfriends-profile' })
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Profile picture'),
+                    $.make('legend', gettext('Profile picture')),
                     $.make('div', { className: 'NB-modal-section NB-friends-profilephoto' })
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Profile Details'),
+                    $.make('legend', gettext('Profile Details')),
                     $.make('div', { className: 'NB-modal-section NB-friends-profile' }, [
                         $.make('form', [
-                            $.make('label', 'Username'),
+                            $.make('label', gettext('Username')),
                             $.make('div', { className: 'NB-profile-username' }, [
                                 NEWSBLUR.Globals.username,
-                                $.make('a', { className: 'NB-splash-link NB-account-link', href: '#' }, 'Change')
+                                $.make('a', { className: 'NB-splash-link NB-account-link', href: '#' }, gettext('Change'))
                             ]),
-                            $.make('label', { 'for': 'NB-profile-location' }, 'Location'),
+                            $.make('label', { 'for': 'NB-profile-location' }, gettext('Location')),
                             $.make('input', { id: 'NB-profile-location', name: 'location', type: 'text', className: 'NB-input', style: 'width: 300px', value: this.profile.get('location'), "data-max": 40 }),
                             $.make('span', { className: 'NB-count NB-count-location' }),
-                            $.make('label', { 'for': 'NB-profile-website' }, 'Website'),
+                            $.make('label', { 'for': 'NB-profile-website' }, gettext('Website')),
                             $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 410px', value: this.profile.get('website'), "data-max": 200 }),
                             $.make('span', { className: 'NB-count NB-count-website' }),
-                            $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
+                            $.make('label', { 'for': 'NB-profile-bio' }, gettext('Bio')),
                             $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 520px', value: this.profile.get('bio'), "data-max": 160 }),
                             $.make('span', { className: 'NB-count NB-count-bio' }),
                             $.make('label', { 'for': 'NB-profile-privacy-public' }, [
-                                'Privacy',
+                                gettext('Privacy'),
                                 (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-profile-privacy-notpremium' }, [
-                                    'You must have a ',
-                                    $.make('div', { className: 'NB-splash-link NB-premium-link' }, 'premium account'),
-                                    ' to change privacy.'
+                                    gettext('You must have a '),
+                                    $.make('div', { className: 'NB-splash-link NB-premium-link' }, gettext('premium account')),
+                                    gettext(' to change privacy.')
                                 ]))
                             ]),
                             $.make('div', { className: 'NB-profile-privacy-options' }, [
@@ -90,8 +90,8 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                         disabled: !NEWSBLUR.Globals.is_premium
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-public', className: 'NB-profile-protected-label' }, [
-                                        $.make('b', 'Public:'),
-                                        $.make('span', 'My shared stories are public and anybody can reply to me')
+                                        $.make('b', gettext('Public:')),
+                                        $.make('span', gettext('My shared stories are public and anybody can reply to me'))
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
@@ -106,8 +106,8 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-protected', className: 'NB-profile-protected-label' }, [
                                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
-                                        $.make('b', 'Protected:'),
-                                        $.make('span', 'My shared stories are public but only people I approve can reply')
+                                        $.make('b', gettext('Protected:')),
+                                        $.make('span', gettext('My shared stories are public but only people I approve can reply'))
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
@@ -122,59 +122,59 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                     }),
                                     $.make('label', { 'for': 'NB-profile-privacy-private', className: 'NB-profile-protected-label' }, [
                                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
-                                        $.make('b', 'Private:'),
-                                        $.make('span', 'Only people I approve can see my shared stories and reply to me')
+                                        $.make('b', gettext('Private:')),
+                                        $.make('span', gettext('Only people I approve can see my shared stories and reply to me'))
                                     ])
                                 ])
                             ])
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-profile-save-button NB-modal-submit-button' }, 'Change your profile above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-profile-save-button NB-modal-submit-button' }, gettext('Change your profile above'))
             ]),
             $.make('div', { className: 'NB-tab NB-tab-blurblog' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'Your Blurblog'),
+                    $.make('legend', gettext('Your Blurblog')),
                     $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-preview' }, [
-                        $.make('label', { 'for': 'NB-profile-blurblog-address' }, 'Blurblog address'),
+                        $.make('label', { 'for': 'NB-profile-blurblog-address' }, gettext('Blurblog address')),
                         $.make('a', { href: this.profile.get('feed_link'), target: '_blank', className: 'NB-profile-blurblog-address NB-splash-link' }, this.profile.get('feed_link')),
-                        $.make('label', { 'for': 'NB-profile-blurblog-title' }, 'Blurblog title'),
+                        $.make('label', { 'for': 'NB-profile-blurblog-title' }, gettext('Blurblog title')),
                         $.make('input', { type: 'text', id: 'NB-profile-blurblog-title', name: 'blurblog_title', value: this.profile.get('feed_title'), className: 'NB-input NB-profile-blurblog-title' }),
-                        $.make('label', 'Background color'),
+                        $.make('label', gettext('Background color')),
                         this.make_color_palette()
                     ])
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Custom CSS for your Blurblog'),
+                    $.make('legend', gettext('Custom CSS for your Blurblog')),
                     $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-css' }, [
                         $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'custom_css' }, this.profile.get('custom_css'))
                     ])
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Blurblog Options'),
+                    $.make('legend', gettext('Blurblog Options')),
                     $.make('div', { className: 'NB-modal-section' }, [
                         $.make('div', { className: 'NB-preference NB-preference-permalinkdirect' }, [
                             $.make('label', { className: 'NB-preference-label' }, [
-                                'Blurblog permalinks'
+                                gettext('Blurblog permalinks')
                             ]),
                             $.make('div', { className: 'NB-preference-options' }, [
                                 $.make('div', [
                                     $.make('input', { id: 'NB-preference-permalinkdirect-0', type: 'radio', name: 'bb_permalink_direct', value: 'false', checked: true }),
                                     $.make('label', { 'for': 'NB-preference-permalinkdirect-0' }, [
-                                        'Link to my blurblog and shared comments'
+                                        gettext('Link to my blurblog and shared comments')
                                     ])
                                 ]),
                                 $.make('div', [
                                     $.make('input', { id: 'NB-preference-permalinkdirect-1', type: 'radio', name: 'bb_permalink_direct', value: 'true' }),
                                     $.make('label', { 'for': 'NB-preference-permalinkdirect-1' }, [
-                                        'Link directly to the original story'
+                                        gettext('Link directly to the original story')
                                     ])
                                 ])
                             ])
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
+                $.make('div', { className: 'NB-disabled NB-modal-submit-green NB-blurblog-save-button NB-modal-submit-button' }, gettext('Change your blurblog settings above'))
             ]),
             $.make('div', { className: 'NB-tab NB-tab-following' }),
             $.make('div', { className: 'NB-tab NB-tab-followers' })
@@ -273,15 +273,15 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 ]),
                 (service == 'upload' && $.make('div', { className: 'NB-photo-link' }, [
                     $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data' }, [
-                        $.make('a', { href: '#', className: 'NB-photo-upload-link NB-splash-link' }, 'upload picture'),
+                        $.make('a', { href: '#', className: 'NB-photo-upload-link NB-splash-link' }, gettext('upload picture')),
                         $.make('input', { type: 'file', name: 'photo', id: "NB-photo-upload-file", className: 'NB-photo-upload-file' })
                     ])
                 ])),
                 (service == 'gravatar' && $.make('div', { className: 'NB-gravatar-link' }, [
-                    $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, 'gravatar.com')
+                    $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, gettext('gravatar.com'))
                 ])),
                 (_.contains(['facebook', 'twitter'], service) && $.make('div', { className: 'NB-friends-link' }, [
-                    $.make('div', { className: 'NB-splash-link' }, 'connect')
+                    $.make('div', { className: 'NB-splash-link' }, gettext('connect'))
                 ]))
             ]);
             if (service == this.profile.get('photo_service') ||
@@ -426,7 +426,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             $('input[name=website]', this.$modal).val(this.profile.get('website'));
         }, this));
         this.disable_save_profile();
-        $('.NB-profile-save-button', this.$modal).text('Saving...');
+        $('.NB-profile-save-button', this.$modal).text(gettext('Saving...'));
     },
 
     save_blurblog: function () {
@@ -436,7 +436,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             this.disable_save_blurblog();
         }, this));
         this.disable_save_blurblog();
-        $('.NB-blurblog-save-button', this.$modal).text('Saving...');
+        $('.NB-blurblog-save-button', this.$modal).text(gettext('Saving...'));
     },
 
     animate_profile_badge: function ($badge) {
@@ -614,7 +614,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         var $error = $('.NB-photo-upload-error', this.$modal);
 
         $loading.removeClass('NB-active');
-        $error.text("There was a problem uploading your photo.");
+        $error.text(gettext("There was a problem uploading your photo."));
         $error.slideDown(300);
     },
 
@@ -628,25 +628,25 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     enable_save_profile: function () {
         $('.NB-profile-save-button', this.$modal)
             .removeClass('NB-disabled')
-            .text('Save My Profile');
+            .text(gettext('Save My Profile'));
     },
 
     enable_save_blurblog: function () {
         $('.NB-blurblog-save-button', this.$modal)
             .removeClass('NB-disabled')
-            .text('Save My Blurblog Settings');
+            .text(gettext('Save My Blurblog Settings'));
     },
 
     disable_save_profile: function () {
         $('.NB-profile-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Saved!');
+            .text(gettext('Saved!'));
     },
 
     disable_save_blurblog: function () {
         $('.NB-blurblog-save-button', this.$modal)
             .addClass('NB-disabled')
-            .text('Saved!');
+            .text(gettext('Saved!'));
     }
 
 });

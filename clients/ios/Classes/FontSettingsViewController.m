@@ -96,8 +96,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    self.title = @"Story Options";
-    self.navigationItem.backBarButtonItem.title = @"Options";
+    self.title = [NBLocalization text:@"Story Options"];
+    self.navigationItem.backBarButtonItem.title = [NBLocalization text:@"Options"];
     
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     self.fonts = [NSMutableArray array];
@@ -396,41 +396,41 @@
     if (adjustedRow == 0) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
-            cell.textLabel.text = @"Unsave this story";
+            cell.textLabel.text = [NBLocalization text:@"Unsave this story"];
         } else {
-            cell.textLabel.text = @"Save this story";
+            cell.textLabel.text = [NBLocalization text:@"Save this story"];
         }
         cell.imageView.image = [Utilities templateImageNamed:@"saved-stories" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x95968F);
     } else if (adjustedRow == 1) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            cell.textLabel.text = @"Mark as unread";
+            cell.textLabel.text = [NBLocalization text:@"Mark as unread"];
         } else {
-            cell.textLabel.text = @"Mark as read";
+            cell.textLabel.text = [NBLocalization text:@"Mark as read"];
         }
         cell.imageView.image = [Utilities templateImageNamed:@"indicator-unread" sized:16];
         cell.imageView.tintColor = UIColorFromRGB(0x6A6659);
     } else if (adjustedRow == 2) {
-        cell.textLabel.text = @"Send to...";
+        cell.textLabel.text = [NBLocalization text:@"Send to..."];
         cell.imageView.image = [Utilities templateImageNamed:@"sendto" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0xBD9146);
     } else if (adjustedRow == 3) {
-        cell.textLabel.text = @"Train this story";
+        cell.textLabel.text = [NBLocalization text:@"Train this story"];
         cell.imageView.image = [Utilities templateImageNamed:@"dialog-trainer" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x689ED7);
     } else if (adjustedRow == 4) {
-        cell.textLabel.text = @"Share on NewsBlur…";
+        cell.textLabel.text = [NBLocalization text:@"Share on NewsBlur…"];
         cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x94968E);
     } else if (adjustedRow == 5) {
-        cell.textLabel.text = @"Ask AI";
+        cell.textLabel.text = [NBLocalization text:@"Ask AI"];
         if (@available(iOS 13.0, *)) {
             cell.imageView.image = [[UIImage systemImageNamed:@"sparkles"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }
         cell.imageView.tintColor = UIColorFromRGB(0x709E5D);
     } else if (adjustedRow == 6) {
-        cell.textLabel.text = @"Go to feed";
+        cell.textLabel.text = [NBLocalization text:@"Go to feed"];
         cell.imageView.image = [[UIImage systemImageNamed:@"newspaper"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         cell.imageView.tintColor = UIColorFromRGB(0x95968F);
     } else if (adjustedRow == 7) {
@@ -451,7 +451,7 @@
                                       scaledFontForFont:previewFont];
             }
         } else {
-            cell.textLabel.text = @"Font...";
+            cell.textLabel.text = [NBLocalization text:@"Font..."];
         }
         cell.imageView.image = [[UIImage imageNamed:@"choose_font.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
@@ -462,8 +462,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger action = [self actionAtIndexPath:indexPath];
     if (action >= 8) return kMenuOptionHeight;
-    NSArray *titles = @[@"Unsave this story", @"Mark as unread", @"Send to…", @"Train this story",
-                        @"Share on NewsBlur…", @"Ask AI", @"Go to feed", @"Font…"];
+    NSArray *titles = @[[NBLocalization text:@"Unsave this story"], [NBLocalization text:@"Mark as unread"], [NBLocalization text:@"Send to…"], [NBLocalization text:@"Train this story"],
+                        [NBLocalization text:@"Share on NewsBlur…"], [NBLocalization text:@"Ask AI"], [NBLocalization text:@"Go to feed"], [NBLocalization text:@"Font…"]];
     return MAX(kMenuOptionHeight, [MenuTableViewCell heightForTitle:titles[action] width:tableView.bounds.size.width]);
 }
 
@@ -547,7 +547,7 @@
 - (void)deleteSite {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Deleting...";
+    HUD.labelText = [NBLocalization text:@"Deleting..."];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_feed",
                            self.appDelegate.url];
@@ -585,11 +585,11 @@
     cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.fontSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.fontSizeSegment setTitle:@"XS" forSegmentAtIndex:0];
-    [self.fontSizeSegment setTitle:@"S" forSegmentAtIndex:1];
-    [self.fontSizeSegment setTitle:@"M" forSegmentAtIndex:2];
-    [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
-    [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
+    [self.fontSizeSegment setTitle:[NBLocalization text:@"XS"] forSegmentAtIndex:0];
+    [self.fontSizeSegment setTitle:[NBLocalization text:@"S"] forSegmentAtIndex:1];
+    [self.fontSizeSegment setTitle:[NBLocalization text:@"M"] forSegmentAtIndex:2];
+    [self.fontSizeSegment setTitle:[NBLocalization text:@"L"] forSegmentAtIndex:3];
+    [self.fontSizeSegment setTitle:[NBLocalization text:@"XL"] forSegmentAtIndex:4];
 #if !TARGET_OS_MACCATALYST
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
@@ -641,8 +641,8 @@
     cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.fullscreenSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.fullscreenSegment setTitle:@"Full Screen" forSegmentAtIndex:0];
-    [self.fullscreenSegment setTitle:@"Toolbar" forSegmentAtIndex:1];
+    [self.fullscreenSegment setTitle:[NBLocalization text:@"Full Screen"] forSegmentAtIndex:0];
+    [self.fullscreenSegment setTitle:[NBLocalization text:@"Toolbar"] forSegmentAtIndex:1];
 #if !TARGET_OS_MACCATALYST
     self.fullscreenSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
@@ -666,8 +666,8 @@
     cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.autoscrollSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.autoscrollSegment setTitle:@"Manual scroll" forSegmentAtIndex:0];
-    [self.autoscrollSegment setTitle:@"Auto scroll" forSegmentAtIndex:1];
+    [self.autoscrollSegment setTitle:[NBLocalization text:@"Manual scroll"] forSegmentAtIndex:0];
+    [self.autoscrollSegment setTitle:[NBLocalization text:@"Auto scroll"] forSegmentAtIndex:1];
 #if !TARGET_OS_MACCATALYST
     self.autoscrollSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
@@ -721,7 +721,7 @@
     UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:NO];
 
     self.themeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.themeSegment setTitle:@"Auto" forSegmentAtIndex:0];
+    [self.themeSegment setTitle:[NBLocalization text:@"Auto"] forSegmentAtIndex:0];
     [self.themeSegment setImage:lightImage forSegmentAtIndex:1];
     [self.themeSegment setImage:sepiaImage forSegmentAtIndex:2];
     [self.themeSegment setImage:mediumImage forSegmentAtIndex:3];

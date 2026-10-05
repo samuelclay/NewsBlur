@@ -1,7 +1,8 @@
+{% load i18n %}
 <!DOCTYPE html>
 
 <html>
-<title>NewsBlur - Connecting...</title>
+<title>{% trans "NewsBlur - Connecting..." %}</title>
 
 <head>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
@@ -90,8 +91,8 @@
 
         <img class="NB-loader" src="{{ MEDIA_URL }}img/logo_512.png">
 
-        <div>Hold on just a smidgen...</div>
-        <div>If I was a bird I'd be a pigeon.</div>
+        <div>{% trans "Hold on just a smidgen..." %}</div>
+        <div>{% trans "If I was a bird I'd be a pigeon." %}</div>
 
     </div>
 

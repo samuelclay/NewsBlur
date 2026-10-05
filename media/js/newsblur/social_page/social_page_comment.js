@@ -66,15 +66,15 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
 
         if (NEWSBLUR.Globals.blurblog_protected && !NEWSBLUR.Globals.blurblog_following) {
             var $error = this.$('.NB-story-comment-error');
-            $error.text("You must be following " + NEWSBLUR.Globals.blurblog_username + " to reply");
+            $error.text(interpolate(gettext("You must be following %(value_1)s to reply"), {value_1: NEWSBLUR.Globals.blurblog_username}, true));
             return;
         }
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
             $.make('img', { className: 'NB-user-avatar NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
             $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: options.reply_comments }),
-            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post'),
-            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-modal-submit-delete' }, 'Delete'))
+            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? gettext('Save') : gettext('Post')),
+            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-modal-submit-delete' }, gettext('Delete')))
         ]);
         this.remove_social_comment_reply_form();
 
@@ -127,7 +127,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
         }
 
         $delete_button.hide();
-        $submit.addClass('NB-disabled').text('Posting...');
+        $submit.addClass('NB-disabled').text(gettext('Posting...'));
         NEWSBLUR.assets.save_comment_reply(this.options.story.id, this.options.story.get('story_feed_id'),
             comment_user_id, comment_reply,
             reply_id,
@@ -139,7 +139,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
                     message = "You need to be logged in to reply to a comment.";
                 }
                 var $error = $.make('div', { className: 'NB-error' }, message);
-                $submit.removeClass('NB-disabled').text('Post');
+                $submit.removeClass('NB-disabled').text(gettext('Post'));
                 $form.find('.NB-error').remove();
                 $form.append($error);
                 if (NEWSBLUR.app.story_list) {
@@ -164,7 +164,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
         }
 
         $submit.addClass('NB-disabled');
-        $delete_button.addClass('NB-disabled').text('Deleting...');
+        $delete_button.addClass('NB-disabled').text(gettext('Deleting...'));
         NEWSBLUR.assets.delete_comment_reply(this.options.story.id,
             this.options.story.get('story_feed_id'),
             comment_user_id, reply_id,
@@ -173,8 +173,8 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
             }, this), _.bind(function (data) {
                 var message = data && data.message || "Sorry, this reply could not be deleted.";
                 var $error = $.make('div', { className: 'NB-error' }, message);
-                $submit.removeClass('NB-disabled').text('Post');
-                $delete_button.removeClass('NB-disabled').text('Delete');
+                $submit.removeClass('NB-disabled').text(gettext('Post'));
+                $delete_button.removeClass('NB-disabled').text(gettext('Delete'));
                 $form.find('.NB-error').remove();
                 $form.append($error);
                 if (NEWSBLUR.app.story_list) {

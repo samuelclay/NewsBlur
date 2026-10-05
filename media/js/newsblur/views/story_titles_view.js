@@ -6,19 +6,19 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     explainers: {
         'river:global': {
-            label: 'Global Shared Stories',
+            label: gettext('Global Shared Stories'),
             explanation: 'A fresh handful of the stories NewsBlur readers shared, chosen every hour.'
         },
         'trending:well_read': {
-            label: 'Widely Read Stories',
+            label: gettext('Widely Read Stories'),
             explanation: 'Stories that held the most attention across NewsBlur.'
         },
         'trending:long_reads': {
-            label: 'Long Reads',
+            label: gettext('Long Reads'),
             explanation: 'Features and essays that readers gave real time to.'
         },
         'trending:good_reads': {
-            label: 'Good Reads',
+            label: gettext('Good Reads'),
             explanation: 'Not the most read, but the best received, and tilted toward small sites over big ones.'
         }
     },
@@ -192,14 +192,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var $empty = $.make('div', { className: 'NB-briefing-empty' }, [
                 $.make('div', { className: 'NB-briefing-empty-icon' }),
                 $.make('div', { className: 'NB-briefing-empty-text' },
-                    'No briefings yet.'),
-                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-large' }, 'Generate Briefing')
+                    gettext('No briefings yet.')),
+                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-large' }, gettext('Generate Briefing'))
             ]);
             $groups.push($empty);
         } else {
             // story_titles_view.js: Regenerate button at the bottom of existing briefings
             var $regenerate = $.make('div', { className: 'NB-briefing-regenerate' }, [
-                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, 'Regenerate Briefing')
+                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, gettext('Regenerate Briefing'))
             ]);
             $groups.push($regenerate);
         }
@@ -236,7 +236,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         var $groups = this._render_briefing_groups(briefings, data, { all_collapsed: true });
         var $regenerate = $.make('div', { className: 'NB-briefing-regenerate' }, [
-            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, 'Regenerate Briefing')
+            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, gettext('Regenerate Briefing'))
         ]);
         $groups.push($regenerate);
 
@@ -321,7 +321,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$el.find('.NB-briefing-loading').remove();
         var $loading = $.make('div', { className: 'NB-briefing-loading' }, [
             $.make('div', { className: 'NB-briefing-progress-spinner' }),
-            $.make('div', { className: 'NB-briefing-progress-message' }, 'Loading more briefings...')
+            $.make('div', { className: 'NB-briefing-progress-message' }, gettext('Loading more briefings...'))
         ]);
         // story_titles_view.js: Insert loading indicator before the regenerate button
         var $regenerate = this.$el.find('.NB-briefing-regenerate');
@@ -371,7 +371,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         var $error = $.make('div', { className: 'NB-briefing-error' }, [
             $.make('div', { className: 'NB-briefing-error-message' }, error_message),
-            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small' }, 'Try Again')
+            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small' }, gettext('Try Again'))
         ]);
 
         var $target = this._briefing_target();
@@ -466,20 +466,20 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     append_river_premium_only_notification: function () {
         var message = [
             'The full River of News is a ',
-            $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'river' }, 'premium feature'),
+            $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'river' }, gettext('premium feature')),
             '.'
         ];
         if (NEWSBLUR.reader.flags['starred_view']) {
             message = [
                 'Reading saved stories by tag is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'saved-tags' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'saved-tags' }, gettext('premium feature')),
                 '.'
             ];
         }
         if (NEWSBLUR.reader.active_feed == "read") {
             message = [
                 'This read stories list is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link' }, gettext('premium feature')),
                 '.'
             ];
         }
@@ -493,8 +493,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     append_search_premium_only_notification: function () {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
-                'Search is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'search' }, 'premium feature'),
+                gettext('Search is a '),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'search' }, gettext('premium feature')),
                 '.'
             ])
         ]);
@@ -590,7 +590,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$('.NB-feed-fetching-indicator').remove();
         var $indicator = $.make('div', { className: 'NB-feed-fetching-indicator' }, [
             $.make('div', { className: 'NB-feed-fetching-spinner' }),
-            $.make('div', { className: 'NB-feed-fetching-text' }, 'Fetching stories...')
+            $.make('div', { className: 'NB-feed-fetching-text' }, gettext('Fetching stories...'))
         ]);
         this.$el.prepend($indicator);
         _.defer(function () {
@@ -649,20 +649,20 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $actions.append($.make('button', {
                 type: 'button',
                 className: 'NB-classifier-filter-empty-widen'
-            }, 'Search All Site Stories'));
+            }, gettext('Search All Site Stories')));
         }
         $actions.append($.make('button', {
             type: 'button',
             className: 'NB-classifier-filter-empty-clear'
-        }, 'Clear filter'));
+        }, gettext('Clear filter')));
 
         var $icon = $.make('div', { className: 'NB-classifier-filter-empty-icon', 'aria-hidden': 'true' });
-        $icon.html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>');
+        $icon.html(gettext('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>'));
         this.$el.append($.make('div', { className: 'NB-classifier-filter-empty' }, [
             $icon,
-            $.make('div', { className: 'NB-classifier-filter-empty-title' }, 'No matches for “' + filter.value + '”'),
+            $.make('div', { className: 'NB-classifier-filter-empty-title' }, interpolate(gettext("No matches for “%(value_1)s”"), {value_1: filter.value}, true)),
             $.make('div', { className: 'NB-classifier-filter-empty-copy' },
-                type_label + ' filters found no stories in ' + context + '.'),
+                interpolate(gettext("%(value_1)s filters found no stories in %(value_2)s."), {value_1: type_label, value_2: context}, true)),
             $actions
         ]));
     },

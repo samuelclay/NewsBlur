@@ -36,7 +36,7 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Recommend this Site',
+                gettext('Recommend this Site'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
@@ -51,20 +51,20 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
                 ])
             ]),
             $.make('div', { className: 'NB-modal-recommend-explanation' }, [
-                "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
+                gettext("Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard.")
             ]),
             $.make('div', { className: 'NB-modal-recommend-tagline-container' }, [
                 $.make('textarea', { className: 'NB-modal-recommend-tagline' })
             ]),
             $.make('div', { className: 'NB-modal-recommend-credit' }, [
-                '&raquo; Want credit? Enter your Twitter username: ',
+                gettext('&raquo; Want credit? Enter your Twitter username: '),
                 $.make('input', { className: 'NB-input NB-modal-recommend-twitter' })
             ]),
             $.make('form', { className: 'NB-recommend-form' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Recommend Site' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                    gettext(' or '),
+                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, gettext('cancel'))
                 ])
             ])
         ]);

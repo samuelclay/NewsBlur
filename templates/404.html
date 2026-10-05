@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -57,17 +58,17 @@
             color: #C5826E;
         }
         </style>
-        <title>404 - NewsBlur can't find that page</title>
+        <title>{% trans "404 - NewsBlur can't find that page" %}</title>
     </head>
     <body>
         <table height="100%" width="100%">
             <tr>
                 <td align="center" valign="middle">
                     <div id="container">
-                        <h1><span class="error404">404</span> &middot; NewsBlur can't find that page</h1>
+                        <h1><span class="error404">404</span> &middot; {% trans "NewsBlur can't find that page" %}</h1>
                         <div class="description">
-                            <p>Either the URL you accessed doesn't point to anything or there is no site, story, or data with these parameters.</p>
-                            <p><a href="{% url "index" %}">Return to NewsBlur</a></p>
+                            <p>{% trans "Either the URL you accessed doesn't point to anything or there is no site, story, or data with these parameters." %}</p>
+                            <p><a href="{% url "index" %}">{% trans "Return to NewsBlur" %}</a></p>
                         </div>
                     </div>
                 </td>

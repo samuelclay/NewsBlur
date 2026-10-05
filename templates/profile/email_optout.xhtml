@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
 
@@ -42,18 +43,18 @@
 
         <div class="NB-thanks">
             {% if unsubscribed %}
-                <div style="color: #175700;font-size: 28px">Unsubscribed</div>
-                <div>You will no longer receive any emails from NewsBlur.</div>
-                <div><a href="{% url "index" %}?next=optout">Changed your mind? Manage your email settings &raquo;</a></div>
-                <div><a href="{% url "index" %}">Continue to NewsBlur &raquo;</a></div>
+                <div style="color: #175700;font-size: 28px">{% trans "Unsubscribed" %}</div>
+                <div>{% trans "You will no longer receive any emails from NewsBlur." %}</div>
+                <div><a href="{% url "index" %}?next=optout">{% trans "Changed your mind? Manage your email settings" %} &raquo;</a></div>
+                <div><a href="{% url "index" %}">{% trans "Continue to NewsBlur" %} &raquo;</a></div>
             {% else %}
-                <div style="color: #404040;font-size: 28px">Unsubscribe from NewsBlur emails</div>
-                <div>Stop sending all NewsBlur emails to <b>{{ user.email }}</b> for the account <b>{{ user.username }}</b>?</div>
+                <div style="color: #404040;font-size: 28px">{% trans "Unsubscribe from NewsBlur emails" %}</div>
+                <div>{% trans "Stop sending all NewsBlur emails to" %} <b>{{ user.email }}</b> {% trans "for the account" %} <b>{{ user.username }}</b>?</div>
                 <form method="post">
                     {% csrf_token %}
-                    <button type="submit" class="NB-unsubscribe-button">Unsubscribe</button>
+                    <button type="submit" class="NB-unsubscribe-button">{% trans "Unsubscribe" %}</button>
                 </form>
-                <div><a href="{% url "index" %}">No thanks, keep my emails and continue to NewsBlur &raquo;</a></div>
+                <div><a href="{% url "index" %}">{% trans "No thanks, keep my emails and continue to NewsBlur" %} &raquo;</a></div>
             {% endif %}
         </div>
 
