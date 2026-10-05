@@ -106,11 +106,12 @@ def javascript_catalog(request, language, version):
     if language not in LANGUAGES:
         raise Http404
     content, current_version = javascript_catalog_data(language)
-    if version != current_version:
-        raise Http404
-    etag = '"%s"' % version
+    etag = '"%s"' % current_version
     response = HttpResponse(content, content_type="text/javascript; charset=utf-8")
-    response["Cache-Control"] = "public, max-age=31536000, immutable"
+    # language.py tolerates mixed worker releases during a rolling deploy without caching mismatched bytes.
+    response["Cache-Control"] = (
+        "public, max-age=31536000, immutable" if version == current_version else "no-store"
+    )
     response["ETag"] = etag
     response["Content-Language"] = language
     return get_conditional_response(request, etag=etag, response=response)

@@ -100,7 +100,7 @@ def ask_ai_question(request):
         if custom_question and len(custom_question) > MAX_CUSTOM_QUESTION_LENGTH:
             return {
                 "code": -1,
-                "message": _("Custom questions are limited to %(limit)d characters")
+                "message": gettext("Custom questions are limited to %(limit)d characters")
                 % {"limit": MAX_CUSTOM_QUESTION_LENGTH},
             }
     elif not get_prompt(question_id):
