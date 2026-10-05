@@ -4,7 +4,7 @@
     letter-spacing: normal !important;
   }
 </style>
-<script src="{% url 'javascript-catalog' %}"></script>
+<script src="{{ ui_catalog_url }}"></script>
 <script>
   // i18n_scripts.html retains usable English controls if the catalog request fails.
   if (!window.gettext) {

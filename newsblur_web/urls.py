@@ -5,10 +5,10 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import RedirectView
-from django.views.i18n import JavaScriptCatalog
 
 from apps.mcp import views as mcp_views
 from apps.profile import views as profile_views
+from apps.profile.language import JAVASCRIPT_CATALOG_PATTERN, javascript_catalog
 from apps.reader import views as reader_views
 from apps.social import views as social_views
 from apps.static import views as static_views
@@ -17,7 +17,7 @@ from apps.static.sitemaps import StaticSitemap
 admin.autodiscover()
 
 urlpatterns = [
-    url(r"^jsi18n/$", JavaScriptCatalog.as_view(), name="javascript-catalog"),
+    url(JAVASCRIPT_CATALOG_PATTERN, javascript_catalog, name="javascript-catalog"),
     url(r"^$", reader_views.index, name="index"),
     url(r"^reader/", include("apps.reader.urls")),
     url(r"^ask-ai/", include("apps.ask_ai.urls")),

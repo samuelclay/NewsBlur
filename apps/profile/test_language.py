@@ -1,13 +1,17 @@
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from django.test import RequestFactory, SimpleTestCase
 from django.utils import translation
+from django.views.i18n import JavaScriptCatalog
 
 from apps.profile.language import (
+    LanguageCatalogMiddleware,
     NewsBlurLocaleMiddleware,
     adopt_login_language,
     detect_language,
+    javascript_catalog_data,
+    language_context,
     language_preference,
 )
 from utils import json_functions as json
@@ -38,6 +42,44 @@ class Test_Language(SimpleTestCase):
         self.assertEqual(detect_language("zh-CN"), "zh-Hans")
         self.assertEqual(detect_language("pt-PT"), "pt-BR")
         self.assertEqual(detect_language("xx, *;q=0.5"), "en")
+
+    def test_oversized_headers_do_not_enter_djangos_parser_cache(self):
+        from django.utils.translation.trans_real import parse_accept_lang_header
+
+        with patch("apps.profile.language.parse_accept_lang_header", wraps=parse_accept_lang_header) as parse:
+            self.assertEqual(detect_language("fr," + "a" * 10000), "fr")
+            self.assertEqual(detect_language("a" * 10000), "en")
+        self.assertTrue(all(len(call.args[0]) <= 500 for call in parse.call_args_list))
+
+    def test_public_catalog_uses_url_language_and_bypasses_sessions(self):
+        request = self.request("es", authenticated=True)
+        request.LANGUAGE_CODE = "es"
+        url = language_context(request)["ui_catalog_url"]
+        catalog_request = self.factory.get(url, HTTP_COOKIE="newsblur_language=fr")
+        downstream = Mock()
+        with translation.override("ar"):
+            response = LanguageCatalogMiddleware(downstream)(catalog_request)
+        downstream.assert_not_called()
+        self.assertContains(response, "Preferencias")
+        self.assertEqual(response["Content-Language"], "es")
+        self.assertEqual(response["Cache-Control"], "public, max-age=31536000, immutable")
+        self.assertNotIn("Cookie", response.get("Vary", ""))
+        self.assertFalse(response.cookies)
+        conditional = self.factory.get(url, HTTP_IF_NONE_MATCH=response["ETag"])
+        self.assertEqual(LanguageCatalogMiddleware(downstream)(conditional).status_code, 304)
+        compressed = self.factory.get(url, HTTP_IF_NONE_MATCH="W/" + response["ETag"])
+        self.assertEqual(LanguageCatalogMiddleware(downstream)(compressed).status_code, 304)
+
+    def test_catalog_is_rendered_once_per_language(self):
+        javascript_catalog_data.cache_clear()
+        self.addCleanup(javascript_catalog_data.cache_clear)
+        with patch(
+            "apps.profile.language.JavaScriptCatalog.as_view", wraps=JavaScriptCatalog.as_view
+        ) as view:
+            first = javascript_catalog_data("es")
+            second = javascript_catalog_data("es")
+        self.assertEqual(first, second)
+        view.assert_called_once()
 
     def test_account_automatic_ignores_anonymous_cookie(self):
         request = self.request(authenticated=True, header="ja", cookie="fr")
