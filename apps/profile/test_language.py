@@ -81,6 +81,19 @@ class Test_Language(SimpleTestCase):
         self.assertEqual(first, second)
         view.assert_called_once()
 
+    def test_catalog_url_remains_available_after_a_worker_deployment(self):
+        request = self.request("es", authenticated=True)
+        request.LANGUAGE_CODE = "es"
+        previous_url = language_context(request)["ui_catalog_url"]
+        downstream = Mock()
+        # test_language.py simulates HTML from one release reaching a worker with different catalogs.
+        with patch("apps.profile.language.javascript_catalog_data", return_value=(b"new catalog", "b" * 16)):
+            response = LanguageCatalogMiddleware(downstream)(self.factory.get(previous_url))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"new catalog")
+        self.assertEqual(response["Cache-Control"], "no-store")
+        self.assertEqual(response["ETag"], '"' + "b" * 16 + '"')
+
     def test_account_automatic_ignores_anonymous_cookie(self):
         request = self.request(authenticated=True, header="ja", cookie="fr")
         NewsBlurLocaleMiddleware(lambda request: None).process_request(request)
