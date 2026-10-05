@@ -286,6 +286,8 @@ abstract class Reading :
     private lateinit var binding: ActivityReadingBinding
     private lateinit var readingViewModel: ReadingViewModel
     private lateinit var traverseBar: ReadingTraverseBar
+    private var endControls: ReaderEndControls? = null
+    private var overlaysSuppressed = false
 
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
@@ -505,6 +507,8 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
+        endControls?.close()
+        endControls = null
         if (latestReaderRef.get() === this) latestReaderRef.clear()
         cancelStoryDwell(clearStory = true)
         preparedPageNavigation?.cancel()
@@ -585,6 +589,13 @@ abstract class Reading :
 
         traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
         traverseBar.setup()
+        endControls = ReaderEndControls(
+            binding.contentBottomOverlay,
+            binding.contentBottomOverlayInner,
+            { if (parked) null else readingFragment?.traversalControlsSlot() },
+            { setOverlayAlpha(toolbarVisibleFraction) },
+        )
+        endControls?.start()
 
         ViewUtils.setViewElevation(binding.readingOverlayLeftGroup, OVERLAY_ELEVATION_DP)
         ViewUtils.setViewElevation(binding.readingOverlayRightGroup, OVERLAY_ELEVATION_DP)
@@ -1385,8 +1396,9 @@ abstract class Reading :
             binding.readingOverlaySend.visibility = if (overflowExtras) View.GONE else View.VISIBLE
             binding.readingOverlayLeftSeparator.visibility = if (overflowExtras) View.GONE else View.VISIBLE
 
-            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, a, true)
+            val alpha = if (overlaysSuppressed) 0f else if (endControls?.isDocked == true) 1f else a
+            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, alpha, true)
+            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, alpha, true)
         }
     }
 
@@ -1395,6 +1407,7 @@ abstract class Reading :
      */
     fun enableOverlays() {
         runOnUiThread {
+            overlaysSuppressed = false
             setOverlayAlpha(toolbarVisibleFraction)
         }
     }
@@ -1402,6 +1415,7 @@ abstract class Reading :
     fun isToolbarHidden(): Boolean = toolbarVisibleFraction == 0f
 
     fun disableOverlays() {
+        overlaysSuppressed = true
         setOverlayAlpha(0.0f)
     }
 

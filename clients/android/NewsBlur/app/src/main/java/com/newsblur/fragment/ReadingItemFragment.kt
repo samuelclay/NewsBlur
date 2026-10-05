@@ -18,6 +18,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView.HitTestResult
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -60,7 +61,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.AppConstants.READING_BASE_URL
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.DefaultFeedView
-import com.newsblur.util.EdgeToEdgeUtil.applyReaderBottomInsetTo
+import com.newsblur.util.EdgeToEdgeUtil.applyReaderFooterInsetTo
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileCache
@@ -455,7 +456,7 @@ class ReadingItemFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        clearBottomInsetListener = view.applyReaderBottomInsetTo(readingItemActionsBinding.commentsContainer)
+        clearBottomInsetListener = view.applyReaderFooterInsetTo(readingItemActionsBinding.readerTraversalFooter)
         view.doOnPreDraw {
             story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
         }
@@ -1455,6 +1456,7 @@ class ReadingItemFragment :
             if (section.visibility != View.GONE) section.visibility = footerVisibility
         }
         readingItemActionsBinding.commentsContainer.visibility = footerVisibility
+        readingItemActionsBinding.readerTraversalFooter.visibility = footerVisibility
         enableProgress(shouldShowLoadingProgress())
     }
 
@@ -1962,6 +1964,13 @@ class ReadingItemFragment :
         val newFragment = StoryShortcutsFragment()
         newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
     }
+
+    fun traversalControlsSlot(): FrameLayout? =
+        if (view != null && hasCompletedInitialStoryRender && articleReveal.isVisible) {
+            readingItemActionsBinding.readerTraversalSlot
+        } else {
+            null
+        }
 
     private val updateStoryReadTitleState = {
         story?.let {

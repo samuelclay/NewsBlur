@@ -7,7 +7,7 @@ import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.newsblur.R
-import com.newsblur.util.EdgeToEdgeUtil.applyReaderBottomInsetTo
+import com.newsblur.util.EdgeToEdgeUtil.applyReaderFooterInsetTo
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -28,7 +28,7 @@ class Test_ReaderBottomInset {
             val viewport = mockk<View>(relaxed = true)
             val root = mockk<View>(relaxed = true)
             val overlay = mockk<View>(relaxed = true)
-            val comments = mockk<View>(relaxed = true)
+            val footer = mockk<View>(relaxed = true)
             val insets = mockk<WindowInsetsCompat>()
             val observer = mockk<ViewTreeObserver>(relaxed = true)
             val listener = slot<ViewTreeObserver.OnGlobalLayoutListener>()
@@ -47,25 +47,29 @@ class Test_ReaderBottomInset {
             every { viewport.height } returns 800
             every { viewport.isLaidOut } returns true
             every { overlay.isLaidOut } returns true
+            every { overlay.height } returns 68
+            every { overlay.paddingBottom } returns 24
             every { viewport.getLocationOnScreen(any()) } answers { firstArg<IntArray>()[1] = 24 }
             every { overlay.getLocationOnScreen(any()) } answers { firstArg<IntArray>()[1] = 744 }
 
-            val clearListener = viewport.applyReaderBottomInsetTo(comments)
+            val clearListener = viewport.applyReaderFooterInsetTo(footer)
 
-            // Test_ReaderBottomInset.kt: 24px navigation alone leaves the last comment under the capsules.
-            verify { comments.setPadding(0, 0, 0, 88) }
+            // Test_ReaderBottomInset.kt: the real 44px traversal row plus 44px clearance replaces the old 88px blank reserve.
+            verify { footer.setPadding(0, 0, 0, 44) }
 
             // Test_ReaderBottomInset.kt: switching to gesture navigation or resizing must recompute the clearance.
             every { insets.getInsets(WindowInsetsCompat.Type.navigationBars()) } returns Insets.NONE
             every { overlay.getLocationOnScreen(any()) } answers { firstArg<IntArray>()[1] = 768 }
+            every { overlay.height } returns 44
+            every { overlay.paddingBottom } returns 0
             if (listener.isCaptured) listener.captured.onGlobalLayout() else preDraw.captured.onPreDraw()
-            verify { comments.setPadding(0, 0, 0, 64) }
+            verify { footer.setPadding(0, 0, 0, 20) }
 
             // Test_ReaderBottomInset.kt: AppBarLayout reveals the toolbar with offsetTopAndBottom,
             // moving the viewport without another layout. The next frame must still clear the capsules.
             every { viewport.getLocationOnScreen(any()) } answers { firstArg<IntArray>()[1] = 80 }
             if (preDraw.isCaptured) preDraw.captured.onPreDraw()
-            verify { comments.setPadding(0, 0, 0, 120) }
+            verify { footer.setPadding(0, 0, 0, 76) }
 
             // Test_ReaderBottomInset.kt: FragmentStateManager detaches the view before onDestroyView,
             // so cleanup must remove the callback from the original window observer, not the new floating one.
