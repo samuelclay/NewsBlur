@@ -1,20 +1,34 @@
 """UI language negotiation and the account preference used by all three clients."""
 
+import hashlib
+import re
+from functools import lru_cache
+
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
-from django.http import HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
+from django.http import (
+    Http404,
+    HttpRequest,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.middleware.locale import LocaleMiddleware
+from django.urls import reverse
 from django.utils import translation
-from django.utils.cache import patch_vary_headers
+from django.utils.cache import get_conditional_response, patch_vary_headers
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation.trans_real import parse_accept_lang_header
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
+from django.views.i18n import JavaScriptCatalog
 
 from utils import json_functions as json
 from utils.languages import LANGUAGES, match_language, normalize_language
 
 COOKIE_NAME = "newsblur_language"
+JAVASCRIPT_CATALOG_PATTERN = r"^jsi18n/(?P<language>[A-Za-z-]+)/(?P<version>[a-f0-9]{16})/$"
 
 
 def preference(request):
@@ -24,6 +38,9 @@ def preference(request):
 
 
 def detect_language(header):
+    # language.py bounds Django 3.1's cached parser input (CVE-2023-23969).
+    if len(header) > 500:
+        header = header[:500].rsplit(",", 1)[0] if "," in header[:500] else ""
     for code, quality in parse_accept_lang_header(header):
         language = match_language(code)
         if quality > 0 and language:
@@ -49,13 +66,54 @@ class NewsBlurLocaleMiddleware(LocaleMiddleware):
         return response
 
 
+class LanguageCatalogMiddleware:
+    """Serve public, versioned catalogs before session/auth middleware can add user-specific headers."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        match = re.fullmatch(JAVASCRIPT_CATALOG_PATTERN, request.path_info[1:])
+        if match:
+            return javascript_catalog(request, **match.groupdict())
+        return self.get_response(request)
+
+
 def language_context(request):
+    language = getattr(request, "LANGUAGE_CODE", "en")
+    _, version = javascript_catalog_data(language)
     return {
         "ui_languages": list(LANGUAGES.items()),
         "ui_language": getattr(request, "LANGUAGE_CODE", "en"),
         "ui_language_preference": getattr(request, "language_preference", "auto"),
         "ui_language_rtl": getattr(request, "LANGUAGE_CODE", "en") in ("ar", "he"),
+        "ui_catalog_url": reverse("javascript-catalog", kwargs={"language": language, "version": version}),
     }
+
+
+@lru_cache(maxsize=len(LANGUAGES))
+def javascript_catalog_data(language):
+    """Build once per locale per worker; the content hash changes when catalogs are deployed."""
+    request = HttpRequest()
+    request.method = "GET"
+    with translation.override(language.lower()):
+        content = JavaScriptCatalog.as_view()(request).content
+    return content, hashlib.sha256(content).hexdigest()[:16]
+
+
+@require_http_methods(["GET", "HEAD"])
+def javascript_catalog(request, language, version):
+    if language not in LANGUAGES:
+        raise Http404
+    content, current_version = javascript_catalog_data(language)
+    if version != current_version:
+        raise Http404
+    etag = '"%s"' % version
+    response = HttpResponse(content, content_type="text/javascript; charset=utf-8")
+    response["Cache-Control"] = "public, max-age=31536000, immutable"
+    response["ETag"] = etag
+    response["Content-Language"] = language
+    return get_conditional_response(request, etag=etag, response=response)
 
 
 @csrf_protect
