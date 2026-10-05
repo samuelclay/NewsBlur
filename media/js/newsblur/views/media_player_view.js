@@ -1532,22 +1532,22 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             if (self.current_media) {
                 // Use sendBeacon for reliable delivery during page unload
                 var data = new FormData();
-                data.append(gettext('current_story_hash'), self.current_media.story_hash);
-                data.append(gettext('current_media_url'), self.current_media.media_url);
-                data.append(gettext('current_media_type'), self.current_media.media_type);
-                data.append(gettext('current_media_title'), self.current_media.media_title);
-                data.append(gettext('current_feed_id'), self.current_media.feed_id);
-                data.append(gettext('current_image_url'), self.current_media.image_url || '');
-                data.append(gettext('current_position'), self.get_current_time());
-                data.append(gettext('current_duration'), self.get_duration());
-                data.append(gettext('current_playback_rate'), self.playback_rate);
-                data.append(gettext('current_volume'), self.volume);
-                data.append(gettext('is_playing'), 'false');
-                data.append(gettext('skip_back_seconds'), self.skip_back_seconds);
-                data.append(gettext('skip_forward_seconds'), self.skip_forward_seconds);
-                data.append(gettext('auto_play_next'), self.auto_play_next);
-                data.append(gettext('remember_position'), self.remember_position);
-                data.append(gettext('resume_on_load'), self.resume_on_load);
+                data.append('current_story_hash', self.current_media.story_hash);
+                data.append('current_media_url', self.current_media.media_url);
+                data.append('current_media_type', self.current_media.media_type);
+                data.append('current_media_title', self.current_media.media_title);
+                data.append('current_feed_id', self.current_media.feed_id);
+                data.append('current_image_url', self.current_media.image_url || '');
+                data.append('current_position', self.get_current_time());
+                data.append('current_duration', self.get_duration());
+                data.append('current_playback_rate', self.playback_rate);
+                data.append('current_volume', self.volume);
+                data.append('is_playing', 'false');
+                data.append('skip_back_seconds', self.skip_back_seconds);
+                data.append('skip_forward_seconds', self.skip_forward_seconds);
+                data.append('auto_play_next', self.auto_play_next);
+                data.append('remember_position', self.remember_position);
+                data.append('resume_on_load', self.resume_on_load);
                 navigator.sendBeacon('/media_player/save_playback_state', data);
             }
         });

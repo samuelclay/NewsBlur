@@ -7,6 +7,7 @@ NewsBlur ships its translations with the application. Reading stories never call
 ## Adding or changing text
 
 - Web JavaScript: `gettext("Save story")`. Use `interpolate(gettext("%(name)s saved"), {name: name}, true)` for variables and `ngettext` for counts. Translate a complete sentence; never translate feed titles or concatenate translated sentence fragments.
+  Keep FormData field names, DOM attribute names, CSS selectors and stored preference keys literal. They are protocol identifiers, even when they resemble English words.
 - Django templates: load `i18n`, then use `trans` or `blocktrans` with named variables and `count`. Python: `gettext` or `gettext_lazy` from `django.utils.translation`.
 - iOS: `NBLocalization.text("Save story")` in Swift, `[NBLocalization text:@"Save story"]` in Objective-C. New Swift files must belong to both app targets. The source scanner extracts explicit calls; never pass user content to the helper.
 - Android: add strings or plurals in `res/values/strings.xml`, then use `stringResource`, `getString`, or `getQuantityString`. Stable preference values, URLs and identifiers must be `translatable="false"`. Arrays ending in `_values` are excluded.

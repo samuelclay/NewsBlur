@@ -1354,13 +1354,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var upload_url;
 
         if (this.folder) {
-            formData.append(gettext('folder_title'), this.folder_title);
+            formData.append('folder_title', this.folder_title);
             upload_url = '/reader/upload_folder_icon';
         } else if (this.feed) {
-            formData.append(gettext('feed_id'), this.feed_id);
+            formData.append('feed_id', this.feed_id);
             upload_url = '/reader/upload_feed_icon';
         }
-        formData.append(gettext('photo'), file);
+        formData.append('photo', file);
 
         $.ajax({
             url: upload_url,

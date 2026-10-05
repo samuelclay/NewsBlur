@@ -64,8 +64,19 @@ def main():
     remaining = list(findings())
     for path, line, value in remaining:
         print(f"{path}:{line}: hardcoded UI text: {value}")
-    print(f"{len(remaining)} hardcoded UI literals in audited APIs")
-    return bool(remaining)
+    # audit.py also rejects snake_case protocol identifiers accidentally wrapped by UI conversions.
+    identifiers = []
+    for path in sorted((ROOT / "media/js/newsblur").rglob("*.js")):
+        content = path.read_text()
+        for match in re.finditer(r"gettext\(['\"]([a-z]+(?:_[a-z]+)+)['\"]\)", content):
+            line = content.count("\n", 0, match.start()) + 1
+            identifiers.append((path, line, match[1]))
+    for path, line, value in identifiers:
+        print(f"{path.relative_to(ROOT)}:{line}: translated protocol identifier: {value}")
+    print(
+        f"{len(remaining)} hardcoded UI literals and {len(identifiers)} translated identifiers in audited APIs"
+    )
+    return bool(remaining or identifiers)
 
 
 if __name__ == "__main__":

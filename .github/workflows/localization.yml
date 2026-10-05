@@ -41,6 +41,10 @@ jobs:
           python-version: '3.11'
       - run: pip install -r localization/requirements.txt
       - run: python -m unittest localization.test_manage
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: node --test localization/test_web.js
       - run: python localization/audit.py
       - name: Validate existing translations (new strings use English until the update PR)
         run: python localization/manage.py check --allow-missing
