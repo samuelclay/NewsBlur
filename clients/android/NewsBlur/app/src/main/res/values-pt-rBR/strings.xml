@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Destacar histórias</string>
     <string name="story_title_mark_story_read">Marcar notícia como lida…</string>
     <string name="story_title_list_font_size">Tamanho da fonte dos títulos de feeds e matérias</string>
+    <string name="language_title">Idioma</string>
+    <string name="settings_cat_general">Geral</string>
     <string name="language_current">Idioma: %1$s</string>
     <string name="language_automatic">Automático (idioma do dispositivo)</string>
     <string name="language_save_failed">Não foi possível salvar seu idioma. Tente novamente.</string>

@@ -36,7 +36,7 @@ msgstr "100 $/год (Pro: неограниченное число источн�
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "144 $/год (Pro+) / 18 $/месяц (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "$29/мес."
 
@@ -68,7 +68,7 @@ msgstr "36 $/год (1 024 сайта)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "36 $/год (Premium), 99 $/год (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "$36/год"
 
@@ -88,7 +88,7 @@ msgstr "96 $ в год (полный доступ)"
 msgid "$99/year"
 msgstr "99 $ в год"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "99 $/год"
 
@@ -172,7 +172,7 @@ msgstr "01 Buzz"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1 024 сайта, полнотекстовый поиск, лента новостей, сохранённые теги статей и текстовый вид"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1 024 сайта, поиск, текстовый режим, поток новостей"
 
@@ -218,7 +218,7 @@ msgstr "404 — не найдено"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 — NewsBlur не может найти эту страницу"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "Получение данных каждые 5 минут, обучение с помощью регулярных выражений, 10 000 сайтов"
 
@@ -510,7 +510,7 @@ msgstr "Решение принимает алгоритм"
 msgid "All"
 msgstr "Все"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "Все функции"
 
@@ -518,7 +518,7 @@ msgstr "Все функции"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "Все ленты обновляются каждые 5 минут"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "Все планы"
 
@@ -984,10 +984,6 @@ msgstr "Автоматически"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "Автоматизируйте рабочие процессы с помощью сотен сервисов"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "Автоматически (язык устройства)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1555,7 +1551,7 @@ msgstr "Комментарии друзей"
 msgid "Common Questions"
 msgstr "Часто задаваемые вопросы"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "Часто задаваемые вопросы о тарифах и оплате"
 
@@ -1579,7 +1575,7 @@ msgstr "Сравнить NewsBlur"
 msgid "Compare all plans"
 msgstr "Сравнить все тарифы"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "Сравните все тарифы рядом"
 
@@ -2902,7 +2898,7 @@ msgstr "Полный"
 msgid "Full Text Search"
 msgstr "Полнотекстовый поиск"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "Полный архив, ИИ-помощник, ежедневная сводка, 4 096 сайтов"
 
@@ -3186,7 +3182,7 @@ msgstr "Политика конфиденциальности Google"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Альтернатива Google Reader"
 
@@ -3326,7 +3322,7 @@ msgstr "Подождите, пока обновляется ваша учётн�
 msgid "Holy crap the search feature is good."
 msgstr "Вот это да, функция поиска просто отличная."
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "Главная"
 
@@ -4175,7 +4171,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "Фильтры по меткам"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "Язык"
 
@@ -4651,7 +4647,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "Ещё"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "Другие возможности"
 
@@ -7722,7 +7718,7 @@ msgstr "Подписчик"
 msgid "Subtotal"
 msgstr "Промежуточный итог"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "Поддержка"
 
@@ -7888,7 +7884,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "Такое имя пользователя не зарегистрировано. Попробуйте ещё раз."
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "Блог"
 
@@ -8340,11 +8336,11 @@ msgstr ""
 "Чтобы использовать OAuth при аутентификации запросов, обязательно передавайте HTTP-заголовок Bearer с "
 "каждым запросом, как и для любого другого API OAuth. Используйте"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "Переключить тёмную тему"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "Переключить тему"
 
@@ -10287,23 +10283,23 @@ msgstr "имя пользователя"
 msgid "vs"
 msgstr "против"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "по сравнению с Feedbin"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "в сравнении с Feedly"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "в сравнении с Inoreader"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "в сравнении с Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "и Readwise"
 

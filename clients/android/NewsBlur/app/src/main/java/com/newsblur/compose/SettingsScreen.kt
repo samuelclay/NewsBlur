@@ -505,7 +505,28 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp, vertical = 18.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
-        LanguagePicker(onSelected = onLanguageSelected)
+        SettingsSection(
+            title = stringResource(R.string.settings_cat_general),
+            icon = Icons.Rounded.Tune,
+            iconColor = NewsblurBlue,
+            palette = palette,
+        ) {
+            val languageTitle = stringResource(R.string.language_title)
+            val automatic = stringResource(R.string.language_automatic)
+            val selected = com.newsblur.util.LanguageSettings.selected(context)
+            val options = (linkedMapOf("auto" to automatic) + com.newsblur.util.LanguageSettings.names)
+                .map { (code, name) -> ChoiceOption(code, name) }
+            ValueSettingsRow(
+                title = languageTitle,
+                icon = Icons.Rounded.Public,
+                iconColor = NewsblurBlue,
+                currentValue = options.labelFor(selected),
+                palette = palette,
+                onClick = {
+                    dialogState = ChoiceDialogState(languageTitle, selected, options, onSelect = onLanguageSelected)
+                },
+            )
+        }
         SettingsSection(
             title = stringResource(R.string.settings_cat_story_list),
             icon = Icons.Rounded.ListAlt,

@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Articles prioritaires</string>
     <string name="story_title_mark_story_read">Marquer l’article comme lu…</string>
     <string name="story_title_list_font_size">Taille de police des titres des flux et des articles</string>
+    <string name="language_title">Langue</string>
+    <string name="settings_cat_general">Général</string>
     <string name="language_current">Langue : %1$s</string>
     <string name="language_automatic">Automatique (langue de l’appareil)</string>
     <string name="language_save_failed">Impossible d\'enregistrer votre langue. Veuillez réessayer.</string>

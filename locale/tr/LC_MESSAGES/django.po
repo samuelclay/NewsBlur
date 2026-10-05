@@ -35,7 +35,7 @@ msgstr "100 ABD doları/yıl (Pro: sınırsız kaynak)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "144 $/yıl (Pro+) / 18 $/ay (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "29 $/ay"
 
@@ -67,7 +67,7 @@ msgstr "Yıllık 36 $ (1.024 site)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "Yılda 36 $ (Premium), yılda 99 $ (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "36 $/yıl"
 
@@ -87,7 +87,7 @@ msgstr "96 $/yıl (tam erişim)"
 msgid "$99/year"
 msgstr "Yılda 99 $"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "99 $/yıl"
 
@@ -170,7 +170,7 @@ msgstr "01 Buzz"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1.024 site, tam metin arama, Haber Nehri, kaydedilmiş haber etiketleri ve metin görünümü"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1.024 site, arama, metin görünümü, haber akışı"
 
@@ -214,7 +214,7 @@ msgstr "404, bulunamadı"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur bu sayfayı bulamıyor"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "5 dakikada bir getirme, regex eğitimi, 10.000 site"
 
@@ -505,7 +505,7 @@ msgstr "Kararı algoritma sizin yerinize verir"
 msgid "All"
 msgstr "Tümü"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "Tüm Özellikler"
 
@@ -513,7 +513,7 @@ msgstr "Tüm Özellikler"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "Tüm Akışlar 5 Dakikada Bir Getirilir"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "Tüm Planlar"
 
@@ -981,10 +981,6 @@ msgstr "Otomatik"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "Yüzlerce hizmetle iş akışlarını otomatikleştirin"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "Otomatik (cihaz dili)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1561,7 +1557,7 @@ msgstr "Arkadaşlardan gelen yorumlar"
 msgid "Common Questions"
 msgstr "Sık Sorulan Sorular"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "Planlar ve faturalandırmayla ilgili sık sorulan sorular"
 
@@ -1585,7 +1581,7 @@ msgstr "NewsBlur'ı Karşılaştırın"
 msgid "Compare all plans"
 msgstr "Tüm planları karşılaştır"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "Tüm paketleri yan yana karşılaştırın"
 
@@ -2897,7 +2893,7 @@ msgstr "Tam"
 msgid "Full Text Search"
 msgstr "Tam Metin Arama"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "Tam arşiv, Yapay Zekâ'ya Sor, günlük özet, 4.096 site"
 
@@ -3182,7 +3178,7 @@ msgstr "Google Gizlilik Politikası"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Google Reader alternatifi"
 
@@ -3320,7 +3316,7 @@ msgstr "Hesabınız yükseltilirken lütfen bekleyin..."
 msgid "Holy crap the search feature is good."
 msgstr "Vay canına, arama özelliği müthiş."
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "Ana sayfa"
 
@@ -4153,7 +4149,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "Etiket tabanlı filtreler"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "Dil"
 
@@ -4631,7 +4627,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "Daha fazla"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "Daha Fazla Özellik"
 
@@ -7696,7 +7692,7 @@ msgstr "Abone"
 msgid "Subtotal"
 msgstr "Ara toplam"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "Destek"
 
@@ -7864,7 +7860,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "Bu kullanıcı adı kayıtlı değil. Lütfen tekrar deneyin."
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "Blog"
 
@@ -8315,11 +8311,11 @@ msgstr ""
 "İstekleri doğrularken OAuth kullanmak için, diğer tüm OAuth API'lerinde olduğu gibi her isteğe Bearer HTTP "
 "başlığını eklediğinizden emin olun. Şunu kullanın:"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "Koyu modu aç/kapat"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "Temayı değiştir"
 
@@ -10263,23 +10259,23 @@ msgstr "kullanıcı adı"
 msgid "vs"
 msgstr "karşı"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "Feedbin'e kıyasla"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "Feedly ile karşılaştırma"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "Inoreader'a kıyasla"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "Old Reader ile karşılaştır"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "Readwise'a karşı"
 

@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Haberlere odaklan</string>
     <string name="story_title_mark_story_read">Hikâyeyi okundu olarak işaretle…</string>
     <string name="story_title_list_font_size">Akış ve haber başlığı yazı tipi boyutu</string>
+    <string name="language_title">Dil</string>
+    <string name="settings_cat_general">Genel</string>
     <string name="language_current">Dil: %1$s</string>
     <string name="language_automatic">Otomatik (cihaz dili)</string>
     <string name="language_save_failed">Diliniz kaydedilemedi. Lütfen tekrar deneyin.</string>

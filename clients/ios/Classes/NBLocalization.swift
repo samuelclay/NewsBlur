@@ -105,27 +105,6 @@ import UIKit
     }
 }
 
-@available(iOS 15.0, *)
-struct NBLanguagePicker: View {
-    @AppStorage(NBLocalization.preferenceKey) private var language = "auto"
-    @State private var failed = false
-    @State private var saving = false
-    var body: some View {
-        Picker(NBLocalization.text("Language"), selection: Binding(get: { language }, set: { value in
-            saving = true
-            NBLocalization.save(value) { success in saving = false; failed = !success }
-        })) {
-            Text(NBLocalization.text("Automatic (device language)")).tag("auto")
-            ForEach(NBLocalization.languages, id: \.0) { code, name in Text(name).tag(code) }
-        }
-        .disabled(saving)
-        .pickerStyle(.menu)
-        .alert(NBLocalization.text("Could not save your language. Please try again."), isPresented: $failed) {
-            Button(NBLocalization.text("OK"), role: .cancel) {}
-        }
-    }
-}
-
 // XIB/storyboard labels opt in explicitly through these runtime attributes.
 // The keys are extracted from the interface files by localization/manage.py.
 extension NSObject {

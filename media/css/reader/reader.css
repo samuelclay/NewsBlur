@@ -42446,3 +42446,70 @@ span.NB-briefing-inline-favicon {
     line-height: 16px;
     color: #6E7068;
 }
+
+/* language_selector.html shares the footer's typography and theme. */
+.NB-splash-info.NB-splash-bottom-language {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.NB-splash-bottom-language .NB-language-selector {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin: 0 0 0 12px;
+    color: #60665b;
+}
+.NB-splash-bottom .NB-language-selector select {
+    appearance: auto;
+    width: auto;
+    max-width: 190px;
+    min-height: 30px;
+    margin: 0;
+    padding: 4px 6px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+.NB-splash-bottom .NB-language-selector select:hover,
+.NB-splash-bottom .NB-language-selector select:focus-visible {
+    background: rgba(128, 128, 128, .12);
+    border-color: currentColor;
+}
+.NB-language-selector select option {
+    background: #fff;
+    color: #30352f;
+}
+.NB-dark .NB-language-selector {
+    color: rgba(255, 255, 255, .65);
+}
+.NB-splash-bottom-language .NB-splash-links {
+    margin-inline-start: auto;
+    min-width: 0;
+    overflow-x: auto;
+}
+.NB-splash-bottom-language .NB-splash-link-logo {
+    display: none;
+}
+@media screen and (max-width: 760px) {
+    .NB-splash-info.NB-splash-bottom-language {
+        height: auto;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0;
+    }
+    .NB-splash-bottom-language .NB-language-selector {
+        margin: 4px 12px;
+    }
+    .NB-splash-info.NB-splash-bottom-language .NB-splash-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+        margin: 0;
+    }
+}

@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">注目記事</string>
     <string name="story_title_mark_story_read">ストーリーを既読にする…</string>
     <string name="story_title_list_font_size">フィードと記事タイトルのフォントサイズ</string>
+    <string name="language_title">言語</string>
+    <string name="settings_cat_general">全般</string>
     <string name="language_current">言語：%1$s</string>
     <string name="language_automatic">自動（デバイスの言語）</string>
     <string name="language_save_failed">言語を保存できませんでした。もう一度お試しください。</string>

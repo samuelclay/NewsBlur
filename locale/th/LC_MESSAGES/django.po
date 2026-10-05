@@ -35,7 +35,7 @@ msgstr "100 ดอลลาร์/ปี (Pro: ไม่จำกัดแหล
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "$144/ปี (Pro+) / $18/เดือน (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "$29/เดือน"
 
@@ -67,7 +67,7 @@ msgstr "$36/ปี (1,024 เว็บไซต์)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "$36/ปี (Premium), $99/ปี (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "$36/ปี"
 
@@ -87,7 +87,7 @@ msgstr "$96/ปี (เข้าถึงได้เต็มรูปแบบ
 msgid "$99/year"
 msgstr "$99/ปี"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "99 ดอลลาร์/ปี"
 
@@ -170,7 +170,7 @@ msgstr "01 Buzz"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "เว็บไซต์ 1,024 แห่ง การค้นหาข้อความเต็ม River of News แท็กเรื่องราวที่บันทึกไว้ และมุมมองข้อความ"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1,024 เว็บไซต์, ค้นหา, มุมมองข้อความ และฟีดข่าวรวม"
 
@@ -214,7 +214,7 @@ msgstr "404 ไม่พบหน้า"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur ไม่พบหน้านี้"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "ดึงข้อมูลทุก 5 นาที, ฝึกด้วย regex, รองรับ 10,000 เว็บไซต์"
 
@@ -500,7 +500,7 @@ msgstr "ให้อัลกอริทึมตัดสินใจให้
 msgid "All"
 msgstr "ทั้งหมด"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "ฟีเจอร์ทั้งหมด"
 
@@ -508,7 +508,7 @@ msgstr "ฟีเจอร์ทั้งหมด"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "ดึงฟีดทั้งหมดทุก 5 นาที"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "แพ็กเกจทั้งหมด"
 
@@ -968,10 +968,6 @@ msgstr "อัตโนมัติ"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "ทำให้เวิร์กโฟลว์เป็นอัตโนมัติด้วยบริการหลายร้อยรายการ"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "อัตโนมัติ (ภาษาของอุปกรณ์)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1534,7 +1530,7 @@ msgstr "ความคิดเห็นจากเพื่อน"
 msgid "Common Questions"
 msgstr "คำถามที่พบบ่อย"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "คำถามที่พบบ่อยเกี่ยวกับแพ็กเกจและการเรียกเก็บเงิน"
 
@@ -1558,7 +1554,7 @@ msgstr "เปรียบเทียบ NewsBlur"
 msgid "Compare all plans"
 msgstr "เปรียบเทียบแพ็กเกจทั้งหมด"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "เปรียบเทียบทุกระดับแบบเคียงข้างกัน"
 
@@ -2866,7 +2862,7 @@ msgstr "เต็ม"
 msgid "Full Text Search"
 msgstr "ค้นหาข้อความทั้งหมด"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "คลังข้อมูลทั้งหมด, ถาม AI, สรุปประจำวัน, 4,096 เว็บไซต์"
 
@@ -3142,7 +3138,7 @@ msgstr "นโยบายความเป็นส่วนตัวของ
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "ทางเลือกแทน Google Reader"
 
@@ -3280,7 +3276,7 @@ msgstr "โปรดรอสักครู่ ระบบกำลังอ�
 msgid "Holy crap the search feature is good."
 msgstr "โอ้โห ฟีเจอร์ค้นหานี่ดีจริง ๆ"
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "หน้าหลัก"
 
@@ -4100,7 +4096,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "ตัวกรองตามป้ายกำกับ"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "ภาษา"
 
@@ -4576,7 +4572,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "เพิ่มเติม"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "ฟีเจอร์เพิ่มเติม"
 
@@ -7608,7 +7604,7 @@ msgstr "สมาชิก"
 msgid "Subtotal"
 msgstr "ยอดรวมย่อย"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "ฝ่ายสนับสนุน"
 
@@ -7772,7 +7768,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "ไม่มีชื่อผู้ใช้นี้ในระบบ โปรดลองอีกครั้ง"
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "บล็อก"
 
@@ -8216,11 +8212,11 @@ msgstr ""
 "หากต้องการใช้ OAuth ในการยืนยันตัวตนของคำขอ อย่าลืมส่งส่วนหัว HTTP Bearer ไปกับทุกคำขอ "
 "เช่นเดียวกับที่คุณทำกับ API ของ OAuth อื่น ๆ ใช้"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "สลับโหมดมืด"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "สลับธีม"
 
@@ -10108,23 +10104,23 @@ msgstr "ชื่อผู้ใช้"
 msgid "vs"
 msgstr "เทียบกับ"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "เทียบกับ Feedbin"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "เทียบกับ Feedly"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "เทียบกับ Inoreader"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "เทียบกับ Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "เทียบกับ Readwise"
 

@@ -202,6 +202,12 @@ def render_footer(context, page=None):
     return {
         "page": page,
         "MEDIA_URL": settings.MEDIA_URL,
+        "request": context.get("request"),
+        "user": context.get("user"),
+        "csrf_token": context.get("csrf_token"),
+        "ui_languages": context.get("ui_languages", []),
+        "ui_language": context.get("ui_language", "en"),
+        "ui_language_preference": context.get("ui_language_preference", "auto"),
     }
 
 

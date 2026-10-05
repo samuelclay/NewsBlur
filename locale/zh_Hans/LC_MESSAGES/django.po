@@ -35,7 +35,7 @@ msgstr "100 美元/年（Pro：无限订阅源）"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "每年 $144（Pro+）/ 每月 $18（Enterprise）"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "29 美元/月"
 
@@ -67,7 +67,7 @@ msgstr "每年 36 美元（1,024 个网站）"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "每年 36 美元（Premium），每年 99 美元（Archive）"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "$36/年"
 
@@ -87,7 +87,7 @@ msgstr "每年 96 美元（完整访问权限）"
 msgid "$99/year"
 msgstr "99 美元/年"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "$99/年"
 
@@ -164,7 +164,7 @@ msgstr "01 Buzz"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1,024 个网站、全文搜索、新闻流、已保存的故事标签和文本视图"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1,024 个网站、搜索、文本视图、新闻流"
 
@@ -208,7 +208,7 @@ msgstr "404，未找到"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur 找不到该页面"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "每 5 分钟抓取、正则表达式训练、10,000 个网站"
 
@@ -482,7 +482,7 @@ msgstr "由算法为您决定"
 msgid "All"
 msgstr "全部"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "所有功能"
 
@@ -490,7 +490,7 @@ msgstr "所有功能"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "所有订阅源每 5 分钟抓取一次"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "所有方案"
 
@@ -911,10 +911,6 @@ msgstr "自动"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "通过数百种服务自动化工作流程"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "自动（设备语言）"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1449,7 +1445,7 @@ msgstr "朋友的评论"
 msgid "Common Questions"
 msgstr "常见问题"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "有关套餐和账单的常见问题"
 
@@ -1473,7 +1469,7 @@ msgstr "比较 NewsBlur"
 msgid "Compare all plans"
 msgstr "比较所有套餐"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "并排比较所有套餐"
 
@@ -2719,7 +2715,7 @@ msgstr "完整"
 msgid "Full Text Search"
 msgstr "全文搜索"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "完整存档、询问 AI、每日简报、4,096 个网站"
 
@@ -2982,7 +2978,7 @@ msgstr "Google 隐私权政策"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API、Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Google Reader 替代品"
 
@@ -3113,7 +3109,7 @@ msgstr "账户正在升级，请稍候……"
 msgid "Holy crap the search feature is good."
 msgstr "我的天，搜索功能也太好用了。"
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "首页"
 
@@ -3869,7 +3865,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "基于标签的过滤器"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "语言"
 
@@ -4332,7 +4328,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "更多"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "更多功能"
 
@@ -7200,7 +7196,7 @@ msgstr "订阅用户"
 msgid "Subtotal"
 msgstr "小计"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "支持"
 
@@ -7362,7 +7358,7 @@ msgstr "该故事模式与当前页面上的具体条目绑定，因此永远无
 msgid "That username is not registered. Please try again."
 msgstr "该用户名尚未注册。请重试。"
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "博客"
 
@@ -7756,11 +7752,11 @@ msgid ""
 "as you would on any other OAuth API. Use the"
 msgstr "使用 OAuth 验证请求时，请确保每个请求都附带 Bearer HTTP 标头，就像使用其他 OAuth API 一样。使用"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "切换深色模式"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "切换主题"
 
@@ -9471,23 +9467,23 @@ msgstr "用户名"
 msgid "vs"
 msgstr "对比"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "与 Feedbin 对比"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "对比 Feedly"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "与 Inoreader 对比"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "与 Old Reader 比较"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "与 Readwise 对比"
 
