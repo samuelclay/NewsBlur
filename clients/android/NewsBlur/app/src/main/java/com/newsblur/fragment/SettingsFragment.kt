@@ -113,6 +113,16 @@ class SettingsFragment : Fragment() {
                 ) {
                     SettingsScreen(
                         state = uiState,
+                        onLanguageSelected = { language ->
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                val saved = withContext(Dispatchers.IO) { userApi.setPreference("language", language) }
+                                if (saved) {
+                                    com.newsblur.util.LanguageSettings.select(requireContext(), language)
+                                } else {
+                                    Toast.makeText(requireContext(), R.string.language_save_failed, Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        },
                         onBooleanChanged = ::updateBooleanPreference,
                         onStringChanged = ::updateStringPreference,
                         onStoryClusteringEnabledChanged = ::updateStoryClusteringEnabled,
