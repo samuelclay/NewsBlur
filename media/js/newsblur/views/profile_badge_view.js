@@ -55,16 +55,16 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     (_.isNumber(profile.get('shared_stories_count')) &&
                         $.make('div', { className: 'NB-profile-badge-stats' }, [
                             $.make('span', { className: 'NB-count' }, Inflector.commas(profile.get('shared_stories_count'))),
-                            'shared ',
+                            gettext('shared '),
                             Inflector.pluralize('story', profile.get('shared_stories_count')),
-                            ' &middot; ',
+                            gettext(' &middot; '),
                             $.make('a', { href: profile.blurblog_url(), target: "_blank", className: "NB-profile-badge-blurblog-link NB-splash-link" }, profile.blurblog_url().replace('http://', '')),
                             (this.model.get('following_you') && $.make('span', [
-                                ' &middot; ',
-                                $.make('div', { className: 'NB-profile-badge-following-you' }, 'Follows you')
+                                gettext(' &middot; '),
+                                $.make('div', { className: 'NB-profile-badge-following-you' }, gettext('Follows you'))
                             ])),
                             (NEWSBLUR.Globals.is_admin && $.make('span', [
-                                ' &middot; ',
+                                gettext(' &middot; '),
                                 $.make('span', { className: 'NB-profile-badge-action-admin' })
                             ]))
                         ]))
@@ -78,32 +78,32 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 $.make('div', {
                     className: 'NB-profile-badge-action-approve NB-modal-submit-button NB-modal-submit-green'
                 }, [
-                    $.make('span', 'Approve')
+                    $.make('span', gettext('Approve'))
                 ]),
                 $.make('div', {
                     className: 'NB-profile-badge-action-ignore NB-modal-submit-button NB-modal-submit-grey ' +
                         (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Ignore')
+                }, gettext('Ignore'))
             ]);
         } else if (NEWSBLUR.reader.model.user_profile.get('user_id') == profile.get('user_id')) {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
                 $.make('div', {
                     className: 'NB-profile-badge-action-self NB-modal-submit-button'
-                }, 'You'),
+                }, gettext('You')),
                 (this.options.show_edit_button && $.make('div', {
                     className: 'NB-profile-badge-action-edit NB-modal-submit-button NB-modal-submit-grey ' +
                         (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Edit Profile'))
+                }, gettext('Edit Profile')))
             ]);
         } else if (profile.get('followed_by_you')) {
             $actions = $.make('div', {
                 className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-grey'
-            }, 'Following');
+            }, gettext('Following'));
         } else if (profile.get('requested_follow')) {
             $actions = $.make('div', {
                 className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-grey'
             }, [
-                $.make('span', 'Requested')
+                $.make('span', gettext('Requested'))
             ]);
         } else if (profile.get('protected')) {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
@@ -111,30 +111,30 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     className: 'NB-profile-badge-action-follow NB-profile-badge-action-protected-follow NB-modal-submit-button NB-modal-submit-green'
                 }, [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' }),
-                    $.make('span', 'Follow')
+                    $.make('span', gettext('Follow'))
                 ]),
                 (!profile.get('private') && $.make('div', {
                     className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
                         (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Preview')),
+                }, gettext('Preview'))),
                 ($.make('div', {
                     className: 'NB-profile-badge-action-mute NB-modal-submit-button NB-modal-submit-grey'
-                }, $.make('span', (profile.get('muted') ? 'Unmute' : 'Mute'))))
+                }, $.make('span', (profile.get('muted') ? gettext('Unmute') : gettext('Mute')))))
             ]);
         } else {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
                 $.make('div', {
                     className: 'NB-profile-badge-action-follow NB-modal-submit-button NB-modal-submit-green'
                 }, [
-                    $.make('span', 'Follow')
+                    $.make('span', gettext('Follow'))
                 ]),
                 $.make('div', {
                     className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
                         (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Preview'),
+                }, gettext('Preview')),
                 $.make('div', {
                     className: 'NB-profile-badge-action-mute NB-modal-submit-button NB-modal-submit-grey '
-                }, $.make('span', (profile.get('muted') ? 'Unmute' : 'Mute')))
+                }, $.make('span', (profile.get('muted') ? gettext('Unmute') : gettext('Mute'))))
             ]);
         }
         this.$('.NB-profile-badge-actions').append($actions);
@@ -153,7 +153,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             this.model.set(data.follow_profile);
 
             var $button = this.$('.NB-profile-badge-action-follow');
-            $button.find('span').text(this.model.get('protected') ? 'Requested' : 'Following');
+            $button.find('span').text(this.model.get('protected') ? gettext('Requested') : gettext('Following'));
             $button.removeClass('NB-modal-submit-green')
                 .removeClass('NB-modal-submit-red')
                 .addClass('NB-modal-submit-grey');
@@ -171,7 +171,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             this.model.set(data.unfollow_profile);
 
             var $button = this.$('.NB-profile-badge-action-follow');
-            $button.find('span').text(this.model.get('protected') ? 'Canceled Request' : 'Unfollowed');
+            $button.find('span').text(this.model.get('protected') ? gettext('Canceled Request') : gettext('Unfollowed'));
             $button.removeClass('NB-modal-submit-grey')
                 .addClass('NB-modal-submit-red');
             $button.removeClass('NB-profile-badge-action-unfollow')
@@ -187,7 +187,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             this.$('.NB-loading').removeClass('NB-active');
 
             var $button = this.$('.NB-profile-badge-action-approve');
-            $button.find('span').text('Approved');
+            $button.find('span').text(gettext('Approved'));
             $button.removeClass('NB-modal-submit-green');
             $button.removeClass('NB-profile-badge-action-follow')
                 .addClass('NB-profile-badge-action-self');
@@ -203,7 +203,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             this.$('.NB-loading').removeClass('NB-active');
 
             var $button = this.$('.NB-profile-badge-action-approve');
-            $button.find('span').text('Ignored');
+            $button.find('span').text(gettext('Ignored'));
             $button.removeClass('NB-modal-submit-green');
             $button.removeClass('NB-profile-badge-action-follow')
                 .addClass('NB-profile-badge-action-self');
@@ -224,7 +224,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
 
             this.$('.NB-loading').removeClass('NB-active');
             var $button = this.$('.NB-profile-badge-action-mute');
-            $button.find('span').text('Muted');
+            $button.find('span').text(gettext('Muted'));
         }, this));
     },
 
@@ -235,7 +235,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
 
             this.$('.NB-loading').removeClass('NB-active');
             var $button = this.$('.NB-profile-badge-action-mute');
-            $button.find('span').text('Unmuted');
+            $button.find('span').text(gettext('Unmuted'));
         }, this));
     },
 
@@ -274,19 +274,19 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     },
 
     mouseenter_unfollow: function () {
-        this.$('.NB-profile-badge-action-unfollow span').text(this.model.get('requested_follow') ? 'Cancel' : 'Unfollow').addClass('NB-active');
+        this.$('.NB-profile-badge-action-unfollow span').text(this.model.get('requested_follow') ? gettext('Cancel') : gettext('Unfollow')).addClass('NB-active');
     },
 
     mouseleave_unfollow: function () {
-        this.$('.NB-profile-badge-action-unfollow span').text(this.model.get('requested_follow') ? 'Requested' : 'Following').removeClass('NB-active');
+        this.$('.NB-profile-badge-action-unfollow span').text(this.model.get('requested_follow') ? gettext('Requested') : gettext('Following')).removeClass('NB-active');
     },
 
     mouseenter_follow: function () {
-        this.$('.NB-profile-badge-action-follow span').text('Follow').addClass('NB-active');
+        this.$('.NB-profile-badge-action-follow span').text(gettext('Follow')).addClass('NB-active');
     },
 
     mouseleave_follow: function () {
-        this.$('.NB-profile-badge-action-follow span').text('Follow').removeClass('NB-active');
+        this.$('.NB-profile-badge-action-follow span').text(gettext('Follow')).removeClass('NB-active');
     },
 
     open_user_admin: function () {

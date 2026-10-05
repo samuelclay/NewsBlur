@@ -102,34 +102,34 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         feed_id: this.options.feed_id,
                         selected_folder_title: this.options.feed_id,
                         include_folders: true,
-                        toplevel: "All Site Stories",
+                        toplevel: gettext("All Site Stories"),
                         include_special_folders: true
                     })
                 ]),
                 $.make('div', { className: 'NB-filter-popover-manage-dashboard-modules' }, [
                     $.make('div', { className: 'NB-filter-popover-manage-button NB-filter-popover-dashboard-add-module-left' }, [
                         $.make('div', { className: 'NB-icon' }),
-                        $.make('div', { className: 'NB-text' }, "Add story list")
+                        $.make('div', { className: 'NB-text' }, gettext("Add story list"))
                     ]),
                     $.make('div', { className: 'NB-filter-popover-manage-button NB-filter-popover-dashboard-add-module-right' }, [
                         $.make('div', { className: 'NB-icon' }),
-                        $.make('div', { className: 'NB-text' }, "Add story list")
+                        $.make('div', { className: 'NB-text' }, gettext("Add story list"))
                     ])
                 ]),
                 $.make('div', { className: 'NB-filter-popover-manage-dashboard-modules' }, [
                     $.make('div', { className: 'NB-filter-popover-manage-button NB-filter-popover-dashboard-remove-module' }, [
                         $.make('div', { className: 'NB-icon' }),
-                        $.make('div', { className: 'NB-text' }, "Remove this list")
+                        $.make('div', { className: 'NB-text' }, gettext("Remove this list"))
                     ]),
                 ])
             ])),
             $.make('div', { className: 'NB-popover-section' }, [
                 (is_feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Filter stories'),
+                $.make('div', { className: 'NB-popover-section-title' }, gettext('Filter stories')),
                 (this.options.on_dashboard && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-dashboardcount' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-dashboardcount' }, [
-                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-5  NB-active', role: "button" }, '5 stories'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-5  NB-active', role: "button" }, gettext('5 stories')),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-10', role: "button" }, '10'),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-15', role: "button" }, '15'),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-20', role: "button" }, '20'),
@@ -138,63 +138,63 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 (this.options.show_readfilter && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-readfilter' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active', role: "button" }, 'All stories'),
-                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread', role: "button" }, 'Unread only')
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active', role: "button" }, gettext('All stories')),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread', role: "button" }, gettext('Unread only'))
                     ])
                 ])),
                 (this.options.show_order && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-order' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active', role: "button" }, 'Newest first'),
-                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest', role: "button" }, 'Oldest')
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active', role: "button" }, gettext('Newest first')),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest', role: "button" }, gettext('Oldest'))
                     ])
                 ])),
-                (this.options.show_infrequent && $.make('div', { className: 'NB-popover-section-title' }, 'Infrequent stories per month')),
+                (this.options.show_infrequent && $.make('div', { className: 'NB-popover-section-title' }, gettext('Infrequent stories per month'))),
                 (this.options.show_infrequent && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-infrequent' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-infrequent' }, [
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-5', role: "button" }, '5'),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-15', role: "button" }, '15'),
-                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-30 NB-active', role: "button" }, '< 30 stories/month'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-30 NB-active', role: "button" }, gettext('< 30 stories/month')),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-60', role: "button" }, '60'),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-90', role: "button" }, '90')
                     ])
                 ])),
                 $.make('div', { className: 'NB-date-filter-title-row' }, [
-                    $.make('div', { className: 'NB-popover-section-title' }, 'Filter by date range'),
+                    $.make('div', { className: 'NB-popover-section-title' }, gettext('Filter by date range')),
                     (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-date-filter-upgrade-notice NB-premium-link', href: '#' }, [
-                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                        $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                     ]))
                 ]),
                 $.make('div', { className: 'NB-date-filter-container' }, [
                     $.make('div', { className: 'NB-date-filter-column' }, [
-                        $.make('div', { className: 'NB-date-filter-label' }, 'Newer:'),
+                        $.make('div', { className: 'NB-date-filter-label' }, gettext('Newer:')),
                         $.make('input', {
                             type: 'date',
                             className: 'NB-date-input NB-date-start',
-                            placeholder: 'YYYY-MM-DD',
+                            placeholder: gettext('YYYY-MM-DD'),
                             autocomplete: 'off'
                         }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-date-filter-start' }, [
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1day', role: "button" }, '1d'),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1week', role: "button" }, '1w'),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1month', role: "button" }, '1m'),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1year', role: "button" }, '1y')
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1day', role: "button" }, gettext('1d')),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1week', role: "button" }, gettext('1w')),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1month', role: "button" }, gettext('1m')),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1year', role: "button" }, gettext('1y'))
                         ])
                     ]),
                     $.make('div', { className: 'NB-date-filter-column' }, [
-                        $.make('div', { className: 'NB-date-filter-label' }, 'Older:'),
+                        $.make('div', { className: 'NB-date-filter-label' }, gettext('Older:')),
                         $.make('input', {
                             type: 'date',
                             className: 'NB-date-input NB-date-end',
-                            placeholder: 'YYYY-MM-DD',
+                            placeholder: gettext('YYYY-MM-DD'),
                             autocomplete: 'off'
                         }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-date-filter-end' }, [
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1day', role: "button" }, '1d'),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1week', role: "button" }, '1w'),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1month', role: "button" }, '1m'),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1year', role: "button" }, '1y')
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1day', role: "button" }, gettext('1d')),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1week', role: "button" }, gettext('1w')),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1month', role: "button" }, gettext('1m')),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1year', role: "button" }, gettext('1y'))
                         ])
                     ]),
                     $.make('div', { className: 'NB-clear-date-button' })
@@ -202,51 +202,51 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             (is_feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-stats-icon' }),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Site stats'),
+                $.make('div', { className: 'NB-popover-section-title' }, gettext('Site stats')),
                 $.make('div', { className: 'NB-feedbar-options-stat NB-stat-subscribers' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, Inflector.pluralize('subscriber', feed.get('num_subscribers'), true))
                 ]),
                 (feed.get('is_push') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-realtime' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, "Stories arrive in real-time")
+                    $.make('div', { className: 'NB-stat' }, gettext("Stories arrive in real-time"))
                 ])),
                 (feed.get('average_stories_per_month') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-average' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, Inflector.pluralize("story", feed.get('average_stories_per_month'), true) + " per month")
+                    $.make('div', { className: 'NB-stat' }, interpolate(gettext("%(value_1)s per month"), {value_1: Inflector.pluralize("story", feed.get('average_stories_per_month'), true)}, true))
                 ])),
                 (feed.get('archive_count') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-archive-count' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, Inflector.pluralize("story", feed.get('archive_count'), true) + " in archive")
+                    $.make('div', { className: 'NB-stat' }, interpolate(gettext("%(value_1)s in archive"), {value_1: Inflector.pluralize("story", feed.get('archive_count'), true)}, true))
                 ])),
                 (feed.get('updated') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-updated' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, "Updated " + feed.get('updated') + ' ago')
+                    $.make('div', { className: 'NB-stat' }, interpolate(gettext("Updated %(value_1)s ago"), {value_1: feed.get('updated')}, true))
                 ])),
                 (feed.get('min_to_decay') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-decay' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, "Fetched every " + NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay')))
+                    $.make('div', { className: 'NB-stat' }, interpolate(gettext("Fetched every %(value_1)s"), {value_1: NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay'))}, true))
                 ]))
             ])),
             (is_feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-notifications-icon' }),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Notifications'),
+                $.make('div', { className: 'NB-popover-section-title' }, gettext('Notifications')),
                 $.make('div', { className: 'NB-feedbar-options-notifications' }, [
                     new NEWSBLUR.Views.FeedNotificationView({ model: feed, popover: true }).render().$el
                 ])
             ])),
             ((is_feed || is_river) && $.make('div', { className: 'NB-popover-section NB-popover-section-auto-mark-read' }, [
                 $.make('div', { className: 'NB-auto-mark-read-title-row' }, [
-                    $.make('div', { className: 'NB-popover-section-title' }, 'Auto mark as read'),
+                    $.make('div', { className: 'NB-popover-section-title' }, gettext('Auto mark as read')),
                     (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-auto-mark-read-upgrade-notice NB-premium-link', href: '#' }, [
-                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                        $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                     ])),
                     $.make('div', { className: 'NB-filter-popover-auto-mark-read-icon' })
                 ]),
                 $.make('ul', { className: 'segmented-control NB-menu-manage-auto-mark-read' }, [
-                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-default', 'data-value': 'default', role: 'button' }, 'Default'),
-                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-days', 'data-value': 'days', role: 'button' }, 'Days'),
-                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-never', 'data-value': 'never', role: 'button' }, 'Never')
+                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-default', 'data-value': 'default', role: 'button' }, gettext('Default')),
+                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-days', 'data-value': 'days', role: 'button' }, gettext('Days')),
+                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-never', 'data-value': 'never', role: 'button' }, gettext('Never'))
                 ]),
                 $.make('div', { className: 'NB-auto-mark-read-slider-container' }, [
                     $.make('input', {
@@ -260,27 +260,27 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ])
             ])),
             $.make('div', { className: 'NB-popover-section-global' }, [
-                $.make('div', { className: 'NB-popover-section-global-label' }, 'Global settings'),
+                $.make('div', { className: 'NB-popover-section-global-label' }, gettext('Global settings')),
                 $.make('div', { className: 'NB-popover-section' }, [
-                    $.make('div', { className: 'NB-popover-section-title' }, 'Story title styling'),
+                    $.make('div', { className: 'NB-popover-section-title' }, gettext('Story title styling')),
                     (this.options.show_markscroll && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-markscroll' }, [
                         $.make('div', { className: 'NB-icon' }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-markscroll' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-read NB-active', role: "button" }, 'Read on scroll'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-unread', role: "button" }, 'Leave unread')
+                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-read NB-active', role: "button" }, gettext('Read on scroll')),
+                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-unread', role: "button" }, gettext('Leave unread'))
                         ])
                     ])),
                     (this.options.show_density && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-density' }, [
                         $.make('div', { className: 'NB-icon' }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-density' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-compact NB-active', role: "button" }, 'Compact'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-comfortable', role: "button" }, 'Comfortable')
+                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-compact NB-active', role: "button" }, gettext('Compact')),
+                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-comfortable', role: "button" }, gettext('Comfortable'))
                         ])
                     ])),
                     (this.options.show_contentpreview && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-contentpreview' }, [
                         $.make('div', { className: 'NB-icon' }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title', role: "button" }, 'Title only'),
+                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title', role: "button" }, gettext('Title only')),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-small', role: "button" }, $.make('div', { className: 'NB-icon' })),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-medium', role: "button" }, $.make('div', { className: 'NB-icon' })),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-large', role: "button" }, $.make('div', { className: 'NB-icon' })),
@@ -289,7 +289,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     (this.options.show_imagepreview && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-imagepreview' }, [
                         $.make('div', { className: 'NB-icon' }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none', role: "button" }, 'No image'),
+                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none', role: "button" }, gettext('No image')),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-left', role: "button" }, [
                                 $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/image_preview_small_left.png' })
                             ]),
@@ -309,74 +309,74 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('ul', { className: 'segmented-control NB-options-feed-font' }, [
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-whitney NB-theme-feed-font-whitney', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                'Whitney'
+                                gettext('Whitney')
                             ]),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-lucida NB-theme-feed-font-lucida', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                'Lucida'
+                                gettext('Lucida')
                             ]),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                'Gotham'
+                                gettext('Gotham')
                             ])
                         ])
                     ]),
                     $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-feed-size' }, [
                         $.make('div', { className: 'NB-icon' }),
                         $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xs', role: "button" }, 'XS'),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-s', role: "button" }, 'S'),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-m NB-active', role: "button" }, 'M'),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-l', role: "button" }, 'L'),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xl', role: "button" }, 'XL')
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xs', role: "button" }, gettext('XS')),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-s', role: "button" }, gettext('S')),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-m NB-active', role: "button" }, gettext('M')),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-l', role: "button" }, gettext('L')),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xl', role: "button" }, gettext('XL'))
                         ])
                     ])
                 ]),
                 ((is_feed || is_river) && $.make('div', { className: 'NB-popover-section NB-popover-section-clustering' }, [
                     $.make('div', { className: 'NB-clustering-title-row' }, [
-                        $.make('div', { className: 'NB-popover-section-title' }, 'Story clustering')
+                        $.make('div', { className: 'NB-popover-section-title' }, gettext('Story clustering'))
                     ]),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-enabled' }, [
-                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'Cluster related stories'),
-                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-off', 'data-setting': 'story_clustering', 'data-value': 'false', role: 'button' }, 'Keep stories separate')
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, gettext('Cluster related stories')),
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-off', 'data-setting': 'story_clustering', 'data-value': 'false', role: 'button' }, gettext('Keep stories separate'))
                     ]),
                     $.make('div', { className: 'NB-clustering-mode-section' }, [
-                        $.make('div', { className: 'NB-clustering-read-label' }, 'Group stories that share:'),
+                        $.make('div', { className: 'NB-clustering-read-label' }, gettext('Group stories that share:')),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-mode' }, [
                             $.make('li', { className: 'NB-clustering-option NB-clustering-mode-title', 'data-setting': 'cluster_mode', 'data-value': 'title', role: 'button' }, [
-                                $.make('span', { className: 'NB-clustering-mode-label' }, 'Title only'),
+                                $.make('span', { className: 'NB-clustering-mode-label' }, gettext('Title only')),
                                 $.make('span', { className: 'NB-cluster-tier-title NB-clustering-mode-pill' }, [
-                                    $.make('span', { className: 'NB-cluster-tier-badge' }, 'Match')
+                                    $.make('span', { className: 'NB-cluster-tier-badge' }, gettext('Match'))
                                 ])
                             ]),
                             $.make('li', { className: 'NB-clustering-option NB-clustering-mode-related', 'data-setting': 'cluster_mode', 'data-value': 'related', role: 'button' }, [
                                 $.make('span', { className: 'NB-cluster-tier-title NB-clustering-mode-pill' }, [
-                                    $.make('span', { className: 'NB-cluster-tier-badge' }, 'Match')
+                                    $.make('span', { className: 'NB-cluster-tier-badge' }, gettext('Match'))
                                 ]),
                                 $.make('span', { className: 'NB-clustering-mode-plus' }, '+'),
                                 $.make('span', { className: 'NB-cluster-tier-related NB-clustering-mode-pill' }, [
-                                    $.make('span', { className: 'NB-cluster-tier-badge' }, 'Related')
+                                    $.make('span', { className: 'NB-cluster-tier-badge' }, gettext('Related'))
                                 ])
                             ])
                         ])
                     ]),
                     $.make('div', { className: 'NB-clustering-preview-section' }, [
-                        $.make('div', { className: 'NB-clustering-read-label' }, 'Cluster preview:'),
+                        $.make('div', { className: 'NB-clustering-read-label' }, gettext('Cluster preview:')),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-preview' }, [
-                            $.make('li', { className: 'NB-clustering-option NB-clustering-preview-single', 'data-setting': 'cluster_preview_style', 'data-value': 'single_line', role: 'button' }, 'Single line'),
-                            $.make('li', { className: 'NB-clustering-option NB-clustering-preview-expanded', 'data-setting': 'cluster_preview_style', 'data-value': 'expanded', role: 'button' }, 'Expanded')
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-preview-single', 'data-setting': 'cluster_preview_style', 'data-value': 'single_line', role: 'button' }, gettext('Single line')),
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-preview-expanded', 'data-setting': 'cluster_preview_style', 'data-value': 'expanded', role: 'button' }, gettext('Expanded'))
                         ])
                     ]),
                     $.make('div', { className: 'NB-clustering-read-section' }, [
                         $.make('div', { className: 'NB-clustering-read-label' }, [
-                            'When reading a clustered story:',
+                            gettext('When reading a clustered story:'),
                             (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-clustering-upgrade-notice NB-premium-link' }, [
-                                $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                                $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                             ]))
                         ]),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-read' }, [
-                            $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, 'Mark all as read'),
-                            $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, 'Keep others unread')
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, gettext('Mark all as read')),
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, gettext('Keep others unread'))
                         ])
                     ])
                 ]))
@@ -470,8 +470,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         $oldest.toggleClass('NB-active', order == 'oldest');
         $newest.toggleClass('NB-active', order != 'oldest');
-        $oldest.text('Oldest' + (order == 'oldest' ? ' first' : ''));
-        $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
+        $oldest.text(interpolate(gettext("Oldest%(value_1)s"), {value_1: order == 'oldest' ? ' first' : ''}, true));
+        $newest.text(interpolate(gettext("Newest%(value_1)s"), {value_1: order != 'oldest' ? ' first' : ''}, true));
         $unread.toggleClass('NB-active', read_filter == 'unread');
         $count5.toggleClass('NB-active', dashboard_count == 5);
         $count10.toggleClass('NB-active', dashboard_count == 10);
@@ -505,7 +505,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             var freq = frequencies[f];
             var $infrequent = this.$('.NB-view-setting-infrequent-' + freq);
             $infrequent.toggleClass('NB-active', infrequent == freq);
-            $infrequent.text(infrequent == freq ? '< ' + freq + '/month' : freq);
+            $infrequent.text(infrequent == freq ? interpolate(gettext("< %(value_1)s/month"), {value_1: freq}, true) : freq);
         }
 
         if (this.options.on_dashboard) {
@@ -608,14 +608,14 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var html = '';
         if (mode === 'default') {
             if (days === 0) {
-                html = 'Using default: <b>never</b> (from ' + source + ')';
+                html = interpolate(gettext("Using default: <b>never</b> (from %(source)s)"), {source: source}, true);
             } else {
-                html = 'Using default: <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b> (from ' + source + ')';
+                html = interpolate(ngettext("Using default: <b>%(days)s day</b> (from %(source)s)", "Using default: <b>%(days)s days</b> (from %(source)s)", days), {days: days, source: source}, true);
             }
         } else if (mode === 'never') {
-            html = 'Stories will <b>never</b> be marked as read';
+            html = gettext('Stories will <b>never</b> be marked as read');
         } else {
-            html = 'Stories marked as read at <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
+            html = interpolate(ngettext("Stories marked as read at <b>%(days)s day</b>", "Stories marked as read at <b>%(days)s days</b>", days), {days: days}, true);
         }
         $element.html(html);
     },

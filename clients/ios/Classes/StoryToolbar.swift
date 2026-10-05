@@ -66,7 +66,7 @@ class StoryToolbar: UIView {
     private func buildBackButton() {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.accessibilityIdentifier = "story-reader-back"
-        backButton.accessibilityLabel = "Back to story titles"
+        backButton.accessibilityLabel = NBLocalization.text("Back to story titles")
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
         addSubview(backButton)
 
@@ -98,7 +98,7 @@ class StoryToolbar: UIView {
         settingsButton.setImage(settingsImage, for: .normal)
         settingsButton.translatesAutoresizingMaskIntoConstraints = false
         settingsButton.addTarget(self, action: #selector(settingsTapped), for: .touchUpInside)
-        settingsButton.accessibilityLabel = "Story settings"
+        settingsButton.accessibilityLabel = NBLocalization.text("Story settings")
         addSubview(settingsButton)
 
         // Browser (original story) button
@@ -107,7 +107,7 @@ class StoryToolbar: UIView {
         browserButton.setImage(browserImage, for: .normal)
         browserButton.translatesAutoresizingMaskIntoConstraints = false
         browserButton.addTarget(self, action: #selector(browserTapped), for: .touchUpInside)
-        browserButton.accessibilityLabel = "Show original story"
+        browserButton.accessibilityLabel = NBLocalization.text("Show original story")
         addSubview(browserButton)
     }
 

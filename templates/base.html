@@ -1,9 +1,10 @@
+{% load i18n %}
 {% load utils_tags %}
 {% load static %}
 {% load pipeline %}
 {% autoescape off %}
   <!DOCTYPE html>
-  <html>
+  <html lang="{{ ui_language }}" dir="{% if ui_language_rtl %}rtl{% else %}ltr{% endif %}">
     <head>
       <title>
         {% block title %}NewsBlur{% endblock %}
@@ -23,6 +24,7 @@
       <meta name="apple-itunes-app" content="app-id=463981119">
       <link rel="manifest" href="/manifest.webmanifest">
       <link rel="canonical" href="https://www.newsblur.com{{ request.path }}">
+      {% include "includes/i18n_scripts.html" %}
       {% block head %}{% endblock %}
       {% if not user.is_authenticated %}
       <script async src="https://plausible.io/js/pa-AGTOvjd1KjVNLnRT2aQ7m.js"></script>
@@ -33,6 +35,8 @@
        color="orange"> -->
       <script type="text/javascript" charset="utf-8">
     window.NEWSBLUR = {};
+    NEWSBLUR.language_preference = "{{ ui_language_preference|escapejs }}";
+    NEWSBLUR.languages = [{% for code, name in ui_languages %}["{{ code|escapejs }}", "{{ name|escapejs }}"]{% if not forloop.last %},{% endif %}{% endfor %}];
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
@@ -189,133 +193,134 @@
     </head>
     <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
       <script>(function(){var t=null;try{var r=localStorage.getItem('newsblur:theme');if(r){var o=JSON.parse(r);if(o&&o.theme&&o.ts&&(Date.now()-o.ts<216e5))t=o.theme;else localStorage.removeItem('newsblur:theme')}}catch(e){try{localStorage.removeItem('newsblur:theme')}catch(e2){}}if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark')})()</script>
+      {% if not user.is_authenticated %}{% include "includes/language_selector.html" %}{% endif %}
       {% block header %}{% endblock %}
       <div class="NB-body-inner">
         <div class="NB-splash-info NB-splash-top">
           <div class="NB-splash-top-nav">
             <span class="NB-splash-top-title">{% block nav_title %}{% endblock %}</span>
             <ul class="NB-splash-top-links">
-              <li class="NB-splash-top-link NB-splash-top-link-home"><a href="{% url "index" %}">Home</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-home"><a href="{% url "index" %}">{% trans "Home" %}</a></li>
               <li class="NB-splash-top-link NB-splash-top-link-features NB-splash-nav-has-dropdown">
-                <a href="{% url "features" %}">Features</a>
+                <a href="{% url "features" %}">{% trans "Features" %}</a>
                 <div class="NB-splash-dropdown NB-splash-dropdown-features">
                   <div class="NB-splash-dropdown-inner">
                     <div class="NB-splash-dropdown-col NB-splash-dropdown-col-hero">
                       <div class="NB-splash-dropdown-heading">
-                        <a href="{% url "features" %}" class="NB-splash-dropdown-heading-link">All Features &rarr;</a>
+                        <a href="{% url "features" %}" class="NB-splash-dropdown-heading-link">{% trans "All Features" %} &rarr;</a>
                       </div>
                       <a href="{% url "feature-intelligence-training" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-training">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/train.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-blue">Intelligence Training</div>
-                        <div class="NB-splash-dropdown-item-desc">Train by author, tag, title, and full text</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/train.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-blue">{% trans "Intelligence Training" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Train by author, tag, title, and full text" %}</div>
                       </a>
                       <a href="{% url "feature-ask-ai" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-ask-ai">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">Ask AI &amp; Daily Briefing</div>
-                        <div class="NB-splash-dropdown-item-desc">AI-powered story analysis and daily summaries</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">{% trans "Ask AI" %} &amp; {% trans "Daily Briefing" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "AI-powered story analysis and daily summaries" %}</div>
                       </a>
                       <a href="{% url "feature-web-feeds" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-web-feeds">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">Web Feeds</div>
-                        <div class="NB-splash-dropdown-item-desc">Follow any website, even without RSS</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">{% trans "Web Feeds" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Follow any website, even without RSS" %}</div>
                       </a>
                       <a href="{% url "feature-newsletters" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-newsletters">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/email.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-pink">Email Newsletters</div>
-                        <div class="NB-splash-dropdown-item-desc">Read newsletters in your news reader</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/email.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-pink">{% trans "Email Newsletters" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Read newsletters in your news reader" %}</div>
                       </a>
                       <a href="{% url "feature-search" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-search">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/search.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-teal">Full-Text Search</div>
-                        <div class="NB-splash-dropdown-item-desc">Search across all your subscriptions</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/search.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-teal">{% trans "Full-Text Search" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Search across all your subscriptions" %}</div>
                       </a>
                       <a href="{% url "feature-archive" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-archive">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/archive.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-orange">Story Archive</div>
-                        <div class="NB-splash-dropdown-item-desc">Every story kept and searchable forever</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/archive.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-orange">{% trans "Story Archive" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Every story kept and searchable forever" %}</div>
                       </a>
                       <a href="{% url "feature-saved-stories" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-saved">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/tag.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-green">Saved Stories &amp; Tags</div>
-                        <div class="NB-splash-dropdown-item-desc">Save stories and organize with custom tags</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/tag.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-green">{% trans "Saved Stories" %} &amp; {% trans "Tags" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Save stories and organize with custom tags" %}</div>
                       </a>
                       <a href="{% url "feature-native-apps" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-native-apps">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/dialog-goodies.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-gold">Native Apps</div>
-                        <div class="NB-splash-dropdown-item-desc">First-class iOS &amp; Android apps, not wrappers</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/dialog-goodies.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-gold">{% trans "Native Apps" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "First-class iOS" %} &amp; {% trans "Android apps, not wrappers" %}</div>
                       </a>
                       <a href="{% url "feature-story-clustering" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-clustering">
-                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/stack.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">Story Clustering</div>
-                        <div class="NB-splash-dropdown-item-desc">Group duplicate stories across your feeds</div>
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/stack.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">{% trans "Story Clustering" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Group duplicate stories across your feeds" %}</div>
                       </a>
                     </div>
                     <div class="NB-splash-dropdown-col NB-splash-dropdown-col-more">
-                      <div class="NB-splash-dropdown-heading">More Features</div>
+                      <div class="NB-splash-dropdown-heading">{% trans "More Features" %}</div>
                       <div class="NB-splash-dropdown-grid">
-                        <a href="{% url "features" %}#river" class="NB-splash-dropdown-grid-item">River of News</a>
-                        <a href="{% url "features" %}#notifications" class="NB-splash-dropdown-grid-item">Notifications</a>
-                        <a href="{% url "features" %}#text-view" class="NB-splash-dropdown-grid-item">Text View</a>
-                        <a href="{% url "features" %}#changes" class="NB-splash-dropdown-grid-item">Track Changes</a>
-                        <a href="{% url "features" %}#themes" class="NB-splash-dropdown-grid-item">Themes</a>
-                        <a href="{% url "features" %}#shortcuts" class="NB-splash-dropdown-grid-item">Keyboard Shortcuts</a>
-                        <a href="{% url "features" %}#integrations" class="NB-splash-dropdown-grid-item">IFTTT &amp; Zapier</a>
-                        <a href="{% url "features" %}#blurblog" class="NB-splash-dropdown-grid-item">Shared Stories</a>
-                        <a href="{% url "feature-mcp" %}" class="NB-splash-dropdown-grid-item">MCP Server</a>
-                        <a href="{% url "feature-cli" %}" class="NB-splash-dropdown-grid-item">CLI Tool</a>
+                        <a href="{% url "features" %}#river" class="NB-splash-dropdown-grid-item">{% trans "River of News" %}</a>
+                        <a href="{% url "features" %}#notifications" class="NB-splash-dropdown-grid-item">{% trans "Notifications" %}</a>
+                        <a href="{% url "features" %}#text-view" class="NB-splash-dropdown-grid-item">{% trans "Text View" %}</a>
+                        <a href="{% url "features" %}#changes" class="NB-splash-dropdown-grid-item">{% trans "Track Changes" %}</a>
+                        <a href="{% url "features" %}#themes" class="NB-splash-dropdown-grid-item">{% trans "Themes" %}</a>
+                        <a href="{% url "features" %}#shortcuts" class="NB-splash-dropdown-grid-item">{% trans "Keyboard Shortcuts" %}</a>
+                        <a href="{% url "features" %}#integrations" class="NB-splash-dropdown-grid-item">{% trans "IFTTT" %} &amp; {% trans "Zapier" %}</a>
+                        <a href="{% url "features" %}#blurblog" class="NB-splash-dropdown-grid-item">{% trans "Shared Stories" %}</a>
+                        <a href="{% url "feature-mcp" %}" class="NB-splash-dropdown-grid-item">{% trans "MCP Server" %}</a>
+                        <a href="{% url "feature-cli" %}" class="NB-splash-dropdown-grid-item">{% trans "CLI Tool" %}</a>
                       </div>
                       <div class="NB-splash-dropdown-divider"></div>
-                      <div class="NB-splash-dropdown-heading">Compare</div>
+                      <div class="NB-splash-dropdown-heading">{% trans "Compare" %}</div>
                       <div class="NB-splash-dropdown-grid">
-                        <a href="{% url "compare-feedly" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-feedly">vs Feedly</a>
-                        <a href="{% url "compare-inoreader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-inoreader">vs Inoreader</a>
-                        <a href="{% url "compare-readwise" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-readwise">vs Readwise</a>
-                        <a href="{% url "compare-the-old-reader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-old-reader">vs Old Reader</a>
-                        <a href="{% url "compare-feedbin" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-feedbin">vs Feedbin</a>
+                        <a href="{% url "compare-feedly" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-feedly">{% trans "vs Feedly" %}</a>
+                        <a href="{% url "compare-inoreader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-inoreader">{% trans "vs Inoreader" %}</a>
+                        <a href="{% url "compare-readwise" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-readwise">{% trans "vs Readwise" %}</a>
+                        <a href="{% url "compare-the-old-reader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-old-reader">{% trans "vs Old Reader" %}</a>
+                        <a href="{% url "compare-feedbin" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-compare-feedbin">{% trans "vs Feedbin" %}</a>
                       </div>
                       <div class="NB-splash-dropdown-divider"></div>
-                      <div class="NB-splash-dropdown-heading">Alternatives</div>
+                      <div class="NB-splash-dropdown-heading">{% trans "Alternatives" %}</div>
                       <div class="NB-splash-dropdown-grid">
-                        <a href="{% url "alt-feedly" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-feedly">Feedly Alternative</a>
-                        <a href="{% url "alt-google-reader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-google-reader">Google Reader Alt</a>
-                        <a href="{% url "alt-open-source" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-open-source">Open Source</a>
-                        <a href="{% url "alt-inoreader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-inoreader">Inoreader Alternative</a>
-                        <a href="{% url "alt-self-hosted" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-self-hosted">Self-Hosted</a>
+                        <a href="{% url "alt-feedly" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-feedly">{% trans "Feedly Alternative" %}</a>
+                        <a href="{% url "alt-google-reader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-google-reader">{% trans "Google Reader Alt" %}</a>
+                        <a href="{% url "alt-open-source" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-open-source">{% trans "Open Source" %}</a>
+                        <a href="{% url "alt-inoreader" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-inoreader">{% trans "Inoreader Alternative" %}</a>
+                        <a href="{% url "alt-self-hosted" %}" class="NB-splash-dropdown-grid-item NB-splash-dropdown-grid-item-alt-self-hosted">{% trans "Self-Hosted" %}</a>
                       </div>
                     </div>
                   </div>
                 </div>
               </li>
               <li class="NB-splash-top-link NB-splash-top-link-pricing NB-splash-nav-has-dropdown">
-                <a href="{% url "pricing" %}">Pricing</a>
+                <a href="{% url "pricing" %}">{% trans "Pricing" %}</a>
                 <div class="NB-splash-dropdown NB-splash-dropdown-pricing">
                   <div class="NB-splash-dropdown-inner">
                     <a href="{% url "pricing" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-allplans">
-                      <div class="NB-splash-dropdown-item-name">All Plans</div>
-                      <div class="NB-splash-dropdown-item-desc">Compare every tier side by side</div>
+                      <div class="NB-splash-dropdown-item-name">{% trans "All Plans" %}</div>
+                      <div class="NB-splash-dropdown-item-desc">{% trans "Compare every tier side by side" %}</div>
                     </a>
                     <div class="NB-splash-dropdown-divider"></div>
                     <a href="{% url "pricing-premium" %}" class="NB-splash-dropdown-item NB-splash-dropdown-tier NB-splash-dropdown-tier-premium">
-                      <div class="NB-splash-dropdown-item-name">Premium <span class="NB-splash-dropdown-price">$36/yr</span></div>
-                      <div class="NB-splash-dropdown-item-desc">1,024 sites, search, text view, river of news</div>
+                      <div class="NB-splash-dropdown-item-name">{% trans "Premium" %} <span class="NB-splash-dropdown-price">{% trans "$36/yr" %}</span></div>
+                      <div class="NB-splash-dropdown-item-desc">{% trans "1,024 sites, search, text view, river of news" %}</div>
                     </a>
                     <a href="{% url "pricing-archive" %}" class="NB-splash-dropdown-item NB-splash-dropdown-tier NB-splash-dropdown-tier-archive">
-                      <div class="NB-splash-dropdown-item-name">Premium Archive <span class="NB-splash-dropdown-price">$99/yr</span></div>
-                      <div class="NB-splash-dropdown-item-desc">Full archive, Ask AI, daily briefing, 4,096 sites</div>
+                      <div class="NB-splash-dropdown-item-name">{% trans "Premium Archive" %} <span class="NB-splash-dropdown-price">{% trans "$99/yr" %}</span></div>
+                      <div class="NB-splash-dropdown-item-desc">{% trans "Full archive, Ask AI, daily briefing, 4,096 sites" %}</div>
                     </a>
                     <a href="{% url "pricing-pro" %}" class="NB-splash-dropdown-item NB-splash-dropdown-tier NB-splash-dropdown-tier-pro">
-                      <div class="NB-splash-dropdown-item-name">Premium Pro <span class="NB-splash-dropdown-price">$29/mo</span></div>
-                      <div class="NB-splash-dropdown-item-desc">5-min fetching, regex training, 10,000 sites</div>
+                      <div class="NB-splash-dropdown-item-name">{% trans "Premium Pro" %} <span class="NB-splash-dropdown-price">{% trans "$29/mo" %}</span></div>
+                      <div class="NB-splash-dropdown-item-desc">{% trans "5-min fetching, regex training, 10,000 sites" %}</div>
                     </a>
                     <div class="NB-splash-dropdown-divider"></div>
                     <a href="{% url "faq" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-faq">
-                      <div class="NB-splash-dropdown-item-name">FAQ</div>
-                      <div class="NB-splash-dropdown-item-desc">Common questions about plans and billing</div>
+                      <div class="NB-splash-dropdown-item-name">{% trans "FAQ" %}</div>
+                      <div class="NB-splash-dropdown-item-desc">{% trans "Common questions about plans and billing" %}</div>
                     </a>
                   </div>
                 </div>
               </li>
-              <li class="NB-splash-top-link NB-splash-top-link-faq"><a href="{% url "faq" %}">FAQ</a></li>
-              <li class="NB-splash-top-link NB-splash-top-link-about"><a href="{% url "about" %}">About</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-faq"><a href="{% url "faq" %}">{% trans "FAQ" %}</a></li>
+              <li class="NB-splash-top-link NB-splash-top-link-about"><a href="{% url "about" %}">{% trans "About" %}</a></li>
             </ul>
             <div class="NB-splash-top-logo">
-              <div class="NB-theme-toggle" title="Toggle theme">
+              <div class="NB-theme-toggle" title="{% trans 'Toggle theme' %}">
                 <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
                   <circle cx="12" cy="12" r="4" fill="currentColor"/>
                   <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+                <button class="NB-theme-toggle-track" aria-label="{% trans 'Toggle dark mode' %}" type="button">
                   <span class="NB-theme-toggle-thumb"></span>
                 </button>
                 <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">

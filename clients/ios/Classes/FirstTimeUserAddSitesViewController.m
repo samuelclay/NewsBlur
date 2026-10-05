@@ -49,12 +49,12 @@
     
     [super viewDidLoad];
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:[NBLocalization text:@"Next step"] style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.nextButton.enabled = YES;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Add Sites";
+    self.navigationItem.title = [NBLocalization text:@"Add Sites"];
     self.activityIndicator.hidesWhenStopped = YES;
     
     self.categoriesTable.delegate = self;
@@ -133,10 +133,10 @@
     self.googleReaderButton = button;
 
     self.nextButton.enabled = YES;
-    [self.googleReaderButton setTitle:@"Importing sites..." forState:UIControlStateNormal];
+    [self.googleReaderButton setTitle:[NBLocalization text:@"Importing sites..."] forState:UIControlStateNormal];
     self.instructionLabel.textColor = UIColorFromRGB(0x333333);
     self.googleReaderButton.userInteractionEnabled = NO;
-    self.instructionLabel.text = @"This might take a minute.\nFeel free to continue...";
+    self.instructionLabel.text = [NBLocalization text:@"This might take a minute.\nFeel free to continue..."];
     [self.googleReaderButton addSubview:self.activityIndicator];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"%@/import/import_from_google_reader/",
@@ -151,7 +151,7 @@
 }
 
 - (void)importFromGoogleReaderFailed:(NSError *)error {
-    [self.googleReaderButton setTitle:@"Retry Google Reader" forState:UIControlStateNormal];
+    [self.googleReaderButton setTitle:[NBLocalization text:@"Retry Google Reader"] forState:UIControlStateNormal];
     self.instructionLabel.textColor = [UIColor redColor];
     self.instructionLabel.text = error.localizedDescription;
 }
@@ -165,8 +165,8 @@
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = [NSString stringWithFormat:@"You are subscribed to %lu sites", (unsigned long)[[appDelegate.dictFeeds allKeys] count]];
-    NSString *msg = [NSString stringWithFormat:@"Imported %i site%@", 
+    self.instructionLabel.text = [NSString stringWithFormat:[NBLocalization text:@"You are subscribed to %lu sites"], (unsigned long)[[appDelegate.dictFeeds allKeys] count]];
+    NSString *msg = [NSString stringWithFormat:[NBLocalization text:@"Imported %i site%@"],
                      self.importedFeedCount_,
                      self.importedFeedCount_ == 1 ? @"" : @"s"];
     [self.googleReaderButton setTitle:msg  forState:UIControlStateSelected];
@@ -267,7 +267,7 @@
         UIView* categoryTitleView = [UIView new];
         UILabel *categoryTitleLabel = [UILabel new];
         categoryTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        categoryTitleLabel.text = @"You can always add your own individual sites.";
+        categoryTitleLabel.text = [NBLocalization text:@"You can always add your own individual sites."];
         categoryTitleLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:15];
         [categoryTitleView addSubview:categoryTitleLabel];
         categoryTitleLabel.textColor = [UIColor darkGrayColor];

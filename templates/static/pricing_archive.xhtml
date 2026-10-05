@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-pricing{% endblock %}
-{% block title %}Premium Archive - NewsBlur Pricing{% endblock %}
-{% block nav_title %}Premium Archive{% endblock %}
+{% block title %}{% trans "Premium Archive - NewsBlur Pricing" %}{% endblock %}
+{% block nav_title %}{% trans "Premium Archive" %}{% endblock %}
 {% block head %}
     <meta name="description" content="NewsBlur Premium Archive: $99/year. Your complete news archive with AI-powered intelligence. 4,096 sites, full story archive, Ask AI, daily briefing, and story clustering.">
     <meta property="og:title" content="Premium Archive - NewsBlur Pricing">
@@ -22,174 +23,174 @@
 <div class="NB-pricing-tier-detail-container">
 
     <div class="NB-pricing-tier-detail-hero">
-        <h1 class="NB-pricing-tier-detail-name">Premium Archive</h1>
-        <div class="NB-pricing-tier-detail-price">$99/year</div>
-        <p class="NB-pricing-tier-detail-subtitle">Your complete news archive with AI-powered intelligence. 4,096 sites, full story archive, Ask AI, and daily briefing.</p>
-        <a href="{% url "index" %}" class="NB-pricing-tier-detail-cta-button NB-pricing-tier-detail-cta-archive">Get Premium Archive</a>
+        <h1 class="NB-pricing-tier-detail-name">{% trans "Premium Archive" %}</h1>
+        <div class="NB-pricing-tier-detail-price">{% trans "$99/year" %}</div>
+        <p class="NB-pricing-tier-detail-subtitle">{% trans "Your complete news archive with AI-powered intelligence. 4,096 sites, full story archive, Ask AI, and daily briefing." %}</p>
+        <a href="{% url "index" %}" class="NB-pricing-tier-detail-cta-button NB-pricing-tier-detail-cta-archive">{% trans "Get Premium Archive" %}</a>
     </div>
 
     <div class="NB-pricing-tier-detail-features">
-        <h2>Everything in Premium, plus</h2>
+        <h2>{% trans "Everything in Premium, plus" %}</h2>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Follow up to 4,096 sites</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Four times the Premium limit. Follow every source you need.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Follow up to 4,096 sites" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Four times the Premium limit. Follow every source you need." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Web Feeds from any website, even without RSS</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and delivers new content automatically.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Web Feeds from any website, even without RSS" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and delivers new content automatically." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Story Clustering</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">When multiple feeds cover the same story, they're grouped together. Read your preferred version and skip duplicates.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Story Clustering" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "When multiple feeds cover the same story, they're grouped together. Read your preferred version and skip duplicates." %}</p>
             </div>
             <div class="NB-pricing-tier-detail-feature-img">
-                <img src="{{ MEDIA_URL }}img/features/clustering.png" alt="Story Clustering">
+                <img src="{{ MEDIA_URL }}img/features/clustering.png" alt="{% trans 'Story Clustering' %}">
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Every story archived and searchable forever</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Stories never expire. When you subscribe to a new feed, its entire history is back-filled.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Every story archived and searchable forever" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Stories never expire. When you subscribe to a new feed, its entire history is back-filled." %}</p>
             </div>
             <div class="NB-pricing-tier-detail-feature-img">
-                <img src="{{ MEDIA_URL }}img/features/archive.png" alt="Every story archived and searchable forever">
+                <img src="{{ MEDIA_URL }}img/features/archive.png" alt="{% trans 'Every story archived and searchable forever' %}">
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Feeds back-filled for complete archive</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">New subscriptions automatically import the feed's full history so you have everything from day one.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Feeds back-filled for complete archive" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "New subscriptions automatically import the feed's full history so you have everything from day one." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Train stories on full text content</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Go beyond titles and tags. Train on the actual content of stories for more precise filtering.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Train stories on full text content" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Go beyond titles and tags. Train on the actual content of stories for more precise filtering." %}</p>
             </div>
             <div class="NB-pricing-tier-detail-feature-img">
-                <img src="{{ MEDIA_URL }}img/features/text-training.png" alt="Train stories on full text content">
+                <img src="{{ MEDIA_URL }}img/features/text-training.png" alt="{% trans 'Train stories on full text content' %}">
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Notifications on trained intelligence classifiers</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Get notified by email, web, iOS, or Android when new stories match your trained intelligence classifiers.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Notifications on trained intelligence classifiers" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Get notified by email, web, iOS, or Android when new stories match your trained intelligence classifiers." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Ask AI questions about stories</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Ask any question about a story using Claude, GPT, Gemini, or Grok. Get summaries, key points, or have a conversation.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Ask AI questions about stories" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Ask any question about a story using Claude, GPT, Gemini, or Grok. Get summaries, key points, or have a conversation." %}</p>
             </div>
             <div class="NB-pricing-tier-detail-feature-img">
-                <img src="{{ MEDIA_URL }}img/features/ask-ai.png" alt="Ask AI questions about stories">
+                <img src="{{ MEDIA_URL }}img/features/ask-ai.png" alt="{% trans 'Ask AI questions about stories' %}">
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Daily Briefing</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">An AI-generated summary of your top stories, customized to your interests. Top stories, long reads, widely covered topics, and custom sections.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Daily Briefing" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "An AI-generated summary of your top stories, customized to your interests. Top stories, long reads, widely covered topics, and custom sections." %}</p>
             </div>
             <div class="NB-pricing-tier-detail-feature-img">
-                <img src="{{ MEDIA_URL }}img/features/briefing.png" alt="Daily Briefing">
+                <img src="{{ MEDIA_URL }}img/features/briefing.png" alt="{% trans 'Daily Briefing' %}">
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Discover related stories across your archive</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Find connections between stories across your entire archive with semantic similarity.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Discover related stories across your archive" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Find connections between stories across your entire archive with semantic similarity." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Export trained stories from folders</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Export stories that match your training from any folder as an RSS feed or download.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Export trained stories from folders" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Export stories that match your training from any folder as an RSS feed or download." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Stories can stay unread forever</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">No forced mark-as-read. Stories stay unread until you decide to read them.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Stories can stay unread forever" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "No forced mark-as-read. Stories stay unread until you decide to read them." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Choose when stories are marked as read</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Customize auto-read behavior by site or folder. Read on scroll, on open, or manually.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Choose when stories are marked as read" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Customize auto-read behavior by site or folder. Read on scroll, on open, or manually." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Filter stories by date range</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Navigate your archive with date filters. Find stories from any time period.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Filter stories by date range" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Navigate your archive with date filters. Find stories from any time period." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Apply training across a folder</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Set training rules that apply to every feed in a folder at once.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Apply training across a folder" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Set training rules that apply to every feed in a folder at once." %}</p>
             </div>
             <div class="NB-pricing-tier-detail-feature-img">
-                <img src="{{ MEDIA_URL }}img/features/training.png" alt="Apply training across a folder">
+                <img src="{{ MEDIA_URL }}img/features/training.png" alt="{% trans 'Apply training across a folder' %}">
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Apply training globally</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Set training rules that apply across all your feeds, everywhere.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Apply training globally" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Set training rules that apply across all your feeds, everywhere." %}</p>
             </div>
         </div>
 
         <div class="NB-pricing-tier-detail-feature">
             <div class="NB-pricing-tier-detail-feature-text">
-                <h3 class="NB-pricing-tier-detail-feature-name">Connect AI agents with MCP server and CLI</h3>
-                <p class="NB-pricing-tier-detail-feature-desc">Plug NewsBlur into Claude, Cursor, or any AI agent framework via the Model Context Protocol. Manage feeds, triage stories, and train classifiers from your favorite tools.</p>
+                <h3 class="NB-pricing-tier-detail-feature-name">{% trans "Connect AI agents with MCP server and CLI" %}</h3>
+                <p class="NB-pricing-tier-detail-feature-desc">{% trans "Plug NewsBlur into Claude, Cursor, or any AI agent framework via the Model Context Protocol. Manage feeds, triage stories, and train classifiers from your favorite tools." %}</p>
             </div>
         </div>
     </div>
 
     <div class="NB-pricing-tier-detail-faq">
-        <h2>Frequently Asked Questions</h2>
+        <h2>{% trans "Frequently Asked Questions" %}</h2>
 
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">Does Archive include everything in Premium?</h3>
-            <p class="NB-feature-detail-faq-a">Yes, Premium Archive includes all Premium features plus the archive, AI, and advanced training features.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "Does Archive include everything in Premium?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Yes, Premium Archive includes all Premium features plus the archive, AI, and advanced training features." %}</p>
         </div>
 
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">How far back does the archive go?</h3>
-            <p class="NB-feature-detail-faq-a">When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story is kept forever.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "How far back does the archive go?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story is kept forever." %}</p>
         </div>
 
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">What happens if I downgrade?</h3>
-            <p class="NB-feature-detail-faq-a">Your archived stories remain accessible, but new stories follow the standard retention policy.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "What happens if I downgrade?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Your archived stories remain accessible, but new stories follow the standard retention policy." %}</p>
         </div>
 
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">Can I use Ask AI on any story?</h3>
-            <p class="NB-feature-detail-faq-a">Yes, Ask AI works on any story in your feeds, including archived stories.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "Can I use Ask AI on any story?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Yes, Ask AI works on any story in your feeds, including archived stories." %}</p>
         </div>
     </div>
 

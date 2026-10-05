@@ -29,23 +29,23 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-admin NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'User Admin'
+                gettext('User Admin')
             ]),
             new NEWSBLUR.Views.SocialProfileBadge({
                 model: this.user
             }),
             $.make('fieldset', [
-                $.make('legend', 'Statistics')
+                $.make('legend', gettext('Statistics'))
             ]),
             $.make('div', { className: 'NB-admin-statistics' }),
             $.make('fieldset', [
-                $.make('legend', 'Payments')
+                $.make('legend', gettext('Payments'))
             ]),
             $.make('ul', { className: 'NB-account-payments' }, [
-                $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
+                $.make('li', { className: 'NB-payments-loading' }, gettext('Loading...'))
             ]),
             $.make('fieldset', [
-                $.make('legend', 'Actions')
+                $.make('legend', gettext('Actions'))
             ]),
             $.make('div', { className: 'NB-admin-actions' }, [
             ])
@@ -70,74 +70,74 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 ]));
             });
             if (!data.payments.length) {
-                $history.append($.make('i', 'No payments found.'));
+                $history.append($.make('i', gettext('No payments found.')));
             }
 
             if (data.is_premium) {
                 $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
                     (data.is_premium && !data.is_archive && "User is premium, expires: "),
                     (data.is_premium && data.is_archive && "User is premium ARCHIVE, expires: "),
-                    (data.premium_expire || $.make('b', 'NEVER'))
+                    (data.premium_expire || $.make('b', gettext('NEVER')))
                 ]));
                 $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
-                    "Premium renewal: ",
-                    (data.premium_renewal ? $.make('b', 'Active') : "Off")
+                    gettext("Premium renewal: "),
+                    (data.premium_renewal ? $.make('b', gettext('Active')) : gettext("Off"))
                 ]));
-                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: left" }, "Full Refund"));
-                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund-partial", style: "float: left" }, "Refund $12"));
-                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-never-expire", style: "float: left" }, "Never expire"));
-                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-1yr-expire", style: "float: left" }, "Expire 1 YR"));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: left" }, gettext("Full Refund")));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund-partial", style: "float: left" }, gettext("Refund $12")));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-never-expire", style: "float: left" }, gettext("Never expire")));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-1yr-expire", style: "float: left" }, gettext("Expire 1 YR")));
             } else {
-                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "Upgrade to premium"));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, gettext("Upgrade to premium")));
             }
 
-            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-history", style: "float: left" }, "Update History"));
-            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-opml", style: "float: left" }, "OPML"));
+            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-history", style: "float: left" }, gettext("Update History")));
+            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-opml", style: "float: left" }, gettext("OPML")));
 
             var training = data.statistics.training;
             $statistics.append($.make('dl', [
-                $.make('dt', 'Created:'),
+                $.make('dt', gettext('Created:')),
                 $.make('dd', data.statistics.created_date),
-                $.make('dt', 'Last seen:'),
+                $.make('dt', gettext('Last seen:')),
                 $.make('dd', data.statistics.last_seen_date),
-                $.make('dt', 'Last IP:'),
+                $.make('dt', gettext('Last IP:')),
                 $.make('dd', data.statistics.last_seen_ip),
-                $.make('dt', 'Timezone:'),
+                $.make('dt', gettext('Timezone:')),
                 $.make('dd', data.statistics.timezone),
-                $.make('dt', 'Email:'),
+                $.make('dt', gettext('Email:')),
                 $.make('dd', data.statistics.email),
-                $.make('dt', 'Stripe Id:'),
+                $.make('dt', gettext('Stripe Id:')),
                 $.make('dd', $.make('a', { href: "https://manage.stripe.com/customers/" + data.statistics.stripe_id, className: 'NB-splash-link' }, data.statistics.stripe_id)),
-                $.make('dt', 'Paypal email:'),
+                $.make('dt', gettext('Paypal email:')),
                 $.make('dd', $.make('a', { href: "https://www.paypal.com/businessexp/transactions?nav=0.3.1&payer_email=" + data.statistics.paypal_email, className: 'NB-splash-link' }, data.statistics.paypal_email)),
-                $.make('dt', 'Feeds:'),
+                $.make('dt', gettext('Feeds:')),
                 $.make('dd', Inflector.commas(data.statistics.feeds)),
-                $.make('dt', 'Feed opens:'),
+                $.make('dt', gettext('Feed opens:')),
                 $.make('dd', Inflector.commas(data.statistics.feed_opens)),
-                $.make('dt', 'Read Stories:'),
+                $.make('dt', gettext('Read Stories:')),
                 $.make('dd', Inflector.commas(data.statistics.read_story_count)),
-                $.make('dt', 'Training:'),
+                $.make('dt', gettext('Training:')),
                 $.make('dd', { className: 'NB-admin-training-counts' }, [
                     $.make('span', { className: training.title_ps || training.title_ng ? '' : 'NB-grey' }, [
-                        'Title: ',
+                        gettext('Title: '),
                         (training.title_ps && $.make('span', { className: 'NB-green' }, training.title_ps)),
                         '-',
                         (training.title_ng && $.make('span', { className: 'NB-red' }, training.title_ng))
                     ]),
                     $.make('span', { className: training.author_ps || training.author_ng ? '' : 'NB-grey' }, [
-                        'Author: ',
+                        gettext('Author: '),
                         (training.author_ps && $.make('span', { className: 'NB-green' }, training.author_ps)),
                         '-',
                         (training.author_ng && $.make('span', { className: 'NB-red' }, training.author_ng))
                     ]),
                     $.make('span', { className: training.tag_ps || training.tag_ng ? '' : 'NB-grey' }, [
-                        'Tag: ',
+                        gettext('Tag: '),
                         (training.tag_ps && $.make('span', { className: 'NB-green' }, training.tag_ps)),
                         '-',
                         (training.tag_ng && $.make('span', { className: 'NB-red' }, training.tag_ng))
                     ]),
                     $.make('span', { className: training.feed_ps || training.feed_ng ? '' : 'NB-grey' }, [
-                        'Feed: ',
+                        gettext('Feed: '),
                         (training.feed_ps && $.make('span', { className: 'NB-green' }, training.feed_ps)),
                         '-',
                         (training.feed_ng && $.make('span', { className: 'NB-red' }, training.feed_ng))
@@ -205,7 +205,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             e.preventDefault();
 
             NEWSBLUR.assets.upgrade_premium(self.user.get('user_id'), function () {
-                $(".NB-admin-action-upgrade").replaceWith($.make('div', 'Upgraded!'));
+                $(".NB-admin-action-upgrade").replaceWith($.make('div', gettext('Upgraded!')));
                 self.fetch_payment_history();
             }, function (data) {
                 $(".NB-admin-action-upgrade").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
@@ -215,7 +215,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             e.preventDefault();
 
             NEWSBLUR.assets.update_payment_history(self.user.get('user_id'), function () {
-                $(".NB-admin-action-history").replaceWith($.make('div', 'Updated!'));
+                $(".NB-admin-action-history").replaceWith($.make('div', gettext('Updated!')));
                 self.fetch_payment_history();
             }, function (data) {
                 $(".NB-admin-action-history").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));

@@ -162,7 +162,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             NEWSBLUR.assets.preference('post_to_facebook') && 'facebook'
         ]);
 
-        $submit.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
+        $submit.addClass('NB-saving').addClass('NB-disabled').text(gettext('Sharing...'));
         var data = {
             story_id: this.model.id,
             story_feed_id: this.model.get('story_feed_id'),
@@ -198,13 +198,13 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         }
         var $error = $.make('div', { className: 'NB-error' }, message);
 
-        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
-        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
+        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text(gettext('Share'));
+        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text(gettext('Delete Share'));
         $share_button.siblings('.NB-error').remove();
         $share_button.after($error);
 
         if ($share_button_menu.length) {
-            $share_button_menu.removeClass('NB-disabled').text('Share');
+            $share_button_menu.removeClass('NB-disabled').text(gettext('Share'));
             $share_button_menu.siblings('.NB-error').remove();
             $share_button_menu.after($error.clone());
         }
@@ -214,7 +214,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     mark_story_as_unshared: function (options) {
         options = options || {};
         var $unshare_button = this.$('.NB-story-comment-delete');
-        $unshare_button.addClass('NB-saving').addClass('NB-disabled').text('Deleting...');
+        $unshare_button.addClass('NB-saving').addClass('NB-disabled').text(gettext('Deleting...'));
 
         var params = {
             story_id: this.model.id,
@@ -312,9 +312,9 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var $save = this.$('.NB-story-comment-save');
 
         if (!_.string.isBlank($input.val())) {
-            $save.text('Share with comments');
+            $save.text(gettext('Share with comments'));
         } else {
-            $save.text("Share this story");
+            $save.text(gettext("Share this story"));
         }
 
         var input_width = $input.innerWidth();

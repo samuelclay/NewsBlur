@@ -1,9 +1,10 @@
+{% load i18n %}
 <div class="NB-module NB-module-gettingstarted">
     <h5 class="NB-module-header">
         <div class="NB-module-header-right">
-            <a href="#" class="NB-module-hide NB-module-gettingstarted-hide">Hide</a>
+            <a href="#" class="NB-module-hide NB-module-gettingstarted-hide">{% trans "Hide" %}</a>
         </div>
-        Getting Started
+        {% trans "Getting Started" %}
     </h5>
 
     <div class="NB-module-item NB-module-item-intro">
@@ -25,28 +26,28 @@
 
         <div class="NB-intro-goals">
             <div class="NB-intro-goal NB-intro-goal-sites {% if user_profile.has_setup_feeds %}NB-done{% else %}NB-not-done{% endif %}">
-                <span>Setup NewsBlur.</span>
+                <span>{% trans "Setup NewsBlur." %}</span>
                 <div class="NB-not-done NB-modal-submit-green NB-modal-submit-button NB-module-launch-intro NB-javascript">
                     <div class="NB-icon"></div>
-                    Import Sites
+                    {% trans "Import Sites" %}
                 </div>
-                <div class="NB-done">Complete!</div>
+                <div class="NB-done">{% trans "Complete!" %}</div>
             </div>
             <div class="NB-intro-goal NB-intro-goal-friends {% if user_profile.has_found_friends %}NB-done{% else %}NB-not-done{% endif %}">
-                <span>Follow the blog.</span>
+                <span>{% trans "Follow the blog." %}</span>
                 <div class="NB-not-done NB-modal-submit-green NB-modal-submit-button NB-module-friends-button NB-javascript">
                     <div class="NB-icon"></div>
-                    Keep up-to-date
+                    {% trans "Keep up-to-date" %}
                 </div>
-                <div class="NB-done">Complete!</div>
+                <div class="NB-done">{% trans "Complete!" %}</div>
             </div>
             <div class="NB-intro-goal NB-intro-goal-train {% if user_profile.has_trained_intelligence %}NB-done{% else %}NB-not-done{% endif %}">
-                <span>Train stories.</span>
+                <span>{% trans "Train stories." %}</span>
                 <div class="NB-not-done NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">
                     <div class="NB-icon"></div>
-                    Launch Intel
+                    {% trans "Launch Intel" %}
                 </div>
-                <div class="NB-done">Complete!</div>
+                <div class="NB-done">{% trans "Complete!" %}</div>
             </div>
         </div>
     </div>

@@ -1,59 +1,60 @@
+{% load i18n %}
 {% load utils_tags %}
 <div class="NB-feature-detail-crosslinks">
-    <h2>Explore more features</h2>
+    <h2>{% trans "Explore more features" %}</h2>
     <div class="NB-feature-detail-crosslinks-grid">
         <a href="{% url "feature-intelligence-training" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-training">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/train.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-blue">Intelligence Training</div>
-            <div class="NB-feature-detail-crosslink-desc">Train by author, tag, title, and full text</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/train.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-blue">{% trans "Intelligence Training" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Train by author, tag, title, and full text" %}</div>
         </a>
         <a href="{% url "feature-ask-ai" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-ask-ai">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">Ask AI &amp; Daily Briefing</div>
-            <div class="NB-feature-detail-crosslink-desc">AI-powered story analysis and daily summaries</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">{% trans "Ask AI" %} &amp; {% trans "Daily Briefing" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "AI-powered story analysis and daily summaries" %}</div>
         </a>
         <a href="{% url "feature-web-feeds" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-web-feeds">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">Web Feeds</div>
-            <div class="NB-feature-detail-crosslink-desc">Follow any website, even without RSS</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">{% trans "Web Feeds" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Follow any website, even without RSS" %}</div>
         </a>
         <a href="{% url "feature-newsletters" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-newsletters">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/email.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-pink">Email Newsletters</div>
-            <div class="NB-feature-detail-crosslink-desc">Read newsletters in your news reader</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/email.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-pink">{% trans "Email Newsletters" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Read newsletters in your news reader" %}</div>
         </a>
         <a href="{% url "feature-search" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-search">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/search.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-teal">Full-Text Search</div>
-            <div class="NB-feature-detail-crosslink-desc">Search across all your subscriptions</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/search.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-teal">{% trans "Full-Text Search" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Search across all your subscriptions" %}</div>
         </a>
         <a href="{% url "feature-archive" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-archive">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/archive.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-orange">Story Archive</div>
-            <div class="NB-feature-detail-crosslink-desc">Every story kept and searchable forever</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/archive.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-orange">{% trans "Story Archive" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Every story kept and searchable forever" %}</div>
         </a>
         <a href="{% url "feature-saved-stories" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-saved">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/tag.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-green">Saved Stories &amp; Tags</div>
-            <div class="NB-feature-detail-crosslink-desc">Save stories and organize with custom tags</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/tag.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-green">{% trans "Saved Stories" %} &amp; {% trans "Tags" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Save stories and organize with custom tags" %}</div>
         </a>
         <a href="{% url "feature-native-apps" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-native-apps">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/dialog-goodies.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-gold">Native Apps</div>
-            <div class="NB-feature-detail-crosslink-desc">First-class iOS &amp; Android apps, not wrappers</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/dialog-goodies.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-gold">{% trans "Native Apps" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "First-class iOS" %} &amp; {% trans "Android apps, not wrappers" %}</div>
         </a>
         <a href="{% url "feature-mcp" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-mcp">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/mcp-agent.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">MCP Server</div>
-            <div class="NB-feature-detail-crosslink-desc">Connect AI agents to your feeds and stories</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/mcp-agent.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">{% trans "MCP Server" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Connect AI agents to your feeds and stories" %}</div>
         </a>
         <a href="{% url "feature-cli" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-cli">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/cli-terminal.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-cyan">CLI Tool</div>
-            <div class="NB-feature-detail-crosslink-desc">Manage feeds and stories from your terminal</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/cli-terminal.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-cyan">{% trans "CLI Tool" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Manage feeds and stories from your terminal" %}</div>
         </a>
         <a href="{% url "feature-story-clustering" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-clustering">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/stack.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">Story Clustering</div>
-            <div class="NB-feature-detail-crosslink-desc">Group duplicate stories across your feeds</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/stack.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-indigo">{% trans "Story Clustering" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Group duplicate stories across your feeds" %}</div>
         </a>
         <a href="{% url "features" %}#integrations" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-integrations">
-            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/link.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-cyan">IFTTT &amp; Zapier</div>
-            <div class="NB-feature-detail-crosslink-desc">Automate workflows with hundreds of services</div>
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/link.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-cyan">{% trans "IFTTT" %} &amp; {% trans "Zapier" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Automate workflows with hundreds of services" %}</div>
         </a>
     </div>
 </div>
 
 <div class="NB-feature-detail-cta">
-    <a href="{% url "features" %}" class="NB-feature-detail-cta-primary">See all features</a>
-    <a href="{% url "index" %}" class="NB-feature-detail-cta-secondary">Try NewsBlur free</a>
+    <a href="{% url "features" %}" class="NB-feature-detail-cta-primary">{% trans "See all features" %}</a>
+    <a href="{% url "index" %}" class="NB-feature-detail-cta-secondary">{% trans "Try NewsBlur free" %}</a>
 </div>

@@ -71,7 +71,7 @@ struct DiscoverSearchBarView: View {
                         .foregroundColor(DiscoverColors.textSecondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                .accessibilityLabel("Clear search")
+                .accessibilityLabel(NBLocalization.text("Clear search"))
                 .frame(minWidth: 32, minHeight: 44)
             }
         }
@@ -104,13 +104,13 @@ struct DiscoverViewModePicker: View {
         .padding(3)
         .background(DiscoverColors.border.opacity(0.35), in: Capsule())
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("View mode")
+        .accessibilityLabel(NBLocalization.text("View mode"))
     }
 
     private func modeButtons(stackedLabels: Bool) -> some View {
         HStack(spacing: 2) {
-            modeButton(.grid, title: "Grid", icon: "square.grid.2x2", stackedLabel: stackedLabels)
-            modeButton(.list, title: "List", icon: "list.bullet", stackedLabel: stackedLabels)
+            modeButton(.grid, title: NBLocalization.text("Grid"), icon: "square.grid.2x2", stackedLabel: stackedLabels)
+            modeButton(.list, title: NBLocalization.text("List"), icon: "list.bullet", stackedLabel: stackedLabels)
         }
         .fixedSize(horizontal: true, vertical: false)
     }

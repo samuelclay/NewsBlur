@@ -1,0 +1,18 @@
+<style>
+  /* i18n_scripts.html preserves joining in scripts where Latin tracking breaks words. */
+  html:lang(ar) body *, html:lang(he) body *, html:lang(hi) body *, html:lang(th) body * {
+    letter-spacing: normal !important;
+  }
+</style>
+<script src="{% url 'javascript-catalog' %}"></script>
+<script>
+  // i18n_scripts.html retains usable English controls if the catalog request fails.
+  if (!window.gettext) {
+    window.gettext = function (message) { return message; };
+    window.ngettext = function (singular, plural, count) { return count === 1 ? singular : plural; };
+    window.interpolate = function (message, values, named) {
+      return named ? message.replace(/%\(([^)]+)\)s/g, function (_, key) { return String(values[key]); }) :
+        message.replace(/%s/g, function () { return String(values.shift()); });
+    };
+  }
+</script>

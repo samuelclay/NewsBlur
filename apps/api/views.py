@@ -18,6 +18,7 @@ from django.contrib.auth import logout as logout_user
 from django.core.mail import mail_admins
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext
 from mongoengine.queryset import NotUniqueError
 
 from apps.profile.models import Profile
@@ -244,7 +245,7 @@ def check_share_on_site(request, token):
 
     if not story_url:
         response = HttpResponse(
-            callback + "(" + json.encode({"code": -1, "message": "No story_url specified."}) + ")",
+            callback + "(" + json.encode({"code": -1, "message": gettext("No story_url specified.")}) + ")",
             content_type="text/plain",
         )
         response["Access-Control-Allow-Origin"] = "*"

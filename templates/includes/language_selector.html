@@ -1,0 +1,13 @@
+{% load i18n %}
+<form method="post" action="{% url 'language-preference' %}" class="NB-language-selector" style="position:relative;z-index:10;text-align:end;padding:8px 16px">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  <label for="NB-login-language">{% trans "Language" %}</label>
+  <select id="NB-login-language" name="language" onchange="this.form.submit()" aria-label="{% trans 'Language' %}" style="max-width:min(280px,70vw);font:inherit">
+    <option value="auto" {% if ui_language_preference == 'auto' %}selected{% endif %}>{% trans "Automatic (device language)" %}</option>
+    {% for code, name in ui_languages %}
+      <option value="{{ code }}" {% if ui_language_preference == code %}selected{% endif %}>{{ name }}</option>
+    {% endfor %}
+  </select>
+  <noscript><button type="submit">{% trans "Save" %}</button></noscript>
+</form>

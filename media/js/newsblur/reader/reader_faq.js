@@ -36,40 +36,40 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
             $.make('div', { className: 'NB-modal-titlebar' }, [
                 $.make('h2', { className: 'NB-modal-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    'Frequently Asked Questions'
+                    gettext('Frequently Asked Questions')
                 ]),
                 $.make('div', { className: 'NB-faq-controls' }, [
                     $.make('ul', { className: 'segmented-control NB-faq-expand-toggle' }, [
                         $.make('li', {
                             className: 'NB-taskbar-button NB-faq-expand-option NB-faq-expand-all',
                             'data-mode': 'expanded'
-                        }, [$.make('span', { className: 'NB-task-title' }, 'Expanded')]),
+                        }, [$.make('span', { className: 'NB-task-title' }, gettext('Expanded'))]),
                         $.make('li', {
                             className: 'NB-taskbar-button NB-faq-expand-option NB-faq-collapse-all NB-active',
                             'data-mode': 'collapsed'
-                        }, [$.make('span', { className: 'NB-task-title' }, 'Collapsed')])
+                        }, [$.make('span', { className: 'NB-task-title' }, gettext('Collapsed'))])
                     ]),
                     $.make('div', { className: 'NB-faq-search' }, [
                         $.make('input', {
                             type: 'text',
                             className: 'NB-faq-search-input',
-                            placeholder: 'Search the FAQ...',
+                            placeholder: gettext('Search the FAQ...'),
                             autocomplete: 'off',
                             spellcheck: 'false'
                         }),
-                        $.make('div', { className: 'NB-faq-search-clear', title: 'Clear search' })
+                        $.make('div', { className: 'NB-faq-search-clear', title: gettext('Clear search') })
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-modal-body NB-faq-modal-body' }, [
-                $.make('div', { className: 'NB-faq-loading' }, 'Loading...')
+                $.make('div', { className: 'NB-faq-loading' }, gettext('Loading...'))
             ]),
             $.make('div', { className: 'NB-modal-footer NB-faq-modal-footer' }, [
                 $.make('div', { className: 'NB-faq-footer-text' }, [
-                    'Browse the full ',
-                    $.make('a', { href: '/faq', target: '_blank', className: 'NB-splash-link' }, 'FAQ page'),
-                    ' or ',
-                    $.make('a', { href: 'https://forum.newsblur.com', target: '_blank', className: 'NB-splash-link' }, 'ask the community'),
+                    gettext('Browse the full '),
+                    $.make('a', { href: '/faq', target: '_blank', className: 'NB-splash-link' }, gettext('FAQ page')),
+                    gettext(' or '),
+                    $.make('a', { href: 'https://forum.newsblur.com', target: '_blank', className: 'NB-splash-link' }, gettext('ask the community')),
                     '.'
                 ])
             ])
@@ -92,7 +92,7 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
             }, this),
             error: _.bind(function () {
                 $('.NB-faq-modal-body', this.$modal).html(
-                    '<div class="NB-faq-error">Could not load FAQ. Please try again.</div>'
+                    gettext('<div class="NB-faq-error">Could not load FAQ. Please try again.</div>')
                 );
             }, this)
         });
@@ -113,8 +113,8 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
         }
 
         $body.append($.make('div', { className: 'NB-faq-empty-state' }, [
-            $.make('div', { className: 'NB-faq-empty-state-title' }, 'No questions match that search.'),
-            $.make('div', { className: 'NB-faq-empty-state-subtitle' }, 'Try different keywords, or clear the search to see everything.')
+            $.make('div', { className: 'NB-faq-empty-state-title' }, gettext('No questions match that search.')),
+            $.make('div', { className: 'NB-faq-empty-state-subtitle' }, gettext('Try different keywords, or clear the search to see everything.'))
         ]));
     },
 
@@ -137,7 +137,7 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
             );
         }
         return $.make('div', { className: 'NB-faq-tiers-block' }, [
-            $.make('div', { className: 'NB-faq-tiers-label' }, 'Subscription tiers'),
+            $.make('div', { className: 'NB-faq-tiers-label' }, gettext('Subscription tiers')),
             $grid
         ]);
     },
@@ -231,7 +231,7 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
                 rel: 'noopener'
             }, [
                 $.make('span', { className: 'NB-faq-blog-icon' }),
-                'Read more on the NewsBlur Blog'
+                gettext('Read more on the NewsBlur Blog')
             ]));
         }
         return $links;

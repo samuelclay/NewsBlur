@@ -88,14 +88,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     TABS: [
-        { id: 'search', label: 'Search', icon: '/media/img/icons/nouns/search.svg', mono: true },
-        { id: 'web-feed', label: 'Web Feed', icon: '/media/img/icons/nouns/web-feed.svg', mono: true },
-        { id: 'popular', label: 'Popular', icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
-        { id: 'youtube', label: 'YouTube', icon: '/media/img/icons/lucide/youtube.svg', mono: true },
-        { id: 'reddit', label: 'Reddit', icon: '/media/img/icons/phosphor-fill/reddit-logo-fill.svg', mono: true },
-        { id: 'newsletters', label: 'Newsletters', icon: '/media/img/icons/lucide/mail.svg', mono: true },
-        { id: 'podcasts', label: 'Podcasts', icon: '/media/img/icons/lucide/podcast.svg', mono: true },
-        { id: 'google-news', label: 'Google News', icon: '/media/img/icons/lucide/newspaper.svg', mono: true }
+        { id: 'search', label: gettext('Search'), icon: '/media/img/icons/nouns/search.svg', mono: true },
+        { id: 'web-feed', label: gettext('Web Feed'), icon: '/media/img/icons/nouns/web-feed.svg', mono: true },
+        { id: 'popular', label: gettext('Popular'), icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
+        { id: 'youtube', label: gettext('YouTube'), icon: '/media/img/icons/lucide/youtube.svg', mono: true },
+        { id: 'reddit', label: gettext('Reddit'), icon: '/media/img/icons/phosphor-fill/reddit-logo-fill.svg', mono: true },
+        { id: 'newsletters', label: gettext('Newsletters'), icon: '/media/img/icons/lucide/mail.svg', mono: true },
+        { id: 'podcasts', label: gettext('Podcasts'), icon: '/media/img/icons/lucide/podcast.svg', mono: true },
+        { id: 'google-news', label: gettext('Google News'), icon: '/media/img/icons/lucide/newspaper.svg', mono: true }
     ],
 
     GOOGLE_NEWS_TOPICS: [
@@ -463,7 +463,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     ),
                     $.make('div', { className: 'NB-add-site-tabs-overflow NB-hidden' }, [
                         $.make('div', { className: 'NB-add-site-tabs-overflow-button' }, [
-                            $.make('span', 'More'),
+                            $.make('span', gettext('More')),
                             $.make('span', { className: 'NB-add-site-tabs-overflow-arrow' }, '\u25BC')
                         ]),
                         $.make('div', { className: 'NB-add-site-tabs-overflow-menu NB-hidden' })
@@ -476,10 +476,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     ]),
                     $.make('div', {
                         className: 'NB-add-site-style-button',
-                        title: 'Sort, filter, and display options'
+                        title: gettext('Sort, filter, and display options')
                     }, [
                         $.make('img', { src: '/media/img/icons/nouns/settings.svg' }),
-                        $.make('span', { className: 'NB-add-site-style-label' }, 'Options')
+                        $.make('span', { className: 'NB-add-site-style-label' }, gettext('Options'))
                     ])
                 ])
             ])
@@ -585,7 +585,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var children = [$.make('div', { className: 'NB-add-site-empty-text' }, empty_msg)];
         if (this.has_active_filters()) {
             children.push($.make('div', { className: 'NB-add-site-empty-hint' },
-                'Your filters may be hiding sites — open Options to widen them.'));
+                gettext('Your filters may be hiding sites — open Options to widen them.')));
         }
         return $.make('div', { className: 'NB-add-site-empty-state' }, children);
     },
@@ -754,7 +754,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             // Full render needed
             var $search_bar = this.render_tab_search_bar({
                 input_class: 'NB-add-site-search-input',
-                placeholder: 'Search by name, keyword, or paste a URL...',
+                placeholder: gettext('Search by name, keyword, or paste a URL...'),
                 value: this.search_query,
                 is_loading: state.is_loading
             });
@@ -806,7 +806,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     className: 'NB-add-site-search-clear' + (config.value ? '' : ' NB-hidden')
                 }, '\u00d7')
             ]),
-            $.make('div', { className: 'NB-add-site-search-btn NB-add-site-tab-search-btn' }, 'Search')
+            $.make('div', { className: 'NB-add-site-search-btn NB-add-site-tab-search-btn' }, gettext('Search'))
         ]);
     },
 
@@ -822,10 +822,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         // Trending Sites Section
         var trending_categories = [
-            { id: 'popular', label: 'Popular', description: 'Most subscribed-to feeds this week' },
-            { id: 'rising', label: 'Rising', description: 'Small feeds with the fastest-growing subscriber base' },
-            { id: 'hidden_gems', label: 'Hidden Gems', description: 'Feeds with deeply engaged readers, not yet widely known' },
-            { id: 'new_arrivals', label: 'New Arrivals', description: 'Recently added feeds that are gaining subscribers' }
+            { id: 'popular', label: gettext('Popular'), description: 'Most subscribed-to feeds this week' },
+            { id: 'rising', label: gettext('Rising'), description: 'Small feeds with the fastest-growing subscriber base' },
+            { id: 'hidden_gems', label: gettext('Hidden Gems'), description: 'Feeds with deeply engaged readers, not yet widely known' },
+            { id: 'new_arrivals', label: gettext('New Arrivals'), description: 'Recently added feeds that are gaining subscribers' }
         ];
         var $trending_pills = $.make('div', { className: 'NB-add-site-trending-pills' },
             _.map(trending_categories, function (cat) {
@@ -843,12 +843,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-section-header' }, [
                 $.make('div', { className: 'NB-add-site-section-title' }, [
                     $.make('img', { src: '/media/img/icons/nouns/pulse.svg', className: 'NB-add-site-section-icon' }),
-                    'Trending Sites'
+                    gettext('Trending Sites')
                 ]),
                 $.make('select', { className: 'NB-add-site-trending-days' }, [
-                    $.make('option', { value: '1', selected: state.trending_days === 1 }, 'Today'),
-                    $.make('option', { value: '7', selected: state.trending_days === 7 }, 'This Week'),
-                    $.make('option', { value: '30', selected: state.trending_days === 30 }, 'This Month')
+                    $.make('option', { value: '1', selected: state.trending_days === 1 }, gettext('Today')),
+                    $.make('option', { value: '7', selected: state.trending_days === 7 }, gettext('This Week')),
+                    $.make('option', { value: '30', selected: state.trending_days === 30 }, gettext('This Month'))
                 ])
             ]),
             $trending_pills,
@@ -1255,7 +1255,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             'data-category': 'all',
             'data-level': 'category',
             'data-source': source
-        }, 'All'));
+        }, gettext('All')));
 
         // One pill per category with icon and feed count
         _.each(grouped, function(group) {
@@ -1322,7 +1322,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             'data-subcategory': 'all',
             'data-level': 'subcategory',
             'data-source': source
-        }, 'All'));
+        }, gettext('All')));
 
         // Individual subcategory pills
         _.each(group.subcategories, function(subcat) {
@@ -1428,7 +1428,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $back_btn = $.make('div', { className: 'NB-add-site-category-back' }, [
             $.make('img', { src: '/media/img/icons/lucide/arrow-left.svg' }),
-            'Back to Search'
+            gettext('Back to Search')
         ]);
 
         var $content = $.make('div', { className: 'NB-add-site-search-category-view' }, [
@@ -1495,7 +1495,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (feed_ids.length === 0) {
             $results.html($.make('div', { className: 'NB-add-site-empty-state' }, [
-                $.make('div', { className: 'NB-add-site-empty-text' }, 'No feeds found in this category.')
+                $.make('div', { className: 'NB-add-site-empty-text' }, gettext('No feeds found in this category.'))
             ]));
             return;
         }
@@ -1598,9 +1598,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/heroicons-solid/fire.svg', className: 'NB-mono' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Discover Sites'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('Discover Sites')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Browse popular blogs, news sites, and publications with RSS feeds.')
+                        gettext('Browse popular blogs, news sites, and publications with RSS feeds.'))
                 ])
             ]),
             $category_pills,
@@ -1629,7 +1629,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 default_title: 'Discover Sites',
                 type_label: 'Sites',
                 search_class: 'NB-add-site-popular-search',
-                placeholder: 'Filter sites...'
+                placeholder: gettext('Filter sites...')
             });
             $results.html($section);
         }
@@ -1780,7 +1780,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (trimmed_query.length > 0) {
             if (!$badge.length) {
                 $badge = $.make('div', { className: 'NB-add-site-section-filter-badge' }, [
-                    $.make('span', { className: 'NB-add-site-section-filter-badge-label' }, 'Filtering for '),
+                    $.make('span', { className: 'NB-add-site-section-filter-badge-label' }, gettext('Filtering for ')),
                     $.make('span', { className: 'NB-add-site-section-filter-badge-query' }),
                     $.make('span', { className: 'NB-add-site-section-filter-badge-close' }, '\u00d7')
                 ]);
@@ -1827,7 +1827,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $search_bar = this.render_tab_search_bar({
             input_class: 'NB-add-site-tab-search-input NB-add-site-youtube-search',
-            placeholder: 'Search YouTube channels...',
+            placeholder: gettext('Search YouTube channels...'),
             value: state.query || ''
         });
 
@@ -1837,9 +1837,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/lucide/youtube.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'YouTube Channels'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('YouTube Channels')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Subscribe to YouTube channels and playlists as RSS feeds.')
+                        gettext('Subscribe to YouTube channels and playlists as RSS feeds.'))
                 ])
             ]),
             $search_bar,
@@ -1889,7 +1889,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 default_title: 'Discover Channels',
                 type_label: 'Channels',
                 search_class: 'NB-add-site-youtube-search',
-                placeholder: 'Filter channels...'
+                placeholder: gettext('Filter channels...')
             });
             $results.html($section);
         }
@@ -1985,7 +1985,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $search_bar = this.render_tab_search_bar({
             input_class: 'NB-add-site-tab-search-input NB-add-site-reddit-search',
-            placeholder: 'Search subreddits (e.g., programming, news, gaming)...',
+            placeholder: gettext('Search subreddits (e.g., programming, news, gaming)...'),
             value: state.query || ''
         });
 
@@ -1995,9 +1995,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/phosphor-fill/reddit-logo-fill.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Reddit Subreddits'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('Reddit Subreddits')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Subscribe to subreddits as RSS feeds.')
+                        gettext('Subscribe to subreddits as RSS feeds.'))
                 ])
             ]),
             $search_bar,
@@ -2059,13 +2059,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $actions = $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
                 $.make('div', { className: 'NB-subscribed-badge' }, [
                     $.make('span', { className: 'NB-subscribed-badge-check' }, '\u2713'),
-                    ' Subscribed'
+                    gettext(' Subscribed')
                 ]),
                 $.make('div', { className: 'NB-add-site-card-actions-row' }, [
                     $.make('div', {
                         className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
                         'data-feed-id': feed_id
-                    }, 'Open')
+                    }, gettext('Open'))
                 ])
             ]);
         } else {
@@ -2075,7 +2075,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('div', {
                         className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
                         'data-feed-url': feed_url
-                    }, 'Add')
+                    }, gettext('Add'))
                 ])
             ]);
         }
@@ -2091,7 +2091,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     className: 'NB-add-site-card-icon'
                 }),
                 $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title' }, 'Subscribe to r/' + name),
+                    $.make('div', { className: 'NB-add-site-card-title' }, interpolate(gettext("Subscribe to r/%(value_1)s"), {value_1: name}, true)),
                     $.make('div', { className: 'NB-add-site-card-meta' }, feed_url)
                 ])
             ]),
@@ -2112,7 +2112,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 default_title: 'Discover Subreddits',
                 type_label: 'Subreddits',
                 search_class: 'NB-add-site-reddit-search',
-                placeholder: 'Filter subreddits...'
+                placeholder: gettext('Filter subreddits...')
             });
             $results.html($section);
         }
@@ -2211,7 +2211,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (new_results.length > 0) {
             var $section = $.make('div', { className: 'NB-add-site-reddit-api-section' }, [
-                $.make('div', { className: 'NB-add-site-reddit-api-header' }, 'More from Reddit')
+                $.make('div', { className: 'NB-add-site-reddit-api-header' }, gettext('More from Reddit'))
             ]);
             var $grid = this.make_results_container();
             _.each(new_results, function (subreddit) {
@@ -2353,7 +2353,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $search_bar = this.render_tab_search_bar({
             input_class: 'NB-add-site-tab-search-input NB-add-site-newsletters-search',
-            placeholder: 'Search newsletters or paste URL...',
+            placeholder: gettext('Search newsletters or paste URL...'),
             value: state.query || ''
         });
 
@@ -2363,19 +2363,19 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/lucide/mail.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Newsletters & Substack'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('Newsletters & Substack')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more.')
+                        gettext('Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more.'))
                 ])
             ]),
             $search_bar,
             $.make('div', { className: 'NB-add-site-newsletter-filters' }, [
                 $.make('div', { className: 'NB-add-site-filter-group' }, [
-                    $.make('div', { className: 'NB-add-site-filter-label' }, 'Platform'),
+                    $.make('div', { className: 'NB-add-site-filter-label' }, gettext('Platform')),
                     $platform_pills
                 ]),
                 $.make('div', { className: 'NB-add-site-filter-group' }, [
-                    $.make('div', { className: 'NB-add-site-filter-label' }, 'Category'),
+                    $.make('div', { className: 'NB-add-site-filter-label' }, gettext('Category')),
                     $category_pills
                 ])
             ]),
@@ -2425,7 +2425,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 default_title: 'Discover Newsletters',
                 type_label: 'Newsletters',
                 search_class: 'NB-add-site-newsletters-search',
-                placeholder: 'Filter newsletters...'
+                placeholder: gettext('Filter newsletters...')
             });
             $results.html($section);
         }
@@ -2534,7 +2534,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $search_bar = this.render_tab_search_bar({
             input_class: 'NB-add-site-tab-search-input NB-add-site-podcasts-search',
-            placeholder: 'Search podcasts (e.g., "technology", "true crime", "comedy")...',
+            placeholder: gettext('Search podcasts (e.g., "technology", "true crime", "comedy")...'),
             value: state.query || ''
         });
 
@@ -2544,9 +2544,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/lucide/podcast.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Podcasts'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('Podcasts')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Subscribe to podcasts via RSS. Search by name or paste a feed URL.')
+                        gettext('Subscribe to podcasts via RSS. Search by name or paste a feed URL.'))
                 ])
             ]),
             $search_bar,
@@ -2596,7 +2596,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 default_title: 'Discover Podcasts',
                 type_label: 'Podcasts',
                 search_class: 'NB-add-site-podcasts-search',
-                placeholder: 'Filter podcasts...'
+                placeholder: gettext('Filter podcasts...')
             });
             $results.html($section);
         }
@@ -2691,9 +2691,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/lucide/newspaper.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Google News'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('Google News')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Subscribe to Google News feeds by topic or custom keywords.')
+                        gettext('Subscribe to Google News feeds by topic or custom keywords.'))
                 ])
             ]),
             $.make('div', { className: 'NB-add-site-tab-results' }, [
@@ -2703,7 +2703,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         $.make('div', { className: 'NB-add-site-google-news-controls' }, [
                             $.make('div', { className: 'NB-add-site-google-news-input-row' }, [
                                 $.make('div', { className: 'NB-add-site-google-news-field NB-add-site-google-news-field-search' }, [
-                                    $.make('label', { className: 'NB-add-site-google-news-label' }, 'Search keywords'),
+                                    $.make('label', { className: 'NB-add-site-google-news-label' }, gettext('Search keywords')),
                                     $.make('div', { className: 'NB-add-site-google-news-search-wrapper' }, [
                                         $.make('img', {
                                             src: '/media/img/icons/nouns/search.svg',
@@ -2712,45 +2712,45 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                                         $.make('input', {
                                             type: 'text',
                                             className: 'NB-add-site-tab-search-input NB-add-site-google-news-search-input',
-                                            placeholder: 'Enter a topic or keywords...',
+                                            placeholder: gettext('Enter a topic or keywords...'),
                                             value: state.query || ''
                                         })
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-add-site-google-news-field NB-add-site-google-news-field-folder' }, [
-                                    $.make('label', { className: 'NB-add-site-google-news-label' }, 'Folder'),
+                                    $.make('label', { className: 'NB-add-site-google-news-label' }, gettext('Folder')),
                                     $.make('div', { className: 'NB-add-site-google-news-folder-row' }, [
                                         this.make_folder_selector(),
-                                        $.make('div', { className: 'NB-add-site-google-news-folder-add-icon', title: 'New folder', role: 'button' }, '+')
+                                        $.make('div', { className: 'NB-add-site-google-news-folder-add-icon', title: gettext('New folder'), role: 'button' }, '+')
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-add-site-google-news-field' }, [
-                                    $.make('label', { className: 'NB-add-site-google-news-label' }, 'Language'),
+                                    $.make('label', { className: 'NB-add-site-google-news-label' }, gettext('Language')),
                                     $.make('select', { className: 'NB-add-site-google-news-language' }, [
-                                        $.make('option', { value: 'en' }, 'English'),
-                                        $.make('option', { value: 'es' }, 'Spanish'),
-                                        $.make('option', { value: 'fr' }, 'French'),
-                                        $.make('option', { value: 'de' }, 'German'),
-                                        $.make('option', { value: 'pt' }, 'Portuguese'),
-                                        $.make('option', { value: 'ja' }, 'Japanese'),
-                                        $.make('option', { value: 'zh' }, 'Chinese')
+                                        $.make('option', { value: 'en' }, gettext('English')),
+                                        $.make('option', { value: 'es' }, gettext('Spanish')),
+                                        $.make('option', { value: 'fr' }, gettext('French')),
+                                        $.make('option', { value: 'de' }, gettext('German')),
+                                        $.make('option', { value: 'pt' }, gettext('Portuguese')),
+                                        $.make('option', { value: 'ja' }, gettext('Japanese')),
+                                        $.make('option', { value: 'zh' }, gettext('Chinese'))
                                     ])
                                 ]),
                                 $.make('div', {
                                     className: 'NB-add-site-google-news-subscribe-btn' +
                                         (state.is_subscribed ? ' NB-subscribed' : '') +
                                         (state.is_loading ? ' NB-loading' : '')
-                                }, state.is_subscribed ? 'Open Site' : (state.is_loading ? 'Subscribing...' : 'Subscribe'))
+                                }, state.is_subscribed ? gettext('Open Site') : (state.is_loading ? gettext('Subscribing...') : gettext('Subscribe')))
                             ]),
                             $.make('div', { className: 'NB-add-site-google-news-folder-input NB-hidden' }, [
                                 $.make('div', { className: 'NB-add-site-google-news-folder-input-row' }, [
                                     $.make('input', {
                                         type: 'text',
                                         className: 'NB-add-site-google-news-folder-name',
-                                        placeholder: 'New folder name...'
+                                        placeholder: gettext('New folder name...')
                                     }),
                                     $.make('div', { className: 'NB-loading' }),
-                                    $.make('div', { className: 'NB-add-site-google-news-folder-submit' }, 'Add Folder')
+                                    $.make('div', { className: 'NB-add-site-google-news-folder-submit' }, gettext('Add Folder'))
                                 ])
                             ])
                         ])
@@ -2774,7 +2774,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $search_bar = this.render_tab_search_bar({
             input_class: 'NB-add-site-tab-search-input NB-add-site-web-feed-search',
-            placeholder: 'Paste any website URL...',
+            placeholder: gettext('Paste any website URL...'),
             value: state.url || '',
             is_loading: state.is_analyzing
         });
@@ -2837,9 +2837,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/nouns/web-feed.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Web Feed'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('Web Feed')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Create a feed for any website, even without RSS.')
+                        gettext('Create a feed for any website, even without RSS.'))
                 ])
             ]),
             $search_bar,
@@ -2851,25 +2851,25 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var explainer_cards = [
             {
                 icon: '/media/img/icons/nouns/web-feed-any-site.svg',
-                title: 'Works on any website',
+                title: gettext('Works on any website'),
                 desc: 'Paste any URL and NewsBlur creates a feed from the page, even without RSS.',
                 detail: 'The page HTML is fetched and parsed to extract content structure.'
             },
             {
                 icon: '/media/img/icons/nouns/web-feed-ai-analyze.svg',
-                title: 'AI finds the stories',
+                title: gettext('AI finds the stories'),
                 desc: 'You\'re presented with multiple story pattern options to choose from.',
                 detail: 'XPath patterns identify story blocks, headlines, links, and images.'
             },
             {
                 icon: '/media/img/icons/nouns/web-feed-refine.svg',
-                title: 'Refine with a hint',
+                title: gettext('Refine with a hint'),
                 desc: 'If none of the options match, type a story title you see on the page and we\'ll re-analyze.',
                 detail: 'A second pass uses your hint to find the right pattern on the page.'
             },
             {
                 icon: '/media/img/icons/nouns/web-feed-updates.svg',
-                title: 'Updates come to you',
+                title: gettext('Updates come to you'),
                 desc: 'NewsBlur checks for changes and delivers new stories to your feed.',
                 detail: 'Pages are re-checked on a configurable schedule and diffed for new content.'
             }
@@ -2911,24 +2911,24 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-webfeed-hint-header' }, [
                 $.make('div', { className: 'NB-add-site-webfeed-hint-info' }, [
                     $.make('div', { className: 'NB-add-site-webfeed-hint-title' },
-                        'Not seeing the right stories?'),
+                        gettext('Not seeing the right stories?')),
                     $.make('div', { className: 'NB-add-site-webfeed-hint-desc' },
-                        'Describe a story you\'re looking for and we\'ll re-analyze the page to find it.')
+                        gettext('Describe a story you\'re looking for and we\'ll re-analyze the page to find it.'))
                 ])
             ]),
             $.make('div', { className: 'NB-add-site-webfeed-hint-form' }, [
                 $.make('input', {
                     type: 'text',
                     className: 'NB-add-site-webfeed-hint-input',
-                    placeholder: 'Type a story title you see on the page',
+                    placeholder: gettext('Type a story title you see on the page'),
                     value: state.story_hint || ''
                 }),
                 $.make('div', {
                     className: 'NB-add-site-webfeed-hint-btn' + (state.is_refining ? ' NB-disabled' : '')
                 }, state.is_refining ? [
                     $.make('div', { className: 'NB-add-site-webfeed-hint-spinner NB-spinner' }),
-                    'Re-analyzing\u2026'
-                ] : 'Re-analyze')
+                    gettext('Re-analyzing\u2026')
+                ] : gettext('Re-analyze'))
             ])
         ]);
 
@@ -2936,9 +2936,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var $variants_section = $.make('div', { className: 'NB-add-site-webfeed-variants-section' }, [
             $.make('div', { className: 'NB-add-site-webfeed-section-header' }, [
                 $.make('div', { className: 'NB-add-site-webfeed-section-title' },
-                    'Choose a story pattern'),
+                    gettext('Choose a story pattern')),
                 $.make('div', { className: 'NB-add-site-webfeed-section-subtitle' },
-                    'Found ' + variants.length + ' patterns. Select the one that best matches the stories you want.')
+                    interpolate(gettext("Found %(value_1)s patterns. Select the one that best matches the stories you want."), {value_1: variants.length}, true))
             ]),
             $.make('div', { className: 'NB-add-site-webfeed-variant-cards' + (state.is_refining ? ' NB-refining' : '') },
                 [$hint_card].concat(_.map(variants, function (variant, index) {
@@ -2992,7 +2992,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                                 $.make('div', { className: 'NB-add-site-webfeed-variant-desc' }, variant.description || '')
                             ]),
                             $.make('div', { className: 'NB-add-site-webfeed-variant-count' },
-                                story_count + (story_count === 1 ? ' story' : ' stories'))
+                                interpolate(ngettext("%(count)s story", "%(count)s stories", story_count), {count: story_count}, true))
                         ]),
                         $preview_stories
                     ]);
@@ -3017,7 +3017,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $.make('div', { className: 'NB-add-site-webfeed-feed-badge-url' }, base_url),
                 selected_variant
                     ? $.make('div', { className: 'NB-add-site-webfeed-feed-badge-pattern' },
-                        'Pattern: ' + (selected_variant.label || ''))
+                        interpolate(gettext("Pattern: %(value_1)s"), {value_1: selected_variant.label || ''}, true))
                     : null
             ])
         ]);
@@ -3026,13 +3026,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             className: 'NB-add-site-webfeed-subscribe-section' + (state.selected_variant !== null ? '' : ' NB-hidden')
         }, [
             $.make('div', { className: 'NB-add-site-webfeed-section-header' }, [
-                $.make('div', { className: 'NB-add-site-webfeed-section-title' }, 'Subscribe')
+                $.make('div', { className: 'NB-add-site-webfeed-section-title' }, gettext('Subscribe'))
             ]),
             $feed_badge,
             $.make('div', { className: 'NB-add-site-webfeed-options' }, [
                 $.make('div', { className: 'NB-add-site-webfeed-option' }, [
                     $.make('label', { className: 'NB-add-site-webfeed-option-label' },
-                        'Alert after ' + state.staleness_days + (state.staleness_days === 1 ? ' day' : ' days') + ' without new stories'),
+                        interpolate(ngettext("Alert after %(value_1)s day without new stories", "Alert after %(value_1)s days without new stories", state.staleness_days), {value_1: state.staleness_days}, true)),
                     $.make('input', {
                         type: 'range',
                         className: 'NB-add-site-webfeed-staleness-slider',
@@ -3042,7 +3042,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     })
                 ]),
                 $.make('div', { className: 'NB-add-site-webfeed-option' }, [
-                    $.make('label', { className: 'NB-add-site-webfeed-option-label' }, 'When story content changes'),
+                    $.make('label', { className: 'NB-add-site-webfeed-option-label' }, gettext('When story content changes')),
                     $.make('div', { className: 'NB-add-site-webfeed-radio-group' }, [
                         $.make('label', {
                             className: 'NB-add-site-webfeed-radio-option' + (!state.mark_unread_on_change ? ' NB-selected' : '')
@@ -3054,7 +3054,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                                 value: 'keep',
                                 checked: !state.mark_unread_on_change
                             }),
-                            $.make('span', { className: 'NB-add-site-webfeed-radio-label' }, 'Keep read status')
+                            $.make('span', { className: 'NB-add-site-webfeed-radio-label' }, gettext('Keep read status'))
                         ]),
                         $.make('label', {
                             className: 'NB-add-site-webfeed-radio-option' + (state.mark_unread_on_change ? ' NB-selected' : '')
@@ -3066,25 +3066,25 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                                 value: 'unread',
                                 checked: state.mark_unread_on_change
                             }),
-                            $.make('span', { className: 'NB-add-site-webfeed-radio-label' }, 'Mark as unread')
+                            $.make('span', { className: 'NB-add-site-webfeed-radio-label' }, gettext('Mark as unread'))
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-add-site-webfeed-option' }, [
-                    $.make('label', { className: 'NB-add-site-webfeed-option-label' }, 'Add to folder'),
+                    $.make('label', { className: 'NB-add-site-webfeed-option-label' }, gettext('Add to folder')),
                     $.make('div', { className: 'NB-add-site-webfeed-folder-row' }, [
                         self.make_folder_selector(),
-                        $.make('div', { className: 'NB-add-site-webfeed-folder-add-icon', title: 'New folder', role: 'button' }, '+')
+                        $.make('div', { className: 'NB-add-site-webfeed-folder-add-icon', title: gettext('New folder'), role: 'button' }, '+')
                     ]),
                     $.make('div', { className: 'NB-add-site-webfeed-folder-input NB-hidden' }, [
                         $.make('div', { className: 'NB-add-site-webfeed-folder-input-row' }, [
                             $.make('input', {
                                 type: 'text',
                                 className: 'NB-add-site-webfeed-folder-name',
-                                placeholder: 'New folder name...'
+                                placeholder: gettext('New folder name...')
                             }),
                             $.make('div', { className: 'NB-loading' }),
-                            $.make('div', { className: 'NB-add-site-webfeed-folder-submit' }, 'Add Folder')
+                            $.make('div', { className: 'NB-add-site-webfeed-folder-submit' }, gettext('Add Folder'))
                         ])
                     ])
                 ])
@@ -3094,20 +3094,20 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('div', { className: 'NB-add-site-webfeed-archive-banner-icon' }),
                     $.make('div', { className: 'NB-add-site-webfeed-archive-banner-text' }, [
                         $.make('div', { className: 'NB-add-site-webfeed-archive-banner-title' }, [
-                            'Web Feeds',
-                            $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                            gettext('Web Feeds'),
+                            $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                         ]),
                         $.make('div', { className: 'NB-add-site-webfeed-archive-banner-body' },
-                            'Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds.')
+                            gettext('Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds.'))
                     ])
                 ]),
                 $.make('div', { className: 'NB-add-site-webfeed-archive-banner-cta' },
-                    'Upgrade to Premium Archive')
+                    gettext('Upgrade to Premium Archive'))
             ]) : null,
             $.make('div', {
                 className: 'NB-add-site-webfeed-subscribe-btn NB-modal-submit-button NB-modal-submit-green' +
                     (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '')
-            }, 'Subscribe to ' + page_title)
+            }, interpolate(gettext("Subscribe to %(value_1)s"), {value_1: page_title}, true))
         ]);
 
         return $.make('div', { className: 'NB-add-site-webfeed-results' }, [$variants_section, $options]);
@@ -3148,10 +3148,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-webfeed-subscribed-icon' }, is_done ? '\u2713' : (is_error ? '\u26a0' : '\u2713')),
             $.make('div', { className: 'NB-add-site-webfeed-subscribed-text' }, [
                 $.make('div', { className: 'NB-add-site-webfeed-subscribed-title' },
-                    is_done ? 'Subscribed!' : (is_error ? 'Subscribed with errors' : 'Subscribed!')),
+                    is_done ? gettext('Subscribed!') : (is_error ? gettext('Subscribed with errors') : gettext('Subscribed!'))),
                 $.make('div', { className: 'NB-add-site-webfeed-subscribed-desc' },
-                    is_done ? 'Feed "' + feed_title + '" is ready.' :
-                    'Feed "' + feed_title + '" has been created.'),
+                    is_done ? interpolate(gettext("Feed \"%(value_1)s\" is ready."), {value_1: feed_title}, true) :
+                    interpolate(gettext("Feed \"%(value_1)s\" has been created."), {value_1: feed_title}, true)),
                 $.make('div', { className: 'NB-add-site-webfeed-subscribe-stages' }, $status_items)
             ])
         ]);
@@ -3370,7 +3370,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var $subscribe = this.$('.NB-add-site-webfeed-subscribe-section');
         $subscribe.removeClass('NB-hidden');
         this.$('.NB-add-site-webfeed-feed-badge-pattern').text(
-            'Pattern: ' + (variant ? variant.label || '' : ''));
+            interpolate(gettext("Pattern: %(value_1)s"), {value_1: variant ? variant.label || '' : ''}, true));
 
         // Scroll subscribe section into view
         setTimeout(_.bind(function () {
@@ -3385,7 +3385,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var value = parseInt($(e.target).val(), 10);
         this.webfeed_state.staleness_days = value;
         $(e.target).closest('.NB-add-site-webfeed-option').find('.NB-add-site-webfeed-option-label').text(
-            'Alert after ' + value + (value === 1 ? ' day' : ' days') + ' without new stories'
+            interpolate(ngettext("Alert after %(value_1)s day without new stories", "Alert after %(value_1)s days without new stories", value), {value_1: value}, true)
         );
     },
 
@@ -3409,7 +3409,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var folder = this.$('.NB-add-site-webfeed-subscribe-section .NB-add-site-folder-select').val() || '';
 
         var $btn = this.$('.NB-add-site-webfeed-subscribe-btn');
-        $btn.text('Subscribing...').addClass('NB-disabled');
+        $btn.text(gettext('Subscribing...')).addClass('NB-disabled');
 
         NEWSBLUR.assets.subscribe_webfeed(state.url, state.selected_variant, folder, {
             'story_container_xpath': variant.story_container,
@@ -3433,7 +3433,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 NEWSBLUR.assets.load_feeds();
             } else {
                 var page_title = state.page_title || 'Web Feed';
-                $btn.text('Subscribe to ' + page_title).removeClass('NB-disabled');
+                $btn.text(interpolate(gettext("Subscribe to %(value_1)s"), {value_1: page_title}, true)).removeClass('NB-disabled');
                 this.webfeed_state.error = data.message;
                 this.render_webfeed_tab();
             }
@@ -3524,9 +3524,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/nouns/folder-closed.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Browse by Category'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, gettext('Browse by Category')),
                     $.make('div', { className: 'NB-add-site-source-desc' },
-                        'Discover feeds organized by topic and interest.')
+                        gettext('Discover feeds organized by topic and interest.'))
                 ])
             ]),
             $.make('div', { className: 'NB-add-site-tab-results' }, [
@@ -3681,7 +3681,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (state.categories.length === 0) {
             $grid.html($.make('div', { className: 'NB-add-site-empty-state' },
-                'No categories available. Categories will appear here once they are configured.'));
+                gettext('No categories available. Categories will appear here once they are configured.')));
             return;
         }
 
@@ -3707,7 +3707,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $.make('div', { className: 'NB-add-site-category-icon' }, $icon),
                 $.make('div', { className: 'NB-add-site-category-info' }, [
                     $.make('div', { className: 'NB-add-site-category-name' }, category.name),
-                    $.make('div', { className: 'NB-add-site-category-count' }, category.feed_count + ' feeds')
+                    $.make('div', { className: 'NB-add-site-category-count' }, interpolate(gettext("%(value_1)s feeds"), {value_1: category.feed_count}, true))
                 ])
             ]));
         });
@@ -3732,7 +3732,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-category-feeds-header' }, [
                 $.make('div', { className: 'NB-add-site-category-back' }, [
                     $.make('img', { src: '/media/img/icons/lucide/arrow-left.svg' }),
-                    'Back to Categories'
+                    gettext('Back to Categories')
                 ]),
                 $.make('div', { className: 'NB-add-site-category-feeds-title' }, [
                     $category_icon,
@@ -3773,7 +3773,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (feeds.length === 0) {
             $results.html($.make('div', { className: 'NB-add-site-empty-state' },
-                'No feeds found in this category.'));
+                gettext('No feeds found in this category.')));
             return;
         }
 
@@ -4136,21 +4136,21 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 src: '/media/embed/icons/nouns/dialog-statistics.svg',
                 className: 'NB-add-site-stats-icon'
             }),
-            'Stats'
+            gettext('Stats')
         ]);
 
         if (subscribed) {
             $actions = $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
                 $.make('div', { className: 'NB-subscribed-badge' }, [
                     $.make('span', { className: 'NB-subscribed-badge-check' }, '\u2713'),
-                    ' Subscribed'
+                    gettext(' Subscribed')
                 ]),
                 $.make('div', { className: 'NB-add-site-card-actions-row' }, [
                     $stats_btn,
                     $.make('div', {
                         className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
                         'data-feed-id': feed_id
-                    }, 'Open')
+                    }, gettext('Open'))
                 ])
             ]);
         } else {
@@ -4159,7 +4159,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('div', {
                         className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
                         'data-feed-id': feed_id
-                    }, 'Try'),
+                    }, gettext('Try')),
                     $stats_btn
                 ]),
                 $.make('div', { className: 'NB-add-site-card-add-group' }, [
@@ -4168,7 +4168,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
                         'data-feed-id': feed_id,
                         'data-feed-url': feed.feed_address || feed.address
-                    }, 'Add')
+                    }, gettext('Add'))
                 ])
             ]);
         }
@@ -4234,21 +4234,21 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 src: '/media/embed/icons/nouns/dialog-statistics.svg',
                 className: 'NB-add-site-stats-icon'
             }),
-            'Stats'
+            gettext('Stats')
         ]);
 
         if (subscribed) {
             $actions = $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
                 $.make('div', { className: 'NB-subscribed-badge' }, [
                     $.make('span', { className: 'NB-subscribed-badge-check' }, '\u2713'),
-                    ' Subscribed'
+                    gettext(' Subscribed')
                 ]),
                 $.make('div', { className: 'NB-add-site-card-actions-row' }, [
                     $stats_btn,
                     $.make('div', {
                         className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
                         'data-feed-id': feed_id
-                    }, 'Open')
+                    }, gettext('Open'))
                 ])
             ]);
         } else {
@@ -4257,7 +4257,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('div', {
                         className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
                         'data-feed-id': feed_id
-                    }, 'Try'),
+                    }, gettext('Try')),
                     $stats_btn
                 ]),
                 $.make('div', { className: 'NB-add-site-card-add-group' }, [
@@ -4266,7 +4266,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
                         'data-feed-id': feed_id,
                         'data-feed-url': config.feed_url
-                    }, 'Add')
+                    }, gettext('Add'))
                 ])
             ]);
         }
@@ -4446,18 +4446,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         $.make('img', { src: '/media/img/icons/nouns/add.svg' })
                     ]),
                     $.make('div', { className: 'NB-add-site-card-info' }, [
-                        $.make('div', { className: 'NB-add-site-card-title' }, 'Subscribe to ' + domain),
+                        $.make('div', { className: 'NB-add-site-card-title' }, interpolate(gettext("Subscribe to %(value_1)s"), {value_1: domain}, true)),
                         $.make('div', { className: 'NB-add-site-card-meta' }, normalized_url)
                     ])
                 ]),
                 $.make('div', { className: 'NB-add-site-card-desc' },
-                    'NewsBlur will automatically find the RSS feed for this site.'),
+                    gettext('NewsBlur will automatically find the RSS feed for this site.')),
                 $.make('div', { className: 'NB-add-site-card-actions' }, [
                     this.make_folder_selector(),
                     $.make('div', {
                         className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
                         'data-feed-url': normalized_url
-                    }, 'Subscribe')
+                    }, gettext('Subscribe'))
                 ])
             ])
         ]);
@@ -4825,28 +4825,28 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var feed_url = $card.data('feed-url');
         if (!popular_feed_id && !feed_url) return;
 
-        $btn.text('Loading...');
+        $btn.text(gettext('Loading...'));
         var params = {};
         if (popular_feed_id) params.id = popular_feed_id;
         if (feed_url) params.feed_url = feed_url;
         this.model.make_request('/discover/link_popular_feed', params, function (data) {
             if (data.code > 0 && data.feed_id) {
-                $btn.text($btn.hasClass('NB-add-site-try-btn') ? 'Try' : 'Stats');
+                $btn.text($btn.hasClass('NB-add-site-try-btn') ? gettext('Try') : gettext('Stats'));
                 $card.find('[data-feed-id]').each(function () {
                     $(this).data('feed-id', data.feed_id).attr('data-feed-id', data.feed_id);
                 });
                 $card.data('feed-id', data.feed_id).attr('data-feed-id', data.feed_id);
                 if (callback) callback(data.feed_id);
             } else {
-                $btn.text('Error');
+                $btn.text(gettext('Error'));
                 setTimeout(function () {
-                    $btn.text($btn.hasClass('NB-add-site-try-btn') ? 'Try' : 'Stats');
+                    $btn.text($btn.hasClass('NB-add-site-try-btn') ? gettext('Try') : gettext('Stats'));
                 }, 2000);
             }
         }, function () {
-            $btn.text('Error');
+            $btn.text(gettext('Error'));
             setTimeout(function () {
-                $btn.text($btn.hasClass('NB-add-site-try-btn') ? 'Try' : 'Stats');
+                $btn.text($btn.hasClass('NB-add-site-try-btn') ? gettext('Try') : gettext('Stats'));
             }, 2000);
         }, { request_type: 'GET' });
     },
@@ -4863,7 +4863,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             return;
         }
 
-        $btn.addClass('NB-loading').text('Adding...');
+        $btn.addClass('NB-loading').text(gettext('Adding...'));
 
         NEWSBLUR.assets.save_add_url(feed_url, folder, function (data) {
             if (data.code > 0 || data.feed) {
@@ -4875,13 +4875,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 // Convert button to "Open Site" with feed ID stored for later
                 $btn.removeClass('NB-loading NB-add-site-subscribe-btn NB-modal-submit-grey')
                     .addClass('NB-add-site-open-btn NB-modal-submit-green')
-                    .text('Open Site')
+                    .text(gettext('Open Site'))
                     .data('feed-id', data.feed ? data.feed.id : null);
             } else {
-                $btn.removeClass('NB-loading').addClass('NB-error').text('Error');
+                $btn.removeClass('NB-loading').addClass('NB-error').text(gettext('Error'));
                 console.log('Subscribe error:', data.message);
                 setTimeout(function () {
-                    $btn.removeClass('NB-error').text('Add');
+                    $btn.removeClass('NB-error').text(gettext('Add'));
                 }, 2000);
             }
         });
@@ -4945,7 +4945,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var $loading = this.$('.NB-add-site-webfeed-folder-input .NB-loading');
 
         $loading.addClass('NB-active');
-        $submit.addClass('NB-disabled').text('Adding...');
+        $submit.addClass('NB-disabled').text(gettext('Adding...'));
 
         var parent_folder = this.$('.NB-add-site-webfeed-folder-row .NB-add-site-folder-select').val() || '';
         NEWSBLUR.assets.save_add_folder(folder_name, parent_folder, function (data) {
@@ -4953,7 +4953,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $submit.removeClass('NB-disabled');
 
             if (data && !data.message) {
-                $submit.text('Added!');
+                $submit.text(gettext('Added!'));
                 NEWSBLUR.assets.load_feeds(function () {
                     var $new_select = self.make_folder_selector(folder_name);
                     self.$('.NB-add-site-webfeed-folder-row .NB-add-site-folder-select').replaceWith($new_select);
@@ -4962,10 +4962,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         $(this).addClass('NB-hidden');
                     });
                     self.$('.NB-add-site-webfeed-folder-add-icon').removeClass('NB-active');
-                    $submit.text('Add Folder');
+                    $submit.text(gettext('Add Folder'));
                 });
             } else {
-                $submit.text('Add Folder');
+                $submit.text(gettext('Add Folder'));
             }
         });
     },
@@ -5470,11 +5470,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $btn.removeClass('NB-loading NB-subscribed NB-disabled');
 
         if (state.is_subscribed) {
-            $btn.addClass('NB-subscribed').text('Open Site');
+            $btn.addClass('NB-subscribed').text(gettext('Open Site'));
         } else if (state.is_loading) {
-            $btn.addClass('NB-loading NB-disabled').text('Subscribing...');
+            $btn.addClass('NB-loading NB-disabled').text(gettext('Subscribing...'));
         } else {
-            $btn.text('Subscribe');
+            $btn.text(gettext('Subscribe'));
         }
     },
 
@@ -5550,10 +5550,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     show_google_news_error: function (message) {
         var $btn = this.$('.NB-add-site-google-news-subscribe-btn');
-        $btn.removeClass('NB-loading NB-disabled').addClass('NB-error').text('Error');
+        $btn.removeClass('NB-loading NB-disabled').addClass('NB-error').text(gettext('Error'));
 
         setTimeout(function () {
-            $btn.removeClass('NB-error').text('Subscribe');
+            $btn.removeClass('NB-error').text(gettext('Subscribe'));
         }, 2000);
     },
 
@@ -5589,7 +5589,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var $loading = this.$('.NB-add-site-google-news-folder-input .NB-loading');
 
         $loading.addClass('NB-active');
-        $submit.addClass('NB-disabled').text('Adding...');
+        $submit.addClass('NB-disabled').text(gettext('Adding...'));
 
         var parent_folder = this.$('.NB-add-site-google-news-folder-row .NB-add-site-folder-select').val() || '';
         NEWSBLUR.assets.save_add_folder(folder_name, parent_folder, function (data) {
@@ -5597,7 +5597,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $submit.removeClass('NB-disabled');
 
             if (data && !data.message) {
-                $submit.text('Added!');
+                $submit.text(gettext('Added!'));
                 NEWSBLUR.assets.load_feeds(function () {
                     var $new_select = self.make_folder_selector(folder_name);
                     self.$('.NB-add-site-google-news-folder-row .NB-add-site-folder-select').replaceWith($new_select);
@@ -5606,10 +5606,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         $(this).addClass('NB-hidden');
                     });
                     self.$('.NB-add-site-google-news-folder-add-icon').removeClass('NB-active');
-                    $submit.text('Add Folder');
+                    $submit.text(gettext('Add Folder'));
                 });
             } else {
-                $submit.text('Add Folder');
+                $submit.text(gettext('Add Folder'));
             }
         });
     },

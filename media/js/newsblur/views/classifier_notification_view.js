@@ -42,7 +42,7 @@ NEWSBLUR.Views.ClassifierNotificationView = Backbone.View.extend({
             ]),
             $.make('div', { className: 'NB-classifier-notification-pill' }, [
                 $.make('span', { className: 'NB-classifier-type-badge' }, notif.classifier_type.toUpperCase()),
-                (notif.is_regex && $.make('span', { className: 'NB-classifier-type-badge NB-classifier-regex-badge' }, 'REGEX')),
+                (notif.is_regex && $.make('span', { className: 'NB-classifier-type-badge NB-classifier-regex-badge' }, gettext('REGEX'))),
                 $.make('span', { className: 'NB-classifier-notification-value' }, notif.classifier_value)
             ])
         ]);

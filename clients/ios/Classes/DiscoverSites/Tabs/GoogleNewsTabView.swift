@@ -50,7 +50,7 @@ struct GoogleNewsTabView: View {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: DiscoverColors.accent))
 
-            Text("Loading Google News topics...")
+            Text(NBLocalization.text("Loading Google News topics..."))
                 .font(.system(size: 14))
                 .foregroundColor(DiscoverColors.textSecondary)
         }
@@ -62,7 +62,7 @@ struct GoogleNewsTabView: View {
 
     private var topicGridSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Choose a Topic")
+            Text(NBLocalization.text("Choose a Topic"))
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
 
@@ -116,7 +116,7 @@ struct GoogleNewsTabView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 13, weight: .medium))
-                    Text("All Topics")
+                    Text(NBLocalization.text("All Topics"))
                         .font(.system(size: 14, weight: .medium))
                 }
                 .foregroundColor(DiscoverColors.accent)
@@ -152,7 +152,7 @@ struct GoogleNewsTabView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
                             subcategoryPill(
-                                label: "All", isActive: viewModel.googleNewsState.selectedSubcategory == nil
+                                label: NBLocalization.text("All"), isActive: viewModel.googleNewsState.selectedSubcategory == nil
                             ) {
                                 viewModel.selectGoogleNewsSubcategory(nil)
                             }
@@ -237,11 +237,11 @@ struct GoogleNewsTabView: View {
 
             // Custom query
             VStack(alignment: .leading, spacing: 4) {
-                Text("Custom Search Query")
+                Text(NBLocalization.text("Custom Search Query"))
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(DiscoverColors.textSecondary)
 
-                TextField("Enter a custom search query...", text: $viewModel.googleNewsState.searchQuery)
+                TextField(NBLocalization.text("Enter a custom search query..."), text: $viewModel.googleNewsState.searchQuery)
                     .font(.system(size: 14))
                     .foregroundColor(DiscoverColors.textPrimary)
                     .autocapitalization(.none)
@@ -258,7 +258,7 @@ struct GoogleNewsTabView: View {
 
             // Language
             VStack(alignment: .leading, spacing: 4) {
-                Text("Language")
+                Text(NBLocalization.text("Language"))
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(DiscoverColors.textSecondary)
 
@@ -305,7 +305,7 @@ struct GoogleNewsTabView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .disabled(subscribeDisabled)
-                .accessibilityLabel("Subscribe to Google News Feed")
+                .accessibilityLabel(NBLocalization.text("Subscribe to Google News Feed"))
                 .accessibilityIdentifier("discover-subscribe-google-news")
             }
         }

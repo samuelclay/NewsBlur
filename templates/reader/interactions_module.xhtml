@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils_tags typogrify_tags statistics_tags %}
 
 <ul class="NB-interactions">
@@ -14,7 +15,7 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> is now following you.
+                </span> {% trans "is now following you." %}
             </div>
             <div class="NB-interaction-date">
                 {{ interaction.time_since }} ago
@@ -26,7 +27,7 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
+                </span> {% trans "replied to your" %} {% if interaction.category == 'comment_reply' %}{% trans "comment" %}{% else %}{% trans "reply" %}{% endif %}:
             </div>
             <div class="NB-interaction-content">
                 <span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:128 }}</span>
@@ -41,7 +42,7 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> re-shared <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:12 }}</span>{% if interaction.content %}:{% else %}.{% endif %}
+                </span> {% trans "re-shared" %} <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:12 }}</span>{% if interaction.content %}:{% else %}.{% endif %}
             </div>
             {% if interaction.content %}
                 <div class="NB-interaction-content">
@@ -58,7 +59,7 @@
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
-                </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:12 }}</span>.
+                </span> {% trans "favorited your comments on" %} <span class="NB-interaction-sharedstory-title NB-splash-link" title="{{ interaction.title }}">{{ interaction.title|safe|truncatewords:12 }}</span>.
             </div>
             <div class="NB-interaction-date">
                 {{ interaction.time_since }} ago

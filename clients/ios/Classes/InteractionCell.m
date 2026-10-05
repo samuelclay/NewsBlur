@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  InteractionCell.m
 //  NewsBlur
@@ -112,24 +113,24 @@
     NSString *content = [interaction objectForKey:@"content"];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [interaction objectForKey:@"title"]]];
     NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
-    NSString *time = [NSString stringWithFormat:@"%@ ago", [interaction objectForKey:@"time_since"]];
+    NSString *time = [NSString stringWithFormat:[NBLocalization text:@"%@ ago"], [interaction objectForKey:@"time_since"]];
     NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
     NSString *txt;
     
     if ([category isEqualToString:@"follow"]) {        
-        txt = [NSString stringWithFormat:@"%@ is now following you.", username];                
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ is now following you."], username];
     } else if ([category isEqualToString:@"comment_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n \n%@", username, title, comment];          
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ replied to your comment on %@:\n \n%@"], username, title, comment];
     } else if ([category isEqualToString:@"reply_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n \n%@", username, title, comment];  
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ replied to your reply on %@:\n \n%@"], username, title, comment];
     } else if ([category isEqualToString:@"story_reshare"]) {
         if ([content isEqualToString:@""] || content == nil) {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@.", username, title];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ re-shared %@."], username, title];
         } else {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n \n%@", username, title, comment];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ re-shared %@:\n \n%@"], username, title, comment];
         }
     } else if ([category isEqualToString:@"comment_like"]) {
-        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@.", username, title];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ favorited your comments on %@."], username, title];
     }
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];

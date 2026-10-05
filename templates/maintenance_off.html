@@ -1,3 +1,4 @@
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -75,7 +76,7 @@
             margin: 0 0 48px;
         }
         </style>
-        <title>NewsBlur is upgrading...</title>
+        <title>{% trans "NewsBlur is upgrading..." %}</title>
     </head>
     <body>
         <table height="100%" width="100%">
@@ -83,10 +84,10 @@
                 <td align="center" valign="middle">
                     <div id="container">
                         <img src="/media/img/logo_512.png" class="logo">
-                        <h1>NewsBlur is in <span class="error404">maintenance mode</span></h1>
+                        <h1>{% trans "NewsBlur is in" %} <span class="error404">{% trans "maintenance mode" %}</span></h1>
                         <div class="description">
-                            <p>This is an unplanned maintenance related to a bad deploy of a new feature. I'm working on getting things stablized.</p>
-                            <p>To pass the time, <a href="http://mltshp.com/popular">check out what's popular on MLTSHP</a>.</p>
+                            <p>{% trans "This is an unplanned maintenance related to a bad deploy of a new feature. I'm working on getting things stablized." %}</p>
+                            <p>{% trans "To pass the time," %} <a href="http://mltshp.com/popular">{% trans "check out what's popular on MLTSHP" %}</a>.</p>
                         </div>
                     </div>
                 </td>

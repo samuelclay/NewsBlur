@@ -261,10 +261,10 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         imageView.accessibilityIdentifier = "fullscreen-story-image"
         scroll.addSubview(imageView)
         view.addSubview(controls)
-        let close = makeButton(symbol: "xmark", label: "Close image")
+        let close = makeButton(symbol: "xmark", label: NBLocalization.text("Close image"))
         close.addTarget(self, action: #selector(closeImage), for: .touchUpInside)
         controls.addSubview(close)
-        configureButton(menuButton, symbol: "ellipsis", label: "Image actions")
+        configureButton(menuButton, symbol: "ellipsis", label: NBLocalization.text("Image actions"))
         menuButton.showsMenuAsPrimaryAction = true
         controls.addSubview(menuButton)
         close.translatesAutoresizingMaskIntoConstraints = false
@@ -328,7 +328,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         status.font = .preferredFont(forTextStyle: .footnote)
         status.textAlignment = .center
         status.numberOfLines = 0
-        status.text = "Loading image…"
+        status.text = NBLocalization.text("Loading image…")
         view.addSubview(status)
         spinner.color = .white
         view.addSubview(spinner)
@@ -588,7 +588,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
                     self.transitionImage?.image = image
                     self.status.text = nil
                 } else {
-                    self.status.text = "Couldn’t load the full image. You can try opening it in your browser."
+                    self.status.text = NBLocalization.text("Couldn’t load the full image. You can try opening it in your browser.")
                 }
                 self.updateMenu()
             }
@@ -684,8 +684,8 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
 
     private func showError(_ message: String) {
         guard !closing else { return }
-        let alert = UIAlertController(title: "Save Image", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+        let alert = UIAlertController(title: NBLocalization.text("Save Image"), message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NBLocalization.text("OK"), style: .cancel))
         present(alert, animated: true)
     }
 

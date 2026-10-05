@@ -1,7 +1,8 @@
 {% load utils_tags %}
 <!DOCTYPE html>
-<html>
+<html lang="{{ ui_language }}" dir="{% if ui_language_rtl %}rtl{% else %}ltr{% endif %}">
 <head>
+  {% include "includes/i18n_scripts.html" %}
   <title>{% block title %}NewsBlur{% endblock %}</title>
   {% include_stylesheets "common" %}
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">

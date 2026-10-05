@@ -100,7 +100,7 @@ fun DiscoveryScreen(
             Row(Modifier.fillMaxWidth().padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") }
                 Text(
-                    "Add + Discover Sites",
+                    stringResource(R.string.i18n_add_discover_sites),
                     Modifier.weight(1f),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
@@ -209,7 +209,7 @@ fun DiscoveryScreen(
                                         DiscoveryAddRow(state, model, colors) {
                                             TextButton(modifier = Modifier.semantics { contentDescription = "Add this URL" }, enabled = !state.busy, onClick = {
                                                 model.add(DiscoveryFeed(state.page.query.trim(), state.page.query.trim()))
-                                            }) { Text("Add", color = colors.siteLink) }
+                                            }) { Text(stringResource(R.string.i18n_add), color = colors.siteLink) }
                                         }
                                     }
                                 }
@@ -240,15 +240,15 @@ fun DiscoveryScreen(
                                     }
                                     state.page.error?.let {
                                         Text(it, color = colors.stale)
-                                        TextButton(onClick = model::retry) { Text("Retry", color = colors.siteLink) }
+                                        TextButton(onClick = model::retry) { Text(stringResource(R.string.i18n_retry), color = colors.siteLink) }
                                     }
                                     if (!state.page.loading &&
                                         state.page.error == null &&
                                         state.page.feeds.isEmpty()
                                     ) {
-                                        Text("No sites found. Try another search.", color = colors.textSecondary)
+                                        Text(stringResource(R.string.i18n_no_sites_found_try_another_search), color = colors.textSecondary)
                                     }
-                                    if (state.page.hasMore) TextButton(onClick = model::more) { Text("Load more", color = colors.siteLink) }
+                                    if (state.page.hasMore) TextButton(onClick = model::more) { Text(stringResource(R.string.i18n_load_more), color = colors.siteLink) }
                                 }
                             }
                         }
@@ -369,9 +369,9 @@ private fun WebFeedForm(
 ) {
     val web = state.web
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Follow any website", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.i18n_follow_any_website), style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Create a feed from a page without RSS. NewsBlur finds its stories and checks for updates. Requires Premium Archive.",
+            stringResource(R.string.i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive),
             color = colors.textSecondary,
         )
         DiscoveryInput(web.url, "Web page URL", colors, { value -> model.webEdit { it.copy(url = value) } }, model::analyze, !state.busy)
@@ -397,7 +397,7 @@ private fun WebFeedForm(
                     modifier = Modifier.semantics { contentDescription = "Add RSS feed" },
                     enabled = !state.busy && web.detectedFeed !in state.added,
                     colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
-                ) { Text(if (web.detectedFeed in state.added) "Added" else "Add") }
+                ) { Text(if (web.detectedFeed in state.added) "Added" else stringResource(R.string.i18n_add)) }
             }
         }
         web.variants.forEachIndexed { index, variant ->
@@ -443,7 +443,7 @@ private fun WebFeedForm(
             ) { days -> model.webEdit { it.copy(staleness = days.toInt()) } }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(web.markUnread, { checked -> model.webEdit { it.copy(markUnread = checked) } }, enabled = !state.busy)
-                Text("Mark updated stories unread", Modifier.weight(1f))
+                Text(stringResource(R.string.i18n_mark_updated_stories_unread), Modifier.weight(1f))
             }
             DiscoveryAddRow(state, model, colors) {
                 Button(
@@ -452,7 +452,7 @@ private fun WebFeedForm(
                     enabled = !state.busy && "webfeed:${web.analyzedUrl}" !in state.added,
                     colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
                 ) {
-                    Text(if ("webfeed:${web.analyzedUrl}" in state.added) "Added" else "Subscribe")
+                    Text(if ("webfeed:${web.analyzedUrl}" in state.added) "Added" else stringResource(R.string.i18n_subscribe))
                 }
             }
         }
@@ -467,8 +467,8 @@ private fun GoogleNewsForm(
 ) {
     val category = state.newsCategory
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Follow news that matters to you", style = MaterialTheme.typography.headlineSmall)
-        Text("Choose a topic or create a Google News feed for any search.", color = colors.textSecondary)
+        Text(stringResource(R.string.i18n_follow_news_that_matters_to_you), style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search), color = colors.textSecondary)
         DiscoveryInput(state.newsQuery, "Search a news topic", colors, { model.news(query = it) }, model::addNews, !state.busy)
         DiscoveryChoice(
             "Top stories",
@@ -525,7 +525,7 @@ private fun GoogleNewsForm(
                 enabled = !state.busy && (state.newsQuery.isNotBlank() || state.newsTopic.isNotBlank()),
                 colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
             ) {
-                Text("Subscribe")
+                Text(stringResource(R.string.i18n_subscribe))
             }
         }
     }

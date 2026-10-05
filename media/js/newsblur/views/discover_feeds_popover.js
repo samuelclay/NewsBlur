@@ -99,7 +99,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    'Discover sites'
+                    gettext('Discover sites')
                 ]),
                 this.make_archive_upgrade_banner(),
                 $.make('div', { className: 'NB-discover-loading' }, [
@@ -115,7 +115,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
     on_data_load_error: function () {
         this.hide_loading();
-        this.$el.find(".NB-discover-loading").html('<div class="error-message">Failed to load related sites</div>');
+        this.$el.find(".NB-discover-loading").html(gettext('<div class="error-message">Failed to load related sites</div>'));
     },
 
     render: function () {
@@ -125,7 +125,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    'Discover sites'
+                    gettext('Discover sites')
                 ]),
                 this.make_archive_upgrade_banner(),
                 $.make('div', { className: 'NB-discover-feed-badges NB-story-pane-west' }, _.flatten(this.discover_feeds_model.map(function (discover_feed) {
@@ -369,9 +369,9 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     update_index_button_state: function () {
         var $button = this.$('.NB-discover-index-button');
         if (this.is_discover_indexing) {
-            $button.addClass('NB-disabled').text('Indexing...');
+            $button.addClass('NB-disabled').text(gettext('Indexing...'));
         } else {
-            $button.removeClass('NB-disabled').text('Index remaining feeds');
+            $button.removeClass('NB-disabled').text(gettext('Index remaining feeds'));
         }
     },
 
@@ -394,11 +394,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
             this.$('.NB-discover-archive-banner-progress-fill').css('width', progress_pct + '%');
             this.$('.NB-discover-archive-banner-progress-label').text(
-                counts.discover_indexed_count + ' of ' + counts.feed_count + ' sites indexed'
+                interpolate(gettext("%(value_1)s of %(value_2)s sites indexed"), {value_1: counts.discover_indexed_count, value_2: counts.feed_count}, true)
             );
             this.$('.NB-discover-archive-banner-body').text(
-                counts.discover_indexed_count + ' of ' + counts.feed_count +
-                ' sites indexed. Index remaining feeds to get better recommendations.'
+                interpolate(gettext("%(value_1)s of %(value_2)s sites indexed. Index remaining feeds to get better recommendations."), {value_1: counts.discover_indexed_count, value_2: counts.feed_count}, true)
             );
         }
     },
@@ -439,11 +438,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-discover-archive-banner-icon' }),
                     $.make('div', { className: 'NB-discover-archive-banner-text' }, [
                         $.make('div', { className: 'NB-discover-archive-banner-title' },
-                            'Index feeds for discovery'
+                            gettext('Index feeds for discovery')
                         ),
                         $.make('div', { className: 'NB-discover-archive-banner-body' },
-                            discover_indexed_count + ' of ' + feed_count +
-                            ' sites indexed. Index remaining feeds to get better recommendations.'
+                            interpolate(gettext("%(value_1)s of %(value_2)s sites indexed. Index remaining feeds to get better recommendations."), {value_1: discover_indexed_count, value_2: feed_count}, true)
                         )
                     ])
                 ]),
@@ -455,7 +453,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                         })
                     ]),
                     $.make('div', { className: 'NB-discover-archive-banner-progress-label' },
-                        discover_indexed_count + ' of ' + feed_count + ' sites indexed'
+                        interpolate(gettext("%(value_1)s of %(value_2)s sites indexed"), {value_1: discover_indexed_count, value_2: feed_count}, true)
                     )
                 ]),
                 $.make('div', { className: button_class }, button_text)
@@ -468,12 +466,11 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                 $.make('div', { className: 'NB-discover-archive-banner-icon' }),
                 $.make('div', { className: 'NB-discover-archive-banner-text' }, [
                     $.make('div', { className: 'NB-discover-archive-banner-title' }, [
-                        'Unlock full discovery',
-                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                        gettext('Unlock full discovery'),
+                        $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                     ]),
                     $.make('div', { className: 'NB-discover-archive-banner-body' },
-                        'Only ' + discover_indexed_count + ' of your ' + feed_count +
-                        ' sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.'
+                        interpolate(gettext("Only %(value_1)s of your %(value_2)s sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations."), {value_1: discover_indexed_count, value_2: feed_count}, true)
                     )
                 ])
             ]),
@@ -485,10 +482,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     })
                 ]),
                 $.make('div', { className: 'NB-discover-archive-banner-progress-label' },
-                    discover_indexed_count + ' of ' + feed_count + ' sites indexed'
+                    interpolate(gettext("%(value_1)s of %(value_2)s sites indexed"), {value_1: discover_indexed_count, value_2: feed_count}, true)
                 )
             ]),
-            $.make('div', { className: 'NB-discover-archive-banner-cta' }, 'Upgrade to Premium Archive')
+            $.make('div', { className: 'NB-discover-archive-banner-cta' }, gettext('Upgrade to Premium Archive'))
         ]);
     }
 

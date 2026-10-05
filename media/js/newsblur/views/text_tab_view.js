@@ -118,10 +118,10 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         var $notice = $.make('div', { className: 'NB-text-view-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-divider' }),
             $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
-                'The full ',
+                gettext('The full '),
                 $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/circular/nav_story_text_active.png' }),
-                ' Text view is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                gettext(' Text view is a '),
+                $.make('a', { href: '#', className: 'NB-splash-link' }, gettext('premium feature')),
                 '.'
             ])
         ]);
@@ -139,7 +139,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     show_explainer_single_story_mode: function () {
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             $.make('div', { className: 'NB-world' }),
-            'Select a story to read'
+            gettext('Select a story to read')
         ]);
 
         this.$(".NB-story-list-empty").remove();

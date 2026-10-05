@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load utils_tags %}
 
 {% block bodyclass %}NB-static{% endblock %}
 
-{% block title %}Feedback on NewsBlur{% endblock %}
+{% block title %}{% trans "Feedback on NewsBlur" %}{% endblock %}
 
 {% block head %}
     <meta name="description" content="Send feedback to NewsBlur. Report bugs, request features, or get help with your account.">
@@ -23,25 +24,25 @@
 {% block content %}
 
   <div class="NB-static-title">
-    Feedback on NewsBlur
+    {% trans "Feedback on NewsBlur" %}
   </div>
 
   <div class="NB-module">
-    <h5 class="NB-module-title">Control the Original View</h5>
+    <h5 class="NB-module-title">{% trans "Control the Original View" %}</h5>
     <div class="NB-module-content">
       
     </div>
   </div>
 
   <div class="NB-module">
-    <h5 class="NB-module-title">Graceful iFrame Busting</h5>
+    <h5 class="NB-module-title">{% trans "Graceful iFrame Busting" %}</h5>
     <div class="NB-module-content">
       
     </div>
   </div>
   
   <div class="NB-module">
-    <h5 class="NB-module-title">Opt-out of the Original view</h5>
+    <h5 class="NB-module-title">{% trans "Opt-out of the Original view" %}</h5>
     <div class="NB-module-content">
       
     </div>

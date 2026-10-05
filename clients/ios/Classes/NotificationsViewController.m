@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  NotificationsViewController.m
 //  NewsBlur
@@ -110,9 +111,9 @@ viewForHeaderInSection:(NSInteger)section {
     headerLabel.shadowColor = UIColorFromRGB(0xF0F0F7);
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (self.feedId && section == 0) {
-        headerLabel.text = @"SITE NOTIFICATIONS";
+        headerLabel.text = [NBLocalization text:@"SITE NOTIFICATIONS"];
     } else {
-        headerLabel.text = @"ALL NOTIFICATIONS";
+        headerLabel.text = [NBLocalization text:@"ALL NOTIFICATIONS"];
     }
     
     customView.backgroundColor = [UIColorFromRGB(0xF7F7F5)
@@ -158,7 +159,7 @@ viewForHeaderInSection:(NSInteger)section {
         CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
         UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, height)];
         [cell.contentView addSubview:msg];
-        msg.text = @"No notifications yet.";
+        msg.text = [NBLocalization text:@"No notifications yet."];
         msg.textColor = UIColorFromRGB(0x7a7a7a);
         if (vb.size.width > 320) {
             msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 21.0];

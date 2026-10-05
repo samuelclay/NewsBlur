@@ -42,16 +42,16 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         this.$el.html($.make('div', { className: 'NB-briefing-onboarding' }, [
             $.make('div', { className: 'NB-briefing-onboarding-header' }, [
                 $.make('div', { className: 'NB-briefing-onboarding-icon' }),
-                $.make('div', { className: 'NB-briefing-onboarding-title' }, 'Daily Briefing'),
+                $.make('div', { className: 'NB-briefing-onboarding-title' }, gettext('Daily Briefing')),
                 $.make('div', { className: 'NB-briefing-onboarding-subtitle' },
-                    'Get a summary of your top stories, delivered on your schedule.')
+                    gettext('Get a summary of your top stories, delivered on your schedule.'))
             ]),
             $.make('div', { className: 'NB-briefing-onboarding-settings NB-briefing-popover' }),
             $.make('div', { className: 'NB-briefing-onboarding-footer' }, [
                 $.make('div', {
                     className: 'NB-briefing-generate-btn NB-briefing-generate-btn-large NB-briefing-onboarding-generate',
                     role: 'button'
-                }, 'Generate Briefing')
+                }, gettext('Generate Briefing'))
             ])
         ]));
 
@@ -91,7 +91,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         var sources = prefs.story_sources || 'all';
         var selected_folder = sources.indexOf('folder:') === 0 ? sources.slice(7) : null;
 
-        var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, "All Site Stories", 'feed', false);
+        var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, gettext("All Site Stories"), 'feed', false);
         $folder_chooser.addClass('NB-modal-feed-chooser');
 
         var $settings = this.$('.NB-briefing-onboarding-settings');
@@ -232,7 +232,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         ]);
         $section.find('.NB-popover-section-label').append(
             $.make('div', { className: 'NB-briefing-notification-hint' },
-                'Sections are only included when matching stories are found.')
+                gettext('Sections are only included when matching stories are found.'))
         );
         return $section;
     },
@@ -250,7 +250,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS) {
             items.push($.make('div', { className: 'NB-briefing-add-keyword-section', role: 'button' }, [
                 $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
-                'Add keyword section'
+                gettext('Add keyword section')
             ]));
         }
 
@@ -323,15 +323,15 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
                 $.make('div', { className: 'NB-briefing-section-name' }, [
-                    'Keyword section ' + index,
+                    interpolate(gettext("Keyword section %(value_1)s"), {value_1: index}, true),
                     $.make('img', {
                         className: 'NB-briefing-remove-custom-section',
                         'data-custom-index': index,
-                        title: 'Remove',
+                        title: gettext('Remove'),
                         src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/close.svg'
                     })
                 ]),
-                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Matches story titles containing all keywords')
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, gettext('Matches story titles containing all keywords'))
             ])
         ]);
 
@@ -349,10 +349,10 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
         $item.append($.make('div', { className: 'NB-briefing-section-hint-popover' }, [
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
-                $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Keyword Section'),
+                $.make('div', { className: 'NB-briefing-section-hint-title' }, gettext('Keyword Section')),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.'),
-                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
+                    gettext('Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.')),
+                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, gettext('Examples')),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' },
                     _.shuffle(NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES).slice(0, 4).map(function (ex) {
                         return $.make('li', ex);
@@ -448,7 +448,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
         var $error = $.make('div', { className: 'NB-briefing-error' }, [
             $.make('div', { className: 'NB-briefing-error-message' }, error_message),
-            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small NB-briefing-onboarding-generate' }, 'Try Again')
+            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small NB-briefing-onboarding-generate' }, gettext('Try Again'))
         ]);
 
         var $target = this.$('.NB-briefing-onboarding-footer');

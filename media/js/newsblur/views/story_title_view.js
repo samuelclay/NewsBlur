@@ -103,7 +103,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var match = permalink.slice(match_index, match_index + String(filter.value).length);
         var after = permalink.slice(match_index + String(filter.value).length);
         var $url_match = $.make('div', { className: 'NB-storytitles-classifier-url' }, [
-            $.make('span', { className: 'NB-storytitles-classifier-url-label' }, 'URL'),
+            $.make('span', { className: 'NB-storytitles-classifier-url-label' }, gettext('URL')),
             $.make('span', before),
             $.make('mark', { className: 'NB-classifier-filter-highlight' }, match),
             $.make('span', after)
@@ -611,7 +611,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         }
 
         if (this.model.get('starred')) {
-            $star.attr({ 'title': 'Saved!' });
+            $star.attr({ 'title': gettext('Saved!') });
             $star.tipsy({
                 gravity: pane_alignment == 'north' ? 'nw' : 'sw',
                 fade: true,
@@ -640,7 +640,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             this.$st.one('mouseout', _.bind(function () {
                 this.$st.removeClass('NB-unstarred');
             }, this));
-            $star.attr({ 'title': 'Removed' });
+            $star.attr({ 'title': gettext('Removed') });
 
             $star.tipsy({
                 gravity: pane_alignment == 'north' ? 'nw' : 'sw',

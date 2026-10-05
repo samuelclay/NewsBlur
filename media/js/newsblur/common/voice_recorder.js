@@ -260,7 +260,7 @@ NEWSBLUR.VoiceRecorder.prototype = {
         } else if (audio_blob.type.includes('mp4')) {
             extension = 'mp4';
         }
-        form_data.append('audio', audio_blob, 'recording.' + extension);
+        form_data.append(gettext('audio'), audio_blob, 'recording.' + extension);
 
         $.ajax({
             url: '/ask-ai/transcribe',

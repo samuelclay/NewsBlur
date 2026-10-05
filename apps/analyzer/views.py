@@ -7,6 +7,7 @@ and populating the trainer modal with current classifier state.
 import redis
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext
 from django.views.decorators.http import require_POST
 from mongoengine.queryset import NotUniqueError
 
@@ -45,7 +46,7 @@ def save_classifier(request):
     post = request.POST
     feed_id = post.get("feed_id")
     if not feed_id:
-        return dict(code=-1, message="Missing feed_id")
+        return dict(code=-1, message=gettext("Missing feed_id"))
     feed = None
     social_user_id = None
 
@@ -76,7 +77,7 @@ def save_classifier(request):
 
     # Archive gating for folder/global scope
     if scope != "feed" and not request.user.profile.is_archive:
-        return dict(code=-1, message="Premium Archive required for folder and global classifiers")
+        return dict(code=-1, message=gettext("Premium Archive required for folder and global classifiers"))
 
     logging.user(
         request,
@@ -324,7 +325,7 @@ def save_prompt_classifier(request):
     prompt_id = post.get("prompt_id", "")
 
     if classifier_type not in ("focus", "hidden"):
-        return {"code": -1, "message": "Invalid classifier_type"}
+        return {"code": -1, "message": gettext("Invalid classifier_type")}
 
     if action == "delete" and prompt_id:
         try:
@@ -333,10 +334,10 @@ def save_prompt_classifier(request):
             MClassifierPrompt.invalidate_cache(request.user.pk, prompt_id)
             logging.user(request, "~FGDeleted prompt classifier: ~SB%s" % prompt_id)
         except MClassifierPrompt.DoesNotExist:
-            return {"code": -1, "message": "Prompt classifier not found"}
+            return {"code": -1, "message": gettext("Prompt classifier not found")}
     elif action == "save" and prompt:
         if len(prompt) > 500:
-            return {"code": -1, "message": "Prompt too long (max 500 characters)"}
+            return {"code": -1, "message": gettext("Prompt too long (max 500 characters)")}
 
         classifier = MClassifierPrompt(
             user_id=request.user.pk,
@@ -363,7 +364,7 @@ def save_prompt_classifier(request):
 
         # Prompt classifiers only apply to new stories going forward (no backlog classification)
     else:
-        return {"code": -1, "message": "Missing prompt or prompt_id"}
+        return {"code": -1, "message": gettext("Missing prompt or prompt_id")}
 
     # Return current prompt classifiers for this feed
     prompts = MClassifierPrompt.objects.filter(user_id=request.user.pk, feed_id=feed_id)
@@ -387,7 +388,12 @@ def save_prompt_classifier(request):
         estimator = AIClassifierCostEstimator(request.user)
         cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
 
-    return {"code": 0, "message": "OK", "prompt_classifiers": prompt_list, "cost_estimate": cost_estimate}
+    return {
+        "code": 0,
+        "message": gettext("OK"),
+        "prompt_classifiers": prompt_list,
+        "cost_estimate": cost_estimate,
+    }
 
 
 @require_POST
@@ -398,13 +404,10 @@ def test_prompt_classifier(request):
     import zlib
 
     from apps.rss_feeds.models import MStory
-    from utils.ai_functions import (
-        classify_stories_with_ai,
-        classify_stories_with_vision,
-    )
+    from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
 
     if not request.user.profile.can_use_ai_classifiers:
-        return {"code": -1, "message": "Usage billing required for AI classifiers"}
+        return {"code": -1, "message": gettext("Usage billing required for AI classifiers")}
 
     post = request.POST
     prompt_text = post.get("prompt", "").strip()
@@ -412,14 +415,14 @@ def test_prompt_classifier(request):
     include_images = post.get("include_images", "false") == "true"
 
     if not prompt_text:
-        return {"code": -1, "message": "Missing prompt"}
+        return {"code": -1, "message": gettext("Missing prompt")}
     if not story_hash:
-        return {"code": -1, "message": "Missing story_hash"}
+        return {"code": -1, "message": gettext("Missing story_hash")}
 
     try:
         story_db = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
-        return {"code": -1, "message": "Story not found"}
+        return {"code": -1, "message": gettext("Story not found")}
 
     # Build a temporary prompt-like object for the classifier
     class TempPrompt:
@@ -436,7 +439,7 @@ def test_prompt_classifier(request):
         # can show per-image match/no-match labels.
         image_urls = story_db.image_urls or []
         if not image_urls:
-            return {"code": -1, "message": "Story has no images"}
+            return {"code": -1, "message": gettext("Story has no images")}
 
         # Send each image as its own "story" so VLM returns per-image results
         image_stories = []
@@ -451,7 +454,7 @@ def test_prompt_classifier(request):
             )
         results = classify_stories_with_vision(temp_prompt, image_stories, user_id=request.user.pk)
         if results is None:
-            return {"code": -1, "message": "Classification failed, please try again"}
+            return {"code": -1, "message": gettext("Classification failed, please try again")}
 
         # Build per-image results list (ordered by image index)
         image_results = []
@@ -473,7 +476,7 @@ def test_prompt_classifier(request):
         }
         results = classify_stories_with_ai(temp_prompt, [story_dict], user_id=request.user.pk)
         if results is None:
-            return {"code": -1, "message": "Classification failed, please try again"}
+            return {"code": -1, "message": gettext("Classification failed, please try again")}
 
     if not include_images:
         classification = results.get(story_hash, 0)
@@ -554,11 +557,11 @@ def save_all_classifiers(request):
     try:
         body = json.decode(request.body)
     except (ValueError, TypeError):
-        return {"code": -1, "message": "Invalid JSON"}
+        return {"code": -1, "message": gettext("Invalid JSON")}
 
     classifiers_by_feed = body.get("classifiers", {})
     if not classifiers_by_feed:
-        return {"code": 0, "message": "No classifiers to save"}
+        return {"code": 0, "message": gettext("No classifiers to save")}
 
     logging.user(request, "~FGBulk saving classifiers for ~SB%s~SN feeds" % len(classifiers_by_feed))
 
@@ -602,7 +605,7 @@ def save_all_classifiers(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "feed:%s" % ",".join(map(str, feeds_updated)))
 
-    return {"code": 0, "message": "OK", "feeds_updated": feeds_updated}
+    return {"code": 0, "message": gettext("OK"), "feeds_updated": feeds_updated}
 
 
 def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data):

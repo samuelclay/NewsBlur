@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  AuthorizeServicesViewController.m
 //  NewsBlur
@@ -39,11 +40,11 @@
     [super viewWillAppear:animated];
     
     if ([type isEqualToString:@"google"]) {
-        self.navigationItem.title = @"Google Reader";
+        self.navigationItem.title = [NBLocalization text:@"Google Reader"];
     } else if ([type isEqualToString:@"facebook"]) {
-        self.navigationItem.title = @"Facebook";
+        self.navigationItem.title = [NBLocalization text:@"Facebook"];
     } else if ([type isEqualToString:@"twitter"]) {
-        self.navigationItem.title = @"Twitter";
+        self.navigationItem.title = [NBLocalization text:@"Twitter"];
     }
     
     [self.appDelegate prepareWebView:self.webView completionHandler:^{
@@ -55,7 +56,7 @@
     
     if (self.fromStory && !appDelegate.isPhone) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
-                                         initWithTitle: @"Cancel"
+                                         initWithTitle: [NBLocalization text:@"Cancel"]
                                          style: UIBarButtonItemStylePlain
                                          target: self
                                          action: @selector(doCancelButton)];

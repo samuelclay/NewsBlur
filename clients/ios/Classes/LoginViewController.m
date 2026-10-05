@@ -203,7 +203,7 @@ static NSString *const kWaveShaderSource =
 
     // === "NewsBlur" in GothamNarrow ===
     UILabel *welcomeLabel = [[UILabel alloc] init];
-    welcomeLabel.text = @"NewsBlur";
+    welcomeLabel.text = [NBLocalization text:@"NewsBlur"];
     welcomeLabel.font = [UIFont fontWithName:@"GothamNarrow-Medium" size:38] ?: [UIFont systemFontOfSize:38 weight:UIFontWeightBold];
     welcomeLabel.textColor = [UIColor whiteColor];
     welcomeLabel.textAlignment = NSTextAlignmentCenter;
@@ -216,7 +216,7 @@ static NSString *const kWaveShaderSource =
 
     // === Tagline in ChronicleSSm italic ===
     UILabel *taglineLabel = [[UILabel alloc] init];
-    taglineLabel.text = @"A personal news reader bringing\npeople together to talk about the world.";
+    taglineLabel.text = [NBLocalization text:@"A personal news reader bringing\npeople together to talk about the world."];
     taglineLabel.font = [UIFont fontWithName:@"ChronicleSSm-BookItalic" size:16] ?: [UIFont italicSystemFontOfSize:16];
     taglineLabel.textColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE);
     taglineLabel.textAlignment = NSTextAlignmentCenter;
@@ -241,7 +241,7 @@ static NSString *const kWaveShaderSource =
     UIView *formContentView = formCard.contentView;
 
     // === Segmented control ===
-    self.loginControl = [[UISegmentedControl alloc] initWithItems:@[@"Log In", @"Sign Up"]];
+    self.loginControl = [[UISegmentedControl alloc] initWithItems:@[[NBLocalization text:@"Log In"], [NBLocalization text:@"Sign Up"]]];
     self.loginControl.selectedSegmentIndex = 0;
     self.loginControl.translatesAutoresizingMaskIntoConstraints = NO;
     self.loginControl.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.08];
@@ -280,7 +280,7 @@ static NSString *const kWaveShaderSource =
 
     // === Submit button (flat gold) ===
     UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [submitButton setTitle:@"Log In" forState:UIControlStateNormal];
+    [submitButton setTitle:[NBLocalization text:@"Log In"] forState:UIControlStateNormal];
     submitButton.titleLabel.font = [UIFont fontWithName:@"GothamNarrow-Medium" size:17] ?: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
     [submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     submitButton.backgroundColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_BUTTON);
@@ -302,7 +302,7 @@ static NSString *const kWaveShaderSource =
 
     // === Forgot password button ===
     self.forgotPasswordButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.forgotPasswordButton setTitle:@"Forgot Password?" forState:UIControlStateNormal];
+    [self.forgotPasswordButton setTitle:[NBLocalization text:@"Forgot Password?"] forState:UIControlStateNormal];
     self.forgotPasswordButton.titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:14] ?: [UIFont systemFontOfSize:14];
     [self.forgotPasswordButton setTitleColor:UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE) forState:UIControlStateNormal];
     self.forgotPasswordButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -474,6 +474,7 @@ static NSString *const kWaveShaderSource =
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [NBLocalization installLoginButton:self];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -598,7 +599,7 @@ static NSString *const kWaveShaderSource =
     [self showError:nil];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Authenticating";
+    HUD.labelText = [NBLocalization text:@"Authenticating"];
 
     NSString *urlString = [NSString stringWithFormat:@"%@/api/login",
                            self.appDelegate.url];
@@ -635,7 +636,7 @@ static NSString *const kWaveShaderSource =
 - (void)registerAccount {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Registering...";
+    HUD.labelText = [NBLocalization text:@"Registering..."];
     [self showError:nil];
     NSString *urlString = [NSString stringWithFormat:@"%@/api/signup",
                            self.appDelegate.url];
@@ -705,7 +706,7 @@ static NSString *const kWaveShaderSource =
     BOOL isLogin = [self.loginControl selectedSegmentIndex] == 0;
 
     UIButton *submitButton = [self.view viewWithTag:100];
-    [submitButton setTitle:(isLogin ? @"Log In" : @"Sign Up") forState:UIControlStateNormal];
+    [submitButton setTitle:(isLogin ? [NBLocalization text:@"Log In"] : [NBLocalization text:@"Sign Up"]) forState:UIControlStateNormal];
 
     // Animate email field expand/collapse
     self.emailHeightConstraint.constant = isLogin ? 0 : 50;
@@ -723,12 +724,12 @@ static NSString *const kWaveShaderSource =
 
         if (isLogin) {
             self.usernameInput.attributedPlaceholder = [[NSAttributedString alloc]
-                initWithString:@"Username or Email" attributes:placeholderAttrs];
+                initWithString:[NBLocalization text:@"Username or Email"] attributes:placeholderAttrs];
             self.usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
             self.passwordInput.returnKeyType = UIReturnKeyGo;
         } else {
             self.usernameInput.attributedPlaceholder = [[NSAttributedString alloc]
-                initWithString:@"Username" attributes:placeholderAttrs];
+                initWithString:[NBLocalization text:@"Username"] attributes:placeholderAttrs];
             self.usernameInput.keyboardType = UIKeyboardTypeDefault;
             self.passwordInput.returnKeyType = UIReturnKeyNext;
         }

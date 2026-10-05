@@ -78,7 +78,7 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
 
     // Create header label
     UILabel *header = [[UILabel alloc] init];
-    header.text = @"Share this story";
+    header.text = [NBLocalization text:@"Share this story"];
     header.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
     header.textAlignment = NSTextAlignmentLeft;
     self.headerLabel = header;
@@ -86,7 +86,7 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
 
     // Create inline submit button (UIButtonTypeCustom to avoid system tint/double border)
     UIButton *inlineBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [inlineBtn setTitle:@"Share" forState:UIControlStateNormal];
+    [inlineBtn setTitle:[NBLocalization text:@"Share"] forState:UIControlStateNormal];
     inlineBtn.titleLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
     [inlineBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [inlineBtn setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.4] forState:UIControlStateDisabled];
@@ -249,8 +249,8 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
         setUsername:(NSString *)username
          setReplyId:(NSString *)replyId {
     if ([type isEqualToString: @"edit-reply"]) {
-        self.headerLabel.text = @"Edit your reply";
-        [self.inlineSubmitButton setTitle:@"Save reply" forState:UIControlStateNormal];
+        self.headerLabel.text = [NBLocalization text:@"Edit your reply"];
+        [self.inlineSubmitButton setTitle:[NBLocalization text:@"Save reply"] forState:UIControlStateNormal];
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doReplyToComment:) forControlEvents:UIControlEventTouchUpInside];
         self.activeReplyId = replyId;
@@ -270,8 +270,8 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
         }
     } else if ([type isEqualToString: @"reply"]) {
         self.activeReplyId = nil;
-        self.headerLabel.text = [NSString stringWithFormat:@"Reply to %@", username];
-        [self.inlineSubmitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username] forState:UIControlStateNormal];
+        self.headerLabel.text = [NSString stringWithFormat:[NBLocalization text:@"Reply to %@"], username];
+        [self.inlineSubmitButton setTitle:[NSString stringWithFormat:[NBLocalization text:@"Reply to %@"], username] forState:UIControlStateNormal];
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doReplyToComment:) forControlEvents:UIControlEventTouchUpInside];
 
@@ -282,14 +282,14 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
             self.commentField.text = @"";
         }
     } else if ([type isEqualToString: @"edit-share"]) {
-        self.headerLabel.text = @"Edit your comment";
+        self.headerLabel.text = [NBLocalization text:@"Edit your comment"];
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
 
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doShareThisStory:) forControlEvents:UIControlEventTouchUpInside];
     } else if ([type isEqualToString: @"share"]) {
-        self.headerLabel.text = @"Share this story";
+        self.headerLabel.text = [NBLocalization text:@"Share this story"];
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doShareThisStory:) forControlEvents:UIControlEventTouchUpInside];
         if (![self.currentType isEqualToString:@"share"] &&
@@ -516,9 +516,9 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
     if ([self.currentType isEqualToString: @"share"] ||
         [self.currentType isEqualToString:@"edit-share"]) {
         if (text.length) {
-            [self.inlineSubmitButton setTitle:@"Share with comment" forState:UIControlStateNormal];
+            [self.inlineSubmitButton setTitle:[NBLocalization text:@"Share with comment"] forState:UIControlStateNormal];
         } else {
-            [self.inlineSubmitButton setTitle:@"Share" forState:UIControlStateNormal];
+            [self.inlineSubmitButton setTitle:[NBLocalization text:@"Share"] forState:UIControlStateNormal];
         }
         self.inlineSubmitButton.enabled = YES;
     } else if ([self.currentType isEqualToString: @"reply"] ||

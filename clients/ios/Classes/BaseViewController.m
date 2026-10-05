@@ -95,9 +95,9 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     [HUD hide:YES afterDelay:(details ? 3 : 1)];
     
     //    UIAlertView* alertView = [[UIAlertView alloc]
-    //                              initWithTitle:@"Error"
+    //                              initWithTitle:[NBLocalization text:@"Error"]
     //                              message:localizedDescription delegate:nil
-    //                              cancelButtonTitle:@"OK"
+    //                              cancelButtonTitle:[NBLocalization text:@"OK"]
     //                              otherButtonTitles:nil];
     //    [alertView show];
     //    [alertView release];
@@ -425,29 +425,29 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         }
     } else if (command.action == @selector(openRenameSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Rename Folder…";
+            command.title = [NBLocalization text:@"Rename Folder…"];
         } else {
-            command.title = @"Rename Site…";
+            command.title = [NBLocalization text:@"Rename Site…"];
         }
     } else if (command.action == @selector(deleteSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Delete Folder…";
+            command.title = [NBLocalization text:@"Delete Folder…"];
         } else {
-            command.title = @"Delete Site…";
+            command.title = [NBLocalization text:@"Delete Site…"];
         }
     } else if (command.action == @selector(toggleStorySaved:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isRead) {
-            command.title = @"Unsave This Story";
+            command.title = [NBLocalization text:@"Unsave This Story"];
         } else {
-            command.title = @"Save This Story";
+            command.title = [NBLocalization text:@"Save This Story"];
         }
     } else if (command.action == @selector(toggleStoryUnread:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            command.title = @"Mark as Unread";
+            command.title = [NBLocalization text:@"Mark as Unread"];
         } else {
-            command.title = @"Mark as Read";
+            command.title = [NBLocalization text:@"Mark as Read"];
         }
     } else if (command.action == @selector(chooseMarkRead:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_mark_read_filter"];
@@ -706,7 +706,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 }
 
 - (IBAction)muteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to mute %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to mute %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
     [alertController addAction:[UIAlertAction actionWithTitle: @"Mute Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController muteSite];

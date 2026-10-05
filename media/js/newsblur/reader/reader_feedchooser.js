@@ -109,7 +109,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 // Modal title with icon and dropdown
                 $.make('h2', { className: 'NB-modal-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    this.MAX_FEEDS ? 'Choose sites' : 'Mute sites',
+                    this.MAX_FEEDS ? gettext('Choose sites') : gettext('Mute sites'),
                     $.make('div', { className: 'NB-icon-dropdown' })
                 ]),
                 // Unified header card
@@ -132,15 +132,15 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 // Actions row - directly above feed list
                 $.make('div', { className: 'NB-feedchooser-actions-row' }, [
                     $.make('div', { className: 'NB-feedchooser-actions-left' }, [
-                        $.make('div', { className: 'NB-feedchooser-info-reset' }, this.MAX_FEEDS ? 'Auto-select top sites' : 'Enable all sites'),
-                        $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-selected by popularity')
+                        $.make('div', { className: 'NB-feedchooser-info-reset' }, this.MAX_FEEDS ? gettext('Auto-select top sites') : gettext('Enable all sites')),
+                        $.make('div', { className: 'NB-feedchooser-info-sort' }, gettext('Auto-selected by popularity'))
                     ]),
                     $.make('div', { className: 'NB-feedchooser-actions-right' }, [
                         $.make('div', { className: 'NB-feedchooser-usage-text' }),
                         $.make('div', { className: 'NB-feedchooser-folder-actions' }, [
-                            $.make('span', { className: 'NB-feedchooser-collapse-all NB-splash-link' }, 'Collapse all'),
+                            $.make('span', { className: 'NB-feedchooser-collapse-all NB-splash-link' }, gettext('Collapse all')),
                             $.make('span', { className: 'NB-feedchooser-folder-actions-separator' }, '|'),
-                            $.make('span', { className: 'NB-feedchooser-expand-all NB-splash-link' }, 'Expand all')
+                            $.make('span', { className: 'NB-feedchooser-expand-all NB-splash-link' }, gettext('Expand all'))
                         ])
                     ])
                 ]),
@@ -283,14 +283,14 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         var $usageText = $('.NB-feedchooser-usage-text');
         $usageText.removeClass('NB-state-ok NB-state-error');
         if (has_limit) {
-            $usageText.text(Inflector.commas(approved) + ' of ' + Inflector.commas(this.MAX_FEEDS) + ' sites');
+            $usageText.text(interpolate(gettext("%(value_1)s of %(value_2)s sites"), {value_1: Inflector.commas(approved), value_2: Inflector.commas(this.MAX_FEEDS)}, true));
             if (over_limit) {
                 $usageText.addClass('NB-state-error');
             } else {
                 $usageText.addClass('NB-state-ok');
             }
         } else {
-            $usageText.text(Inflector.commas(approved) + ' sites');
+            $usageText.text(interpolate(gettext("%(value_1)s sites"), {value_1: Inflector.commas(approved)}, true));
         }
 
         // Update progress bar
@@ -309,13 +309,13 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
 
             if (available < 0) {
                 $container.addClass('NB-state-error');
-                $label.text(Math.abs(available) + ' over limit');
+                $label.text(interpolate(gettext("%(value_1)s over limit"), {value_1: Math.abs(available)}, true));
             } else if (available === 0) {
                 $container.addClass('NB-state-error');
-                $label.text('No sites available');
+                $label.text(gettext('No sites available'));
             } else {
                 $container.addClass('NB-state-ok');
-                $label.text(available + (available === 1 ? ' site' : ' sites') + ' available');
+                $label.text(interpolate(gettext("%(value_1)s available"), {value_1: interpolate(ngettext("%(count)s site", "%(count)s sites", available), {count: available}, true)}, true));
             }
         } else {
             $container.hide();

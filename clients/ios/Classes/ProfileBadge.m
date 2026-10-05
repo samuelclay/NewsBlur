@@ -140,14 +140,14 @@
     
     // check follow button status    
     if ([[profile objectForKey:@"yourself"] intValue]) {
-        [follow setTitle:@"You" forState:UIControlStateNormal];
+        [follow setTitle:[NBLocalization text:@"You"] forState:UIControlStateNormal];
         follow.enabled = NO;
     } else if ([[profile objectForKey:@"followed_by_you"] intValue]) {
-        [follow setTitle:@"Following" forState:UIControlStateNormal];
+        [follow setTitle:[NBLocalization text:@"Following"] forState:UIControlStateNormal];
         follow.backgroundColor = UIColorFromFixedRGB(kFollowingColor);
         [follow setTitleColor:UIColorFromFixedRGB(kFollowingTextColor) forState:UIControlStateNormal];
     } else {
-        [follow setTitle:@"Follow" forState:UIControlStateNormal];
+        [follow setTitle:[NBLocalization text:@"Follow"] forState:UIControlStateNormal];
     }
     
     follow.titleLabel.font = [UIFont systemFontOfSize:12];
@@ -249,7 +249,7 @@
         [self.contentView addSubview:shared];
         
         UILabel *sharedLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *sharedLabelStr = [NSString stringWithFormat:@"Shared Stor%@",
+        NSString *sharedLabelStr = [NSString stringWithFormat:[NBLocalization text:@"Shared Stor%@"],
                                     [[profile objectForKey:@"shared_stories_count"] intValue] == 1 ? @"y" : @"ies"];
         sharedLabel.text = sharedLabelStr;
         sharedLabel.textAlignment = NSTextAlignmentCenter;
@@ -271,7 +271,7 @@
         [self.contentView addSubview:following];
         
         UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3), kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *followingLabelStr = [NSString stringWithFormat:@"Following"];
+        NSString *followingLabelStr = [NSString stringWithFormat:[NBLocalization text:@"Following"]];
         followingLabel.text = followingLabelStr;
         followingLabel.textAlignment = NSTextAlignmentCenter;
         followingLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
@@ -292,7 +292,7 @@
         [self.contentView addSubview:followers];
         
         UILabel *followersLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3) * 2, kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *followersLabelStr = [NSString stringWithFormat:@"Follower%@", 
+        NSString *followersLabelStr = [NSString stringWithFormat:[NBLocalization text:@"Follower%@"],
                                        [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
         followersLabel.text = followersLabelStr;
         followersLabel.textAlignment = NSTextAlignmentCenter;
@@ -348,7 +348,7 @@
         return;
     } 
     
-    [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
+    [self.followButton setTitle:[NBLocalization text:@"Following"] forState:UIControlStateNormal];
     self.followButton.backgroundColor = UIColorFromFixedRGB(kFollowColor);
     [self.followButton setTitleColor:UIColorFromFixedRGB(kFollowTextColor) forState:UIControlStateNormal];
     [appDelegate reloadFeedsView:NO];
@@ -374,7 +374,7 @@
     } 
     
     NSLog(@"results %@", results);
-    [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
+    [self.followButton setTitle:[NBLocalization text:@"Follow"] forState:UIControlStateNormal];
     self.followButton.backgroundColor = UIColorFromFixedRGB(kFollowingColor);
     [self.followButton setTitleColor:UIColorFromFixedRGB(kFollowingTextColor) forState:UIControlStateNormal];
     

@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-about{% endblock %}
-{% block title %}About NewsBlur{% endblock %}
-{% block nav_title %}About{% endblock %}
+{% block title %}{% trans "About NewsBlur" %}{% endblock %}
+{% block nav_title %}{% trans "About" %}{% endblock %}
 {% block head %}
     <meta name="description" content="NewsBlur is a personal news reader that brings people together to talk about the world. Built by Samuel Clay since 2009.">
     <meta property="og:title" content="About NewsBlur">
@@ -22,161 +23,161 @@
 <div class="NB-about-container">
 
     <div class="NB-about-hero">
-        <h1 class="NB-about-hero-title">A personal news reader that brings people together to talk about the world.</h1>
+        <h1 class="NB-about-hero-title">{% trans "A personal news reader that brings people together to talk about the world." %}</h1>
     </div>
 
     <div class="NB-about-section">
-        <h2 class="NB-about-section-title">What makes NewsBlur different</h2>
+        <h2 class="NB-about-section-title">{% trans "What makes NewsBlur different" %}</h2>
         <div class="NB-about-cards">
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <img src="{{ MEDIA_URL }}embed/icons/nouns/train.svg" class="NB-about-card-icon" alt="">
-                    <h3 class="NB-about-card-title">Intelligence Training</h3>
+                    <h3 class="NB-about-card-title">{% trans "Intelligence Training" %}</h3>
                 </div>
-                <p class="NB-about-card-text">Train stories by author, tag, title, and keyword. Thumbs up what you want to see, thumbs down what you don't. NewsBlur learns what matters to you.</p>
+                <p class="NB-about-card-text">{% trans "Train stories by author, tag, title, and keyword. Thumbs up what you want to see, thumbs down what you don't. NewsBlur learns what matters to you." %}</p>
             </div>
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <svg class="NB-about-card-icon NB-about-card-icon-inline" viewBox="0 0 256 256" fill="currentColor"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16ZM80,32h96a8,8,0,0,1,8,8v8H72V40A8,8,0,0,1,80,32Zm96,192H80a8,8,0,0,1-8-8v-8H184v8A8,8,0,0,1,176,224Z"/></svg>
-                    <h3 class="NB-about-card-title">iOS &amp; Android Apps</h3>
+                    <h3 class="NB-about-card-title">{% trans "iOS" %} &amp; {% trans "Android Apps" %}</h3>
                 </div>
-                <p class="NB-about-card-text">First-class native apps built specifically for each platform. Full training, sharing, and offline reading on your phone and tablet.</p>
+                <p class="NB-about-card-text">{% trans "First-class native apps built specifically for each platform. Full training, sharing, and offline reading on your phone and tablet." %}</p>
             </div>
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-about-card-icon" alt="">
-                    <h3 class="NB-about-card-title">Web Feeds</h3>
+                    <h3 class="NB-about-card-title">{% trans "Web Feeds" %}</h3>
                 </div>
-                <p class="NB-about-card-text">Follow any website, even without RSS. NewsBlur generates a feed from any page, monitors it for changes, and delivers new content to you.</p>
+                <p class="NB-about-card-text">{% trans "Follow any website, even without RSS. NewsBlur generates a feed from any page, monitors it for changes, and delivers new content to you." %}</p>
             </div>
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <img src="{{ MEDIA_URL }}embed/icons/nouns/ai-brain.svg" class="NB-about-card-icon" alt="">
-                    <h3 class="NB-about-card-title">Ask AI</h3>
+                    <h3 class="NB-about-card-title">{% trans "Ask AI" %}</h3>
                 </div>
-                <p class="NB-about-card-text">Ask questions about any story using Claude, GPT, Gemini, or Grok. Summarize, translate, analyze, or dig deeper into what you're reading.</p>
+                <p class="NB-about-card-text">{% trans "Ask questions about any story using Claude, GPT, Gemini, or Grok. Summarize, translate, analyze, or dig deeper into what you're reading." %}</p>
             </div>
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <img src="{{ MEDIA_URL }}embed/icons/nouns/search.svg" class="NB-about-card-icon" alt="">
-                    <h3 class="NB-about-card-title">Full-Text Search</h3>
+                    <h3 class="NB-about-card-title">{% trans "Full-Text Search" %}</h3>
                 </div>
-                <p class="NB-about-card-text">Search across all your subscriptions and saved stories. Find anything you've ever read with Elasticsearch-powered full-text search.</p>
+                <p class="NB-about-card-text">{% trans "Search across all your subscriptions and saved stories. Find anything you've ever read with Elasticsearch-powered full-text search." %}</p>
             </div>
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <img src="{{ MEDIA_URL }}embed/icons/nouns/lightning-bolt.svg" class="NB-about-card-icon" alt="">
-                    <h3 class="NB-about-card-title">Real-Time Updates</h3>
+                    <h3 class="NB-about-card-title">{% trans "Real-Time Updates" %}</h3>
                 </div>
-                <p class="NB-about-card-text">Stories pushed as they publish with real-time notifications. Pro users get all feeds fetched every 5-15 minutes for breaking news.</p>
+                <p class="NB-about-card-text">{% trans "Stories pushed as they publish with real-time notifications. Pro users get all feeds fetched every 5-15 minutes for breaking news." %}</p>
             </div>
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <img src="{{ MEDIA_URL }}embed/icons/nouns/archive.svg" class="NB-about-card-icon" alt="">
-                    <h3 class="NB-about-card-title">Story Archive</h3>
+                    <h3 class="NB-about-card-title">{% trans "Story Archive" %}</h3>
                 </div>
-                <p class="NB-about-card-text">Every story archived and searchable forever. Feeds are back-filled for a complete history. Your reading archive grows with you.</p>
+                <p class="NB-about-card-text">{% trans "Every story archived and searchable forever. Feeds are back-filled for a complete history. Your reading archive grows with you." %}</p>
             </div>
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <img src="{{ MEDIA_URL }}embed/icons/nouns/briefing.svg" class="NB-about-card-icon" alt="">
-                    <h3 class="NB-about-card-title">Daily Briefing</h3>
+                    <h3 class="NB-about-card-title">{% trans "Daily Briefing" %}</h3>
                 </div>
-                <p class="NB-about-card-text">An AI-generated summary of your top stories, delivered daily. Clusters related stories and highlights what you'd find most interesting.</p>
+                <p class="NB-about-card-text">{% trans "An AI-generated summary of your top stories, delivered daily. Clusters related stories and highlights what you'd find most interesting." %}</p>
             </div>
         </div>
     </div>
 
     <div class="NB-about-section">
-        <h2 class="NB-about-section-title">The team</h2>
+        <h2 class="NB-about-section-title">{% trans "The team" %}</h2>
         <div class="NB-about-team">
             <div class="NB-about-person">
-                <img src="{{ MEDIA_URL }}img/static/Samuel Clay.jpg" class="NB-about-person-photo" alt="Samuel Clay">
-                <div class="NB-about-person-name">Samuel Clay</div>
-                <div class="NB-about-person-role">Founder</div>
+                <img src="{{ MEDIA_URL }}img/static/Samuel Clay.jpg" class="NB-about-person-photo" alt="{% trans 'Samuel Clay' %}">
+                <div class="NB-about-person-name">{% trans "Samuel Clay" %}</div>
+                <div class="NB-about-person-role">{% trans "Founder" %}</div>
                 <div class="NB-about-person-links">
-                    <a href="https://x.com/samuelclay">@samuelclay</a>
-                    <a href="https://www.samuelclay.com">samuelclay.com</a>
-                    <a href="mailto:samuel@newsblur.com">samuel@newsblur.com</a>
+                    <a href="https://x.com/samuelclay">{% trans "@samuelclay" %}</a>
+                    <a href="https://www.samuelclay.com">{% trans "samuelclay.com" %}</a>
+                    <a href="mailto:samuel@newsblur.com">{% trans "samuel@newsblur.com" %}</a>
                 </div>
             </div>
             <div class="NB-about-person">
-                <img src="{{ MEDIA_URL }}img/static/Lyric.jpg" class="NB-about-person-photo" alt="Lyric">
-                <div class="NB-about-person-name">Lyric</div>
-                <div class="NB-about-person-role">Chief Morale Officer</div>
+                <img src="{{ MEDIA_URL }}img/static/Lyric.jpg" class="NB-about-person-photo" alt="{% trans 'Lyric' %}">
+                <div class="NB-about-person-name">{% trans "Lyric" %}</div>
+                <div class="NB-about-person-role">{% trans "Chief Morale Officer" %}</div>
                 <div class="NB-about-person-links">
-                    <a href="https://x.com/newsblur">@newsblur</a>
-                    <a href="mailto:lyric@newsblur.com">lyric@newsblur.com</a>
+                    <a href="https://x.com/newsblur">{% trans "@newsblur" %}</a>
+                    <a href="mailto:lyric@newsblur.com">{% trans "lyric@newsblur.com" %}</a>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="NB-about-section">
-        <h2 class="NB-about-section-title">The story</h2>
+        <h2 class="NB-about-section-title">{% trans "The story" %}</h2>
         <div class="NB-about-timeline">
             <div class="NB-about-timeline-item">
                 <div class="NB-about-timeline-year">2009</div>
                 <div class="NB-about-timeline-content">
-                    <p>Samuel wanted a better way to read the news. So he built the first version of NewsBlur almost entirely underground on the A train in New York City.</p>
+                    <p>{% trans "Samuel wanted a better way to read the news. So he built the first version of NewsBlur almost entirely underground on the A train in New York City." %}</p>
                 </div>
             </div>
             <div class="NB-about-timeline-item">
                 <div class="NB-about-timeline-year">2010</div>
                 <div class="NB-about-timeline-content">
-                    <p>NewsBlur launched to the public and to favorable reviews. Premium accounts launched in October, paying for NewsBlur's increasing server costs.</p>
+                    <p>{% trans "NewsBlur launched to the public and to favorable reviews. Premium accounts launched in October, paying for NewsBlur's increasing server costs." %}</p>
                 </div>
             </div>
             <div class="NB-about-timeline-item">
                 <div class="NB-about-timeline-year">2012</div>
                 <div class="NB-about-timeline-content">
-                    <p>After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence training. Samuel and his dog Shiloh celebrated with champagne and biscuits.</p>
+                    <p>{% trans "After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence training. Samuel and his dog Shiloh celebrated with champagne and biscuits." %}</p>
                 </div>
             </div>
             <div class="NB-about-timeline-item">
                 <div class="NB-about-timeline-year">2013</div>
                 <div class="NB-about-timeline-content">
-                    <p>Google sunsets Reader and thousands of users flee the dying giant. NewsBlur becomes one of the top contenders for the successor to the RSS throne, offering sustainability and longevity by charging cash American dollar for premium accounts.</p>
+                    <p>{% trans "Google sunsets Reader and thousands of users flee the dying giant. NewsBlur becomes one of the top contenders for the successor to the RSS throne, offering sustainability and longevity by charging cash American dollar for premium accounts." %}</p>
                 </div>
             </div>
             <div class="NB-about-timeline-item">
                 <div class="NB-about-timeline-year">{% now "Y" %}</div>
                 <div class="NB-about-timeline-content">
-                    <p>NewsBlur continues to evolve with AI-powered features, daily briefings, and intelligence training that gets smarter over time. Still independent, still open source, still built for readers who care about the news.</p>
+                    <p>{% trans "NewsBlur continues to evolve with AI-powered features, daily briefings, and intelligence training that gets smarter over time. Still independent, still open source, still built for readers who care about the news." %}</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="NB-about-section">
-        <h2 class="NB-about-section-title">Built with</h2>
+        <h2 class="NB-about-section-title">{% trans "Built with" %}</h2>
         <div class="NB-about-tech">
             <div class="NB-about-tech-group">
-                <h3 class="NB-about-tech-group-title">Server</h3>
+                <h3 class="NB-about-tech-group-title">{% trans "Server" %}</h3>
                 <div class="NB-about-tech-pills">
-                    <a href="https://www.djangoproject.com" class="NB-about-tech-pill">Django</a>
-                    <a href="https://docs.celeryq.dev/" class="NB-about-tech-pill">Celery</a>
-                    <a href="https://www.elastic.co" class="NB-about-tech-pill">Elasticsearch</a>
-                    <a href="https://www.mongodb.com" class="NB-about-tech-pill">MongoDB</a>
-                    <a href="https://www.postgresql.org" class="NB-about-tech-pill">PostgreSQL</a>
-                    <a href="https://redis.io" class="NB-about-tech-pill">Redis</a>
-                    <a href="https://nodejs.org" class="NB-about-tech-pill">Node.js</a>
+                    <a href="https://www.djangoproject.com" class="NB-about-tech-pill">{% trans "Django" %}</a>
+                    <a href="https://docs.celeryq.dev/" class="NB-about-tech-pill">{% trans "Celery" %}</a>
+                    <a href="https://www.elastic.co" class="NB-about-tech-pill">{% trans "Elasticsearch" %}</a>
+                    <a href="https://www.mongodb.com" class="NB-about-tech-pill">{% trans "MongoDB" %}</a>
+                    <a href="https://www.postgresql.org" class="NB-about-tech-pill">{% trans "PostgreSQL" %}</a>
+                    <a href="https://redis.io" class="NB-about-tech-pill">{% trans "Redis" %}</a>
+                    <a href="https://nodejs.org" class="NB-about-tech-pill">{% trans "Node.js" %}</a>
                 </div>
             </div>
             <div class="NB-about-tech-group">
-                <h3 class="NB-about-tech-group-title">Client</h3>
+                <h3 class="NB-about-tech-group-title">{% trans "Client" %}</h3>
                 <div class="NB-about-tech-pills">
-                    <a href="https://jquery.com" class="NB-about-tech-pill">jQuery</a>
-                    <a href="https://backbonejs.org" class="NB-about-tech-pill">Backbone.js</a>
-                    <a href="https://underscorejs.org" class="NB-about-tech-pill">Underscore.js</a>
+                    <a href="https://jquery.com" class="NB-about-tech-pill">{% trans "jQuery" %}</a>
+                    <a href="https://backbonejs.org" class="NB-about-tech-pill">{% trans "Backbone.js" %}</a>
+                    <a href="https://underscorejs.org" class="NB-about-tech-pill">{% trans "Underscore.js" %}</a>
                 </div>
             </div>
             <div class="NB-about-tech-group">
-                <h3 class="NB-about-tech-group-title">Open Source</h3>
+                <h3 class="NB-about-tech-group-title">{% trans "Open Source" %}</h3>
                 <div class="NB-about-tech-pills">
                     <a href="https://github.com/samuelclay/NewsBlur" class="NB-about-tech-pill NB-about-tech-pill-github">
                         <img src="{{ MEDIA_URL }}img/reader/github-mark.svg" class="NB-about-github-icon" alt="">
-                        View on GitHub
+                        {% trans "View on GitHub" %}
                     </a>
                 </div>
             </div>
@@ -184,17 +185,17 @@
     </div>
 
     <div class="NB-about-section NB-about-section-legal">
-        <a href="{% url 'contact' %}" class="NB-about-legal-link">Contact us</a>
+        <a href="{% url 'contact' %}" class="NB-about-legal-link">{% trans "Contact us" %}</a>
         <span class="NB-about-legal-sep">&middot;</span>
-        <a href="/privacy" class="NB-about-legal-link">Privacy Policy</a>
+        <a href="/privacy" class="NB-about-legal-link">{% trans "Privacy Policy" %}</a>
         <span class="NB-about-legal-sep">&middot;</span>
-        <a href="/tos" class="NB-about-legal-link">Terms of Service</a>
+        <a href="/tos" class="NB-about-legal-link">{% trans "Terms of Service" %}</a>
     </div>
 
     <div class="NB-about-tagline">
-        <p class="NB-about-tagline-text">A new sound of an old instrument.</p>
+        <p class="NB-about-tagline-text">{% trans "A new sound of an old instrument." %}</p>
         <a href="https://www.youtube.com/watch?v=Lks51ELeUB4">
-            <img src="{{ MEDIA_URL }}img/static/Moondog.jpg" class="NB-about-tagline-img" alt="Moondog">
+            <img src="{{ MEDIA_URL }}img/static/Moondog.jpg" class="NB-about-tagline-img" alt="{% trans 'Moondog' %}">
         </a>
     </div>
 

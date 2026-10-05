@@ -1,10 +1,11 @@
+{% load i18n %}
 {% load utils_tags %}
 <div class="NB-module-recommended NB-module {% if unmoderated and not page %}NB-recommended-unmoderated{% endif %}">
   <h5 class="NB-module-header">
     {% if unmoderated %}
-      Moderation Queue
+      {% trans "Moderation Queue" %}
     {% else %}
-      Recommended Site
+      {% trans "Recommended Site" %}
     {% endif %}
     <div class="NB-module-recommended-date">
       {% if unmoderated %}
@@ -16,7 +17,7 @@
   <div class="NB-module-header-right">
       {% if user.is_staff and not unmoderated %}
         <div class="NB-recommended-show-moderation-wrapper">
-          <a href="#" class="NB-recommended-show-moderation" class="NB-splash-link" onclick="$('.NB-recommended-unmoderated').show();">Moderate</a>
+          <a href="#" class="NB-recommended-show-moderation" class="NB-splash-link" onclick="$('.NB-recommended-unmoderated').show();">{% trans "Moderate" %}</a>
         </div>
       {% endif %}
 
@@ -41,15 +42,15 @@
         <b>{{ recommended_feed.feed.average_stories_per_month }}</b> {{ recommended_feed.feed.average_stories_per_month|pluralize:"story,stories" }}  per month
       </div>
       {% if usersub %}
-        <div class="NB-recommended-added">Subscribed</div>
+        <div class="NB-recommended-added">{% trans "Subscribed" %}</div>
       {% else %}
-        <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">Try</div>
-        <div class="NB-recommended-add NB-modal-submit-grey NB-modal-submit-button NB-javascript">Add</div>
+        <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">{% trans "Try" %}</div>
+        <div class="NB-recommended-add NB-modal-submit-grey NB-modal-submit-button NB-javascript">{% trans "Add" %}</div>
       {% endif %}
       {% if unmoderated %}
         <input type="text" class="NB-recommended-moderation-date" name="date" value="{{ today|date:"Y-m-d" }}" />
-        <div class="NB-recommended-approve NB-modal-submit-green NB-modal-submit-button NB-javascript">Approve</div>
-        <div class="NB-recommended-decline NB-modal-submit-grey NB-modal-submit-button NB-javascript">Decline</div>
+        <div class="NB-recommended-approve NB-modal-submit-green NB-modal-submit-button NB-javascript">{% trans "Approve" %}</div>
+        <div class="NB-recommended-decline NB-modal-submit-grey NB-modal-submit-button NB-javascript">{% trans "Decline" %}</div>
       {% endif %}
     </div>
   </div>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load typogrify_tags utils_tags %}
 
@@ -12,11 +13,11 @@
 <div class="NB-paypal-return NB-premium-trial-return">
 
   <div class="NB-paypal-return-title">
-    Welcome to your premium trial!
+    {% trans "Welcome to your premium trial!" %}
   </div>
 
   <div class="NB-paypal-return-subtitle">
-    Hold tight while your account is being upgraded...
+    {% trans "Hold tight while your account is being upgraded..." %}
   </div>
 
   <div class="NB-paypal-return-loading"></div>

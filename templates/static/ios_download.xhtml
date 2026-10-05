@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
-  <title>Install the NewsBlur iPhone and iPad app</title>
+  <title>{% trans "Install the NewsBlur iPhone and iPad app" %}</title>
   <style type="text/css">
     body {
       background: url(/media/img/reader/iphone-stripe-bkg.png) repeat #c5ccd4;
@@ -40,11 +41,11 @@
 </head>
 <body>
 
-<div class="congrats">Download the latest version of the NewsBlur iOS app</div>
+<div class="congrats">{% trans "Download the latest version of the NewsBlur iOS app" %}</div>
 
 <div class="step">
   <table><tr>
-    <td class="instructions"><a href="itms-services://?action=download-manifest&url=https://www.newsblur.com/ios/NewsBlur.plist">Install the NewsBlur app</a></td>
+    <td class="instructions"><a href="itms-services://?action=download-manifest&url=https://www.newsblur.com/ios/NewsBlur.plist">{% trans "Install the NewsBlur app" %}</a></td>
     <td width="24" class="arrow">&rarr;</td>
     <td width="57" class="imagelink">
       <a href="itms-services://?action=download-manifest&url=https://www.newsblur.com/ios/NewsBlur.plist">
@@ -55,40 +56,40 @@
 </div>
 
 <div class="changelog">
-    <h2>What's new: <code>version 5.0.0b2 / September 23rd, 2015</code></h2>
+    <h2>{% trans "What's new:" %} <code>version 5.0.0b2 / September 23rd, 2015</code></h2>
     <ul>
-        <li> iOS 9-ified</li>
-        <li> The Text view is now sticky based on the last view you used. It's per feed but it also respects individual feeds when reading by folder. </li>
-        <li> Stories now remember your last scroll position. When you go back to a story, you are taken back to the same place you left off. </li>
-        <li> Stories are now searchable through spotlight if they have been stored for offline reading. </li>
-        <li> New Safari-based browser for the original story. These views are faster and support content blockers on iOS 9 and use your browser's cookies. However, they look like Safari and not NewsBlur, so the default in-app browser is the original browser. The new in-app Safari browser is a preference, along with Chrome, Opera, and the full Safari app.</li>
-        <li> Sending stories to third-party services now uses full Text if available. Useful for storing full story text in Evernote or Pocket.</li>
-        <li> iOS 8 is the minimum supported version for this release. </li>
+        <li> {% trans "iOS 9-ified" %}</li>
+        <li> {% trans "The Text view is now sticky based on the last view you used. It's per feed but it also respects individual feeds when reading by folder." %} </li>
+        <li> {% trans "Stories now remember your last scroll position. When you go back to a story, you are taken back to the same place you left off." %} </li>
+        <li> {% trans "Stories are now searchable through spotlight if they have been stored for offline reading." %} </li>
+        <li> {% trans "New Safari-based browser for the original story. These views are faster and support content blockers on iOS 9 and use your browser's cookies. However, they look like Safari and not NewsBlur, so the default in-app browser is the original browser. The new in-app Safari browser is a preference, along with Chrome, Opera, and the full Safari app." %}</li>
+        <li> {% trans "Sending stories to third-party services now uses full Text if available. Useful for storing full story text in Evernote or Pocket." %}</li>
+        <li> {% trans "iOS 8 is the minimum supported version for this release." %} </li>
     </ul>
-    <h2>What's new: <code>version 4.6.0 / November 12th, 2014</code></h2>
+    <h2>{% trans "What's new:" %} <code>version 4.6.0 / November 12th, 2014</code></h2>
     <ul>
-        <li>Search feeds and folders.</li>
-        <li>Fixing rotation issues so you can watch a video and rotate without losing position.</li>
-        <li>Saved story tagging: add and remove tags with a handy tagging popover.</li>
-        <li>Native controls for sending a story to other services (mail, safari, chrome, evernote, instapaper, etc).</li>
-        <li>Progress bar for the Story view when loading a story using the in-app browser.</li>
-        <li>Further UI cleanups and memory fixes/speedups for iOS 8.</li>
+        <li>{% trans "Search feeds and folders." %}</li>
+        <li>{% trans "Fixing rotation issues so you can watch a video and rotate without losing position." %}</li>
+        <li>{% trans "Saved story tagging: add and remove tags with a handy tagging popover." %}</li>
+        <li>{% trans "Native controls for sending a story to other services (mail, safari, chrome, evernote, instapaper, etc)." %}</li>
+        <li>{% trans "Progress bar for the Story view when loading a story using the in-app browser." %}</li>
+        <li>{% trans "Further UI cleanups and memory fixes/speedups for iOS 8." %}</li>
     </ul>
-    <h2>What's new: <code>version 4.5.0 / October 15th, 2014</code></h2>
+    <h2>{% trans "What's new:" %} <code>version 4.5.0 / October 15th, 2014</code></h2>
     <ul>
-        <li>iPhone 6 and 6 Plus are now fully supported</li>
-        <li>iOS 8 is also now fully supported (as well as iOS 7)</li>
-        <li>Moving between the feed list, story list, and story detail is now much faster</li>
-        <li>Images are now “full bleed”, extending to the entire width of the screen</li>
-        <li>New preference for hiding feeds after they are read</li>
-        <li>Long press images in a story to read the alt text</li>
-        <li>Long press images in a story to save it to your camera roll</li>
-        <li>Long press images in a story to zoom into it</li>
-        <li>Long press links in a story to get an actions menu (safari, instapaper, bookmark, etc)</li>
-        <li>Fixed all iOS 8 issues (preference panes, profile popovers)</li>
-        <li>OvershareKit updated for iOS 8</li>
-        <li>Pull to refresh updated to match theme</li>
-        <li>Pull to refresh date is now localized</li>
+        <li>{% trans "iPhone 6 and 6 Plus are now fully supported" %}</li>
+        <li>{% trans "iOS 8 is also now fully supported (as well as iOS 7)" %}</li>
+        <li>{% trans "Moving between the feed list, story list, and story detail is now much faster" %}</li>
+        <li>{% trans "Images are now “full bleed”, extending to the entire width of the screen" %}</li>
+        <li>{% trans "New preference for hiding feeds after they are read" %}</li>
+        <li>{% trans "Long press images in a story to read the alt text" %}</li>
+        <li>{% trans "Long press images in a story to save it to your camera roll" %}</li>
+        <li>{% trans "Long press images in a story to zoom into it" %}</li>
+        <li>{% trans "Long press links in a story to get an actions menu (safari, instapaper, bookmark, etc)" %}</li>
+        <li>{% trans "Fixed all iOS 8 issues (preference panes, profile popovers)" %}</li>
+        <li>{% trans "OvershareKit updated for iOS 8" %}</li>
+        <li>{% trans "Pull to refresh updated to match theme" %}</li>
+        <li>{% trans "Pull to refresh date is now localized" %}</li>
     </ul>
 </div>
 

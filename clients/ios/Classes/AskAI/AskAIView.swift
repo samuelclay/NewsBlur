@@ -164,7 +164,7 @@ struct AskAIView: View {
                     .foregroundColor(NewsBlurColors.textSecondary)
                     .frame(width: 18, height: 18)
 
-                Text("Summarize")
+                Text(NBLocalization.text("Summarize"))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(NewsBlurColors.textPrimary)
 
@@ -187,7 +187,7 @@ struct AskAIView: View {
                 }
                 .buttonStyle(.plain)
                 .help("Dismiss")
-                .accessibilityLabel("Dismiss")
+                .accessibilityLabel(NBLocalization.text("Dismiss"))
 #endif
             }
             .padding(.horizontal, 12)
@@ -273,7 +273,7 @@ struct AskAIView: View {
                     .foregroundColor(NewsBlurColors.textSecondary)
                     .frame(width: 18, height: 18)
 
-                Text("Understand")
+                Text(NBLocalization.text("Understand"))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(NewsBlurColors.textPrimary)
 
@@ -336,7 +336,7 @@ struct AskAIView: View {
                 .disabled(viewModel.isTranscribing)
 
                 // Text input
-                TextField("Ask a question...", text: $viewModel.customQuestion)
+                TextField(NBLocalization.text("Ask a question..."), text: $viewModel.customQuestion)
                     .font(.system(size: 13))
                     .foregroundColor(NewsBlurColors.textPrimary)
                     .padding(.horizontal, 12)
@@ -415,7 +415,7 @@ struct AskAIView: View {
                     viewModel.sendQuestion(.custom)
                 }
             }) {
-                Text("Ask")
+                Text(NBLocalization.text("Ask"))
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
@@ -619,7 +619,7 @@ struct AskAIView: View {
                     HStack {
                         Image(systemName: "star.fill")
                             .font(.system(size: 12))
-                        Text("Upgrade to Premium Archive")
+                        Text(NBLocalization.text("Upgrade to Premium Archive"))
                             .font(.system(size: 13, weight: .medium))
                     }
                     .foregroundColor(.white)
@@ -658,7 +658,7 @@ struct AskAIView: View {
                     HStack {
                         Image(systemName: "star.fill")
                             .font(.system(size: 12))
-                        Text("Upgrade to Premium Archive")
+                        Text(NBLocalization.text("Upgrade to Premium Archive"))
                             .font(.system(size: 13, weight: .medium))
                     }
                     .foregroundColor(.white)
@@ -708,7 +708,7 @@ struct AskAIView: View {
                 }
 
                 // Text input
-                TextField("Follow up...", text: $viewModel.customQuestion)
+                TextField(NBLocalization.text("Follow up..."), text: $viewModel.customQuestion)
                     .font(.system(size: 13))
                     .foregroundColor(NewsBlurColors.textPrimary)
                     .padding(.horizontal, 12)
@@ -761,7 +761,7 @@ struct AskAIView: View {
                     Button(action: {
                         viewModel.reaskWithModel(viewModel.selectedModel)
                     }) {
-                        Text("Re-ask")
+                        Text(NBLocalization.text("Re-ask"))
                             .font(.system(size: 13))
                             .foregroundColor(NewsBlurColors.textPrimary)
                             .padding(.horizontal, 12)
@@ -777,7 +777,7 @@ struct AskAIView: View {
                     Button(action: {
                         viewModel.sendFollowUp()
                     }) {
-                        Text("Send")
+                        Text(NBLocalization.text("Send"))
                             .font(.system(size: 13, weight: .medium))
                             .foregroundColor(.white)
                             .padding(.horizontal, 12)
