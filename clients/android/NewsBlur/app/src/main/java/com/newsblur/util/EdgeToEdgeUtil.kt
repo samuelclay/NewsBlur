@@ -164,7 +164,7 @@ object EdgeToEdgeUtil {
         return value.data
     }
 
-    fun View.applyReaderBottomInsetTo(targetView: View): Runnable {
+    fun View.applyReaderFooterInsetTo(targetView: View): Runnable {
         val viewportLocation = IntArray(2)
         val controlsLocation = IntArray(2)
         val gap = UIUtils.dp2px(context, 8)
@@ -176,8 +176,9 @@ object EdgeToEdgeUtil {
                 if (isLaidOut && controls?.isLaidOut == true) {
                     getLocationOnScreen(viewportLocation)
                     controls.getLocationOnScreen(controlsLocation)
-                    // EdgeToEdgeUtil.kt leaves the final comment above the capsules, including their margin and system navigation.
-                    bottom = maxOf(bottom, viewportLocation[1] + height - controlsLocation[1] + gap)
+                    // EdgeToEdgeUtil.kt reserves only the space below the real footer row, not another capsule-sized gap.
+                    val controlsBottom = controlsLocation[1] + controls.height - controls.paddingBottom
+                    bottom = maxOf(bottom, viewportLocation[1] + height - controlsBottom + gap)
                 }
                 if (targetView.paddingBottom != bottom) targetView.updateBottomPadding(bottom)
                 true
