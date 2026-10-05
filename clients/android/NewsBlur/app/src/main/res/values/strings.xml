@@ -492,10 +492,10 @@ people together to talk about the world.</string>
         <item>NOMO</item>
         <item>NOMONONME</item>
     </string-array>
-    <string name="default_network_select_value">NOMONONME</string>
+    <string name="default_network_select_value" translatable="false">NOMONONME</string>
 
     <string name="menu_delete_offline_stories">Delete offline stories…</string>
-    <string name="menu_delete_offline_stories_key">delete_offline_stories</string>
+    <string name="menu_delete_offline_stories_key" translatable="false">delete_offline_stories</string>
     <string name="menu_delete_offline_stories_sum">Free up space by clearing stored stories and images</string>
     <string name="menu_delete_offline_stories_confirmation">Cleared all stories and images!</string>
 
@@ -517,7 +517,7 @@ people together to talk about the world.</string>
         <item>CACHE_AGE_14D</item>
         <item>CACHE_AGE_30D</item>
     </string-array>
-    <string name="default_cache_age_select_value">CACHE_AGE_30D</string>
+    <string name="default_cache_age_select_value" translatable="false">CACHE_AGE_30D</string>
 
     <string name="settings_cat_feed_list">Feed list</string>
 
@@ -567,7 +567,7 @@ people together to talk about the world.</string>
         <item>NEWEST</item>
         <item>OLDEST</item>
     </string-array>
-    <string name="default_story_order_value">NEWEST</string>
+    <string name="default_story_order_value" translatable="false">NEWEST</string>
 
     <string name="comfortable">Comfortable</string>
     <string name="compact">Compact</string>
@@ -582,7 +582,7 @@ people together to talk about the world.</string>
         <item>ALPHABETICAL</item>
         <item>MOST_USED_AT_TOP</item>
     </string-array>
-    <string name="default_feed_list_order_value">ALPHABETICAL</string>
+    <string name="default_feed_list_order_value" translatable="false">ALPHABETICAL</string>
 
     <string name="all_stories">All stories</string>
     <string name="unread_only">Unread only</string>
@@ -600,7 +600,7 @@ people together to talk about the world.</string>
         <item>ALL</item>
         <item>UNREAD</item>
     </string-array>
-    <string name="default_read_filter_value">ALL</string>
+    <string name="default_read_filter_value" translatable="false">ALL</string>
 
     <string-array name="mark_all_read_options">
         <item>Mark all read</item>
@@ -703,7 +703,7 @@ people together to talk about the world.</string>
         <item>MANUALLY</item>
     </string-array>
 
-    <string name="mark_story_read_default_value">IMMEDIATELY</string>
+    <string name="mark_story_read_default_value" translatable="false">IMMEDIATELY</string>
 
     <string name="settings_social">Sharing stories</string>
     <string name="settings_show_public_comments">Show public comments</string>
@@ -719,7 +719,7 @@ people together to talk about the world.</string>
     <string name="settings_preview_images_segment_right_large">R large</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable notifications</string>
-    <string name="settings_enable_notifications_key">enable_notifications</string>
+    <string name="settings_enable_notifications_key" translatable="false">enable_notifications</string>
     <string name="ask_ai_upgrade_archive">Upgrade to Premium Archive</string>
     <string name="ask_ai_ask_question">Ask a question…</string>
     <string name="ask_ai_follow_up">Follow up…</string>
@@ -756,7 +756,7 @@ people together to talk about the world.</string>
         <item>LARGE</item>
     </string-array>
 
-    <string name="show_content_preview_default_value">MEDIUM</string>
+    <string name="show_content_preview_default_value" translatable="false">MEDIUM</string>
 
     <string name="story_thumbnail_left_hand_small">Left-hand small</string>
     <string name="story_thumbnail_left_hand_large">Left-hand large</string>
@@ -779,7 +779,7 @@ people together to talk about the world.</string>
         <item>OFF</item>
     </string-array>
 
-    <string name="thumbnail_style_default_value">RIGHT_LARGE</string>
+    <string name="thumbnail_style_default_value" translatable="false">RIGHT_LARGE</string>
 
     <string name="infrequent_choice_title">Stories from sites with</string>
     <string name="infrequent_5">&lt; 5 stories/month</string>
@@ -842,7 +842,7 @@ people together to talk about the world.</string>
         <item>UP_NEXT</item>
         <item>DOWN_NEXT</item>
     </string-array>
-    <string name="default_volume_key_navigation_value">OFF</string>
+    <string name="default_volume_key_navigation_value" translatable="false">OFF</string>
     <string name="settings_load_next_on_mark_read">Open next feed/folder after read</string>
     <string name="settings_load_next_on_mark_read_summary">Load the next feed/folder after marked as read</string>
 
@@ -860,7 +860,7 @@ people together to talk about the world.</string>
         <item>FOLDER_ONLY</item>
         <item>NONE</item>
     </string-array>
-    <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
+    <string name="confirm_mark_all_read_value" translatable="false">FOLDER_ONLY</string>
 
     <string name="settings_confirm_mark_range_read">Confirm mark older/newer read</string>
 
@@ -893,7 +893,7 @@ people together to talk about the world.</string>
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="ltr_gesture_action_value">GEST_ACTION_BACK</string>
+    <string name="ltr_gesture_action_value" translatable="false">GEST_ACTION_BACK</string>
 
     <string name="settings_rtl_gesture_action">Leftward swipe on story title…</string>
     <string-array name="rtl_gesture_action_entries">
@@ -914,7 +914,7 @@ people together to talk about the world.</string>
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="rtl_gesture_action_value">GEST_ACTION_TOGGLE_READ</string>
+    <string name="rtl_gesture_action_value" translatable="false">GEST_ACTION_TOGGLE_READ</string>
 
     <string name="default_browser">Default browser…</string>
     <string name="font">Font…</string>
@@ -926,20 +926,20 @@ people together to talk about the world.</string>
     <string name="open_sans_condensed_font">Open Sans Condensed</string>
     <string name="roboto_font">Roboto</string>
     <string name="anonymous_pro_font">Anonymous Pro</string>
-    <string name="anonymous_pro_font_prefvalue">ANONYMOUS_PRO</string>
-    <string name="default_font_prefvalue">DEFAULT</string>
-    <string name="whitney_font_prefvalue">WHITNEY</string>
-    <string name="gotham_narrow_font_prefvalue">GOTHAM_NARROW</string>
-    <string name="chronicle_font_prefvalue">CHRONICLE</string>
-    <string name="noto_sans_font_prefvalue">NOTO_SANS</string>
-    <string name="noto_serif_font_prefvalue">NOTO_SERIF</string>
-    <string name="open_sans_condensed_font_prefvalue">OPEN_SANS_CONDENSED</string>
-    <string name="roboto_font_prefvalue">ROBOTO</string>
-    <string name="system_default_prefvalue">SYSTEM_DEFAULT</string>
-    <string name="in_app_browser_prefvalue">IN_APP_BROWSER</string>
-    <string name="chrome_prefvalue">CHROME</string>
-    <string name="firefox_prefvalue">FIREFOX</string>
-    <string name="opera_mini_prefvalue">OPERA_MINI</string>
+    <string name="anonymous_pro_font_prefvalue" translatable="false">ANONYMOUS_PRO</string>
+    <string name="default_font_prefvalue" translatable="false">DEFAULT</string>
+    <string name="whitney_font_prefvalue" translatable="false">WHITNEY</string>
+    <string name="gotham_narrow_font_prefvalue" translatable="false">GOTHAM_NARROW</string>
+    <string name="chronicle_font_prefvalue" translatable="false">CHRONICLE</string>
+    <string name="noto_sans_font_prefvalue" translatable="false">NOTO_SANS</string>
+    <string name="noto_serif_font_prefvalue" translatable="false">NOTO_SERIF</string>
+    <string name="open_sans_condensed_font_prefvalue" translatable="false">OPEN_SANS_CONDENSED</string>
+    <string name="roboto_font_prefvalue" translatable="false">ROBOTO</string>
+    <string name="system_default_prefvalue" translatable="false">SYSTEM_DEFAULT</string>
+    <string name="in_app_browser_prefvalue" translatable="false">IN_APP_BROWSER</string>
+    <string name="chrome_prefvalue" translatable="false">CHROME</string>
+    <string name="firefox_prefvalue" translatable="false">FIREFOX</string>
+    <string name="opera_mini_prefvalue" translatable="false">OPERA_MINI</string>
     <string-array name="default_browser_entries">
         <item>System default</item>
         <item>In-app browser</item>
@@ -974,10 +974,10 @@ people together to talk about the world.</string>
         <item>@string/open_sans_condensed_font_prefvalue</item>
         <item>@string/roboto_font_prefvalue</item>
     </string-array>
-    <string name="default_font_value">DEFAULT</string>
+    <string name="default_font_value" translatable="false">DEFAULT</string>
     <string name="default_default_browser">@string/system_default_prefvalue</string>
 
-    <string name="story_notification_channel_id">story_notification_channel</string>
+    <string name="story_notification_channel_id" translatable="false">story_notification_channel</string>
     <string name="story_notification_channel_name">New stories</string>
     <string name="go_to_feed">Go to feed</string>
 
@@ -1009,15 +1009,15 @@ people together to talk about the world.</string>
     <string name="saved_stories">Saved stories</string>
 
     <string name="short_next_story">Next Story</string>
-    <string name="short_next_story_key_down">\u2193</string>
-    <string name="short_next_story_key_j">J</string>
+    <string name="short_next_story_key_down" translatable="false">\u2193</string>
+    <string name="short_next_story_key_j" translatable="false">J</string>
 
     <string name="short_previous_story">Previous Story</string>
-    <string name="short_previous_story_key_up">\u2191</string>
-    <string name="short_previous_story_key_k">K</string>
+    <string name="short_previous_story_key_up" translatable="false">\u2191</string>
+    <string name="short_previous_story_key_k" translatable="false">K</string>
 
     <string name="short_text_view">Text View</string>
-    <string name="short_text_view_key">\u21E7 \u23CE</string>
+    <string name="short_text_view_key" translatable="false">\u21E7 \u23CE</string>
 
     <string name="short_page_down">Page Down</string>
     <string name="short_page_down_key">space</string>
@@ -1026,37 +1026,37 @@ people together to talk about the world.</string>
     <string name="short_page_up_key">\u21E7 space</string>
 
     <string name="short_next_unread_story">Next Unread Story</string>
-    <string name="short_next_unread_story_key">N</string>
+    <string name="short_next_unread_story_key" translatable="false">N</string>
 
     <string name="short_toggle_read_unread">Toggle Read/Unread</string>
-    <string name="short_toggle_read_unread_key_u">U</string>
-    <string name="short_toggle_read_unread_key_m">M</string>
+    <string name="short_toggle_read_unread_key_u" translatable="false">U</string>
+    <string name="short_toggle_read_unread_key_m" translatable="false">M</string>
 
     <string name="short_save_unsave_story">Save/Unsave Story</string>
-    <string name="short_save_unsave_story_key">S</string>
+    <string name="short_save_unsave_story_key" translatable="false">S</string>
 
     <string name="short_open_in_browser">Open in Browser</string>
-    <string name="short_open_in_browser_key_o">O</string>
-    <string name="short_open_in_browser_key_v">V</string>
+    <string name="short_open_in_browser_key_o" translatable="false">O</string>
+    <string name="short_open_in_browser_key_v" translatable="false">V</string>
 
     <string name="short_share_this_story">Share this Story</string>
-    <string name="short_share_this_story_key">\u21E7 S</string>
+    <string name="short_share_this_story_key" translatable="false">\u21E7 S</string>
 
     <string name="short_scroll_to_comments">Scroll to Comments</string>
-    <string name="short_scroll_to_comments_key">C</string>
+    <string name="short_scroll_to_comments_key" translatable="false">C</string>
 
     <string name="short_open_story_trainer">Open Story Trainer</string>
-    <string name="short_open_story_trainer_key">T</string>
+    <string name="short_open_story_trainer_key" translatable="false">T</string>
 
     <string name="short_open_all_stories">Open All Site Stories</string>
-    <string name="short_open_all_stories_key">\u2325 E</string>
+    <string name="short_open_all_stories_key" translatable="false">\u2325 E</string>
 
     <string name="short_switch_views">Switch Views</string>
-    <string name="short_switch_views_key_left">\u2190</string>
-    <string name="short_switch_views_key_right">\u2192</string>
+    <string name="short_switch_views_key_left" translatable="false">\u2190</string>
+    <string name="short_switch_views_key_right" translatable="false">\u2192</string>
 
     <string name="short_add_site">Add Site</string>
-    <string name="short_add_site_key">\u2325 A</string>
+    <string name="short_add_site_key" translatable="false">\u2325 A</string>
     <string name="registering">Registering...</string>
     <string name="renaming_feed_message">Renaming feed %s</string>
     <string name="renaming_folder_message">Renaming folder %s</string>
