@@ -63,6 +63,20 @@ def android_qualifier(code):
     return {"pt-BR": "pt-rBR", "zh-Hans": "b+zh+Hans", "zh-Hant": "b+zh+Hant"}.get(code, code)
 
 
+def validate_language_registry():
+    """Keep the two bundled pickers and Android's system picker in sync with languages.json."""
+    swift = (ROOT / "clients/ios/Classes/NBLocalization.swift").read_text()
+    kotlin = (RESOURCES.parent / "java/com/newsblur/util/LanguageSettings.kt").read_text()
+    ios_codes = set(re.findall(r'\("([a-z]{2}(?:-[A-Za-z]+)?)", "[^"\n]+"\)', swift))
+    android_codes = set(re.findall(r'"([a-z]{2}(?:-[A-Za-z]+)?)" to "', kotlin))
+    system_codes = {
+        node.attrib["{http://schemas.android.com/apk/res/android}name"]
+        for node in ET.parse(RESOURCES / "xml/locales_config.xml").getroot()
+    }
+    if any(codes != set(LANGUAGES) for codes in (ios_codes, android_codes, system_codes)):
+        raise ValueError("Update both native language pickers and locales_config.xml to match languages.json")
+
+
 def android_nodes():
     for path in sorted((RESOURCES / "values").glob("*.xml")):
         for node in ET.parse(path).getroot():
@@ -459,6 +473,7 @@ def main():
         help="Report missing translations without failing check; English is the runtime fallback",
     )
     args = parser.parse_args()
+    validate_language_registry()
     codes = args.languages.split(",") if args.languages else [code for code in LANGUAGES if code != "en"]
     if any(code not in LANGUAGES or code == "en" for code in codes):
         parser.error("Unsupported target language")
