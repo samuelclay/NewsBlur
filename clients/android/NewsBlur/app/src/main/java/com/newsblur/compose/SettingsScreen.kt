@@ -250,6 +250,7 @@ fun buildSettingsUiState(
 
 @Composable
 fun SettingsScreen(
+    onLanguageSelected: (String) -> Unit = {},
     state: SettingsUiState,
     onBooleanChanged: (String, Boolean) -> Unit,
     onStringChanged: (String, String) -> Unit,
@@ -504,6 +505,7 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp, vertical = 18.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
+        LanguagePicker(onSelected = onLanguageSelected)
         SettingsSection(
             title = stringResource(R.string.settings_cat_story_list),
             icon = Icons.Rounded.ListAlt,

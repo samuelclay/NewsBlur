@@ -1,4 +1,7 @@
 <resources>
+    <string name="language_current">Language: %1$s</string>
+    <string name="language_automatic">Automatic (device language)</string>
+    <string name="language_save_failed">Could not save your language. Please try again.</string>
     <string name="try_feed_instafetching">Insta-fetching stories…</string>
     <string name="try_feed_fetch_failed">Unable to fetch stories. Tap to try again.</string>
     <string name="try_feed_empty">No stories are available from this site yet. Tap to refresh.</string>
@@ -1061,4 +1064,39 @@ people together to talk about the world.</string>
     <string name="parent_folder">Parent folder</string>
     <string name="folder_added">Folder added</string>
     <string name="new_folder_parent">In: %1$s</string>
+    <string name="ui_014f8b8d982f">Add custom keyword filters that become their own briefing sections</string>
+    <string name="ui_05392d13e2f2">No briefings yet</string>
+    <string name="ui_0a4444676244">Save failed</string>
+    <string name="ui_0a8adac9d6d5">Schedule</string>
+    <string name="ui_13b7bfcac438">Working…</string>
+    <string name="ui_2eb56be3c2d9">Sources</string>
+    <string name="ui_314ef761a08f">Add keyword section</string>
+    <string name="ui_3af014d03229">Feed source</string>
+    <string name="ui_3e4a49541e18">Include already-read stories</string>
+    <string name="ui_4a24ff492222">Get daily briefings with all your top stories</string>
+    <string name="ui_4e9f59082144">Premium Archive</string>
+    <string name="ui_5b170811b992">Upgrade to Premium Archive</string>
+    <string name="ui_67a31d6fa581">Choose where Daily Briefing alerts should go</string>
+    <string name="ui_67d0be0dd546">Control how much is included and how it is written</string>
+    <string name="ui_68c2cc7f0cea">Model</string>
+    <string name="ui_710089545189">Length &amp; Style</string>
+    <string name="ui_753a22b2eb61">Notifications</string>
+    <string name="ui_771ee100da2b">Keyword Sections</string>
+    <string name="ui_7c522fb68f07">Get a summary of your top stories, delivered on your schedule.</string>
+    <string name="ui_7f7e956b2244">Set up Daily Briefing to generate a summary of the stories that matter most to you.</string>
+    <string name="ui_7ff5a6dafd80">Sections</string>
+    <string name="ui_80f7bcbc57b0">Choose how often and when your briefing is generated</string>
+    <string name="ui_a4d5830966af">Automatically create briefings on your schedule</string>
+    <string name="ui_a92076d4b9e3">Pick which model writes your Daily Briefing</string>
+    <string name="ui_a970fbbd6df8">Auto-generate</string>
+    <string name="ui_a9dc7e4dcba7">Daily Briefing Settings</string>
+    <string name="ui_bbfa773e5a63">Close</string>
+    <string name="ui_c2d462f8f6da">Choose which stories are eligible for Daily Briefing</string>
+    <string name="ui_d521ea8640b5">Generate Daily Briefing</string>
+    <string name="ui_df174a3f2faa">Enabled</string>
+    <string name="ui_df2164622bcf">Unable to load Daily Briefing</string>
+    <string name="ui_eaed56ec84ae">Daily Briefing</string>
+    <string name="ui_efc007a393f6">Save</string>
+    <string name="ui_f530db58b3e5">Keywords</string>
+    <string name="ui_fdafe86c10a4">Only sections with matching stories will be included</string>
 </resources>

@@ -201,6 +201,7 @@ class PrefsRepo(
 
         // wipe the prefs store
         prefs.edit { clear() }
+        com.newsblur.util.LanguageSettings.select(context, "auto")
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
