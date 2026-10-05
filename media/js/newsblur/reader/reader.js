@@ -566,7 +566,7 @@
                 $('.NB-narrow .NB-taskbar-button.NB-tipsy').tipsy({
                     gravity: 's',
                     delayIn: 175,
-                    title: gettext('tipsy-title')
+                    title: 'tipsy-title'
                 }).each(function () {
                     $(this).tipsy('enable');
                 });

@@ -4295,7 +4295,7 @@ var classifier_prototype = {
 
             // Map input type to scope key (e.g. 'text' → 'texts_scope', 'author' → 'authors_scope')
             var scope_key_map = {
-                'tag': 'tags_scope', 'title': gettext('titles_scope'), 'text': 'texts_scope',
+                'tag': 'tags_scope', 'title': 'titles_scope', 'text': 'texts_scope',
                 'url': 'urls_scope', 'author': 'authors_scope',
                 'title_regex': 'title_regex_scope', 'text_regex': 'text_regex_scope',
                 'url_regex': 'url_regex_scope', 'author_regex': 'author_regex_scope'
