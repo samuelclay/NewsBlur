@@ -35,7 +35,7 @@ msgstr "US$ 100/ano (Pro: fontes ilimitadas)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "US$ 144/ano (Pro+) / US$ 18/mês (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "US$ 29/mês"
 
@@ -67,7 +67,7 @@ msgstr "US$ 36/ano (1.024 sites)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "US$ 36/ano (Premium), US$ 99/ano (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "$36/ano"
 
@@ -87,7 +87,7 @@ msgstr "US$ 96/ano (acesso completo)"
 msgid "$99/year"
 msgstr "US$ 99/ano"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "US$ 99/ano"
 
@@ -170,7 +170,7 @@ msgstr "01 Buzz"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1.024 sites, busca em texto completo, River of News, tags de matérias salvas e visualização de texto"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1.024 sites, busca, visualização em texto e fluxo de notícias"
 
@@ -216,7 +216,7 @@ msgstr "Erro 404: página não encontrada"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - O NewsBlur não encontrou esta página"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "Busca a cada 5 min, treinamento por regex, 10.000 sites"
 
@@ -508,7 +508,7 @@ msgstr "O algoritmo decide por você"
 msgid "All"
 msgstr "Todos"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "Todos os recursos"
 
@@ -516,7 +516,7 @@ msgstr "Todos os recursos"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "Todos os feeds atualizados a cada 5 min"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "Todos os planos"
 
@@ -982,10 +982,6 @@ msgstr "Automático"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "Automatize fluxos de trabalho com centenas de serviços"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "Automático (idioma do dispositivo)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1556,7 +1552,7 @@ msgstr "Comentários de amigos"
 msgid "Common Questions"
 msgstr "Perguntas frequentes"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "Dúvidas frequentes sobre planos e cobrança"
 
@@ -1580,7 +1576,7 @@ msgstr "Compare o NewsBlur"
 msgid "Compare all plans"
 msgstr "Compare todos os planos"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "Compare todos os planos lado a lado"
 
@@ -2897,7 +2893,7 @@ msgstr "Completo"
 msgid "Full Text Search"
 msgstr "Pesquisa no texto completo"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "Arquivo completo, Pergunte à IA, resumo diário, 4.096 sites"
 
@@ -3178,7 +3174,7 @@ msgstr "Política de Privacidade do Google"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Alternativa ao Google Reader"
 
@@ -3318,7 +3314,7 @@ msgstr "Aguarde enquanto sua conta está sendo atualizada..."
 msgid "Holy crap the search feature is good."
 msgstr "Caramba, a busca é muito boa."
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "Início"
 
@@ -4152,7 +4148,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "Filtros por etiqueta"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "Idioma"
 
@@ -4632,7 +4628,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "Mais"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "Mais recursos"
 
@@ -7718,7 +7714,7 @@ msgstr "Assinante"
 msgid "Subtotal"
 msgstr "Subtotal"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "Suporte"
 
@@ -7882,7 +7878,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "Esse nome de usuário não está cadastrado. Tente novamente."
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "O blog"
 
@@ -8338,11 +8334,11 @@ msgstr ""
 "Para usar OAuth na autenticação de solicitações, envie o cabeçalho HTTP Bearer em todas as solicitações, "
 "como faria com qualquer outra API OAuth. Use o"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "Alternar modo escuro"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "Alternar tema"
 
@@ -10275,23 +10271,23 @@ msgstr "nome de usuário"
 msgid "vs"
 msgstr "versus"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "vs. Feedbin"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "vs. Feedly"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "vs. Inoreader"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "vs. Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "vs. Readwise"
 

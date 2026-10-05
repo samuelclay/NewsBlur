@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Зосередитися на новинах</string>
     <string name="story_title_mark_story_read">Позначити статтю прочитаною…</string>
     <string name="story_title_list_font_size">Розмір шрифту стрічки та заголовків статей</string>
+    <string name="language_title">Мова</string>
+    <string name="settings_cat_general">Загальні</string>
     <string name="language_current">Мова: %1$s</string>
     <string name="language_automatic">Автоматично (мова пристрою)</string>
     <string name="language_save_failed">Не вдалося зберегти мову. Спробуйте ще раз.</string>

@@ -36,7 +36,7 @@ msgstr "100 دولار سنويًا (Pro: مصادر غير محدودة)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "‏144 دولارًا سنويًا (Pro+) / 18 دولارًا شهريًا (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "29 دولارًا شهريًا"
 
@@ -68,7 +68,7 @@ msgstr "‏36 دولارًا سنويًا (1,024 موقعًا)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "36 دولارًا سنويًا (Premium)، و99 دولارًا سنويًا (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "36 دولارًا/سنة"
 
@@ -88,7 +88,7 @@ msgstr "$96 سنويًا (وصول كامل)"
 msgid "$99/year"
 msgstr "99 دولارًا سنويًا"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "$99/سنة"
 
@@ -170,7 +170,7 @@ msgstr "01 Buzz"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1,024 موقعًا، وبحث كامل النص، ونهر الأخبار، ووسوم القصص المحفوظة، وعرض نصي"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1,024 موقعًا، والبحث، وعرض النص، وتدفّق الأخبار"
 
@@ -214,7 +214,7 @@ msgstr "404، الصفحة غير موجودة"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - لم يتمكن NewsBlur من العثور على هذه الصفحة"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "جلب كل 5 دقائق، تدريب بالتعبيرات النمطية، 10,000 موقع"
 
@@ -500,7 +500,7 @@ msgstr "الخوارزمية تختار نيابةً عنك"
 msgid "All"
 msgstr "الكل"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "كل الميزات"
 
@@ -508,7 +508,7 @@ msgstr "كل الميزات"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "جلب جميع الخلاصات كل 5 دقائق"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "جميع الخطط"
 
@@ -964,10 +964,6 @@ msgstr "تلقائي"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "أتمتة سير العمل باستخدام مئات الخدمات"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "تلقائي (لغة الجهاز)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1525,7 +1521,7 @@ msgstr "تعليقات الأصدقاء"
 msgid "Common Questions"
 msgstr "الأسئلة الشائعة"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "أسئلة شائعة حول الخطط والفوترة"
 
@@ -1549,7 +1545,7 @@ msgstr "قارن NewsBlur"
 msgid "Compare all plans"
 msgstr "قارن جميع الخطط"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "قارن جميع الخطط جنبًا إلى جنب"
 
@@ -2837,7 +2833,7 @@ msgstr "كامل"
 msgid "Full Text Search"
 msgstr "البحث في النص الكامل"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "أرشيف كامل، اسأل الذكاء الاصطناعي، موجز يومي، 4,096 موقعًا"
 
@@ -3115,7 +3111,7 @@ msgstr "سياسة خصوصية Google"
 msgid "Google Reader API, Fever API"
 msgstr "واجهة Google Reader API وواجهة Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "بديل Google Reader"
 
@@ -3252,7 +3248,7 @@ msgstr "انتظر قليلًا ريثما تتم ترقية حسابك..."
 msgid "Holy crap the search feature is good."
 msgstr "يا للعجب، ميزة البحث رائعة."
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "الرئيسية"
 
@@ -4055,7 +4051,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "فلاتر حسب التصنيف"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "اللغة"
 
@@ -4527,7 +4523,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "المزيد"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "المزيد من الميزات"
 
@@ -7547,7 +7543,7 @@ msgstr "مشترك"
 msgid "Subtotal"
 msgstr "المجموع الفرعي"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "الدعم"
 
@@ -7711,7 +7707,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "اسم المستخدم هذا غير مسجل. يُرجى المحاولة مرة أخرى."
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "المدونة"
 
@@ -8140,11 +8136,11 @@ msgstr ""
 "لاستخدام OAuth عند مصادقة الطلبات، تأكد من إرسال ترويسة HTTP Bearer مع كل طلب، تمامًا كما تفعل مع أي واجهة "
 "API أخرى لـ OAuth. استخدم"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "تبديل الوضع الداكن"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "تبديل المظهر"
 
@@ -10009,23 +10005,23 @@ msgstr "اسم المستخدم"
 msgid "vs"
 msgstr "مقابل"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "مقارنةً بـ Feedbin"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "مقارنةً بـ Feedly"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "مقارنةً بـ Inoreader"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "مقارنةً بـ Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "مقارنةً بـ Readwise"
 

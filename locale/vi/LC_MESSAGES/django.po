@@ -35,7 +35,7 @@ msgstr "100 USD/năm (Pro: không giới hạn nguồn)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "$144/năm (Pro+) / $18/tháng (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "29 USD/tháng"
 
@@ -67,7 +67,7 @@ msgstr "36 USD/năm (1.024 trang web)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "36 USD/năm (Premium), 99 USD/năm (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "36 USD/năm"
 
@@ -87,7 +87,7 @@ msgstr "96 USD/năm (đầy đủ quyền truy cập)"
 msgid "$99/year"
 msgstr "99 USD/năm"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "99 USD/năm"
 
@@ -170,7 +170,7 @@ msgstr "01 Buzz"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1.024 trang web, tìm kiếm toàn văn, Dòng tin tức, thẻ bài viết đã lưu và chế độ xem văn bản"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1.024 trang web, tìm kiếm, chế độ xem văn bản, dòng tin"
 
@@ -214,7 +214,7 @@ msgstr "Lỗi 404, không tìm thấy"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur không tìm thấy trang này"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "Tải dữ liệu mỗi 5 phút, huấn luyện regex, 10.000 trang web"
 
@@ -504,7 +504,7 @@ msgstr "Để thuật toán tự quyết định"
 msgid "All"
 msgstr "Tất cả"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "Tất cả tính năng"
 
@@ -512,7 +512,7 @@ msgstr "Tất cả tính năng"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "Tất cả nguồn tin được tải 5 phút một lần"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "Tất cả gói"
 
@@ -979,10 +979,6 @@ msgstr "Tự động"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "Tự động hóa quy trình với hàng trăm dịch vụ"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "Tự động (ngôn ngữ thiết bị)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1551,7 +1547,7 @@ msgstr "Bình luận từ bạn bè"
 msgid "Common Questions"
 msgstr "Câu hỏi thường gặp"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "Các câu hỏi thường gặp về gói dịch vụ và thanh toán"
 
@@ -1575,7 +1571,7 @@ msgstr "So sánh NewsBlur"
 msgid "Compare all plans"
 msgstr "So sánh tất cả các gói"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "So sánh song song mọi gói"
 
@@ -2888,7 +2884,7 @@ msgstr "Đầy đủ"
 msgid "Full Text Search"
 msgstr "Tìm kiếm toàn văn"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "Lưu trữ đầy đủ, Hỏi AI, bản tin hằng ngày, 4.096 trang web"
 
@@ -3169,7 +3165,7 @@ msgstr "Chính sách quyền riêng tư của Google"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Giải pháp thay thế Google Reader"
 
@@ -3309,7 +3305,7 @@ msgstr "Vui lòng chờ trong khi tài khoản của bạn được nâng cấp.
 msgid "Holy crap the search feature is good."
 msgstr "Trời đất, tính năng tìm kiếm này thật tuyệt."
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "Trang chủ"
 
@@ -4147,7 +4143,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "Bộ lọc dựa trên nhãn"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "Ngôn ngữ"
 
@@ -4625,7 +4621,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "Thêm"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "Thêm tính năng"
 
@@ -7686,7 +7682,7 @@ msgstr "Người đăng ký"
 msgid "Subtotal"
 msgstr "Tạm tính"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "Hỗ trợ"
 
@@ -7852,7 +7848,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "Tên người dùng này chưa được đăng ký. Vui lòng thử lại."
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "Blog"
 
@@ -8305,11 +8301,11 @@ msgstr ""
 "Để sử dụng OAuth khi xác thực yêu cầu, hãy nhớ gửi tiêu đề HTTP Bearer trong mỗi yêu cầu, như bạn vẫn làm "
 "với mọi API OAuth khác. Hãy dùng"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "Bật/tắt chế độ tối"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "Chuyển đổi giao diện"
 
@@ -10247,23 +10243,23 @@ msgstr "tên người dùng"
 msgid "vs"
 msgstr "so với"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "so với Feedbin"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "so với Feedly"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "so với Inoreader"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "so với Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "so với Readwise"
 

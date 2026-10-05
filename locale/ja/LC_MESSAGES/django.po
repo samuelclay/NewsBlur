@@ -35,7 +35,7 @@ msgstr "年額100ドル（Pro：ソース数無制限）"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "年額144ドル（Pro+） / 月額18ドル（Enterprise）"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "月額29ドル"
 
@@ -67,7 +67,7 @@ msgstr "年額36ドル（1,024サイト）"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "年額36ドル（Premium）、年額99ドル（Archive）"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "年額36ドル"
 
@@ -87,7 +87,7 @@ msgstr "年額96ドル（全機能利用）"
 msgid "$99/year"
 msgstr "年間99ドル"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "年額99ドル"
 
@@ -166,7 +166,7 @@ msgstr "01 バズ"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1,024サイト、全文検索、ニュースの一覧表示、記事タグの保存、テキスト表示"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1,024サイト、検索、テキスト表示、ニュースフィード"
 
@@ -210,7 +210,7 @@ msgstr "404、見つかりません"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur：ページが見つかりません"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "5分ごとの取得、正規表現による学習、10,000サイト"
 
@@ -488,7 +488,7 @@ msgstr "アルゴリズムに任せる"
 msgid "All"
 msgstr "すべて"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "すべての機能"
 
@@ -496,7 +496,7 @@ msgstr "すべての機能"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "すべてのフィードを5分ごとに取得"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "すべてのプラン"
 
@@ -916,10 +916,6 @@ msgstr "自動"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "数百のサービスと連携してワークフローを自動化"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "自動（端末の言語）"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1449,7 +1445,7 @@ msgstr "友達からのコメント"
 msgid "Common Questions"
 msgstr "よくある質問"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "プランと請求に関するよくある質問"
 
@@ -1473,7 +1469,7 @@ msgstr "NewsBlurを比較"
 msgid "Compare all plans"
 msgstr "すべてのプランを比較"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "すべてのプランを並べて比較"
 
@@ -2717,7 +2713,7 @@ msgstr "フル"
 msgid "Full Text Search"
 msgstr "全文検索"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "全アーカイブ、Ask AI、デイリーブリーフィング、4,096サイト"
 
@@ -2980,7 +2976,7 @@ msgstr "Googleプライバシーポリシー"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API、Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Google Readerの代替"
 
@@ -3111,7 +3107,7 @@ msgstr "アカウントをアップグレードしています。しばらくお
 msgid "Holy crap the search feature is good."
 msgstr "すごい、検索機能がめちゃくちゃ優秀。"
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "ホーム"
 
@@ -3868,7 +3864,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "ラベルベースのフィルター"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "言語"
 
@@ -4329,7 +4325,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "もっと見る"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "その他の機能"
 
@@ -7171,7 +7167,7 @@ msgstr "購読者"
 msgid "Subtotal"
 msgstr "小計"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "サポート"
 
@@ -7333,7 +7329,7 @@ msgstr "このストーリーパターンは現在ページ上にある特定の
 msgid "That username is not registered. Please try again."
 msgstr "そのユーザー名は登録されていません。もう一度お試しください。"
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "ブログ"
 
@@ -7728,11 +7724,11 @@ msgid ""
 "as you would on any other OAuth API. Use the"
 msgstr "リクエストの認証にOAuthを使用するには、他のOAuth APIと同様に、すべてのリクエストでBearer HTTPヘッダーを渡してください。次を使用してください"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "ダークモードを切り替え"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "テーマを切り替える"
 
@@ -9444,23 +9440,23 @@ msgstr "ユーザー名"
 msgid "vs"
 msgstr "対"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "Feedbinとの比較"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "Feedlyとの比較"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "Inoreaderとの比較"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "Old Readerとの比較"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "対 Readwise"
 

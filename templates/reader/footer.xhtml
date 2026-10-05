@@ -1,5 +1,6 @@
 {% load i18n %}
-<div class="NB-splash-info NB-splash-bottom">
+<div class="NB-splash-info NB-splash-bottom{% if not user.is_authenticated %} NB-splash-bottom-language{% endif %}">
+    {% if not user.is_authenticated %}{% include "includes/language_selector.html" %}{% endif %}
     <ul class="NB-splash-links NB-inner">
         <li class="NB-splash-link NB-splash-link-features {% if page == "features" %}NB-active{% endif %}"><a href="{% url "features" %}">{% trans "Features" %}</a></li>
         <li class="NB-splash-link NB-splash-link-pricing {% if page == "pricing" %}NB-active{% endif %}"><a href="{% url "pricing" %}">{% trans "Pricing" %}</a></li>

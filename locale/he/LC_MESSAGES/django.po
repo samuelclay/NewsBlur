@@ -35,7 +35,7 @@ msgstr "100$ לשנה (Pro: מקורות ללא הגבלה)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "$144 לשנה (Pro+) / $18 לחודש (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "29$ לחודש"
 
@@ -67,7 +67,7 @@ msgstr "$36 לשנה (1,024 אתרים)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "36$ לשנה (Premium), ‏99$ לשנה (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "36$ לשנה"
 
@@ -87,7 +87,7 @@ msgstr "$96 לשנה (גישה מלאה)"
 msgid "$99/year"
 msgstr "99$ לשנה"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "99$ לשנה"
 
@@ -169,7 +169,7 @@ msgstr "01 באזז"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1,024 אתרים, חיפוש בטקסט מלא, זרם החדשות, תגיות לסיפורים שמורים ותצוגת טקסט"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1,024 אתרים, חיפוש, תצוגת טקסט, זרם חדשות"
 
@@ -213,7 +213,7 @@ msgstr "404, לא נמצא"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 — NewsBlur לא מצליח למצוא את הדף הזה"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "רענון כל 5 דקות, אימון בביטויים רגולריים, 10,000 אתרים"
 
@@ -493,7 +493,7 @@ msgstr "האלגוריתם יחליט עבורך"
 msgid "All"
 msgstr "הכול"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "כל התכונות"
 
@@ -501,7 +501,7 @@ msgstr "כל התכונות"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "כל הפידים מתעדכנים כל 5 דקות"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "כל התוכניות"
 
@@ -953,10 +953,6 @@ msgstr "אוטומטי"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "אוטומציה של תהליכי עבודה עם מאות שירותים"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "אוטומטי (שפת המכשיר)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1513,7 +1509,7 @@ msgstr "תגובות מחברים"
 msgid "Common Questions"
 msgstr "שאלות נפוצות"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "שאלות נפוצות על תוכניות וחיוב"
 
@@ -1537,7 +1533,7 @@ msgstr "השוואת NewsBlur"
 msgid "Compare all plans"
 msgstr "השוואת כל התוכניות"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "השוואה בין כל הרמות זו לצד זו"
 
@@ -2825,7 +2821,7 @@ msgstr "מלא"
 msgid "Full Text Search"
 msgstr "חיפוש בטקסט מלא"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "ארכיון מלא, שאל את הבינה המלאכותית, תקציר יומי, 4,096 אתרים"
 
@@ -3099,7 +3095,7 @@ msgstr "מדיניות הפרטיות של Google"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "חלופה ל-Google Reader"
 
@@ -3234,7 +3230,7 @@ msgstr "רק רגע, החשבון שלך משודרג..."
 msgid "Holy crap the search feature is good."
 msgstr "וואו, תכונת החיפוש פשוט מעולה."
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "דף הבית"
 
@@ -4029,7 +4025,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "מסננים מבוססי תוויות"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "שפה"
 
@@ -4498,7 +4494,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "עוד"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "תכונות נוספות"
 
@@ -7494,7 +7490,7 @@ msgstr "מנוי"
 msgid "Subtotal"
 msgstr "סכום ביניים"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "תמיכה"
 
@@ -7658,7 +7654,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "שם המשתמש הזה אינו רשום. נסו שוב."
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "הבלוג"
 
@@ -8086,11 +8082,11 @@ msgstr ""
 "כדי להשתמש ב-OAuth בעת אימות בקשות, יש להעביר את כותרת ה-HTTP‏ Bearer בכל בקשה, בדיוק כמו בכל API אחר של "
 "OAuth. השתמשו ב-"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "החלפת מצב כהה"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "החלפת ערכת נושא"
 
@@ -9939,23 +9935,23 @@ msgstr "שם משתמש"
 msgid "vs"
 msgstr "לעומת"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "לעומת Feedbin"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "לעומת Feedly"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "לעומת Inoreader"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "לעומת Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "לעומת Readwise"
 

@@ -35,7 +35,7 @@ msgstr "$100/वर्ष (Pro: असीमित स्रोत)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "$144/वर्ष (Pro+) / $18/माह (Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "$29/माह"
 
@@ -67,7 +67,7 @@ msgstr "$36/वर्ष (1,024 साइटें)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "$36/वर्ष (Premium), $99/वर्ष (Archive)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "$36/वर्ष"
 
@@ -87,7 +87,7 @@ msgstr "$96/वर्ष (पूर्ण पहुँच)"
 msgid "$99/year"
 msgstr "$99/वर्ष"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "$99/वर्ष"
 
@@ -170,7 +170,7 @@ msgstr "01 चर्चा"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "1,024 साइटें, पूर्ण-पाठ खोज, समाचारों की धारा, सहेजे गए स्टोरी टैग और टेक्स्ट दृश्य"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1,024 साइटें, खोज, टेक्स्ट दृश्य, समाचारों की धारा"
 
@@ -214,7 +214,7 @@ msgstr "404, नहीं मिला"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur को यह पेज नहीं मिला"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "5 मिनट में फ़ेचिंग, रेगेक्स प्रशिक्षण, 10,000 साइटें"
 
@@ -504,7 +504,7 @@ msgstr "एल्गोरिदम आपके लिए निर्णय �
 msgid "All"
 msgstr "सभी"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "सभी सुविधाएँ"
 
@@ -512,7 +512,7 @@ msgstr "सभी सुविधाएँ"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "सभी फ़ीड हर 5 मिनट में फ़ेच किए जाते हैं"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "सभी प्लान"
 
@@ -976,10 +976,6 @@ msgstr "स्वचालित"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "सैकड़ों सेवाओं के साथ वर्कफ़्लो स्वचालित करें"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "स्वचालित (डिवाइस की भाषा)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1547,7 +1543,7 @@ msgstr "दोस्तों की टिप्पणियाँ"
 msgid "Common Questions"
 msgstr "आम सवाल"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "योजनाओं और बिलिंग से जुड़े आम सवाल"
 
@@ -1571,7 +1567,7 @@ msgstr "NewsBlur की तुलना करें"
 msgid "Compare all plans"
 msgstr "सभी प्लान की तुलना करें"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "हर स्तर की साथ-साथ तुलना करें"
 
@@ -2882,7 +2878,7 @@ msgstr "पूर्ण"
 msgid "Full Text Search"
 msgstr "पूर्ण-पाठ खोज"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "पूरा संग्रह, Ask AI, दैनिक ब्रीफ़िंग, 4,096 साइटें"
 
@@ -3163,7 +3159,7 @@ msgstr "Google की गोपनीयता नीति"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Google Reader का विकल्प"
 
@@ -3303,7 +3299,7 @@ msgstr "आपका खाता अपग्रेड हो रहा है,
 msgid "Holy crap the search feature is good."
 msgstr "अरे वाह, खोज सुविधा कितनी बढ़िया है।"
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "होम"
 
@@ -4138,7 +4134,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "लेबल-आधारित फ़िल्टर"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "भाषा"
 
@@ -4614,7 +4610,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "और"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "और सुविधाएँ"
 
@@ -7668,7 +7664,7 @@ msgstr "सब्सक्राइबर"
 msgid "Subtotal"
 msgstr "उप-योग"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "सहायता"
 
@@ -7834,7 +7830,7 @@ msgstr ""
 msgid "That username is not registered. Please try again."
 msgstr "यह उपयोगकर्ता नाम पंजीकृत नहीं है। कृपया फिर से कोशिश करें।"
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "ब्लॉग"
 
@@ -8288,11 +8284,11 @@ msgstr ""
 "अनुरोधों को प्रमाणित करने के लिए OAuth का उपयोग करते समय, हर अनुरोध के साथ Bearer HTTP हेडर भेजना न भूलें, "
 "ठीक वैसे ही जैसे आप किसी अन्य OAuth API के साथ करेंगे। इसका उपयोग करें"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "डार्क मोड चालू/बंद करें"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "थीम बदलें"
 
@@ -10213,23 +10209,23 @@ msgstr "उपयोगकर्ता नाम"
 msgid "vs"
 msgstr "बनाम"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "Feedbin की तुलना में"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "Feedly की तुलना में"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "बनाम Inoreader"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr " बनाम Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "बनाम Readwise"
 

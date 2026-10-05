@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Verhalen uitlichten</string>
     <string name="story_title_mark_story_read">Artikel als gelezen markeren…</string>
     <string name="story_title_list_font_size">Lettergrootte van feeds en verhaal titels</string>
+    <string name="language_title">Taal</string>
+    <string name="settings_cat_general">Algemeen</string>
     <string name="language_current">Taal: %1$s</string>
     <string name="language_automatic">Automatisch (taal van apparaat)</string>
     <string name="language_save_failed">Je taalinstelling kon niet worden opgeslagen. Probeer het opnieuw.</string>

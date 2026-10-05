@@ -366,6 +366,7 @@ enum PreferenceItemType {
     case button(key: String, action: String)
     case staticValue(key: String, value: String)
     case link(title: String, url: String)
+    case language
     case appIcon
 }
 
@@ -467,6 +468,13 @@ class PreferencesViewModel: ObservableObject {
 
     func buildSections() {
         sections = [
+            PreferenceSection(
+                title: NBLocalization.text("General"),
+                icon: "gearshape",
+                iconColor: .gray,
+                items: [PreferenceItem(title: NBLocalization.text("Language"), icon: "globe",
+                                       iconColor: .blue, type: .language)]
+            ),
             // MARK: Story List Section
             PreferenceSection(
                 title: NBLocalization.text("Story List"),
@@ -1213,7 +1221,6 @@ struct PreferencesView: View {
 
             ScrollView {
                 LazyVStack(spacing: 16) {
-                    NBLanguagePicker()
                     ForEach(viewModel.sections) { section in
                         PreferenceSectionView(
                             section: section,
@@ -1455,6 +1462,9 @@ struct PreferenceItemView: View {
             case .link(_, let url):
                 LinkItemView(item: item, url: url)
 
+            case .language:
+                LanguagePreferenceItemView(item: item)
+
             case .appIcon:
                 AppIconPreferenceItemView(item: item, viewModel: viewModel)
             }
@@ -1475,6 +1485,48 @@ struct PreferenceItemView: View {
 }
 
 // MARK: - Toggle Item View
+
+@available(iOS 15.0, *)
+private struct LanguagePreferenceItemView: View {
+    let item: PreferenceItem
+    @AppStorage(NBLocalization.preferenceKey) private var language = "auto"
+    @State private var failed = false
+    @State private var saving = false
+
+    var body: some View {
+        Menu {
+            Picker(item.title, selection: Binding(get: { language }, set: { value in
+                saving = true
+                NBLocalization.save(value) { success in saving = false; failed = !success }
+            })) {
+                Text(NBLocalization.text("Automatic (device language)")).tag("auto")
+                ForEach(NBLocalization.languages, id: \.0) { code, name in Text(name).tag(code) }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                PreferenceIconView(icon: item.icon, color: item.iconColor)
+                Text(item.title)
+                    .font(.system(size: 15))
+                    .foregroundColor(PreferencesColors.textPrimary)
+                Spacer()
+                Text(NBLocalization.languages.first { $0.0 == language }?.1 ?? NBLocalization.text("Automatic"))
+                    .font(.system(size: 14))
+                    .foregroundColor(PreferencesColors.textSecondary)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(saving)
+        .alert(NBLocalization.text("Could not save your language. Please try again."), isPresented: $failed) {
+            Button(NBLocalization.text("OK"), role: .cancel) {}
+        }
+    }
+}
 
 @available(iOS 15.0, *)
 struct ToggleItemView: View {

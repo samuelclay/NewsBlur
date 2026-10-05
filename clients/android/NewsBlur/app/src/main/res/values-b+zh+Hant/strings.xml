@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">聚焦文章</string>
     <string name="story_title_mark_story_read">將故事標示為已讀…</string>
     <string name="story_title_list_font_size">訂閱源與文章標題字級</string>
+    <string name="language_title">語言</string>
+    <string name="settings_cat_general">一般</string>
     <string name="language_current">語言：%1$s</string>
     <string name="language_automatic">自動（裝置語言）</string>
     <string name="language_save_failed">無法儲存你的語言設定。請再試一次。</string>

@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Статьи в фокусе</string>
     <string name="story_title_mark_story_read">Отметить запись как прочитанную…</string>
     <string name="story_title_list_font_size">Размер шрифта названий лент и статей</string>
+    <string name="language_title">Язык</string>
+    <string name="settings_cat_general">Общие</string>
     <string name="language_current">Язык: %1$s</string>
     <string name="language_automatic">Автоматически (язык устройства)</string>
     <string name="language_save_failed">Не удалось сохранить язык. Попробуйте ещё раз.</string>

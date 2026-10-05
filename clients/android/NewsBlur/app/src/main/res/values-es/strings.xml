@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Historias de enfoque</string>
     <string name="story_title_mark_story_read">Marcar historia como leída…</string>
     <string name="story_title_list_font_size">Tamaño de fuente del título de la fuente y la noticia</string>
+    <string name="language_title">Idioma</string>
+    <string name="settings_cat_general">General</string>
     <string name="language_current">Idioma: %1$s</string>
     <string name="language_automatic">Automático (idioma del dispositivo)</string>
     <string name="language_save_failed">No se pudo guardar tu idioma. Por favor, inténtalo de nuevo.</string>

@@ -35,7 +35,7 @@ msgstr "연 $100 (Pro: 소스 무제한)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "연 $144(Pro+) / 월 $18(Enterprise)"
 
-#: templates/base.html:303
+#: templates/base.html:302
 msgid "$29/mo"
 msgstr "월 $29"
 
@@ -67,7 +67,7 @@ msgstr "연 $36(사이트 1,024개)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "연 $36(프리미엄), 연 $99(아카이브)"
 
-#: templates/base.html:295
+#: templates/base.html:294
 msgid "$36/yr"
 msgstr "연 $36"
 
@@ -87,7 +87,7 @@ msgstr "연 $96(전체 이용)"
 msgid "$99/year"
 msgstr "연 $99"
 
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "$99/yr"
 msgstr "연 $99"
 
@@ -168,7 +168,7 @@ msgstr "01 버즈"
 msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
 msgstr "사이트 1,024개, 전문 검색, 뉴스 스트림, 저장한 기사 태그 및 텍스트 보기"
 
-#: templates/base.html:296
+#: templates/base.html:295
 msgid "1,024 sites, search, text view, river of news"
 msgstr "사이트 1,024개, 검색, 텍스트 보기, 뉴스 피드"
 
@@ -212,7 +212,7 @@ msgstr "404, 페이지를 찾을 수 없습니다"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur에서 해당 페이지를 찾을 수 없습니다"
 
-#: templates/base.html:304
+#: templates/base.html:303
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "5분 간격 가져오기, 정규식 학습, 사이트 10,000개"
 
@@ -490,7 +490,7 @@ msgstr "알고리즘이 대신 결정"
 msgid "All"
 msgstr "전체"
 
-#: templates/base.html:210
+#: templates/base.html:209
 msgid "All Features"
 msgstr "모든 기능"
 
@@ -498,7 +498,7 @@ msgstr "모든 기능"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "모든 피드를 5분마다 가져오기"
 
-#: templates/base.html:290
+#: templates/base.html:289
 msgid "All Plans"
 msgstr "모든 요금제"
 
@@ -931,10 +931,6 @@ msgstr "자동"
 #: templates/static/_feature_crosslinks.xhtml:52
 msgid "Automate workflows with hundreds of services"
 msgstr "수백 가지 서비스로 워크플로를 자동화하세요"
-
-#: templates/includes/language_selector.html:7
-msgid "Automatic (device language)"
-msgstr "자동(기기 언어)"
 
 #: templates/static/features.xhtml:72
 msgid "Available on Premium Pro"
@@ -1477,7 +1473,7 @@ msgstr "친구들의 댓글"
 msgid "Common Questions"
 msgstr "자주 묻는 질문"
 
-#: templates/base.html:309
+#: templates/base.html:308
 msgid "Common questions about plans and billing"
 msgstr "요금제 및 결제 관련 자주 묻는 질문"
 
@@ -1501,7 +1497,7 @@ msgstr "NewsBlur 비교"
 msgid "Compare all plans"
 msgstr "모든 요금제 비교"
 
-#: templates/base.html:291
+#: templates/base.html:290
 msgid "Compare every tier side by side"
 msgstr "모든 요금제를 나란히 비교"
 
@@ -2768,7 +2764,7 @@ msgstr "전체"
 msgid "Full Text Search"
 msgstr "전체 텍스트 검색"
 
-#: templates/base.html:300
+#: templates/base.html:299
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "전체 아카이브, AI에게 질문하기, 일일 브리핑, 사이트 4,096개"
 
@@ -3035,7 +3031,7 @@ msgstr "Google 개인정보처리방침"
 msgid "Google Reader API, Fever API"
 msgstr "Google Reader API, Fever API"
 
-#: templates/base.html:276
+#: templates/base.html:275
 msgid "Google Reader Alt"
 msgstr "Google Reader 대안"
 
@@ -3168,7 +3164,7 @@ msgstr "계정 업그레이드 중입니다. 잠시만 기다려 주세요..."
 msgid "Holy crap the search feature is good."
 msgstr "와, 검색 기능 정말 좋네요."
 
-#: templates/base.html:203
+#: templates/base.html:202
 msgid "Home"
 msgstr "홈"
 
@@ -3940,7 +3936,7 @@ msgstr "LaFlecha"
 msgid "Label-based filters"
 msgstr "라벨 기반 필터"
 
-#: templates/includes/language_selector.html:6
+#: templates/includes/language_selector.html:5
 msgid "Language"
 msgstr "언어"
 
@@ -4407,7 +4403,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "더보기"
 
-#: templates/base.html:250
+#: templates/base.html:249
 msgid "More Features"
 msgstr "더 많은 기능"
 
@@ -7319,7 +7315,7 @@ msgstr "구독자"
 msgid "Subtotal"
 msgstr "소계"
 
-#: templates/reader/footer.xhtml:12
+#: templates/reader/footer.xhtml:13
 msgid "Support"
 msgstr "지원"
 
@@ -7481,7 +7477,7 @@ msgstr "이 스토리 패턴은 현재 페이지의 정확한 항목에 연결�
 msgid "That username is not registered. Please try again."
 msgstr "해당 사용자 이름은 등록되어 있지 않습니다. 다시 시도해 주세요."
 
-#: templates/reader/footer.xhtml:13
+#: templates/reader/footer.xhtml:14
 msgid "The Blog"
 msgstr "블로그"
 
@@ -7890,11 +7886,11 @@ msgid ""
 "as you would on any other OAuth API. Use the"
 msgstr "요청 인증에 OAuth를 사용하려면 다른 OAuth API와 마찬가지로 모든 요청에 Bearer HTTP 헤더를 포함해야 합니다. 다음을 사용하세요"
 
-#: templates/base.html:323
+#: templates/base.html:322
 msgid "Toggle dark mode"
 msgstr "다크 모드 전환"
 
-#: templates/base.html:318
+#: templates/base.html:317
 msgid "Toggle theme"
 msgstr "테마 전환"
 
@@ -9651,23 +9647,23 @@ msgstr "사용자 이름"
 msgid "vs"
 msgstr "대"
 
-#: templates/base.html:270
+#: templates/base.html:269
 msgid "vs Feedbin"
 msgstr "Feedbin과 비교"
 
-#: templates/base.html:266
+#: templates/base.html:265
 msgid "vs Feedly"
 msgstr "Feedly와 비교"
 
-#: templates/base.html:267
+#: templates/base.html:266
 msgid "vs Inoreader"
 msgstr "Inoreader와 비교"
 
-#: templates/base.html:269
+#: templates/base.html:268
 msgid "vs Old Reader"
 msgstr "vs Old Reader"
 
-#: templates/base.html:268
+#: templates/base.html:267
 msgid "vs Readwise"
 msgstr "vs Readwise"
 

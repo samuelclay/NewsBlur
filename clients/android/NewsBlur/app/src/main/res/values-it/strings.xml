@@ -38,6 +38,8 @@
     <string name="gesture_focus_stories">Metti in evidenza le notizie</string>
     <string name="story_title_mark_story_read">Segna la notizia come letta…</string>
     <string name="story_title_list_font_size">Dimensione del carattere dei titoli di feed e notizie</string>
+    <string name="language_title">Lingua</string>
+    <string name="settings_cat_general">Generale</string>
     <string name="language_current">Lingua: %1$s</string>
     <string name="language_automatic">Automatico (lingua del dispositivo)</string>
     <string name="language_save_failed">Impossibile salvare la lingua. Riprova.</string>
