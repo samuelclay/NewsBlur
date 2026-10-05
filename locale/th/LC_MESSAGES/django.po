@@ -1582,6 +1582,10 @@ msgstr "เสร็จสมบูรณ์!"
 msgid "Comprehensive"
 msgstr "ครอบคลุม"
 
+#: apps/profile/forms.py:51
+msgid "Confirm your password"
+msgstr "ยืนยันรหัสผ่าน"
+
 #: templates/static/features.xhtml:466
 msgid ""
 "Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, "
@@ -1743,6 +1747,11 @@ msgstr "ฟีด RSS แบบกำหนดเองสำหรับเร�
 #: apps/ask_ai/views.py:99
 msgid "Custom question is required"
 msgstr "จำเป็นต้องระบุคำถามที่กำหนดเอง"
+
+#: apps/ask_ai/views.py:103
+#, python-format
+msgid "Custom questions are limited to %(limit)d characters"
+msgstr "คำถามที่กำหนดเองมีความยาวได้ไม่เกิน %(limit)d ตัวอักษร"
 
 #: templates/static/compare_inoreader.xhtml:61
 msgid "Customizable AI summaries"
@@ -2134,7 +2143,7 @@ msgstr "จดหมายข่าวทางอีเมล"
 msgid "Email Newsletters - NewsBlur"
 msgstr "จดหมายข่าวทางอีเมล - NewsBlur"
 
-#: templates/social/social_page.xhtml:167
+#: apps/reader/forms.py:109
 msgid "Email address"
 msgstr "ที่อยู่อีเมล"
 
@@ -3054,6 +3063,10 @@ msgstr "ข้อผิดพลาดเกี่ยวกับของขว
 #: templates/profile/gift_checkout_complete.html:12
 msgid "Gift Sent"
 msgstr "ส่งของขวัญแล้ว"
+
+#: apps/profile/forms.py:212
+msgid "Gift code"
+msgstr "รหัสของขวัญ"
 
 #: templates/static/press.xhtml:180
 msgid "GirlSync"
@@ -4050,6 +4063,10 @@ msgstr "แป้นพิมพ์ลัด"
 #: templates/static/features.xhtml:350
 msgid "Keyboard shortcuts preferences dialog"
 msgstr "หน้าต่างโต้ตอบการตั้งค่าแป้นพิมพ์ลัด"
+
+#: apps/analyzer/forms.py:19
+msgid "Keywords"
+msgstr "คำสำคัญ"
 
 #: templates/static/press.xhtml:381
 msgid "KillerStartups"
@@ -5573,7 +5590,7 @@ msgstr "ไม่ได้ระบุ URL"
 msgid "No applications defined"
 msgstr "ไม่ได้กำหนดแอปพลิเคชัน"
 
-#: apps/ask_ai/views.py:146
+#: apps/ask_ai/views.py:147
 msgid "No audio file provided"
 msgstr "ไม่มีไฟล์เสียง"
 
@@ -5628,6 +5645,10 @@ msgstr "ไม่มีระบบฝึก"
 #: apps/archive_extension/views.py:1334
 msgid "No uncategorized archives found"
 msgstr "ไม่พบคลังที่ไม่มีหมวดหมู่"
+
+#: apps/profile/forms.py:94
+msgid "No user has that email address."
+msgstr "ไม่มีผู้ใช้ที่ใช้ที่อยู่อีเมลนี้"
 
 #: templates/reader/welcome.xhtml:1682
 msgid "No."
@@ -5822,7 +5843,7 @@ msgstr "โอเพนซอร์สหมายถึงไม่ถูกผ
 msgid "Open the trainer for any feed"
 msgstr "เปิดเครื่องมือฝึกสำหรับฟีดใดก็ได้"
 
-#: apps/ask_ai/views.py:168
+#: apps/ask_ai/views.py:169
 msgid "OpenAI API key not configured"
 msgstr "ยังไม่ได้ตั้งค่า OpenAI API key"
 
@@ -5934,6 +5955,10 @@ msgstr "พารามิเตอร์"
 msgid "Password"
 msgstr "รหัสผ่าน"
 
+#: apps/reader/forms.py:117
+msgid "Password (optional)"
+msgstr "รหัสผ่าน (ไม่บังคับ)"
+
 #: templates/statistics/render_statistics_graphs.xhtml:10
 msgid "Past day"
 msgstr "วันที่ผ่านมา"
@@ -5978,6 +6003,10 @@ msgstr "ข้อมูลส่วนบุคคล"
 msgid "Phil Windley"
 msgstr "Phil Windley"
 
+#: apps/profile/forms.py:45
+msgid "Plan"
+msgstr "แพ็กเกจ"
+
 #: templates/static/pricing.xhtml:26
 msgid "Plans for every reader"
 msgstr "มีแพ็กเกจสำหรับผู้อ่านทุกคน"
@@ -5985,6 +6014,14 @@ msgstr "มีแพ็กเกจสำหรับผู้อ่านทุ
 #: templates/accounts/signup.html:50
 msgid "Please create an account to continue."
 msgstr "โปรดสร้างบัญชีเพื่อดำเนินการต่อ"
+
+#: apps/analyzer/forms.py:32
+msgid "Please enter in a keyword search query."
+msgstr "โปรดป้อนคำค้นหา"
+
+#: apps/profile/forms.py:88
+msgid "Please enter in an email address."
+msgstr "โปรดป้อนที่อยู่อีเมล"
 
 #: templates/accounts/login.html:40
 msgid "Please login to continue."
@@ -6014,6 +6051,10 @@ msgstr ""
 "หากคุณไม่ยอมรับข้อกำหนดและเงื่อนไขทั้งหมดของข้อตกลงนี้ คุณจะไม่สามารถเข้าถึงเว็บไซต์หรือใช้บริการใด ๆ ได้ "
 "หากถือว่าข้อกำหนดการให้บริการเหล่านี้เป็นข้อเสนอ "
 "การยอมรับจะจำกัดอยู่เฉพาะข้อกำหนดการให้บริการเหล่านี้โดยชัดแจ้ง"
+
+#: apps/profile/forms.py:73
+msgid "Please type \"DELETE\" to confirm deletion."
+msgstr "พิมพ์ \"DELETE\" เพื่อยืนยันการลบ"
 
 #: templates/502.html:70
 msgid "Please wait patiently while NewsBlur comes back."
@@ -6253,7 +6294,7 @@ msgstr "แพ็กเกจ Pro+"
 msgid "Pro: every feed, every 5 minutes"
 msgstr "Pro: ทุกฟีด ทุก 5 นาที"
 
-#: apps/ask_ai/views.py:125
+#: apps/ask_ai/views.py:126
 msgid "Processing question"
 msgstr "กำลังประมวลผลคำถาม"
 
@@ -7131,6 +7172,10 @@ msgstr "5 ก.ย. 2012"
 msgid "Sept 6, 2012"
 msgstr "6 ก.ย. 2012"
 
+#: apps/reader/forms.py:154
+msgid "Seriously, fuck off spammer."
+msgstr "เลิกส่งสแปมได้แล้ว"
+
 #: templates/static/about.xhtml:156
 msgid "Server"
 msgstr "เซิร์ฟเวอร์"
@@ -7314,6 +7359,10 @@ msgstr "มีผู้ใช้ชื่อนี้แล้ว"
 #: templates/reader/feeds_skeleton.xhtml:46
 msgid "Something went wrong..."
 msgstr "เกิดข้อผิดพลาดบางอย่าง..."
+
+#: apps/reader/forms.py:160
+msgid "Sorry, that email is invalid."
+msgstr "ขออภัย อีเมลนี้ไม่ถูกต้อง"
 
 #: templates/static/feature_cli.xhtml:56
 msgid "Source:"
@@ -8039,6 +8088,10 @@ msgstr ""
 msgid "Third-party only"
 msgstr "บุคคลที่สามเท่านั้น"
 
+#: apps/profile/forms.py:175
+msgid "This email is already being used by another account. Try something different."
+msgstr "บัญชีอื่นใช้ที่อยู่อีเมลนี้แล้ว ลองใช้อีเมลอื่น"
+
 #: apps/reader/views.py:6151
 msgid "This feature requires the Archive subscription"
 msgstr "ฟีเจอร์นี้ต้องสมัครสมาชิก Archive"
@@ -8098,6 +8151,10 @@ msgstr ""
 #: templates/social/social_page.xhtml:234
 msgid "This user has limited their shared stories only to followers."
 msgstr "ผู้ใช้นี้จำกัดการแชร์เรื่องราวไว้เฉพาะผู้ติดตามเท่านั้น"
+
+#: apps/profile/forms.py:168
+msgid "This username is already taken. Try something different."
+msgstr "ชื่อผู้ใช้นี้ถูกใช้แล้ว ลองใช้ชื่ออื่น"
 
 #: templates/static/tos.xhtml:33
 msgid ""
@@ -8332,6 +8389,10 @@ msgstr ""
 msgid "Two of the most popular RSS readers, compared feature by feature. Here's how they differ."
 msgstr "เปรียบเทียบโปรแกรมอ่าน RSS ยอดนิยมสองรายการแบบเจาะลึกทุกฟีเจอร์ มาดูกันว่าแตกต่างกันอย่างไร"
 
+#: apps/profile/forms.py:54
+msgid "Type \"Delete\" to confirm"
+msgstr "พิมพ์ \"Delete\" เพื่อยืนยัน"
+
 #: templates/static/feature_search.xhtml:42
 msgid "Type keywords, phrases, or combinations"
 msgstr "พิมพ์คำสำคัญ วลี หรือชุดคำ"
@@ -8348,7 +8409,7 @@ msgstr "Underscore.js"
 msgid "Unique email address"
 msgstr "ที่อยู่อีเมลเฉพาะ"
 
-#: apps/ask_ai/views.py:106
+#: apps/ask_ai/views.py:107
 msgid "Unknown Ask AI question"
 msgstr "ไม่รู้จักคำถาม Ask AI"
 
@@ -8444,7 +8505,7 @@ msgstr "ชื่อผู้ใช้"
 msgid "Username or Email"
 msgstr "ชื่อผู้ใช้หรืออีเมล"
 
-#: templates/social/social_page.xhtml:161
+#: apps/reader/forms.py:24
 msgid "Username or email"
 msgstr "ชื่อผู้ใช้หรืออีเมล"
 
@@ -9474,6 +9535,10 @@ msgstr ""
 "คลังข่าวครบถ้วนพร้อมระบบอัจฉริยะที่ขับเคลื่อนด้วย AI มีเว็บไซต์ 4,096 แห่ง คลังบทความฉบับเต็ม ถาม AI "
 "และสรุปข่าวประจำวัน"
 
+#: apps/profile/forms.py:80
+msgid "Your email address"
+msgstr "ที่อยู่อีเมลของคุณ"
+
 #: templates/static/pricing.xhtml:168
 msgid ""
 "Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
@@ -9484,9 +9549,29 @@ msgstr ""
 "เรื่องราวเก่าจะไม่ปรากฏในผลการค้นหาอีกต่อไป แต่จะกลับมาให้ใช้งานได้หากคุณอัปเกรดอีกครั้ง "
 "หากคุณใช้ฟีดเกินจำนวนที่แพ็กเกจระดับต่ำกว่ากำหนด ระบบจะแจ้งให้คุณปิดเสียงฟีดบางรายการ"
 
+#: apps/profile/forms.py:237
+msgid "Your gift code is invalid. Check it for errors."
+msgstr "รหัสของขวัญไม่ถูกต้อง โปรดตรวจสอบว่าพิมพ์ถูกต้อง"
+
+#: apps/profile/forms.py:220
+msgid "Your gift code should be 12 characters long."
+msgstr "รหัสของขวัญต้องมีความยาว 12 ตัวอักษร"
+
 #: templates/static/feature_newsletters.xhtml:45
 msgid "Your inbox stays clean"
 msgstr "กล่องจดหมายของคุณเป็นระเบียบอยู่เสมอ"
+
+#: apps/profile/forms.py:101
+msgid "Your new password"
+msgstr "รหัสผ่านใหม่ของคุณ"
+
+#: apps/profile/forms.py:182
+msgid "Your old password is incorrect."
+msgstr "รหัสผ่านเดิมไม่ถูกต้อง"
+
+#: apps/profile/forms.py:67
+msgid "Your password doesn't match."
+msgstr "รหัสผ่านของคุณไม่ตรงกัน"
 
 #: templates/profile/gift_checkout_complete.html:35
 msgid "Your payment is being processed. Your gift link will be available shortly."
@@ -9596,6 +9681,14 @@ msgstr "ความคิดเห็น"
 msgid "cookie with every request. This cookie is set on"
 msgstr "คุกกี้พร้อมทุกคำขอ คุกกี้นี้ถูกตั้งค่าเมื่อ"
 
+#: apps/profile/forms.py:136
+msgid "custom_css"
+msgstr "custom_css"
+
+#: apps/profile/forms.py:133
+msgid "custom_js"
+msgstr "custom_js"
+
 #: templates/reader/welcome.xhtml:985
 msgid "dangerousmeta"
 msgstr "dangerousmeta"
@@ -9619,6 +9712,10 @@ msgstr "แก้ไข"
 #: templates/static/api.xhtml:38
 msgid "email Samuel"
 msgstr "ส่งอีเมลถึง Samuel"
+
+#: apps/profile/forms.py:117
+msgid "email address"
+msgstr "ที่อยู่อีเมล"
 
 #: templates/static/api.xhtml:41
 msgid "endpoint to begin the OAuth authentication procedure. Use the"
@@ -9899,6 +9996,10 @@ msgstr ""
 msgid "output. Works with self-hosted instances too."
 msgstr "เอาต์พุต ใช้ได้กับอินสแตนซ์ที่โฮสต์เองด้วย"
 
+#: apps/profile/forms.py:129
+msgid "password"
+msgstr "รหัสผ่าน"
+
 #: templates/analyzer/popularity_query.xhtml:30
 msgid "pebble watch, philips hue, alexa"
 msgstr "นาฬิกา Pebble, Philips Hue, Alexa"
@@ -9998,6 +10099,10 @@ msgstr "ขึ้น"
 #: templates/reader/welcome.xhtml:966
 msgid "urban_mermaid"
 msgstr "urban_mermaid"
+
+#: apps/profile/forms.py:111
+msgid "username"
+msgstr "ชื่อผู้ใช้"
 
 #: templates/reader/welcome.xhtml:1723
 msgid "vs"
