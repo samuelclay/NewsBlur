@@ -50,6 +50,7 @@ from django.utils import feedgenerator
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 from mongoengine.queryset import NotUniqueError, OperationError
 
 from apps.analyzer.models import (
@@ -336,6 +337,7 @@ def filter_stories_by_classifier(stories, classifier_type, classifier_value):
 
 
 @never_cache
+@ensure_csrf_cookie
 @render_to("reader/dashboard.xhtml")
 def index(request, **kwargs):
     subdomain = get_subdomain(request)
@@ -403,6 +405,7 @@ def dashboard(request, **kwargs):
     }, "reader/dashboard.xhtml"
 
 
+@ensure_csrf_cookie
 @render_to("reader/dashboard.xhtml")
 def welcome_req(request, **kwargs):
     return welcome(request, **kwargs)

@@ -1,6 +1,9 @@
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
+from django.conf import settings
+from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase
 from django.utils import translation
 from django.views.i18n import JavaScriptCatalog
@@ -21,6 +24,30 @@ class Test_Language(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.addCleanup(translation.deactivate)
+
+    def test_welcome_language_form_can_submit_on_first_visit(self):
+        from apps.reader.views import index, welcome_req
+
+        for view in (index, welcome_req):
+            with self.subTest(view=view.__name__):
+                request = self.factory.get("/welcome")
+                request.user = SimpleNamespace(is_authenticated=False, is_anonymous=True)
+
+                def welcome_form(request, **kwargs):
+                    return HttpResponse(render_to_string("includes/language_selector.html", request=request))
+
+                with patch("apps.reader.views.welcome", side_effect=welcome_form), patch(
+                    "apps.reader.views.get_subdomain", return_value=None
+                ):
+                    response = view(request)
+                self.assertIn(settings.CSRF_COOKIE_NAME, response.cookies)
+                token = response.cookies[settings.CSRF_COOKIE_NAME].value
+                post = self.factory.post(
+                    "/profile/language", {"language": "es", "csrfmiddlewaretoken": token}
+                )
+                post.user = request.user
+                post.COOKIES[settings.CSRF_COOKIE_NAME] = token
+                self.assertEqual(language_preference(post).status_code, 200)
 
     def request(self, language=None, authenticated=False, header="en", cookie=None):
         request = self.factory.post(

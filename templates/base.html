@@ -197,6 +197,7 @@
       <div class="NB-body-inner">
         <div class="NB-splash-info NB-splash-top">
           <div class="NB-splash-top-nav">
+            {% block nav_language %}{% endblock %}
             <span class="NB-splash-top-title">{% block nav_title %}{% endblock %}</span>
             <ul class="NB-splash-top-links">
               <li class="NB-splash-top-link NB-splash-top-link-home"><a href="{% url "index" %}">{% trans "Home" %}</a></li>
