@@ -1,0 +1,919 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">何もしない</string>
+    <string name="gesture_back">フィードに戻る</string>
+    <string name="gesture_toggle_read">既読／未読</string>
+    <string name="gesture_markread">既読にする</string>
+    <string name="gesture_markunread">未読にする</string>
+    <string name="gesture_save">記事を保存</string>
+    <string name="gesture_unsave">記事の保存を解除</string>
+    <string name="gesture_statistics">統計</string>
+    <string name="gesture_menu">アクションを表示</string>
+    <string name="gesture_share">共有</string>
+    <string name="gesture_toggle_save">保存／保存解除</string>
+    <string name="gesture_ask_ai">AIに質問</string>
+    <string name="gesture_train">インテリジェンスを学習</string>
+    <string name="gesture_notifications">通知</string>
+    <string name="gesture_read_range">既読にする期間を選択</string>
+    <string name="gesture_feed_list">フィード一覧</string>
+    <string name="gesture_story_titles">記事のタイトル</string>
+    <string name="gesture_reading_story">記事を読んでいるとき</string>
+    <string name="gesture_swipe_feeds">フィードをスワイプ</string>
+    <string name="gesture_swipe_stories">記事をスワイプ</string>
+    <string name="gesture_left">左にスワイプ</string>
+    <string name="gesture_right">右にスワイプ</string>
+    <string name="gesture_long_press">長押し</string>
+    <string name="gesture_double_tap">ダブルタップ</string>
+    <string name="gesture_two_finger_double_tap">2本指でダブルタップ</string>
+    <string name="gesture_left_edge">画面左端からスワイプ</string>
+    <string name="gesture_edge_footer">左端からスワイプすると、記事のスワイプ操作がオフでも、常にフィードに戻ります。</string>
+    <string name="gesture_mark_all">すべての記事を既読にする</string>
+    <string name="gesture_original">元の記事を開く</string>
+    <string name="gesture_text">元のテキストを表示</string>
+    <string name="gesture_unread">未読にする</string>
+    <string name="gesture_back_titles">記事タイトルに戻る</string>
+    <string name="gesture_previous">前のストーリー</string>
+    <string name="gesture_off">オフ</string>
+    <string name="gesture_unread_stories">未読の記事</string>
+    <string name="gesture_focus_stories">注目記事</string>
+    <string name="story_title_mark_story_read">ストーリーを既読にする…</string>
+    <string name="story_title_list_font_size">フィードと記事タイトルのフォントサイズ</string>
+    <string name="language_current">言語：%1$s</string>
+    <string name="language_automatic">自動（デバイスの言語）</string>
+    <string name="language_save_failed">言語を保存できませんでした。もう一度お試しください。</string>
+    <string name="try_feed_instafetching">記事を即時取得中…</string>
+    <string name="try_feed_fetch_failed">記事を取得できませんでした。タップして再試行してください。</string>
+    <string name="try_feed_empty">このサイトの記事はまだありません。タップして更新してください。</string>
+    <string name="image_viewer_close">画像を閉じる</string>
+    <string name="image_viewer_loading">画像を読み込み中…</string>
+    <string name="image_viewer_failed">画像全体を読み込めませんでした。</string>
+    <string name="image_viewer_retry">再試行</string>
+    <string name="image_viewer_copy">画像をコピー</string>
+    <string name="image_viewer_save">画像を保存</string>
+    <string name="image_viewer_share">画像を共有…</string>
+    <string name="image_viewer_open_link">リンクを開く</string>
+    <string name="image_viewer_copied">画像をコピーしました</string>
+    <string name="image_viewer_saved">写真に保存しました</string>
+    <string name="image_viewer_save_failed">画像を保存できませんでした。</string>
+    <string name="image_viewer_share_failed">画像を共有できませんでした。</string>
+    <string name="image_viewer_storage_permission">画像を保存するにはストレージへのアクセスを許可してから、もう一度お試しください。</string>
+    <string name="image_viewer_show_actions">画像の操作ボタンを表示</string>
+    <string name="settings_story_toolbar_position">記事リストのツールバー位置</string>
+    <string name="settings_story_toolbar_top">上</string>
+    <string name="settings_story_toolbar_bottom">下部</string>
+    <string name="story_header_mark_read_cutoff">どこまでさかのぼって既読にするか選択</string>
+    <string name="login_username_hint">ユーザー名</string>
+    <string name="login_username_or_email_hint">ユーザー名またはメールアドレス</string>
+    <string name="login_password_hint">パスワード</string>
+    <string name="login_registration_email_hint">メールアドレス</string>
+    <string name="login_button_login">ログイン</string>
+    <string name="login_segment_sign_in">ログイン</string>
+    <string name="login_segment_sign_up">新規登録</string>
+    <string name="login_forgot_password">パスワードをお忘れですか</string>
+    <string name="login_custom_server">セルフホスト型カスタムサーバー</string>
+    <string name="login_custom_server_subtitle">独自のNewsBlurインストールを利用</string>
+    <string name="login_custom_server_active">カスタムサーバー: %1$s</string>
+    <string name="login_custom_server_edit">タップしてサーバーURLを編集またはリセット</string>
+    <string name="login_custom_server_dialog_title">カスタムサーバー</string>
+    <string name="login_custom_server_dialog_body">NewsBlurを利用する場合は空欄のままにするか、自分でホストしているインストール環境のURLを入力してください。ログインと登録にすぐ反映されます。</string>
+    <string name="login_message_error">NewsBlurへのログイン中に問題が発生しました。</string>
+    <string name="login_logging_in">ログイン中…</string>
+    <string name="login_logged_in">スプラインを調整しています…</string>
+    <string name="login_retrieving_feeds">フィードを取得中…</string>
+    <string name="login_next">次へ</string>
+    <string name="login_custom_server_scheme_error">カスタムサーバーURLに \'https://\' が必要です</string>
+    <string name="login_custom_server_invalid">有効なカスタムサーバーURLを入力してください。</string>
+    <string name="login_tagline">世界について語り合う人々をつなぐ
+パーソナルニュースリーダー。</string>
+    <string name="user_profile_picture">ユーザープロフィール画像</string>
+    <string name="search_for_feed">フィードを検索</string>
+    <string name="loading">読み込み中…</string>
+    <string name="story_navigation_failed">記事を開けませんでした。もう一度お試しください。</string>
+    <string name="orig_text_loading">記事のテキストを取得中…</string>
+    <string name="follow_error">ユーザーのフォロー中に問題が発生しました。</string>
+    <string name="unfollow_error">ユーザーのフォロー解除中に問題が発生しました。</string>
+    <string name="description_login_button">押してログイン</string>
+    <string name="description_login_logo">NewsBlurのロゴ</string>
+    <string name="description_profile_picture">ユーザーのプロフィール写真</string>
+    <string name="description_row_folder_icon">フォルダーアイコン</string>
+    <string name="description_row_feed_icon">フィードアイコン</string>
+    <string name="description_row_feed_mute_toggle">フィードのミュート切り替え</string>
+    <string name="description_activity_icon">ユーザーのアクティビティを示すアイコン</string>
+    <string name="description_follow_button">ユーザーをフォロー／フォロー解除</string>
+    <string name="description_comment_user">コメント投稿者の画像</string>
+    <string name="description_empty_list_image">空のリストのプレースホルダー</string>
+    <string name="description_menu">メニュー</string>
+    <string name="story_settings">記事の設定</string>
+    <string name="title_choose_folders">フィード%sのフォルダーを選択</string>
+    <string name="title_rename_feed">フィード %s の名前を変更</string>
+    <string name="title_rename_folder">フォルダー %s の名前を変更</string>
+    <string name="all_stories_title">すべてのサイトの記事</string>
+    <string name="daily_briefing_title">デイリーブリーフィング</string>
+    <string name="infrequent_title">更新頻度の低いサイトの記事</string>
+    <string name="widely_read_stories_title">よく読まれている記事</string>
+    <string name="long_reads_title">長文記事</string>
+    <string name="good_reads_title">おすすめの本</string>
+    <string name="all_shared_stories_title">共有したすべての記事</string>
+    <string name="global_shared_stories_title">全体の共有記事</string>
+    <string name="read_stories_title">記事を読む</string>
+    <string name="saved_stories_title">保存した記事</string>
+    <string name="saved_searches_title">保存済み検索</string>
+    <string name="feed_list">フィード一覧</string>
+    <string name="bottom_next_unread_site">次の未読サイト、%1$s</string>
+    <string name="bottom_next_unread_folder">次の未読フォルダー、%1$s</string>
+    <string name="top_level">最上位</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nNewsBlurで共有</string>
+    <string name="share_comment_hint">共有コメント（任意）</string>
+    <string name="share_save_newsblur">「%s」をBlurblogに共有／保存しますか？</string>
+    <string name="share_this">共有</string>
+    <string name="already_shared">共有済み</string>
+    <string name="share_this_story">共有</string>
+    <string name="share_with_comment">コメントを付けて共有</string>
+    <string name="unshare">共有を削除</string>
+    <string name="update_shared">コメントを更新</string>
+    <string name="rename">名前を変更</string>
+    <string name="save_this">保存</string>
+    <string name="unsave_this">保存を解除</string>
+    <string name="train_this">学習</string>
+    <string name="ask_ai">AIに質問</string>
+    <string name="story_mark_unread_state">既読</string>
+    <string name="story_mark_read_state">記事を既読にする</string>
+    <string name="overlay_next">次へ</string>
+    <string name="overlay_done">完了</string>
+    <string name="overlay_count_toast_N">未読記事%d件</string>
+    <string name="overlay_count_toast_1">未読ストーリー1件</string>
+    <string name="overlay_text">テキスト</string>
+    <string name="overlay_story">記事</string>
+    <string name="orig_text_failed">申し訳ありません。記事の本文を抽出できませんでした。</string>
+    <string name="state_all">すべて</string>
+    <string name="state_unread">未読</string>
+    <string name="state_focus">フォーカス</string>
+    <string name="state_saved">保存済み</string>
+    <string name="reply_to">\"%s\"に返信</string>
+    <string name="edit_reply">返信を編集</string>
+    <string name="edit_reply_update">返信を更新</string>
+    <string name="edit_reply_delete">返信Yを削除</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">完了</string>
+    <string name="alert_dialog_openlink">リンクを開く</string>
+    <string name="alert_dialog_openimage">画像を開く</string>
+    <string name="dialog_folders_save">フォルダーを保存</string>
+    <string name="dialog_story_intel_save">学習内容を保存</string>
+    <string name="dialog_story_tags_save">タグを保存</string>
+    <string name="profile">プロフィール</string>
+    <string name="profile_location_icon">位置アイコン</string>
+    <string name="profile_following">フォロー中</string>
+    <string name="profile_followers">フォロワー</string>
+    <string name="profile_shared">共有したストーリー</string>
+    <string name="profile_ago">前</string>
+    <string name="profile_recent_actvity">アクティビティ</string>
+    <string name="profile_recent_interactions">やり取り</string>
+    <string name="profile_started_following">フォローしました</string>
+    <string name="profile_you">あなた</string>
+    <string name="profile_you_lower">あなた</string>
+    <string name="profile_your">あなたの</string>
+    <string name="profile_now_following">が %1$s をフォロー中</string>
+    <string name="profile_replied_to">返信先</string>
+    <string name="profile_replied_to_your">%1$sに返信しました</string>
+    <string name="profile_shared_story">共有済み</string>
+    <string name="profile_comment">コメント</string>
+    <string name="profile_reply">返信</string>
+    <string name="profile_button_follow">フォロー</string>
+    <string name="profile_button_unfollow">フォロー解除</string>
+    <string name="profile_subscribed_to">の購読中</string>
+    <string name="profile_saved">保存済み</string>
+    <string name="profile_reshared">再共有済み</string>
+    <string name="profile_favorited">お気に入り登録済み</string>
+    <string name="profile_favorited_comments">%1$s件のコメントにお気に入りを付けました</string>
+    <string name="profile_signup">Newsblurに登録しました</string>
+    <string name="profile_comments_on">へのコメント</string>
+    <string name="profile_feed_not_available">このフィードの購読は解除されています</string>
+    <string name="profile_do_not_follow">このユーザーをフォローしていません</string>
+    <string name="profile_no_interactions">やり取りはありません</string>
+    <string name="menu_profile">プロフィール</string>
+    <string name="menu_search_feeds">フィードを検索</string>
+    <string name="menu_original">元の記事を表示</string>
+    <string name="menu_send_story">リンクを送信…</string>
+    <string name="menu_send_story_full">記事を送信…</string>
+    <string name="menu_mark_feed_as_read">フィードを既読にする</string>
+    <string name="menu_delete_feed">フィードを削除</string>
+    <string name="menu_statistics">統計</string>
+    <string name="menu_delete_saved_search">保存した検索を削除</string>
+    <string name="menu_unfollow">ユーザーのフォローを解除</string>
+    <string name="menu_choose_folders">フォルダーを選択</string>
+    <string name="menu_notifications_choose">通知</string>
+    <string name="menu_notifications_disable">通知を無効にする</string>
+    <string name="menu_notifications_focus">新しい注目記事を通知</string>
+    <string name="menu_notifications_unread">新着記事をすべて通知</string>
+    <string name="menu_mark_folder_as_read">フォルダを既読にする</string>
+    <string name="menu_sharenewsblur">このストーリーを共有</string>
+    <string name="menu_text_size">文字サイズ</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">フォント</string>
+    <string name="menu_save_story">この記事を保存</string>
+    <string name="menu_unsave_story">この記事の保存を解除</string>
+    <string name="menu_newest_mark_older_stories_as_read">古い記事を既読にする</string>
+    <string name="menu_newest_mark_newer_stories_as_read">新しい記事を既読にする</string>
+    <string name="menu_oldest_mark_older_stories_as_read">古い記事を既読にする</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">新しい記事を既読にする</string>
+    <string name="story_menu_open_feed">フィードを開く</string>
+    <string name="story_menu_share_link">共有リンク…</string>
+    <string name="story_menu_share_story">記事を共有…</string>
+    <string name="menu_mark_story_as_read">既読にする</string>
+    <string name="menu_mark_unread">未読にする</string>
+    <string name="menu_search_stories">検索…</string>
+    <string name="menu_mute_feed">フィードをミュート</string>
+    <string name="menu_unmute_feed">フィードのミュートを解除</string>
+    <string name="menu_mute_folder">フォルダーをミュート</string>
+    <string name="menu_unmute_folder">フォルダのミュートを解除</string>
+    <string name="menu_delete_folder">フォルダを削除</string>
+    <string name="menu_rename_folder">フォルダ名を変更</string>
+    <string name="menu_instafetch_feed">ストーリーを即時取得</string>
+    <string name="feed_menu_back_to_actions">フィード操作に戻る</string>
+    <string name="menu_infrequent_cutoff">月あたりの低頻度記事</string>
+    <string name="menu_intel">インテリジェンストレーナー</string>
+    <string name="menu_rename_feed">フィード名を変更</string>
+    <string name="menu_story_list_style_choose">リストのスタイル</string>
+    <string name="menu_save_search">検索を保存</string>
+    <string name="menu_web_search">ウェブ検索</string>
+    <string name="menu_highlight">ハイライト</string>
+    <string name="list_style_list">リスト</string>
+    <string name="list_style_grid_f">グリッド（細かい）</string>
+    <string name="list_style_grid_m">グリッド（中）</string>
+    <string name="list_style_grid_c">グリッド（粗）</string>
+    <string name="story_content_preview_none">タイトルのみ（なし）</string>
+    <string name="story_content_preview_small">2行（小）</string>
+    <string name="story_content_preview_medium">4行（中）</string>
+    <string name="story_content_preview_large">6行（大）</string>
+    <string name="mark_read_on_scroll_disabled">未読のままにする</string>
+    <string name="mark_read_on_scroll_enabled">スクロール時に既読にする</string>
+    <string name="menu_sort_by">並べ替え</string>
+    <string name="menu_sort_by_name">名前</string>
+    <string name="menu_sort_by_subs">登録者数</string>
+    <string name="menu_sort_by_stories_month">月ごとのストーリー数</string>
+    <string name="menu_sort_by_recent_story">最新のストーリー</string>
+    <string name="menu_sort_by_number_opens">開封数</string>
+    <string name="menu_sort_order">並び順</string>
+    <string name="menu_sort_order_ascending">昇順</string>
+    <string name="menu_sort_order_descending">降順</string>
+    <string name="menu_folder_view">フォルダ表示</string>
+    <string name="menu_folder_view_nested">入れ子</string>
+    <string name="menu_folder_view_flat">フラット</string>
+    <string name="menu_mute_all">すべてミュート</string>
+    <string name="menu_mute_none">ミュートしない</string>
+    <string name="menu_select_all">すべて選択</string>
+    <string name="menu_select_none">すべて選択解除</string>
+    <string name="menu_widget_background">ウィジェットの背景</string>
+    <string name="menu_widget_background_default">デフォルト</string>
+    <string name="menu_widget_background_transparent">透明</string>
+    <string name="toast_hold_to_select">長押ししてテキストを選択</string>
+    <string name="logout_warning">ログアウトしてもよろしいですか？</string>
+    <string name="search_mark_read_warning">ご注意ください！検索結果だけでなく、フィード／フォルダー内のすべての記事が既読になります。すべての記事を既読にする場合は、検索語句をクリアして確定してください。</string>
+    <string name="story_show_changes">記事の変更を表示</string>
+    <string name="story_hide_changes">記事の変更を非表示</string>
+    <string name="story_changes_loading">ストーリーの変更を読み込み中…</string>
+    <string name="story_saved_timestamp">%sを保存しました</string>
+    <string name="your_feeds_search_hint">フィードを検索</string>
+    <string name="feed_list_clear_search">検索をクリア</string>
+    <string name="story_search_hint">記事を検索</string>
+    <string name="discover_related_sites_title">関連サイト</string>
+    <string name="discover_show_grid">グリッドを表示</string>
+    <string name="discover_show_list">リストを表示</string>
+    <string name="discover_loading">関連サイトを検索中…</string>
+    <string name="discover_no_related_sites">関連サイトが見つかりません</string>
+    <string name="discover_view_mode_grid">グリッド</string>
+    <string name="discover_view_mode_list">リスト</string>
+    <string name="discover_try">試す</string>
+    <string name="discover_add">追加</string>
+    <string name="discover_subscribed">購読中</string>
+    <string name="discover_updated_today">今日更新</string>
+    <string name="discover_updated_relative">%sに更新</string>
+    <string name="discover_stale_updated_relative">古い — %s更新</string>
+    <string name="discover_stale_date">更新停止。最終記事 %s</string>
+    <string name="discover_last_fetched_relative">%sを取得</string>
+    <string name="try_feed_banner_subtitle">プレビューです。まだ登録されていません。</string>
+    <string name="try_feed_subscribe_button">購読</string>
+    <string name="empty_search_notice">検索語を入力して開始</string>
+    <string name="menu_add_feed">追加 + サイトを探す</string>
+    <string name="adding_feed_progress">フィードを追加中…</string>
+    <string name="feed_list_search_hint">フィードを検索</string>
+    <string name="add_folder_name">フォルダー名を入力してください</string>
+    <string name="add_tag_name">タグ名を入力してください</string>
+    <string name="add_new_folder">+ 新しいフォルダーを追加</string>
+    <string name="add_new_tag">+ 新しいタグを追加</string>
+    <string name="add_tag">タグを追加</string>
+    <string name="new_folder_name_hint">新しいフォルダー名を入力</string>
+    <string name="new_tag_name_hint">新しいタグ名を入力</string>
+    <string name="add_feed_error">フィードを追加できませんでした</string>
+    <string name="add_folder_error">フォルダーを追加できませんでした</string>
+    <string name="menu_mark_all_as_read">すべて既読にする</string>
+    <string name="menu_logout">ログアウト</string>
+    <string name="contact_us">お問い合わせ</string>
+    <string name="contact_description">NewsBlurは、NewsBlur, Inc.が開発したニュースリーダー兼アグリゲーターです。アプリのサポート、お問い合わせ、ご意見についてはNewsBlurチームまでご連絡ください。</string>
+    <string name="contact_email_label">開発者にメールを送る</string>
+    <string name="contact_send_email">メールを送信</string>
+    <string name="contact_website_label">NewsBlurのウェブサイト</string>
+    <string name="contact_open_website">ウェブサイトを開く</string>
+    <string name="contact_back">戻る</string>
+    <string name="contact_no_email_app">メールアプリがインストールされていません。このページでメールアドレスを選択してコピーできます。</string>
+    <string name="contact_no_browser">Webブラウザーがインストールされていません。このページでウェブサイトのアドレスを選択してコピーできます。</string>
+    <string name="menu_feedback">アプリについてフィードバックを送信</string>
+    <string name="menu_feedback_post">フィードバック投稿を作成</string>
+    <string name="menu_feedback_email">バグをメールで報告</string>
+    <string name="menu_theme_choose">テーマ</string>
+    <string name="menu_spacing">間隔</string>
+    <string name="menu_subscription">購読…</string>
+    <string name="description_add_new_folder_icon">新しいフォルダーアイコンを追加</string>
+    <string name="menu_loginas">次のユーザーとしてログイン…</string>
+    <string name="loginas_title">ユーザーとしてログイン</string>
+    <string name="empty_list_view_loading">読み込み中…</string>
+    <string name="story_loading_description">記事を読み込み中</string>
+    <string name="empty_list_view_no_stories">読む記事はありません</string>
+    <string name="empty_list_view_no_stories_unread">未読の記事はありません</string>
+    <string name="reading_placeholder_select_story">ストーリーを選択して読む</string>
+    <string name="empty_list_view_no_unread_stories">未読の記事はありません。</string>
+    <string name="empty_list_view_no_focus_stories">フォーカスに未読記事はありません。\n\nすべてまたは未読に切り替えてください。</string>
+    <string name="empty_list_view_no_saved_stories">保存した記事はありません。\n\n「すべて」または「未読」に切り替えてください。</string>
+    <string name="login_registration_custom_server">カスタムサーバーを設定</string>
+    <string name="login_registration_reset_url">リセット</string>
+    <string name="login_registration_register">登録</string>
+    <string name="register_message_error">NewsBlurへの登録中に問題が発生しました。</string>
+    <string name="need_to_login">
+        <u>ログインが必要です！</u>
+    </string>
+    <string name="need_to_register">
+        <u>登録が必要です</u>
+    </string>
+    <string name="public_comment_count">公開コメント%d件</string>
+    <string name="friends_comments_count">%d件のコメント</string>
+    <string name="friends_shares_count">件のシェア：%d</string>
+    <string name="unknown_user">不明なユーザー</string>
+    <string name="delete_feed_message">フィード「%s」を削除しますか？</string>
+    <string name="delete_saved_search_message">保存した検索「%s」を削除しますか？</string>
+    <string name="delete_folder_message">フォルダー「\"%s\"」を削除し、中のすべてのフィードの購読を解除しますか？</string>
+    <string name="deleting_folder_message">フォルダ「%s」を削除中</string>
+    <string name="add_saved_search_message">検索条件「%s」を保存しますか？</string>
+    <string name="unfollow_message">「%s」のフォローを解除しますか？</string>
+    <string name="feed_subscribers">購読者 %s 人</string>
+    <string name="feed_opens">%d 回開かれました</string>
+    <string name="feed_stories_per_month">月 %d 件の記事</string>
+    <string name="forwarding_email_address">転送先メールアドレス</string>
+    <string name="setup_instructions">設定手順 \u25bc</string>
+    <string name="setup_instructions_details">NewsBlurでメールマガジンを読むには、上に表示されている専用メールアドレスにメールマガジンを転送してください。\n\nGmailで、[設定] &gt; [メール転送と POP/IMAP] に移動し、[転送先アドレスを追加] をクリックします。NewsBlurの専用メールアドレスを追加してください。\n\nGmailの案内に従ってメールアドレスを確認します。NewsBlurに戻り、「ニュースレター」フォルダーにある確認メールを探してください。\n\n次に、すべてのメールマガジンを対象とするフィルタを作成し、NewsBlurの専用アドレスに転送するよう設定します。</string>
+    <string name="copy_email">メールアドレスをコピー</string>
+    <string name="stories_shortcuts">記事のショートカット</string>
+    <string name="feeds_shortcuts">フィードのショートカット</string>
+    <string name="import_export">インポート／エクスポート…</string>
+    <string name="settings">設定…</string>
+    <string name="menu_mute_sites">サイトをミュート…</string>
+    <string name="mute_sites">サイトをミュート</string>
+    <string name="menu_widget">ウィジェット…</string>
+    <string name="menu_notifications">通知…</string>
+    <string name="widget">ウィジェット</string>
+    <string name="title_widget_setup">タップしてNewsBlurで設定</string>
+    <string name="title_no_subscriptions">有効な購読が見つかりません</string>
+    <string name="title_widget_loading">読み込み中…</string>
+    <string name="menu_newsletters">ニュースレター…</string>
+    <string name="menu_shortcuts">ショートカット…</string>
+    <string name="main_menu_preferences">設定</string>
+    <string name="main_menu_mute_sites">サイトをミュート</string>
+    <string name="main_menu_widget_sites">ウィジェットサイト</string>
+    <string name="main_menu_notifications">通知</string>
+    <string name="main_menu_interactions">操作</string>
+    <string name="main_menu_upgrade_premium">プレミアムにアップグレード</string>
+    <string name="main_menu_upgrade_archive">アーカイブにアップグレード</string>
+    <string name="main_menu_premium_archive">プレミアムアーカイブ</string>
+    <string name="main_menu_premium_pro">プレミアム Pro</string>
+    <string name="main_menu_support_forum">サポートフォーラム</string>
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">OPMLのインポート／エクスポート</string>
+    <string name="notifications_title">通知</string>
+    <string name="premium_subscribers_folder">ニュース一覧の全表示はプレミアム機能です</string>
+    <string name="premium_subscribers_allstories">すべてのサイトの記事を読むにはプレミアム登録が必要です</string>
+    <string name="premium_subscribers_saved_tag">タグで保存済み記事を読むにはプレミアム登録が必要です</string>
+    <string name="premium_subscribers_search">検索はプレミアム機能です</string>
+    <string name="premium_subscribers">プレミアム購読者</string>
+    <string name="premium_upgrade_button">Premiumにアップグレード</string>
+    <string name="subscription_toolbar_title">NewsBlur プレミアム</string>
+    <string name="thank_you_for_subscribing">購読ありがとうございます！</string>
+    <string name="premium_subscription_renewal">サブスクリプションは%sに更新されます</string>
+    <string name="premium_subscription_expiration">サブスクリプションは%sに期限切れになります</string>
+    <string name="premium_subscription_no_expiration">サブスクリプションは期限なしに設定されています。すごい！</string>
+    <string name="premium_policies">詳細はNewsBlurの <a href="https://newsblur.com/privacy">プライバシーポリシー</a> と <a href="https://newsblur.com/tos">利用規約</a>をご覧ください。</string>
+    <string name="premium_subscription_header">プレミアムサブスクリプション</string>
+    <string name="archive_subscription_header">プレミアムアーカイブ</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">NewsBlur プレミアムサブスクリプション</string>
+    <string name="archive_subscription_title">NewsBlurプレミアムアーカイブ</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">年額35.99ドル（月額3.00ドル）</string>
+    <string name="premium_subscription_active">プレミアムプランは有効です</string>
+    <string name="archive_subscription_active">プレミアムアーカイブの購読は有効です</string>
+    <string name="pro_subscription_active">プレミアムプロのサブスクリプションは有効です</string>
+    <string name="subscription_manage">サブスクリプションを管理</string>
+    <string name="subscription_details_error">サブスクリプション情報の取得エラー</string>
+    <string name="no_subscription_available">利用可能な購読プランがありません</string>
+    <string name="subscription_unavailable">現在、Androidではご利用いただけません</string>
+    <string name="subscription_coming_soon">近日公開</string>
+    <string name="subscription_upgrade_from_premium">プレミアムからアップグレード</string>
+    <string name="subscription_upgrade_from_archive">アーカイブからアップグレード</string>
+    <string name="subscription_price_yearly">%1$s/年（%2$s/月）</string>
+    <string name="subscription_price_monthly">%1$s/月</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">プレミアムアーカイブの購読には、上記のすべてが含まれます</string>
+    <string name="premium_pro_includes_above">プレミアムProサブスクリプションには、上記のすべてが含まれます</string>
+    <string name="premium_enable_sites">最大1,024サイトをフォロー</string>
+    <string name="premium_sync">サイトの更新頻度が最大5倍に</string>
+    <string name="premium_read_by_folder">ニュース一覧（フォルダー別に読む）</string>
+    <string name="premium_search">サイトとフォルダを検索</string>
+    <string name="premium_searchable_tags">検索可能なタグを付けてストーリーを保存</string>
+    <string name="premium_privacy_options">blurblogのプライバシー設定</string>
+    <string name="premium_custom_rss">保存した記事用のカスタムRSSフィード</string>
+    <string name="premium_text_view">テキスト表示では記事の本文を手軽に抽出できます</string>
+    <string name="premium_discover_related">関連する記事やサイトを見つける</string>
+    <string name="premium_shiloh">Lyric（NewsBlurの食いしん坊な猟犬）に6日間、フィードをあげています</string>
+    <string name="archive_everything_premium">もちろん、プレミアム購読のすべての機能</string>
+    <string name="archive_enable_sites">最大4,096サイトをフォロー</string>
+    <string name="archive_marked_as_read">記事を自動的に既読にするタイミングを選択</string>
+    <string name="archive_customize_auto_read">サイトまたはフォルダーごとに自動既読をカスタマイズ</string>
+    <string name="archive_story_searchable_forever">すべてのサイトの記事を永久にアーカイブして検索できます</string>
+    <string name="archive_back_filled">ページ分割に対応したフィードは、完全なアーカイブを作成するため過去分も取り込まれます</string>
+    <string name="archive_train_full_text">全文の内容で記事を学習</string>
+    <string name="archive_discover_related">アーカイブ全体から関連する記事を見つける</string>
+    <string name="archive_export_trained_stories">フォルダーから学習済みの記事をRSSフィードとしてエクスポート</string>
+    <string name="archive_stories_unread_forever">記事は未読のまま無期限に保存できます</string>
+    <string name="archive_ask_ai">記事についてAIに質問する</string>
+    <string name="archive_filter_by_date_range">日付範囲で記事を絞り込む</string>
+    <string name="archive_train_folder">フォルダー全体にトレーニングを適用</string>
+    <string name="archive_train_globally">学習内容を全体に適用</string>
+    <string name="pro_everything_archive">もちろん、アーカイブ購読のすべての機能</string>
+    <string name="pro_enable_sites">最大10,000サイトをフォロー</string>
+    <string name="pro_all_feeds_fetched">すべてのフィードを5～15分ごとに取得</string>
+    <string name="pro_regex_train">正規表現で記事を学習</string>
+    <string name="pro_priority_support">優先サポート</string>
+    <string name="pro_natural_language_filters">自然言語フィルター</string>
+    <string name="pro_natural_language_search">自然言語検索</string>
+    <string name="settings_cat_offline">オフラインで読む</string>
+    <string name="settings_enable_offline">記事をダウンロード</string>
+    <string name="settings_enable_offline_sum">バックグラウンドで定期的に記事を取得</string>
+    <string name="settings_enable_image_prefetch">画像をダウンロード</string>
+    <string name="settings_enable_image_prefetch_sum">オフラインで読むために画像を先読みする</string>
+    <string name="settings_keep_old_stories">既読後も記事を保持</string>
+    <string name="settings_keep_old_stories_sum">ストレージ使用量を減らすには無効にしてください</string>
+    <string name="mute_config_title">無料の標準アカウントでは、最大64サイトをフォローできます</string>
+    <string name="mute_config_message">%d 件のサイトをミュートするか、人気サイトに戻してください。</string>
+    <string name="mute_config_reset_button">人気サイトに戻す</string>
+    <string name="mute_config_upgrade_to_premium">プレミアムにアップグレード</string>
+    <string name="mute_config_upgrade_subtitle">1,024件のサイトを購読</string>
+    <string name="mute_config_upgrade">アップグレード</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">利用可能なサイト数：%d</string>
+    <string name="mute_config_sites_over">%d件超過</string>
+    <string name="menu_network_select">ダウンロード方法…</string>
+    <string name="menu_network_select_sum">バックグラウンドデータ通信を選択したネットワークに制限</string>
+    <string name="menu_network_select_opt_any">すべてのネットワーク</string>
+    <string name="menu_network_select_opt_nomo">Wi-Fiまたはイーサネット</string>
+    <string name="menu_network_select_opt_nomononme">従量制でない Wi-Fi または Ethernet のみ</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">オフライン記事を削除…</string>
+    <string name="menu_delete_offline_stories_sum">保存済みの記事や画像を削除して空き容量を増やす</string>
+    <string name="menu_delete_offline_stories_confirmation">すべての記事と画像を削除しました！</string>
+    <string name="menu_cache_age_select">記事を保存する期間…</string>
+    <string name="menu_cache_age_select_sum">オフライン閲覧用に保存した記事を削除</string>
+    <string name="menu_cache_age_select_opt_2d">2日（ストレージ使用量を削減）</string>
+    <string name="menu_cache_age_select_opt_7d">7日間</string>
+    <string name="menu_cache_age_select_opt_14d">14日間</string>
+    <string name="menu_cache_age_select_opt_30d">30日間（ネットワーク使用量を削減）</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">フィード一覧</string>
+    <string name="setting_feed_list_order">フィード一覧の順序…</string>
+    <string name="settings_enable_row_global_shared">全体の共有ストーリーを表示</string>
+    <string name="settings_enable_row_global_shared_sum">「世界で共有された記事」フォルダを表示</string>
+    <string name="settings_enable_row_infrequent_stories">低頻度の記事を表示</string>
+    <string name="settings_enable_row_infrequent_stories_sum">「更新頻度の低いサイトの記事」フォルダを表示</string>
+    <string name="settings_enable_row_daily_briefing">デイリーブリーフィングを表示</string>
+    <string name="settings_enable_row_daily_briefing_sum">「今日のブリーフィング」フォルダーを表示</string>
+    <string name="settings_enable_row_widely_read_stories">広く読まれている記事を表示</string>
+    <string name="settings_enable_row_widely_read_stories_sum">「広く読まれている記事」フォルダーを表示</string>
+    <string name="settings_enable_row_long_reads">長文記事を表示</string>
+    <string name="settings_enable_row_long_reads_sum">「長文記事」フォルダーを表示</string>
+    <string name="settings_enable_row_good_reads">おすすめ記事を表示</string>
+    <string name="settings_enable_row_good_reads_sum">「おすすめ記事」フォルダーを表示</string>
+    <string name="settings_cat_story_list">記事リスト</string>
+    <string name="settings_cat_story_layout">記事レイアウト</string>
+    <string name="settings_app_icon">アプリアイコン</string>
+    <string name="settings_app_icon_choose">アイコンを選択</string>
+    <string name="settings_app_icon_summary">ライトとダークのバリエーションを備えた12色のカラーセット。</string>
+    <string name="settings_app_icon_footer">Premium購読者は、NewsBlurのアイコンをカスタマイズできます。各デザインにはライト版とダーク版があります。</string>
+    <string name="settings_app_icon_premium">プレミアム</string>
+    <string name="settings_app_icon_light">ライト</string>
+    <string name="settings_app_icon_dark">ダーク</string>
+    <string name="settings_app_icon_save_failed">アプリアイコンを変更できませんでした</string>
+    <string name="settings_app_icon_appearance_light">ライト</string>
+    <string name="settings_app_icon_appearance_auto">両方を使用</string>
+    <string name="settings_app_icon_appearance_dark">ダーク</string>
+    <string name="settings_app_icon_appearance_light_caption">デバイスの設定にかかわらず、ライトアイコンを使用します。</string>
+    <string name="settings_app_icon_appearance_auto_caption">アイコンはデバイスのライト／ダーク表示設定に従います。</string>
+    <string name="settings_app_icon_appearance_dark_caption">デバイスの設定にかかわらず、暗いアイコンを使用します。</string>
+    <string name="oldest">古い順</string>
+    <string name="newest">新しい順</string>
+    <string name="menu_story_order">記事の並び順</string>
+    <string name="settings_story_order">記事の順序…</string>
+    <string name="story_header_options">オプション</string>
+    <string name="story_header_search">検索</string>
+    <string name="story_header_related_sites">関連サイト</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">ゆったり</string>
+    <string name="compact">コンパクト</string>
+    <string name="alphabetical">アルファベット順</string>
+    <string name="most_used_at_top">使用頻度の高い順</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">すべての記事</string>
+    <string name="unread_only">未読のみ</string>
+    <string name="menu_story_content_preview">記事本文のプレビュー</string>
+    <string name="menu_story_thumbnail_preview">サムネイルプレビュー</string>
+    <string name="menu_mark_read_on_scroll">スクロール時に既読にする</string>
+    <string name="settings_read_filter">既読記事フィルター…</string>
+    <string name="settings_read_filter_title">表示する記事</string>
+    <string name="menu_read_filter">既読記事フィルター</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>すべて既読にする</item>
+        <item>キャンセル</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>古い記事を既読にする</item>
+        <item>キャンセル</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="other">%d日より古い記事</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="other">%s 人の購読者</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="other">%s 件/月</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="other">%d サイトでも公開</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="other">+ %d 件のサイト</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>新しい記事を既読にする</item>
+        <item>キャンセル</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">最初の未読記事を自動で開く</string>
+    <string name="settings_auto_open_first_unread_sum">記事一覧の最初の未読記事を自動的に開く</string>
+    <string name="settings_mark_read_on_feed_scroll">スクロール時に記事タイトルを既読にする</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">記事をスクロールして通過したら自動的に既読にする</string>
+    <string name="settings_story_clustering">関連する記事をまとめる</string>
+    <string name="settings_story_clustering_summary">記事タイトルの下に、他のフィードにある重複記事を表示</string>
+    <string name="settings_cluster_matches">一致した記事をまとめる</string>
+    <string name="settings_cluster_matches_summary">クラスターに重複したタイトルのみを表示するか、関連する記事も表示するかを選択します</string>
+    <string name="settings_story_clustering_save_failed">記事のクラスタリング設定を保存できませんでした</string>
+    <string name="settings_story_clustering_title_only">タイトルのみ</string>
+    <string name="settings_cluster_mode_title_match_only">タイトルのみ一致</string>
+    <string name="settings_cluster_mode_title_match_plus_related">タイトル一致＋関連</string>
+    <string name="settings_cluster_mark_read_matches">条件に一致する記事を既読にする</string>
+    <string name="settings_cluster_mark_read_related">関連する記事を既読にする</string>
+    <string name="settings_cluster_mark_read_matches_summary">記事を読むときに、一致する記事も既読にする</string>
+    <string name="settings_cluster_mark_read_related_summary">記事を読むと、一致する記事や関連する記事も既読にします。</string>
+    <string name="settings_cluster_mark_read_save_failed">関連ストーリーの既読設定を保存できませんでした</string>
+    <string name="settings_story_clustering_title">タイトル</string>
+    <string name="settings_story_clustering_only">のみ</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">一致</string>
+    <string name="story_cluster_badge_related">関連</string>
+    <string name="settings_mark_story_read">記事を既読にする…</string>
+    <string name="settings_mark_story_read_title">記事を既読にする</string>
+    <string name="mark_story_read_immediately">選択時のみ</string>
+    <string name="mark_story_read_on_scroll">スクロール時または選択時</string>
+    <string name="mark_story_read_1_second">1秒後</string>
+    <string name="mark_story_read_2_seconds">2秒後</string>
+    <string name="mark_story_read_3_seconds">3秒後</string>
+    <string name="mark_story_read_5_seconds">5秒後</string>
+    <string name="mark_story_read_10_seconds">10秒後</string>
+    <string name="mark_story_read_20_seconds">20秒後</string>
+    <string name="mark_story_read_30_seconds">30秒後</string>
+    <string name="mark_story_read_45_seconds">45秒後</string>
+    <string name="mark_story_read_60_seconds">60秒後</string>
+    <string name="mark_story_read_manually">手動</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">記事の共有</string>
+    <string name="settings_show_public_comments">公開コメントを表示</string>
+    <string name="settings_reading">読書</string>
+    <string name="settings_show_ask_ai">Ask AIを表示</string>
+    <string name="settings_content_preview">コンテンツのプレビュー文…</string>
+    <string name="settings_thumbnails_style">画像プレビューのサムネイル…</string>
+    <string name="settings_preview_images_title">画像をプレビュー</string>
+    <string name="settings_preview_images_segment_off">オフ</string>
+    <string name="settings_preview_images_segment_left_small">L 小</string>
+    <string name="settings_preview_images_segment_left_large">L 大</string>
+    <string name="settings_preview_images_segment_right_small">R 小</string>
+    <string name="settings_preview_images_segment_right_large">右：大</string>
+    <string name="settings_notifications">通知</string>
+    <string name="settings_enable_notifications">通知を有効にする</string>
+    <string name="ask_ai_upgrade_archive">プレミアムアーカイブにアップグレード</string>
+    <string name="ask_ai_ask_question">質問する…</string>
+    <string name="ask_ai_follow_up">続けて質問…</string>
+    <string name="ask_ai_ask">質問する</string>
+    <string name="ask_ai_send">送信</string>
+    <string name="ask_ai_reask">もう一度質問</string>
+    <string name="ask_ai_recording">録音中…</string>
+    <string name="ask_ai_transcribing">文字起こし中…</string>
+    <string name="ask_ai_microphone_permission_denied">マイクの使用が許可されていません</string>
+    <string name="ask_ai_microphone_error">音声を録音できません</string>
+    <string name="settings_confirm_mark_all_read_note">サイト内のすべての記事を既読にするときは、常に確認を求めます。既読ボタンを長押しすると、その他のオプションが表示されます。</string>
+    <string name="settings_confirm_mark_all_read_segment_both">両方</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">フォルダー</string>
+    <string name="settings_confirm_mark_all_read_segment_never">しない</string>
+    <string name="settings_after_mark_read_title">既読にした後</string>
+    <string name="settings_after_mark_read_next">次のリストを開く</string>
+    <string name="settings_after_mark_read_stay">このまま表示</string>
+    <string name="settings_when_opening_site_title">サイトを開くとき</string>
+    <string name="settings_when_opening_site_stories">記事を表示</string>
+    <string name="settings_when_opening_site_first_story">最初の記事を開く</string>
+    <string name="story_cluster_upgrade_archive">プレミアムアーカイブ</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">左側・小</string>
+    <string name="story_thumbnail_left_hand_large">左側・大</string>
+    <string name="story_thumbnail_right_hand_small">右側・小</string>
+    <string name="story_thumbnail_right_hand_large">右側・大</string>
+    <string name="story_thumbnail_no_image_preview">画像プレビューなし</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">次のサイトの記事</string>
+    <string name="infrequent_5">月5件未満</string>
+    <string name="infrequent_15">月15件未満</string>
+    <string name="infrequent_30">月30件未満</string>
+    <string name="infrequent_60">月60件未満</string>
+    <string name="infrequent_90">月90件未満の記事</string>
+    <string name="story_intel_dialog_title">この記事の好きなところ、嫌いなところを教えてください。</string>
+    <string name="feed_intel_dialog_title">このサイトの気に入っている点、気に入らない点を教えてください。</string>
+    <string name="intel_title_header">記事のタイトル</string>
+    <string name="feed_intel_title_header">タイトル</string>
+    <string name="intel_tag_header">記事タグ</string>
+    <string name="feed_intel_tag_header">タグ</string>
+    <string name="intel_author_header">記事の著者</string>
+    <string name="feed_intel_author_header">著者</string>
+    <string name="intel_feed_header">発行元別にすべて表示</string>
+    <string name="intel_super_dislike">大嫌い</string>
+    <string name="explainer_super_dislike">超嫌い</string>
+    <string name="explainer_like">いいね</string>
+    <string name="explainer_dislike">よくない</string>
+    <string name="explainer_beats">ビート</string>
+    <string name="explainer_example1_header">「いいね」1件で、何件の「よくないね」も覆せます</string>
+    <string name="explainer_example1_result">記事がフォーカス表示に表示されます</string>
+    <string name="explainer_example2_header">1つの超低評価がすべてに優先します</string>
+    <string name="explainer_example2_result">記事は常に非表示</string>
+    <string name="auto">自動</string>
+    <string name="light">ライト</string>
+    <string name="sepia">セピア</string>
+    <string name="dark">ダーク</string>
+    <string name="black">黒</string>
+    <string name="settings_gestures">ジェスチャー</string>
+    <string name="sync_status_housekeeping">整理中…</string>
+    <string name="sync_status_actions">%d件の既読操作を同期中…</string>
+    <string name="sync_status_recounts">既読操作を反映中…</string>
+    <string name="sync_status_ffsync">まもなく完了します…</string>
+    <string name="sync_status_cleanup">クリーンアップ中…</string>
+    <string name="sync_status_starred">保存した記事の操作を同期中…</string>
+    <string name="sync_status_stories">新着記事を取得中…</string>
+    <string name="sync_status_unreads">未読記事を%s保存中…</string>
+    <string name="sync_status_images">%d 件の画像を保存中…</string>
+    <string name="sync_status_offline">オフライン</string>
+    <string name="sync_status_feed_add">フィードを追加中</string>
+    <string name="sync_status_done">完了</string>
+    <string name="volume_key_navigation">音量キーでのナビゲーション…</string>
+    <string name="off">オフ</string>
+    <string name="volume_up_next">上 = 次の記事</string>
+    <string name="volume_down_next">下キー = 次のストーリー</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">既読にした後、次のフィード／フォルダーを開く</string>
+    <string name="settings_load_next_on_mark_read_summary">既読にした後、次のフィード／フォルダーを読み込む</string>
+    <string name="settings_confirm_mark_all_read">次の場合にすべて既読にすることを確認…</string>
+    <string name="none">どちらでもない</string>
+    <string name="feed_and_folder">フィードとフォルダー</string>
+    <string name="folder_only">フォルダーのみ</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">古い／新しい記事を既読にする確認</string>
+    <string name="settings_ltr_gesture_action">記事一覧を右にスワイプ…</string>
+    <string name="gest_action_none">操作なし</string>
+    <string name="gest_action_back">前のリストに戻る</string>
+    <string name="gest_action_toggle_read">記事の既読状態を切り替える</string>
+    <string name="gest_action_markread">記事を既読にする</string>
+    <string name="gest_action_markunread">記事を未読にする</string>
+    <string name="gest_action_save">記事を保存</string>
+    <string name="gest_action_unsave">記事を保存解除</string>
+    <string name="gest_action_statistics">サイト統計</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">記事タイトルを左にスワイプ…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">デフォルトのブラウザー…</string>
+    <string name="font">フォント…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">クロニクル</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>システムのデフォルト</item>
+        <item>アプリ内ブラウザー</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">新着記事</string>
+    <string name="go_to_feed">フィードに移動</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">検索</string>
+    <string name="add_feed">フィードを追加</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">メール</string>
+    <string name="notification_web">ウェブ</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">フィード通知はありません</string>
+    <string name="notification_permissions_context">通知を送信するには権限が必要です</string>
+    <string name="notification_permissions_rationale">通知を有効にする前に、アプリの設定で通知の権限を手動で追加してから、もう一度お試しください</string>
+    <string name="write_storage_permission_opml">OPMLのエクスポートにはストレージへの書き込み権限が必要です</string>
+    <string name="story_saved">記事を保存済みにしました</string>
+    <string name="story_unsaved">ストーリーを未保存にしました</string>
+    <string name="story_read">ストーリーを既読にしました</string>
+    <string name="story_unread">記事を未読にしました</string>
+    <string name="unread_stories">未読記事</string>
+    <string name="focused_stories">注目の記事</string>
+    <string name="saved_stories">保存した記事</string>
+    <string name="short_next_story">次の記事</string>
+    <string name="short_previous_story">前の記事</string>
+    <string name="short_text_view">テキスト表示</string>
+    <string name="short_page_down">ページダウン</string>
+    <string name="short_page_down_key">スペース</string>
+    <string name="short_page_up">ページアップ</string>
+    <string name="short_page_up_key">\u21E7 スペース</string>
+    <string name="short_next_unread_story">次の未読記事</string>
+    <string name="short_toggle_read_unread">既読／未読を切り替え</string>
+    <string name="short_save_unsave_story">記事を保存／保存解除</string>
+    <string name="short_open_in_browser">ブラウザーで開く</string>
+    <string name="short_share_this_story">この記事を共有</string>
+    <string name="short_scroll_to_comments">コメントまでスクロール</string>
+    <string name="short_open_story_trainer">記事トレーナーを開く</string>
+    <string name="short_open_all_stories">すべてのサイトのストーリーを開く</string>
+    <string name="short_switch_views">表示を切り替え</string>
+    <string name="short_add_site">サイトを追加</string>
+    <string name="registering">登録中...</string>
+    <string name="renaming_feed_message">フィード %s の名前を変更中</string>
+    <string name="renaming_folder_message">フォルダー %s の名前を変更中</string>
+    <string name="parent_folder">親フォルダー</string>
+    <string name="folder_added">フォルダーを追加しました</string>
+    <string name="new_folder_parent">場所: %1$s</string>
+    <string name="ui_014f8b8d982f">カスタムキーワードフィルターを追加して、独自のブリーフィングセクションを作成</string>
+    <string name="ui_05392d13e2f2">ブリーフィングはまだありません</string>
+    <string name="ui_0a4444676244">保存に失敗しました</string>
+    <string name="ui_0a8adac9d6d5">スケジュール</string>
+    <string name="ui_13b7bfcac438">処理中…</string>
+    <string name="ui_2eb56be3c2d9">ソース</string>
+    <string name="ui_314ef761a08f">キーワード欄を追加</string>
+    <string name="ui_3af014d03229">フィードのソース</string>
+    <string name="ui_3e4a49541e18">既読の記事も含める</string>
+    <string name="ui_4a24ff492222">おすすめ記事をまとめたデイリーブリーフィングを受け取る</string>
+    <string name="ui_4e9f59082144">プレミアムアーカイブ</string>
+    <string name="ui_5b170811b992">プレミアムアーカイブにアップグレード</string>
+    <string name="ui_67a31d6fa581">デイリーブリーフィングの通知先を選択</string>
+    <string name="ui_67d0be0dd546">含める内容とその表示方法を調整</string>
+    <string name="ui_68c2cc7f0cea">モデル</string>
+    <string name="ui_710089545189">長さとスタイル</string>
+    <string name="ui_753a22b2eb61">通知</string>
+    <string name="ui_771ee100da2b">キーワードセクション</string>
+    <string name="ui_7c522fb68f07">おすすめ記事の要約を、指定したスケジュールでお届けします。</string>
+    <string name="ui_7f7e956b2244">デイリーブリーフィングを設定して、あなたにとって重要な記事の要約を作成しましょう。</string>
+    <string name="ui_7ff5a6dafd80">セクション</string>
+    <string name="ui_80f7bcbc57b0">ブリーフィングを生成する頻度と時刻を選択</string>
+    <string name="ui_a4d5830966af">スケジュールに合わせてブリーフィングを自動作成</string>
+    <string name="ui_a92076d4b9e3">デイリーブリーフィングを作成するモデルを選択</string>
+    <string name="ui_a970fbbd6df8">自動生成</string>
+    <string name="ui_a9dc7e4dcba7">毎日のブリーフィング設定</string>
+    <string name="ui_bbfa773e5a63">閉じる</string>
+    <string name="ui_c2d462f8f6da">デイリーブリーフィングの対象にする記事を選択</string>
+    <string name="ui_d521ea8640b5">デイリーブリーフィングを生成</string>
+    <string name="ui_df174a3f2faa">有効</string>
+    <string name="ui_df2164622bcf">デイリーブリーフィングを読み込めません</string>
+    <string name="ui_eaed56ec84ae">デイリーブリーフィング</string>
+    <string name="ui_efc007a393f6">保存</string>
+    <string name="ui_f530db58b3e5">キーワード</string>
+    <string name="ui_fdafe86c10a4">一致する記事があるセクションのみ含まれます</string>
+    <string name="ui_690910f6ed17">OPMLをインポート</string>
+    <string name="ui_244fd5e426f0">OPMLをエクスポート</string>
+    <string name="ui_768e0c1c6957">タイトル</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">保存済みタグ</string>
+    <string name="ui_6e914f494515">記事のタグ</string>
+    <string name="ui_e912ab619a72">その他のタグ</string>
+    <string name="i18n_add_site">サイトを追加</string>
+    <string name="i18n_add">追加</string>
+    <string name="i18n_retry">再試行</string>
+    <string name="i18n_no_sites_found_try_another_search">サイトが見つかりません。別の検索をお試しください。</string>
+    <string name="i18n_load_more">さらに読み込む</string>
+    <string name="i18n_follow_any_website">あらゆるウェブサイトをフォロー</string>
+    <string name="i18n_mark_updated_stories_unread">更新された記事を未読にする</string>
+    <string name="i18n_follow_news_that_matters_to_you">あなたにとって大切なニュースをフォロー</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">トピックを選ぶか、任意の検索語でGoogleニュースフィードを作成できます。</string>
+    <string name="i18n_subscribe">購読</string>
+    <string name="i18n_tech">テクノロジー</string>
+    <string name="i18n_review">レビュー</string>
+    <string name="i18n_sponsored">スポンサー提供</string>
+    <string name="i18n_discover_more_to_read">ほかの記事を見つける</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">サイトが見つかりません。URLを入力してサイトを追加することもできます。</string>
+    <string name="i18n_add_discover_sites">サイトを追加＋発見</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">RSSのないページからフィードを作成します。NewsBlurがストーリーを見つけ、更新を確認します。プレミアムアーカイブが必要です。</string>
+</resources>

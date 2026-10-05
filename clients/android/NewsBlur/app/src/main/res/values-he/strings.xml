@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">לא לעשות דבר</string>
+    <string name="gesture_back">חזרה לפידים</string>
+    <string name="gesture_toggle_read">נקרא / לא נקרא</string>
+    <string name="gesture_markread">סימון כנקרא</string>
+    <string name="gesture_markunread">סמן כלא נקרא</string>
+    <string name="gesture_save">שמירת כתבה</string>
+    <string name="gesture_unsave">בטל שמירת כתבה</string>
+    <string name="gesture_statistics">סטטיסטיקה</string>
+    <string name="gesture_menu">הצגת פעולות</string>
+    <string name="gesture_share">שתף</string>
+    <string name="gesture_toggle_save">שמירה / ביטול שמירה</string>
+    <string name="gesture_ask_ai">שאלו את ה-AI</string>
+    <string name="gesture_train">אימון הבינה</string>
+    <string name="gesture_notifications">התראות</string>
+    <string name="gesture_read_range">בחירת טווח הזמן לסימון כנקרא</string>
+    <string name="gesture_feed_list">רשימת העדכונים</string>
+    <string name="gesture_story_titles">כותרות כתבות</string>
+    <string name="gesture_reading_story">קריאת כתבה</string>
+    <string name="gesture_swipe_feeds">החלקה על עדכונים</string>
+    <string name="gesture_swipe_stories">החלקה על כתבות</string>
+    <string name="gesture_left">החלקה שמאלה</string>
+    <string name="gesture_right">החלקה ימינה</string>
+    <string name="gesture_long_press">לחיצה ממושכת</string>
+    <string name="gesture_double_tap">הקשה כפולה</string>
+    <string name="gesture_two_finger_double_tap">הקשה כפולה בשתי אצבעות</string>
+    <string name="gesture_left_edge">החלקה מהקצה השמאלי</string>
+    <string name="gesture_edge_footer">החלקה מהקצה השמאלי תמיד תחזיר לפידים, גם כשהחלקה בין כתבות כבויה.</string>
+    <string name="gesture_mark_all">סימון כל הכתבות כנקראו</string>
+    <string name="gesture_original">פתיחת הכתבה המקורית</string>
+    <string name="gesture_text">הצג את הטקסט המקורי</string>
+    <string name="gesture_unread">סמן כלא נקרא</string>
+    <string name="gesture_back_titles">חזרה לכותרות הכתבות</string>
+    <string name="gesture_previous">הכתבה הקודמת</string>
+    <string name="gesture_off">כבוי</string>
+    <string name="gesture_unread_stories">כתבות שלא נקראו</string>
+    <string name="gesture_focus_stories">כתבות ממוקדות</string>
+    <string name="story_title_mark_story_read">סמן כתבה כנקראה…</string>
+    <string name="story_title_list_font_size">גודל הגופן של שמות הפידים והכתבות</string>
+    <string name="language_current">שפה: %1$s</string>
+    <string name="language_automatic">אוטומטי (שפת המכשיר)</string>
+    <string name="language_save_failed">שמירת השפה נכשלה. נסה שוב.</string>
+    <string name="try_feed_instafetching">טוען סיפורים באופן מיידי…</string>
+    <string name="try_feed_fetch_failed">לא ניתן לטעון כתבות. הקש כדי לנסות שוב.</string>
+    <string name="try_feed_empty">עדיין אין כתבות זמינות מאתר זה. הקישו לרענון.</string>
+    <string name="image_viewer_close">סגירת תמונה</string>
+    <string name="image_viewer_loading">התמונה נטענת…</string>
+    <string name="image_viewer_failed">לא ניתן לטעון את התמונה המלאה.</string>
+    <string name="image_viewer_retry">לנסות שוב</string>
+    <string name="image_viewer_copy">העתקת תמונה</string>
+    <string name="image_viewer_save">שמירת תמונה</string>
+    <string name="image_viewer_share">שיתוף תמונה…</string>
+    <string name="image_viewer_open_link">פתיחת קישור</string>
+    <string name="image_viewer_copied">התמונה הועתקה</string>
+    <string name="image_viewer_saved">נשמר לתמונות</string>
+    <string name="image_viewer_save_failed">לא ניתן לשמור את התמונה.</string>
+    <string name="image_viewer_share_failed">לא ניתן לשתף את התמונה.</string>
+    <string name="image_viewer_storage_permission">אפשרו גישה לאחסון כדי לשמור תמונות, ואז נסו שוב.</string>
+    <string name="image_viewer_show_actions">הצג פעולות תמונה</string>
+    <string name="settings_story_toolbar_position">מיקום סרגל הכלים של רשימת הכתבות</string>
+    <string name="settings_story_toolbar_top">עליון</string>
+    <string name="settings_story_toolbar_bottom">למטה</string>
+    <string name="story_header_mark_read_cutoff">בחר עד כמה אחורה לסמן כנקרא</string>
+    <string name="login_username_hint">שם משתמש</string>
+    <string name="login_username_or_email_hint">שם משתמש או אימייל</string>
+    <string name="login_password_hint">סיסמה</string>
+    <string name="login_registration_email_hint">כתובת אימייל</string>
+    <string name="login_button_login">כניסה</string>
+    <string name="login_segment_sign_in">התחברות</string>
+    <string name="login_segment_sign_up">הרשמה</string>
+    <string name="login_forgot_password">שכחת את הסיסמה?</string>
+    <string name="login_custom_server">שרת מותאם אישית באירוח עצמי</string>
+    <string name="login_custom_server_subtitle">השתמשו בהתקנת NewsBlur משלכם</string>
+    <string name="login_custom_server_active">שרת מותאם אישית: %1$s</string>
+    <string name="login_custom_server_edit">הקשה לעריכה או לאיפוס של כתובת השרת</string>
+    <string name="login_custom_server_dialog_title">שרת מותאם אישית</string>
+    <string name="login_custom_server_dialog_body">השאירו את השדה ריק כדי להשתמש ב-NewsBlur, או הזינו את כתובת ה-URL של ההתקנה העצמית שלכם. השינוי נכנס לתוקף מיד עבור התחברות והרשמה.</string>
+    <string name="login_message_error">אירעה בעיה בכניסה ל-NewsBlur.</string>
+    <string name="login_logging_in">מתבצעת התחברות…</string>
+    <string name="login_logged_in">מחשב מסלולים…</string>
+    <string name="login_retrieving_feeds">אחזור הזנות…</string>
+    <string name="login_next">הבא</string>
+    <string name="login_custom_server_scheme_error">הצפוי \'https://\' בכתובת URL של שרת מותאם אישית</string>
+    <string name="login_custom_server_invalid">יש להזין כתובת URL תקינה של שרת מותאם אישית.</string>
+    <string name="login_tagline">קורא חדשות אישי שמחבר בין אנשים
+כדי לדבר על העולם.</string>
+    <string name="user_profile_picture">תמונת פרופיל של המשתמש</string>
+    <string name="search_for_feed">חיפוש אחר פידים</string>
+    <string name="loading">בטעינה…</string>
+    <string name="story_navigation_failed">לא ניתן לפתוח את הסיפור. נסו שוב.</string>
+    <string name="orig_text_loading">אחזור טקסט הכתבה…</string>
+    <string name="follow_error">אירעה בעיה במעקב אחר המשתמש.</string>
+    <string name="unfollow_error">אירעה בעיה בביטול המעקב אחר המשתמש.</string>
+    <string name="description_login_button">לחצו כדי להתחבר</string>
+    <string name="description_login_logo">הלוגו של NewsBlur</string>
+    <string name="description_profile_picture">תמונת הפרופיל של המשתמש\'ת</string>
+    <string name="description_row_folder_icon">סמל תיקייה</string>
+    <string name="description_row_feed_icon">סמל הפיד</string>
+    <string name="description_row_feed_mute_toggle">מתג השתקת פיד</string>
+    <string name="description_activity_icon">סמל הממחיש את פעילות המשתמש\'ת</string>
+    <string name="description_follow_button">מעקב אחר משתמש או הפסקת המעקב אחריו</string>
+    <string name="description_comment_user">תמונת משתמש של תגובה</string>
+    <string name="description_empty_list_image">מציין מיקום לרשימה ריקה</string>
+    <string name="description_menu">תפריט</string>
+    <string name="story_settings">הגדרות כתבה</string>
+    <string name="title_choose_folders">בחירת תיקיות לעדכון %s</string>
+    <string name="title_rename_feed">שינוי שם הפיד %s</string>
+    <string name="title_rename_folder">שינוי שם התיקייה %s</string>
+    <string name="all_stories_title">כל הכתבות באתר</string>
+    <string name="daily_briefing_title">תדריך יומי</string>
+    <string name="infrequent_title">כתבות מאתרים שמתעדכנים לעיתים רחוקות</string>
+    <string name="widely_read_stories_title">כתבות שנקראו רבות</string>
+    <string name="long_reads_title">כתבות ארוכות</string>
+    <string name="good_reads_title">קריאות מומלצות</string>
+    <string name="all_shared_stories_title">כל הסיפורים ששותפו</string>
+    <string name="global_shared_stories_title">כתבות משותפות גלובליות</string>
+    <string name="read_stories_title">קריאת כתבות</string>
+    <string name="saved_stories_title">כתבות שמורות</string>
+    <string name="saved_searches_title">חיפושים שמורים</string>
+    <string name="feed_list">רשימת הזנות</string>
+    <string name="bottom_next_unread_site">האתר הבא שלא נקרא, %1$s</string>
+    <string name="bottom_next_unread_folder">התיקייה הבאה שלא נקראה, %1$s</string>
+    <string name="top_level">רמה עליונה</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nשותף עם NewsBlur</string>
+    <string name="share_comment_hint">תגובה לשיתוף (אופציונלי)</string>
+    <string name="share_save_newsblur">לשתף/לשמור את \"%s\" בבלוג הטשטוש שלך?</string>
+    <string name="share_this">שיתוף</string>
+    <string name="already_shared">שותף</string>
+    <string name="share_this_story">שיתוף</string>
+    <string name="share_with_comment">שיתוף עם תגובה</string>
+    <string name="unshare">ביטול שיתוף</string>
+    <string name="update_shared">עדכון תגובה</string>
+    <string name="rename">שינוי שם</string>
+    <string name="save_this">שמירה</string>
+    <string name="unsave_this">הסרה מהשמורים</string>
+    <string name="train_this">אימון</string>
+    <string name="ask_ai">שאל את הבינה המלאכותית</string>
+    <string name="story_mark_unread_state">נקרא</string>
+    <string name="story_mark_read_state">סימון הכתבה כנקראה</string>
+    <string name="overlay_next">הבא</string>
+    <string name="overlay_done">סיום</string>
+    <string name="overlay_count_toast_N">%d כתבות שלא נקראו</string>
+    <string name="overlay_count_toast_1">כתבה אחת שלא נקראה</string>
+    <string name="overlay_text">טקסט</string>
+    <string name="overlay_story">כתבה</string>
+    <string name="orig_text_failed">מצטערים, לא ניתן היה לחלץ את הטקסט של הכתבה.</string>
+    <string name="state_all">הכול</string>
+    <string name="state_unread">לא נקרא</string>
+    <string name="state_focus">מיקוד</string>
+    <string name="state_saved">נשמר</string>
+    <string name="reply_to">השב ל־\"%s\"</string>
+    <string name="edit_reply">עריכת התגובה</string>
+    <string name="edit_reply_update">עדכון התשובה</string>
+    <string name="edit_reply_delete">מחיקת התשובה</string>
+    <string name="alert_dialog_ok">אישור</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">סיום</string>
+    <string name="alert_dialog_openlink">פתיחת קישור</string>
+    <string name="alert_dialog_openimage">פתיחת תמונה</string>
+    <string name="dialog_folders_save">תיקיות שמורות</string>
+    <string name="dialog_story_intel_save">שמירת האימון</string>
+    <string name="dialog_story_tags_save">שמירת תגיות</string>
+    <string name="profile">פרופיל</string>
+    <string name="profile_location_icon">סמל מיקום</string>
+    <string name="profile_following">במעקב</string>
+    <string name="profile_followers">עוקבים</string>
+    <string name="profile_shared">כתבות ששותפו</string>
+    <string name="profile_ago">לפני</string>
+    <string name="profile_recent_actvity">פעילויות</string>
+    <string name="profile_recent_interactions">אינטראקציות</string>
+    <string name="profile_started_following">התחיל לעקוב</string>
+    <string name="profile_you">את/ה</string>
+    <string name="profile_you_lower">את/ה</string>
+    <string name="profile_your">שלך</string>
+    <string name="profile_now_following">עוקב/ת עכשיו אחרי %1$s</string>
+    <string name="profile_replied_to">השיב/ה ל</string>
+    <string name="profile_replied_to_your">השיב/ה ל-%1$s</string>
+    <string name="profile_shared_story">משותף</string>
+    <string name="profile_comment">תגובה</string>
+    <string name="profile_reply">תגובה</string>
+    <string name="profile_button_follow">עקוב</string>
+    <string name="profile_button_unfollow">הפסקת מעקב</string>
+    <string name="profile_subscribed_to">נרשם אל</string>
+    <string name="profile_saved">נשמר</string>
+    <string name="profile_reshared">שיתף מחדש</string>
+    <string name="profile_favorited">סומן כמועדף</string>
+    <string name="profile_favorited_comments">סימן %1$s תגובות כמועדפות ב־</string>
+    <string name="profile_signup">נרשם ל-Newsblur</string>
+    <string name="profile_comments_on">תגובות על</string>
+    <string name="profile_feed_not_available">אינך עוד מנוי לפיד הזה</string>
+    <string name="profile_do_not_follow">אינך עוקב/ת אחרי המשתמש הזה</string>
+    <string name="profile_no_interactions">אין אינטראקציות</string>
+    <string name="menu_profile">פרופיל</string>
+    <string name="menu_search_feeds">חיפוש במקורות החדשות שלך</string>
+    <string name="menu_original">הצגת המקור</string>
+    <string name="menu_send_story">שליחת קישור אל…</string>
+    <string name="menu_send_story_full">שליחת הכתבה אל…</string>
+    <string name="menu_mark_feed_as_read">סימון הפיד כנקרא</string>
+    <string name="menu_delete_feed">מחיקת הפיד</string>
+    <string name="menu_statistics">סטטיסטיקה</string>
+    <string name="menu_delete_saved_search">מחיקת חיפוש שמור</string>
+    <string name="menu_unfollow">הפסקת מעקב אחר המשתמש</string>
+    <string name="menu_choose_folders">בחירת תיקיות</string>
+    <string name="menu_notifications_choose">התראות</string>
+    <string name="menu_notifications_disable">השבתת התראות</string>
+    <string name="menu_notifications_focus">שליחת התראה על כתבות חדשות במיקוד</string>
+    <string name="menu_notifications_unread">שליחת התראה על כל הכתבות החדשות</string>
+    <string name="menu_mark_folder_as_read">סמן תיקייה כנקראה</string>
+    <string name="menu_sharenewsblur">שיתוף הסיפור הזה</string>
+    <string name="menu_text_size">גודל הטקסט</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">בינוני</string>
+    <string name="menu_text_size_l">גדול</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">גופן</string>
+    <string name="menu_save_story">שמירת כתבה זו</string>
+    <string name="menu_unsave_story">ביטול שמירת הכתבה</string>
+    <string name="menu_newest_mark_older_stories_as_read">סימון כתבות ישנות יותר כנקראו</string>
+    <string name="menu_newest_mark_newer_stories_as_read">סמן כתבות חדשות יותר כנקראו</string>
+    <string name="menu_oldest_mark_older_stories_as_read">סמן כתבות ישנות יותר כנקראו</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">סימון כתבות חדשות יותר כנקראו</string>
+    <string name="story_menu_open_feed">פתח פיד</string>
+    <string name="story_menu_share_link">שיתוף קישור…</string>
+    <string name="story_menu_share_story">שיתוף כתבה…</string>
+    <string name="menu_mark_story_as_read">סימון כנקרא</string>
+    <string name="menu_mark_unread">סימון כלא נקראה</string>
+    <string name="menu_search_stories">חיפוש…</string>
+    <string name="menu_mute_feed">השתק הזנה</string>
+    <string name="menu_unmute_feed">בטל השתקה של ההזנה</string>
+    <string name="menu_mute_folder">השתקת תיקייה</string>
+    <string name="menu_unmute_folder">בטל השתקת תיקייה</string>
+    <string name="menu_delete_folder">מחיקת תיקייה</string>
+    <string name="menu_rename_folder">שינוי שם התיקייה</string>
+    <string name="menu_instafetch_feed">טען כתבות מיד</string>
+    <string name="feed_menu_back_to_actions">חזרה לפעולות ההזנה</string>
+    <string name="menu_infrequent_cutoff">סיפורים בתדירות נמוכה בחודש</string>
+    <string name="menu_intel">מאמן אינטליגנציה</string>
+    <string name="menu_rename_feed">שינוי שם הפיד</string>
+    <string name="menu_story_list_style_choose">סגנון הרשימה</string>
+    <string name="menu_save_search">שמירת החיפוש</string>
+    <string name="menu_web_search">חיפוש באינטרנט</string>
+    <string name="menu_highlight">הדגשה</string>
+    <string name="list_style_list">רשימה</string>
+    <string name="list_style_grid_f">רשת (צפופה)</string>
+    <string name="list_style_grid_m">רשת (בינונית)</string>
+    <string name="list_style_grid_c">רשת (גסה)</string>
+    <string name="story_content_preview_none">כותרת בלבד (ללא תוכן)</string>
+    <string name="story_content_preview_small">2 שורות (קטן)</string>
+    <string name="story_content_preview_medium">4 שורות (בינוני)</string>
+    <string name="story_content_preview_large">6 שורות (גדול)</string>
+    <string name="mark_read_on_scroll_disabled">השאר כלא נקרא</string>
+    <string name="mark_read_on_scroll_enabled">סימון כנקרא בעת גלילה</string>
+    <string name="menu_sort_by">מיון לפי</string>
+    <string name="menu_sort_by_name">שם</string>
+    <string name="menu_sort_by_subs">מנויים</string>
+    <string name="menu_sort_by_stories_month">כתבות בחודש</string>
+    <string name="menu_sort_by_recent_story">הכתבה העדכנית ביותר</string>
+    <string name="menu_sort_by_number_opens">מספר פתיחות</string>
+    <string name="menu_sort_order">סדר מיון</string>
+    <string name="menu_sort_order_ascending">בסדר עולה</string>
+    <string name="menu_sort_order_descending">סדר יורד</string>
+    <string name="menu_folder_view">תצוגת תיקיות</string>
+    <string name="menu_folder_view_nested">מקונן</string>
+    <string name="menu_folder_view_flat">שטוח</string>
+    <string name="menu_mute_all">השתק הכול</string>
+    <string name="menu_mute_none">השתק: אף אחד</string>
+    <string name="menu_select_all">בחירת הכול</string>
+    <string name="menu_select_none">בטל את הבחירה</string>
+    <string name="menu_widget_background">רקע הווידג׳ט</string>
+    <string name="menu_widget_background_default">ברירת מחדל</string>
+    <string name="menu_widget_background_transparent">שקוף</string>
+    <string name="toast_hold_to_select">לחיצה ממושכת לבחירת טקסט</string>
+    <string name="logout_warning">בטוח שברצונך להתנתק?</string>
+    <string name="search_mark_read_warning">שימו לב! כל הכתבות בעדכון או בתיקייה יסומנו כנקראו, ולא רק תוצאות החיפוש. אם ברצונכם לסמן את כל הכתבות כנקראו, נקו את שאילתת החיפוש כדי לאשר.</string>
+    <string name="story_show_changes">הצגת שינויים בכתבה</string>
+    <string name="story_hide_changes">הסתרת שינויים בכתבה</string>
+    <string name="story_changes_loading">טוען שינויים בכתבה …</string>
+    <string name="story_saved_timestamp">נשמר %s</string>
+    <string name="your_feeds_search_hint">חיפוש בפידים שלך</string>
+    <string name="feed_list_clear_search">ניקוי החיפוש</string>
+    <string name="story_search_hint">חיפוש כתבות</string>
+    <string name="discover_related_sites_title">אתרים קשורים</string>
+    <string name="discover_show_grid">הצגת רשת</string>
+    <string name="discover_show_list">הצגת רשימה</string>
+    <string name="discover_loading">מחפש אתרים קשורים…</string>
+    <string name="discover_no_related_sites">לא נמצאו אתרים קשורים</string>
+    <string name="discover_view_mode_grid">רשת</string>
+    <string name="discover_view_mode_list">רשימה</string>
+    <string name="discover_try">נסה</string>
+    <string name="discover_add">הוספה</string>
+    <string name="discover_subscribed">רשום כמנוי</string>
+    <string name="discover_updated_today">עודכן היום</string>
+    <string name="discover_updated_relative">עודכן %s</string>
+    <string name="discover_stale_updated_relative">לא עדכני — עודכן %s</string>
+    <string name="discover_stale_date">לא מעודכן. הכתבה האחרונה %s</string>
+    <string name="discover_last_fetched_relative">נאסף %s</string>
+    <string name="try_feed_banner_subtitle">תצוגה מקדימה. עדיין לא נרשמת כמנוי.</string>
+    <string name="try_feed_subscribe_button">הרשמה</string>
+    <string name="empty_search_notice">הקלידו מונח חיפוש כדי להתחיל</string>
+    <string name="menu_add_feed">הוספה + גילוי אתרים</string>
+    <string name="adding_feed_progress">מוסיף פיד…</string>
+    <string name="feed_list_search_hint">חיפוש בפידים</string>
+    <string name="add_folder_name">נא להזין שם תיקייה</string>
+    <string name="add_tag_name">נא להזין שם לתגית</string>
+    <string name="add_new_folder">+ הוספת תיקייה חדשה</string>
+    <string name="add_new_tag">+ הוספת תגית חדשה</string>
+    <string name="add_tag">הוספת תגית</string>
+    <string name="new_folder_name_hint">הזן שם תיקייה חדש</string>
+    <string name="new_tag_name_hint">הזנת שם תגית חדש</string>
+    <string name="add_feed_error">לא ניתן להוסיף הזנה</string>
+    <string name="add_folder_error">לא ניתן להוסיף תיקייה</string>
+    <string name="menu_mark_all_as_read">סמן הכול כנקרא</string>
+    <string name="menu_logout">התנתקות</string>
+    <string name="contact_us">יצירת קשר</string>
+    <string name="contact_description">NewsBlur הוא קורא חדשות וצובר תוכן שפותח על ידי NewsBlur, Inc. צרו קשר עם צוות NewsBlur לקבלת תמיכה באפליקציה, לשאלות או למשוב.</string>
+    <string name="contact_email_label">שליחת אימייל למפתח</string>
+    <string name="contact_send_email">שליחת אימייל</string>
+    <string name="contact_website_label">אתר NewsBlur</string>
+    <string name="contact_open_website">בקרו באתר</string>
+    <string name="contact_back">חזרה</string>
+    <string name="contact_no_email_app">לא מותקנת אפליקציית דוא״ל. אפשר לבחור ולהעתיק את כתובת הדוא״ל שמופיעה בדף הזה.</string>
+    <string name="contact_no_browser">לא מותקן דפדפן אינטרנט. אפשר לבחור ולהעתיק את כתובת האתר שבעמוד הזה.</string>
+    <string name="menu_feedback">שליחת משוב על האפליקציה</string>
+    <string name="menu_feedback_post">יצירת פוסט משוב</string>
+    <string name="menu_feedback_email">שליחת דיווח על באג באימייל</string>
+    <string name="menu_theme_choose">ערכת נושא</string>
+    <string name="menu_spacing">ריווח</string>
+    <string name="menu_subscription">מינוי…</string>
+    <string name="description_add_new_folder_icon">סמל הוספת תיקייה חדשה</string>
+    <string name="menu_loginas">התחברות בתור…</string>
+    <string name="loginas_title">התחברות בתור משתמש</string>
+    <string name="empty_list_view_loading">טוען…</string>
+    <string name="story_loading_description">הכתבות נטענות</string>
+    <string name="empty_list_view_no_stories">אין כתבות לקריאה</string>
+    <string name="empty_list_view_no_stories_unread">אין כתבות שלא נקראו</string>
+    <string name="reading_placeholder_select_story">בחרו כתבה לקריאה</string>
+    <string name="empty_list_view_no_unread_stories">אין לך כתבות שלא נקראו.</string>
+    <string name="empty_list_view_no_focus_stories">אין לך כתבות שלא נקראו במיקוד.\n\nעבור לתצוגת הכול או שלא נקראו.</string>
+    <string name="empty_list_view_no_saved_stories">אין לך סיפורים שמורים.\n\nעבור אל הכול או אל שלא נקראו.</string>
+    <string name="login_registration_custom_server">הגדרת שרת מותאם אישית</string>
+    <string name="login_registration_reset_url">איפוס</string>
+    <string name="login_registration_register">הרשמה</string>
+    <string name="register_message_error">אירעה בעיה בהרשמה ל־NewsBlur.</string>
+    <string name="need_to_login">
+        <u>אני צריך/ה להתחבר!</u>
+    </string>
+    <string name="need_to_register">
+        <u>אני צריך להירשם</u>
+    </string>
+    <string name="public_comment_count">%d תגובות ציבוריות</string>
+    <string name="friends_comments_count">%d תגובות</string>
+    <string name="friends_shares_count">%d שיתופים</string>
+    <string name="unknown_user">משתמש לא ידוע</string>
+    <string name="delete_feed_message">למחוק את הפיד \"%s\"?</string>
+    <string name="delete_saved_search_message">למחוק את החיפוש השמור %s?</string>
+    <string name="delete_folder_message">למחוק את התיקייה \"%s\" ולבטל את המינוי לכל העדכונים שבה?</string>
+    <string name="deleting_folder_message">מחיקת התיקייה \"%s\"</string>
+    <string name="add_saved_search_message">לשמור את החיפוש \"%s\"?</string>
+    <string name="unfollow_message">להפסיק לעקוב אחרי \"%s\"?</string>
+    <string name="feed_subscribers">%s מנויים</string>
+    <string name="feed_opens">%d פתיחות</string>
+    <string name="feed_stories_per_month">%d כתבות בחודש</string>
+    <string name="forwarding_email_address">כתובת דוא״ל להעברה</string>
+    <string name="setup_instructions">הוראות התקנה \u25bc</string>
+    <string name="setup_instructions_details">כדי לקרוא את הניוזלטרים שלך בדוא״ל ב-NewsBlur, העבר אותם לכתובת הדוא״ל האישית שלך שמוצגת למעלה.\n\nב-Gmail, עבור אל הגדרות &gt; העברה ולחץ על הוספת כתובת להעברה. הוסף את כתובת הדוא״ל האישית שלך ב-NewsBlur.\n\nGmail ינחה אותך לאשר את כתובת הדוא״ל. לאחר מכן חזור ל-NewsBlur וחפש את הודעת האישור בתיקיית \"ניוזלטרים\".\n\nלאחר מכן, צור מסנן עבור כל הניוזלטרים שלך כדי להעביר אותם לכתובת האישית ב-NewsBlur.</string>
+    <string name="copy_email">העתקת כתובת אימייל</string>
+    <string name="stories_shortcuts">קיצורי דרך לכתבות</string>
+    <string name="feeds_shortcuts">קיצורי דרך לעדכונים</string>
+    <string name="import_export">ייבוא/ייצוא…</string>
+    <string name="settings">העדפות…</string>
+    <string name="menu_mute_sites">השתקת אתרים…</string>
+    <string name="mute_sites">השתקת אתרים</string>
+    <string name="menu_widget">ווידג׳ט…</string>
+    <string name="menu_notifications">התראות…</string>
+    <string name="widget">יישומון</string>
+    <string name="title_widget_setup">הקישו כדי להגדיר ב־NewsBlur</string>
+    <string name="title_no_subscriptions">לא זוהו מינויים פעילים</string>
+    <string name="title_widget_loading">בטעינה…</string>
+    <string name="menu_newsletters">ניוזלטרים…</string>
+    <string name="menu_shortcuts">קיצורי דרך…</string>
+    <string name="main_menu_preferences">העדפות</string>
+    <string name="main_menu_mute_sites">השתקת אתרים</string>
+    <string name="main_menu_widget_sites">אתרי ווידג׳טים</string>
+    <string name="main_menu_notifications">התראות</string>
+    <string name="main_menu_interactions">אינטראקציות</string>
+    <string name="main_menu_upgrade_premium">שדרוג ל-Premium</string>
+    <string name="main_menu_upgrade_archive">שדרגו ל-Archive</string>
+    <string name="main_menu_premium_archive">ארכיון פרימיום</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">פורום תמיכה</string>
+    <string name="newsblur_opml">OPML של NewsBlur</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">ייבוא/ייצוא OPML</string>
+    <string name="notifications_title">התראות</string>
+    <string name="premium_subscribers_folder">נהר החדשות המלא הוא תכונת פרימיום</string>
+    <string name="premium_subscribers_allstories">קריאת כל הכתבות באתר היא תכונת פרימיום</string>
+    <string name="premium_subscribers_saved_tag">קריאת כתבות שמורות לפי תגית היא תכונת פרימיום</string>
+    <string name="premium_subscribers_search">חיפוש הוא תכונת Premium</string>
+    <string name="premium_subscribers">מנויי פרימיום</string>
+    <string name="premium_upgrade_button">שדרוג ל-Premium</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
+    <string name="thank_you_for_subscribing">תודה שנרשמתם!</string>
+    <string name="premium_subscription_renewal">המינוי שלך יתחדש בתאריך %s</string>
+    <string name="premium_subscription_expiration">המינוי שלך יפוג בתאריך %s</string>
+    <string name="premium_subscription_no_expiration">המינוי שלך מוגדר כך שלא יפוג לעולם. וואו!</string>
+    <string name="premium_policies">לפרטים, עיינו ב<a href="https://newsblur.com/privacy">מדיניות הפרטיות</a> וב<a href="https://newsblur.com/tos">תנאי השימוש</a> של NewsBlur\.</string>
+    <string name="premium_subscription_header">מינוי Premium</string>
+    <string name="archive_subscription_header">ארכיון פרימיום</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">מינוי NewsBlur Premium</string>
+    <string name="archive_subscription_title">ארכיון הפרימיום של NewsBlur</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">35.99$ לשנה (3.00$ לחודש)</string>
+    <string name="premium_subscription_active">המינוי שלך לפרימיום פעיל</string>
+    <string name="archive_subscription_active">מינוי הארכיון Premium שלך פעיל</string>
+    <string name="pro_subscription_active">מינוי Premium Pro שלך פעיל</string>
+    <string name="subscription_manage">ניהול המינוי</string>
+    <string name="subscription_details_error">שגיאה באחזור פרטי המינוי</string>
+    <string name="no_subscription_available">אין מינוי זמין</string>
+    <string name="subscription_unavailable">אינו זמין כרגע ב‑Android</string>
+    <string name="subscription_coming_soon">בקרוב</string>
+    <string name="subscription_upgrade_from_premium">שדרוג מ-Premium</string>
+    <string name="subscription_upgrade_from_archive">שדרוג מארכיון</string>
+    <string name="subscription_price_yearly">%1$s לשנה (%2$s לחודש)</string>
+    <string name="subscription_price_monthly">%1$s לחודש</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">מנוי הארכיון הפרימיום שלך כולל את כל מה שמופיע למעלה</string>
+    <string name="premium_pro_includes_above">המינוי Premium Pro שלך כולל את כל מה שמופיע למעלה</string>
+    <string name="premium_enable_sites">עקוב אחר עד 1,024 אתרים</string>
+    <string name="premium_sync">אתרים מתעדכנים בתדירות גבוהה עד פי 5</string>
+    <string name="premium_read_by_folder">זרם חדשות (קריאה לפי תיקייה)</string>
+    <string name="premium_search">חיפוש באתרים ובתיקיות</string>
+    <string name="premium_searchable_tags">שמירת כתבות עם תגיות שניתן לחפש</string>
+    <string name="premium_privacy_options">אפשרויות פרטיות לבלוג הטשטוש שלך</string>
+    <string name="premium_custom_rss">עדכוני RSS מותאמים אישית לסיפורים שמורים</string>
+    <string name="premium_text_view">תצוגת טקסט מחלצת בנוחות את הכתבה</string>
+    <string name="premium_discover_related">גילוי כתבות ואתרים קשורים</string>
+    <string name="premium_shiloh">אתם מאכילים את ליריק, כלב הציד הרעב של NewsBlur, במשך 6 ימים</string>
+    <string name="archive_everything_premium">כמובן, כל מה שכלול במינוי הפרימיום</string>
+    <string name="archive_enable_sites">עקבו אחר עד 4,096 אתרים</string>
+    <string name="archive_marked_as_read">בחירת המועד שבו כתבות יסומנו אוטומטית כנקראו</string>
+    <string name="archive_customize_auto_read">התאמת הסימון האוטומטי כנקרא לפי אתר או תיקייה</string>
+    <string name="archive_story_searchable_forever">כל סיפור מכל אתר נשמר בארכיון וניתן לחיפוש לתמיד</string>
+    <string name="archive_back_filled">פידים שתומכים בעימוד נטענים לאחור כדי ליצור ארכיון מלא</string>
+    <string name="archive_train_full_text">אימון על כתבות באמצעות הטקסט המלא</string>
+    <string name="archive_discover_related">גלה כתבות קשורות בכל רחבי הארכיון שלך</string>
+    <string name="archive_export_trained_stories">ייצוא כתבות שאומנו מתיקיות כהזנות RSS</string>
+    <string name="archive_stories_unread_forever">אפשר להשאיר כתבות בארכיון כלא נקראו לנצח</string>
+    <string name="archive_ask_ai">שאלו את הבינה המלאכותית שאלות על כתבות</string>
+    <string name="archive_filter_by_date_range">סנן כתבות לפי טווח תאריכים</string>
+    <string name="archive_train_folder">החלת האימון על תיקייה</string>
+    <string name="archive_train_globally">החלת האימון באופן גלובלי</string>
+    <string name="pro_everything_archive">כמובן, כל מה שכלול במינוי הארכיון</string>
+    <string name="pro_enable_sites">עקוב אחר עד 10,000 אתרים</string>
+    <string name="pro_all_feeds_fetched">כל הפידים נמשכים כל 5–15 דקות</string>
+    <string name="pro_regex_train">אימון כתבות באמצעות ביטויים רגולריים</string>
+    <string name="pro_priority_support">תמיכה בעדיפות גבוהה</string>
+    <string name="pro_natural_language_filters">מסננים בשפה טבעית</string>
+    <string name="pro_natural_language_search">חיפוש בשפה טבעית</string>
+    <string name="settings_cat_offline">קריאה במצב לא מקוון</string>
+    <string name="settings_enable_offline">הורדת כתבות</string>
+    <string name="settings_enable_offline_sum">אחזור כתבות תקופתי ברקע</string>
+    <string name="settings_enable_image_prefetch">הורדת תמונות</string>
+    <string name="settings_enable_image_prefetch_sum">טעינה מראש של תמונות לקריאה לא מקוונת</string>
+    <string name="settings_keep_old_stories">השארת כתבות לאחר הקריאה</string>
+    <string name="settings_keep_old_stories_sum">השבתה תצמצם את השימוש באחסון</string>
+    <string name="mute_config_title">אפשר לעקוב אחר עד 64 אתרים בחשבון רגיל בחינם</string>
+    <string name="mute_config_message">נא להשתיק אתרים %d או לאפס לרשימת האתרים הפופולריים ביותר.</string>
+    <string name="mute_config_reset_button">אפס לאתרים פופולריים</string>
+    <string name="mute_config_upgrade_to_premium">שדרוג ל-Premium</string>
+    <string name="mute_config_upgrade_subtitle">הירשמו ל־1,024 אתרים</string>
+    <string name="mute_config_upgrade">שדרוג</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">זמינים %d אתרים</string>
+    <string name="mute_config_sites_over">%d מעל המגבלה</string>
+    <string name="menu_network_select">הורדה באמצעות…</string>
+    <string name="menu_network_select_sum">הגבלת נתוני הרקע לרשתות שנבחרו</string>
+    <string name="menu_network_select_opt_any">כל רשת</string>
+    <string name="menu_network_select_opt_nomo">כל רשת Wi‑Fi או Ethernet</string>
+    <string name="menu_network_select_opt_nomononme">Wi‑Fi ללא הגבלה או Ethernet בלבד</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">מחיקת כתבות לשימוש לא מקוון…</string>
+    <string name="menu_delete_offline_stories_sum">פנו מקום על ידי מחיקת כתבות ותמונות שמורות</string>
+    <string name="menu_delete_offline_stories_confirmation">כל הכתבות והתמונות נמחקו!</string>
+    <string name="menu_cache_age_select">לכמה זמן לשמור כתבות…</string>
+    <string name="menu_cache_age_select_sum">מחיקת כתבות שמורות לקריאה לא מקוונת</string>
+    <string name="menu_cache_age_select_opt_2d">יומיים (צמצום השימוש באחסון)</string>
+    <string name="menu_cache_age_select_opt_7d">7 ימים</string>
+    <string name="menu_cache_age_select_opt_14d">14 ימים</string>
+    <string name="menu_cache_age_select_opt_30d">30 ימים (צמצום השימוש ברשת)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">רשימת הזנות</string>
+    <string name="setting_feed_list_order">סדר רשימת העדכונים…</string>
+    <string name="settings_enable_row_global_shared">הצגת כתבות משותפות גלובליות</string>
+    <string name="settings_enable_row_global_shared_sum">הצגת תיקיית הכתבות המשותפות הגלובליות</string>
+    <string name="settings_enable_row_infrequent_stories">הצג כתבות שמופיעות לעיתים רחוקות</string>
+    <string name="settings_enable_row_infrequent_stories_sum">הצגת תיקיית הכתבות מאתרים שאינם מתעדכנים לעיתים קרובות</string>
+    <string name="settings_enable_row_daily_briefing">הצגת התדריך היומי</string>
+    <string name="settings_enable_row_daily_briefing_sum">הצג את תיקיית התדריך היומי</string>
+    <string name="settings_enable_row_widely_read_stories">הצג כתבות שנקראו רבות</string>
+    <string name="settings_enable_row_widely_read_stories_sum">הצגת תיקיית הכתבות הנקראות ביותר</string>
+    <string name="settings_enable_row_long_reads">הצגת כתבות ארוכות</string>
+    <string name="settings_enable_row_long_reads_sum">הצגת תיקיית הכתבות הארוכות</string>
+    <string name="settings_enable_row_good_reads">הצגת קריאות טובות</string>
+    <string name="settings_enable_row_good_reads_sum">הצגת תיקיית הכתבות הטובות</string>
+    <string name="settings_cat_story_list">רשימת כתבות</string>
+    <string name="settings_cat_story_layout">פריסת כתבות</string>
+    <string name="settings_app_icon">סמל האפליקציה</string>
+    <string name="settings_app_icon_choose">בחירת סמל</string>
+    <string name="settings_app_icon_summary">12 גווני צבע, כל אחד בגרסה בהירה וכהה.</string>
+    <string name="settings_app_icon_footer">מנויי Premium יכולים לבחור סמל מותאם אישית ל-NewsBlur. כל סגנון כולל גרסה בהירה וכהה.</string>
+    <string name="settings_app_icon_premium">Premium</string>
+    <string name="settings_app_icon_light">בהיר</string>
+    <string name="settings_app_icon_dark">כהה</string>
+    <string name="settings_app_icon_save_failed">לא ניתן לשנות את סמל האפליקציה</string>
+    <string name="settings_app_icon_appearance_light">בהיר</string>
+    <string name="settings_app_icon_appearance_auto">שימוש בשניהם</string>
+    <string name="settings_app_icon_appearance_dark">כהה</string>
+    <string name="settings_app_icon_appearance_light_caption">משאיר את סמל האפליקציה בהיר, ללא קשר להגדרות המכשיר.</string>
+    <string name="settings_app_icon_appearance_auto_caption">הסמל משתנה בהתאם למראה הבהיר או הכהה של המכשיר שלך.</string>
+    <string name="settings_app_icon_appearance_dark_caption">הסמל הכהה יישאר גם אם הגדרות המכשיר שלך שונות.</string>
+    <string name="oldest">הוותיק ביותר</string>
+    <string name="newest">החדשים ביותר</string>
+    <string name="menu_story_order">סדר הכתבות</string>
+    <string name="settings_story_order">סדר הכתבות…</string>
+    <string name="story_header_options">אפשרויות</string>
+    <string name="story_header_search">חיפוש</string>
+    <string name="story_header_related_sites">אתרים קשורים</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">נוח</string>
+    <string name="compact">קומפקטי</string>
+    <string name="alphabetical">לפי סדר אלפביתי</string>
+    <string name="most_used_at_top">הנפוצים ביותר למעלה</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">כל הסיפורים</string>
+    <string name="unread_only">לא נקראו בלבד</string>
+    <string name="menu_story_content_preview">תצוגה מקדימה של תוכן הכתבה</string>
+    <string name="menu_story_thumbnail_preview">תצוגה מקדימה של תמונה ממוזערת</string>
+    <string name="menu_mark_read_on_scroll">סימון כנקרא בעת גלילה</string>
+    <string name="settings_read_filter">מסנן כתבות שנקראו…</string>
+    <string name="settings_read_filter_title">כתבות שמוצגות</string>
+    <string name="menu_read_filter">מסנן סיפורים שנקראו</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>סימון הכול כנקרא</item>
+        <item>ביטול</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>סמן כתבות ישנות יותר כנקראו</item>
+        <item>ביטול</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="one">ישן מ-%d יום</item>
+        <item quantity="other">ישנות מ-%d ימים</item>
+        <item quantity="two">לפני יותר מ־%d ימים</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="one">%s מנוי</item>
+        <item quantity="other">%s מנויים</item>
+        <item quantity="two">%s מנויים</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="one">%s כתבות בחודש</item>
+        <item quantity="other">%s כתבות בחודש</item>
+        <item quantity="two">%s כתבות בחודש</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="one">פורסם גם באתר %d</item>
+        <item quantity="other">פורסם גם באתרים של %d</item>
+        <item quantity="two">פורסם גם ב־%d אתרים</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="one">+ %d אתר נוסף</item>
+        <item quantity="other">+ עוד %d אתרים</item>
+        <item quantity="two">+ עוד %d אתרים</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>סמן כתבות חדשות יותר כנקראו</item>
+        <item>ביטול</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">פתיחה אוטומטית של הסיפור הראשון</string>
+    <string name="settings_auto_open_first_unread_sum">פתיחה אוטומטית של הכתבה הראשונה שלא נקראה ברשימת הכתבות</string>
+    <string name="settings_mark_read_on_feed_scroll">סימון כותרות כתבות כנקראו בעת הגלילה</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">סימון אוטומטי של סיפורים כנקראו בעת גלילה מעבר להם</string>
+    <string name="settings_story_clustering">קבצו כתבות קשורות</string>
+    <string name="settings_story_clustering_summary">הצגת כתבות כפולות מפידים אחרים מתחת לכותרת הכתבה</string>
+    <string name="settings_cluster_matches">התאמות באשכולות</string>
+    <string name="settings_cluster_matches_summary">בחרו אם האשכולות יציגו רק כותרות כפולות או גם כתבות קשורות</string>
+    <string name="settings_story_clustering_save_failed">לא ניתן לשמור את העדפת קיבוץ הכתבות</string>
+    <string name="settings_story_clustering_title_only">כותרת בלבד</string>
+    <string name="settings_cluster_mode_title_match_only">התאמה לכותרת בלבד</string>
+    <string name="settings_cluster_mode_title_match_plus_related">התאמה לכותרת ונושאים קשורים</string>
+    <string name="settings_cluster_mark_read_matches">סמן כתבות תואמות כנקראו</string>
+    <string name="settings_cluster_mark_read_related">סמן כתבות קשורות כנקראו</string>
+    <string name="settings_cluster_mark_read_matches_summary">כשאתה קורא כתבה, סמן גם את הכתבות התואמות שלה כנקראו.</string>
+    <string name="settings_cluster_mark_read_related_summary">כשאתם קוראים סיפור, סמנו גם סיפורים תואמים וקשורים כנקראו.</string>
+    <string name="settings_cluster_mark_read_save_failed">לא ניתן לשמור את העדפת סימון הכתבות הקשורות כנקראו</string>
+    <string name="settings_story_clustering_title">כותרת</string>
+    <string name="settings_story_clustering_only">בלבד</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">התאמה</string>
+    <string name="story_cluster_badge_related">קשור</string>
+    <string name="settings_mark_story_read">סמן כתבה כנקראה…</string>
+    <string name="settings_mark_story_read_title">סמן כתבות כנקראו</string>
+    <string name="mark_story_read_immediately">רק בעת בחירה</string>
+    <string name="mark_story_read_on_scroll">בעת גלילה או בחירה</string>
+    <string name="mark_story_read_1_second">אחרי שנייה אחת</string>
+    <string name="mark_story_read_2_seconds">אחרי 2 שניות</string>
+    <string name="mark_story_read_3_seconds">לאחר 3 שניות</string>
+    <string name="mark_story_read_5_seconds">אחרי 5 שניות</string>
+    <string name="mark_story_read_10_seconds">אחרי 10 שניות</string>
+    <string name="mark_story_read_20_seconds">אחרי 20 שניות</string>
+    <string name="mark_story_read_30_seconds">לאחר 30 שניות</string>
+    <string name="mark_story_read_45_seconds">אחרי 45 שניות</string>
+    <string name="mark_story_read_60_seconds">לאחר 60 שניות</string>
+    <string name="mark_story_read_manually">ידנית</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">שיתוף כתבות</string>
+    <string name="settings_show_public_comments">הצגת תגובות ציבוריות</string>
+    <string name="settings_reading">קריאה</string>
+    <string name="settings_show_ask_ai">הצגת Ask AI</string>
+    <string name="settings_content_preview">טקסט תצוגה מקדימה של התוכן…</string>
+    <string name="settings_thumbnails_style">תמונות ממוזערות לתצוגה מקדימה של תמונות…</string>
+    <string name="settings_preview_images_title">תצוגה מקדימה של תמונות</string>
+    <string name="settings_preview_images_segment_off">כבוי</string>
+    <string name="settings_preview_images_segment_left_small">L קטן</string>
+    <string name="settings_preview_images_segment_left_large">L גדול</string>
+    <string name="settings_preview_images_segment_right_small">R קטן</string>
+    <string name="settings_preview_images_segment_right_large">R גדול</string>
+    <string name="settings_notifications">התראות</string>
+    <string name="settings_enable_notifications">הפעל התראות</string>
+    <string name="ask_ai_upgrade_archive">שדרגו לארכיון Premium</string>
+    <string name="ask_ai_ask_question">שאלו שאלה…</string>
+    <string name="ask_ai_follow_up">שאלת המשך…</string>
+    <string name="ask_ai_ask">שאל</string>
+    <string name="ask_ai_send">שליחה</string>
+    <string name="ask_ai_reask">לשאול שוב</string>
+    <string name="ask_ai_recording">מקליט…</string>
+    <string name="ask_ai_transcribing">מתמלל…</string>
+    <string name="ask_ai_microphone_permission_denied">ההרשאה למיקרופון נדחתה</string>
+    <string name="ask_ai_microphone_error">לא ניתן להקליט אודיו</string>
+    <string name="settings_confirm_mark_all_read_note">סימון כל הסיפורים באתר כנקראו תמיד יבקש אישור. לחיצה ממושכת על כפתור הסימון כנקרא תציג אפשרויות נוספות.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">שניהם</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">תיקיות</string>
+    <string name="settings_confirm_mark_all_read_segment_never">אף פעם</string>
+    <string name="settings_after_mark_read_title">לאחר סימון כנקרא</string>
+    <string name="settings_after_mark_read_next">פתיחת הרשימה הבאה</string>
+    <string name="settings_after_mark_read_stay">להישאר כאן</string>
+    <string name="settings_when_opening_site_title">בעת פתיחת אתר</string>
+    <string name="settings_when_opening_site_stories">הצג כתבות</string>
+    <string name="settings_when_opening_site_first_story">פתיחת הכתבה הראשונה</string>
+    <string name="story_cluster_upgrade_archive">ארכיון פרימיום</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">שמאלי, קטן</string>
+    <string name="story_thumbnail_left_hand_large">גדולה משמאל</string>
+    <string name="story_thumbnail_right_hand_small">קטן, בצד ימין</string>
+    <string name="story_thumbnail_right_hand_large">גדול, בצד ימין</string>
+    <string name="story_thumbnail_no_image_preview">ללא תצוגה מקדימה של תמונה</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">כתבות מאתרים עם</string>
+    <string name="infrequent_5">פחות מ-5 כתבות בחודש</string>
+    <string name="infrequent_15">פחות מ־15 כתבות בחודש</string>
+    <string name="infrequent_30">פחות מ-30 סיפורים בחודש</string>
+    <string name="infrequent_60">&lt; 60 סיפורים בחודש</string>
+    <string name="infrequent_90">פחות מ־90 כתבות בחודש</string>
+    <string name="story_intel_dialog_title">מה אהבתם ומה לא אהבתם בכתבה הזו?</string>
+    <string name="feed_intel_dialog_title">מה אהבת ומה לא אהבת באתר הזה?</string>
+    <string name="intel_title_header">כותרות הכתבות</string>
+    <string name="feed_intel_title_header">כותרות</string>
+    <string name="intel_tag_header">תגיות הסיפור</string>
+    <string name="feed_intel_tag_header">תגיות</string>
+    <string name="intel_author_header">כותבי הכתבה</string>
+    <string name="feed_intel_author_header">מחברים</string>
+    <string name="intel_feed_header">הכול לפי המפרסם</string>
+    <string name="intel_super_dislike">לא אוהב במיוחד</string>
+    <string name="explainer_super_dislike">סלידה חזקה</string>
+    <string name="explainer_like">אהבתי</string>
+    <string name="explainer_dislike">לא אוהב</string>
+    <string name="explainer_beats">פעימות</string>
+    <string name="explainer_example1_header">לייק אחד גובר על כל מספר של דיסלייקים</string>
+    <string name="explainer_example1_result">הכתבה מופיעה בתצוגת המיקוד</string>
+    <string name="explainer_example2_header">סימון אחד כ״לא אוהב במיוחד״ גובר על הכול</string>
+    <string name="explainer_example2_result">הכתבה תמיד מוסתרת</string>
+    <string name="auto">אוטומטי</string>
+    <string name="light">בהיר</string>
+    <string name="sepia">ספיה</string>
+    <string name="dark">כהה</string>
+    <string name="black">שחור</string>
+    <string name="settings_gestures">מחוות</string>
+    <string name="sync_status_housekeeping">מסדרים את הדברים…</string>
+    <string name="sync_status_actions">מסנכרן %d פעולות קריאה…</string>
+    <string name="sync_status_recounts">מתעדכן לגבי פעולות הקריאה…</string>
+    <string name="sync_status_ffsync">בדרך…</string>
+    <string name="sync_status_cleanup">מנקה…</string>
+    <string name="sync_status_starred">מסנכרן פעולות בכתבות שמורות…</string>
+    <string name="sync_status_stories">אחזור כתבות חדשות…</string>
+    <string name="sync_status_unreads">שומר%sכתבות שלא נקראו…</string>
+    <string name="sync_status_images">מאחסן %d תמונות…</string>
+    <string name="sync_status_offline">לא מקוון</string>
+    <string name="sync_status_feed_add">מוסיף הזנה</string>
+    <string name="sync_status_done">הכול הושלם</string>
+    <string name="volume_key_navigation">ניווט באמצעות מקשי עוצמת הקול…</string>
+    <string name="off">כבוי</string>
+    <string name="volume_up_next">למעלה = הכתבה הבאה</string>
+    <string name="volume_down_next">למטה = הסיפור הבא</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">פתיחת העדכון או התיקייה הבאים לאחר סימון כנקרא</string>
+    <string name="settings_load_next_on_mark_read_summary">טעינת העדכון/התיקייה הבאים לאחר סימון כנקרא</string>
+    <string name="settings_confirm_mark_all_read">אישור סימון הכול כנקרא ב…</string>
+    <string name="none">אף אחד מהם</string>
+    <string name="feed_and_folder">הזנות ותיקיות</string>
+    <string name="folder_only">תיקיות בלבד</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">אישור סימון פריטים ישנים/חדשים יותר כנקראו</string>
+    <string name="settings_ltr_gesture_action">החלקה ימינה ברשימת הכתבות…</string>
+    <string name="gest_action_none">ללא פעולה</string>
+    <string name="gest_action_back">חזרה לרשימה הקודמת</string>
+    <string name="gest_action_toggle_read">שנה את מצב הקריאה של הכתבה</string>
+    <string name="gest_action_markread">סמן את הסיפור כנקרא</string>
+    <string name="gest_action_markunread">סמן כתבה כלא נקראה</string>
+    <string name="gest_action_save">שמירת כתבה</string>
+    <string name="gest_action_unsave">ביטול שמירת הכתבה</string>
+    <string name="gest_action_statistics">נתוני האתר</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">החלקה שמאלה על כותרת הסיפור…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">דפדפן ברירת מחדל…</string>
+    <string name="font">גופן…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">כרוניקה</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>ברירת מחדל של המערכת</item>
+        <item>דפדפן בתוך האפליקציה</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">כתבות חדשות</string>
+    <string name="go_to_feed">מעבר לפיד</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">חיפוש</string>
+    <string name="add_feed">הוספת פיד</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">דוא״ל</string>
+    <string name="notification_web">אינטרנט</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">אין התראות על פידים</string>
+    <string name="notification_permissions_context">נדרשת הרשאה לפרסום התראות</string>
+    <string name="notification_permissions_rationale">יש להוסיף ידנית את הרשאת ההתראות בהגדרות האפליקציה\' לפני שמנסים שוב להפעיל התראות</string>
+    <string name="write_storage_permission_opml">נדרשת הרשאת כתיבה לאחסון כדי לייצא OPML</string>
+    <string name="story_saved">הכתבה סומנה כשמורה</string>
+    <string name="story_unsaved">הסיפור סומן כלא שמור</string>
+    <string name="story_read">הידיעה סומנה כנקראה</string>
+    <string name="story_unread">הכתבה סומנה כלא נקראה</string>
+    <string name="unread_stories">כתבות שלא נקראו</string>
+    <string name="focused_stories">כתבות ממוקדות</string>
+    <string name="saved_stories">סיפורים שמורים</string>
+    <string name="short_next_story">הכתבה הבאה</string>
+    <string name="short_previous_story">הסיפור הקודם</string>
+    <string name="short_text_view">תצוגת טקסט</string>
+    <string name="short_page_down">עמוד למטה</string>
+    <string name="short_page_down_key">רווח</string>
+    <string name="short_page_up">עמוד למעלה</string>
+    <string name="short_page_up_key">\u21E7 רווח</string>
+    <string name="short_next_unread_story">הכתבה הבאה שלא נקראה</string>
+    <string name="short_toggle_read_unread">החלף בין נקראה ללא נקראה</string>
+    <string name="short_save_unsave_story">שמירת כתבה / ביטול שמירה</string>
+    <string name="short_open_in_browser">פתח בדפדפן</string>
+    <string name="short_share_this_story">שתף את הסיפור הזה</string>
+    <string name="short_scroll_to_comments">גלילה לתגובות</string>
+    <string name="short_open_story_trainer">פתיחת מאמן הסיפורים</string>
+    <string name="short_open_all_stories">פתיחת כל כתבות האתר</string>
+    <string name="short_switch_views">החלפת תצוגה</string>
+    <string name="short_add_site">הוסף אתר</string>
+    <string name="registering">נרשם...</string>
+    <string name="renaming_feed_message">משנה את שם העדכון %s</string>
+    <string name="renaming_folder_message">שינוי שם התיקייה %s</string>
+    <string name="parent_folder">תיקיית אב</string>
+    <string name="folder_added">התיקייה נוספה</string>
+    <string name="new_folder_parent">בתוך: %1$s</string>
+    <string name="ui_014f8b8d982f">הוסף מסנני מילות מפתח מותאמים אישית שיהפכו למקטעים משלהם בתדריך</string>
+    <string name="ui_05392d13e2f2">אין עדיין תקצירים</string>
+    <string name="ui_0a4444676244">השמירה נכשלה</string>
+    <string name="ui_0a8adac9d6d5">תזמון</string>
+    <string name="ui_13b7bfcac438">בעבודה…</string>
+    <string name="ui_2eb56be3c2d9">מקורות</string>
+    <string name="ui_314ef761a08f">הוספת מקטע מילות מפתח</string>
+    <string name="ui_3af014d03229">מקור הפיד</string>
+    <string name="ui_3e4a49541e18">כולל כתבות שכבר נקראו</string>
+    <string name="ui_4a24ff492222">קבלו תקצירים יומיים עם כל הכתבות המובילות שלכם</string>
+    <string name="ui_4e9f59082144">ארכיון פרימיום</string>
+    <string name="ui_5b170811b992">שדרוג לארכיון Premium</string>
+    <string name="ui_67a31d6fa581">בחרו לאן יישלחו ההתראות על התדריך היומי</string>
+    <string name="ui_67d0be0dd546">קבע מה ייכלל ואיך הדברים ינוסחו</string>
+    <string name="ui_68c2cc7f0cea">מודל</string>
+    <string name="ui_710089545189">אורך וסגנון</string>
+    <string name="ui_753a22b2eb61">התראות</string>
+    <string name="ui_771ee100da2b">מקטעים לפי מילות מפתח</string>
+    <string name="ui_7c522fb68f07">קבלו תקציר של הכתבות המובילות שלכם, במועד שנוח לכם.</string>
+    <string name="ui_7f7e956b2244">הגדר את התקציר היומי כדי ליצור סיכום של הכתבות החשובות לך ביותר.</string>
+    <string name="ui_7ff5a6dafd80">מקטעים</string>
+    <string name="ui_80f7bcbc57b0">בחרו באיזו תדירות ומתי ייווצר תקציר העדכונים שלכם</string>
+    <string name="ui_a4d5830966af">יצירה אוטומטית של תדרוכים לפי לוח הזמנים שלך</string>
+    <string name="ui_a92076d4b9e3">בחרו איזה מודל יכתוב את התדריך היומי שלכם</string>
+    <string name="ui_a970fbbd6df8">יצירה אוטומטית</string>
+    <string name="ui_a9dc7e4dcba7">הגדרות התדריך היומי</string>
+    <string name="ui_bbfa773e5a63">סגירה</string>
+    <string name="ui_c2d462f8f6da">בחר אילו כתבות ייכללו בתקציר היומי</string>
+    <string name="ui_d521ea8640b5">יצירת תקציר יומי</string>
+    <string name="ui_df174a3f2faa">מופעל</string>
+    <string name="ui_df2164622bcf">לא ניתן לטעון את התדריך היומי</string>
+    <string name="ui_eaed56ec84ae">תקציר יומי</string>
+    <string name="ui_efc007a393f6">שמור</string>
+    <string name="ui_f530db58b3e5">מילות מפתח</string>
+    <string name="ui_fdafe86c10a4">ייכללו רק חלקים שבהם יש כתבות תואמות</string>
+    <string name="ui_690910f6ed17">ייבוא OPML</string>
+    <string name="ui_244fd5e426f0">ייצוא OPML</string>
+    <string name="ui_768e0c1c6957">כותרת</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">תגיות שמורות</string>
+    <string name="ui_6e914f494515">תגיות כתבות</string>
+    <string name="ui_e912ab619a72">תגיות אחרות</string>
+    <string name="i18n_add_site">הוספת אתר</string>
+    <string name="i18n_add">הוספה</string>
+    <string name="i18n_retry">ניסיון חוזר</string>
+    <string name="i18n_no_sites_found_try_another_search">לא נמצאו אתרים. נסו חיפוש אחר.</string>
+    <string name="i18n_load_more">טעינת פריטים נוספים</string>
+    <string name="i18n_follow_any_website">עקבו אחרי כל אתר</string>
+    <string name="i18n_mark_updated_stories_unread">סימון כתבות שעודכנו כלא נקראו</string>
+    <string name="i18n_follow_news_that_matters_to_you">עקוב אחר חדשות שחשובות לך</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">בחרו נושא או צרו פיד של Google News לכל חיפוש.</string>
+    <string name="i18n_subscribe">הירשם</string>
+    <string name="i18n_tech">טכנולוגיה</string>
+    <string name="i18n_review">ביקורת</string>
+    <string name="i18n_sponsored">בחסות</string>
+    <string name="i18n_discover_more_to_read">גלו עוד דברים לקריאה</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">לא נמצאו אתרים. אפשר גם להוסיף אתר באמצעות כתובת URL.</string>
+    <string name="i18n_add_discover_sites">הוספה + גילוי אתרים</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">צרו פיד מדף ללא RSS. NewsBlur מאתר את הסיפורים שבו ובודק אם יש עדכונים. נדרש ארכיון Premium.</string>
+</resources>

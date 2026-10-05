@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">Hiçbir şey yapma</string>
+    <string name="gesture_back">Akışlara dön</string>
+    <string name="gesture_toggle_read">Okundu / okunmadı</string>
+    <string name="gesture_markread">Okundu olarak işaretle</string>
+    <string name="gesture_markunread">Okunmadı olarak işaretle</string>
+    <string name="gesture_save">Haberi kaydet</string>
+    <string name="gesture_unsave">Hikâyeyi kayıtlardan kaldır</string>
+    <string name="gesture_statistics">İstatistikler</string>
+    <string name="gesture_menu">Eylemleri göster</string>
+    <string name="gesture_share">Paylaş</string>
+    <string name="gesture_toggle_save">Kaydet / kaydı kaldır</string>
+    <string name="gesture_ask_ai">Yapay zekâya sor</string>
+    <string name="gesture_train">Eğitim zekâsı</string>
+    <string name="gesture_notifications">Bildirimler</string>
+    <string name="gesture_read_range">Hangi tarihe kadar okundu olarak işaretlensin?</string>
+    <string name="gesture_feed_list">Akış listesi</string>
+    <string name="gesture_story_titles">Haber başlıkları</string>
+    <string name="gesture_reading_story">Bir haberi okurken</string>
+    <string name="gesture_swipe_feeds">Akışlarda kaydırma hareketi</string>
+    <string name="gesture_swipe_stories">Haberlerde kaydırma hareketi</string>
+    <string name="gesture_left">Sola kaydır</string>
+    <string name="gesture_right">Sağa kaydır</string>
+    <string name="gesture_long_press">Uzun basın</string>
+    <string name="gesture_double_tap">Çift dokunma</string>
+    <string name="gesture_two_finger_double_tap">İki parmakla çift dokunma</string>
+    <string name="gesture_left_edge">Sol kenardan kaydırın</string>
+    <string name="gesture_edge_footer">Sol kenardan kaydırmak, hikâye kaydırma kapalı olsa bile her zaman akışlara döner.</string>
+    <string name="gesture_mark_all">Tüm hikâyeleri okundu olarak işaretle</string>
+    <string name="gesture_original">Hikâyenin orijinalini aç</string>
+    <string name="gesture_text">Orijinal metni göster</string>
+    <string name="gesture_unread">Okunmadı olarak işaretle</string>
+    <string name="gesture_back_titles">Haber başlıklarına dön</string>
+    <string name="gesture_previous">Önceki hikâye</string>
+    <string name="gesture_off">Kapalı</string>
+    <string name="gesture_unread_stories">Okunmamış haberler</string>
+    <string name="gesture_focus_stories">Haberlere odaklan</string>
+    <string name="story_title_mark_story_read">Hikâyeyi okundu olarak işaretle…</string>
+    <string name="story_title_list_font_size">Akış ve haber başlığı yazı tipi boyutu</string>
+    <string name="language_current">Dil: %1$s</string>
+    <string name="language_automatic">Otomatik (cihaz dili)</string>
+    <string name="language_save_failed">Diliniz kaydedilemedi. Lütfen tekrar deneyin.</string>
+    <string name="try_feed_instafetching">Haberler anında getiriliyor…</string>
+    <string name="try_feed_fetch_failed">Haberler alınamadı. Yeniden denemek için dokunun.</string>
+    <string name="try_feed_empty">Bu sitede henüz yazı yok. Yenilemek için dokunun.</string>
+    <string name="image_viewer_close">Resmi kapat</string>
+    <string name="image_viewer_loading">Görsel yükleniyor…</string>
+    <string name="image_viewer_failed">Tam resim yüklenemedi.</string>
+    <string name="image_viewer_retry">Tekrar dene</string>
+    <string name="image_viewer_copy">Görseli Kopyala</string>
+    <string name="image_viewer_save">Görseli Kaydet</string>
+    <string name="image_viewer_share">Görseli paylaş…</string>
+    <string name="image_viewer_open_link">Bağlantıyı Aç</string>
+    <string name="image_viewer_copied">Görsel kopyalandı</string>
+    <string name="image_viewer_saved">Resimlere kaydedildi</string>
+    <string name="image_viewer_save_failed">Görsel kaydedilemedi.</string>
+    <string name="image_viewer_share_failed">Görsel paylaşılamadı.</string>
+    <string name="image_viewer_storage_permission">Görselleri kaydetmek için depolama erişimine izin verin ve yeniden deneyin.</string>
+    <string name="image_viewer_show_actions">Görsel işlemlerini göster</string>
+    <string name="settings_story_toolbar_position">Hikâye listesi araç çubuğunun konumu</string>
+    <string name="settings_story_toolbar_top">Üst</string>
+    <string name="settings_story_toolbar_bottom">Alt</string>
+    <string name="story_header_mark_read_cutoff">Ne kadar geriye dönük okunmuş olarak işaretleneceğini seçin</string>
+    <string name="login_username_hint">kullanıcı adı</string>
+    <string name="login_username_or_email_hint">kullanıcı adı veya e-posta</string>
+    <string name="login_password_hint">şifre</string>
+    <string name="login_registration_email_hint">e-posta adresi</string>
+    <string name="login_button_login">Giriş yap</string>
+    <string name="login_segment_sign_in">Giriş yap</string>
+    <string name="login_segment_sign_up">Kaydol</string>
+    <string name="login_forgot_password">Şifremi unuttum</string>
+    <string name="login_custom_server">Kendi sunucunuzda barındırılan özel sunucu</string>
+    <string name="login_custom_server_subtitle">Kendi NewsBlur kurulumunuzu kullanın</string>
+    <string name="login_custom_server_active">Özel sunucu: %1$s</string>
+    <string name="login_custom_server_edit">Sunucu URL\'nizi düzenlemek veya sıfırlamak için dokunun</string>
+    <string name="login_custom_server_dialog_title">Özel sunucu</string>
+    <string name="login_custom_server_dialog_body">NewsBlur’ı kullanmak için bu alanı boş bırakın ya da kendi sunucunuzdaki kurulumun URL’sini girin. Bu ayar, giriş ve kaydolma işlemleri için hemen geçerli olur.</string>
+    <string name="login_message_error">NewsBlur\'a giriş yapılırken bir sorun oluştu.</string>
+    <string name="login_logging_in">Oturum açılıyor…</string>
+    <string name="login_logged_in">Eğriler işleniyor…</string>
+    <string name="login_retrieving_feeds">Akışlar alınıyor…</string>
+    <string name="login_next">İleri</string>
+    <string name="login_custom_server_scheme_error">Özel sunucu URL\'sinde \'https://\' bekleniyordu</string>
+    <string name="login_custom_server_invalid">Geçerli bir özel sunucu URL\'si girin.</string>
+    <string name="login_tagline">İnsanları dünya hakkında konuşmak için
+bir araya getiren kişisel haber okuyucusu.</string>
+    <string name="user_profile_picture">Kullanıcı profil fotoğrafı</string>
+    <string name="search_for_feed">Akış ara</string>
+    <string name="loading">Yükleniyor…</string>
+    <string name="story_navigation_failed">Haber açılamadı. Lütfen tekrar deneyin.</string>
+    <string name="orig_text_loading">Haber metni alınıyor…</string>
+    <string name="follow_error">Kullanıcıyı takip ederken bir sorun oluştu.</string>
+    <string name="unfollow_error">Kullanıcıyı takipten çıkarırken bir sorun oluştu.</string>
+    <string name="description_login_button">Giriş yapmak için basın</string>
+    <string name="description_login_logo">NewsBlur logosu</string>
+    <string name="description_profile_picture">Kullanıcının profil fotoğrafı</string>
+    <string name="description_row_folder_icon">klasör simgesi</string>
+    <string name="description_row_feed_icon">akış simgesi</string>
+    <string name="description_row_feed_mute_toggle">akış sessize alma düğmesi</string>
+    <string name="description_activity_icon">Kullanıcının etkinliğini gösteren bir simge</string>
+    <string name="description_follow_button">Bir kullanıcıyı takip et veya takibi bırak</string>
+    <string name="description_comment_user">Yorum yapan kullanıcının görseli</string>
+    <string name="description_empty_list_image">Boş liste yer tutucusu</string>
+    <string name="description_menu">Menü</string>
+    <string name="story_settings">Haber ayarları</string>
+    <string name="title_choose_folders">%s akışı için klasörleri seçin</string>
+    <string name="title_rename_feed">%s akışını yeniden adlandır</string>
+    <string name="title_rename_folder">%s klasörünü yeniden adlandır</string>
+    <string name="all_stories_title">Tüm Site Hikâyeleri</string>
+    <string name="daily_briefing_title">Günlük Özet</string>
+    <string name="infrequent_title">Seyrek Güncellenen Sitelerin Haberleri</string>
+    <string name="widely_read_stories_title">Çok Okunan Haberler</string>
+    <string name="long_reads_title">Uzun Okumalar</string>
+    <string name="good_reads_title">İyi Okumalar</string>
+    <string name="all_shared_stories_title">Paylaşılan Tüm Hikâyeler</string>
+    <string name="global_shared_stories_title">Genel Paylaşılan Haberler</string>
+    <string name="read_stories_title">Hikâyeleri Oku</string>
+    <string name="saved_stories_title">Kaydedilen Haberler</string>
+    <string name="saved_searches_title">Kayıtlı aramalar</string>
+    <string name="feed_list">Akış listesi</string>
+    <string name="bottom_next_unread_site">Sonraki okunmamış site, %1$s</string>
+    <string name="bottom_next_unread_folder">Sonraki okunmamış klasör, %1$s</string>
+    <string name="top_level">EN ÜST DÜZEY</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nŞununla paylaşıldı: NewsBlur</string>
+    <string name="share_comment_hint">Yorum ekle (İsteğe bağlı)</string>
+    <string name="share_save_newsblur">\"%s\" Blurblog\'unuzda paylaşmak/kaydetmek ister misiniz?</string>
+    <string name="share_this">Paylaş</string>
+    <string name="already_shared">Paylaşıldı</string>
+    <string name="share_this_story">Paylaş</string>
+    <string name="share_with_comment">Yorumla paylaş</string>
+    <string name="unshare">Paylaşımı sil</string>
+    <string name="update_shared">Yorumu güncelle</string>
+    <string name="rename">Yeniden adlandır</string>
+    <string name="save_this">Kaydet</string>
+    <string name="unsave_this">Kaydı kaldır</string>
+    <string name="train_this">Eğit</string>
+    <string name="ask_ai">Yapay zekâya sor</string>
+    <string name="story_mark_unread_state">Okundu</string>
+    <string name="story_mark_read_state">Haberi okundu olarak işaretle</string>
+    <string name="overlay_next">İleri</string>
+    <string name="overlay_done">Tamam</string>
+    <string name="overlay_count_toast_N">%d okunmamış haber</string>
+    <string name="overlay_count_toast_1">1 okunmamış hikâye</string>
+    <string name="overlay_text">Metin</string>
+    <string name="overlay_story">Haber</string>
+    <string name="orig_text_failed">Üzgünüz, haberin metni çıkarılamadı.</string>
+    <string name="state_all">Tümü</string>
+    <string name="state_unread">Okunmadı</string>
+    <string name="state_focus">Odaklan</string>
+    <string name="state_saved">Kaydedildi</string>
+    <string name="reply_to">\"%s\" yanıtla</string>
+    <string name="edit_reply">Yanıtı düzenle</string>
+    <string name="edit_reply_update">Yanıtı güncelle</string>
+    <string name="edit_reply_delete">replyY yanıtını sil</string>
+    <string name="alert_dialog_ok">Tamam</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">Tamam</string>
+    <string name="alert_dialog_openlink">Bağlantıyı aç</string>
+    <string name="alert_dialog_openimage">Görseli Aç</string>
+    <string name="dialog_folders_save">Kayıtlı klasörler</string>
+    <string name="dialog_story_intel_save">Eğitimi kaydet</string>
+    <string name="dialog_story_tags_save">Etiketleri kaydet</string>
+    <string name="profile">Profil</string>
+    <string name="profile_location_icon">Konum simgesi</string>
+    <string name="profile_following">Takip ediyor</string>
+    <string name="profile_followers">Takipçiler</string>
+    <string name="profile_shared">Paylaşılan hikâyeler</string>
+    <string name="profile_ago">önce</string>
+    <string name="profile_recent_actvity">Etkinlikler</string>
+    <string name="profile_recent_interactions">Etkileşimler</string>
+    <string name="profile_started_following">takip etti</string>
+    <string name="profile_you">Siz</string>
+    <string name="profile_you_lower">siz</string>
+    <string name="profile_your">sizin</string>
+    <string name="profile_now_following">artık %1$s hesabını takip ediyor</string>
+    <string name="profile_replied_to">Yanıt verdiği kişi</string>
+    <string name="profile_replied_to_your">%1$s adlı kullanıcıya yanıt verdi</string>
+    <string name="profile_shared_story">paylaşıldı</string>
+    <string name="profile_comment">yorum</string>
+    <string name="profile_reply">yanıtla</string>
+    <string name="profile_button_follow">Takip et</string>
+    <string name="profile_button_unfollow">Takibi bırak</string>
+    <string name="profile_subscribed_to">şuna abone oldu</string>
+    <string name="profile_saved">kaydedildi</string>
+    <string name="profile_reshared">yeniden paylaşıldı</string>
+    <string name="profile_favorited">favorilere eklendi</string>
+    <string name="profile_favorited_comments">şu gönderideki %1$s yorumu favorilerine ekledi</string>
+    <string name="profile_signup">Newsblur’a kaydoldu</string>
+    <string name="profile_comments_on">hakkında yorumlar</string>
+    <string name="profile_feed_not_available">Artık bu akışa abone değilsiniz</string>
+    <string name="profile_do_not_follow">Bu kullanıcıyı takip etmiyorsunuz</string>
+    <string name="profile_no_interactions">Etkileşim yok</string>
+    <string name="menu_profile">Profil</string>
+    <string name="menu_search_feeds">Akışlarınızda ara</string>
+    <string name="menu_original">Orijinalini görüntüle</string>
+    <string name="menu_send_story">Bağlantıyı şuraya gönder…</string>
+    <string name="menu_send_story_full">Haberi şuraya gönder…</string>
+    <string name="menu_mark_feed_as_read">Akışı okundu olarak işaretle</string>
+    <string name="menu_delete_feed">Akışı sil</string>
+    <string name="menu_statistics">İstatistikler</string>
+    <string name="menu_delete_saved_search">Kayıtlı aramayı sil</string>
+    <string name="menu_unfollow">Kullanıcıyı takip etmeyi bırak</string>
+    <string name="menu_choose_folders">Klasörleri seç</string>
+    <string name="menu_notifications_choose">Bildirimler</string>
+    <string name="menu_notifications_disable">Bildirimleri devre dışı bırak</string>
+    <string name="menu_notifications_focus">Yeni odaklanmış haberler için bildirim gönder</string>
+    <string name="menu_notifications_unread">Tüm yeni yazılar için bildirim gönder</string>
+    <string name="menu_mark_folder_as_read">Klasörü okundu olarak işaretle</string>
+    <string name="menu_sharenewsblur">Bu haberi paylaş</string>
+    <string name="menu_text_size">Metin boyutu</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">Yazı tipi</string>
+    <string name="menu_save_story">Bu haberi kaydet</string>
+    <string name="menu_unsave_story">Bu haberi kayıtlardan çıkar</string>
+    <string name="menu_newest_mark_older_stories_as_read">Daha eskileri okundu olarak işaretle</string>
+    <string name="menu_newest_mark_newer_stories_as_read">Daha yenileri okundu olarak işaretle</string>
+    <string name="menu_oldest_mark_older_stories_as_read">Eskileri okundu olarak işaretle</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">Daha yeni olanları okundu olarak işaretle</string>
+    <string name="story_menu_open_feed">Akışı aç</string>
+    <string name="story_menu_share_link">Bağlantıyı paylaş…</string>
+    <string name="story_menu_share_story">Haberi paylaş…</string>
+    <string name="menu_mark_story_as_read">Okundu olarak işaretle</string>
+    <string name="menu_mark_unread">Okunmadı olarak işaretle</string>
+    <string name="menu_search_stories">Ara…</string>
+    <string name="menu_mute_feed">Akışı sessize al</string>
+    <string name="menu_unmute_feed">Akışın sesini aç</string>
+    <string name="menu_mute_folder">Klasörü sessize al</string>
+    <string name="menu_unmute_folder">Klasörün sesini aç</string>
+    <string name="menu_delete_folder">Klasörü sil</string>
+    <string name="menu_rename_folder">Klasörü yeniden adlandır</string>
+    <string name="menu_instafetch_feed">Hikâyeleri anında getir</string>
+    <string name="feed_menu_back_to_actions">Akış işlemlerine geri dön</string>
+    <string name="menu_infrequent_cutoff">Ayda seyrek çıkan hikâyeler</string>
+    <string name="menu_intel">Zekâ eğitmeni</string>
+    <string name="menu_rename_feed">Akışın adını değiştir</string>
+    <string name="menu_story_list_style_choose">Liste stili</string>
+    <string name="menu_save_search">Aramayı Kaydet</string>
+    <string name="menu_web_search">Web\'de ara</string>
+    <string name="menu_highlight">Vurgula</string>
+    <string name="list_style_list">Liste</string>
+    <string name="list_style_grid_f">Izgara (küçük)</string>
+    <string name="list_style_grid_m">Izgara (orta)</string>
+    <string name="list_style_grid_c">Izgara (seyrek)</string>
+    <string name="story_content_preview_none">Yalnızca başlık (yok)</string>
+    <string name="story_content_preview_small">2 satır (küçük)</string>
+    <string name="story_content_preview_medium">4 satır (orta)</string>
+    <string name="story_content_preview_large">6 satır (büyük)</string>
+    <string name="mark_read_on_scroll_disabled">Okunmamış olarak bırak</string>
+    <string name="mark_read_on_scroll_enabled">Kaydırırken okundu olarak işaretle</string>
+    <string name="menu_sort_by">Sıralama ölçütü</string>
+    <string name="menu_sort_by_name">Ada göre</string>
+    <string name="menu_sort_by_subs">Abone sayısı</string>
+    <string name="menu_sort_by_stories_month">Aylık haber sayısı</string>
+    <string name="menu_sort_by_recent_story">En Yeni Hikâye</string>
+    <string name="menu_sort_by_number_opens">Açılma Sayısı</string>
+    <string name="menu_sort_order">Sıralama düzeni</string>
+    <string name="menu_sort_order_ascending">Artan</string>
+    <string name="menu_sort_order_descending">Azalan</string>
+    <string name="menu_folder_view">Klasör görünümü</string>
+    <string name="menu_folder_view_nested">İç içe</string>
+    <string name="menu_folder_view_flat">Düz</string>
+    <string name="menu_mute_all">Tümünü sessize al</string>
+    <string name="menu_mute_none">Hiçbirini sessize alma</string>
+    <string name="menu_select_all">Tümünü Seç</string>
+    <string name="menu_select_none">Hiçbirini seçme</string>
+    <string name="menu_widget_background">Widget arka planı</string>
+    <string name="menu_widget_background_default">Varsayılan</string>
+    <string name="menu_widget_background_transparent">Şeffaf</string>
+    <string name="toast_hold_to_select">Metni seçmek için basılı tutun</string>
+    <string name="logout_warning">Oturumu kapatmak istediğinizden emin misiniz?</string>
+    <string name="search_mark_read_warning">Dikkat! Akış/klasördeki tüm haberler, yalnızca arama sonuçları değil, okundu olarak işaretlenecek. Tüm haberleri okundu olarak işaretlemek istiyorsanız, onaylamak için arama sorgunuzu temizleyin.</string>
+    <string name="story_show_changes">Haber Değişikliklerini Göster</string>
+    <string name="story_hide_changes">Haber Değişikliklerini Gizle</string>
+    <string name="story_changes_loading">Hikâye değişiklikleri yükleniyor …</string>
+    <string name="story_saved_timestamp">%s kaydedildi</string>
+    <string name="your_feeds_search_hint">Akışlarınızda arayın</string>
+    <string name="feed_list_clear_search">Aramayı temizle</string>
+    <string name="story_search_hint">Hikâyelerde ara</string>
+    <string name="discover_related_sites_title">İlgili Siteler</string>
+    <string name="discover_show_grid">Izgarayı göster</string>
+    <string name="discover_show_list">Listeyi göster</string>
+    <string name="discover_loading">İlgili siteler bulunuyor…</string>
+    <string name="discover_no_related_sites">İlgili site bulunamadı</string>
+    <string name="discover_view_mode_grid">Izgara</string>
+    <string name="discover_view_mode_list">Liste</string>
+    <string name="discover_try">Dene</string>
+    <string name="discover_add">Ekle</string>
+    <string name="discover_subscribed">Abone olundu</string>
+    <string name="discover_updated_today">Bugün güncellendi</string>
+    <string name="discover_updated_relative">%s güncellendi</string>
+    <string name="discover_stale_updated_relative">Eski — %s güncellendi</string>
+    <string name="discover_stale_date">Güncel değil. Son haber %s</string>
+    <string name="discover_last_fetched_relative">%s alındı</string>
+    <string name="try_feed_banner_subtitle">Önizleme. Henüz abone olunmadı.</string>
+    <string name="try_feed_subscribe_button">Abone ol</string>
+    <string name="empty_search_notice">Başlamak için bir arama terimi yazın</string>
+    <string name="menu_add_feed">Akış Ekle + Keşfet</string>
+    <string name="adding_feed_progress">Akış ekleniyor…</string>
+    <string name="feed_list_search_hint">Akışlarda ara</string>
+    <string name="add_folder_name">Lütfen klasör adını girin</string>
+    <string name="add_tag_name">Lütfen etiket adı ekleyin</string>
+    <string name="add_new_folder">+ Yeni klasör ekle</string>
+    <string name="add_new_tag">+ Yeni etiket ekle</string>
+    <string name="add_tag">Etiket Ekle</string>
+    <string name="new_folder_name_hint">Yeni klasör adını girin</string>
+    <string name="new_tag_name_hint">Yeni etiket adını girin</string>
+    <string name="add_feed_error">Akış eklenemedi</string>
+    <string name="add_folder_error">Klasör eklenemedi</string>
+    <string name="menu_mark_all_as_read">Tümünü okundu olarak işaretle</string>
+    <string name="menu_logout">Çıkış yap</string>
+    <string name="contact_us">Bize ulaşın</string>
+    <string name="contact_description">NewsBlur, NewsBlur, Inc. tarafından geliştirilen bir haber okuyucu ve toplayıcıdır. Uygulama desteği, sorularınız veya geri bildirimleriniz için NewsBlur ekibiyle iletişime geçin.</string>
+    <string name="contact_email_label">Geliştiriciye e-posta gönder</string>
+    <string name="contact_send_email">E-posta gönder</string>
+    <string name="contact_website_label">NewsBlur web sitesi</string>
+    <string name="contact_open_website">Web sitesini ziyaret et</string>
+    <string name="contact_back">Geri</string>
+    <string name="contact_no_email_app">Yüklü bir e-posta uygulaması yok. Bu sayfadaki e-posta adresini seçip kopyalayabilirsiniz.</string>
+    <string name="contact_no_browser">Yüklü bir web tarayıcısı yok. Bu sayfadaki web sitesi adresini seçip kopyalayabilirsiniz.</string>
+    <string name="menu_feedback">Uygulama hakkında geri bildirim gönder</string>
+    <string name="menu_feedback_post">Geri bildirim gönderisi oluştur</string>
+    <string name="menu_feedback_email">Hata bildirimini e-postayla gönder</string>
+    <string name="menu_theme_choose">Tema</string>
+    <string name="menu_spacing">Boşluk</string>
+    <string name="menu_subscription">Abonelik…</string>
+    <string name="description_add_new_folder_icon">Yeni klasör ekleme simgesi</string>
+    <string name="menu_loginas">Şu kullanıcı olarak oturum aç…</string>
+    <string name="loginas_title">Kullanıcı Olarak Giriş Yap</string>
+    <string name="empty_list_view_loading">Yükleniyor…</string>
+    <string name="story_loading_description">Haberler yükleniyor</string>
+    <string name="empty_list_view_no_stories">Okunacak haber yok</string>
+    <string name="empty_list_view_no_stories_unread">Okunmamış haber yok</string>
+    <string name="reading_placeholder_select_story">Okumak için bir hikâye seçin</string>
+    <string name="empty_list_view_no_unread_stories">Okunmamış haberiniz yok.</string>
+    <string name="empty_list_view_no_focus_stories">Focus\'ta okunmamış hikâyeniz yok.\n\nTümü veya Okunmamış\'a geçin.</string>
+    <string name="empty_list_view_no_saved_stories">Kaydedilmiş hikâyeniz yok.\n\nTümü veya Okunmamış\'a geçin.</string>
+    <string name="login_registration_custom_server">Özel sunucu ayarla</string>
+    <string name="login_registration_reset_url">Sıfırla</string>
+    <string name="login_registration_register">Kaydol</string>
+    <string name="register_message_error">NewsBlur\'a kaydolurken bir sorun oluştu.</string>
+    <string name="need_to_login">
+        <u>Giriş yapmam gerekiyor!</u>
+    </string>
+    <string name="need_to_register">
+        <u>Kayıt olmam gerekiyor</u>
+    </string>
+    <string name="public_comment_count">%d herkese açık yorum</string>
+    <string name="friends_comments_count">%d yorum</string>
+    <string name="friends_shares_count">%d paylaşım</string>
+    <string name="unknown_user">Bilinmeyen Kullanıcı</string>
+    <string name="delete_feed_message">\"%s\" akışı silinsin mi?</string>
+    <string name="delete_saved_search_message">%s kayıtlı araması silinsin mi?</string>
+    <string name="delete_folder_message">\"%s\" klasörü silinsin ve içindeki tüm akışlardan abonelikten çıkılsın mı?</string>
+    <string name="deleting_folder_message">\"%s\" klasörü siliniyor</string>
+    <string name="add_saved_search_message">\"%s\" araması kaydedilsin mi?</string>
+    <string name="unfollow_message">\"%s\" takibi bırakılsın mı?</string>
+    <string name="feed_subscribers">%s abone</string>
+    <string name="feed_opens">%d açılma</string>
+    <string name="feed_stories_per_month">Ayda %d hikâye</string>
+    <string name="forwarding_email_address">Yönlendirme e-posta adresi</string>
+    <string name="setup_instructions">Kurulum talimatları \u25bc</string>
+    <string name="setup_instructions_details">E-posta bültenlerinizi NewsBlur\'da okumak için bültenlerinizi yukarıda gösterilen size özel e-posta adresinize iletin.\n\nGmail\'de Ayarlar &gt; Yönlendirme\'ye gidin ve Yönlendirme adresi ekle\'ye tıklayın. Size özel NewsBlur e-posta adresinizi ekleyin.\n\nGmail, e-posta adresini doğrulama adımlarında size yol gösterecektir. Ardından NewsBlur\'a dönüp doğrulama e-postasını \"Bültenler\" klasöründe bulmanız gerekir.\n\nSonra tüm bültenlerinizi içeren bir filtre oluşturun ve bunların NewsBlur\'daki size özel adrese yönlendirilmesini sağlayın.</string>
+    <string name="copy_email">E-postayı kopyala</string>
+    <string name="stories_shortcuts">Haber kısayolları</string>
+    <string name="feeds_shortcuts">Akış kısayolları</string>
+    <string name="import_export">İçe/Dışa Aktar…</string>
+    <string name="settings">Tercihler…</string>
+    <string name="menu_mute_sites">Siteleri sessize al…</string>
+    <string name="mute_sites">Siteleri sessize al</string>
+    <string name="menu_widget">Widget…</string>
+    <string name="menu_notifications">Bildirimler…</string>
+    <string name="widget">Bileşen</string>
+    <string name="title_widget_setup">NewsBlur\'da ayarlamak için dokunun</string>
+    <string name="title_no_subscriptions">Etkin abonelik bulunamadı</string>
+    <string name="title_widget_loading">Yükleniyor…</string>
+    <string name="menu_newsletters">Bültenler…</string>
+    <string name="menu_shortcuts">Kısayollar…</string>
+    <string name="main_menu_preferences">Tercihler</string>
+    <string name="main_menu_mute_sites">Siteleri sessize al</string>
+    <string name="main_menu_widget_sites">Widget Siteleri</string>
+    <string name="main_menu_notifications">Bildirimler</string>
+    <string name="main_menu_interactions">Etkileşimler</string>
+    <string name="main_menu_upgrade_premium">Premium\'a yükselt</string>
+    <string name="main_menu_upgrade_archive">Arşiv\'e Yükselt</string>
+    <string name="main_menu_premium_archive">Premium Arşiv</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">Destek Forumu</string>
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">OPML içe/dışa aktar</string>
+    <string name="notifications_title">Bildirimler</string>
+    <string name="premium_subscribers_folder">Haber Nehri\'nin tamamı Premium özelliğidir</string>
+    <string name="premium_subscribers_allstories">Tüm sitelerin hikâyelerini okumak premium bir özelliktir</string>
+    <string name="premium_subscribers_saved_tag">Etikete göre kaydedilmiş haberleri okumak premium bir özelliktir</string>
+    <string name="premium_subscribers_search">Arama Premium özelliğidir</string>
+    <string name="premium_subscribers">premium aboneler</string>
+    <string name="premium_upgrade_button">Premium\'a Yükselt</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
+    <string name="thank_you_for_subscribing">Abone olduğunuz için teşekkürler!</string>
+    <string name="premium_subscription_renewal">Aboneliğiniz %s tarihinde yenilenecek</string>
+    <string name="premium_subscription_expiration">Aboneliğiniz %s tarihinde sona erecek</string>
+    <string name="premium_subscription_no_expiration">Aboneliğinizin süresi hiç dolmayacak şekilde ayarlanmış. Vay!</string>
+    <string name="premium_policies">Ayrıntılar için NewsBlur\'ın <a href="https://newsblur.com/privacy">gizlilik politikasına</a> ve <a href="https://newsblur.com/tos">kullanım koşullarına</a> göz atın.</string>
+    <string name="premium_subscription_header">Premium Abonelik</string>
+    <string name="archive_subscription_header">Premium Arşiv</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">NewsBlur Premium Aboneliği</string>
+    <string name="archive_subscription_title">NewsBlur Premium Arşiv</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">Yıllık 35,99 $ (aylık 3,00 $)</string>
+    <string name="premium_subscription_active">Premium aboneliğiniz etkin</string>
+    <string name="archive_subscription_active">Premium arşiv aboneliğiniz etkin</string>
+    <string name="pro_subscription_active">Premium Pro aboneliğiniz etkin</string>
+    <string name="subscription_manage">Aboneliği Yönet</string>
+    <string name="subscription_details_error">Abonelik ayrıntıları alınırken hata oluştu</string>
+    <string name="no_subscription_available">Kullanılabilir abonelik yok</string>
+    <string name="subscription_unavailable">Şu anda Android\'de kullanılamıyor</string>
+    <string name="subscription_coming_soon">Yakında</string>
+    <string name="subscription_upgrade_from_premium">Premium\'dan yükselt</string>
+    <string name="subscription_upgrade_from_archive">Arşivden yükselt</string>
+    <string name="subscription_price_yearly">%1$s/yıl (%2$s/ay)</string>
+    <string name="subscription_price_monthly">%1$s/ay</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">Premium Archive aboneliğiniz yukarıdakilerin tümünü içerir</string>
+    <string name="premium_pro_includes_above">Premium Pro aboneliğiniz yukarıdakilerin tümünü içerir</string>
+    <string name="premium_enable_sites">1.024 siteye kadar takip edin</string>
+    <string name="premium_sync">Siteler 5 kata kadar daha sık güncellenir</string>
+    <string name="premium_read_by_folder">Haber Akışı (klasöre göre okuma)</string>
+    <string name="premium_search">Sitelerde ve klasörlerde ara</string>
+    <string name="premium_searchable_tags">Hikâyeleri aranabilir etiketlerle kaydet</string>
+    <string name="premium_privacy_options">Blurblog\'unuz için gizlilik seçenekleri</string>
+    <string name="premium_custom_rss">Kaydedilen haberler için özel RSS akışları</string>
+    <string name="premium_text_view">Metin görünümü, haber içeriğini kullanışlı bir şekilde çıkarır</string>
+    <string name="premium_discover_related">İlgili haberleri ve siteleri keşfedin</string>
+    <string name="premium_shiloh">NewsBlur\'ın aç köpeği Lyric\'i 6 gün boyunca besliyorsunuz</string>
+    <string name="archive_everything_premium">Elbette Premium aboneliğindeki her şey</string>
+    <string name="archive_enable_sites">4.096 siteye kadar takip edin</string>
+    <string name="archive_marked_as_read">Haberlerin otomatik olarak ne zaman okundu olarak işaretleneceğini seçin</string>
+    <string name="archive_customize_auto_read">Siteye veya klasöre göre otomatik okuma ayarlarını özelleştirin</string>
+    <string name="archive_story_searchable_forever">Her sitedeki tüm haberler arşivlenir ve sonsuza kadar aranabilir</string>
+    <string name="archive_back_filled">Sayfalandırmayı destekleyen akışların eski içerikleri tamamlanmış bir arşiv oluşturmak için eklenir</string>
+    <string name="archive_train_full_text">Hikâyeleri tam metin içeriğiyle eğit</string>
+    <string name="archive_discover_related">Arşivinizdeki ilgili hikâyeleri keşfedin</string>
+    <string name="archive_export_trained_stories">Klasörlerdeki eğitilmiş hikâyeleri RSS akışları olarak dışa aktar</string>
+    <string name="archive_stories_unread_forever">Haberler süresiz olarak okunmamış kalabilir</string>
+    <string name="archive_ask_ai">Haberlerle ilgili yapay zekâya soru sor</string>
+    <string name="archive_filter_by_date_range">Haberleri tarih aralığına göre filtrele</string>
+    <string name="archive_train_folder">Eğitimi bir klasörün tamamına uygula</string>
+    <string name="archive_train_globally">Eğitimi genel olarak uygula</string>
+    <string name="pro_everything_archive">Elbette arşiv aboneliğindeki her şey</string>
+    <string name="pro_enable_sites">10.000\'e kadar siteyi takip edin</string>
+    <string name="pro_all_feeds_fetched">Tüm akışlar 5-15 dakikada bir alınır</string>
+    <string name="pro_regex_train">Haberleri düzenli ifadelerle eğit</string>
+    <string name="pro_priority_support">Öncelikli destek</string>
+    <string name="pro_natural_language_filters">Doğal dil filtreleri</string>
+    <string name="pro_natural_language_search">Doğal dilde arama</string>
+    <string name="settings_cat_offline">Çevrimdışı okuma</string>
+    <string name="settings_enable_offline">Haberleri indir</string>
+    <string name="settings_enable_offline_sum">Yazıları arka planda düzenli olarak getir</string>
+    <string name="settings_enable_image_prefetch">Görselleri indir</string>
+    <string name="settings_enable_image_prefetch_sum">Çevrimdışı okumak için görselleri önceden yükle</string>
+    <string name="settings_keep_old_stories">Okuduktan sonra haberleri sakla</string>
+    <string name="settings_keep_old_stories_sum">Depolama kullanımını azaltmak için devre dışı bırakın</string>
+    <string name="mute_config_title">Ücretsiz standart hesapla 64 siteye kadar takip edebilirsiniz</string>
+    <string name="mute_config_message">Lütfen %d siteyi sessize alın veya en popüler sitelere sıfırlayın.</string>
+    <string name="mute_config_reset_button">Popüler sitelere sıfırla</string>
+    <string name="mute_config_upgrade_to_premium">Premium\'a yükselt</string>
+    <string name="mute_config_upgrade_subtitle">1.024 siteye abone olun</string>
+    <string name="mute_config_upgrade">Yükselt</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">%d site mevcut</string>
+    <string name="mute_config_sites_over">%d sınırın üzerinde</string>
+    <string name="menu_network_select">Şunu kullanarak indir…</string>
+    <string name="menu_network_select_sum">Arka plan verilerini seçilen ağlarla sınırla</string>
+    <string name="menu_network_select_opt_any">Herhangi bir ağ</string>
+    <string name="menu_network_select_opt_nomo">Herhangi bir Wi-Fi veya Ethernet</string>
+    <string name="menu_network_select_opt_nomononme">Sınırsız Wi-Fi veya Yalnızca Ethernet</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">Çevrimdışı hikâyeleri sil…</string>
+    <string name="menu_delete_offline_stories_sum">Saklanan haberleri ve görselleri silerek yer açın</string>
+    <string name="menu_delete_offline_stories_confirmation">Tüm haberler ve görseller silindi!</string>
+    <string name="menu_cache_age_select">Haberler ne kadar süre saklansın…</string>
+    <string name="menu_cache_age_select_sum">Çevrimdışı okumak için saklanan haberleri temizle</string>
+    <string name="menu_cache_age_select_opt_2d">2 gün (depolama kullanımını azaltır)</string>
+    <string name="menu_cache_age_select_opt_7d">7 gün</string>
+    <string name="menu_cache_age_select_opt_14d">14 gün</string>
+    <string name="menu_cache_age_select_opt_30d">30 gün (ağ kullanımını azaltır)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">Akış listesi</string>
+    <string name="setting_feed_list_order">Akış listesi sırası…</string>
+    <string name="settings_enable_row_global_shared">Genel Paylaşılan Haberleri Göster</string>
+    <string name="settings_enable_row_global_shared_sum">Global Shared Stories klasörünü göster</string>
+    <string name="settings_enable_row_infrequent_stories">Seyrek Yayınlanan Hikâyeleri Göster</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Seyrek Güncellenen Siteler klasörünü göster</string>
+    <string name="settings_enable_row_daily_briefing">Günlük Özeti Göster</string>
+    <string name="settings_enable_row_daily_briefing_sum">Günlük Özet klasörünü göster</string>
+    <string name="settings_enable_row_widely_read_stories">Çok Okunan Haberleri Göster</string>
+    <string name="settings_enable_row_widely_read_stories_sum">Çok Okunanlar klasörünü göster</string>
+    <string name="settings_enable_row_long_reads">Uzun Okumaları Göster</string>
+    <string name="settings_enable_row_long_reads_sum">Uzun Okumalar klasörünü göster</string>
+    <string name="settings_enable_row_good_reads">İyi Okumaları Göster</string>
+    <string name="settings_enable_row_good_reads_sum">İyi Okumalar klasörünü göster</string>
+    <string name="settings_cat_story_list">Haber Listesi</string>
+    <string name="settings_cat_story_layout">Haber düzeni</string>
+    <string name="settings_app_icon">Uygulama simgesi</string>
+    <string name="settings_app_icon_choose">Simge Seç</string>
+    <string name="settings_app_icon_summary">Açık ve koyu seçenekleriyle 12 renk.</string>
+    <string name="settings_app_icon_footer">Premium aboneler özel bir NewsBlur simgesi seçebilir. Her tasarımın açık ve koyu sürümleri vardır.</string>
+    <string name="settings_app_icon_premium">Premium</string>
+    <string name="settings_app_icon_light">Açık</string>
+    <string name="settings_app_icon_dark">Koyu</string>
+    <string name="settings_app_icon_save_failed">Uygulama simgesi değiştirilemedi</string>
+    <string name="settings_app_icon_appearance_light">Açık</string>
+    <string name="settings_app_icon_appearance_auto">İkisini de kullan</string>
+    <string name="settings_app_icon_appearance_dark">Koyu</string>
+    <string name="settings_app_icon_appearance_light_caption">Cihazınızın ayarı ne olursa olsun açık renkli simgeyi korur.</string>
+    <string name="settings_app_icon_appearance_auto_caption">Simge, cihazınızın açık ve koyu görünüm ayarını izler.</string>
+    <string name="settings_app_icon_appearance_dark_caption">Cihazınızın ayarından bağımsız olarak koyu simgeyi kullanır.</string>
+    <string name="oldest">En eski</string>
+    <string name="newest">En yeni</string>
+    <string name="menu_story_order">Haber sıralaması</string>
+    <string name="settings_story_order">Yazı sıralaması…</string>
+    <string name="story_header_options">Seçenekler</string>
+    <string name="story_header_search">Ara</string>
+    <string name="story_header_related_sites">İlgili Siteler</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">Rahat</string>
+    <string name="compact">Kompakt</string>
+    <string name="alphabetical">Alfabetik</string>
+    <string name="most_used_at_top">En çok kullanılan en üstte</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">Tüm haberler</string>
+    <string name="unread_only">Yalnızca okunmamışlar</string>
+    <string name="menu_story_content_preview">Haber içeriği önizlemesi</string>
+    <string name="menu_story_thumbnail_preview">Küçük resim önizlemesi</string>
+    <string name="menu_mark_read_on_scroll">Kaydırırken okundu olarak işaretle</string>
+    <string name="settings_read_filter">Okunan haber filtresi…</string>
+    <string name="settings_read_filter_title">Gösterilen hikâyeler</string>
+    <string name="menu_read_filter">Okunmuş hikâye filtresi</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>Tümünü okundu olarak işaretle</item>
+        <item>İptal</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Daha eski haberleri okundu olarak işaretle</item>
+        <item>İptal</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="one">%d günden eski</item>
+        <item quantity="other">%d günden daha eski</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="one">%s abone</item>
+        <item quantity="other">%s abone</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="one">%s haber/ay</item>
+        <item quantity="other">%s haber/ay</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="one">%d sitesi tarafından da yayımlandı</item>
+        <item quantity="other">Ayrıca %d site tarafından yayımlandı</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="one">+ %d site daha</item>
+        <item quantity="other">+ %d site daha</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>Daha yeni haberleri okundu olarak işaretle</item>
+        <item>İptal</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">İlk hikâyeyi otomatik aç</string>
+    <string name="settings_auto_open_first_unread_sum">Haber listesinde okunmamış ilk haberi otomatik aç</string>
+    <string name="settings_mark_read_on_feed_scroll">Kaydırırken haber başlıklarını okundu olarak işaretle</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Haberleri kaydırıp geçerken otomatik olarak okundu olarak işaretle</string>
+    <string name="settings_story_clustering">İlgili haberleri grupla</string>
+    <string name="settings_story_clustering_summary">Diğer akışlardaki yinelenen haberleri haber başlığının altında göster</string>
+    <string name="settings_cluster_matches">Küme eşleşmeleri</string>
+    <string name="settings_cluster_matches_summary">Kümelerin yalnızca yinelenen başlıkları mı yoksa ilgili haberleri de mi göstereceğini seçin</string>
+    <string name="settings_story_clustering_save_failed">Hikâye gruplandırma tercihi kaydedilemedi</string>
+    <string name="settings_story_clustering_title_only">Yalnızca başlık</string>
+    <string name="settings_cluster_mode_title_match_only">Yalnızca başlık eşleşmesi</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Başlık eşleşmesi ve ilgili içerikler</string>
+    <string name="settings_cluster_mark_read_matches">Eşleşen haberleri okundu olarak işaretle</string>
+    <string name="settings_cluster_mark_read_related">İlgili haberleri okundu olarak işaretle</string>
+    <string name="settings_cluster_mark_read_matches_summary">Bir hikâyeyi okuduğunuzda, eşleşen hikâyelerini de okundu olarak işaretleyin.</string>
+    <string name="settings_cluster_mark_read_related_summary">Bir haberi okuduğunuzda, eşleşen ve ilişkili haberleri de okundu olarak işaretle.</string>
+    <string name="settings_cluster_mark_read_save_failed">İlgili haberlerin okundu olarak işaretlenmesi tercihi kaydedilemedi</string>
+    <string name="settings_story_clustering_title">Başlık</string>
+    <string name="settings_story_clustering_only">yalnızca</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">Eşleşme</string>
+    <string name="story_cluster_badge_related">İlgili</string>
+    <string name="settings_mark_story_read">Bir haberi okundu olarak işaretle…</string>
+    <string name="settings_mark_story_read_title">Hikâyeleri okundu olarak işaretle</string>
+    <string name="mark_story_read_immediately">Yalnızca seçimde</string>
+    <string name="mark_story_read_on_scroll">Kaydırınca veya seçince</string>
+    <string name="mark_story_read_1_second">1 saniye sonra</string>
+    <string name="mark_story_read_2_seconds">2 saniye sonra</string>
+    <string name="mark_story_read_3_seconds">3 saniye sonra</string>
+    <string name="mark_story_read_5_seconds">5 saniye sonra</string>
+    <string name="mark_story_read_10_seconds">10 saniye sonra</string>
+    <string name="mark_story_read_20_seconds">20 saniye sonra</string>
+    <string name="mark_story_read_30_seconds">30 saniye sonra</string>
+    <string name="mark_story_read_45_seconds">45 saniye sonra</string>
+    <string name="mark_story_read_60_seconds">60 saniye sonra</string>
+    <string name="mark_story_read_manually">Manuel olarak</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">Haberleri paylaşma</string>
+    <string name="settings_show_public_comments">Herkese açık yorumları göster</string>
+    <string name="settings_reading">Okuma</string>
+    <string name="settings_show_ask_ai">Yapay Zekâ\'ya Sor\'u göster</string>
+    <string name="settings_content_preview">İçerik önizleme metni…</string>
+    <string name="settings_thumbnails_style">Resim önizleme küçük resimleri…</string>
+    <string name="settings_preview_images_title">Görselleri önizle</string>
+    <string name="settings_preview_images_segment_off">Kapalı</string>
+    <string name="settings_preview_images_segment_left_small">L küçük</string>
+    <string name="settings_preview_images_segment_left_large">L büyük</string>
+    <string name="settings_preview_images_segment_right_small">Sağ küçük</string>
+    <string name="settings_preview_images_segment_right_large">R büyük</string>
+    <string name="settings_notifications">Bildirimler</string>
+    <string name="settings_enable_notifications">Bildirimleri etkinleştir</string>
+    <string name="ask_ai_upgrade_archive">Premium Arşiv\'e yükselt</string>
+    <string name="ask_ai_ask_question">Bir soru sor…</string>
+    <string name="ask_ai_follow_up">Takip sorusu…</string>
+    <string name="ask_ai_ask">Sor</string>
+    <string name="ask_ai_send">Gönder</string>
+    <string name="ask_ai_reask">Yeniden sor</string>
+    <string name="ask_ai_recording">Kaydediliyor…</string>
+    <string name="ask_ai_transcribing">Yazıya dökülüyor…</string>
+    <string name="ask_ai_microphone_permission_denied">Mikrofon izni reddedildi</string>
+    <string name="ask_ai_microphone_error">Ses kaydedilemiyor</string>
+    <string name="settings_confirm_mark_all_read_note">Bir sitenin tüm hikâyelerini okundu olarak işaretlerken her zaman onay istenir. Diğer seçenekleri görmek için okundu olarak işaretle düğmesine uzun basın.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">Her ikisi</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">Klasörler</string>
+    <string name="settings_confirm_mark_all_read_segment_never">Asla</string>
+    <string name="settings_after_mark_read_title">Okundu olarak işaretledikten sonra</string>
+    <string name="settings_after_mark_read_next">Okuduktan sonra sonraki listeyi aç</string>
+    <string name="settings_after_mark_read_stay">Burada kal</string>
+    <string name="settings_when_opening_site_title">Bir site açılırken</string>
+    <string name="settings_when_opening_site_stories">Haberleri göster</string>
+    <string name="settings_when_opening_site_first_story">İlk haberi aç</string>
+    <string name="story_cluster_upgrade_archive">Premium Arşiv</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">Sol tarafta küçük</string>
+    <string name="story_thumbnail_left_hand_large">Sol tarafta büyük</string>
+    <string name="story_thumbnail_right_hand_small">Sağda küçük</string>
+    <string name="story_thumbnail_right_hand_large">Sağda büyük</string>
+    <string name="story_thumbnail_no_image_preview">Görsel önizlemesi yok</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">Şu özelliklere sahip sitelerden haberler</string>
+    <string name="infrequent_5">Ayda &lt; 5 haber</string>
+    <string name="infrequent_15">&lt; 15 haber/ay</string>
+    <string name="infrequent_30">Ayda 30 hikâyeden az</string>
+    <string name="infrequent_60">&lt; 60 haber/ay</string>
+    <string name="infrequent_90">Ayda 90\'dan az haber</string>
+    <string name="story_intel_dialog_title">Bu haberin nelerini beğeniyor veya beğenmiyorsunuz?</string>
+    <string name="feed_intel_dialog_title">Bu sitede neleri seviyor, neleri sevmiyorsunuz?</string>
+    <string name="intel_title_header">Hikâye başlıkları</string>
+    <string name="feed_intel_title_header">Başlıklar</string>
+    <string name="intel_tag_header">Yazı etiketleri</string>
+    <string name="feed_intel_tag_header">Etiketler</string>
+    <string name="intel_author_header">Haber yazarları</string>
+    <string name="feed_intel_author_header">Yazarlar</string>
+    <string name="intel_feed_header">Yayıncıya göre tümü</string>
+    <string name="intel_super_dislike">Hiç beğenmeme</string>
+    <string name="explainer_super_dislike">Süper Beğenmeme</string>
+    <string name="explainer_like">Beğen</string>
+    <string name="explainer_dislike">Beğenme</string>
+    <string name="explainer_beats">ritimler</string>
+    <string name="explainer_example1_header">Tek bir beğeni, istediğiniz sayıda beğenmeme oyunu geçersiz kılar</string>
+    <string name="explainer_example1_result">Haber, Odak görünümünde gösterilir</string>
+    <string name="explainer_example2_header">Tek bir süper beğenmeme her şeyi geçersiz kılar</string>
+    <string name="explainer_example2_result">Haber her zaman gizli</string>
+    <string name="auto">Otomatik</string>
+    <string name="light">Açık</string>
+    <string name="sepia">Sepya</string>
+    <string name="dark">Koyu</string>
+    <string name="black">Siyah</string>
+    <string name="settings_gestures">Hareketler</string>
+    <string name="sync_status_housekeeping">Düzenleniyor…</string>
+    <string name="sync_status_actions">%d okuma işlemi eşitleniyor…</string>
+    <string name="sync_status_recounts">Okuma işlemleri senkronize ediliyor…</string>
+    <string name="sync_status_ffsync">Yolda…</string>
+    <string name="sync_status_cleanup">Temizleniyor…</string>
+    <string name="sync_status_starred">Kaydedilen haber işlemlerini eşitle…</string>
+    <string name="sync_status_stories">Yeni haberler alınıyor…</string>
+    <string name="sync_status_unreads">%s okunmamış haber kaydediliyor…</string>
+    <string name="sync_status_images">%d görseli depolanıyor…</string>
+    <string name="sync_status_offline">Çevrimdışı</string>
+    <string name="sync_status_feed_add">Akış ekleniyor</string>
+    <string name="sync_status_done">Tamamlandı</string>
+    <string name="volume_key_navigation">Ses düzeyi tuşlarıyla gezinme…</string>
+    <string name="off">Kapalı</string>
+    <string name="volume_up_next">Yukarı = sonraki haber</string>
+    <string name="volume_down_next">Aşağı = sonraki haber</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">Okuduktan sonra sonraki akışı/klasörü aç</string>
+    <string name="settings_load_next_on_mark_read_summary">Okundu olarak işaretledikten sonra sonraki akışı/klasörü yükle</string>
+    <string name="settings_confirm_mark_all_read">Tümünü okundu olarak işaretlemeyi onayla…</string>
+    <string name="none">Hiçbiri</string>
+    <string name="feed_and_folder">Akışlar ve klasörler</string>
+    <string name="folder_only">Yalnızca klasörler</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">Daha eski/yeni haberleri okundu olarak işaretlemeyi onayla</string>
+    <string name="settings_ltr_gesture_action">Hikâye listesinde sağa kaydır…</string>
+    <string name="gest_action_none">İşlem yok</string>
+    <string name="gest_action_back">Önceki listeye dön</string>
+    <string name="gest_action_toggle_read">Hikâyenin okundu durumunu değiştir</string>
+    <string name="gest_action_markread">Haberi okundu olarak işaretle</string>
+    <string name="gest_action_markunread">Haberi okunmadı olarak işaretle</string>
+    <string name="gest_action_save">Hikâyeyi kaydet</string>
+    <string name="gest_action_unsave">Haberi kayıtlardan çıkar</string>
+    <string name="gest_action_statistics">Site istatistikleri</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">Hikâye başlığında sola kaydır…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">Varsayılan tarayıcı…</string>
+    <string name="font">Yazı tipi…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>Sistem varsayılanı</item>
+        <item>Uygulama içi tarayıcı</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">Yeni haberler</string>
+    <string name="go_to_feed">Akışa git</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">Ara</string>
+    <string name="add_feed">Akış ekle</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">E-posta</string>
+    <string name="notification_web">Web</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">Akış bildirimi yok</string>
+    <string name="notification_permissions_context">Bildirim göndermek için izin gereklidir</string>
+    <string name="notification_permissions_rationale">Bildirimleri etkinleştirmeyi yeniden denemeden önce, uygulamanın ayarlarından bildirim iznini manuel olarak vermeniz gerekir</string>
+    <string name="write_storage_permission_opml">OPML dışa aktarma için depolama alanına yazma izni gerekiyor</string>
+    <string name="story_saved">Haber kaydedildi olarak işaretlendi</string>
+    <string name="story_unsaved">Haber kaydedilmemiş olarak işaretlendi</string>
+    <string name="story_read">Haber okundu olarak işaretlendi</string>
+    <string name="story_unread">Haber okunmadı olarak işaretlendi</string>
+    <string name="unread_stories">Okunmamış hikâyeler</string>
+    <string name="focused_stories">Odaklanılan haberler</string>
+    <string name="saved_stories">Kaydedilen haberler</string>
+    <string name="short_next_story">Sonraki Haber</string>
+    <string name="short_previous_story">Önceki yazı</string>
+    <string name="short_text_view">Metin Görünümü</string>
+    <string name="short_page_down">Sayfa Aşağı</string>
+    <string name="short_page_down_key">boşluk</string>
+    <string name="short_page_up">Page Up</string>
+    <string name="short_page_up_key">\u21E7 boşluk</string>
+    <string name="short_next_unread_story">Sıradaki Okunmamış Haber</string>
+    <string name="short_toggle_read_unread">Okundu/Okunmadı durumunu değiştir</string>
+    <string name="short_save_unsave_story">Yazıyı Kaydet/Kaydı Kaldır</string>
+    <string name="short_open_in_browser">Tarayıcıda aç</string>
+    <string name="short_share_this_story">Bu Haberi Paylaş</string>
+    <string name="short_scroll_to_comments">Yorumlara kaydır</string>
+    <string name="short_open_story_trainer">Hikâye Eğitmeni\'ni aç</string>
+    <string name="short_open_all_stories">Tüm Site Haberlerini Aç</string>
+    <string name="short_switch_views">Görünümler arasında geçiş yap</string>
+    <string name="short_add_site">Site Ekle</string>
+    <string name="registering">Kaydediliyor...</string>
+    <string name="renaming_feed_message">%s akışı yeniden adlandırılıyor</string>
+    <string name="renaming_folder_message">%s klasörü yeniden adlandırılıyor</string>
+    <string name="parent_folder">Üst klasör</string>
+    <string name="folder_added">Klasör eklendi</string>
+    <string name="new_folder_parent">Konum: %1$s</string>
+    <string name="ui_014f8b8d982f">Kendi özet bölümlerini oluşturan özel anahtar kelime filtreleri ekleyin</string>
+    <string name="ui_05392d13e2f2">Henüz özet yok</string>
+    <string name="ui_0a4444676244">Kaydetme başarısız oldu</string>
+    <string name="ui_0a8adac9d6d5">Zamanla</string>
+    <string name="ui_13b7bfcac438">İşleniyor…</string>
+    <string name="ui_2eb56be3c2d9">Kaynaklar</string>
+    <string name="ui_314ef761a08f">Anahtar kelime bölümü ekle</string>
+    <string name="ui_3af014d03229">Akış kaynağı</string>
+    <string name="ui_3e4a49541e18">Okunmuş haberleri de dahil et</string>
+    <string name="ui_4a24ff492222">Öne çıkan haberlerinizin günlük özetini alın</string>
+    <string name="ui_4e9f59082144">Premium Arşiv</string>
+    <string name="ui_5b170811b992">Premium Arşiv\'e yükselt</string>
+    <string name="ui_67a31d6fa581">Günlük Özet bildirimlerinin nereye gönderileceğini seçin</string>
+    <string name="ui_67d0be0dd546">Nelerin dahil edileceğini ve nasıl yazılacağını kontrol edin</string>
+    <string name="ui_68c2cc7f0cea">Model</string>
+    <string name="ui_710089545189">Uzunluk ve Stil</string>
+    <string name="ui_753a22b2eb61">Bildirimler</string>
+    <string name="ui_771ee100da2b">Anahtar Kelime Bölümleri</string>
+    <string name="ui_7c522fb68f07">En önemli haberlerinizin özetini istediğiniz zaman alın.</string>
+    <string name="ui_7f7e956b2244">Sizin için en önemli haberleri özetleyen Günlük Özeti oluşturmak üzere ayarlayın.</string>
+    <string name="ui_7ff5a6dafd80">Bölümler</string>
+    <string name="ui_80f7bcbc57b0">Bilgilendirmenizin ne sıklıkta ve ne zaman oluşturulacağını seçin</string>
+    <string name="ui_a4d5830966af">Programınıza göre otomatik olarak özetler oluşturun</string>
+    <string name="ui_a92076d4b9e3">Günlük Özetinizi hangi modelin yazacağını seçin</string>
+    <string name="ui_a970fbbd6df8">Otomatik oluştur</string>
+    <string name="ui_a9dc7e4dcba7">Günlük Özet Ayarları</string>
+    <string name="ui_bbfa773e5a63">Kapat</string>
+    <string name="ui_c2d462f8f6da">Günlük Özete hangi haberlerin dahil edileceğini seçin</string>
+    <string name="ui_d521ea8640b5">Günlük Özeti Oluştur</string>
+    <string name="ui_df174a3f2faa">Etkin</string>
+    <string name="ui_df2164622bcf">Günlük Özeti yüklenemiyor</string>
+    <string name="ui_eaed56ec84ae">Günlük Özet</string>
+    <string name="ui_efc007a393f6">Kaydet</string>
+    <string name="ui_f530db58b3e5">Anahtar kelimeler</string>
+    <string name="ui_fdafe86c10a4">Yalnızca eşleşen haberleri olan bölümler dahil edilir</string>
+    <string name="ui_690910f6ed17">OPML\'yi içe aktar</string>
+    <string name="ui_244fd5e426f0">OPML\'yi dışa aktar</string>
+    <string name="ui_768e0c1c6957">Başlık</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">Kaydedilen Etiketler</string>
+    <string name="ui_6e914f494515">Haber etiketleri</string>
+    <string name="ui_e912ab619a72">Diğer etiketler</string>
+    <string name="i18n_add_site">Site ekle</string>
+    <string name="i18n_add">Ekle</string>
+    <string name="i18n_retry">Yeniden dene</string>
+    <string name="i18n_no_sites_found_try_another_search">Site bulunamadı. Başka bir arama deneyin.</string>
+    <string name="i18n_load_more">Daha fazla yükle</string>
+    <string name="i18n_follow_any_website">Herhangi bir web sitesini takip edin</string>
+    <string name="i18n_mark_updated_stories_unread">Güncellenen haberleri okunmamış olarak işaretle</string>
+    <string name="i18n_follow_news_that_matters_to_you">Sizin için önemli haberleri takip edin</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">Bir konu seçin veya herhangi bir arama için Google Haberler akışı oluşturun.</string>
+    <string name="i18n_subscribe">Abone ol</string>
+    <string name="i18n_tech">teknoloji</string>
+    <string name="i18n_review">incele</string>
+    <string name="i18n_sponsored">sponsorlu</string>
+    <string name="i18n_discover_more_to_read">Okuyacak başka şeyler keşfedin</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">Site bulunamadı. URL kullanarak da site ekleyebilirsiniz.</string>
+    <string name="i18n_add_discover_sites">+ Ekle ve Keşfet</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">RSS\'i olmayan bir sayfadan akış oluşturun. NewsBlur haberlerini bulur ve güncellemeleri kontrol eder. Premium Arşiv gerektirir.</string>
+</resources>
