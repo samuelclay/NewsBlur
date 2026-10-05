@@ -1,0 +1,944 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">لا تفعل شيئًا</string>
+    <string name="gesture_back">العودة إلى الخلاصات</string>
+    <string name="gesture_toggle_read">مقروء / غير مقروء</string>
+    <string name="gesture_markread">وضع علامة مقروء</string>
+    <string name="gesture_markunread">وضع علامة «غير مقروء»</string>
+    <string name="gesture_save">حفظ القصة</string>
+    <string name="gesture_unsave">إزالة حفظ المقالة</string>
+    <string name="gesture_statistics">الإحصاءات</string>
+    <string name="gesture_menu">عرض الإجراءات</string>
+    <string name="gesture_share">مشاركة</string>
+    <string name="gesture_toggle_save">حفظ / إلغاء الحفظ</string>
+    <string name="gesture_ask_ai">اسأل الذكاء الاصطناعي</string>
+    <string name="gesture_train">تدريب الذكاء</string>
+    <string name="gesture_notifications">الإشعارات</string>
+    <string name="gesture_read_range">اختر المدة السابقة التي تريد وضع علامة مقروء عليها</string>
+    <string name="gesture_feed_list">قائمة الخلاصات</string>
+    <string name="gesture_story_titles">عناوين القصص</string>
+    <string name="gesture_reading_story">عند قراءة قصة</string>
+    <string name="gesture_swipe_feeds">اسحب على الخلاصات</string>
+    <string name="gesture_swipe_stories">اسحب على القصص</string>
+    <string name="gesture_left">اسحب لليسار</string>
+    <string name="gesture_right">اسحب إلى اليمين</string>
+    <string name="gesture_long_press">ضغط مطوّل</string>
+    <string name="gesture_double_tap">النقر مرتين</string>
+    <string name="gesture_two_finger_double_tap">النقر المزدوج بإصبعين</string>
+    <string name="gesture_left_edge">اسحب من الحافة اليسرى</string>
+    <string name="gesture_edge_footer">يؤدي السحب من الحافة اليسرى دائمًا إلى العودة إلى الخلاصات، حتى عند تعطيل السحب بين القصص.</string>
+    <string name="gesture_mark_all">تحديد كل القصص كمقروءة</string>
+    <string name="gesture_original">افتح المقال الأصلي</string>
+    <string name="gesture_text">إظهار النص الأصلي</string>
+    <string name="gesture_unread">وضع علامة كغير مقروءة</string>
+    <string name="gesture_back_titles">العودة إلى عناوين المقالات</string>
+    <string name="gesture_previous">القصة السابقة</string>
+    <string name="gesture_off">إيقاف</string>
+    <string name="gesture_unread_stories">القصص غير المقروءة</string>
+    <string name="gesture_focus_stories">التركيز على القصص</string>
+    <string name="story_title_mark_story_read">وضع علامة مقروء على القصة…</string>
+    <string name="story_title_list_font_size">حجم خط الخلاصات وعناوين القصص</string>
+    <string name="language_current">اللغة: %1$s</string>
+    <string name="language_automatic">تلقائي (لغة الجهاز)</string>
+    <string name="language_save_failed">تعذّر حفظ لغتك. يُرجى المحاولة مجددًا.</string>
+    <string name="try_feed_instafetching">جارٍ جلب القصص فورًا…</string>
+    <string name="try_feed_fetch_failed">تعذّر جلب المقالات. اضغط للمحاولة مجددًا.</string>
+    <string name="try_feed_empty">لا تتوفر قصص من هذا الموقع بعد. اضغط للتحديث.</string>
+    <string name="image_viewer_close">إغلاق الصورة</string>
+    <string name="image_viewer_loading">جارٍ تحميل الصورة…</string>
+    <string name="image_viewer_failed">تعذّر تحميل الصورة كاملة.</string>
+    <string name="image_viewer_retry">حاول مرة أخرى</string>
+    <string name="image_viewer_copy">نسخ الصورة</string>
+    <string name="image_viewer_save">حفظ الصورة</string>
+    <string name="image_viewer_share">مشاركة الصورة…</string>
+    <string name="image_viewer_open_link">فتح الرابط</string>
+    <string name="image_viewer_copied">تم نسخ الصورة</string>
+    <string name="image_viewer_saved">تم الحفظ في الصور</string>
+    <string name="image_viewer_save_failed">تعذّر حفظ الصورة.</string>
+    <string name="image_viewer_share_failed">تعذّرت مشاركة الصورة.</string>
+    <string name="image_viewer_storage_permission">اسمح بالوصول إلى مساحة التخزين لحفظ الصور، ثم حاول مرة أخرى.</string>
+    <string name="image_viewer_show_actions">إظهار إجراءات الصور</string>
+    <string name="settings_story_toolbar_position">موضع شريط أدوات قائمة القصص</string>
+    <string name="settings_story_toolbar_top">أعلى</string>
+    <string name="settings_story_toolbar_bottom">أسفل</string>
+    <string name="story_header_mark_read_cutoff">اختر المدة السابقة لوضع علامة «مقروء»</string>
+    <string name="login_username_hint">اسم المستخدم</string>
+    <string name="login_username_or_email_hint">اسم المستخدم أو البريد الإلكتروني</string>
+    <string name="login_password_hint">كلمة المرور</string>
+    <string name="login_registration_email_hint">عنوان البريد الإلكتروني</string>
+    <string name="login_button_login">تسجيل الدخول</string>
+    <string name="login_segment_sign_in">تسجيل الدخول</string>
+    <string name="login_segment_sign_up">إنشاء حساب</string>
+    <string name="login_forgot_password">نسيت كلمة المرور</string>
+    <string name="login_custom_server">خادم مخصص مستضاف ذاتيًا</string>
+    <string name="login_custom_server_subtitle">استخدم تثبيت NewsBlur الخاص بك</string>
+    <string name="login_custom_server_active">الخادم المخصص: %1$s</string>
+    <string name="login_custom_server_edit">انقر للتعديل أو إعادة ضبط عنوان URL للخادم</string>
+    <string name="login_custom_server_dialog_title">خادم مخصص</string>
+    <string name="login_custom_server_dialog_body">اترك هذا الحقل فارغًا لاستخدام NewsBlur، أو أدخل عنوان URL لتثبيتك المستضاف ذاتيًا. يسري التغيير فورًا على تسجيل الدخول وإنشاء الحساب.</string>
+    <string name="login_message_error">حدثت مشكلة أثناء تسجيل الدخول إلى NewsBlur.</string>
+    <string name="login_logging_in">جارٍ تسجيل الدخول…</string>
+    <string name="login_logged_in">جارٍ ضبط الخطوط المتشابكة…</string>
+    <string name="login_retrieving_feeds">جارٍ استرداد الخلاصات…</string>
+    <string name="login_next">التالي</string>
+    <string name="login_custom_server_scheme_error">كان متوقعًا وجود \'https://\' في عنوان URL للخادم المخصص</string>
+    <string name="login_custom_server_invalid">أدخل عنوان URL صالحًا لخادم مخصص.</string>
+    <string name="login_tagline">قارئ أخبار شخصي يجمع
+الناس للحديث عن العالم.</string>
+    <string name="user_profile_picture">صورة الملف الشخصي للمستخدم</string>
+    <string name="search_for_feed">البحث عن خلاصات</string>
+    <string name="loading">جارٍ التحميل…</string>
+    <string name="story_navigation_failed">تعذّر فتح المقالة. يُرجى المحاولة مجددًا.</string>
+    <string name="orig_text_loading">جارٍ جلب نص المقالة…</string>
+    <string name="follow_error">حدثت مشكلة أثناء متابعة المستخدم.</string>
+    <string name="unfollow_error">حدثت مشكلة أثناء إلغاء متابعة المستخدم.</string>
+    <string name="description_login_button">اضغط لتسجيل الدخول</string>
+    <string name="description_login_logo">شعار NewsBlur</string>
+    <string name="description_profile_picture">صورة الملف الشخصي للمستخدم</string>
+    <string name="description_row_folder_icon">أيقونة المجلد</string>
+    <string name="description_row_feed_icon">أيقونة الخلاصة</string>
+    <string name="description_row_feed_mute_toggle">زر كتم الخلاصة</string>
+    <string name="description_activity_icon">أيقونة توضّح نشاط المستخدم\'s</string>
+    <string name="description_follow_button">متابعة مستخدم أو إلغاء متابعته</string>
+    <string name="description_comment_user">صورة مستخدم التعليق</string>
+    <string name="description_empty_list_image">عنصر نائب للقائمة الفارغة</string>
+    <string name="description_menu">القائمة</string>
+    <string name="story_settings">إعدادات القصة</string>
+    <string name="title_choose_folders">اختر مجلدات للخلاصة %s</string>
+    <string name="title_rename_feed">إعادة تسمية الموجز %s</string>
+    <string name="title_rename_folder">إعادة تسمية المجلد %s</string>
+    <string name="all_stories_title">كل مقالات الموقع</string>
+    <string name="daily_briefing_title">الموجز اليومي</string>
+    <string name="infrequent_title">قصص المواقع قليلة التحديث</string>
+    <string name="widely_read_stories_title">المقالات الأكثر قراءة</string>
+    <string name="long_reads_title">قراءات طويلة</string>
+    <string name="good_reads_title">قراءات جيدة</string>
+    <string name="all_shared_stories_title">كل القصص المشتركة</string>
+    <string name="global_shared_stories_title">القصص المشتركة عالميًا</string>
+    <string name="read_stories_title">قراءة المقالات</string>
+    <string name="saved_stories_title">الأخبار المحفوظة</string>
+    <string name="saved_searches_title">عمليات البحث المحفوظة</string>
+    <string name="feed_list">قائمة الموجزات</string>
+    <string name="bottom_next_unread_site">الموقع التالي غير المقروء، %1$s</string>
+    <string name="bottom_next_unread_folder">المجلد التالي غير المقروء، %1$s</string>
+    <string name="top_level">المستوى الأعلى</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nتمت المشاركة مع NewsBlur</string>
+    <string name="share_comment_hint">تعليق المشاركة (اختياري)</string>
+    <string name="share_save_newsblur">هل تريد مشاركة/حفظ \"%s\" في مدونة Blurblog الخاصة بك؟</string>
+    <string name="share_this">مشاركة</string>
+    <string name="already_shared">تمت المشاركة</string>
+    <string name="share_this_story">مشاركة</string>
+    <string name="share_with_comment">مشاركة مع تعليق</string>
+    <string name="unshare">حذف المشاركة</string>
+    <string name="update_shared">تحديث التعليق</string>
+    <string name="rename">إعادة التسمية</string>
+    <string name="save_this">حفظ</string>
+    <string name="unsave_this">إزالة الحفظ</string>
+    <string name="train_this">درّب</string>
+    <string name="ask_ai">اسأل الذكاء الاصطناعي</string>
+    <string name="story_mark_unread_state">مقروء</string>
+    <string name="story_mark_read_state">وضع علامة «مقروءة» على المقالة</string>
+    <string name="overlay_next">التالي</string>
+    <string name="overlay_done">تم</string>
+    <string name="overlay_count_toast_N">%d مقالة غير مقروءة</string>
+    <string name="overlay_count_toast_1">قصة واحدة غير مقروءة</string>
+    <string name="overlay_text">نص</string>
+    <string name="overlay_story">خبر</string>
+    <string name="orig_text_failed">عذرًا، تعذّر استخراج نص المقالة.</string>
+    <string name="state_all">الكل</string>
+    <string name="state_unread">غير مقروء</string>
+    <string name="state_focus">تركيز</string>
+    <string name="state_saved">تم الحفظ</string>
+    <string name="reply_to">الرد على \"%s\"</string>
+    <string name="edit_reply">تعديل الرد</string>
+    <string name="edit_reply_update">تحديث الرد</string>
+    <string name="edit_reply_delete">حذف الردY</string>
+    <string name="alert_dialog_ok">حسنًا</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">تم</string>
+    <string name="alert_dialog_openlink">فتح الرابط</string>
+    <string name="alert_dialog_openimage">فتح الصورة</string>
+    <string name="dialog_folders_save">مجلدات الحفظ</string>
+    <string name="dialog_story_intel_save">حفظ التدريب</string>
+    <string name="dialog_story_tags_save">حفظ العلامات</string>
+    <string name="profile">الملف الشخصي</string>
+    <string name="profile_location_icon">أيقونة الموقع</string>
+    <string name="profile_following">المتابَعون</string>
+    <string name="profile_followers">المتابعون</string>
+    <string name="profile_shared">القصص التي تمت مشاركتها</string>
+    <string name="profile_ago">منذ</string>
+    <string name="profile_recent_actvity">الأنشطة</string>
+    <string name="profile_recent_interactions">التفاعلات</string>
+    <string name="profile_started_following">بدأ بمتابعة</string>
+    <string name="profile_you">أنت</string>
+    <string name="profile_you_lower">أنت</string>
+    <string name="profile_your">لك</string>
+    <string name="profile_now_following">يتابع الآن %1$s</string>
+    <string name="profile_replied_to">ردّ على</string>
+    <string name="profile_replied_to_your">ردّ على %1$s</string>
+    <string name="profile_shared_story">مشاركة</string>
+    <string name="profile_comment">تعليق</string>
+    <string name="profile_reply">رد</string>
+    <string name="profile_button_follow">متابعة</string>
+    <string name="profile_button_unfollow">إلغاء المتابعة</string>
+    <string name="profile_subscribed_to">اشترك في</string>
+    <string name="profile_saved">محفوظ</string>
+    <string name="profile_reshared">أُعيدت مشاركته</string>
+    <string name="profile_favorited">أُضيف إلى المفضلة</string>
+    <string name="profile_favorited_comments">أُعجِب بـ %1$s تعليقًا على</string>
+    <string name="profile_signup">أنشأ حسابًا في Newsblur</string>
+    <string name="profile_comments_on">تعليقات على</string>
+    <string name="profile_feed_not_available">لم تعد مشتركًا في هذا الموجز</string>
+    <string name="profile_do_not_follow">أنت لا تتابع هذا المستخدم</string>
+    <string name="profile_no_interactions">لا توجد تفاعلات</string>
+    <string name="menu_profile">الملف الشخصي</string>
+    <string name="menu_search_feeds">ابحث في خلاصاتك</string>
+    <string name="menu_original">عرض الأصل</string>
+    <string name="menu_send_story">إرسال الرابط إلى…</string>
+    <string name="menu_send_story_full">إرسال القصة إلى…</string>
+    <string name="menu_mark_feed_as_read">وضع علامة «مقروء» على الخلاصة</string>
+    <string name="menu_delete_feed">حذف الخلاصة</string>
+    <string name="menu_statistics">الإحصاءات</string>
+    <string name="menu_delete_saved_search">حذف البحث المحفوظ</string>
+    <string name="menu_unfollow">إلغاء متابعة المستخدم</string>
+    <string name="menu_choose_folders">اختيار المجلدات</string>
+    <string name="menu_notifications_choose">الإشعارات</string>
+    <string name="menu_notifications_disable">تعطيل الإشعارات</string>
+    <string name="menu_notifications_focus">الإشعار عند ظهور قصص جديدة ضمن المفضلة</string>
+    <string name="menu_notifications_unread">الإشعار بكل القصص الجديدة</string>
+    <string name="menu_mark_folder_as_read">وضع علامة «مقروء» على المجلد</string>
+    <string name="menu_sharenewsblur">مشاركة هذا الخبر</string>
+    <string name="menu_text_size">حجم النص</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">ص</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">الأكبر</string>
+    <string name="menu_font">الخط</string>
+    <string name="menu_save_story">احفظ هذه القصة</string>
+    <string name="menu_unsave_story">إزالة هذه المقالة من المحفوظات</string>
+    <string name="menu_newest_mark_older_stories_as_read">تعليم الأقدم كمقروء</string>
+    <string name="menu_newest_mark_newer_stories_as_read">وضع الأحدث كمقروء</string>
+    <string name="menu_oldest_mark_older_stories_as_read">وضع الأقدم كمقروء</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">وضع الأحدث كمقروء</string>
+    <string name="story_menu_open_feed">فتح الخلاصة</string>
+    <string name="story_menu_share_link">رابط المشاركة…</string>
+    <string name="story_menu_share_story">مشاركة القصة…</string>
+    <string name="menu_mark_story_as_read">وضع علامة مقروء</string>
+    <string name="menu_mark_unread">وضع علامة «غير مقروءة»</string>
+    <string name="menu_search_stories">بحث…</string>
+    <string name="menu_mute_feed">كتم الخلاصة</string>
+    <string name="menu_unmute_feed">إلغاء كتم الخلاصة</string>
+    <string name="menu_mute_folder">كتم صوت المجلد</string>
+    <string name="menu_unmute_folder">إلغاء كتم المجلد</string>
+    <string name="menu_delete_folder">حذف المجلد</string>
+    <string name="menu_rename_folder">إعادة تسمية المجلد</string>
+    <string name="menu_instafetch_feed">جلب القصص فورًا</string>
+    <string name="feed_menu_back_to_actions">العودة إلى إجراءات الموجز</string>
+    <string name="menu_infrequent_cutoff">المقالات غير المتكررة شهريًا</string>
+    <string name="menu_intel">مدرّب التعلّم</string>
+    <string name="menu_rename_feed">إعادة تسمية الموجز</string>
+    <string name="menu_story_list_style_choose">نمط القائمة</string>
+    <string name="menu_save_search">حفظ البحث</string>
+    <string name="menu_web_search">بحث الويب</string>
+    <string name="menu_highlight">تمييز</string>
+    <string name="list_style_list">قائمة</string>
+    <string name="list_style_grid_f">شبكة (دقيقة)</string>
+    <string name="list_style_grid_m">شبكة (متوسطة)</string>
+    <string name="list_style_grid_c">شبكة (خشنة)</string>
+    <string name="story_content_preview_none">العنوان فقط (بدون)</string>
+    <string name="story_content_preview_small">سطران (صغير)</string>
+    <string name="story_content_preview_medium">4 أسطر (متوسط)</string>
+    <string name="story_content_preview_large">6 أسطر (كبير)</string>
+    <string name="mark_read_on_scroll_disabled">اتركه غير مقروء</string>
+    <string name="mark_read_on_scroll_enabled">وضع علامة مقروء عند التمرير</string>
+    <string name="menu_sort_by">ترتيب حسب</string>
+    <string name="menu_sort_by_name">الاسم</string>
+    <string name="menu_sort_by_subs">المشتركون</string>
+    <string name="menu_sort_by_stories_month">القصص شهريًا</string>
+    <string name="menu_sort_by_recent_story">أحدث قصة</string>
+    <string name="menu_sort_by_number_opens">عدد مرات الفتح</string>
+    <string name="menu_sort_order">ترتيب الفرز</string>
+    <string name="menu_sort_order_ascending">تصاعدي</string>
+    <string name="menu_sort_order_descending">تنازلي</string>
+    <string name="menu_folder_view">عرض المجلدات</string>
+    <string name="menu_folder_view_nested">متداخل</string>
+    <string name="menu_folder_view_flat">مسطّح</string>
+    <string name="menu_mute_all">كتم الكل</string>
+    <string name="menu_mute_none">إلغاء كتم الكل</string>
+    <string name="menu_select_all">تحديد الكل</string>
+    <string name="menu_select_none">إلغاء تحديد الكل</string>
+    <string name="menu_widget_background">خلفية الأداة</string>
+    <string name="menu_widget_background_default">افتراضي</string>
+    <string name="menu_widget_background_transparent">شفاف</string>
+    <string name="toast_hold_to_select">اضغط مطولًا لتحديد النص</string>
+    <string name="logout_warning">هل أنت متأكد من رغبتك في تسجيل الخروج؟</string>
+    <string name="search_mark_read_warning">انتبه! ستُعلَّم كل القصص في الخلاصة/المجلد كمقروءة، وليس نتائج البحث فقط. إذا كنت تريد حقًا تعليم كل القصص كمقروءة، يُرجى مسح استعلام البحث للتأكيد.</string>
+    <string name="story_show_changes">إظهار تغييرات المقالة</string>
+    <string name="story_hide_changes">إخفاء تغييرات المقال</string>
+    <string name="story_changes_loading">جارٍ تحميل تغييرات المقال…</string>
+    <string name="story_saved_timestamp">تم الحفظ %s</string>
+    <string name="your_feeds_search_hint">ابحث في خلاصاتك</string>
+    <string name="feed_list_clear_search">مسح البحث</string>
+    <string name="story_search_hint">البحث عن القصص</string>
+    <string name="discover_related_sites_title">المواقع ذات الصلة</string>
+    <string name="discover_show_grid">إظهار الشبكة</string>
+    <string name="discover_show_list">عرض القائمة</string>
+    <string name="discover_loading">جارٍ البحث عن مواقع ذات صلة…</string>
+    <string name="discover_no_related_sites">لم يتم العثور على مواقع ذات صلة</string>
+    <string name="discover_view_mode_grid">شبكة</string>
+    <string name="discover_view_mode_list">قائمة</string>
+    <string name="discover_try">جرّب</string>
+    <string name="discover_add">إضافة</string>
+    <string name="discover_subscribed">تم الاشتراك</string>
+    <string name="discover_updated_today">تم التحديث اليوم</string>
+    <string name="discover_updated_relative">تم التحديث %s</string>
+    <string name="discover_stale_updated_relative">قديمة — حُدّثت %s</string>
+    <string name="discover_stale_date">قديم. آخر قصة %s</string>
+    <string name="discover_last_fetched_relative">تم الجلب %s</string>
+    <string name="try_feed_banner_subtitle">معاينة. لم يتم الاشتراك بعد.</string>
+    <string name="try_feed_subscribe_button">اشتراك</string>
+    <string name="empty_search_notice">اكتب عبارة بحث للبدء</string>
+    <string name="menu_add_feed">إضافة + اكتشاف المواقع</string>
+    <string name="adding_feed_progress">جارٍ إضافة الموجز…</string>
+    <string name="feed_list_search_hint">البحث في الخلاصات</string>
+    <string name="add_folder_name">يُرجى إدخال اسم المجلد</string>
+    <string name="add_tag_name">يُرجى إضافة اسم الوسم</string>
+    <string name="add_new_folder">+ إضافة مجلد جديد</string>
+    <string name="add_new_tag">+ إضافة وسم جديد</string>
+    <string name="add_tag">أضف وسمًا</string>
+    <string name="new_folder_name_hint">أدخل اسم المجلد الجديد</string>
+    <string name="new_tag_name_hint">أدخل اسم الوسم الجديد</string>
+    <string name="add_feed_error">تعذّرت إضافة الخلاصة</string>
+    <string name="add_folder_error">تعذّر إضافة المجلد</string>
+    <string name="menu_mark_all_as_read">وضع علامة «مقروء» على الكل</string>
+    <string name="menu_logout">تسجيل الخروج</string>
+    <string name="contact_us">اتصل بنا</string>
+    <string name="contact_description">NewsBlur قارئ ومجمّع للأخبار تطوره NewsBlur, Inc. تواصل مع فريق NewsBlur للحصول على دعم التطبيق أو لطرح الأسئلة أو إرسال الملاحظات.</string>
+    <string name="contact_email_label">راسل المطوّر عبر البريد الإلكتروني</string>
+    <string name="contact_send_email">إرسال بريد إلكتروني</string>
+    <string name="contact_website_label">موقع NewsBlur</string>
+    <string name="contact_open_website">زيارة الموقع الإلكتروني</string>
+    <string name="contact_back">رجوع</string>
+    <string name="contact_no_email_app">لا يوجد تطبيق بريد إلكتروني مثبّت. يمكنك تحديد عنوان البريد الإلكتروني في هذه الصفحة ونسخه.</string>
+    <string name="contact_no_browser">لا يوجد متصفح ويب مثبّت. يمكنك تحديد عنوان الموقع في هذه الصفحة ونسخه.</string>
+    <string name="menu_feedback">إرسال ملاحظات حول التطبيق</string>
+    <string name="menu_feedback_post">إنشاء منشور للتعليقات</string>
+    <string name="menu_feedback_email">أرسل بلاغًا عن خطأ عبر البريد الإلكتروني</string>
+    <string name="menu_theme_choose">السمة</string>
+    <string name="menu_spacing">التباعد</string>
+    <string name="menu_subscription">الاشتراك…</string>
+    <string name="description_add_new_folder_icon">أيقونة إضافة مجلد جديد</string>
+    <string name="menu_loginas">تسجيل الدخول باسم…</string>
+    <string name="loginas_title">تسجيل الدخول كمستخدم</string>
+    <string name="empty_list_view_loading">جارٍ التحميل…</string>
+    <string name="story_loading_description">جارٍ تحميل القصص</string>
+    <string name="empty_list_view_no_stories">لا توجد قصص لقراءتها</string>
+    <string name="empty_list_view_no_stories_unread">لا توجد قصص غير مقروءة</string>
+    <string name="reading_placeholder_select_story">اختر قصة لقراءتها</string>
+    <string name="empty_list_view_no_unread_stories">ليس لديك قصص غير مقروءة.</string>
+    <string name="empty_list_view_no_focus_stories">ليس لديك قصص غير مقروءة في Focus.\n\nانتقل إلى «الكل» أو «غير مقروءة».</string>
+    <string name="empty_list_view_no_saved_stories">ليس لديك قصص محفوظة.\n\nانتقل إلى «الكل» أو «غير مقروءة».</string>
+    <string name="login_registration_custom_server">تعيين خادم مخصص</string>
+    <string name="login_registration_reset_url">إعادة تعيين</string>
+    <string name="login_registration_register">إنشاء حساب</string>
+    <string name="register_message_error">حدثت مشكلة أثناء التسجيل في NewsBlur.</string>
+    <string name="need_to_login">
+        <u>أحتاج إلى تسجيل الدخول!</u>
+    </string>
+    <string name="need_to_register">
+        <u>أحتاج إلى التسجيل</u>
+    </string>
+    <string name="public_comment_count">%d تعليقًا عامًا</string>
+    <string name="friends_comments_count">%d تعليقان</string>
+    <string name="friends_shares_count">%d مشاركة</string>
+    <string name="unknown_user">مستخدم غير معروف</string>
+    <string name="delete_feed_message">هل تريد حذف الخلاصة \"%s\"؟</string>
+    <string name="delete_saved_search_message">هل تريد حذف البحث المحفوظ %s؟</string>
+    <string name="delete_folder_message">هل تريد حذف المجلد \"%s\" وإلغاء الاشتراك من جميع الخلاصات الموجودة بداخله؟</string>
+    <string name="deleting_folder_message">جارٍ حذف المجلد \"%s\"</string>
+    <string name="add_saved_search_message">هل تريد حفظ البحث \"%s\"؟</string>
+    <string name="unfollow_message">هل تريد إلغاء متابعة \"%s\"؟</string>
+    <string name="feed_subscribers">%s مشتركًا</string>
+    <string name="feed_opens">%d مرة فتح</string>
+    <string name="feed_stories_per_month">%d قصة شهريًا</string>
+    <string name="forwarding_email_address">عنوان البريد الإلكتروني لإعادة التوجيه</string>
+    <string name="setup_instructions">تعليمات الإعداد \u25bc</string>
+    <string name="setup_instructions_details">لقراءة نشراتك البريدية في NewsBlur، أعد توجيهها إلى عنوان بريدك الإلكتروني المخصص الظاهر أعلاه.\n\nفي Gmail، انتقل إلى الإعدادات &gt; إعادة التوجيه، ثم انقر على إضافة عنوان لإعادة التوجيه. أضف عنوان بريدك الإلكتروني المخصص من NewsBlur.\n\nسيرشدك Gmail إلى تأكيد عنوان البريد الإلكتروني. بعد ذلك، ارجع إلى NewsBlur وابحث عن رسالة التأكيد في مجلد \"النشرات البريدية\".\n\nبعدها، أنشئ فلترًا يضم جميع نشراتك البريدية لإعادة توجيهها إلى عنوان NewsBlur المخصص.</string>
+    <string name="copy_email">نسخ البريد الإلكتروني</string>
+    <string name="stories_shortcuts">اختصارات القصص</string>
+    <string name="feeds_shortcuts">اختصارات الخلاصات</string>
+    <string name="import_export">استيراد/تصدير…</string>
+    <string name="settings">التفضيلات…</string>
+    <string name="menu_mute_sites">كتم المواقع…</string>
+    <string name="mute_sites">كتم المواقع</string>
+    <string name="menu_widget">أداة…</string>
+    <string name="menu_notifications">الإشعارات…</string>
+    <string name="widget">أداة</string>
+    <string name="title_widget_setup">انقر للإعداد في NewsBlur</string>
+    <string name="title_no_subscriptions">لم يتم العثور على اشتراكات نشطة</string>
+    <string name="title_widget_loading">جارٍ التحميل…</string>
+    <string name="menu_newsletters">النشرات البريدية…</string>
+    <string name="menu_shortcuts">اختصارات…</string>
+    <string name="main_menu_preferences">التفضيلات</string>
+    <string name="main_menu_mute_sites">كتم المواقع</string>
+    <string name="main_menu_widget_sites">مواقع الأدوات</string>
+    <string name="main_menu_notifications">الإشعارات</string>
+    <string name="main_menu_interactions">التفاعلات</string>
+    <string name="main_menu_upgrade_premium">الترقية إلى Premium</string>
+    <string name="main_menu_upgrade_archive">الترقية إلى الأرشيف</string>
+    <string name="main_menu_premium_archive">أرشيف Premium</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">منتدى الدعم</string>
+    <string name="newsblur_opml">ملف OPML من NewsBlur</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">استيراد/تصدير OPML</string>
+    <string name="notifications_title">الإشعارات</string>
+    <string name="premium_subscribers_folder">عرض الأخبار الكامل ميزة مميزة</string>
+    <string name="premium_subscribers_allstories">قراءة جميع مقالات المواقع ميزة مدفوعة</string>
+    <string name="premium_subscribers_saved_tag">قراءة المقالات المحفوظة حسب الوسم ميزة للمشتركين المميزين</string>
+    <string name="premium_subscribers_search">البحث ميزة مدفوعة</string>
+    <string name="premium_subscribers">مشتركو الخطة المميزة</string>
+    <string name="premium_upgrade_button">الترقية إلى Premium</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
+    <string name="thank_you_for_subscribing">شكرًا لاشتراكك!</string>
+    <string name="premium_subscription_renewal">سيُجدَّد اشتراكك في %s</string>
+    <string name="premium_subscription_expiration">سينتهي اشتراكك في %s</string>
+    <string name="premium_subscription_no_expiration">اشتراكك مضبوط على عدم الانتهاء مطلقًا. يا للعجب!</string>
+    <string name="premium_policies">راجع <a href="https://newsblur.com/privacy">سياسة الخصوصية</a> و<a href="https://newsblur.com/tos">شروط الاستخدام</a> الخاصة بـ NewsBlur للاطلاع على التفاصيل.</string>
+    <string name="premium_subscription_header">اشتراك مميز</string>
+    <string name="archive_subscription_header">الأرشيف المميز</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">اشتراك NewsBlur Premium</string>
+    <string name="archive_subscription_title">أرشيف NewsBlur Premium</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">35.99 دولارًا سنويًا (3.00 دولارات شهريًا)</string>
+    <string name="premium_subscription_active">اشتراكك المميز نشط</string>
+    <string name="archive_subscription_active">اشتراكك في الأرشيف المميز نشط</string>
+    <string name="pro_subscription_active">اشتراكك في Premium Pro نشط</string>
+    <string name="subscription_manage">إدارة الاشتراك</string>
+    <string name="subscription_details_error">خطأ في استرداد تفاصيل الاشتراك</string>
+    <string name="no_subscription_available">لا يوجد اشتراك متاح</string>
+    <string name="subscription_unavailable">غير متاح حاليًا على Android</string>
+    <string name="subscription_coming_soon">قريبًا</string>
+    <string name="subscription_upgrade_from_premium">الترقية من Premium</string>
+    <string name="subscription_upgrade_from_archive">الترقية من الأرشيف</string>
+    <string name="subscription_price_yearly">%1$s/سنويًا (%2$s/شهريًا)</string>
+    <string name="subscription_price_monthly">%1$s/شهريًا</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">يشمل اشتراكك في الأرشيف المميز كل ما سبق</string>
+    <string name="premium_pro_includes_above">يشمل اشتراكك المميز Pro كل ما سبق</string>
+    <string name="premium_enable_sites">تابع ما يصل إلى 1,024 موقعًا</string>
+    <string name="premium_sync">تُحدَّث المواقع بمعدل أسرع يصل إلى 5 أضعاف</string>
+    <string name="premium_read_by_folder">ساق الأخبار (القراءة حسب المجلد)</string>
+    <string name="premium_search">البحث في المواقع والمجلدات</string>
+    <string name="premium_searchable_tags">حفظ القصص باستخدام وسوم قابلة للبحث</string>
+    <string name="premium_privacy_options">خيارات الخصوصية لمدونتك المجمّعة</string>
+    <string name="premium_custom_rss">خلاصات RSS مخصصة للقصص المحفوظة</string>
+    <string name="premium_text_view">يستخرج عرض النص نص المقال بسهولة</string>
+    <string name="premium_discover_related">اكتشف المقالات والمواقع ذات الصلة</string>
+    <string name="premium_shiloh">أطعمت Lyric، كلب NewsBlur النهم، لمدة 6 أيام</string>
+    <string name="archive_everything_premium">كل ما يتضمنه الاشتراك المميز، بالطبع</string>
+    <string name="archive_enable_sites">تابع ما يصل إلى 4,096 موقعًا</string>
+    <string name="archive_marked_as_read">اختر توقيت وضع علامة «مقروءة» على القصص تلقائيًا</string>
+    <string name="archive_customize_auto_read">تخصيص القراءة التلقائية حسب الموقع أو المجلد</string>
+    <string name="archive_story_searchable_forever">تُؤرشف كل قصة من كل موقع ويمكن البحث فيها إلى الأبد</string>
+    <string name="archive_back_filled">تُستكمل أرشفة الخلاصات التي تدعم التصفح بالصفحات لإنشاء أرشيف كامل</string>
+    <string name="archive_train_full_text">درّب القصص على النص الكامل للمحتوى</string>
+    <string name="archive_discover_related">اكتشف القصص ذات الصلة في أرشيفك</string>
+    <string name="archive_export_trained_stories">تصدير المقالات المدرّبة من المجلدات كخلاصات RSS</string>
+    <string name="archive_stories_unread_forever">يمكن أن تظل القصص غير مقروءة إلى الأبد</string>
+    <string name="archive_ask_ai">اطرح على الذكاء الاصطناعي أسئلة عن القصص</string>
+    <string name="archive_filter_by_date_range">تصفية القصص حسب النطاق الزمني</string>
+    <string name="archive_train_folder">تطبيق التدريب على مجلد</string>
+    <string name="archive_train_globally">طبّق التدريب على الكل</string>
+    <string name="pro_everything_archive">كل ما تتضمنه باقة الأرشيف، بالطبع</string>
+    <string name="pro_enable_sites">تابع ما يصل إلى 10,000 موقع</string>
+    <string name="pro_all_feeds_fetched">يتم جلب جميع الخلاصات كل 5 إلى 15 دقيقة</string>
+    <string name="pro_regex_train">درّب القصص باستخدام التعابير النمطية</string>
+    <string name="pro_priority_support">دعم ذو أولوية</string>
+    <string name="pro_natural_language_filters">عوامل تصفية باللغة الطبيعية</string>
+    <string name="pro_natural_language_search">البحث باللغة الطبيعية</string>
+    <string name="settings_cat_offline">القراءة دون اتصال</string>
+    <string name="settings_enable_offline">تنزيل المقالات</string>
+    <string name="settings_enable_offline_sum">جلب القصص دوريًا في الخلفية</string>
+    <string name="settings_enable_image_prefetch">تنزيل الصور</string>
+    <string name="settings_enable_image_prefetch_sum">جلب الصور مسبقًا للقراءة دون اتصال</string>
+    <string name="settings_keep_old_stories">الاحتفاظ بالقصص بعد قراءتها</string>
+    <string name="settings_keep_old_stories_sum">عطّل هذا الخيار لتقليل استخدام مساحة التخزين</string>
+    <string name="mute_config_title">يمكنك متابعة ما يصل إلى 64 موقعًا باستخدام حساب قياسي مجاني</string>
+    <string name="mute_config_message">يرجى كتم %d من المواقع أو إعادة الضبط إلى المواقع الأكثر شيوعًا.</string>
+    <string name="mute_config_reset_button">إعادة ضبط المواقع الشائعة</string>
+    <string name="mute_config_upgrade_to_premium">الترقية إلى Premium</string>
+    <string name="mute_config_upgrade_subtitle">اشترك في 1,024 موقعًا</string>
+    <string name="mute_config_upgrade">ترقية</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">المواقع المتاحة: %d</string>
+    <string name="mute_config_sites_over">تجاوز الحد: %d</string>
+    <string name="menu_network_select">التنزيل باستخدام…</string>
+    <string name="menu_network_select_sum">تقييد بيانات الخلفية بالشبكات المحددة</string>
+    <string name="menu_network_select_opt_any">أي شبكة</string>
+    <string name="menu_network_select_opt_nomo">أي شبكة Wi-Fi أو Ethernet</string>
+    <string name="menu_network_select_opt_nomononme">واي فاي غير محدود أو Ethernet فقط</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">حذف القصص المتاحة بلا اتصال…</string>
+    <string name="menu_delete_offline_stories_sum">وفّر مساحة بحذف القصص والصور المخزنة</string>
+    <string name="menu_delete_offline_stories_confirmation">تم مسح جميع الأخبار والصور!</string>
+    <string name="menu_cache_age_select">مدة الاحتفاظ بالمقالات…</string>
+    <string name="menu_cache_age_select_sum">مسح القصص المخزنة للقراءة دون اتصال</string>
+    <string name="menu_cache_age_select_opt_2d">يومان (تقليل استخدام التخزين)</string>
+    <string name="menu_cache_age_select_opt_7d">7 أيام</string>
+    <string name="menu_cache_age_select_opt_14d">14 يومًا</string>
+    <string name="menu_cache_age_select_opt_30d">30 يومًا (لتقليل استخدام الشبكة)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">قائمة الموجزات</string>
+    <string name="setting_feed_list_order">ترتيب قائمة الموجزات…</string>
+    <string name="settings_enable_row_global_shared">إظهار المقالات المشتركة عالميًا</string>
+    <string name="settings_enable_row_global_shared_sum">أظهر مجلد المقالات المشتركة عالميًا</string>
+    <string name="settings_enable_row_infrequent_stories">إظهار القصص غير المتكررة</string>
+    <string name="settings_enable_row_infrequent_stories_sum">إظهار مجلد قصص المواقع غير المتكررة</string>
+    <string name="settings_enable_row_daily_briefing">إظهار الموجز اليومي</string>
+    <string name="settings_enable_row_daily_briefing_sum">إظهار مجلد الإحاطة اليومية</string>
+    <string name="settings_enable_row_widely_read_stories">إظهار القصص المقروءة على نطاق واسع</string>
+    <string name="settings_enable_row_widely_read_stories_sum">إظهار مجلد القصص الأكثر قراءة</string>
+    <string name="settings_enable_row_long_reads">إظهار المقالات الطويلة</string>
+    <string name="settings_enable_row_long_reads_sum">إظهار مجلد المقالات الطويلة</string>
+    <string name="settings_enable_row_good_reads">إظهار القراءات الجيدة</string>
+    <string name="settings_enable_row_good_reads_sum">إظهار مجلد القصص الجيدة</string>
+    <string name="settings_cat_story_list">قائمة المقالات</string>
+    <string name="settings_cat_story_layout">تخطيط القصص</string>
+    <string name="settings_app_icon">أيقونة التطبيق</string>
+    <string name="settings_app_icon_choose">اختيار أيقونة</string>
+    <string name="settings_app_icon_summary">12 لونًا مع نسختين فاتحة وداكنة.</string>
+    <string name="settings_app_icon_footer">يمكن لمشتركي Premium اختيار أيقونة مخصصة لـ NewsBlur. يتضمن كل نمط نسختين فاتحة وداكنة.</string>
+    <string name="settings_app_icon_premium">مميز</string>
+    <string name="settings_app_icon_light">فاتح</string>
+    <string name="settings_app_icon_dark">داكن</string>
+    <string name="settings_app_icon_save_failed">تعذّر تغيير أيقونة التطبيق</string>
+    <string name="settings_app_icon_appearance_light">فاتح</string>
+    <string name="settings_app_icon_appearance_auto">استخدم كليهما</string>
+    <string name="settings_app_icon_appearance_dark">داكن</string>
+    <string name="settings_app_icon_appearance_light_caption">يُبقي الأيقونة فاتحة بصرف النظر عن إعدادات جهازك.</string>
+    <string name="settings_app_icon_appearance_auto_caption">يتبع الرمز المظهر الفاتح أو الداكن لجهازك.</string>
+    <string name="settings_app_icon_appearance_dark_caption">يُبقي الأيقونة داكنة مهما كانت إعدادات جهازك.</string>
+    <string name="oldest">الأقدم</string>
+    <string name="newest">الأحدث</string>
+    <string name="menu_story_order">ترتيب القصص</string>
+    <string name="settings_story_order">ترتيب القصص…</string>
+    <string name="story_header_options">خيارات</string>
+    <string name="story_header_search">بحث</string>
+    <string name="story_header_related_sites">مواقع ذات صلة</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">مريح</string>
+    <string name="compact">مضغوط</string>
+    <string name="alphabetical">أبجديًا</string>
+    <string name="most_used_at_top">الأكثر استخدامًا في الأعلى</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">كل القصص</string>
+    <string name="unread_only">غير المقروء فقط</string>
+    <string name="menu_story_content_preview">معاينة محتوى القصة</string>
+    <string name="menu_story_thumbnail_preview">معاينة الصورة المصغرة</string>
+    <string name="menu_mark_read_on_scroll">وضع علامة مقروء عند التمرير</string>
+    <string name="settings_read_filter">تصفية القصص المقروءة…</string>
+    <string name="settings_read_filter_title">المقالات المعروضة</string>
+    <string name="menu_read_filter">تصفية القصص المقروءة</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>وضع علامة «مقروءة» على الكل</item>
+        <item>إلغاء</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>وضع علامة مقروء على القصص الأقدم</item>
+        <item>إلغاء</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="few">أقدم من %d أيام</item>
+        <item quantity="many">أقدم من %d يومًا</item>
+        <item quantity="one">أقدم من %d يوم</item>
+        <item quantity="other">أقدم من %d يومًا</item>
+        <item quantity="two">أقدم من %d يومين</item>
+        <item quantity="zero">أقدم من %d يومًا</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="few">%s مشتركين</item>
+        <item quantity="many">%s مشتركًا</item>
+        <item quantity="one">مشترك واحد: %s</item>
+        <item quantity="other">%s مشتركين</item>
+        <item quantity="two">%s مشتركان</item>
+        <item quantity="zero">%s مشترك</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="few">%s قصة شهريًا</item>
+        <item quantity="many">%s قصة/شهر</item>
+        <item quantity="one">%s مقال/شهر</item>
+        <item quantity="other">%s قصة/شهر</item>
+        <item quantity="two">%s قصة/شهر</item>
+        <item quantity="zero">%s قصة/شهر</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="few">نُشرت أيضًا على %d مواقع</item>
+        <item quantity="many">نُشرت أيضًا على %d مواقع</item>
+        <item quantity="one">نُشرت أيضًا على موقع %d</item>
+        <item quantity="other">منشور أيضًا على مواقع %d</item>
+        <item quantity="two">تنشره أيضًا %d مواقع</item>
+        <item quantity="zero">نُشرت أيضًا على %d مواقع</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="few">+ %d مواقع أخرى</item>
+        <item quantity="many">+ %d مواقع أخرى</item>
+        <item quantity="one">+ %d موقع إضافي</item>
+        <item quantity="other">+ %d مواقع أخرى</item>
+        <item quantity="two">+ %d موقعين آخرين</item>
+        <item quantity="zero">+ %d مواقع أخرى</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>وضع القصص الأحدث كمقروءة</item>
+        <item>إلغاء</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">فتح أول قصة تلقائيًا</string>
+    <string name="settings_auto_open_first_unread_sum">فتح أول مقال غير مقروء تلقائيًا في قائمة المقالات</string>
+    <string name="settings_mark_read_on_feed_scroll">وضع عناوين القصص كمقروءة أثناء التمرير</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">وضع علامة «مقروء» على المقالات تلقائيًا عند تجاوزها بالتمرير</string>
+    <string name="settings_story_clustering">تجميع القصص ذات الصلة</string>
+    <string name="settings_story_clustering_summary">عرض القصص المكررة من موجزات أخرى أسفل عنوان القصة</string>
+    <string name="settings_cluster_matches">مطابقات التجميع</string>
+    <string name="settings_cluster_matches_summary">اختر ما إذا كانت المجموعات تعرض العناوين المكررة فقط أم القصص ذات الصلة أيضًا</string>
+    <string name="settings_story_clustering_save_failed">تعذّر حفظ تفضيل تجميع القصص</string>
+    <string name="settings_story_clustering_title_only">العنوان فقط</string>
+    <string name="settings_cluster_mode_title_match_only">مطابقة العنوان فقط</string>
+    <string name="settings_cluster_mode_title_match_plus_related">مطابقة العنوان وما يرتبط بها</string>
+    <string name="settings_cluster_mark_read_matches">وضع علامة مقروء على القصص المطابقة</string>
+    <string name="settings_cluster_mark_read_related">وضع علامة مقروء على القصص ذات الصلة</string>
+    <string name="settings_cluster_mark_read_matches_summary">عند قراءة قصة، ضع علامة مقروء على القصص المطابقة لها أيضًا.</string>
+    <string name="settings_cluster_mark_read_related_summary">عند قراءة قصة، علّم أيضًا القصص المطابقة والمرتبطة بها كمقروءة.</string>
+    <string name="settings_cluster_mark_read_save_failed">تعذّر حفظ تفضيل قراءة المقالات ذات الصلة</string>
+    <string name="settings_story_clustering_title">العنوان</string>
+    <string name="settings_story_clustering_only">فقط</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">مطابقة</string>
+    <string name="story_cluster_badge_related">ذات صلة</string>
+    <string name="settings_mark_story_read">وضع علامة «مقروءة» على قصة…</string>
+    <string name="settings_mark_story_read_title">وضع علامة «مقروءة» على القصص</string>
+    <string name="mark_story_read_immediately">عند التحديد فقط</string>
+    <string name="mark_story_read_on_scroll">عند التمرير أو التحديد</string>
+    <string name="mark_story_read_1_second">بعد ثانية واحدة</string>
+    <string name="mark_story_read_2_seconds">بعد ثانيتين</string>
+    <string name="mark_story_read_3_seconds">بعد 3 ثوانٍ</string>
+    <string name="mark_story_read_5_seconds">بعد 5 ثوانٍ</string>
+    <string name="mark_story_read_10_seconds">بعد 10 ثوانٍ</string>
+    <string name="mark_story_read_20_seconds">بعد 20 ثانية</string>
+    <string name="mark_story_read_30_seconds">بعد 30 ثانية</string>
+    <string name="mark_story_read_45_seconds">بعد 45 ثانية</string>
+    <string name="mark_story_read_60_seconds">بعد 60 ثانية</string>
+    <string name="mark_story_read_manually">يدويًا</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">مشاركة القصص</string>
+    <string name="settings_show_public_comments">إظهار التعليقات العامة</string>
+    <string name="settings_reading">القراءة</string>
+    <string name="settings_show_ask_ai">إظهار «اسأل الذكاء الاصطناعي»</string>
+    <string name="settings_content_preview">نص معاينة المحتوى…</string>
+    <string name="settings_thumbnails_style">صور مصغّرة لمعاينة الصور…</string>
+    <string name="settings_preview_images_title">معاينة الصور</string>
+    <string name="settings_preview_images_segment_off">إيقاف</string>
+    <string name="settings_preview_images_segment_left_small">L صغير</string>
+    <string name="settings_preview_images_segment_left_large">L كبير</string>
+    <string name="settings_preview_images_segment_right_small">R صغير</string>
+    <string name="settings_preview_images_segment_right_large">R كبير</string>
+    <string name="settings_notifications">الإشعارات</string>
+    <string name="settings_enable_notifications">تفعيل الإشعارات</string>
+    <string name="ask_ai_upgrade_archive">الترقية إلى الأرشيف المميز</string>
+    <string name="ask_ai_ask_question">اطرح سؤالًا…</string>
+    <string name="ask_ai_follow_up">متابعة…</string>
+    <string name="ask_ai_ask">اسأل</string>
+    <string name="ask_ai_send">إرسال</string>
+    <string name="ask_ai_reask">أعِد السؤال</string>
+    <string name="ask_ai_recording">جارٍ التسجيل…</string>
+    <string name="ask_ai_transcribing">جارٍ التفريغ الصوتي…</string>
+    <string name="ask_ai_microphone_permission_denied">تم رفض إذن استخدام الميكروفون</string>
+    <string name="ask_ai_microphone_error">تعذّر تسجيل الصوت</string>
+    <string name="settings_confirm_mark_all_read_note">يتطلب تعليم جميع قصص الموقع كمقروءة تأكيدًا دائمًا. اضغط مطولًا على زر التعليم كمقروء لاستعراض مزيد من الخيارات.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">كلاهما</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">المجلدات</string>
+    <string name="settings_confirm_mark_all_read_segment_never">أبدًا</string>
+    <string name="settings_after_mark_read_title">بعد تحديد كمقروء</string>
+    <string name="settings_after_mark_read_next">فتح القائمة التالية</string>
+    <string name="settings_after_mark_read_stay">ابقَ هنا</string>
+    <string name="settings_when_opening_site_title">عند فتح موقع</string>
+    <string name="settings_when_opening_site_stories">عرض القصص</string>
+    <string name="settings_when_opening_site_first_story">فتح القصة الأولى</string>
+    <string name="story_cluster_upgrade_archive">أرشيف بريميوم</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">صغير إلى اليسار</string>
+    <string name="story_thumbnail_left_hand_large">كبير في الجهة اليسرى</string>
+    <string name="story_thumbnail_right_hand_small">صغير على اليمين</string>
+    <string name="story_thumbnail_right_hand_large">كبير إلى اليمين</string>
+    <string name="story_thumbnail_no_image_preview">لا توجد معاينة للصورة</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">قصص من مواقع ذات</string>
+    <string name="infrequent_5">أقل من 5 قصص شهريًا</string>
+    <string name="infrequent_15">أقل من 15 قصة/شهريًا</string>
+    <string name="infrequent_30">أقل من 30 قصة شهريًا</string>
+    <string name="infrequent_60">أقل من 60 قصة شهريًا</string>
+    <string name="infrequent_90">أقل من 90 قصة شهريًا</string>
+    <string name="story_intel_dialog_title">ما الذي يعجبك وما الذي لا يعجبك في هذا الخبر؟</string>
+    <string name="feed_intel_dialog_title">ما الذي يعجبك وما الذي لا يعجبك في هذا الموقع؟</string>
+    <string name="intel_title_header">عناوين القصص</string>
+    <string name="feed_intel_title_header">العناوين</string>
+    <string name="intel_tag_header">وسوم القصص</string>
+    <string name="feed_intel_tag_header">الوسوم</string>
+    <string name="intel_author_header">كتّاب الأخبار</string>
+    <string name="feed_intel_author_header">الكتّاب</string>
+    <string name="intel_feed_header">كل شيء حسب الناشر</string>
+    <string name="intel_super_dislike">لا يعجبني إطلاقًا</string>
+    <string name="explainer_super_dislike">عدم إعجاب شديد</string>
+    <string name="explainer_like">أعجبني</string>
+    <string name="explainer_dislike">لا يعجبني</string>
+    <string name="explainer_beats">إيقاعات</string>
+    <string name="explainer_example1_header">إعجاب واحد يتغلب على أي عدد من حالات عدم الإعجاب</string>
+    <string name="explainer_example1_result">تظهر القصة في عرض التركيز</string>
+    <string name="explainer_example2_header">عدم إعجاب فائق واحد يتجاوز كل شيء</string>
+    <string name="explainer_example2_result">تُخفى القصة دائمًا</string>
+    <string name="auto">تلقائي</string>
+    <string name="light">فاتح</string>
+    <string name="sepia">بني داكن</string>
+    <string name="dark">داكن</string>
+    <string name="black">أسود</string>
+    <string name="settings_gestures">الإيماءات</string>
+    <string name="sync_status_housekeeping">جارٍ الترتيب…</string>
+    <string name="sync_status_actions">جارٍ مزامنة %d إجراءً من إجراءات القراءة…</string>
+    <string name="sync_status_recounts">جارٍ اللحاق بإجراءات القراءة…</string>
+    <string name="sync_status_ffsync">في الطريق…</string>
+    <string name="sync_status_cleanup">جارٍ التنظيف…</string>
+    <string name="sync_status_starred">مزامنة إجراءات القصص المحفوظة…</string>
+    <string name="sync_status_stories">جارٍ جلب القصص الجديدة…</string>
+    <string name="sync_status_unreads">جارٍ تخزين%s قصة غير مقروءة…</string>
+    <string name="sync_status_images">جارٍ تخزين %d صورة…</string>
+    <string name="sync_status_offline">غير متصل</string>
+    <string name="sync_status_feed_add">جارٍ إضافة الخلاصة</string>
+    <string name="sync_status_done">اكتمل كل شيء</string>
+    <string name="volume_key_navigation">التنقل بمفاتيح الصوت…</string>
+    <string name="off">إيقاف</string>
+    <string name="volume_up_next">أعلى = القصة التالية</string>
+    <string name="volume_down_next">السهم لأسفل = القصة التالية</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">فتح الموجز/المجلد التالي بعد القراءة</string>
+    <string name="settings_load_next_on_mark_read_summary">تحميل الخلاصة/المجلد التالي بعد وضع علامة مقروء</string>
+    <string name="settings_confirm_mark_all_read">تأكيد وضع علامة مقروء على الكل عند…</string>
+    <string name="none">لا هذا ولا ذاك</string>
+    <string name="feed_and_folder">الموجزات والمجلدات</string>
+    <string name="folder_only">المجلدات فقط</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">تأكيد تحديد القصص الأقدم/الأحدث كمقروءة</string>
+    <string name="settings_ltr_gesture_action">السحب لليمين على قائمة القصص…</string>
+    <string name="gest_action_none">بلا إجراء</string>
+    <string name="gest_action_back">العودة إلى القائمة السابقة</string>
+    <string name="gest_action_toggle_read">تبديل حالة قراءة القصة</string>
+    <string name="gest_action_markread">وضع علامة «مقروءة» على المقالة</string>
+    <string name="gest_action_markunread">وضع علامة «غير مقروءة» على القصة</string>
+    <string name="gest_action_save">حفظ القصة</string>
+    <string name="gest_action_unsave">إزالة حفظ القصة</string>
+    <string name="gest_action_statistics">إحصاءات الموقع</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">السحب لليسار على عنوان القصة…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">المتصفح الافتراضي…</string>
+    <string name="font">الخط…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>افتراضي النظام</item>
+        <item>المتصفح داخل التطبيق</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">قصص جديدة</string>
+    <string name="go_to_feed">انتقل إلى الخلاصة</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">بحث</string>
+    <string name="add_feed">إضافة خلاصة</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">البريد الإلكتروني</string>
+    <string name="notification_web">الويب</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">لا توجد إشعارات للخلاصات</string>
+    <string name="notification_permissions_context">يلزم منح الإذن لنشر الإشعارات</string>
+    <string name="notification_permissions_rationale">يجب إضافة إذن الإشعارات يدويًا من إعدادات التطبيق قبل إعادة المحاولة لتفعيل الإشعارات</string>
+    <string name="write_storage_permission_opml">يلزم إذن الكتابة إلى وحدة التخزين لتصدير OPML</string>
+    <string name="story_saved">تم حفظ الخبر</string>
+    <string name="story_unsaved">تم إلغاء حفظ القصة</string>
+    <string name="story_read">تم وضع علامة «مقروءة» على القصة</string>
+    <string name="story_unread">تم وضع علامة «غير مقروءة» على القصة</string>
+    <string name="unread_stories">القصص غير المقروءة</string>
+    <string name="focused_stories">القصص المركّز عليها</string>
+    <string name="saved_stories">القصص المحفوظة</string>
+    <string name="short_next_story">القصة التالية</string>
+    <string name="short_previous_story">القصة السابقة</string>
+    <string name="short_text_view">عرض النص</string>
+    <string name="short_page_down">الصفحة التالية</string>
+    <string name="short_page_down_key">مسافة</string>
+    <string name="short_page_up">Page Up</string>
+    <string name="short_page_up_key">\u21E7 مسافة</string>
+    <string name="short_next_unread_story">القصة غير المقروءة التالية</string>
+    <string name="short_toggle_read_unread">تبديل حالة القراءة</string>
+    <string name="short_save_unsave_story">حفظ القصة أو إلغاء حفظها</string>
+    <string name="short_open_in_browser">افتح في المتصفح</string>
+    <string name="short_share_this_story">مشاركة هذه القصة</string>
+    <string name="short_scroll_to_comments">انتقل إلى التعليقات</string>
+    <string name="short_open_story_trainer">فتح أداة تدريب القصص</string>
+    <string name="short_open_all_stories">فتح كل قصص الموقع</string>
+    <string name="short_switch_views">تبديل طرق العرض</string>
+    <string name="short_add_site">إضافة موقع</string>
+    <string name="registering">جارٍ التسجيل...</string>
+    <string name="renaming_feed_message">جارٍ تغيير اسم الخلاصة %s</string>
+    <string name="renaming_folder_message">إعادة تسمية المجلد %s</string>
+    <string name="parent_folder">المجلد الرئيسي</string>
+    <string name="folder_added">تمت إضافة المجلد</string>
+    <string name="new_folder_parent">في: %1$s</string>
+    <string name="ui_014f8b8d982f">أضف عوامل تصفية مخصصة للكلمات المفتاحية لتصبح أقسامًا مستقلة في الإحاطة</string>
+    <string name="ui_05392d13e2f2">لا توجد إحاطات بعد</string>
+    <string name="ui_0a4444676244">فشل الحفظ</string>
+    <string name="ui_0a8adac9d6d5">جدولة</string>
+    <string name="ui_13b7bfcac438">جارٍ العمل…</string>
+    <string name="ui_2eb56be3c2d9">المصادر</string>
+    <string name="ui_314ef761a08f">إضافة قسم كلمات مفتاحية</string>
+    <string name="ui_3af014d03229">مصدر الخلاصة</string>
+    <string name="ui_3e4a49541e18">تضمين القصص المقروءة مسبقًا</string>
+    <string name="ui_4a24ff492222">احصل على موجز يومي يضم أبرز قصصك</string>
+    <string name="ui_4e9f59082144">أرشيف بريميوم</string>
+    <string name="ui_5b170811b992">الترقية إلى الأرشيف المميز</string>
+    <string name="ui_67a31d6fa581">اختر وجهة تنبيهات الموجز اليومي</string>
+    <string name="ui_67d0be0dd546">تحكّم في مقدار المحتوى المضمّن وطريقة صياغته</string>
+    <string name="ui_68c2cc7f0cea">النموذج</string>
+    <string name="ui_710089545189">الطول والأسلوب</string>
+    <string name="ui_753a22b2eb61">الإشعارات</string>
+    <string name="ui_771ee100da2b">أقسام الكلمات المفتاحية</string>
+    <string name="ui_7c522fb68f07">احصل على ملخص لأهم القصص وفق جدولك الزمني.</string>
+    <string name="ui_7f7e956b2244">أعِد إعداد الموجز اليومي لإنشاء ملخص للمقالات الأهم بالنسبة إليك.</string>
+    <string name="ui_7ff5a6dafd80">الأقسام</string>
+    <string name="ui_80f7bcbc57b0">اختر عدد مرات إنشاء موجزك وموعد إنشائه</string>
+    <string name="ui_a4d5830966af">أنشئ ملخصات تلقائيًا وفق جدولك</string>
+    <string name="ui_a92076d4b9e3">اختر النموذج الذي يكتب موجزك اليومي</string>
+    <string name="ui_a970fbbd6df8">إنشاء تلقائي</string>
+    <string name="ui_a9dc7e4dcba7">إعدادات الملخص اليومي</string>
+    <string name="ui_bbfa773e5a63">إغلاق</string>
+    <string name="ui_c2d462f8f6da">اختر القصص المؤهلة للإحاطة اليومية</string>
+    <string name="ui_d521ea8640b5">إنشاء موجز يومي</string>
+    <string name="ui_df174a3f2faa">مفعّل</string>
+    <string name="ui_df2164622bcf">تعذّر تحميل الموجز اليومي</string>
+    <string name="ui_eaed56ec84ae">الموجز اليومي</string>
+    <string name="ui_efc007a393f6">حفظ</string>
+    <string name="ui_f530db58b3e5">الكلمات المفتاحية</string>
+    <string name="ui_fdafe86c10a4">لن تُدرج إلا الأقسام التي تحتوي على قصص مطابقة</string>
+    <string name="ui_690910f6ed17">استيراد OPML</string>
+    <string name="ui_244fd5e426f0">تصدير OPML</string>
+    <string name="ui_768e0c1c6957">العنوان</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">الوسوم المحفوظة</string>
+    <string name="ui_6e914f494515">وسوم المقالات</string>
+    <string name="ui_e912ab619a72">وسوم أخرى</string>
+    <string name="i18n_add_site">إضافة موقع</string>
+    <string name="i18n_add">إضافة</string>
+    <string name="i18n_retry">إعادة المحاولة</string>
+    <string name="i18n_no_sites_found_try_another_search">لم يُعثر على مواقع. جرّب بحثًا آخر.</string>
+    <string name="i18n_load_more">تحميل المزيد</string>
+    <string name="i18n_follow_any_website">تابع أي موقع إلكتروني</string>
+    <string name="i18n_mark_updated_stories_unread">وضع علامة «غير مقروء» على القصص التي تم تحديثها</string>
+    <string name="i18n_follow_news_that_matters_to_you">تابع الأخبار التي تهمك</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">اختر موضوعًا أو أنشئ موجز أخبار Google لأي عملية بحث.</string>
+    <string name="i18n_subscribe">اشتراك</string>
+    <string name="i18n_tech">تقنية</string>
+    <string name="i18n_review">مراجعة</string>
+    <string name="i18n_sponsored">برعاية</string>
+    <string name="i18n_discover_more_to_read">اكتشف المزيد لقراءته</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">لم يتم العثور على مواقع. يمكنك أيضًا إضافة موقع باستخدام عنوان URL.</string>
+    <string name="i18n_add_discover_sites">إضافة + اكتشاف مواقع</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">أنشئ خلاصة من صفحة لا تحتوي على RSS. يعثر NewsBlur على قصصها ويتحقق من التحديثات. يتطلب أرشيف Premium.</string>
+</resources>

@@ -1,0 +1,919 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">Không làm gì</string>
+    <string name="gesture_back">Quay lại nguồn tin</string>
+    <string name="gesture_toggle_read">Đã đọc / chưa đọc</string>
+    <string name="gesture_markread">Đánh dấu đã đọc</string>
+    <string name="gesture_markunread">Đánh dấu chưa đọc</string>
+    <string name="gesture_save">Lưu bài viết</string>
+    <string name="gesture_unsave">Bỏ lưu tin</string>
+    <string name="gesture_statistics">Thống kê</string>
+    <string name="gesture_menu">Hiện thao tác</string>
+    <string name="gesture_share">Chia sẻ</string>
+    <string name="gesture_toggle_save">Lưu / bỏ lưu</string>
+    <string name="gesture_ask_ai">Hỏi AI</string>
+    <string name="gesture_train">Huấn luyện trí tuệ</string>
+    <string name="gesture_notifications">Thông báo</string>
+    <string name="gesture_read_range">Chọn khoảng thời gian cần đánh dấu đã đọc</string>
+    <string name="gesture_feed_list">Danh sách nguồn cấp dữ liệu</string>
+    <string name="gesture_story_titles">Tiêu đề bài viết</string>
+    <string name="gesture_reading_story">Đang đọc bài viết</string>
+    <string name="gesture_swipe_feeds">Vuốt trên nguồn tin</string>
+    <string name="gesture_swipe_stories">Vuốt trên tin</string>
+    <string name="gesture_left">Vuốt sang trái</string>
+    <string name="gesture_right">Vuốt sang phải</string>
+    <string name="gesture_long_press">Nhấn giữ</string>
+    <string name="gesture_double_tap">Chạm hai lần</string>
+    <string name="gesture_two_finger_double_tap">Chạm đúp bằng hai ngón tay</string>
+    <string name="gesture_left_edge">Vuốt từ mép trái</string>
+    <string name="gesture_edge_footer">Vuốt từ mép trái luôn quay về danh sách nguồn tin, kể cả khi đã tắt thao tác vuốt bài viết.</string>
+    <string name="gesture_mark_all">Đánh dấu đã đọc tất cả tin</string>
+    <string name="gesture_original">Mở bài viết gốc</string>
+    <string name="gesture_text">Hiển thị văn bản gốc</string>
+    <string name="gesture_unread">Đánh dấu là chưa đọc</string>
+    <string name="gesture_back_titles">Quay lại tiêu đề bài viết</string>
+    <string name="gesture_previous">Bài viết trước</string>
+    <string name="gesture_off">Tắt</string>
+    <string name="gesture_unread_stories">Bài viết chưa đọc</string>
+    <string name="gesture_focus_stories">Tập trung vào câu chuyện</string>
+    <string name="story_title_mark_story_read">Đánh dấu bài viết là đã đọc…</string>
+    <string name="story_title_list_font_size">Cỡ chữ tiêu đề nguồn tin và bài viết</string>
+    <string name="language_current">Ngôn ngữ: %1$s</string>
+    <string name="language_automatic">Tự động (ngôn ngữ thiết bị)</string>
+    <string name="language_save_failed">Không thể lưu ngôn ngữ của bạn. Vui lòng thử lại.</string>
+    <string name="try_feed_instafetching">Đang tải tin tức tức thì…</string>
+    <string name="try_feed_fetch_failed">Không thể tải bài viết. Nhấn để thử lại.</string>
+    <string name="try_feed_empty">Trang này chưa có bài viết nào. Nhấn để làm mới.</string>
+    <string name="image_viewer_close">Đóng hình ảnh</string>
+    <string name="image_viewer_loading">Đang tải ảnh…</string>
+    <string name="image_viewer_failed">Không thể tải ảnh đầy đủ.</string>
+    <string name="image_viewer_retry">Thử lại</string>
+    <string name="image_viewer_copy">Sao chép hình ảnh</string>
+    <string name="image_viewer_save">Lưu ảnh</string>
+    <string name="image_viewer_share">Chia sẻ hình ảnh…</string>
+    <string name="image_viewer_open_link">Mở liên kết</string>
+    <string name="image_viewer_copied">Đã sao chép ảnh</string>
+    <string name="image_viewer_saved">Đã lưu vào Ảnh</string>
+    <string name="image_viewer_save_failed">Không thể lưu ảnh.</string>
+    <string name="image_viewer_share_failed">Không thể chia sẻ hình ảnh.</string>
+    <string name="image_viewer_storage_permission">Cho phép truy cập bộ nhớ để lưu ảnh, rồi thử lại.</string>
+    <string name="image_viewer_show_actions">Hiện thao tác với ảnh</string>
+    <string name="settings_story_toolbar_position">Vị trí thanh công cụ danh sách bài viết</string>
+    <string name="settings_story_toolbar_top">Trên cùng</string>
+    <string name="settings_story_toolbar_bottom">Dưới cùng</string>
+    <string name="story_header_mark_read_cutoff">Chọn khoảng thời gian lùi lại để đánh dấu đã đọc</string>
+    <string name="login_username_hint">tên người dùng</string>
+    <string name="login_username_or_email_hint">tên người dùng hoặc email</string>
+    <string name="login_password_hint">mật khẩu</string>
+    <string name="login_registration_email_hint">địa chỉ email</string>
+    <string name="login_button_login">Đăng nhập</string>
+    <string name="login_segment_sign_in">Đăng nhập</string>
+    <string name="login_segment_sign_up">Đăng ký</string>
+    <string name="login_forgot_password">Quên mật khẩu</string>
+    <string name="login_custom_server">Máy chủ tùy chỉnh tự lưu trữ</string>
+    <string name="login_custom_server_subtitle">Sử dụng bản cài đặt NewsBlur của riêng bạn</string>
+    <string name="login_custom_server_active">Máy chủ tùy chỉnh: %1$s</string>
+    <string name="login_custom_server_edit">Chạm để chỉnh sửa hoặc đặt lại URL máy chủ</string>
+    <string name="login_custom_server_dialog_title">Máy chủ tùy chỉnh</string>
+    <string name="login_custom_server_dialog_body">Để trống để dùng NewsBlur hoặc nhập URL của bản cài đặt tự lưu trữ. Thay đổi có hiệu lực ngay khi đăng nhập và đăng ký.</string>
+    <string name="login_message_error">Đã xảy ra lỗi khi đăng nhập NewsBlur.</string>
+    <string name="login_logging_in">Đang đăng nhập…</string>
+    <string name="login_logged_in">Đang uốn các đường spline…</string>
+    <string name="login_retrieving_feeds">Đang tải nguồn tin…</string>
+    <string name="login_next">Tiếp theo</string>
+    <string name="login_custom_server_scheme_error">Cần có \'https://\' trong URL máy chủ tùy chỉnh</string>
+    <string name="login_custom_server_invalid">Vui lòng nhập URL máy chủ tùy chỉnh hợp lệ.</string>
+    <string name="login_tagline">Trình đọc tin tức cá nhân giúp
+mọi người kết nối để trò chuyện về thế giới.</string>
+    <string name="user_profile_picture">Ảnh hồ sơ người dùng</string>
+    <string name="search_for_feed">Tìm nguồn tin</string>
+    <string name="loading">Đang tải…</string>
+    <string name="story_navigation_failed">Không thể mở bài viết. Vui lòng thử lại.</string>
+    <string name="orig_text_loading">Đang tải nội dung bài viết…</string>
+    <string name="follow_error">Đã xảy ra sự cố khi theo dõi người dùng.</string>
+    <string name="unfollow_error">Đã xảy ra sự cố khi hủy theo dõi người dùng.</string>
+    <string name="description_login_button">Nhấn để đăng nhập</string>
+    <string name="description_login_logo">Logo NewsBlur</string>
+    <string name="description_profile_picture">Ảnh hồ sơ của người dùng</string>
+    <string name="description_row_folder_icon">biểu tượng thư mục</string>
+    <string name="description_row_feed_icon">biểu tượng nguồn cấp</string>
+    <string name="description_row_feed_mute_toggle">bật/tắt tắt tiếng nguồn cấp dữ liệu</string>
+    <string name="description_activity_icon">Biểu tượng minh họa hoạt động của người dùng</string>
+    <string name="description_follow_button">Theo dõi hoặc bỏ theo dõi người dùng</string>
+    <string name="description_comment_user">Ảnh người dùng bình luận</string>
+    <string name="description_empty_list_image">Hình minh họa danh sách trống</string>
+    <string name="description_menu">Menu</string>
+    <string name="story_settings">Cài đặt tin</string>
+    <string name="title_choose_folders">Chọn thư mục cho nguồn tin %s</string>
+    <string name="title_rename_feed">Đổi tên nguồn tin %s</string>
+    <string name="title_rename_folder">Đổi tên thư mục %s</string>
+    <string name="all_stories_title">Tất cả bài viết trên trang web</string>
+    <string name="daily_briefing_title">Bản tin hằng ngày</string>
+    <string name="infrequent_title">Tin bài từ trang ít cập nhật</string>
+    <string name="widely_read_stories_title">Bài viết được đọc nhiều</string>
+    <string name="long_reads_title">Bài đọc dài</string>
+    <string name="good_reads_title">Bài đọc hay</string>
+    <string name="all_shared_stories_title">Tất cả bài viết được chia sẻ</string>
+    <string name="global_shared_stories_title">Bài viết được chia sẻ toàn cầu</string>
+    <string name="read_stories_title">Đọc bài viết</string>
+    <string name="saved_stories_title">Tin đã lưu</string>
+    <string name="saved_searches_title">Tìm kiếm đã lưu</string>
+    <string name="feed_list">Danh sách nguồn cấp</string>
+    <string name="bottom_next_unread_site">Trang chưa đọc tiếp theo, %1$s</string>
+    <string name="bottom_next_unread_folder">Thư mục chưa đọc tiếp theo, %1$s</string>
+    <string name="top_level">CẤP CAO NHẤT</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nĐược chia sẻ với NewsBlur</string>
+    <string name="share_comment_hint">Chia sẻ bình luận (Không bắt buộc)</string>
+    <string name="share_save_newsblur">Chia sẻ/Lưu \"%s\" vào Blurblog của bạn?</string>
+    <string name="share_this">Chia sẻ</string>
+    <string name="already_shared">Đã chia sẻ</string>
+    <string name="share_this_story">Chia sẻ</string>
+    <string name="share_with_comment">Chia sẻ kèm bình luận</string>
+    <string name="unshare">Xóa chia sẻ</string>
+    <string name="update_shared">Cập nhật bình luận</string>
+    <string name="rename">Đổi tên</string>
+    <string name="save_this">Lưu</string>
+    <string name="unsave_this">Bỏ lưu</string>
+    <string name="train_this">Huấn luyện</string>
+    <string name="ask_ai">Hỏi AI</string>
+    <string name="story_mark_unread_state">Đã đọc</string>
+    <string name="story_mark_read_state">Đánh dấu bài viết là đã đọc</string>
+    <string name="overlay_next">Tiếp</string>
+    <string name="overlay_done">Xong</string>
+    <string name="overlay_count_toast_N">%d bài viết chưa đọc</string>
+    <string name="overlay_count_toast_1">1 bài viết chưa đọc</string>
+    <string name="overlay_text">Văn bản</string>
+    <string name="overlay_story">Bài viết</string>
+    <string name="orig_text_failed">Rất tiếc, không thể trích xuất văn bản của bài viết.</string>
+    <string name="state_all">Tất cả</string>
+    <string name="state_unread">Chưa đọc</string>
+    <string name="state_focus">Tập trung</string>
+    <string name="state_saved">Đã lưu</string>
+    <string name="reply_to">Trả lời \"%s\"</string>
+    <string name="edit_reply">Sửa câu trả lời</string>
+    <string name="edit_reply_update">Cập nhật câu trả lời</string>
+    <string name="edit_reply_delete">Xóa câu trả lờiY</string>
+    <string name="alert_dialog_ok">Đồng ý</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">Xong</string>
+    <string name="alert_dialog_openlink">Mở liên kết</string>
+    <string name="alert_dialog_openimage">Mở hình ảnh</string>
+    <string name="dialog_folders_save">Thư mục lưu</string>
+    <string name="dialog_story_intel_save">Lưu thiết lập huấn luyện</string>
+    <string name="dialog_story_tags_save">Lưu thẻ</string>
+    <string name="profile">Hồ sơ</string>
+    <string name="profile_location_icon">Biểu tượng vị trí</string>
+    <string name="profile_following">Đang theo dõi</string>
+    <string name="profile_followers">Người theo dõi</string>
+    <string name="profile_shared">Bài viết đã chia sẻ</string>
+    <string name="profile_ago">trước</string>
+    <string name="profile_recent_actvity">Hoạt động</string>
+    <string name="profile_recent_interactions">Tương tác</string>
+    <string name="profile_started_following">đã theo dõi</string>
+    <string name="profile_you">Bạn</string>
+    <string name="profile_you_lower">bạn</string>
+    <string name="profile_your">của bạn</string>
+    <string name="profile_now_following">hiện đang theo dõi %1$s</string>
+    <string name="profile_replied_to">Đã trả lời</string>
+    <string name="profile_replied_to_your">đã trả lời %1$s</string>
+    <string name="profile_shared_story">đã chia sẻ</string>
+    <string name="profile_comment">bình luận</string>
+    <string name="profile_reply">trả lời</string>
+    <string name="profile_button_follow">Theo dõi</string>
+    <string name="profile_button_unfollow">Bỏ theo dõi</string>
+    <string name="profile_subscribed_to">đã đăng ký theo dõi</string>
+    <string name="profile_saved">đã lưu</string>
+    <string name="profile_reshared">đã chia sẻ lại</string>
+    <string name="profile_favorited">đã yêu thích</string>
+    <string name="profile_favorited_comments">đã yêu thích %1$s bình luận trên</string>
+    <string name="profile_signup">đã đăng ký Newsblur</string>
+    <string name="profile_comments_on">bình luận về</string>
+    <string name="profile_feed_not_available">Bạn không còn đăng ký theo dõi nguồn cấp dữ liệu này</string>
+    <string name="profile_do_not_follow">Bạn không theo dõi người dùng này</string>
+    <string name="profile_no_interactions">Không có tương tác nào</string>
+    <string name="menu_profile">Hồ sơ</string>
+    <string name="menu_search_feeds">Tìm kiếm trong các nguồn tin</string>
+    <string name="menu_original">Xem bản gốc</string>
+    <string name="menu_send_story">Gửi liên kết đến…</string>
+    <string name="menu_send_story_full">Gửi tin đến…</string>
+    <string name="menu_mark_feed_as_read">Đánh dấu nguồn cấp dữ liệu là đã đọc</string>
+    <string name="menu_delete_feed">Xóa nguồn cấp dữ liệu</string>
+    <string name="menu_statistics">Thống kê</string>
+    <string name="menu_delete_saved_search">Xóa tìm kiếm đã lưu</string>
+    <string name="menu_unfollow">Bỏ theo dõi người dùng</string>
+    <string name="menu_choose_folders">Chọn thư mục</string>
+    <string name="menu_notifications_choose">Thông báo</string>
+    <string name="menu_notifications_disable">Tắt thông báo</string>
+    <string name="menu_notifications_focus">Thông báo khi có bài viết trọng tâm mới</string>
+    <string name="menu_notifications_unread">Thông báo khi có tất cả tin mới</string>
+    <string name="menu_mark_folder_as_read">Đánh dấu thư mục là đã đọc</string>
+    <string name="menu_sharenewsblur">Chia sẻ bài viết này</string>
+    <string name="menu_text_size">Cỡ chữ</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">Phông chữ</string>
+    <string name="menu_save_story">Lưu bài viết này</string>
+    <string name="menu_unsave_story">Bỏ lưu bài viết này</string>
+    <string name="menu_newest_mark_older_stories_as_read">Đánh dấu các bài cũ hơn là đã đọc</string>
+    <string name="menu_newest_mark_newer_stories_as_read">Đánh dấu các bài mới hơn là đã đọc</string>
+    <string name="menu_oldest_mark_older_stories_as_read">Đánh dấu các bài cũ hơn là đã đọc</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">Đánh dấu các bài mới hơn là đã đọc</string>
+    <string name="story_menu_open_feed">Mở nguồn tin</string>
+    <string name="story_menu_share_link">Chia sẻ liên kết…</string>
+    <string name="story_menu_share_story">Chia sẻ tin…</string>
+    <string name="menu_mark_story_as_read">Đánh dấu đã đọc</string>
+    <string name="menu_mark_unread">Đánh dấu là chưa đọc</string>
+    <string name="menu_search_stories">Tìm kiếm…</string>
+    <string name="menu_mute_feed">Tắt tiếng nguồn cấp dữ liệu</string>
+    <string name="menu_unmute_feed">Bỏ tắt tiếng nguồn tin</string>
+    <string name="menu_mute_folder">Tắt tiếng thư mục</string>
+    <string name="menu_unmute_folder">Bật tiếng thư mục</string>
+    <string name="menu_delete_folder">Xóa thư mục</string>
+    <string name="menu_rename_folder">Đổi tên thư mục</string>
+    <string name="menu_instafetch_feed">Tải tin Insta tức thì</string>
+    <string name="feed_menu_back_to_actions">Quay lại các thao tác với nguồn cấp</string>
+    <string name="menu_infrequent_cutoff">Số bài viết ít thường xuyên mỗi tháng</string>
+    <string name="menu_intel">Huấn luyện trí tuệ</string>
+    <string name="menu_rename_feed">Đổi tên nguồn tin</string>
+    <string name="menu_story_list_style_choose">Kiểu danh sách</string>
+    <string name="menu_save_search">Lưu tìm kiếm</string>
+    <string name="menu_web_search">Tìm kiếm trên web</string>
+    <string name="menu_highlight">Tô sáng</string>
+    <string name="list_style_list">Danh sách</string>
+    <string name="list_style_grid_f">Dạng lưới (nhỏ)</string>
+    <string name="list_style_grid_m">Dạng lưới (vừa)</string>
+    <string name="list_style_grid_c">Lưới (thô)</string>
+    <string name="story_content_preview_none">Chỉ tiêu đề (không có)</string>
+    <string name="story_content_preview_small">2 dòng (nhỏ)</string>
+    <string name="story_content_preview_medium">4 dòng (trung bình)</string>
+    <string name="story_content_preview_large">6 dòng (lớn)</string>
+    <string name="mark_read_on_scroll_disabled">Để lại ở trạng thái chưa đọc</string>
+    <string name="mark_read_on_scroll_enabled">Đánh dấu đã đọc khi cuộn</string>
+    <string name="menu_sort_by">Sắp xếp theo</string>
+    <string name="menu_sort_by_name">Tên</string>
+    <string name="menu_sort_by_subs">Người đăng ký</string>
+    <string name="menu_sort_by_stories_month">Số bài viết mỗi tháng</string>
+    <string name="menu_sort_by_recent_story">Bài viết mới nhất</string>
+    <string name="menu_sort_by_number_opens">Số lần mở</string>
+    <string name="menu_sort_order">Thứ tự sắp xếp</string>
+    <string name="menu_sort_order_ascending">Tăng dần</string>
+    <string name="menu_sort_order_descending">Giảm dần</string>
+    <string name="menu_folder_view">Chế độ xem thư mục</string>
+    <string name="menu_folder_view_nested">Lồng nhau</string>
+    <string name="menu_folder_view_flat">Dạng phẳng</string>
+    <string name="menu_mute_all">Tắt tiếng tất cả</string>
+    <string name="menu_mute_none">Tắt tiếng: Không có</string>
+    <string name="menu_select_all">Chọn tất cả</string>
+    <string name="menu_select_none">Bỏ chọn tất cả</string>
+    <string name="menu_widget_background">Nền tiện ích</string>
+    <string name="menu_widget_background_default">Mặc định</string>
+    <string name="menu_widget_background_transparent">Trong suốt</string>
+    <string name="toast_hold_to_select">Nhấn và giữ để chọn văn bản</string>
+    <string name="logout_warning">Bạn có chắc muốn đăng xuất không?</string>
+    <string name="search_mark_read_warning">Lưu ý! Tất cả bài viết trong nguồn cấp/thư mục sẽ được đánh dấu là đã đọc, không chỉ kết quả tìm kiếm. Nếu bạn thực sự muốn đánh dấu tất cả bài viết là đã đọc, hãy xóa truy vấn tìm kiếm để xác nhận.</string>
+    <string name="story_show_changes">Hiển thị thay đổi của bài viết</string>
+    <string name="story_hide_changes">Ẩn các thay đổi của bài viết</string>
+    <string name="story_changes_loading">Đang tải thay đổi bài viết …</string>
+    <string name="story_saved_timestamp">Đã lưu %s</string>
+    <string name="your_feeds_search_hint">Tìm kiếm trong các nguồn tin của bạn</string>
+    <string name="feed_list_clear_search">Xóa tìm kiếm</string>
+    <string name="story_search_hint">Tìm kiếm bài viết</string>
+    <string name="discover_related_sites_title">Trang liên quan</string>
+    <string name="discover_show_grid">Hiển thị dạng lưới</string>
+    <string name="discover_show_list">Hiện danh sách</string>
+    <string name="discover_loading">Đang tìm các trang liên quan…</string>
+    <string name="discover_no_related_sites">Không tìm thấy trang web liên quan</string>
+    <string name="discover_view_mode_grid">Lưới</string>
+    <string name="discover_view_mode_list">Danh sách</string>
+    <string name="discover_try">Dùng thử</string>
+    <string name="discover_add">Thêm</string>
+    <string name="discover_subscribed">Đã đăng ký</string>
+    <string name="discover_updated_today">Cập nhật hôm nay</string>
+    <string name="discover_updated_relative">Đã cập nhật %s</string>
+    <string name="discover_stale_updated_relative">Cũ — cập nhật %s</string>
+    <string name="discover_stale_date">Lỗi thời. Bài viết gần nhất %s</string>
+    <string name="discover_last_fetched_relative">Đã tải %s</string>
+    <string name="try_feed_banner_subtitle">Xem trước. Chưa đăng ký.</string>
+    <string name="try_feed_subscribe_button">Đăng ký</string>
+    <string name="empty_search_notice">Nhập từ khóa để bắt đầu</string>
+    <string name="menu_add_feed">Thêm + Khám phá trang web</string>
+    <string name="adding_feed_progress">Đang thêm nguồn tin…</string>
+    <string name="feed_list_search_hint">Tìm kiếm nguồn tin</string>
+    <string name="add_folder_name">Vui lòng nhập tên thư mục</string>
+    <string name="add_tag_name">Vui lòng nhập tên thẻ</string>
+    <string name="add_new_folder">+ Thêm thư mục mới</string>
+    <string name="add_new_tag">+ Thêm thẻ mới</string>
+    <string name="add_tag">Thêm thẻ</string>
+    <string name="new_folder_name_hint">Nhập tên thư mục mới</string>
+    <string name="new_tag_name_hint">Nhập tên thẻ mới</string>
+    <string name="add_feed_error">Không thể thêm nguồn cấp</string>
+    <string name="add_folder_error">Không thể thêm thư mục</string>
+    <string name="menu_mark_all_as_read">Đánh dấu tất cả là đã đọc</string>
+    <string name="menu_logout">Đăng xuất</string>
+    <string name="contact_us">Liên hệ với chúng tôi</string>
+    <string name="contact_description">NewsBlur là ứng dụng đọc và tổng hợp tin tức do NewsBlur, Inc. phát triển. Hãy liên hệ với nhóm NewsBlur để được hỗ trợ ứng dụng, giải đáp thắc mắc hoặc gửi phản hồi.</string>
+    <string name="contact_email_label">Gửi email cho nhà phát triển</string>
+    <string name="contact_send_email">Gửi email</string>
+    <string name="contact_website_label">Trang web NewsBlur</string>
+    <string name="contact_open_website">Truy cập trang web</string>
+    <string name="contact_back">Quay lại</string>
+    <string name="contact_no_email_app">Chưa cài ứng dụng email nào. Bạn có thể chọn và sao chép địa chỉ email trên trang này.</string>
+    <string name="contact_no_browser">Không có trình duyệt web nào được cài đặt. Bạn có thể chọn và sao chép địa chỉ trang web trên trang này.</string>
+    <string name="menu_feedback">Gửi phản hồi về ứng dụng</string>
+    <string name="menu_feedback_post">Tạo bài đăng phản hồi</string>
+    <string name="menu_feedback_email">Gửi email báo lỗi</string>
+    <string name="menu_theme_choose">Giao diện</string>
+    <string name="menu_spacing">Khoảng cách</string>
+    <string name="menu_subscription">Đăng ký…</string>
+    <string name="description_add_new_folder_icon">Biểu tượng thêm thư mục mới</string>
+    <string name="menu_loginas">Đăng nhập với tư cách…</string>
+    <string name="loginas_title">Đăng nhập với tư cách người dùng</string>
+    <string name="empty_list_view_loading">Đang tải…</string>
+    <string name="story_loading_description">Đang tải bài viết</string>
+    <string name="empty_list_view_no_stories">Không có tin nào để đọc</string>
+    <string name="empty_list_view_no_stories_unread">Không có bài viết chưa đọc</string>
+    <string name="reading_placeholder_select_story">Chọn bài viết để đọc</string>
+    <string name="empty_list_view_no_unread_stories">Bạn không có bài viết nào chưa đọc.</string>
+    <string name="empty_list_view_no_focus_stories">Bạn không có bài viết chưa đọc nào trong mục Tập trung.\n\nChuyển sang Tất cả hoặc Chưa đọc.</string>
+    <string name="empty_list_view_no_saved_stories">Bạn chưa lưu bài viết nào.\n\nChuyển sang Tất cả hoặc Chưa đọc.</string>
+    <string name="login_registration_custom_server">Đặt máy chủ tùy chỉnh</string>
+    <string name="login_registration_reset_url">Đặt lại</string>
+    <string name="login_registration_register">Đăng ký</string>
+    <string name="register_message_error">Đã xảy ra lỗi khi đăng ký NewsBlur.</string>
+    <string name="need_to_login">
+        <u>Tôi cần đăng nhập!</u>
+    </string>
+    <string name="need_to_register">
+        <u>Tôi cần đăng ký</u>
+    </string>
+    <string name="public_comment_count">%d bình luận công khai</string>
+    <string name="friends_comments_count">%d bình luận</string>
+    <string name="friends_shares_count">%d lượt chia sẻ</string>
+    <string name="unknown_user">Người dùng không xác định</string>
+    <string name="delete_feed_message">Xóa nguồn cấp \"%s\"?</string>
+    <string name="delete_saved_search_message">Xóa tìm kiếm đã lưu %s?</string>
+    <string name="delete_folder_message">Xóa thư mục \"%s\" và hủy đăng ký tất cả nguồn tin bên trong?</string>
+    <string name="deleting_folder_message">Đang xóa thư mục \"%s\"</string>
+    <string name="add_saved_search_message">Lưu tìm kiếm \"%s\"?</string>
+    <string name="unfollow_message">Bỏ theo dõi \"%s\"?</string>
+    <string name="feed_subscribers">%s người đăng ký</string>
+    <string name="feed_opens">%d lượt mở</string>
+    <string name="feed_stories_per_month">%d tin/tháng</string>
+    <string name="forwarding_email_address">Địa chỉ email chuyển tiếp</string>
+    <string name="setup_instructions">Hướng dẫn thiết lập \u25bc</string>
+    <string name="setup_instructions_details">Để đọc bản tin qua email trong NewsBlur, hãy chuyển tiếp bản tin đến địa chỉ email tùy chỉnh hiển thị ở trên.\n\nTrong Gmail, vào Cài đặt &gt; Chuyển tiếp và nhấp vào Thêm địa chỉ chuyển tiếp. Thêm địa chỉ email NewsBlur tùy chỉnh của bạn.\n\nGmail sẽ hướng dẫn bạn xác nhận địa chỉ email. Sau đó, hãy quay lại NewsBlur và tìm email xác nhận trong thư mục \"Newsletters\".\n\nTiếp theo, tạo bộ lọc cho tất cả bản tin để chuyển tiếp chúng đến địa chỉ tùy chỉnh trên NewsBlur.</string>
+    <string name="copy_email">Sao chép email</string>
+    <string name="stories_shortcuts">Phím tắt tin</string>
+    <string name="feeds_shortcuts">Phím tắt nguồn cấp dữ liệu</string>
+    <string name="import_export">Nhập/Xuất…</string>
+    <string name="settings">Tùy chọn…</string>
+    <string name="menu_mute_sites">Tắt tiếng trang web…</string>
+    <string name="mute_sites">Tắt tiếng trang tin</string>
+    <string name="menu_widget">Tiện ích…</string>
+    <string name="menu_notifications">Thông báo…</string>
+    <string name="widget">Tiện ích</string>
+    <string name="title_widget_setup">Chạm để thiết lập trong NewsBlur</string>
+    <string name="title_no_subscriptions">Không phát hiện thấy gói đăng ký nào đang hoạt động</string>
+    <string name="title_widget_loading">Đang tải…</string>
+    <string name="menu_newsletters">Bản tin email…</string>
+    <string name="menu_shortcuts">Phím tắt…</string>
+    <string name="main_menu_preferences">Tùy chọn</string>
+    <string name="main_menu_mute_sites">Tắt tiếng trang web</string>
+    <string name="main_menu_widget_sites">Trang web tiện ích</string>
+    <string name="main_menu_notifications">Thông báo</string>
+    <string name="main_menu_interactions">Tương tác</string>
+    <string name="main_menu_upgrade_premium">Nâng cấp lên Premium</string>
+    <string name="main_menu_upgrade_archive">Nâng cấp lên Archive</string>
+    <string name="main_menu_premium_archive">Kho lưu trữ Premium</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">Diễn đàn hỗ trợ</string>
+    <string name="newsblur_opml">OPML NewsBlur</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">Nhập/Xuất OPML</string>
+    <string name="notifications_title">Thông báo</string>
+    <string name="premium_subscribers_folder">Dòng tin đầy đủ là tính năng dành cho người dùng Premium</string>
+    <string name="premium_subscribers_allstories">Đọc tất cả bài viết trên trang là tính năng cao cấp</string>
+    <string name="premium_subscribers_saved_tag">Đọc các bài viết đã lưu theo thẻ là tính năng cao cấp</string>
+    <string name="premium_subscribers_search">Tìm kiếm là tính năng Premium</string>
+    <string name="premium_subscribers">người đăng ký gói cao cấp</string>
+    <string name="premium_upgrade_button">Nâng cấp lên Premium</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
+    <string name="thank_you_for_subscribing">Cảm ơn bạn đã đăng ký!</string>
+    <string name="premium_subscription_renewal">Gói đăng ký của bạn sẽ gia hạn vào %s</string>
+    <string name="premium_subscription_expiration">Gói đăng ký của bạn sẽ hết hạn vào %s</string>
+    <string name="premium_subscription_no_expiration">Gói đăng ký của bạn được thiết lập để không bao giờ hết hạn. Tuyệt vời!</string>
+    <string name="premium_policies">Xem <a href="https://newsblur.com/privacy">chính sách quyền riêng tư</a> và <a href="https://newsblur.com/tos">điều khoản sử dụng</a> của NewsBlur để biết chi tiết.</string>
+    <string name="premium_subscription_header">Gói đăng ký Premium</string>
+    <string name="archive_subscription_header">Kho lưu trữ Premium</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">Gói đăng ký NewsBlur Premium</string>
+    <string name="archive_subscription_title">Kho lưu trữ NewsBlur Premium</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">35,99 USD mỗi năm (3,00 USD/tháng)</string>
+    <string name="premium_subscription_active">Gói đăng ký Premium của bạn đang hoạt động</string>
+    <string name="archive_subscription_active">Gói đăng ký kho lưu trữ Premium của bạn đang hoạt động</string>
+    <string name="pro_subscription_active">Gói đăng ký Premium Pro của bạn đang hoạt động</string>
+    <string name="subscription_manage">Quản lý gói đăng ký</string>
+    <string name="subscription_details_error">Lỗi khi lấy thông tin chi tiết gói đăng ký</string>
+    <string name="no_subscription_available">Không có gói đăng ký nào</string>
+    <string name="subscription_unavailable">Hiện không khả dụng trên Android</string>
+    <string name="subscription_coming_soon">Sắp ra mắt</string>
+    <string name="subscription_upgrade_from_premium">Nâng cấp từ Premium</string>
+    <string name="subscription_upgrade_from_archive">Nâng cấp từ gói Archive</string>
+    <string name="subscription_price_yearly">%1$s/năm (%2$s/tháng)</string>
+    <string name="subscription_price_monthly">%1$s/tháng</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">Gói lưu trữ cao cấp bao gồm tất cả các tính năng trên</string>
+    <string name="premium_pro_includes_above">Gói đăng ký premium pro của bạn bao gồm tất cả các tính năng ở trên</string>
+    <string name="premium_enable_sites">Theo dõi tối đa 1,024 trang web</string>
+    <string name="premium_sync">Các trang web được cập nhật thường xuyên hơn tới 5 lần</string>
+    <string name="premium_read_by_folder">Dòng tin (đọc theo thư mục)</string>
+    <string name="premium_search">Tìm kiếm trang web và thư mục</string>
+    <string name="premium_searchable_tags">Lưu bài viết với thẻ có thể tìm kiếm</string>
+    <string name="premium_privacy_options">Tùy chọn quyền riêng tư cho blurblog của bạn</string>
+    <string name="premium_custom_rss">Nguồn cấp RSS tùy chỉnh cho các bài viết đã lưu</string>
+    <string name="premium_text_view">Chế độ xem văn bản trích xuất nội dung bài viết một cách tiện lợi</string>
+    <string name="premium_discover_related">Khám phá các bài viết và trang liên quan</string>
+    <string name="premium_shiloh">Bạn cho Lyric, chú chó săn háu ăn của NewsBlur, ăn trong 6 ngày</string>
+    <string name="archive_everything_premium">Dĩ nhiên là có mọi thứ trong gói đăng ký cao cấp</string>
+    <string name="archive_enable_sites">Theo dõi tối đa 4.096 trang web</string>
+    <string name="archive_marked_as_read">Chọn thời điểm tự động đánh dấu bài viết là đã đọc</string>
+    <string name="archive_customize_auto_read">Tùy chỉnh chế độ tự động đánh dấu đã đọc theo trang web hoặc thư mục</string>
+    <string name="archive_story_searchable_forever">Mọi bài viết từ mọi trang đều được lưu trữ và có thể tìm kiếm mãi mãi</string>
+    <string name="archive_back_filled">Các nguồn cấp dữ liệu hỗ trợ phân trang được điền ngược để tạo kho lưu trữ đầy đủ</string>
+    <string name="archive_train_full_text">Huấn luyện bài viết dựa trên toàn bộ nội dung</string>
+    <string name="archive_discover_related">Khám phá các bài viết liên quan trong kho lưu trữ của bạn</string>
+    <string name="archive_export_trained_stories">Xuất các bài viết đã huấn luyện trong thư mục dưới dạng nguồn cấp RSS</string>
+    <string name="archive_stories_unread_forever">Bài viết có thể giữ ở trạng thái chưa đọc vô thời hạn</string>
+    <string name="archive_ask_ai">Đặt câu hỏi AI về bài viết</string>
+    <string name="archive_filter_by_date_range">Lọc bài viết theo khoảng ngày</string>
+    <string name="archive_train_folder">Áp dụng huấn luyện cho cả thư mục</string>
+    <string name="archive_train_globally">Áp dụng quá trình huấn luyện cho toàn bộ</string>
+    <string name="pro_everything_archive">Tất nhiên, mọi thứ có trong gói đăng ký lưu trữ</string>
+    <string name="pro_enable_sites">Theo dõi tối đa 10.000 trang web</string>
+    <string name="pro_all_feeds_fetched">Tất cả nguồn tin được lấy dữ liệu sau mỗi 5–15 phút</string>
+    <string name="pro_regex_train">Huấn luyện tin bằng biểu thức chính quy</string>
+    <string name="pro_priority_support">Hỗ trợ ưu tiên</string>
+    <string name="pro_natural_language_filters">Bộ lọc ngôn ngữ tự nhiên</string>
+    <string name="pro_natural_language_search">Tìm kiếm bằng ngôn ngữ tự nhiên</string>
+    <string name="settings_cat_offline">Đọc ngoại tuyến</string>
+    <string name="settings_enable_offline">Tải bài viết xuống</string>
+    <string name="settings_enable_offline_sum">Định kỳ tải bài viết trong nền</string>
+    <string name="settings_enable_image_prefetch">Tải hình ảnh xuống</string>
+    <string name="settings_enable_image_prefetch_sum">Tải trước hình ảnh để đọc ngoại tuyến</string>
+    <string name="settings_keep_old_stories">Giữ lại tin sau khi đọc</string>
+    <string name="settings_keep_old_stories_sum">Tắt để giảm dung lượng lưu trữ</string>
+    <string name="mute_config_title">Bạn có thể theo dõi tối đa 64 trang web với tài khoản tiêu chuẩn miễn phí</string>
+    <string name="mute_config_message">Vui lòng tắt tiếng %d trang web hoặc đặt lại về các trang web phổ biến nhất.</string>
+    <string name="mute_config_reset_button">Đặt lại về các trang phổ biến</string>
+    <string name="mute_config_upgrade_to_premium">Nâng cấp lên Premium</string>
+    <string name="mute_config_upgrade_subtitle">Đăng ký 1.024 trang web</string>
+    <string name="mute_config_upgrade">Nâng cấp</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">Có %d trang web</string>
+    <string name="mute_config_sites_over">%d vượt quá giới hạn</string>
+    <string name="menu_network_select">Tải xuống bằng…</string>
+    <string name="menu_network_select_sum">Hạn chế dữ liệu nền chỉ dùng các mạng đã chọn</string>
+    <string name="menu_network_select_opt_any">Mọi mạng</string>
+    <string name="menu_network_select_opt_nomo">Bất kỳ mạng Wi-Fi hoặc Ethernet nào</string>
+    <string name="menu_network_select_opt_nomononme">Chỉ dùng Wi-Fi không giới hạn hoặc Ethernet</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">Xóa bài viết ngoại tuyến…</string>
+    <string name="menu_delete_offline_stories_sum">Giải phóng dung lượng bằng cách xóa bài viết và hình ảnh đã lưu</string>
+    <string name="menu_delete_offline_stories_confirmation">Đã xóa tất cả tin và hình ảnh!</string>
+    <string name="menu_cache_age_select">Giữ bài viết trong bao lâu…</string>
+    <string name="menu_cache_age_select_sum">Xóa các bài viết đã lưu để đọc ngoại tuyến</string>
+    <string name="menu_cache_age_select_opt_2d">2 ngày (giảm mức sử dụng bộ nhớ)</string>
+    <string name="menu_cache_age_select_opt_7d">7 ngày</string>
+    <string name="menu_cache_age_select_opt_14d">14 ngày</string>
+    <string name="menu_cache_age_select_opt_30d">30 ngày (giảm sử dụng mạng)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">Danh sách nguồn cấp dữ liệu</string>
+    <string name="setting_feed_list_order">Thứ tự danh sách nguồn tin…</string>
+    <string name="settings_enable_row_global_shared">Hiển thị bài viết được chia sẻ công khai</string>
+    <string name="settings_enable_row_global_shared_sum">Hiển thị thư mục Bài viết được chia sẻ toàn cầu</string>
+    <string name="settings_enable_row_infrequent_stories">Hiển thị bài viết ít xuất hiện</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Hiển thị thư mục bài viết ít cập nhật</string>
+    <string name="settings_enable_row_daily_briefing">Hiển thị bản tin hằng ngày</string>
+    <string name="settings_enable_row_daily_briefing_sum">Hiện thư mục Bản tin hằng ngày</string>
+    <string name="settings_enable_row_widely_read_stories">Hiển thị bài viết được đọc rộng rãi</string>
+    <string name="settings_enable_row_widely_read_stories_sum">Hiển thị thư mục Tin được đọc nhiều</string>
+    <string name="settings_enable_row_long_reads">Hiển thị bài đọc dài</string>
+    <string name="settings_enable_row_long_reads_sum">Hiển thị thư mục Bài đọc dài</string>
+    <string name="settings_enable_row_good_reads">Hiển thị bài đọc hay</string>
+    <string name="settings_enable_row_good_reads_sum">Hiển thị thư mục Tin hay</string>
+    <string name="settings_cat_story_list">Danh sách bài viết</string>
+    <string name="settings_cat_story_layout">Bố cục bài viết</string>
+    <string name="settings_app_icon">Biểu tượng ứng dụng</string>
+    <string name="settings_app_icon_choose">Chọn biểu tượng</string>
+    <string name="settings_app_icon_summary">12 kiểu màu với biến thể sáng và tối.</string>
+    <string name="settings_app_icon_footer">Người đăng ký Premium có thể chọn biểu tượng NewsBlur tùy chỉnh. Mỗi kiểu đều có phiên bản sáng và tối.</string>
+    <string name="settings_app_icon_premium">Premium</string>
+    <string name="settings_app_icon_light">Sáng</string>
+    <string name="settings_app_icon_dark">Tối</string>
+    <string name="settings_app_icon_save_failed">Không thể thay đổi biểu tượng ứng dụng</string>
+    <string name="settings_app_icon_appearance_light">Sáng</string>
+    <string name="settings_app_icon_appearance_auto">Dùng cả hai</string>
+    <string name="settings_app_icon_appearance_dark">Tối</string>
+    <string name="settings_app_icon_appearance_light_caption">Luôn dùng biểu tượng sáng bất kể cài đặt thiết bị của bạn.</string>
+    <string name="settings_app_icon_appearance_auto_caption">Biểu tượng sẽ theo giao diện sáng hoặc tối trên thiết bị của bạn.</string>
+    <string name="settings_app_icon_appearance_dark_caption">Luôn giữ biểu tượng tối, bất kể thiết lập trên thiết bị của bạn.</string>
+    <string name="oldest">Cũ nhất</string>
+    <string name="newest">Mới nhất</string>
+    <string name="menu_story_order">Thứ tự bài viết</string>
+    <string name="settings_story_order">Thứ tự bài viết…</string>
+    <string name="story_header_options">Tùy chọn</string>
+    <string name="story_header_search">Tìm kiếm</string>
+    <string name="story_header_related_sites">Trang liên quan</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">Thoải mái</string>
+    <string name="compact">Gọn</string>
+    <string name="alphabetical">Theo thứ tự bảng chữ cái</string>
+    <string name="most_used_at_top">Được dùng nhiều nhất ở trên cùng</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">Tất cả bài viết</string>
+    <string name="unread_only">Chỉ chưa đọc</string>
+    <string name="menu_story_content_preview">Bản xem trước nội dung bài viết</string>
+    <string name="menu_story_thumbnail_preview">Xem trước hình thu nhỏ</string>
+    <string name="menu_mark_read_on_scroll">Đánh dấu đã đọc khi cuộn</string>
+    <string name="settings_read_filter">Bộ lọc bài viết đã đọc…</string>
+    <string name="settings_read_filter_title">Bài viết được hiển thị</string>
+    <string name="menu_read_filter">Bộ lọc bài viết đã đọc</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>Đánh dấu tất cả là đã đọc</item>
+        <item>Hủy</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Đánh dấu các bài viết cũ hơn là đã đọc</item>
+        <item>Hủy</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="other">Cũ hơn %d ngày</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="other">%s người đăng ký</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="other">%s tin/tháng</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="other">Cũng được đăng trên các trang %d</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="other">+ thêm %d trang web</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>Đánh dấu các bài mới hơn là đã đọc</item>
+        <item>Hủy</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">Tự động mở tin chưa đọc đầu tiên</string>
+    <string name="settings_auto_open_first_unread_sum">Tự động mở bài viết chưa đọc đầu tiên trong danh sách bài viết</string>
+    <string name="settings_mark_read_on_feed_scroll">Đánh dấu tiêu đề tin bài là đã đọc khi cuộn</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Tự động đánh dấu bài viết là đã đọc khi cuộn qua</string>
+    <string name="settings_story_clustering">Nhóm các bài viết liên quan</string>
+    <string name="settings_story_clustering_summary">Hiển thị các bài viết trùng lặp từ nguồn cấp dữ liệu khác bên dưới tiêu đề bài viết</string>
+    <string name="settings_cluster_matches">Các bài viết trùng khớp trong nhóm</string>
+    <string name="settings_cluster_matches_summary">Chọn xem các cụm chỉ hiển thị tiêu đề trùng lặp hay cả tin bài liên quan</string>
+    <string name="settings_story_clustering_save_failed">Không thể lưu tùy chọn nhóm bài viết</string>
+    <string name="settings_story_clustering_title_only">Chỉ tiêu đề</string>
+    <string name="settings_cluster_mode_title_match_only">Chỉ khớp tiêu đề</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Khớp tiêu đề và nội dung liên quan</string>
+    <string name="settings_cluster_mark_read_matches">Đánh dấu đã đọc các bài viết khớp</string>
+    <string name="settings_cluster_mark_read_related">Đánh dấu các bài viết liên quan là đã đọc</string>
+    <string name="settings_cluster_mark_read_matches_summary">Khi bạn đọc một tin, hãy đánh dấu cả những tin trùng khớp là đã đọc.</string>
+    <string name="settings_cluster_mark_read_related_summary">Khi bạn đọc một bài viết, hãy đánh dấu cả những bài viết khớp và liên quan là đã đọc.</string>
+    <string name="settings_cluster_mark_read_save_failed">Không thể lưu tùy chọn đánh dấu bài viết liên quan là đã đọc</string>
+    <string name="settings_story_clustering_title">Tiêu đề</string>
+    <string name="settings_story_clustering_only">chỉ</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">Khớp</string>
+    <string name="story_cluster_badge_related">Liên quan</string>
+    <string name="settings_mark_story_read">Đánh dấu bài viết là đã đọc…</string>
+    <string name="settings_mark_story_read_title">Đánh dấu tin là đã đọc</string>
+    <string name="mark_story_read_immediately">Chỉ khi chọn</string>
+    <string name="mark_story_read_on_scroll">Khi cuộn hoặc chọn</string>
+    <string name="mark_story_read_1_second">Sau 1 giây</string>
+    <string name="mark_story_read_2_seconds">Sau 2 giây</string>
+    <string name="mark_story_read_3_seconds">Sau 3 giây</string>
+    <string name="mark_story_read_5_seconds">Sau 5 giây</string>
+    <string name="mark_story_read_10_seconds">Sau 10 giây</string>
+    <string name="mark_story_read_20_seconds">Sau 20 giây</string>
+    <string name="mark_story_read_30_seconds">Sau 30 giây</string>
+    <string name="mark_story_read_45_seconds">Sau 45 giây</string>
+    <string name="mark_story_read_60_seconds">Sau 60 giây</string>
+    <string name="mark_story_read_manually">Thủ công</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">Chia sẻ tin bài</string>
+    <string name="settings_show_public_comments">Hiển thị bình luận công khai</string>
+    <string name="settings_reading">Đang đọc</string>
+    <string name="settings_show_ask_ai">Hiển thị Hỏi AI</string>
+    <string name="settings_content_preview">Văn bản xem trước nội dung…</string>
+    <string name="settings_thumbnails_style">Ảnh thu nhỏ xem trước…</string>
+    <string name="settings_preview_images_title">Xem trước hình ảnh</string>
+    <string name="settings_preview_images_segment_off">Tắt</string>
+    <string name="settings_preview_images_segment_left_small">L nhỏ</string>
+    <string name="settings_preview_images_segment_left_large">L lớn</string>
+    <string name="settings_preview_images_segment_right_small">R nhỏ</string>
+    <string name="settings_preview_images_segment_right_large">R lớn</string>
+    <string name="settings_notifications">Thông báo</string>
+    <string name="settings_enable_notifications">Bật thông báo</string>
+    <string name="ask_ai_upgrade_archive">Nâng cấp lên Kho lưu trữ Premium</string>
+    <string name="ask_ai_ask_question">Đặt câu hỏi…</string>
+    <string name="ask_ai_follow_up">Hỏi tiếp…</string>
+    <string name="ask_ai_ask">Hỏi</string>
+    <string name="ask_ai_send">Gửi</string>
+    <string name="ask_ai_reask">Hỏi lại</string>
+    <string name="ask_ai_recording">Đang ghi…</string>
+    <string name="ask_ai_transcribing">Đang chép lời…</string>
+    <string name="ask_ai_microphone_permission_denied">Quyền truy cập micrô bị từ chối</string>
+    <string name="ask_ai_microphone_error">Không thể ghi âm</string>
+    <string name="settings_confirm_mark_all_read_note">Luôn yêu cầu xác nhận khi đánh dấu đã đọc tất cả bài viết trên trang web. Nhấn giữ nút đánh dấu đã đọc để xem thêm tùy chọn.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">Cả hai</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">Thư mục</string>
+    <string name="settings_confirm_mark_all_read_segment_never">Không bao giờ</string>
+    <string name="settings_after_mark_read_title">Sau khi đánh dấu đã đọc</string>
+    <string name="settings_after_mark_read_next">Mở danh sách tiếp theo</string>
+    <string name="settings_after_mark_read_stay">Ở lại đây</string>
+    <string name="settings_when_opening_site_title">Khi mở một trang web</string>
+    <string name="settings_when_opening_site_stories">Hiển thị tin</string>
+    <string name="settings_when_opening_site_first_story">Mở bài viết đầu tiên</string>
+    <string name="story_cluster_upgrade_archive">Kho lưu trữ cao cấp</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">Nhỏ, bên trái</string>
+    <string name="story_thumbnail_left_hand_large">Lớn, bên trái</string>
+    <string name="story_thumbnail_right_hand_small">Bên phải, kích thước nhỏ</string>
+    <string name="story_thumbnail_right_hand_large">Lớn, bên phải</string>
+    <string name="story_thumbnail_no_image_preview">Không có bản xem trước hình ảnh</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">Tin từ các trang web có</string>
+    <string name="infrequent_5">&lt; 5 câu chuyện/tháng</string>
+    <string name="infrequent_15">&lt; 15 bài viết/tháng</string>
+    <string name="infrequent_30">Dưới 30 bài viết/tháng</string>
+    <string name="infrequent_60">&lt; 60 bài/tháng</string>
+    <string name="infrequent_90">&lt; 90 bài viết/tháng</string>
+    <string name="story_intel_dialog_title">Bạn thích và không thích điều gì ở bài viết này?</string>
+    <string name="feed_intel_dialog_title">Bạn thích và không thích điều gì ở trang web này?</string>
+    <string name="intel_title_header">Tiêu đề bài viết</string>
+    <string name="feed_intel_title_header">Tiêu đề</string>
+    <string name="intel_tag_header">Thẻ tin</string>
+    <string name="feed_intel_tag_header">Thẻ</string>
+    <string name="intel_author_header">Tác giả bài viết</string>
+    <string name="feed_intel_author_header">Tác giả</string>
+    <string name="intel_feed_header">Tất cả nội dung từ nhà xuất bản</string>
+    <string name="intel_super_dislike">Rất không thích</string>
+    <string name="explainer_super_dislike">Không thích mạnh</string>
+    <string name="explainer_like">Thích</string>
+    <string name="explainer_dislike">Không thích</string>
+    <string name="explainer_beats">nhịp</string>
+    <string name="explainer_example1_header">Một lượt thích có thể lấn át bất kỳ số lượt không thích nào</string>
+    <string name="explainer_example1_result">Tin hiển thị trong chế độ Tập trung</string>
+    <string name="explainer_example2_header">Một lượt cực kỳ không thích duy nhất sẽ ghi đè mọi thứ</string>
+    <string name="explainer_example2_result">Bài viết luôn bị ẩn</string>
+    <string name="auto">Tự động</string>
+    <string name="light">Sáng</string>
+    <string name="sepia">Nâu đỏ</string>
+    <string name="dark">Tối</string>
+    <string name="black">Đen</string>
+    <string name="settings_gestures">Thao tác vuốt</string>
+    <string name="sync_status_housekeeping">Đang dọn dẹp…</string>
+    <string name="sync_status_actions">Đang đồng bộ %d thao tác đọc…</string>
+    <string name="sync_status_recounts">Đang cập nhật các thao tác đọc…</string>
+    <string name="sync_status_ffsync">Đang trên đường…</string>
+    <string name="sync_status_cleanup">Đang dọn dẹp…</string>
+    <string name="sync_status_starred">Đồng bộ thao tác với tin đã lưu…</string>
+    <string name="sync_status_stories">Đang tải tin mới…</string>
+    <string name="sync_status_unreads">Đang lưu%stin chưa đọc…</string>
+    <string name="sync_status_images">Đang lưu %d ảnh…</string>
+    <string name="sync_status_offline">Ngoại tuyến</string>
+    <string name="sync_status_feed_add">Đang thêm nguồn cấp dữ liệu</string>
+    <string name="sync_status_done">Hoàn tất</string>
+    <string name="volume_key_navigation">Điều hướng bằng phím âm lượng…</string>
+    <string name="off">Tắt</string>
+    <string name="volume_up_next">Lên = tin tiếp theo</string>
+    <string name="volume_down_next">Xuống = câu chuyện tiếp theo</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">Mở nguồn cấp dữ liệu/thư mục tiếp theo sau khi đọc</string>
+    <string name="settings_load_next_on_mark_read_summary">Tải nguồn tin/thư mục tiếp theo sau khi đánh dấu đã đọc</string>
+    <string name="settings_confirm_mark_all_read">Xác nhận đánh dấu tất cả là đã đọc khi…</string>
+    <string name="none">Không cái nào</string>
+    <string name="feed_and_folder">Nguồn tin và thư mục</string>
+    <string name="folder_only">Chỉ thư mục</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">Xác nhận đánh dấu các bài cũ hơn/mới hơn là đã đọc</string>
+    <string name="settings_ltr_gesture_action">Vuốt sang phải trong danh sách bài viết…</string>
+    <string name="gest_action_none">Không làm gì</string>
+    <string name="gest_action_back">Quay lại danh sách trước</string>
+    <string name="gest_action_toggle_read">Bật/tắt trạng thái đã đọc của bài viết</string>
+    <string name="gest_action_markread">Đánh dấu bài viết là đã đọc</string>
+    <string name="gest_action_markunread">Đánh dấu tin bài là chưa đọc</string>
+    <string name="gest_action_save">Lưu bài viết</string>
+    <string name="gest_action_unsave">Bỏ lưu bài viết</string>
+    <string name="gest_action_statistics">Thống kê trang web</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">Vuốt sang trái trên tiêu đề bài viết…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">Trình duyệt mặc định…</string>
+    <string name="font">Phông chữ…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>Mặc định hệ thống</item>
+        <item>Trình duyệt trong ứng dụng</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">Bài viết mới</string>
+    <string name="go_to_feed">Đến nguồn tin</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="add_feed">Thêm nguồn tin</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">Email</string>
+    <string name="notification_web">Web</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">Không có thông báo từ nguồn tin</string>
+    <string name="notification_permissions_context">Cần có quyền để gửi thông báo</string>
+    <string name="notification_permissions_rationale">Bạn cần cấp quyền thông báo theo cách thủ công trong phần cài đặt của ứng dụng trước khi thử bật thông báo lại</string>
+    <string name="write_storage_permission_opml">Cần quyền ghi bộ nhớ để xuất OPML</string>
+    <string name="story_saved">Tin đã được đánh dấu là đã lưu</string>
+    <string name="story_unsaved">Đã đánh dấu bài viết là chưa lưu</string>
+    <string name="story_read">Bài viết đã được đánh dấu là đã đọc</string>
+    <string name="story_unread">Đã đánh dấu bài viết là chưa đọc</string>
+    <string name="unread_stories">Tin chưa đọc</string>
+    <string name="focused_stories">Bài viết được ưu tiên</string>
+    <string name="saved_stories">Bài viết đã lưu</string>
+    <string name="short_next_story">Tin tiếp theo</string>
+    <string name="short_previous_story">Tin trước</string>
+    <string name="short_text_view">Chế độ xem văn bản</string>
+    <string name="short_page_down">Trang xuống</string>
+    <string name="short_page_down_key">phím cách</string>
+    <string name="short_page_up">Trang lên</string>
+    <string name="short_page_up_key">\u21E7 dấu cách</string>
+    <string name="short_next_unread_story">Bài viết chưa đọc tiếp theo</string>
+    <string name="short_toggle_read_unread">Chuyển đổi Đã đọc/Chưa đọc</string>
+    <string name="short_save_unsave_story">Lưu/Bỏ lưu tin bài</string>
+    <string name="short_open_in_browser">Mở trong trình duyệt</string>
+    <string name="short_share_this_story">Chia sẻ bài viết này</string>
+    <string name="short_scroll_to_comments">Cuộn đến bình luận</string>
+    <string name="short_open_story_trainer">Mở công cụ huấn luyện bài viết</string>
+    <string name="short_open_all_stories">Mở tất cả câu chuyện trên trang web</string>
+    <string name="short_switch_views">Chuyển đổi chế độ xem</string>
+    <string name="short_add_site">Thêm trang web</string>
+    <string name="registering">Đang đăng ký...</string>
+    <string name="renaming_feed_message">Đang đổi tên nguồn cấp %s</string>
+    <string name="renaming_folder_message">Đang đổi tên thư mục %s</string>
+    <string name="parent_folder">Thư mục cha</string>
+    <string name="folder_added">Đã thêm thư mục</string>
+    <string name="new_folder_parent">Trong: %1$s</string>
+    <string name="ui_014f8b8d982f">Thêm bộ lọc từ khóa tùy chỉnh để tạo các mục điểm tin riêng</string>
+    <string name="ui_05392d13e2f2">Chưa có bản tin nào</string>
+    <string name="ui_0a4444676244">Lưu thất bại</string>
+    <string name="ui_0a8adac9d6d5">Lịch</string>
+    <string name="ui_13b7bfcac438">Đang xử lý…</string>
+    <string name="ui_2eb56be3c2d9">Nguồn</string>
+    <string name="ui_314ef761a08f">Thêm mục từ khóa</string>
+    <string name="ui_3af014d03229">Nguồn cấp dữ liệu</string>
+    <string name="ui_3e4a49541e18">Bao gồm cả bài viết đã đọc</string>
+    <string name="ui_4a24ff492222">Nhận bản tin tóm tắt hằng ngày gồm những bài viết nổi bật nhất</string>
+    <string name="ui_4e9f59082144">Kho lưu trữ Premium</string>
+    <string name="ui_5b170811b992">Nâng cấp lên Kho lưu trữ Premium</string>
+    <string name="ui_67a31d6fa581">Chọn nơi nhận thông báo Bản tin hằng ngày</string>
+    <string name="ui_67d0be0dd546">Kiểm soát nội dung được đưa vào và cách diễn đạt</string>
+    <string name="ui_68c2cc7f0cea">Mô hình</string>
+    <string name="ui_710089545189">Độ dài &amp; phong cách</string>
+    <string name="ui_753a22b2eb61">Thông báo</string>
+    <string name="ui_771ee100da2b">Mục từ khóa</string>
+    <string name="ui_7c522fb68f07">Nhận bản tóm tắt các tin bài hàng đầu theo lịch của bạn.</string>
+    <string name="ui_7f7e956b2244">Thiết lập Bản tin hằng ngày để tạo bản tóm tắt những bài viết quan trọng nhất với bạn.</string>
+    <string name="ui_7ff5a6dafd80">Mục</string>
+    <string name="ui_80f7bcbc57b0">Chọn tần suất và thời điểm tạo bản tin tóm tắt của bạn</string>
+    <string name="ui_a4d5830966af">Tự động tạo bản tin tóm tắt theo lịch của bạn</string>
+    <string name="ui_a92076d4b9e3">Chọn mô hình soạn Bản tin hằng ngày của bạn</string>
+    <string name="ui_a970fbbd6df8">Tự động tạo</string>
+    <string name="ui_a9dc7e4dcba7">Cài đặt Bản tin hằng ngày</string>
+    <string name="ui_bbfa773e5a63">Đóng</string>
+    <string name="ui_c2d462f8f6da">Chọn những tin phù hợp để đưa vào Bản tin hằng ngày</string>
+    <string name="ui_d521ea8640b5">Tạo bản tin tóm tắt hằng ngày</string>
+    <string name="ui_df174a3f2faa">Đã bật</string>
+    <string name="ui_df2164622bcf">Không thể tải Bản tin hằng ngày</string>
+    <string name="ui_eaed56ec84ae">Bản tin hằng ngày</string>
+    <string name="ui_efc007a393f6">Lưu</string>
+    <string name="ui_f530db58b3e5">Từ khóa</string>
+    <string name="ui_fdafe86c10a4">Chỉ đưa vào các mục có bài viết phù hợp</string>
+    <string name="ui_690910f6ed17">Nhập OPML</string>
+    <string name="ui_244fd5e426f0">Xuất OPML</string>
+    <string name="ui_768e0c1c6957">Tiêu đề</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">Thẻ đã lưu</string>
+    <string name="ui_6e914f494515">Thẻ bài viết</string>
+    <string name="ui_e912ab619a72">Thẻ khác</string>
+    <string name="i18n_add_site">Thêm trang web</string>
+    <string name="i18n_add">Thêm</string>
+    <string name="i18n_retry">Thử lại</string>
+    <string name="i18n_no_sites_found_try_another_search">Không tìm thấy trang web nào. Hãy thử tìm kiếm khác.</string>
+    <string name="i18n_load_more">Tải thêm</string>
+    <string name="i18n_follow_any_website">Theo dõi bất kỳ trang web nào</string>
+    <string name="i18n_mark_updated_stories_unread">Đánh dấu các bài viết đã cập nhật là chưa đọc</string>
+    <string name="i18n_follow_news_that_matters_to_you">Theo dõi tin tức quan trọng với bạn</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">Chọn một chủ đề hoặc tạo nguồn Google News cho bất kỳ nội dung tìm kiếm nào.</string>
+    <string name="i18n_subscribe">Đăng ký</string>
+    <string name="i18n_tech">công nghệ</string>
+    <string name="i18n_review">đánh giá</string>
+    <string name="i18n_sponsored">được tài trợ</string>
+    <string name="i18n_discover_more_to_read">Khám phá thêm nội dung để đọc</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">Không tìm thấy trang web nào. Bạn cũng có thể thêm trang web bằng URL.</string>
+    <string name="i18n_add_discover_sites">Thêm + Khám phá trang</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">Tạo nguồn cấp dữ liệu từ trang không có RSS. NewsBlur tìm các bài viết và kiểm tra cập nhật. Cần có Premium Archive.</string>
+</resources>
