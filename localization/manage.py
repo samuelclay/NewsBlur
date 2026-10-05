@@ -19,6 +19,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import lru_cache
 from pathlib import Path
 
 from babel import Locale
@@ -112,6 +113,15 @@ def source_entries(code="en"):
             if not source.strip() or source.startswith("@"):
                 continue
             entries.append(entry("android", f"{name}:{suffix}", source, kind=node.tag))
+    entries.extend(common_entries())
+    unique = {item["id"]: item for item in entries}
+    return sorted(unique.values(), key=lambda item: item["id"])
+
+
+@lru_cache(maxsize=1)
+def common_entries():
+    """Read the locale-independent sources once per manage.py invocation."""
+    entries = []
     ios_strings = set()
     pattern = re.compile(
         r'(?:NBLocalization\.text\(\s*|\[NBLocalization text:@|NSLocalizedString\(@?)("(?:\\.|[^"\\])*")'
