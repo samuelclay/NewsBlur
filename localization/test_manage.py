@@ -47,6 +47,10 @@ class Test_Translation(unittest.TestCase):
             entry("android", "read_verb", "Read")["id"], entry("android", "read_adjective", "Read")["id"]
         )
 
+    def test_lazy_form_errors_are_in_the_translation_inventory(self):
+        messages = [item["source"] for item in source_entries() if item["platform"] == "web"]
+        self.assertIn("Your old password is incorrect.", messages)
+
     def test_arabic_plural_resources_cover_all_categories(self):
         entries = source_entries("ar")
         contexts = {item["context"] for item in entries if item["platform"] == "android"}

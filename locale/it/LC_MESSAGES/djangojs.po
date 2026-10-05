@@ -7733,14 +7733,6 @@ msgstr "e tornerai al piano gratuito"
 msgid "ask the community"
 msgstr "chiedi alla community"
 
-#: media/js/newsblur/common/voice_recorder.js:263
-msgid "audio"
-msgstr "audio"
-
-#: media/js/newsblur/views/media_player_view.js:1548
-msgid "auto_play_next"
-msgstr "auto_play_next"
-
 #: media/js/newsblur/reader/reader_keyboard.js:296
 msgid "b"
 msgstr "b"
@@ -7784,46 +7776,6 @@ msgstr "collega"
 #: media/js/newsblur/reader/reader_keyboard.js:369
 msgid "ctrl"
 msgstr "ctrl"
-
-#: media/js/newsblur/views/media_player_view.js:1542
-msgid "current_duration"
-msgstr "current_duration"
-
-#: media/js/newsblur/views/media_player_view.js:1539
-msgid "current_feed_id"
-msgstr "current_feed_id"
-
-#: media/js/newsblur/views/media_player_view.js:1540
-msgid "current_image_url"
-msgstr "current_image_url"
-
-#: media/js/newsblur/views/media_player_view.js:1538
-msgid "current_media_title"
-msgstr "current_media_title"
-
-#: media/js/newsblur/views/media_player_view.js:1537
-msgid "current_media_type"
-msgstr "current_media_type"
-
-#: media/js/newsblur/views/media_player_view.js:1536
-msgid "current_media_url"
-msgstr "current_media_url"
-
-#: media/js/newsblur/views/media_player_view.js:1543
-msgid "current_playback_rate"
-msgstr "current_playback_rate"
-
-#: media/js/newsblur/views/media_player_view.js:1541
-msgid "current_position"
-msgstr "current_position"
-
-#: media/js/newsblur/views/media_player_view.js:1535
-msgid "current_story_hash"
-msgstr "current_story_hash"
-
-#: media/js/newsblur/views/media_player_view.js:1544
-msgid "current_volume"
-msgstr "current_volume"
 
 #: media/js/newsblur/reader/reader_keyboard.js:67
 msgid "d"
@@ -7877,14 +7829,6 @@ msgstr "esc"
 msgid "f"
 msgstr "f"
 
-#: media/js/newsblur/reader/reader_feed_exception.js:1360
-msgid "feed_id"
-msgstr "feed_id"
-
-#: media/js/newsblur/reader/reader_feed_exception.js:1357
-msgid "folder_title"
-msgstr "folder_title"
-
 #: media/js/newsblur/reader/reader_account.js:205
 msgid "free account"
 msgstr "account gratuito"
@@ -7916,10 +7860,6 @@ msgstr "iPhone eamp; iPad"
 #: media/js/newsblur/reader/reader_add_feed.js:69
 msgid "in"
 msgstr "in"
-
-#: media/js/newsblur/views/media_player_view.js:1545
-msgid "is_playing"
-msgstr "is_playing"
 
 #: media/js/newsblur/reader/reader_keyboard.js:227
 msgid "j"
@@ -7969,10 +7909,6 @@ msgstr "oppure abbonati con "
 msgid "paypal"
 msgstr "paypal"
 
-#: media/js/newsblur/reader/reader_feed_exception.js:1363
-msgid "photo"
-msgstr "foto"
-
 #: media/js/newsblur/reader/reader_statistics.js:178
 msgid "premium"
 msgstr "premium"
@@ -8009,17 +7945,9 @@ msgstr "r"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
-#: media/js/newsblur/views/media_player_view.js:1549
-msgid "remember_position"
-msgstr "remember_position"
-
 #: media/js/newsblur/views/story_comment_view.js:48
 msgid "reply"
 msgstr "rispondi"
-
-#: media/js/newsblur/views/media_player_view.js:1550
-msgid "resume_on_load"
-msgstr "resume_on_load"
 
 #: media/js/newsblur/reader/reader_keyboard.js:363
 msgid "s"
@@ -8053,14 +7981,6 @@ msgstr "globale"
 msgid "site-wide preference"
 msgstr "preferenza globale"
 
-#: media/js/newsblur/views/media_player_view.js:1546
-msgid "skip_back_seconds"
-msgstr "skip_back_seconds"
-
-#: media/js/newsblur/views/media_player_view.js:1547
-msgid "skip_forward_seconds"
-msgstr "skip_forward_seconds"
-
 #: media/js/newsblur/reader/reader_preferences.js:1131
 msgid "space"
 msgstr "spazio"
@@ -8080,14 +8000,6 @@ msgstr "questo sito è già in tempo reale"
 #: media/js/newsblur/reader/reader_statistics.js:181
 msgid "this site would update every"
 msgstr "questo sito si aggiornerebbe ogni"
-
-#: media/js/newsblur/reader/reader.js:569
-msgid "tipsy-title"
-msgstr "titolo-suggerimento"
-
-#: media/js/newsblur/reader/reader_classifier.js:4298
-msgid "titles_scope"
-msgstr "titles_scope"
 
 #: media/js/newsblur/reader/reader_goodies.js:414
 msgid "true"

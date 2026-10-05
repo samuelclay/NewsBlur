@@ -1497,6 +1497,10 @@ msgstr "完成！"
 msgid "Comprehensive"
 msgstr "全面"
 
+#: apps/profile/forms.py:51
+msgid "Confirm your password"
+msgstr "确认密码"
+
 #: templates/static/features.xhtml:466
 msgid ""
 "Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, "
@@ -1650,6 +1654,11 @@ msgstr "已保存文章的自定义 RSS 订阅源"
 #: apps/ask_ai/views.py:99
 msgid "Custom question is required"
 msgstr "必须填写自定义问题"
+
+#: apps/ask_ai/views.py:103
+#, python-format
+msgid "Custom questions are limited to %(limit)d characters"
+msgstr "自定义问题最多可输入 %(limit)d 个字符"
 
 #: templates/static/compare_inoreader.xhtml:61
 msgid "Customizable AI summaries"
@@ -2037,7 +2046,7 @@ msgstr "电子邮件简报"
 msgid "Email Newsletters - NewsBlur"
 msgstr "电子邮件简报 - NewsBlur"
 
-#: templates/social/social_page.xhtml:167
+#: apps/reader/forms.py:109
 msgid "Email address"
 msgstr "电子邮件地址"
 
@@ -2896,6 +2905,10 @@ msgstr "赠礼错误"
 #: templates/profile/gift_checkout_complete.html:12
 msgid "Gift Sent"
 msgstr "礼物已发送"
+
+#: apps/profile/forms.py:212
+msgid "Gift code"
+msgstr "礼品码"
 
 #: templates/static/press.xhtml:180
 msgid "GirlSync"
@@ -3819,6 +3832,10 @@ msgstr "键盘快捷键"
 #: templates/static/features.xhtml:350
 msgid "Keyboard shortcuts preferences dialog"
 msgstr "键盘快捷键偏好设置对话框"
+
+#: apps/analyzer/forms.py:19
+msgid "Keywords"
+msgstr "关键词"
 
 #: templates/static/press.xhtml:381
 msgid "KillerStartups"
@@ -5225,7 +5242,7 @@ msgstr "未提供 URL。"
 msgid "No applications defined"
 msgstr "未定义应用"
 
-#: apps/ask_ai/views.py:146
+#: apps/ask_ai/views.py:147
 msgid "No audio file provided"
 msgstr "未提供音频文件"
 
@@ -5280,6 +5297,10 @@ msgstr "无训练系统"
 #: apps/archive_extension/views.py:1334
 msgid "No uncategorized archives found"
 msgstr "未找到未分类的归档"
+
+#: apps/profile/forms.py:94
+msgid "No user has that email address."
+msgstr "没有使用该电子邮件地址的用户。"
 
 #: templates/reader/welcome.xhtml:1682
 msgid "No."
@@ -5468,7 +5489,7 @@ msgstr "开源意味着不会被锁定"
 msgid "Open the trainer for any feed"
 msgstr "打开任意订阅源的训练器"
 
-#: apps/ask_ai/views.py:168
+#: apps/ask_ai/views.py:169
 msgid "OpenAI API key not configured"
 msgstr "尚未配置 OpenAI API 密钥"
 
@@ -5578,6 +5599,10 @@ msgstr "参数"
 msgid "Password"
 msgstr "密码"
 
+#: apps/reader/forms.py:117
+msgid "Password (optional)"
+msgstr "密码（可选）"
+
 #: templates/statistics/render_statistics_graphs.xhtml:10
 msgid "Past day"
 msgstr "过去一天"
@@ -5622,6 +5647,10 @@ msgstr "个人信息"
 msgid "Phil Windley"
 msgstr "Phil Windley"
 
+#: apps/profile/forms.py:45
+msgid "Plan"
+msgstr "套餐"
+
 #: templates/static/pricing.xhtml:26
 msgid "Plans for every reader"
 msgstr "适合每位读者的方案"
@@ -5629,6 +5658,14 @@ msgstr "适合每位读者的方案"
 #: templates/accounts/signup.html:50
 msgid "Please create an account to continue."
 msgstr "请创建帐户以继续。"
+
+#: apps/analyzer/forms.py:32
+msgid "Please enter in a keyword search query."
+msgstr "请输入关键词搜索查询。"
+
+#: apps/profile/forms.py:88
+msgid "Please enter in an email address."
+msgstr "请输入电子邮件地址。"
 
 #: templates/accounts/login.html:40
 msgid "Please login to continue."
@@ -5653,6 +5690,10 @@ msgid ""
 " and conditions of this agreement, then you may not access the website or use any services. If these Terms "
 "of Service are considered an offer, acceptance is expressly limited to these Terms of Service."
 msgstr "请在访问或使用我们的网站之前仔细阅读本服务条款。访问或使用网站的任何部分，即表示你同意受本服务条款约束。如果你不同意本协议的所有条款和条件，则不得访问本网站或使用任何服务。如果本服务条款被视为一项要约，则接受范围明确仅限于本服务条款。"
+
+#: apps/profile/forms.py:73
+msgid "Please type \"DELETE\" to confirm deletion."
+msgstr "请输入“DELETE”以确认删除。"
 
 #: templates/502.html:70
 msgid "Please wait patiently while NewsBlur comes back."
@@ -5886,7 +5927,7 @@ msgstr "Pro+ 套餐"
 msgid "Pro: every feed, every 5 minutes"
 msgstr "专业版：所有订阅源每 5 分钟更新一次"
 
-#: apps/ask_ai/views.py:125
+#: apps/ask_ai/views.py:126
 msgid "Processing question"
 msgstr "正在处理问题"
 
@@ -6730,6 +6771,10 @@ msgstr "2012年9月5日"
 msgid "Sept 6, 2012"
 msgstr "2012年9月6日"
 
+#: apps/reader/forms.py:154
+msgid "Seriously, fuck off spammer."
+msgstr "真是够了，垃圾邮件发送者滚开。"
+
 #: templates/static/about.xhtml:156
 msgid "Server"
 msgstr "服务器"
@@ -6911,6 +6956,10 @@ msgstr "此用户名已有人使用。"
 #: templates/reader/feeds_skeleton.xhtml:46
 msgid "Something went wrong..."
 msgstr "出了点问题……"
+
+#: apps/reader/forms.py:160
+msgid "Sorry, that email is invalid."
+msgstr "抱歉，该电子邮件地址无效。"
 
 #: templates/static/feature_cli.xhtml:56
 msgid "Source:"
@@ -7593,6 +7642,10 @@ msgstr "本网站上的第三方链接可能会将您引导至与我们无关联
 msgid "Third-party only"
 msgstr "仅第三方"
 
+#: apps/profile/forms.py:175
+msgid "This email is already being used by another account. Try something different."
+msgstr "此电子邮件地址已被另一个账户使用，请尝试其他地址。"
+
 #: apps/reader/views.py:6151
 msgid "This feature requires the Archive subscription"
 msgstr "此功能需要 Archive 订阅"
@@ -7642,6 +7695,10 @@ msgstr "本网站可能包含某些历史信息。历史信息必然不是最新
 #: templates/social/social_page.xhtml:234
 msgid "This user has limited their shared stories only to followers."
 msgstr "此用户仅与关注者分享文章。"
+
+#: apps/profile/forms.py:168
+msgid "This username is already taken. Try something different."
+msgstr "此用户名已被占用，请尝试其他用户名。"
 
 #: templates/static/tos.xhtml:33
 msgid ""
@@ -7859,6 +7916,10 @@ msgstr "两种匹配方式协同工作。标题匹配会规范化标题，并将
 msgid "Two of the most popular RSS readers, compared feature by feature. Here's how they differ."
 msgstr "两款最受欢迎的 RSS 阅读器，逐项功能对比。以下是它们的区别。"
 
+#: apps/profile/forms.py:54
+msgid "Type \"Delete\" to confirm"
+msgstr "输入“Delete”以确认"
+
 #: templates/static/feature_search.xhtml:42
 msgid "Type keywords, phrases, or combinations"
 msgstr "输入关键词、短语或组合"
@@ -7875,7 +7936,7 @@ msgstr "Underscore.js"
 msgid "Unique email address"
 msgstr "专属电子邮件地址"
 
-#: apps/ask_ai/views.py:106
+#: apps/ask_ai/views.py:107
 msgid "Unknown Ask AI question"
 msgstr "未知的 Ask AI 问题"
 
@@ -7970,7 +8031,7 @@ msgstr "用户名"
 msgid "Username or Email"
 msgstr "用户名或邮箱"
 
-#: templates/social/social_page.xhtml:161
+#: apps/reader/forms.py:24
 msgid "Username or email"
 msgstr "用户名或邮箱"
 
@@ -8863,6 +8924,10 @@ msgid ""
 " briefing."
 msgstr "您的完整新闻档案，搭载 AI 智能功能。包含 4,096 个网站、完整文章档案、询问 AI 和每日简报。"
 
+#: apps/profile/forms.py:80
+msgid "Your email address"
+msgstr "您的电子邮件地址"
+
 #: templates/static/pricing.xhtml:168
 msgid ""
 "Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
@@ -8870,9 +8935,29 @@ msgid ""
 "lower tier, you'll be asked to mute some feeds."
 msgstr "你的订阅源和已保存的文章永远不会被删除。如果从 Archive 降级，较早的文章将不再显示在搜索结果中，但升级回来后即可再次访问。如果订阅源数量超过较低套餐的限制，系统会要求你将部分订阅源设为静音。"
 
+#: apps/profile/forms.py:237
+msgid "Your gift code is invalid. Check it for errors."
+msgstr "礼品码无效，请检查是否输入有误。"
+
+#: apps/profile/forms.py:220
+msgid "Your gift code should be 12 characters long."
+msgstr "礼品码应为 12 个字符。"
+
 #: templates/static/feature_newsletters.xhtml:45
 msgid "Your inbox stays clean"
 msgstr "让你的收件箱保持整洁"
+
+#: apps/profile/forms.py:101
+msgid "Your new password"
+msgstr "新密码"
+
+#: apps/profile/forms.py:182
+msgid "Your old password is incorrect."
+msgstr "旧密码不正确。"
+
+#: apps/profile/forms.py:67
+msgid "Your password doesn't match."
+msgstr "两次输入的密码不匹配。"
 
 #: templates/profile/gift_checkout_complete.html:35
 msgid "Your payment is being processed. Your gift link will be available shortly."
@@ -8978,6 +9063,14 @@ msgstr "评论"
 msgid "cookie with every request. This cookie is set on"
 msgstr "每次请求都会附带 Cookie。此 Cookie 设置于"
 
+#: apps/profile/forms.py:136
+msgid "custom_css"
+msgstr "custom_css"
+
+#: apps/profile/forms.py:133
+msgid "custom_js"
+msgstr "custom_js"
+
 #: templates/reader/welcome.xhtml:985
 msgid "dangerousmeta"
 msgstr "dangerousmeta"
@@ -9001,6 +9094,10 @@ msgstr "编辑"
 #: templates/static/api.xhtml:38
 msgid "email Samuel"
 msgstr "发送邮件给 Samuel"
+
+#: apps/profile/forms.py:117
+msgid "email address"
+msgstr "电子邮件地址"
 
 #: templates/static/api.xhtml:41
 msgid "endpoint to begin the OAuth authentication procedure. Use the"
@@ -9264,6 +9361,10 @@ msgstr "会打开浏览器进行 OAuth 授权，流程与第三方应用相同�
 msgid "output. Works with self-hosted instances too."
 msgstr "输出。自托管实例也适用。"
 
+#: apps/profile/forms.py:129
+msgid "password"
+msgstr "密码"
+
 #: templates/analyzer/popularity_query.xhtml:30
 msgid "pebble watch, philips hue, alexa"
 msgstr "Pebble 手表、Philips Hue、Alexa"
@@ -9361,6 +9462,10 @@ msgstr "向上"
 #: templates/reader/welcome.xhtml:966
 msgid "urban_mermaid"
 msgstr "urban_mermaid"
+
+#: apps/profile/forms.py:111
+msgid "username"
+msgstr "用户名"
 
 #: templates/reader/welcome.xhtml:1723
 msgid "vs"

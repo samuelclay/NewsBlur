@@ -25,7 +25,7 @@ from pathlib import Path
 
 from babel import Locale
 from babel.messages.catalog import Catalog
-from babel.messages.extract import extract
+from babel.messages.extract import DEFAULT_KEYWORDS, extract
 from babel.messages.mofile import write_mo
 from babel.messages.pofile import write_po
 
@@ -41,6 +41,10 @@ TOKENS = re.compile(
     r"NewsBlur|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|\\[nrt]|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
 )
 APPLE_STRING = re.compile(r'"((?:\\.|[^"\\])*)"\s*=\s*"((?:\\.|[^"\\])*)"\s*;')
+EXTRACTION_KEYWORDS = {
+    **DEFAULT_KEYWORDS,
+    **{name + "_lazy": arguments for name, arguments in DEFAULT_KEYWORDS.items() if name.endswith("gettext")},
+}
 
 
 def dump(path, data):
@@ -180,7 +184,9 @@ def common_entries():
                     content = "\n".join(line.lstrip() for line in content.splitlines())
                 except SyntaxError as error:
                     raise ValueError(f"Cannot extract {path}: {error}") from error
-            for line, message, comments, context in extract(method, io.BytesIO(content.encode())):
+            for line, message, comments, context in extract(
+                method, io.BytesIO(content.encode()), keywords=EXTRACTION_KEYWORDS
+            ):
                 domain = "djangojs" if method == "javascript" else "django"
                 source = list(message) if isinstance(message, tuple) else message
                 entries.append(

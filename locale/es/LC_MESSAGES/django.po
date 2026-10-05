@@ -1609,6 +1609,10 @@ msgstr "¡Completo!"
 msgid "Comprehensive"
 msgstr "Completo"
 
+#: apps/profile/forms.py:51
+msgid "Confirm your password"
+msgstr "Confirma tu contraseña"
+
 #: templates/static/features.xhtml:466
 msgid ""
 "Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, "
@@ -1770,6 +1774,11 @@ msgstr "Feeds RSS personalizados para historias guardadas"
 #: apps/ask_ai/views.py:99
 msgid "Custom question is required"
 msgstr "Se requiere una pregunta personalizada"
+
+#: apps/ask_ai/views.py:103
+#, python-format
+msgid "Custom questions are limited to %(limit)d characters"
+msgstr "Las preguntas personalizadas tienen un límite de %(limit)d caracteres"
 
 #: templates/static/compare_inoreader.xhtml:61
 msgid "Customizable AI summaries"
@@ -2163,7 +2172,7 @@ msgstr "Boletines por Correo"
 msgid "Email Newsletters - NewsBlur"
 msgstr "Boletines por correo electrónico - NewsBlur"
 
-#: templates/social/social_page.xhtml:167
+#: apps/reader/forms.py:109
 msgid "Email address"
 msgstr "Dirección de correo electrónico"
 
@@ -3097,6 +3106,10 @@ msgstr "Error de regalo"
 #: templates/profile/gift_checkout_complete.html:12
 msgid "Gift Sent"
 msgstr "Regalo enviado"
+
+#: apps/profile/forms.py:212
+msgid "Gift code"
+msgstr "Código de regalo"
 
 #: templates/static/press.xhtml:180
 msgid "GirlSync"
@@ -4119,6 +4132,10 @@ msgstr "Atajos de teclado"
 #: templates/static/features.xhtml:350
 msgid "Keyboard shortcuts preferences dialog"
 msgstr "Diálogo de preferencias de atajos de teclado"
+
+#: apps/analyzer/forms.py:19
+msgid "Keywords"
+msgstr "Palabras clave"
 
 #: templates/static/press.xhtml:381
 msgid "KillerStartups"
@@ -5672,7 +5689,7 @@ msgstr "No se proporcionó ninguna URL."
 msgid "No applications defined"
 msgstr "No hay aplicaciones definidas"
 
-#: apps/ask_ai/views.py:146
+#: apps/ask_ai/views.py:147
 msgid "No audio file provided"
 msgstr "No se proporcionó ningún archivo de audio"
 
@@ -5727,6 +5744,10 @@ msgstr "Sin sistema de entrenamiento"
 #: apps/archive_extension/views.py:1334
 msgid "No uncategorized archives found"
 msgstr "No se encontraron archivos de noticias sin categoría"
+
+#: apps/profile/forms.py:94
+msgid "No user has that email address."
+msgstr "Ningún usuario tiene esa dirección de correo electrónico."
 
 #: templates/reader/welcome.xhtml:1682
 msgid "No."
@@ -5925,7 +5946,7 @@ msgstr "Código abierto significa sin bloqueo"
 msgid "Open the trainer for any feed"
 msgstr "Abrir el entrenador para cualquier feed"
 
-#: apps/ask_ai/views.py:168
+#: apps/ask_ai/views.py:169
 msgid "OpenAI API key not configured"
 msgstr "La clave de API de OpenAI no está configurada"
 
@@ -6037,6 +6058,10 @@ msgstr "Parámetro"
 msgid "Password"
 msgstr "Contraseña"
 
+#: apps/reader/forms.py:117
+msgid "Password (optional)"
+msgstr "Contraseña (opcional)"
+
 #: templates/statistics/render_statistics_graphs.xhtml:10
 msgid "Past day"
 msgstr "Día anterior"
@@ -6081,6 +6106,10 @@ msgstr "Información Personal"
 msgid "Phil Windley"
 msgstr "Phil Windley"
 
+#: apps/profile/forms.py:45
+msgid "Plan"
+msgstr "Plan"
+
 #: templates/static/pricing.xhtml:26
 msgid "Plans for every reader"
 msgstr "Planes para cada lector"
@@ -6088,6 +6117,14 @@ msgstr "Planes para cada lector"
 #: templates/accounts/signup.html:50
 msgid "Please create an account to continue."
 msgstr "Por favor, crea una cuenta para continuar."
+
+#: apps/analyzer/forms.py:32
+msgid "Please enter in a keyword search query."
+msgstr "Introduce una consulta de búsqueda por palabras clave."
+
+#: apps/profile/forms.py:88
+msgid "Please enter in an email address."
+msgstr "Introduce una dirección de correo electrónico."
 
 #: templates/accounts/login.html:40
 msgid "Please login to continue."
@@ -6117,6 +6154,10 @@ msgstr ""
 " estás de acuerdo con todos los términos y condiciones de este acuerdo, entonces no puedes acceder al sitio"
 " web ni utilizar ningún servicio. Si estos Términos de Servicio se consideran una oferta, la aceptación se "
 "limita expresamente a estos Términos de Servicio."
+
+#: apps/profile/forms.py:73
+msgid "Please type \"DELETE\" to confirm deletion."
+msgstr "Escribe «DELETE» para confirmar la eliminación."
 
 #: templates/502.html:70
 msgid "Please wait patiently while NewsBlur comes back."
@@ -6364,7 +6405,7 @@ msgstr "Planes Pro+"
 msgid "Pro: every feed, every 5 minutes"
 msgstr "Pro: cada feed, cada 5 minutos"
 
-#: apps/ask_ai/views.py:125
+#: apps/ask_ai/views.py:126
 msgid "Processing question"
 msgstr "Procesando pregunta"
 
@@ -7257,6 +7298,10 @@ msgstr "5 sept. 2012"
 msgid "Sept 6, 2012"
 msgstr "6 de sep. de 2012"
 
+#: apps/reader/forms.py:154
+msgid "Seriously, fuck off spammer."
+msgstr "En serio, lárgate, spammer."
+
 #: templates/static/about.xhtml:156
 msgid "Server"
 msgstr "Servidor"
@@ -7440,6 +7485,10 @@ msgstr "Alguien ya está usando ese nombre de usuario."
 #: templates/reader/feeds_skeleton.xhtml:46
 msgid "Something went wrong..."
 msgstr "Algo salió mal..."
+
+#: apps/reader/forms.py:160
+msgid "Sorry, that email is invalid."
+msgstr "Lo sentimos, esa dirección de correo electrónico no es válida."
 
 #: templates/static/feature_cli.xhtml:56
 msgid "Source:"
@@ -8182,6 +8231,10 @@ msgstr ""
 msgid "Third-party only"
 msgstr "Solo de terceros"
 
+#: apps/profile/forms.py:175
+msgid "This email is already being used by another account. Try something different."
+msgstr "Esta dirección de correo electrónico ya está siendo utilizada por otra cuenta. Prueba con otra."
+
 #: apps/reader/views.py:6151
 msgid "This feature requires the Archive subscription"
 msgstr "Esta función requiere la suscripción Archive"
@@ -8241,6 +8294,10 @@ msgstr ""
 #: templates/social/social_page.xhtml:234
 msgid "This user has limited their shared stories only to followers."
 msgstr "Este usuario ha limitado sus historias compartidas solo a seguidores."
+
+#: apps/profile/forms.py:168
+msgid "This username is already taken. Try something different."
+msgstr "Este nombre de usuario ya está en uso. Prueba con otro."
 
 #: templates/static/tos.xhtml:33
 msgid ""
@@ -8477,6 +8534,10 @@ msgstr ""
 msgid "Two of the most popular RSS readers, compared feature by feature. Here's how they differ."
 msgstr "Dos de los lectores RSS más populares, comparados característica por característica. Así es como difieren."
 
+#: apps/profile/forms.py:54
+msgid "Type \"Delete\" to confirm"
+msgstr "Escribe «Delete» para confirmar"
+
 #: templates/static/feature_search.xhtml:42
 msgid "Type keywords, phrases, or combinations"
 msgstr "Escribe palabras clave, frases o combinaciones"
@@ -8493,7 +8554,7 @@ msgstr "Underscore.js"
 msgid "Unique email address"
 msgstr "Dirección de correo electrónico única"
 
-#: apps/ask_ai/views.py:106
+#: apps/ask_ai/views.py:107
 msgid "Unknown Ask AI question"
 msgstr "Pregunta desconocida para Ask AI"
 
@@ -8592,7 +8653,7 @@ msgstr "Nombre de usuario"
 msgid "Username or Email"
 msgstr "Nombre de usuario o correo electrónico"
 
-#: templates/social/social_page.xhtml:161
+#: apps/reader/forms.py:24
 msgid "Username or email"
 msgstr "Nombre de usuario o correo electrónico"
 
@@ -9667,6 +9728,10 @@ msgstr ""
 "Tu archivo completo de noticias con inteligencia impulsada por IA. 4.096 sitios, archivo completo de "
 "historias, Preguntar a IA y resumen diario."
 
+#: apps/profile/forms.py:80
+msgid "Your email address"
+msgstr "Tu dirección de correo electrónico"
+
 #: templates/static/pricing.xhtml:168
 msgid ""
 "Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
@@ -9678,9 +9743,29 @@ msgstr ""
 "subir de nivel. Si excedes el límite de fuentes de un nivel inferior, se te pedirá que silencies algunas "
 "fuentes."
 
+#: apps/profile/forms.py:237
+msgid "Your gift code is invalid. Check it for errors."
+msgstr "El código de regalo no es válido. Comprueba que no haya errores."
+
+#: apps/profile/forms.py:220
+msgid "Your gift code should be 12 characters long."
+msgstr "El código de regalo debe tener 12 caracteres."
+
 #: templates/static/feature_newsletters.xhtml:45
 msgid "Your inbox stays clean"
 msgstr "Tu bandeja de entrada se mantiene limpia"
+
+#: apps/profile/forms.py:101
+msgid "Your new password"
+msgstr "Tu nueva contraseña"
+
+#: apps/profile/forms.py:182
+msgid "Your old password is incorrect."
+msgstr "La contraseña anterior es incorrecta."
+
+#: apps/profile/forms.py:67
+msgid "Your password doesn't match."
+msgstr "Las contraseñas no coinciden."
 
 #: templates/profile/gift_checkout_complete.html:35
 msgid "Your payment is being processed. Your gift link will be available shortly."
@@ -9790,6 +9875,14 @@ msgstr "comentario"
 msgid "cookie with every request. This cookie is set on"
 msgstr "cookie en cada solicitud. Esta cookie se establece en"
 
+#: apps/profile/forms.py:136
+msgid "custom_css"
+msgstr "custom_css"
+
+#: apps/profile/forms.py:133
+msgid "custom_js"
+msgstr "custom_js"
+
 #: templates/reader/welcome.xhtml:985
 msgid "dangerousmeta"
 msgstr "dangerousmeta"
@@ -9813,6 +9906,10 @@ msgstr "editar"
 #: templates/static/api.xhtml:38
 msgid "email Samuel"
 msgstr "enviar correo electrónico a Samuel"
+
+#: apps/profile/forms.py:117
+msgid "email address"
+msgstr "dirección de correo electrónico"
 
 #: templates/static/api.xhtml:41
 msgid "endpoint to begin the OAuth authentication procedure. Use the"
@@ -10096,6 +10193,10 @@ msgstr ""
 msgid "output. Works with self-hosted instances too."
 msgstr "salida. También funciona con instancias alojadas por cuenta propia."
 
+#: apps/profile/forms.py:129
+msgid "password"
+msgstr "contraseña"
+
 #: templates/analyzer/popularity_query.xhtml:30
 msgid "pebble watch, philips hue, alexa"
 msgstr "reloj pebble, philips hue, alexa"
@@ -10195,6 +10296,10 @@ msgstr "arriba"
 #: templates/reader/welcome.xhtml:966
 msgid "urban_mermaid"
 msgstr "urban_mermaid"
+
+#: apps/profile/forms.py:111
+msgid "username"
+msgstr "nombre de usuario"
 
 #: templates/reader/welcome.xhtml:1723
 msgid "vs"

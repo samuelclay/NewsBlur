@@ -1605,6 +1605,10 @@ msgstr "Voltooid!"
 msgid "Comprehensive"
 msgstr "Uitgebreid"
 
+#: apps/profile/forms.py:51
+msgid "Confirm your password"
+msgstr "Bevestig je wachtwoord"
+
 #: templates/static/features.xhtml:466
 msgid ""
 "Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, "
@@ -1766,6 +1770,11 @@ msgstr "Aangepaste RSS-feeds voor opgeslagen artikelen"
 #: apps/ask_ai/views.py:99
 msgid "Custom question is required"
 msgstr "Een aangepaste vraag is verplicht"
+
+#: apps/ask_ai/views.py:103
+#, python-format
+msgid "Custom questions are limited to %(limit)d characters"
+msgstr "Aangepaste vragen mogen maximaal %(limit)d tekens bevatten"
 
 #: templates/static/compare_inoreader.xhtml:61
 msgid "Customizable AI summaries"
@@ -2157,7 +2166,7 @@ msgstr "E-mailnieuwsbrieven"
 msgid "Email Newsletters - NewsBlur"
 msgstr "E-mailnieuwsbrieven - NewsBlur"
 
-#: templates/social/social_page.xhtml:167
+#: apps/reader/forms.py:109
 msgid "Email address"
 msgstr "E-mailadres"
 
@@ -3084,6 +3093,10 @@ msgstr "Fout bij cadeau"
 #: templates/profile/gift_checkout_complete.html:12
 msgid "Gift Sent"
 msgstr "Cadeau verzonden"
+
+#: apps/profile/forms.py:212
+msgid "Gift code"
+msgstr "Cadeaucode"
 
 #: templates/static/press.xhtml:180
 msgid "GirlSync"
@@ -4106,6 +4119,10 @@ msgstr "Sneltoetsen"
 #: templates/static/features.xhtml:350
 msgid "Keyboard shortcuts preferences dialog"
 msgstr "Dialoogvenster met voorkeuren voor sneltoetsen"
+
+#: apps/analyzer/forms.py:19
+msgid "Keywords"
+msgstr "Trefwoorden"
 
 #: templates/static/press.xhtml:381
 msgid "KillerStartups"
@@ -5645,7 +5662,7 @@ msgstr "Geen URL opgegeven."
 msgid "No applications defined"
 msgstr "Geen toepassingen gedefinieerd"
 
-#: apps/ask_ai/views.py:146
+#: apps/ask_ai/views.py:147
 msgid "No audio file provided"
 msgstr "Geen audiobestand opgegeven"
 
@@ -5700,6 +5717,10 @@ msgstr "Geen trainingssysteem"
 #: apps/archive_extension/views.py:1334
 msgid "No uncategorized archives found"
 msgstr "Geen niet-gecategoriseerde archieven gevonden"
+
+#: apps/profile/forms.py:94
+msgid "No user has that email address."
+msgstr "Er is geen gebruiker met dat e-mailadres."
 
 #: templates/reader/welcome.xhtml:1682
 msgid "No."
@@ -5896,7 +5917,7 @@ msgstr "Open source betekent geen vendor lock-in"
 msgid "Open the trainer for any feed"
 msgstr "Open de trainer voor een feed"
 
-#: apps/ask_ai/views.py:168
+#: apps/ask_ai/views.py:169
 msgid "OpenAI API key not configured"
 msgstr "OpenAI API-sleutel niet ingesteld"
 
@@ -6008,6 +6029,10 @@ msgstr "Parameter"
 msgid "Password"
 msgstr "Wachtwoord"
 
+#: apps/reader/forms.py:117
+msgid "Password (optional)"
+msgstr "Wachtwoord (optioneel)"
+
 #: templates/statistics/render_statistics_graphs.xhtml:10
 msgid "Past day"
 msgstr "Afgelopen dag"
@@ -6052,6 +6077,10 @@ msgstr "Persoonlijke gegevens"
 msgid "Phil Windley"
 msgstr "Phil Windley"
 
+#: apps/profile/forms.py:45
+msgid "Plan"
+msgstr "Abonnement"
+
 #: templates/static/pricing.xhtml:26
 msgid "Plans for every reader"
 msgstr "Abonnementen voor elke lezer"
@@ -6059,6 +6088,14 @@ msgstr "Abonnementen voor elke lezer"
 #: templates/accounts/signup.html:50
 msgid "Please create an account to continue."
 msgstr "Maak een account aan om door te gaan."
+
+#: apps/analyzer/forms.py:32
+msgid "Please enter in a keyword search query."
+msgstr "Voer een zoekopdracht op trefwoorden in."
+
+#: apps/profile/forms.py:88
+msgid "Please enter in an email address."
+msgstr "Voer een e-mailadres in."
 
 #: templates/accounts/login.html:40
 msgid "Please login to continue."
@@ -6088,6 +6125,10 @@ msgstr ""
 "gaat met alle voorwaarden van deze overeenkomst, mag je de website niet bezoeken en geen diensten "
 "gebruiken. Als deze Servicevoorwaarden als een aanbod worden beschouwd, is de aanvaarding uitdrukkelijk "
 "beperkt tot deze Servicevoorwaarden."
+
+#: apps/profile/forms.py:73
+msgid "Please type \"DELETE\" to confirm deletion."
+msgstr "Typ ‘DELETE’ om het verwijderen te bevestigen."
 
 #: templates/502.html:70
 msgid "Please wait patiently while NewsBlur comes back."
@@ -6329,7 +6370,7 @@ msgstr "Pro+-abonnementen"
 msgid "Pro: every feed, every 5 minutes"
 msgstr "Pro: elke feed, elke 5 minuten"
 
-#: apps/ask_ai/views.py:125
+#: apps/ask_ai/views.py:126
 msgid "Processing question"
 msgstr "Vraag in behandeling"
 
@@ -7218,6 +7259,10 @@ msgstr "5 sep. 2012"
 msgid "Sept 6, 2012"
 msgstr "6 sep. 2012"
 
+#: apps/reader/forms.py:154
+msgid "Seriously, fuck off spammer."
+msgstr "Rot op, spammer."
+
 #: templates/static/about.xhtml:156
 msgid "Server"
 msgstr "Server"
@@ -7401,6 +7446,10 @@ msgstr "Iemand gebruikt deze gebruikersnaam al."
 #: templates/reader/feeds_skeleton.xhtml:46
 msgid "Something went wrong..."
 msgstr "Er is iets misgegaan..."
+
+#: apps/reader/forms.py:160
+msgid "Sorry, that email is invalid."
+msgstr "Sorry, dat e-mailadres is ongeldig."
 
 #: templates/static/feature_cli.xhtml:56
 msgid "Source:"
@@ -8145,6 +8194,10 @@ msgstr ""
 msgid "Third-party only"
 msgstr "Alleen van derden"
 
+#: apps/profile/forms.py:175
+msgid "This email is already being used by another account. Try something different."
+msgstr "Dit e-mailadres wordt al gebruikt door een ander account. Probeer iets anders."
+
 #: apps/reader/views.py:6151
 msgid "This feature requires the Archive subscription"
 msgstr "Voor deze functie is een Archief-abonnement vereist"
@@ -8206,6 +8259,10 @@ msgstr ""
 #: templates/social/social_page.xhtml:234
 msgid "This user has limited their shared stories only to followers."
 msgstr "Deze gebruiker heeft het delen van artikelen beperkt tot volgers."
+
+#: apps/profile/forms.py:168
+msgid "This username is already taken. Try something different."
+msgstr "Deze gebruikersnaam is al in gebruik. Probeer iets anders."
 
 #: templates/static/tos.xhtml:33
 msgid ""
@@ -8441,6 +8498,10 @@ msgstr ""
 msgid "Two of the most popular RSS readers, compared feature by feature. Here's how they differ."
 msgstr "Twee van de populairste RSS-readers vergeleken, functie voor functie. Zo verschillen ze."
 
+#: apps/profile/forms.py:54
+msgid "Type \"Delete\" to confirm"
+msgstr "Typ ‘Delete’ om te bevestigen"
+
 #: templates/static/feature_search.xhtml:42
 msgid "Type keywords, phrases, or combinations"
 msgstr "Typ trefwoorden, woordgroepen of combinaties"
@@ -8457,7 +8518,7 @@ msgstr "Underscore.js"
 msgid "Unique email address"
 msgstr "Uniek e-mailadres"
 
-#: apps/ask_ai/views.py:106
+#: apps/ask_ai/views.py:107
 msgid "Unknown Ask AI question"
 msgstr "Onbekende Ask AI-vraag"
 
@@ -8555,7 +8616,7 @@ msgstr "Gebruikersnaam"
 msgid "Username or Email"
 msgstr "Gebruikersnaam of e-mailadres"
 
-#: templates/social/social_page.xhtml:161
+#: apps/reader/forms.py:24
 msgid "Username or email"
 msgstr "Gebruikersnaam of e-mailadres"
 
@@ -9623,6 +9684,10 @@ msgstr ""
 "Je complete nieuwsarchief met AI-intelligentie. 4.096 sites, volledig verhalenarchief, Vraag AI en "
 "dagelijks overzicht."
 
+#: apps/profile/forms.py:80
+msgid "Your email address"
+msgstr "Je e-mailadres"
+
 #: templates/static/pricing.xhtml:168
 msgid ""
 "Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
@@ -9634,9 +9699,29 @@ msgstr ""
 "upgradet. Als je de feedlimiet van een lager abonnement overschrijdt, wordt je gevraagd enkele feeds te "
 "dempen."
 
+#: apps/profile/forms.py:237
+msgid "Your gift code is invalid. Check it for errors."
+msgstr "Je cadeaucode is ongeldig. Controleer op fouten."
+
+#: apps/profile/forms.py:220
+msgid "Your gift code should be 12 characters long."
+msgstr "Je cadeaucode moet 12 tekens lang zijn."
+
 #: templates/static/feature_newsletters.xhtml:45
 msgid "Your inbox stays clean"
 msgstr "Je inbox blijft overzichtelijk"
+
+#: apps/profile/forms.py:101
+msgid "Your new password"
+msgstr "Je nieuwe wachtwoord"
+
+#: apps/profile/forms.py:182
+msgid "Your old password is incorrect."
+msgstr "Je oude wachtwoord is onjuist."
+
+#: apps/profile/forms.py:67
+msgid "Your password doesn't match."
+msgstr "Je wachtwoorden komen niet overeen."
 
 #: templates/profile/gift_checkout_complete.html:35
 msgid "Your payment is being processed. Your gift link will be available shortly."
@@ -9746,6 +9831,14 @@ msgstr "reactie"
 msgid "cookie with every request. This cookie is set on"
 msgstr "cookie bij elk verzoek. Deze cookie wordt ingesteld op"
 
+#: apps/profile/forms.py:136
+msgid "custom_css"
+msgstr "custom_css"
+
+#: apps/profile/forms.py:133
+msgid "custom_js"
+msgstr "custom_js"
+
 #: templates/reader/welcome.xhtml:985
 msgid "dangerousmeta"
 msgstr "dangerousmeta"
@@ -9769,6 +9862,10 @@ msgstr "bewerken"
 #: templates/static/api.xhtml:38
 msgid "email Samuel"
 msgstr "E-mail Samuel"
+
+#: apps/profile/forms.py:117
+msgid "email address"
+msgstr "e-mailadres"
 
 #: templates/static/api.xhtml:41
 msgid "endpoint to begin the OAuth authentication procedure. Use the"
@@ -10055,6 +10152,10 @@ msgstr ""
 msgid "output. Works with self-hosted instances too."
 msgstr "uitvoer. Werkt ook met zelfgehoste instanties."
 
+#: apps/profile/forms.py:129
+msgid "password"
+msgstr "wachtwoord"
+
 #: templates/analyzer/popularity_query.xhtml:30
 msgid "pebble watch, philips hue, alexa"
 msgstr "Pebble Watch, Philips Hue, Alexa"
@@ -10154,6 +10255,10 @@ msgstr "omhoog"
 #: templates/reader/welcome.xhtml:966
 msgid "urban_mermaid"
 msgstr "urban_mermaid"
+
+#: apps/profile/forms.py:111
+msgid "username"
+msgstr "gebruikersnaam"
 
 #: templates/reader/welcome.xhtml:1723
 msgid "vs"

@@ -1609,6 +1609,10 @@ msgstr "Tamamlandı!"
 msgid "Comprehensive"
 msgstr "Kapsamlı"
 
+#: apps/profile/forms.py:51
+msgid "Confirm your password"
+msgstr "Şifrenizi onaylayın"
+
 #: templates/static/features.xhtml:466
 msgid ""
 "Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, "
@@ -1770,6 +1774,11 @@ msgstr "Kaydedilen haberler için özel RSS akışları"
 #: apps/ask_ai/views.py:99
 msgid "Custom question is required"
 msgstr "Özel soru gerekli"
+
+#: apps/ask_ai/views.py:103
+#, python-format
+msgid "Custom questions are limited to %(limit)d characters"
+msgstr "Özel sorular en fazla %(limit)d karakter olabilir"
 
 #: templates/static/compare_inoreader.xhtml:61
 msgid "Customizable AI summaries"
@@ -2161,7 +2170,7 @@ msgstr "E-posta Bültenleri"
 msgid "Email Newsletters - NewsBlur"
 msgstr "E-posta bültenleri - NewsBlur"
 
-#: templates/social/social_page.xhtml:167
+#: apps/reader/forms.py:109
 msgid "Email address"
 msgstr "E-posta adresi"
 
@@ -3089,6 +3098,10 @@ msgstr "Hediye Hatası"
 #: templates/profile/gift_checkout_complete.html:12
 msgid "Gift Sent"
 msgstr "Hediye Gönderildi"
+
+#: apps/profile/forms.py:212
+msgid "Gift code"
+msgstr "Hediye kodu"
 
 #: templates/static/press.xhtml:180
 msgid "GirlSync"
@@ -4103,6 +4116,10 @@ msgstr "Klavye Kısayolları"
 #: templates/static/features.xhtml:350
 msgid "Keyboard shortcuts preferences dialog"
 msgstr "Klavye kısayolları tercihleri iletişim kutusu"
+
+#: apps/analyzer/forms.py:19
+msgid "Keywords"
+msgstr "Anahtar kelimeler"
 
 #: templates/static/press.xhtml:381
 msgid "KillerStartups"
@@ -5645,7 +5662,7 @@ msgstr "URL belirtilmedi."
 msgid "No applications defined"
 msgstr "Tanımlanmış uygulama yok"
 
-#: apps/ask_ai/views.py:146
+#: apps/ask_ai/views.py:147
 msgid "No audio file provided"
 msgstr "Ses dosyası sağlanmadı"
 
@@ -5700,6 +5717,10 @@ msgstr "Eğitim sistemi yok"
 #: apps/archive_extension/views.py:1334
 msgid "No uncategorized archives found"
 msgstr "Kategorilendirilmemiş arşiv bulunamadı"
+
+#: apps/profile/forms.py:94
+msgid "No user has that email address."
+msgstr "Bu e-posta adresine sahip bir kullanıcı yok."
 
 #: templates/reader/welcome.xhtml:1682
 msgid "No."
@@ -5894,7 +5915,7 @@ msgstr "Açık kaynak, bağımlılık anlamına gelmez"
 msgid "Open the trainer for any feed"
 msgstr "Herhangi bir akış için eğitmeni açın"
 
-#: apps/ask_ai/views.py:168
+#: apps/ask_ai/views.py:169
 msgid "OpenAI API key not configured"
 msgstr "OpenAI API anahtarı yapılandırılmamış"
 
@@ -6006,6 +6027,10 @@ msgstr "Parametre"
 msgid "Password"
 msgstr "Parola"
 
+#: apps/reader/forms.py:117
+msgid "Password (optional)"
+msgstr "Şifre (isteğe bağlı)"
+
 #: templates/statistics/render_statistics_graphs.xhtml:10
 msgid "Past day"
 msgstr "Son 24 saat"
@@ -6050,6 +6075,10 @@ msgstr "Kişisel Bilgiler"
 msgid "Phil Windley"
 msgstr "Phil Windley"
 
+#: apps/profile/forms.py:45
+msgid "Plan"
+msgstr "Plan"
+
 #: templates/static/pricing.xhtml:26
 msgid "Plans for every reader"
 msgstr "Her okura uygun planlar"
@@ -6057,6 +6086,14 @@ msgstr "Her okura uygun planlar"
 #: templates/accounts/signup.html:50
 msgid "Please create an account to continue."
 msgstr "Devam etmek için lütfen bir hesap oluşturun."
+
+#: apps/analyzer/forms.py:32
+msgid "Please enter in a keyword search query."
+msgstr "Lütfen bir anahtar kelime arama sorgusu girin."
+
+#: apps/profile/forms.py:88
+msgid "Please enter in an email address."
+msgstr "Lütfen bir e-posta adresi girin."
 
 #: templates/accounts/login.html:40
 msgid "Please login to continue."
@@ -6086,6 +6123,10 @@ msgstr ""
 " olursunuz. Bu sözleşmenin tüm hüküm ve koşullarını kabul etmiyorsanız web sitesine erişemez veya "
 "hizmetlerden yararlanamazsınız. Bu Hizmet Koşulları bir teklif olarak değerlendiriliyorsa, kabulünüz açıkça"
 " bu Hizmet Koşullarıyla sınırlıdır."
+
+#: apps/profile/forms.py:73
+msgid "Please type \"DELETE\" to confirm deletion."
+msgstr "Silme işlemini onaylamak için lütfen \"DELETE\" yazın."
 
 #: templates/502.html:70
 msgid "Please wait patiently while NewsBlur comes back."
@@ -6328,7 +6369,7 @@ msgstr "Pro+ planları"
 msgid "Pro: every feed, every 5 minutes"
 msgstr "Pro: tüm akışlar, her 5 dakikada bir"
 
-#: apps/ask_ai/views.py:125
+#: apps/ask_ai/views.py:126
 msgid "Processing question"
 msgstr "Soru işleniyor"
 
@@ -7216,6 +7257,10 @@ msgstr "5 Eylül 2012"
 msgid "Sept 6, 2012"
 msgstr "6 Eyl 2012"
 
+#: apps/reader/forms.py:154
+msgid "Seriously, fuck off spammer."
+msgstr "Cidden, defol git spamcı."
+
 #: templates/static/about.xhtml:156
 msgid "Server"
 msgstr "Sunucu"
@@ -7399,6 +7444,10 @@ msgstr "Bu kullanıcı adını başka biri kullanıyor."
 #: templates/reader/feeds_skeleton.xhtml:46
 msgid "Something went wrong..."
 msgstr "Bir şeyler ters gitti..."
+
+#: apps/reader/forms.py:160
+msgid "Sorry, that email is invalid."
+msgstr "Üzgünüz, bu e-posta adresi geçersiz."
 
 #: templates/static/feature_cli.xhtml:56
 msgid "Source:"
@@ -8138,6 +8187,10 @@ msgstr ""
 msgid "Third-party only"
 msgstr "Yalnızca üçüncü taraf"
 
+#: apps/profile/forms.py:175
+msgid "This email is already being used by another account. Try something different."
+msgstr "Bu e-posta başka bir hesap tarafından kullanılıyor. Başka bir adres deneyin."
+
 #: apps/reader/views.py:6151
 msgid "This feature requires the Archive subscription"
 msgstr "Bu özellik için Arşiv aboneliği gerekir"
@@ -8197,6 +8250,10 @@ msgstr ""
 #: templates/social/social_page.xhtml:234
 msgid "This user has limited their shared stories only to followers."
 msgstr "Bu kullanıcı, paylaştığı haberleri yalnızca takipçileriyle sınırladı."
+
+#: apps/profile/forms.py:168
+msgid "This username is already taken. Try something different."
+msgstr "Bu kullanıcı adı zaten alınmış. Başka bir ad deneyin."
 
 #: templates/static/tos.xhtml:33
 msgid ""
@@ -8433,6 +8490,10 @@ msgstr ""
 msgid "Two of the most popular RSS readers, compared feature by feature. Here's how they differ."
 msgstr "En popüler RSS okuyucularından ikisi, özellik özellik karşılaştırıldı. İşte aralarındaki farklar."
 
+#: apps/profile/forms.py:54
+msgid "Type \"Delete\" to confirm"
+msgstr "Onaylamak için \"Delete\" yazın"
+
 #: templates/static/feature_search.xhtml:42
 msgid "Type keywords, phrases, or combinations"
 msgstr "Anahtar kelimeler, ifadeler veya birleşimler yazın"
@@ -8449,7 +8510,7 @@ msgstr "Underscore.js"
 msgid "Unique email address"
 msgstr "Benzersiz e-posta adresi"
 
-#: apps/ask_ai/views.py:106
+#: apps/ask_ai/views.py:107
 msgid "Unknown Ask AI question"
 msgstr "Bilinmeyen Ask AI sorusu"
 
@@ -8548,7 +8609,7 @@ msgstr "Kullanıcı adı"
 msgid "Username or Email"
 msgstr "Kullanıcı adı veya e-posta"
 
-#: templates/social/social_page.xhtml:161
+#: apps/reader/forms.py:24
 msgid "Username or email"
 msgstr "Kullanıcı adı veya e-posta"
 
@@ -9623,6 +9684,10 @@ msgstr ""
 "Yapay zekâ destekli analizle eksiksiz haber arşiviniz. 4.096 site, tüm yazıların arşivi, Yapay Zekâ'ya Sor "
 "ve günlük özet."
 
+#: apps/profile/forms.py:80
+msgid "Your email address"
+msgstr "E-posta adresiniz"
+
 #: templates/static/pricing.xhtml:168
 msgid ""
 "Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
@@ -9633,9 +9698,29 @@ msgstr ""
 "geçerseniz eski haberler arama sonuçlarında görünmez; ancak yeniden yükseltme yaptığınızda tekrar "
 "erişilebilir olur. Daha düşük planın akış sınırını aşarsanız bazı akışları sessize almanız istenir."
 
+#: apps/profile/forms.py:237
+msgid "Your gift code is invalid. Check it for errors."
+msgstr "Hediye kodunuz geçersiz. Hata olup olmadığını kontrol edin."
+
+#: apps/profile/forms.py:220
+msgid "Your gift code should be 12 characters long."
+msgstr "Hediye kodunuz 12 karakter uzunluğunda olmalıdır."
+
 #: templates/static/feature_newsletters.xhtml:45
 msgid "Your inbox stays clean"
 msgstr "Gelen kutunuz düzenli kalır"
+
+#: apps/profile/forms.py:101
+msgid "Your new password"
+msgstr "Yeni şifreniz"
+
+#: apps/profile/forms.py:182
+msgid "Your old password is incorrect."
+msgstr "Eski şifreniz yanlış."
+
+#: apps/profile/forms.py:67
+msgid "Your password doesn't match."
+msgstr "Şifreleriniz eşleşmiyor."
 
 #: templates/profile/gift_checkout_complete.html:35
 msgid "Your payment is being processed. Your gift link will be available shortly."
@@ -9745,6 +9830,14 @@ msgstr "yorum"
 msgid "cookie with every request. This cookie is set on"
 msgstr "her istekle birlikte gönderilen çerez. Bu çerez şu tarihte ayarlanır:"
 
+#: apps/profile/forms.py:136
+msgid "custom_css"
+msgstr "custom_css"
+
+#: apps/profile/forms.py:133
+msgid "custom_js"
+msgstr "custom_js"
+
 #: templates/reader/welcome.xhtml:985
 msgid "dangerousmeta"
 msgstr "dangerousmeta"
@@ -9768,6 +9861,10 @@ msgstr "düzenle"
 #: templates/static/api.xhtml:38
 msgid "email Samuel"
 msgstr "Samuel'e e-posta gönder"
+
+#: apps/profile/forms.py:117
+msgid "email address"
+msgstr "e-posta adresi"
 
 #: templates/static/api.xhtml:41
 msgid "endpoint to begin the OAuth authentication procedure. Use the"
@@ -10054,6 +10151,10 @@ msgstr ""
 msgid "output. Works with self-hosted instances too."
 msgstr "çıktı. Kendi sunucunuzda barındırdığınız kurulumlarla da çalışır."
 
+#: apps/profile/forms.py:129
+msgid "password"
+msgstr "şifre"
+
 #: templates/analyzer/popularity_query.xhtml:30
 msgid "pebble watch, philips hue, alexa"
 msgstr "pebble saati, philips hue, alexa"
@@ -10153,6 +10254,10 @@ msgstr "yukarı"
 #: templates/reader/welcome.xhtml:966
 msgid "urban_mermaid"
 msgstr "urban_mermaid"
+
+#: apps/profile/forms.py:111
+msgid "username"
+msgstr "kullanıcı adı"
 
 #: templates/reader/welcome.xhtml:1723
 msgid "vs"
