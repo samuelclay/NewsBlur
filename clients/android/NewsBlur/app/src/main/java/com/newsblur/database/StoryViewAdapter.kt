@@ -101,6 +101,8 @@ class StoryViewAdapter(
     private var oldScrollState: Parcelable? = null
     private var pendingScrollStoryHash: String? = null
     private var smoothPendingStoryScroll = false
+    var isFollowingReadingStory = false
+        private set
     private var pendingHighlightStoryHash: String? = null
     private var returnPresentationReady = true
     private var returnHighlight: ReturnedStoryHighlight? = null
@@ -232,6 +234,7 @@ class StoryViewAdapter(
             oldScrollState = null
             pendingScrollStoryHash = null
             smoothPendingStoryScroll = false
+            isFollowingReadingStory = false
             pendingHighlightStoryHash = null
             returnHighlight?.cancel()
             returnHighlight = null
@@ -255,6 +258,7 @@ class StoryViewAdapter(
         oldScrollState = null
         pendingScrollStoryHash = null
         smoothPendingStoryScroll = false
+        isFollowingReadingStory = false
         pendingHighlightStoryHash = null
         returnHighlight?.cancel()
         returnHighlight = null
@@ -552,8 +556,13 @@ class StoryViewAdapter(
         queueStoryReturn(storyHash, rv, false, true)
     }
 
+    fun onStoryListScrollStateChanged(newState: Int) {
+        if (newState != RecyclerView.SCROLL_STATE_SETTLING) isFollowingReadingStory = false
+    }
+
     private fun queueStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean, smoothScroll: Boolean) {
         if (storyHash.isNullOrBlank()) return
+        isFollowingReadingStory = false
         if (pendingHighlightStoryHash != storyHash && returnHighlight?.storyHash != storyHash) {
             returnHighlight?.cancel()
             returnHighlight = null
@@ -578,8 +587,11 @@ class StoryViewAdapter(
                 val last = llm?.findLastVisibleItemPosition() ?: -1
                 if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)) {
                     // StoryViewAdapter.kt animates live reading only after a list has a visible anchor.
-                    if (smoothPendingStoryScroll && !replacingEmptyList && first >= 0 && last >= 0) rv.smoothScrollToPosition(position)
-                    else if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
+                    if (smoothPendingStoryScroll && !replacingEmptyList && first >= 0 && last >= 0) {
+                        // StoryViewAdapter.kt keeps the fling-stop exemption until the animation ends, not just until it starts.
+                        isFollowingReadingStory = true
+                        rv.smoothScrollToPosition(position)
+                    } else if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
                     else lm.scrollToPosition(position)
                 }
                 // StoryViewAdapter.kt retains the identity until its page exists in a committed batch.
@@ -688,6 +700,7 @@ class StoryViewAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
+        isFollowingReadingStory = false
         recyclerView.viewTreeObserver.takeIf { it.isAlive }?.let { observer ->
             returnPreDrawListener?.let(observer::removeOnPreDrawListener)
             returnFocusListener?.let(observer::removeOnWindowFocusChangeListener)
