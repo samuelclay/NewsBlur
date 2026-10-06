@@ -424,6 +424,11 @@ public class ItemSetFragment extends NbFragment {
         requestStoryReturn(storyHash, false);
     }
 
+    public void followReadingStory(@Nullable String storyHash) {
+        if (binding == null || adapter == null) return;
+        adapter.followReadingStory(storyHash, binding.itemgridfragmentGrid);
+    }
+
     private void requestStoryReturn(@Nullable String storyHash, boolean presentationReady) {
         if (binding == null || adapter == null) return;
         // ItemSetFragment.java handles an already committed list as well as later database batches.
