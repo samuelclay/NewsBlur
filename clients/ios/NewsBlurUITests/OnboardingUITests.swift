@@ -57,15 +57,21 @@ final class Test_OnboardingUI: XCTestCase {
             interest.tap()
             let add = app.buttons["onboarding.addBundle"]
             XCTAssertTrue(add.waitForExistence(timeout: 15))
-            let card = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'discover-bundle-feed-'")).firstMatch
-            XCTAssertTrue(card.waitForExistence(timeout: 10))
+            let firstCard = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'discover-bundle-feed-'")).firstMatch
+            XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
+            let card = app.buttons[firstCard.identifier]
             // OnboardingUITests.swift hits header, story text, image edge, and footer independently.
             for (index, point) in [CGVector(dx: 0.3, dy: 0.06), CGVector(dx: 0.4, dy: 0.4),
                                    CGVector(dx: 0.93, dy: 0.4), CGVector(dx: 0.3, dy: 0.95)].enumerated() {
                 if index == 3 {
+                    let originalY = card.frame.minY
+                    screenshot("card-before-drag-" + theme)
                     card.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6)).press(forDuration: 0.1,
                         thenDragTo: card.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2)))
+                    screenshot("card-after-drag-" + theme)
+                    XCTAssertLessThan(card.frame.minY, originalY - 100, "The gesture must actually scroll the same card.")
                     XCTAssertEqual(card.value as? String, "Not included in bundle", "Scrolling a card must not toggle it.")
+                    XCTAssertEqual(add.label, "Add 4 feeds to “My Favorites” folder")
                 }
                 card.coordinate(withNormalizedOffset: point).tap()
                 let included = index % 2 == 1
@@ -233,8 +239,13 @@ final class Test_OnboardingUI: XCTestCase {
         screenshot("unified-search")
         add.tap()
         XCTAssertTrue(app.staticTexts["Subscribed"].waitForExistence(timeout: 10))
+        // OnboardingUITests.swift brings search below the fixed header before tapping its clear control.
+        // XCTest can report the scrolled-under control as hittable and otherwise tap Close instead.
+        app.swipeDown()
         for _ in 0..<4 where !app.buttons["Clear search"].isHittable { app.swipeDown() }
         app.buttons["Clear search"].tap()
+        XCTAssertEqual(search.value as? String, "")
+        for _ in 0..<4 where !app.buttons["onboarding.interest.Design"].isHittable { app.swipeUp() }
         XCTAssertTrue(app.buttons["onboarding.interest.Design"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["Science Daily"].exists)
         screenshot("search-cleared")
@@ -396,8 +407,7 @@ final class Test_OnboardingUI: XCTestCase {
             XCTAssertFalse(app.buttons["Back to feeds"].exists)
             XCTAssertFalse(app.staticTexts["Good luck, and happy reading."].exists)
             XCTAssertFalse(app.staticTexts["Loading your feeds…"].exists)
-            XCTAssertTrue(app.links.matching(NSPredicate(format: "label CONTAINS '@samuelclay on X'")).firstMatch.exists)
-            XCTAssertTrue(app.links.matching(NSPredicate(format: "label CONTAINS '@NewsBlur on X'")).firstMatch.exists)
+            assertCompletionLinksAreReachable(app)
             screenshot("recap-" + theme)
             app.buttons["Start reading"].tap()
             XCTAssertTrue(app.staticTexts["You’re all set up."].waitForNonExistence(timeout: 5))
@@ -442,8 +452,7 @@ final class Test_OnboardingUI: XCTestCase {
             XCTAssertFalse(app.buttons["Back to feeds"].exists)
             XCTAssertFalse(app.staticTexts["Good luck, and happy reading."].exists)
             XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS 'Science'")).firstMatch.exists)
-            XCTAssertTrue(app.links.matching(NSPredicate(format: "label CONTAINS '@samuelclay on X'")).firstMatch.exists)
-            XCTAssertTrue(app.links.matching(NSPredicate(format: "label CONTAINS '@NewsBlur on X'")).firstMatch.exists)
+            assertCompletionLinksAreReachable(app)
             screenshot("complete-" + theme)
             app.buttons["Start reading"].tap()
             XCTAssertFalse(app.staticTexts["You’re all set up."].waitForExistence(timeout: 1))
@@ -482,6 +491,16 @@ final class Test_OnboardingUI: XCTestCase {
         screenshot("loading-reader-finished")
         XCTAssertFalse(app.staticTexts["You’re all set up."].waitForExistence(timeout: 1))
         app.terminate()
+    }
+
+    private func assertCompletionLinksAreReachable(_ app: XCUIApplication) {
+        // OnboardingUITests.swift queries SwiftUI Link's actual accessibility button role.
+        for title in ["@samuelclay on X", "@NewsBlur on X"] {
+            let link = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", title)).firstMatch
+            XCTAssertTrue(link.exists)
+            for _ in 0..<4 where !link.isHittable { app.swipeUp() }
+            XCTAssertTrue(link.isHittable, "The completion link must be reachable: \(title)")
+        }
     }
 
     private func screenshot(_ name: String) {

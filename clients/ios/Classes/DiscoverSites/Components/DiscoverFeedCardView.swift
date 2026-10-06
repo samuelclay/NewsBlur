@@ -29,7 +29,7 @@ struct DiscoverFeedCardView: View {
                     .contentShape(RoundedRectangle(cornerRadius: 14))
                     .opacity(selection.wrappedValue ? 1 : 0.5)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(DiscoverBundleSelectionButtonStyle())
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: selection.wrappedValue)
             .accessibilityLabel("Include \(feed.feedTitle)")
             .accessibilityValue(selection.wrappedValue ? "Included in bundle" : "Not included in bundle")
@@ -324,6 +324,17 @@ struct DiscoverFeedIconView: View {
             .font(.system(size: 14))
             .foregroundColor(DiscoverColors.textSecondary)
             .frame(width: 24, height: 24)
+    }
+}
+
+@available(iOS 15.0, *)
+private struct DiscoverBundleSelectionButtonStyle: PrimitiveButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        // DiscoverFeedCardView.swift requires a completed tap: releasing a scroll inside
+        // a large plain Button can otherwise change the bundle's selection on iOS 26.
+        configuration.label
+            .onTapGesture { configuration.trigger() }
+            .accessibilityAction { configuration.trigger() }
     }
 }
 
