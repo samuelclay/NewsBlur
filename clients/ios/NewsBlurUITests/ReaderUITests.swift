@@ -1969,6 +1969,7 @@ final class ReaderUITests: XCTestCase {
         }
         XCUIDevice.shared.orientation = .portrait
         defer { XCUIDevice.shared.orientation = .portrait }
+        app.launchArguments += ["-newsblur-ui-test-animations"]
         launch(on: "reader-feed-swift")
         XCTAssertTrue(waitForFixtureStoryTitles())
         let row = storyRow("ui-story-swift-1")
@@ -1983,15 +1984,17 @@ final class ReaderUITests: XCTestCase {
             let rotation = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
                 (app.frame.width > app.frame.height) == expectedLandscape
             }, object: nil)
-            XCTAssertEqual(XCTWaiter.wait(for: [rotation], timeout: 10), .completed)
+            let rotationResult = XCTWaiter.wait(for: [rotation], timeout: 10)
             let web = app.webViews.firstMatch
-            XCTAssertTrue(web.waitForExistence(timeout: 10))
             attachScreenshot(named: "conventional-phone-reader-width-\(orientation.rawValue)")
-            let geometry = XCTAttachment(string: "orientation=\(orientation.rawValue) app=\(app.frame) web=\(web.frame)\n\(app.debugDescription)")
+            let webFrame = web.exists ? String(describing: web.frame) : "unavailable"
+            let geometry = XCTAttachment(string: "expectedOrientation=\(orientation.rawValue) actualOrientation=\(XCUIDevice.shared.orientation.rawValue) rotationResult=\(rotationResult.rawValue) app=\(app.frame) web=\(webFrame)\n\(app.debugDescription)")
             geometry.name = "conventional-phone-reader-geometry"
             geometry.lifetime = .keepAlways
             add(geometry)
 
+            XCTAssertEqual(rotationResult, .completed)
+            XCTAssertTrue(waitForRenderedFixtureArticle(orientation: orientation))
             XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
             XCTAssertTrue(isVisibleOnScreen(currentStory))
             // ReaderUITests.swift permits the phone's protected horizontal edges, while rejecting a reader squeezed beside either list.
@@ -2002,6 +2005,34 @@ final class ReaderUITests: XCTestCase {
             XCTAssertFalse(fixtureStorySurface().isHittable,
                            "Story titles must remain below the reader in compact navigation")
         }
+
+        let storyBack = app.buttons.containing(.staticText, identifier: "Swift Weekly").firstMatch
+        XCTAssertTrue(storyBack.waitForExistence(timeout: 5))
+        XCTAssertTrue(storyBack.isHittable)
+        storyBack.tap()
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").isHittable)
+        attachScreenshot(named: "conventional-phone-after-back-to-stories")
+
+        let feedsBack = app.navigationBars.buttons.firstMatch
+        XCTAssertTrue(feedsBack.waitForExistence(timeout: 5))
+        XCTAssertTrue(feedsBack.isHittable)
+        feedsBack.tap()
+        let feedsList = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feedsList.waitForExistence(timeout: 5))
+        XCTAssertTrue(feedsList.isHittable)
+        attachScreenshot(named: "conventional-phone-after-back-to-feeds")
+
+        let feed = feedCell("910002")
+        XCTAssertTrue(reveal(feed, in: feedsList))
+        tapElementCenter(feed)
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let reopenedRow = storyRow("ui-story-swift-1")
+        XCTAssertTrue(reopenedRow.waitForExistence(timeout: 10))
+        tapElementCenter(reopenedRow)
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .portrait))
+        XCTAssertEqual(currentStoryProbe().label, "Swift Fixture Story One")
+        attachScreenshot(named: "conventional-phone-reopened-story")
     }
 
     func test_selectingFeedShowsExpectedFixtureStoryRows() {

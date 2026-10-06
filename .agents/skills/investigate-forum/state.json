@@ -3,16 +3,16 @@
     "13672": {
       "title": "NewsBlur app on iOS orientation issue",
       "url": "https://forum.newsblur.com/t/newsblur-app-on-ios-orientation-issue/13672",
-      "status": "tier2-pending",
-      "tier": 2,
-      "handled_at": "2026-10-06T02:34:46.250Z",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-10-06T05:30:44.804Z",
       "last_posted_at": "2026-10-05T15:43:22.493Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2163",
       "branch": "FTUX",
       "worktree": ".worktree/ftux-combined",
-      "note": "Investigated on FTUX at be9090ce0. The existing conventional-phone width fix 5c7d9f869 is absent from iOS_15.0.2 (20e917697), the reported build 341. Three focused layout-policy tests pass. Existing rotation UI test fails on the booted iPhone 17e / iOS 26.5 because the app never enters landscape despite device rotation and unlocked orientation; normal animations produce the same failure. This is not reproduction of the reported Pro Max three-pane/blank portrait bug, and no production fix was added. Strengthened ReaderUITests.swift locally to verify rendered content and actual Back navigation, but that journey remains unvalidated and uncommitted. Test evidence is under /tmp/newsblur-forum-13672-*.xcresult. Restored the 17e's original preferences and relaunched normally. Awaiting permission to boot Pro Max under the standing reuse-booted-simulator rule; existing Pro Max also uses iOS 26.5, while reporter uses 27.0. Do not claim fixed or released. No forum post or deployment.",
-      "reply": "The layout change intended to prevent the squeezed columns is not in 15.0.2. I'm checking the Pro Max rotation sequence before calling this fixed, including whether Back still works after returning to portrait.",
-      "question": "May I boot the existing iPhone 17 Pro Max simulator for this reproduction? The booted iPhone 17e does not have the same landscape size-class behavior as the reported device."
+      "note": "User selected the existing iPhone 17e. Rotation initially failed in both NewsBlur and Safari; restarting that same simulator without erasing data restored rotation. Strengthened the existing UI regression to enable normal animations, verify rendered article content after portrait-landscape-portrait, tap Back to stories and feeds, and reopen the article. The full journey and Safari control pass on iPhone 17e / iOS 26.5. Three focused layout-policy tests also pass. Existing FTUX width fix 5c7d9f869 is absent from reported release iOS_15.0.2 (20e917697, build 341). No additional production layout change was necessary or made. Pro Max / iOS 27.0 remains unverified; 17e results do not establish exact-device reproduction. Added a data-preserving restart action to run_ios.py. Removed temporary Safari diagnostic test. Restored original app preferences and login. Evidence: /tmp/newsblur-forum-13672-restarted-17e.xcresult and /tmp/newsblur-orientation-verified-attachments. Committing regression coverage on FTUX; not released or posted to forum.",
+      "reply": "The layout change intended to prevent the squeezed columns is not in 15.0.2 yet. I checked the current development build on an iPhone 17e: the article stays readable after rotating both ways, Back works, and the story reopens. I have not verified the exact Pro Max setup yet.",
+      "question": null
     },
     "13799": {
       "title": "Subscription renewal through Apple not recognized",
