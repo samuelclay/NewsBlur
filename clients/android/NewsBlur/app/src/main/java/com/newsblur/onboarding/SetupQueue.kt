@@ -262,6 +262,7 @@ class SetupQueue
                                             .map { it.string("feed_id") }
                                             .toSet()
                                     known.forEach { if (it.id in accepted) success(it, account) else failed.add(it) }
+                                    if (failed.isNotEmpty()) error = response.json.string("message").ifBlank { error }
                                     individual = chosen - known.toSet()
                                 } else {
                                     batchSupported = false
