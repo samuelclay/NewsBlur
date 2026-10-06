@@ -1406,6 +1406,50 @@ import XCTest
         XCTAssertTrue(failures([440, 205, 350, -206, -220], times).contains("Wrong direction"))
     }
 
+    func test_articleMotionRecorderDoesNotAssignDelayedSamplesToEarlierDisplayFrames() async throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first { $0.isKeyWindow }
+        let window = trackFixtureWindow(UIWindow(windowScene: scene))
+        window.frame = CGRect(x: 0, y: 0, width: 800, height: 600)
+        let root = UIViewController()
+        window.rootViewController = root
+        window.makeKeyAndVisible()
+        let article = UIView(frame: CGRect(x: 660, y: 0, width: 660, height: 600))
+        article.backgroundColor = .systemBackground
+        root.view.addSubview(article)
+        let recorder = StorySelectionFrameRecorder(view: article, window: window, horizontal: true)
+        defer {
+            recorder.stop()
+            window.isHidden = true
+            window.rootViewController = nil
+            previousWindow?.makeKey()
+        }
+        try await requireState("The compositor control has a committed presentation layer") {
+            article.layer.presentation() != nil
+        }
+        recorder.start()
+        try await requireState("The compositor control has stable initial samples") { recorder.positions.count >= 3 }
+        let delayAfter = CACurrentMediaTime() + 0.1
+        recorder.beforeSample = { [weak recorder] in
+            guard CACurrentMediaTime() >= delayAfter else { return }
+            recorder?.beforeSample = nil
+            // StoryDetailLoadingTests.swift delays only the observer; the compositor animation continues independently.
+            Thread.sleep(forTimeInterval: 0.14)
+        }
+        UIView.animate(withDuration: 0.35, delay: 0, options: .curveLinear) {
+            article.transform = CGAffineTransform(translationX: -660, y: 0)
+        }
+        try await requireState("The compositor control reaches its displayed endpoint") {
+            recorder.positions.last.map { abs($0) < 0.5 } == true
+        }
+        recorder.stop()
+        let failures = StorySelectionFrameRecorder.motionFailures(
+            positions: recorder.positions, times: recorder.sampleTimes,
+            frameDurations: recorder.frameDurations, start: 660, end: 0)
+        XCTAssertNil(recorder.beforeSample, "The delayed observation must actually occur")
+        XCTAssertTrue(failures.isEmpty, "An uninterrupted compositor animation must not look like a snap: \(failures)")
+    }
+
     func test_nextButtonMotionSamplingAllowsOneDisplayFrameButRejectsASnapAfterADelayedCallback() {
         // StoryDetailLoadingTests.swift replays the hosted trace that missed the 155.67-point
         // presentation snapshot: 111 → 204.67 was reported only 13.47 ms apart after a callback gap.
@@ -3272,10 +3316,11 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     private weak var observedView: UIView?
     private weak var window: UIWindow?
     private let horizontal: Bool
-    private var displayLink: CADisplayLink?
+    private var frameObserver: StoryPresentationFrameObserver?
     private(set) var positions: [CGFloat] = []
     private(set) var sampleTimes: [CFTimeInterval] = []
     private(set) var frameDurations: [CFTimeInterval] = []
+    var beforeSample: (() -> Void)?
 
     static func motionFailures(positions: [CGFloat], times: [CFTimeInterval],
                                frameDurations: [CFTimeInterval], start: CGFloat, end: CGFloat) -> [String] {
@@ -3310,15 +3355,14 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 
     func start() {
         recordFrame(at: CACurrentMediaTime(), frameDuration: 1.0 / 60)
-        displayLink = CADisplayLink(target: self, selector: #selector(sample(_:)))
-        displayLink?.add(to: .main, forMode: .common)
+        guard let window else { return }
+        frameObserver = StoryPresentationFrameObserver(window: window) { [weak self] frameDuration in
+            self?.beforeSample?()
+            self?.recordFrame(at: CACurrentMediaTime(), frameDuration: frameDuration)
+        }
     }
 
-    func stop() { displayLink?.invalidate(); displayLink = nil }
-
-    @objc private func sample(_ link: CADisplayLink) {
-        recordFrame(at: link.timestamp, frameDuration: link.duration)
-    }
+    func stop() { frameObserver?.stop(); frameObserver = nil }
 
     private func recordFrame(at time: CFTimeInterval, frameDuration: CFTimeInterval) {
         // StoryDetailLoadingTests.swift measures the actual presented article position through its animated ancestors.
@@ -3328,6 +3372,48 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
         sampleTimes.append(time)
         frameDurations.append(frameDuration)
     }
+}
+
+@MainActor private final class StoryPresentationFrameObserver: NSObject {
+    private let sample: (CFTimeInterval) -> Void
+#if targetEnvironment(macCatalyst)
+    private var displayLink: CADisplayLink?
+#else
+    private var updateLink: UIUpdateLink?
+#endif
+
+    init(window: UIWindow, sample: @escaping (CFTimeInterval) -> Void) {
+        self.sample = sample
+        super.init()
+#if targetEnvironment(macCatalyst)
+        let link = CADisplayLink(target: self, selector: #selector(sampleDisplayLink(_:)))
+        link.add(to: .main, forMode: .common)
+        displayLink = link
+#else
+        // StoryDetailLoadingTests.swift observes after UIKit commits its scroll updates. A display-link
+        // callback can otherwise pair an older transaction's geometry with a newer display timestamp.
+        let link = UIUpdateLink(view: window)
+        let frameDuration = 1.0 / Double(window.screen.maximumFramesPerSecond)
+        link.addAction(to: .afterUpdateComplete) { _, _ in sample(frameDuration) }
+        link.requiresContinuousUpdates = true
+        link.isEnabled = true
+        updateLink = link
+#endif
+    }
+
+    func stop() {
+#if targetEnvironment(macCatalyst)
+        displayLink?.invalidate()
+        displayLink = nil
+#else
+        updateLink?.isEnabled = false
+        updateLink = nil
+#endif
+    }
+
+#if targetEnvironment(macCatalyst)
+    @objc private func sampleDisplayLink(_ link: CADisplayLink) { sample(link.duration) }
+#endif
 }
 
 private final class NextButtonReadingStories: StoriesCollection {
@@ -3387,7 +3473,7 @@ private final class NextButtonReadingStories: StoriesCollection {
     let table: UITableView
     let window: UIWindow
     let target: IndexPath
-    private var displayLink: CADisplayLink?
+    private var frameObserver: StoryPresentationFrameObserver?
     private(set) var offsets: [CGFloat] = []
     private(set) var cellPositions: [CGFloat] = []
     private(set) var sampleTimes: [CFTimeInterval] = []
@@ -3406,22 +3492,23 @@ private final class NextButtonReadingStories: StoriesCollection {
         self.target = target
     }
     func start() {
-        let link = CADisplayLink(target: self, selector: #selector(sample(_:)))
-        link.add(to: .main, forMode: .common)
-        displayLink = link
+        frameObserver = StoryPresentationFrameObserver(window: window) { [weak self] frameDuration in
+            self?.sample(frameDuration: frameDuration)
+        }
     }
-    func stop() { displayLink?.invalidate(); displayLink = nil }
-    @objc private func sample(_ link: CADisplayLink) {
+    func stop() { frameObserver?.stop(); frameObserver = nil }
+    private func sample(frameDuration: CFTimeInterval) {
+        let now = CACurrentMediaTime()
         guard let presentation = table.layer.presentation(), let root = window.layer.presentation() else { return }
-        // StoryDetailLoadingTests.swift pairs presentation geometry with the displayed frame's timestamp, not a delayed main-thread callback's arrival time.
+        // StoryDetailLoadingTests.swift timestamps the geometry being read, not the display tick that scheduled a possibly delayed callback.
         offsets.append(presentation.bounds.origin.y)
-        sampleTimes.append(link.timestamp)
-        frameDurations.append(link.duration)
+        sampleTimes.append(now)
+        frameDurations.append(frameDuration)
         if let cell = table.cellForRow(at: target)?.layer.presentation() {
             // StoryDetailLoadingTests.swift measures the actual cell through all animated ancestors, not only UITableView's model offset.
             cellPositions.append(cell.convert(CGPoint.zero, to: root).y)
-            cellSampleTimes.append(link.timestamp)
-            cellFrameDurations.append(link.duration)
+            cellSampleTimes.append(now)
+            cellFrameDurations.append(frameDuration)
         }
     }
 }
