@@ -138,7 +138,10 @@ def do_boot():
 
 def do_restart():
     """run_ios.py restarts only the selected simulator without erasing its data."""
-    subprocess.run(["xcrun", "simctl", "shutdown", UDID], check=True)
+    devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
+    selected = next(device for group in devices["devices"].values() for device in group if device["udid"] == UDID)
+    if selected["state"] != "Shutdown":
+        subprocess.run(["xcrun", "simctl", "shutdown", UDID], check=True)
     do_boot()
 
 
