@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -202,11 +203,28 @@ object StorySplitView {
     private val reportedReaderPairing = WeakHashMap<Activity, Boolean>()
     private val trackedStoryLists = WeakHashMap<ItemsList, Boolean>()
 
-    /** Reading.kt can offer the toggle for a real list/reader pair, including an expanded pair. */
+    /** Reading.kt's paired window stays opaque even when too narrow to show both panes. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
     @JvmStatic
-    fun canToggleReaderFullscreen(activity: Activity): Boolean =
-        rulesInstalled && readerFullscreenSupported && activity is Reading &&
+    fun isPairedReader(activity: Activity): Boolean =
+        rulesInstalled && activity is Reading &&
             !activity.isFinishing && !activity.isDestroyed && reportedReaderPairing[activity] == true
+
+    /** Reading.kt offers the toggle only when the current whole window can restore both panes. */
+    @JvmStatic
+    fun canToggleReaderFullscreen(activity: Activity): Boolean {
+        if (!readerFullscreenSupported || !isPairedReader(activity)) return false
+        // StorySplitView.kt's reported side-by-side pair already satisfies the split rules;
+        // its currentWindowMetrics can describe just the embedded reader pane.
+        if (reportedSplitMembership[activity] == true) return true
+        // StorySplitView.kt only records pairs on API 30+, where currentWindowMetrics is available.
+        // An expanded reader fills the parent window, so its metrics can determine whether
+        // buildRules' width and smallest-width constraints allow restoring both panes.
+        val bounds = activity.windowManager.currentWindowMetrics.bounds
+        val minimumSizePx = MIN_SPLIT_WIDTH_DP * activity.resources.displayMetrics.density
+        // Match buildRules' minWidthDp and minSmallestWidthDp, including short landscape windows.
+        return bounds.width() >= minimumSizePx && minOf(bounds.width(), bounds.height()) >= minimumSizePx
+    }
 
     /** Returns the requested mode from PrefsRepo.kt, rather than mistaking a narrow window for it. */
     @JvmStatic

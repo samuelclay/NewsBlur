@@ -1,8 +1,14 @@
 package com.newsblur.util
 
+import android.app.Activity
+import android.content.res.Configuration
+import android.graphics.Rect
+import android.util.DisplayMetrics
 import androidx.window.embedding.SplitAttributes
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.Reading
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -13,6 +19,34 @@ import java.lang.reflect.Modifier
 import javax.xml.parsers.DocumentBuilderFactory
 
 class StorySplitViewTest {
+    @Test
+    fun pairedReaderCannotToggleFullscreenInANarrowWholeWindow() {
+        withReaderSplitWindow(widthDp = 599) { reading ->
+            assertFalse(StorySplitView.canToggleReaderFullscreen(reading))
+        }
+    }
+
+    @Test
+    fun pairedReaderCannotToggleFullscreenWhenTheWholeWindowSmallestWidthIsNarrow() {
+        withReaderSplitWindow(widthDp = 840, heightDp = 599) { reading ->
+            assertFalse(StorySplitView.canToggleReaderFullscreen(reading))
+        }
+    }
+
+    @Test
+    fun expandedReaderCanToggleFullscreenAt600dpDespiteItsNarrowConfiguration() {
+        withReaderSplitWindow(widthDp = 600) { reading ->
+            assertTrue(StorySplitView.canToggleReaderFullscreen(reading))
+        }
+    }
+
+    @Test
+    fun sideBySidePortraitReaderCanToggleFullscreenWith480dpPaneMetrics() {
+        withReaderSplitWindow(widthDp = 480, heightDp = 1280, inSplit = true) { reading ->
+            assertTrue(StorySplitView.canToggleReaderFullscreen(reading))
+        }
+    }
+
     private val manifest by lazy {
         val manifestFile =
             sequenceOf(
@@ -170,5 +204,53 @@ class StorySplitViewTest {
             "FeedListDrawer must be declared so the feed list can slide over a tablet's split",
             manifestActivityClasses().any { it.simpleName == "FeedListDrawer" },
         )
+    }
+}
+
+// StorySplitViewTest.kt shares real pairing state with ReadingPreparedEntranceBackTest.kt so
+// button visibility and Back eligibility are exercised independently of one another.
+internal fun <T> withReaderSplitWindow(
+    widthDp: Int,
+    heightDp: Int = 800,
+    pairedReader: Boolean = true,
+    inSplit: Boolean = false,
+    block: (Reading) -> T,
+): T {
+    val reading = mockk<Reading>(relaxed = true)
+    val bounds = mockk<Rect>()
+    every { bounds.width() } returns widthDp * 2
+    every { bounds.height() } returns heightDp * 2
+    every { reading.windowManager.currentWindowMetrics.bounds } returns bounds
+    val displayMetrics = mockk<DisplayMetrics>().apply { density = 2f }
+    every { reading.resources.displayMetrics } returns displayMetrics
+    val configuration = mockk<Configuration>().apply {
+        screenWidthDp = 360
+        smallestScreenWidthDp = 360
+    }
+    every { reading.resources.configuration } returns configuration
+    every { reading.isTaskRoot } returns false
+    every { reading.isFinishing } returns false
+    every { reading.isDestroyed } returns false
+
+    fun field(name: String) = StorySplitView::class.java.getDeclaredField(name).apply { isAccessible = true }
+    val rulesInstalled = field("rulesInstalled")
+    val fullscreenSupported = field("readerFullscreenSupported")
+    val originalRulesInstalled = rulesInstalled.getBoolean(null)
+    val originalFullscreenSupported = fullscreenSupported.getBoolean(null)
+    @Suppress("UNCHECKED_CAST")
+    val pairing = field("reportedReaderPairing").get(null) as MutableMap<Activity, Boolean>
+    @Suppress("UNCHECKED_CAST")
+    val splitMembership = field("reportedSplitMembership").get(null) as MutableMap<Activity, Boolean>
+    try {
+        rulesInstalled.setBoolean(null, true)
+        fullscreenSupported.setBoolean(null, true)
+        pairing[reading] = pairedReader
+        splitMembership[reading] = inSplit
+        return block(reading)
+    } finally {
+        pairing.remove(reading)
+        splitMembership.remove(reading)
+        rulesInstalled.setBoolean(null, originalRulesInstalled)
+        fullscreenSupported.setBoolean(null, originalFullscreenSupported)
     }
 }

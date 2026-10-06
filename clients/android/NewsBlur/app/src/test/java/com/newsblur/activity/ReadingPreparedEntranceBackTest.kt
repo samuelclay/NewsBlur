@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.StorySplitView
+import com.newsblur.util.withReaderSplitWindow
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -31,6 +32,11 @@ class ReadingPreparedEntranceBackTest {
     }
 
     @Test
+    fun narrowPairedReaderBackSkipsPhoneTranslationEvenWhenTheFullscreenButtonIsUnavailable() {
+        assertFalse(readerBackAnimationEnabled(inSplit = false, pairedReader = true, toggleAvailable = false, widthDp = 599))
+    }
+
+    @Test
     fun normalPhoneReaderBackKeepsThePhoneTranslation() {
         assertTrue(readerBackAnimationEnabled(inSplit = false, pairedReader = false))
     }
@@ -40,22 +46,25 @@ class ReadingPreparedEntranceBackTest {
         assertFalse(readerBackAnimationEnabled(inSplit = true, pairedReader = true))
     }
 
-    private fun readerBackAnimationEnabled(inSplit: Boolean, pairedReader: Boolean): Boolean {
+    private fun readerBackAnimationEnabled(
+        inSplit: Boolean,
+        pairedReader: Boolean,
+        toggleAvailable: Boolean = pairedReader,
+        widthDp: Int = 840,
+    ): Boolean = withReaderSplitWindow(widthDp = widthDp, pairedReader = pairedReader, inSplit = inSplit) { reading ->
         mockkStatic(StorySplitView::class)
         try {
-            val reading = mockk<Reading>(relaxed = true)
             Reading::class.java.getDeclaredField("binding").apply {
                 isAccessible = true
                 set(reading, mockk<ActivityReadingBinding>(relaxed = true))
             }
-            every { reading.isTaskRoot } returns false
-            every { reading.isFinishing } returns false
-            every { StorySplitView.isInSplit(reading) } returns inSplit
-            every { StorySplitView.canToggleReaderFullscreen(reading) } returns pairedReader
+            // ReadingPreparedEntranceBackTest.kt changes button availability independently of
+            // the real pairing state: a hidden toggle must not make an opaque reader animate.
+            every { StorySplitView.canToggleReaderFullscreen(reading) } returns toggleAvailable
             every { reading["isInteractiveReaderBackEnabled"]() } answers { callOriginal() }
             every { reading["shouldAnimateReaderBackFinish"]() } answers { callOriginal() }
             // ReadingPreparedEntranceBackTest.kt exercises the predicate used by Reading.finish().
-            return Reading::class.java.getDeclaredMethod("shouldAnimateReaderBackFinish").run {
+            Reading::class.java.getDeclaredMethod("shouldAnimateReaderBackFinish").run {
                 isAccessible = true
                 invoke(reading) as Boolean
             }
