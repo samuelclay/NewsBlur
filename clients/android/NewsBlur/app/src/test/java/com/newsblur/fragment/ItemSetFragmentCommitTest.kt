@@ -1,6 +1,8 @@
 package com.newsblur.fragment
 
 import android.widget.RelativeLayout
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.database.StoryViewAdapter
@@ -11,12 +13,21 @@ import com.newsblur.util.FeedSet
 import io.mockk.every
 import io.mockk.clearMocks
 import io.mockk.mockk
+import io.mockk.mockkConstructor
+import io.mockk.unmockkConstructor
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.Before
+import org.junit.After
 
 class ItemSetFragmentCommitTest {
+    @Before
+    fun prepareInterpolators() = mockkConstructor(LinearInterpolator::class, DecelerateInterpolator::class)
+
+    @After
+    fun releaseInterpolators() = unmockkConstructor(LinearInterpolator::class, DecelerateInterpolator::class)
     @Test
     fun readerFollowPassesTheLastUnreadWithoutBeingStoppedByTheScrollListener() {
         val fixture = Fixture()
@@ -104,6 +115,7 @@ class ItemSetFragmentCommitTest {
                 .set(adapter, mutableListOf(Story().apply { storyHash = "1:target" }))
             every { grid.adapter } returns adapter
             every { grid.layoutManager } returns layoutManager
+            every { layoutManager.findViewByPosition(any()) } returns null
             every { grid.findViewHolderForAdapterPosition(any()) } returns null
             every { layoutManager.findFirstVisibleItemPosition() } returns 0
             every { layoutManager.findLastVisibleItemPosition() } returns 4
@@ -118,7 +130,7 @@ class ItemSetFragmentCommitTest {
             every { adapter.applyPendingStoryReturn(any(), any(), any()) } answers { callOriginal() }
 
             fragment.followReadingStory("1:target")
-            verify { grid.smoothScrollToPosition(12) }
+            verify { layoutManager.startSmoothScroll(match { it.targetPosition == 11 }) }
             listener.onScrollStateChanged(grid, RecyclerView.SCROLL_STATE_SETTLING)
             clearMocks(grid, answers = false, recordedCalls = true)
         }

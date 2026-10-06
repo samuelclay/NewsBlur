@@ -28,6 +28,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.BuildConfig
 import com.newsblur.R
@@ -585,12 +586,22 @@ class StoryViewAdapter(
                 val llm = lm as? LinearLayoutManager
                 val first = llm?.findFirstVisibleItemPosition() ?: -1
                 val last = llm?.findLastVisibleItemPosition() ?: -1
-                if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)) {
+                val hasVisibleAnchor = first >= 0 && last >= first
+                val row = if (smoothPendingStoryScroll) lm.findViewByPosition(position) else null
+                val shouldScroll = if (smoothPendingStoryScroll && hasVisibleAnchor) {
+                    row == null || lm.getDecoratedTop(row) < rv.paddingTop ||
+                        lm.getDecoratedBottom(row) > rv.height - rv.paddingBottom
+                } else ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)
+                if (replacingEmptyList || shouldScroll) {
                     // StoryViewAdapter.kt animates live reading only after a list has a visible anchor.
-                    if (smoothPendingStoryScroll && !replacingEmptyList && first >= 0 && last >= 0) {
+                    if (smoothPendingStoryScroll && !replacingEmptyList && hasVisibleAnchor) {
                         // StoryViewAdapter.kt keeps the fling-stop exemption until the animation ends, not just until it starts.
                         isFollowingReadingStory = true
-                        rv.smoothScrollToPosition(position)
+                        // StoryViewAdapter.kt matches iOS: keep one preceding row when more than four rows are visible.
+                        val target = (position - if (last - first + 1 > 4) 1 else 0).coerceAtLeast(0)
+                        lm.startSmoothScroll(object : LinearSmoothScroller(rv.context) {
+                            override fun getVerticalSnapPreference() = SNAP_TO_START
+                        }.apply { targetPosition = target })
                     } else if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
                     else lm.scrollToPosition(position)
                 }
