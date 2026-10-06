@@ -82,6 +82,47 @@ Google credentials remain in the external common settings.
 Staging shares the NewsBlur database, so accounts and identity links created there
 are real accounts. A successful staging login still requires provider-console setup.
 
+### Production rollout
+
+A code-only deploy does not install provider credentials or the Apple signing key.
+After the reviewed FTUX changes are merged to `main`, run the following from that
+checkout. These commands target production and require deployment authorization:
+
+```sh
+ansible-playbook ansible/setup.yml -l app -t env
+make celery
+make deploy
+make static
+```
+
+The `env` step copies the external common settings and the Apple key. Check that
+those settings do not override production callbacks with staging URLs or explicitly
+disable `SOCIAL_WEB_ENABLED`. The Apple key must be readable by the web container's
+user, with the file kept at mode `0600`. Never paste the key or OAuth client secret
+into logs or the application repository.
+
+Deploy workers before enabling the new web code: onboarding queues the new
+`maintain-feed-subscriptions` task, and OPML import now merges concurrent folder
+changes. Existing workers must load both changes. `make deploy` applies migrations,
+including `profile.0032_socialidentity`; `make static` publishes the provider buttons
+and Account dialog controls. Keep the schema and identity rows when rolling back code.
+
+Before releasing mobile builds, verify the deployed `/api/social/start` returns
+JSON with `code=1` for Google on both native platforms and Apple on Android. Apple's
+iOS start returns a nonce for native authentication, without a browser URL. Confirm
+that all production callback URLs begin with `https://www.newsblur.com/`, while
+staging uses `https://staging.newsblur.com/` for both `/api/social/` and `/account/social/`.
+Google's OAuth audience must be in production, with both production callback paths
+registered. Apple's Services ID needs both production return URLs and grouping with
+the native NewsBlur App ID.
+
+Finally, complete a real provider login on each released client. Reaching a provider's
+sign-in page, passing mocked-provider tests, and compiling the native apps are useful
+checks, but do not prove the provider-to-NewsBlur return or an App Store build's Apple
+entitlements. Verify that account linking preserves the NewsBlur email and refuses
+to move an identity already owned by another account. Staging uses real account data,
+so destructive account tests belong in the local test database.
+
 ### Protocol
 
 Start and account confirmation require CSRF-protected POSTs. Provider state, nonce,

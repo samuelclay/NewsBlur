@@ -11,7 +11,13 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.test import Client, RequestFactory, SimpleTestCase, TransactionTestCase, override_settings
+from django.test import (
+    Client,
+    RequestFactory,
+    SimpleTestCase,
+    TransactionTestCase,
+    override_settings,
+)
 
 from apps.api import social_auth
 from newsblur_web import settings as base_settings
