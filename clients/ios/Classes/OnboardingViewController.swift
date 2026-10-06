@@ -83,10 +83,12 @@ final class OnboardingAPI {
         let (data, response) = try await session.data(for: request)
         // OnboardingViewController.swift falls back only when the endpoint is absent, never after an ambiguous write failure.
         if (response as? HTTPURLResponse)?.statusCode == 404 { return nil }
+        let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
         guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode),
-              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let json,
               let results = json["results"] as? [[String: Any]], !results.isEmpty else {
-            throw error("These feeds could not be added. Please try again.")
+            let message = (json?["message"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            throw error(message.isEmpty ? "These feeds could not be added. Please try again." : message)
         }
         return json
     }
@@ -283,6 +285,7 @@ struct OnboardingFeed: Identifiable {
         let folder: String
         let feeds: [OnboardingFeed]
         var existingFolder = false
+        var message: String?
     }
 
     private let onSubscriptionsChanged: () -> Void
@@ -635,7 +638,7 @@ struct OnboardingFeed: Identifiable {
         for feed in chosen { summaryFeeds[destination, default: [:]][feed.url] = feed.preview }
         failedBundles = failedBundles.compactMap { failure in
             let remaining = failure.feeds.filter { !chosenURLs.contains($0.url) }
-            return remaining.isEmpty ? nil : FailedBundle(folder: failure.folder, feeds: remaining, existingFolder: failure.existingFolder)
+            return remaining.isEmpty ? nil : FailedBundle(folder: failure.folder, feeds: remaining, existingFolder: failure.existingFolder, message: failure.message)
         }
         queued.formUnion(chosenURLs)
         selection.subtract(chosenURLs)
@@ -650,6 +653,7 @@ struct OnboardingFeed: Identifiable {
         let task = Task { [self] in
             await previous?.value
             var failures: [OnboardingFeed] = []
+            var failureMessage: String?
             var successes = 0
             var individual = chosen
             let known = chosen.filter { (Int($0.preview.id) ?? 0) > 0 }
@@ -678,6 +682,9 @@ struct OnboardingFeed: Identifiable {
                             return
                         }
                         let results = response["results"] as? [[String: Any]] ?? []
+                        let resultMessage = results.first { ($0["code"] as? Int ?? -1) != 1 }?["message"] as? String
+                        failureMessage = [response["message"] as? String, resultMessage].compactMap { $0 }
+                            .first { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
                         let successfulIDs = Set(results.filter { ($0["code"] as? Int ?? -1) == 1 }.compactMap { $0["feed_id"] as? Int })
                         for feed in known {
                             if Int(feed.preview.id).map(successfulIDs.contains) == true {
@@ -690,6 +697,7 @@ struct OnboardingFeed: Identifiable {
                         individual.removeAll { knownURLs.contains($0.url) }
                     }
                 } catch {
+                    failureMessage = error.localizedDescription
                     failures.append(contentsOf: known)
                     let knownURLs = Set(known.map(\.url))
                     queued.subtract(knownURLs)
@@ -719,7 +727,10 @@ struct OnboardingFeed: Identifiable {
                     }
                     added.insert(feed.url)
                     successes += 1
-                } catch { failures.append(feed) }
+                } catch {
+                    failureMessage = failureMessage ?? error.localizedDescription
+                    failures.append(feed)
+                }
                 queued.remove(feed.url)
             }
             guard isCurrentAccount() else {
@@ -727,12 +738,12 @@ struct OnboardingFeed: Identifiable {
                 return
             }
             if !failures.isEmpty {
-                failedBundles.append(FailedBundle(folder: destination, feeds: failures, existingFolder: existingFolder))
+                failedBundles.append(FailedBundle(folder: destination, feeds: failures, existingFolder: existingFolder, message: failureMessage))
                 if generation == selectionGeneration { selection.formUnion(failures.map(\.url)) }
             }
             if generation == selectionGeneration {
                 message = failures.isEmpty ? "Added \(successes) feeds\(destination.isEmpty ? "" : " to " + destination)."
-                    : "Added \(successes) feeds. \(failures.count) could not be added. You can retry them below."
+                    : "Added \(successes) feeds. \(failures.count) could not be added. \(failureMessage ?? "You can retry them below.")"
             }
             if OnboardingFeedLoading.shared.finishWork(loadingToken) { onSubscriptionsChanged() }
         }
@@ -1145,7 +1156,13 @@ private struct OnboardingView: View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(bundles.failedBundles) { failure in
                 HStack {
-                    Text("\(failure.feeds.count) feeds couldn’t be added\(failure.folder.isEmpty ? "" : " to " + failure.folder).")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(failure.feeds.count) feeds couldn’t be added\(failure.folder.isEmpty ? "" : " to " + failure.folder).")
+                        if let message = failure.message {
+                            Text(message).foregroundStyle(DiscoverColors.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
                     Spacer()
                     Button("Retry") { bundles.retry(failure) }
                 }.font(.subheadline)
