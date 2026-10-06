@@ -70,6 +70,7 @@ class Test_BatchSubscriptions(TestCase):
                 new_folder="Science",
             )
             self.assertEqual(1, result["code"])
+            self.assertEqual("", result["message"])
             self.assertEqual([self.first.pk, self.second.pk], [item["feed_id"] for item in result["results"]])
             self.assertTrue(all(item["created"] for item in result["results"]))
             retry = self.post(
@@ -111,6 +112,7 @@ class Test_BatchSubscriptions(TestCase):
             new_folder="Bundle",
         )
         self.assertEqual(0, result["code"])
+        self.assertEqual("Invalid feed ID.", result["message"])
         self.assertEqual([1, -1, -1, -1, -1, -1], [item["code"] for item in result["results"]])
         self.assertEqual(
             [self.first.pk],
@@ -185,6 +187,22 @@ class Test_BatchSubscriptions(TestCase):
         with patch.object(Profile, "add_feed_limit", new_callable=PropertyMock, return_value=count):
             result = self.post([self.first.pk, self.second.pk], folder_path="[]", new_folder="Bundle")
         self.assertEqual([1, -1], [item["code"] for item in result["results"]])
+        self.assertFalse(UserSubscription.objects.filter(user=self.user, feed=self.second).exists())
+
+    def test_feed_limit_reason_is_available_for_failed_and_partial_batches(self):
+        UserSubscription.objects.create(user=self.user, feed=self.first, active=True)
+        count = UserSubscription.objects.filter(user=self.user, active=True).count()
+        original = self.tree()
+        with patch.object(Profile, "add_feed_limit", new_callable=PropertyMock, return_value=count):
+            rejected = self.post([self.second.pk], folder_path="[]", new_folder="Rejected")
+            self.assertEqual(-1, rejected["code"])
+            self.assertEqual(original, self.tree())
+            partial = self.post([self.first.pk, self.second.pk], folder_path="[]", new_folder="Partial")
+        self.assertEqual(0, partial["code"])
+        for result in (rejected, partial):
+            with self.subTest(code=result["code"]):
+                self.assertIn("limit of %s sites" % count, result.get("message", ""))
+                self.assertEqual(result["results"][-1]["message"], result["message"])
         self.assertFalse(UserSubscription.objects.filter(user=self.user, feed=self.second).exists())
 
     def test_unauthenticated_and_get_requests_cannot_add_subscriptions(self):
