@@ -943,6 +943,7 @@ import Combine
         await bundles.subscribe()
         XCTAssertEqual(bundles.added, ["https://example.com/101"])
         let failure = try XCTUnwrap(bundles.failedBundles.first)
+        XCTAssertEqual(failure.message, "Try again", "Older servers can report a reason only on the failed result.")
         bundles.folder = "Another Folder"
         bundles.retry(failure)
         for _ in 0..<100 where !bundles.queued.isEmpty { try await Task.sleep(nanoseconds: 10_000_000) }
@@ -951,6 +952,31 @@ import Combine
         XCTAssertTrue(bodies[0].contains("feed_ids=[101,102]"))
         XCTAssertTrue(bodies[1].contains("feed_ids=[102]"))
         XCTAssertTrue(bodies.allSatisfy { $0.contains("new_folder=My Cooking") && $0.contains("folder_path=[]") })
+    }
+
+    func test_subscriptionFailuresKeepTheServerReason() async throws {
+        let reason = "You have reached the feed limit for your account. Upgrade to add more feeds."
+        for status in [200, 400] {
+            network { request in
+                if request.httpMethod == "GET" { return (200, ["batch_add_supported": true]) }
+                XCTAssertEqual(request.url?.path, "/reader/add_feeds")
+                if status == 400 { return (400, ["code": -1, "message": reason]) }
+                return (200, ["code": 0, "message": reason, "results": [
+                    ["feed_id": 101, "code": 1], ["feed_id": 102, "code": -1, "message": reason]
+                ]])
+            }
+            let bundles = OnboardingBundles(onSubscriptionsChanged: {})
+            bundles.feeds = [101, 102].map {
+                OnboardingFeed(preview: DiscoverPopularFeed(feedId: String($0), feedDict: ["feed_address": "https://example.com/\($0)"]))
+            }
+            bundles.selection = Set(bundles.feeds.map(\.url))
+            bundles.folder = "Science"
+            await bundles.subscribe()
+            XCTAssertEqual(bundles.added.count, status == 200 ? 1 : 0)
+            XCTAssertEqual(bundles.failedBundles.first?.feeds.count, status == 200 ? 1 : 2)
+            XCTAssertEqual(bundles.failedBundles.first?.message, reason, "The persistent retry row must retain the reason after leaving this bundle.")
+            XCTAssertTrue(bundles.message?.contains(reason) == true, "A feed-limit response must explain why retrying cannot help.")
+        }
     }
 
     func test_accountChangeDuringCapabilityProbeCannotSendQueuedSubscriptions() async throws {
@@ -1052,6 +1078,8 @@ import Combine
         await queued.value
         shouldFail = false
         let failure = try XCTUnwrap(bundles.failedBundles.first)
+        XCTAssertTrue(bundles.message?.contains("Unavailable") == true, "Individual additions must preserve their failure reason too.")
+        XCTAssertEqual(failure.message, "Unavailable")
         bundles.retry(failure)
         // OnboardingTests.swift waits for the retained background retry, not a second submission.
         for _ in 0..<100 where !bundles.queued.isEmpty { try await Task.sleep(nanoseconds: 10_000_000) }
