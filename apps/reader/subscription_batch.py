@@ -181,8 +181,11 @@ def add_feed_ids(
                     user.username, "reload:feeds"
                 )
             )
+    # subscription_batch.py surfaces the first failure so clients can explain partial or failed batches.
+    message = next((item["message"] for item in results if item["code"] == -1), "")
     return {
         "code": 1 if len(successful_ids) == len(results) else 0 if successful_ids else -1,
+        "message": message,
         "results": results,
         "folders": json.decode(folders.folders or "[]"),
     }
