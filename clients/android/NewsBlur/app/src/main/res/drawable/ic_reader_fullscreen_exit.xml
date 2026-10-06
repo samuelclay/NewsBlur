@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ic_reader_fullscreen_exit.xml uses media/img/icons/remix-fill/fullscreen-exit-fill.svg. -->
+<!-- ic_reader_fullscreen_exit.xml matches StoryPagesObjCViewController.m's inward diagonal arrows. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="#95968E"
-        android:pathData="M18,7H22V9H16V3H18V7ZM8,9H2V7H6V3H8V9ZM18,17V21H16V15H22V17H18ZM8,15V21H6V17H2V15H8Z" />
+    <path android:fillColor="@android:color/transparent"
+        android:strokeColor="#95968E"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M4,10H10V4M4,4L10,10M14,20V14H20M14,14L20,20" />
 </vector>
