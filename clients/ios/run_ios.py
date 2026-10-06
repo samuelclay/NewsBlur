@@ -130,7 +130,12 @@ def do_list():
 def do_boot():
     """Boot the explicitly selected simulator without creating a new device."""
     devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
-    selected = next(device for group in devices["devices"].values() for device in group if device["udid"] == UDID)
+    selected = next(
+        (device for group in devices["devices"].values() for device in group if device["udid"] == UDID),
+        None,
+    )
+    if selected is None:
+        sys.exit(f"run_ios.py: no simulator with UDID {UDID}")
     if selected["state"] != "Booted":
         subprocess.run(["xcrun", "simctl", "boot", UDID], check=True)
     subprocess.run(["xcrun", "simctl", "bootstatus", UDID, "-b"], check=True)
@@ -139,7 +144,12 @@ def do_boot():
 def do_restart():
     """run_ios.py restarts only the selected simulator without erasing its data."""
     devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
-    selected = next(device for group in devices["devices"].values() for device in group if device["udid"] == UDID)
+    selected = next(
+        (device for group in devices["devices"].values() for device in group if device["udid"] == UDID),
+        None,
+    )
+    if selected is None:
+        sys.exit(f"run_ios.py: no simulator with UDID {UDID}")
     if selected["state"] != "Shutdown":
         subprocess.run(["xcrun", "simctl", "shutdown", UDID], check=True)
     do_boot()
