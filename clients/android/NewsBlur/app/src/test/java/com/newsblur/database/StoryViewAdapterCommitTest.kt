@@ -26,6 +26,90 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoryViewAdapterCommitTest {
     @Test
+    fun followingAnOffscreenStoryScrollsSmoothlyInsteadOfJumping() = runTest {
+        withFixture { fixture ->
+            fixture.submit("1:reading", 1)
+            runCurrent()
+            every { fixture.layoutManager.findFirstVisibleItemPosition() } returns 10
+            every { fixture.layoutManager.findLastVisibleItemPosition() } returns 15
+            clearMocks(fixture.layoutManager, answers = false, recordedCalls = true)
+
+            fixture.adapter.followReadingStory("1:reading", fixture.grid)
+
+            verify(exactly = 1) { fixture.grid.smoothScrollToPosition(0) }
+            verify(exactly = 0) { fixture.layoutManager.scrollToPositionWithOffset(any(), any()) }
+        }
+    }
+
+    @Test
+    fun followingAVisibleStoryCancelsThePreviousScrollWithoutMovingTheList() = runTest {
+        withFixture { fixture ->
+            fixture.submit("1:reading", 1)
+            runCurrent()
+            every { fixture.layoutManager.findFirstVisibleItemPosition() } returns 0
+            every { fixture.layoutManager.findLastVisibleItemPosition() } returns 5
+            clearMocks(fixture.layoutManager, answers = false, recordedCalls = true)
+
+            fixture.adapter.followReadingStory("1:reading", fixture.grid)
+
+            verify(exactly = 1) { fixture.grid.stopScroll() }
+            verify(exactly = 0) { fixture.grid.smoothScrollToPosition(any()) }
+            verify(exactly = 0) { fixture.layoutManager.scrollToPositionWithOffset(any(), any()) }
+        }
+    }
+
+    @Test
+    fun reversingToAVisibleStoryStopsTheOlderOffscreenScroll() = runTest {
+        withFixture { fixture ->
+            fixture.showRelatedRow = true
+            fixture.submit("1:reading", 1)
+            runCurrent()
+            every { fixture.layoutManager.findFirstVisibleItemPosition() } returns 0
+            every { fixture.layoutManager.findLastVisibleItemPosition() } returns 0
+            clearMocks(fixture.layoutManager, answers = false, recordedCalls = true)
+
+            fixture.adapter.followReadingStory("2:related", fixture.grid)
+            fixture.adapter.followReadingStory("1:reading", fixture.grid)
+
+            verify(exactly = 2) { fixture.grid.stopScroll() }
+            verify(exactly = 1) { fixture.grid.smoothScrollToPosition(1) }
+            verify(exactly = 0) { fixture.grid.smoothScrollToPosition(0) }
+            verify(exactly = 0) { fixture.layoutManager.scrollToPositionWithOffset(any(), any()) }
+        }
+    }
+
+    @Test
+    fun followingRapidStoryChangesDuringADiffOnlyScrollsToTheLatestSelection() = runTest {
+        withFixture { fixture ->
+            fixture.submit("1:old", 1)
+            runCurrent()
+            every { fixture.layoutManager.findFirstVisibleItemPosition() } returns 10
+            every { fixture.layoutManager.findLastVisibleItemPosition() } returns 15
+            fixture.submit("1:new", 2)
+
+            fixture.adapter.followReadingStory("1:old", fixture.grid)
+            fixture.adapter.followReadingStory("1:new", fixture.grid)
+            verify(exactly = 0) { fixture.grid.smoothScrollToPosition(any()) }
+            runCurrent()
+
+            verify(exactly = 2) { fixture.grid.stopScroll() }
+            verify(exactly = 1) { fixture.grid.smoothScrollToPosition(0) }
+        }
+    }
+
+    @Test
+    fun followingBeforeTheInitialLoadStillPositionsTheListImmediately() = runTest {
+        withFixture { fixture ->
+            fixture.adapter.followReadingStory("1:reading", fixture.grid)
+            fixture.submit("1:reading", 1)
+            runCurrent()
+
+            verify(exactly = 1) { fixture.layoutManager.scrollToPositionWithOffset(0, 0) }
+            verify(exactly = 0) { fixture.grid.smoothScrollToPosition(any()) }
+        }
+    }
+
+    @Test
     fun anIdenticalRefreshSchedulesPresentationAfterReturnWaitedForTheDiff() = runTest {
         withFixture { fixture ->
             fixture.submit("1:already-read", 1)
@@ -382,6 +466,8 @@ class StoryViewAdapterCommitTest {
             every { adapter.itemCount } answers { callOriginal() }
             every { adapter.applyPendingStoryReturn(any(), any(), any()) } answers { callOriginal() }
             every { adapter.requestStoryReturn(any(), any(), any()) } answers { callOriginal() }
+            every { adapter.followReadingStory(any(), any()) } answers { callOriginal() }
+            every { adapter["queueStoryReturn"](any<String>(), any<RecyclerView>(), any<Boolean>(), any<Boolean>()) } answers { callOriginal() }
             every { adapter["boundStoryHash"](any<RecyclerView.ViewHolder>()) } answers { callOriginal() }
             every { adapter.setPendingScrollStoryHash(any()) } answers { callOriginal() }
             every { adapter.setPendingHighlightStoryHash(any()) } answers { callOriginal() }

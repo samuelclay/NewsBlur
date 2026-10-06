@@ -100,6 +100,7 @@ class StoryViewAdapter(
 
     private var oldScrollState: Parcelable? = null
     private var pendingScrollStoryHash: String? = null
+    private var smoothPendingStoryScroll = false
     private var pendingHighlightStoryHash: String? = null
     private var returnPresentationReady = true
     private var returnHighlight: ReturnedStoryHighlight? = null
@@ -230,6 +231,7 @@ class StoryViewAdapter(
             invalidateStoryDiffs()
             oldScrollState = null
             pendingScrollStoryHash = null
+            smoothPendingStoryScroll = false
             pendingHighlightStoryHash = null
             returnHighlight?.cancel()
             returnHighlight = null
@@ -252,6 +254,7 @@ class StoryViewAdapter(
         invalidateStoryDiffs()
         oldScrollState = null
         pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
         pendingHighlightStoryHash = null
         returnHighlight?.cancel()
         returnHighlight = null
@@ -514,6 +517,7 @@ class StoryViewAdapter(
 
     fun setPendingScrollStoryHash(storyHash: String?) {
         pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = false
     }
 
     fun setPendingHighlightStoryHash(storyHash: String?) {
@@ -538,12 +542,24 @@ class StoryViewAdapter(
 
     @JvmOverloads
     fun requestStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean = true) {
+        queueStoryReturn(storyHash, rv, presentationReady, false)
+    }
+
+    fun followReadingStory(storyHash: String?, rv: RecyclerView) {
+        if (storyHash.isNullOrBlank()) return
+        // StoryViewAdapter.kt cancels the previous swipe's target even when the new row is already visible.
+        rv.stopScroll()
+        queueStoryReturn(storyHash, rv, false, true)
+    }
+
+    private fun queueStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean, smoothScroll: Boolean) {
         if (storyHash.isNullOrBlank()) return
         if (pendingHighlightStoryHash != storyHash && returnHighlight?.storyHash != storyHash) {
             returnHighlight?.cancel()
             returnHighlight = null
         }
         pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = smoothScroll
         pendingHighlightStoryHash = storyHash
         returnPresentationReady = presentationReady
         applyPendingStoryReturn(rv)
@@ -561,11 +577,14 @@ class StoryViewAdapter(
                 val first = llm?.findFirstVisibleItemPosition() ?: -1
                 val last = llm?.findLastVisibleItemPosition() ?: -1
                 if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)) {
-                    if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
+                    // StoryViewAdapter.kt animates live reading only after a list has a visible anchor.
+                    if (smoothPendingStoryScroll && !replacingEmptyList && first >= 0 && last >= 0) rv.smoothScrollToPosition(position)
+                    else if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
                     else lm.scrollToPosition(position)
                 }
                 // StoryViewAdapter.kt retains the identity until its page exists in a committed batch.
                 pendingScrollStoryHash = null
+                smoothPendingStoryScroll = false
             }
         }
         val hash = pendingHighlightStoryHash ?: return
@@ -603,6 +622,7 @@ class StoryViewAdapter(
         }
         // StoryViewAdapter.kt holds the tap through launch; only the existing reader-return path starts its fade.
         pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
         pendingHighlightStoryHash = null
         returnPresentationReady = false
         returnHighlight?.cancel()
