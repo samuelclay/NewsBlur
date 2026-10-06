@@ -1,5 +1,19 @@
 {
   "topics": {
+    "13672": {
+      "title": "NewsBlur app on iOS orientation issue",
+      "url": "https://forum.newsblur.com/t/newsblur-app-on-ios-orientation-issue/13672",
+      "status": "tier2-pending",
+      "tier": 2,
+      "handled_at": "2026-10-06T02:34:46.250Z",
+      "last_posted_at": "2026-10-05T15:43:22.493Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2163",
+      "branch": "FTUX",
+      "worktree": ".worktree/ftux-combined",
+      "note": "Investigated on FTUX at be9090ce0. The existing conventional-phone width fix 5c7d9f869 is absent from iOS_15.0.2 (20e917697), the reported build 341. Three focused layout-policy tests pass. Existing rotation UI test fails on the booted iPhone 17e / iOS 26.5 because the app never enters landscape despite device rotation and unlocked orientation; normal animations produce the same failure. This is not reproduction of the reported Pro Max three-pane/blank portrait bug, and no production fix was added. Strengthened ReaderUITests.swift locally to verify rendered content and actual Back navigation, but that journey remains unvalidated and uncommitted. Test evidence is under /tmp/newsblur-forum-13672-*.xcresult. Restored the 17e's original preferences and relaunched normally. Awaiting permission to boot Pro Max under the standing reuse-booted-simulator rule; existing Pro Max also uses iOS 26.5, while reporter uses 27.0. Do not claim fixed or released. No forum post or deployment.",
+      "reply": "The layout change intended to prevent the squeezed columns is not in 15.0.2. I'm checking the Pro Max rotation sequence before calling this fixed, including whether Back still works after returning to portrait.",
+      "question": "May I boot the existing iPhone 17 Pro Max simulator for this reproduction? The booted iPhone 17e does not have the same landscape size-class behavior as the reported device."
+    },
     "13799": {
       "title": "Subscription renewal through Apple not recognized",
       "url": "https://forum.newsblur.com/t/subscription-renewal-through-apple-not-recognized/13799",
