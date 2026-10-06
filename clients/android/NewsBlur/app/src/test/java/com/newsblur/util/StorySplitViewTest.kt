@@ -47,6 +47,37 @@ class StorySplitViewTest {
     }
 
     @Test
+    fun fullscreenReadingExpandsOnlyTheArticleAndRestoresTheOriginalSplit() {
+        val defaults = SplitAttributes.Builder()
+            .setSplitType(SplitAttributes.SplitType.ratio(StorySplitView.STORY_LIST_SPLIT_RATIO))
+            .setLayoutDirection(SplitAttributes.LayoutDirection.LOCALE)
+            .build()
+        assertEquals(
+            SplitAttributes.SplitType.SPLIT_TYPE_EXPAND,
+            StorySplitView.calculateSplitAttributes("story_list_reader", true, true, defaults).splitType,
+        )
+        assertEquals(defaults, StorySplitView.calculateSplitAttributes("story_list_reader", true, false, defaults))
+        // StorySplitViewTest.kt keeps the empty reader and unrelated split rules unchanged.
+        for (tag in listOf("empty_reader", "other_rule", null)) {
+            assertEquals(defaults, StorySplitView.calculateSplitAttributes(tag, true, true, defaults))
+        }
+    }
+
+    @Test
+    fun leavingFullscreenNeverForcesColumnsIntoAFoldedOrNarrowWindow() {
+        val defaults = SplitAttributes.Builder()
+            .setSplitType(SplitAttributes.SplitType.ratio(StorySplitView.STORY_LIST_SPLIT_RATIO))
+            .build()
+        for (fullscreen in listOf(true, false)) {
+            assertEquals(
+                SplitAttributes.SplitType.SPLIT_TYPE_EXPAND,
+                StorySplitView.calculateSplitAttributes("story_list_reader", false, fullscreen, defaults).splitType,
+            )
+        }
+        assertEquals(defaults, StorySplitView.calculateSplitAttributes("story_list_reader", true, false, defaults))
+    }
+
+    @Test
     fun everyReader_opensBesideItsStoryList() {
         // A reader missing from StorySplitView.kt would cover its story list on tablets.
         assertEquals(concreteSubclassesOf(Reading::class.java), StorySplitView.READING_ACTIVITIES.toSet())

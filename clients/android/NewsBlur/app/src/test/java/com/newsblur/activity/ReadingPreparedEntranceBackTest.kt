@@ -13,6 +13,7 @@ import com.newsblur.fragment.ReadingItemFragment
 import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.StorySplitView
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -24,6 +25,45 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ReadingPreparedEntranceBackTest {
+    @Test
+    fun fullscreenPairedReaderBackSkipsThePhoneTranslation() {
+        assertFalse(readerBackAnimationEnabled(inSplit = false, pairedReader = true))
+    }
+
+    @Test
+    fun normalPhoneReaderBackKeepsThePhoneTranslation() {
+        assertTrue(readerBackAnimationEnabled(inSplit = false, pairedReader = false))
+    }
+
+    @Test
+    fun sideBySideReaderBackStillSkipsThePhoneTranslation() {
+        assertFalse(readerBackAnimationEnabled(inSplit = true, pairedReader = true))
+    }
+
+    private fun readerBackAnimationEnabled(inSplit: Boolean, pairedReader: Boolean): Boolean {
+        mockkStatic(StorySplitView::class)
+        try {
+            val reading = mockk<Reading>(relaxed = true)
+            Reading::class.java.getDeclaredField("binding").apply {
+                isAccessible = true
+                set(reading, mockk<ActivityReadingBinding>(relaxed = true))
+            }
+            every { reading.isTaskRoot } returns false
+            every { reading.isFinishing } returns false
+            every { StorySplitView.isInSplit(reading) } returns inSplit
+            every { StorySplitView.canToggleReaderFullscreen(reading) } returns pairedReader
+            every { reading["isInteractiveReaderBackEnabled"]() } answers { callOriginal() }
+            every { reading["shouldAnimateReaderBackFinish"]() } answers { callOriginal() }
+            // ReadingPreparedEntranceBackTest.kt exercises the predicate used by Reading.finish().
+            return Reading::class.java.getDeclaredMethod("shouldAnimateReaderBackFinish").run {
+                isAccessible = true
+                invoke(reading) as Boolean
+            }
+        } finally {
+            unmockkStatic(StorySplitView::class)
+        }
+    }
+
     @Test
     fun test_native_header_ready_enters_without_waiting_for_article_pixels() {
         mockkStatic(Log::class, SystemClock::class)
