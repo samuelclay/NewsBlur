@@ -32,6 +32,44 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoryViewAdapterCommitTest {
     @Test
+    fun followingInAThreeColumnTwoRowViewportFullyRevealsTheSelectedTile() = runTest {
+        withFixture { fixture ->
+            fixture.submitRows(30)
+            runCurrent()
+            fixture.followViewport(0, 5)
+            every { fixture.layoutManager.spanCount } returns 3
+
+            fixture.adapter.followReadingStory("1:row6", fixture.grid)
+
+            val captured = slot<RecyclerView.SmoothScroller>()
+            verify(exactly = 1) { fixture.layoutManager.startSmoothScroll(capture(captured)) }
+            val scroller = captured.captured as LinearSmoothScroller
+            // StoryViewAdapterCommitTest.kt models two 500px tile rows in the 800px padded viewport.
+            val targetTop = if (scroller.targetPosition < 6) 400 else 900
+            val targetRow = fixture.attachRow(scroller.targetPosition, targetTop, targetTop + 500)
+            val action = fixture.finalScrollAction(scroller, targetRow)
+            assertTrue("The selected tile's bottom must be visible after snapping (dy=${action.dy})", 1400 - action.dy <= 900)
+            assertTrue("The selected tile's top must be visible after snapping", 900 - action.dy >= 100)
+            assertTrue(action.duration > 0)
+            assertEquals(6, scroller.targetPosition)
+        }
+    }
+
+    @Test
+    fun followingInAThreeColumnFiveRowViewportKeepsOneWholePrecedingRow() = runTest {
+        withFixture { fixture ->
+            fixture.submitRows(30)
+            runCurrent()
+            fixture.followViewport(0, 14)
+            every { fixture.layoutManager.spanCount } returns 3
+
+            fixture.adapter.followReadingStory("1:row19", fixture.grid)
+
+            fixture.assertSmoothTarget(15)
+        }
+    }
+
+    @Test
     fun followingAPartlyClippedRowRepositionsItNearTheTopInBothDirections() = runTest {
         for ((position, top, bottom) in listOf(Triple(5, 820, 940), Triple(0, 60, 180))) {
             withFixture { fixture ->
@@ -90,12 +128,7 @@ class StoryViewAdapterCommitTest {
             val scroller = fixture.assertSmoothTarget(7)
             // StoryViewAdapterCommitTest.kt runs the native final action after the target is laid out.
             val targetRow = fixture.attachRow(7, 900, 1060)
-            RecyclerView.SmoothScroller::class.java.getDeclaredField("mLayoutManager").apply { isAccessible = true }
-                .set(scroller, fixture.layoutManager)
-            val action = RecyclerView.SmoothScroller.Action(0, 0)
-            LinearSmoothScroller::class.java.getDeclaredMethod(
-                "onTargetFound", View::class.java, RecyclerView.State::class.java, RecyclerView.SmoothScroller.Action::class.java,
-            ).apply { isAccessible = true }.invoke(scroller, targetRow, mockk<RecyclerView.State>(), action)
+            val action = fixture.finalScrollAction(scroller, targetRow)
 
             assertEquals("The target's decorated top must move from 900 to the viewport top at 100", 800, action.dy)
             assertTrue("The native final alignment must animate", action.duration > 0)
@@ -543,6 +576,8 @@ class StoryViewAdapterCommitTest {
             setField("titleCache", StoryTitleCache { it })
             every { grid.adapter } returns adapter
             every { grid.layoutManager } returns layoutManager
+            every { layoutManager.spanCount } returns 1
+            every { layoutManager.spanSizeLookup } returns GridLayoutManager.DefaultSpanSizeLookup()
             every { grid.context.resources.displayMetrics } returns mockk<android.util.DisplayMetrics>(relaxed = true).apply { densityDpi = 160 }
             every { layoutManager.findViewByPosition(any()) } returns null
             every { adapter.submitStories(any(), any(), any(), any(), any(), any()) } answers { callOriginal() }
@@ -626,6 +661,16 @@ class StoryViewAdapterCommitTest {
             assertEquals(LinearSmoothScroller.SNAP_TO_START, LinearSmoothScroller::class.java
                 .getDeclaredMethod("getVerticalSnapPreference").apply { isAccessible = true }.invoke(scroller))
             return scroller
+        }
+
+        fun finalScrollAction(scroller: LinearSmoothScroller, target: View): RecyclerView.SmoothScroller.Action {
+            RecyclerView.SmoothScroller::class.java.getDeclaredField("mLayoutManager").apply { isAccessible = true }
+                .set(scroller, layoutManager)
+            val action = RecyclerView.SmoothScroller.Action(0, 0)
+            LinearSmoothScroller::class.java.getDeclaredMethod(
+                "onTargetFound", View::class.java, RecyclerView.State::class.java, RecyclerView.SmoothScroller.Action::class.java,
+            ).apply { isAccessible = true }.invoke(scroller, target, mockk<RecyclerView.State>(), action)
+            return action
         }
 
         fun showBoundStory(hash: String): StoryViewAdapter.StoryViewHolder {

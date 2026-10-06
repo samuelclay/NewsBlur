@@ -115,6 +115,8 @@ class ItemSetFragmentCommitTest {
                 .set(adapter, mutableListOf(Story().apply { storyHash = "1:target" }))
             every { grid.adapter } returns adapter
             every { grid.layoutManager } returns layoutManager
+            every { layoutManager.spanCount } returns 1
+            every { layoutManager.spanSizeLookup } returns GridLayoutManager.DefaultSpanSizeLookup()
             every { layoutManager.findViewByPosition(any()) } returns null
             every { grid.findViewHolderForAdapterPosition(any()) } returns null
             every { layoutManager.findFirstVisibleItemPosition() } returns 0

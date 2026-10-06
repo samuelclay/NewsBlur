@@ -40,6 +40,24 @@ class SetupQueueTest {
 
     private fun response(value: String) = SetupResponse(JsonParser.parseString(value).asJsonObject, null)
 
+    @Test fun partialBatchFailurePreservesTheServerExplanationForRejectedFeeds() = runTest(dispatcher) {
+        val second = feed.copy(id = "11", url = "https://b.test/rss")
+        coEvery { api.request("/reader/add_feeds", any(), false, any(), any(), any()) } returns
+            response("""{"batch_add_supported":true}""")
+        coEvery { api.request("/reader/add_feeds", any(), true, any(), any(), any()) } returns
+            response("""{"message":"You have reached your subscription limit.","results":[{"code":1,"feed_id":10},{"code":-1,"feed_id":11}]}""")
+        val queue = queue()
+
+        queue.enqueue(listOf(feed, second), "Science")
+        advanceUntilIdle()
+
+        assertEquals("You have reached your subscription limit.", queue.state.value.failures.single().message)
+        assertEquals(listOf(second), queue.state.value.failures.single().feeds)
+        assertEquals(setOf(feed.url), queue.state.value.added)
+        assertTrue(queue.state.value.queued.isEmpty())
+        coVerify(exactly = 0) { api.request("/reader/add_url", any(), any(), any(), any(), any()) }
+    }
+
     @Test fun internalOnlyImportExplainsExistingSubscriptionRequirementWithoutPromisingNewFeeds() = runTest(dispatcher) {
         val bytes = """<opml><body><outline xmlUrl="newsletter:123:inbox"/><outline xmlUrl="webfeed:456"/></body></opml>""".toByteArray()
         val uri = mockk<Uri>()
@@ -126,6 +144,7 @@ class SetupQueueTest {
             val queue = queue()
             queue.enqueue(listOf(feed, second), "News ▸ Local", existing = true)
             advanceUntilIdle()
+            assertEquals("Some feeds could not be added. Please retry.", queue.state.value.failures.single().message)
             queue.retry(
                 queue.state.value.failures
                     .single(),

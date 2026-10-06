@@ -27,6 +27,7 @@ import android.widget.TextView
 import androidx.core.view.doOnLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -597,8 +598,14 @@ class StoryViewAdapter(
                     if (smoothPendingStoryScroll && !replacingEmptyList && hasVisibleAnchor) {
                         // StoryViewAdapter.kt keeps the fling-stop exemption until the animation ends, not just until it starts.
                         isFollowingReadingStory = true
-                        // StoryViewAdapter.kt matches iOS: keep one preceding row when more than four rows are visible.
-                        val target = (position - if (last - first + 1 > 4) 1 else 0).coerceAtLeast(0)
+                        // StoryViewAdapter.kt counts visual rows, including variable-span tiles, before keeping a preceding row.
+                        val grid = lm as? GridLayoutManager
+                        fun rowIndex(item: Int) = grid?.spanSizeLookup?.getSpanGroupIndex(item, grid.spanCount) ?: item
+                        var target = position
+                        if (rowIndex(last) - rowIndex(first) + 1 > 4) {
+                            val precedingRow = (rowIndex(position) - 1).coerceAtLeast(0)
+                            while (target > 0 && rowIndex(target - 1) >= precedingRow) target--
+                        }
                         lm.startSmoothScroll(object : LinearSmoothScroller(rv.context) {
                             override fun getVerticalSnapPreference() = SNAP_TO_START
                         }.apply { targetPosition = target })
