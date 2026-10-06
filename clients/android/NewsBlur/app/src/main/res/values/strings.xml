@@ -1,4 +1,6 @@
 <resources>
+    <string name="reader_enter_fullscreen">Read full screen</string>
+    <string name="reader_exit_fullscreen">Show story list</string>
     <string name="try_feed_instafetching">Insta-fetching stories…</string>
     <string name="try_feed_fetch_failed">Unable to fetch stories. Tap to try again.</string>
     <string name="try_feed_empty">No stories are available from this site yet. Tap to refresh.</string>

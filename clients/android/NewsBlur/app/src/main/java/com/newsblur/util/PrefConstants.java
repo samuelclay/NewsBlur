@@ -73,6 +73,7 @@ public class PrefConstants {
     public static final String STORIES_SHOW_PREVIEWS_STYLE = "pref_show_content_preview_style";
     public static final String STORIES_THUMBNAIL_STYLE = "pref_thumbnail_style";
     public static final String STORY_TOOLBAR_POSITION = "story_toolbar_position";
+    public static final String READER_FULLSCREEN = "reader_fullscreen";
     public static final String STORY_MARK_READ_BEHAVIOR = "pref_story_mark_read_behavior";
     public static final String STORY_CLUSTERING = "story_clustering";
     public static final String CLUSTER_MODE = "cluster_mode";

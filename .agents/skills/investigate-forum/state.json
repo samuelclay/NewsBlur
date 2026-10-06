@@ -1,5 +1,19 @@
 {
   "topics": {
+    "13869": {
+      "title": "NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites",
+      "url": "https://forum.newsblur.com/t/newsblur-15-for-android-faster-scrolling-a-tablet-layout-and-add-discover-sites/13869",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-10-06T05:54:26.692Z",
+      "last_posted_at": "2026-10-05T16:32:49.323Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2163",
+      "branch": "FTUX",
+      "worktree": ".worktree/ftux-combined",
+      "note": "gpjt requested full-width article reading on a Samsung Fold. Added a toolbar toggle that expands the current reader in place, retains reader controls, and persists until disabled across stories and app launches. Uses Activity Embedding extension 3 and keeps narrow-window constraints; exact Fold hardware remains unverified. Samsung SM-X200 runtime checks passed for expansion/restoration, portrait/landscape, Back and reopening, force-stop/relaunch persistence, article position, and light/dark/black/sepia themes. Reproduced the live title-list teleport during swipes, added failing tests, and made offscreen following smooth with cancellation on rapid selection changes; visible titles and phone-return positioning remain unchanged. Full Android unit suite passed 780 tests before the Back follow-up; 23 focused tests pass after fixing a runtime-confirmed blank Back transition for expanded opaque readers. Debug APK built and installed, and fixed Back verified on the tablet. The attached SM-S901U1 phone remains locked, so phone runtime verification is not claimed. Original tablet theme and rotation preferences restored. No release or forum post.",
+      "reply": "I added a full screen button beside the reader settings. It hides the story list while keeping the reading controls, and remembers your choice until you turn it off. I also fixed the story list jumping when you swipe between articles. These changes are tested on a Samsung tablet and are waiting for the next release.",
+      "question": null
+    },
     "13672": {
       "title": "NewsBlur app on iOS orientation issue",
       "url": "https://forum.newsblur.com/t/newsblur-app-on-ios-orientation-issue/13672",

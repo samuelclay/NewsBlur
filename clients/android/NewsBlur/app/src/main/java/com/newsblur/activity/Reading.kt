@@ -334,7 +334,6 @@ abstract class Reading :
             PendingTransitionUtils.overrideEnterTransition(this)
         }
         window.setBackgroundDrawableResource(android.R.color.transparent)
-        StorySplitView.trackSplit(this)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
@@ -398,6 +397,12 @@ abstract class Reading :
         toolbarVisibleFraction = if (savedInstanceBundle?.getBoolean(EXTRA_TOOLBAR_HIDDEN)
             ?: intent.getBooleanExtra(EXTRA_TOOLBAR_HIDDEN, false)) 0f else 1f
         setupViews()
+        StorySplitView.trackSplit(this) {
+            updateReaderFullscreenButton()
+            if (!parked && StorySplitView.isInSplit(this)) {
+                ItemsList.peekReadingLaunchParent(taskId)?.followReadingStory(currentReadingStory()?.storyHash)
+            }
+        }
         setupListeners()
         setupObservers()
         setupOnBackPressed()
@@ -563,6 +568,15 @@ abstract class Reading :
         restoreReadingAfterConfigurationChange()
     }
 
+    private fun updateReaderFullscreenButton() {
+        val button = binding.includeToolbar.toolbarFullscreenButton
+        button.visibility = if (!parked && StorySplitView.canToggleReaderFullscreen(this)) View.VISIBLE else View.GONE
+        val fullscreen = StorySplitView.isReaderFullscreen(this)
+        button.setImageResource(if (fullscreen) R.drawable.ic_reader_fullscreen_exit else R.drawable.ic_reader_fullscreen)
+        button.contentDescription = getString(if (fullscreen) R.string.reader_exit_fullscreen else R.string.reader_enter_fullscreen)
+        button.tooltipText = button.contentDescription
+    }
+
     private fun setupViews() {
         // Reading.kt uses native nested scrolling so the page follows the toolbar without WebView relayout.
         val appBar = binding.includeToolbar.root
@@ -586,6 +600,12 @@ abstract class Reading :
         if (toolbarVisibleFraction == 0f) appBar.setExpanded(false, false)
 
         findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener { openStorySettingsMenu(it) }
+        binding.includeToolbar.toolbarFullscreenButton.setOnClickListener {
+            if (StorySplitView.setReaderFullscreen(this, !prefsRepo.isReaderFullscreenEnabled())) {
+                updateReaderFullscreenButton()
+            }
+        }
+        updateReaderFullscreenButton()
 
         traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
         traverseBar.setup()
@@ -997,6 +1017,7 @@ abstract class Reading :
     fun park() {
         if (parked) return
         parked = true
+        updateReaderFullscreenButton()
         stopLoading = true
         cancelStoryDwell(clearStory = true)
         cancelUnreadSearch()
@@ -2028,8 +2049,11 @@ abstract class Reading :
 
     private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
 
-    // The swipe back reveals the story list underneath, but in a tablet split the list is its own pane.
-    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this)
+    // StorySplitView.kt keeps paired readers opaque even when expanded, so they cannot reveal
+    // the story list underneath with Reading.kt's phone swipe animation.
+    private fun isInteractiveReaderBackEnabled(): Boolean =
+        this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this) &&
+            !StorySplitView.canToggleReaderFullscreen(this)
 
     private fun supportsPredictiveReaderBack(): Boolean {
         val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())

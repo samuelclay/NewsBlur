@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.window.WindowSdkExtensions
 import androidx.window.embedding.ActivityEmbeddingController
 import androidx.window.embedding.ActivityFilter
 import androidx.window.embedding.ActivityRule
@@ -22,6 +23,7 @@ import androidx.window.embedding.SplitPairFilter
 import androidx.window.embedding.SplitPairRule
 import androidx.window.embedding.SplitPlaceholderRule
 import androidx.window.embedding.SplitRule
+import com.newsblur.NbApplication
 import com.newsblur.activity.AllSharedStoriesItemsList
 import com.newsblur.activity.AllSharedStoriesReading
 import com.newsblur.activity.AllStoriesItemsList
@@ -44,6 +46,7 @@ import com.newsblur.activity.GoodReadsReading
 import com.newsblur.activity.ImportExportActivity
 import com.newsblur.activity.InfrequentItemsList
 import com.newsblur.activity.InfrequentReading
+import com.newsblur.activity.ItemsList
 import com.newsblur.activity.LongReadsItemsList
 import com.newsblur.activity.LongReadsReading
 import com.newsblur.activity.MuteConfig
@@ -51,6 +54,7 @@ import com.newsblur.activity.NotificationsActivity
 import com.newsblur.activity.Profile
 import com.newsblur.activity.ReadStoriesItemsList
 import com.newsblur.activity.ReadStoriesReading
+import com.newsblur.activity.Reading
 import com.newsblur.activity.ReadingPlaceholder
 import com.newsblur.activity.SavedStoriesItemsList
 import com.newsblur.activity.SavedStoriesReading
@@ -138,6 +142,7 @@ object StorySplitView {
         )
 
     private var rulesInstalled = false
+    private var readerFullscreenSupported = false
 
     /**
      * Registers the split rules the first time a window is wide enough to split: from
@@ -152,8 +157,23 @@ object StorySplitView {
     fun installIfWideEnough(context: Context) {
         if (rulesInstalled) return
         if (!shouldInstallRules(context.resources.configuration.smallestScreenWidthDp)) return
-        if (SplitController.getInstance(context).splitSupportStatus != SplitController.SplitSupportStatus.SPLIT_AVAILABLE) {
+        val splitController = SplitController.getInstance(context)
+        if (splitController.splitSupportStatus != SplitController.SplitSupportStatus.SPLIT_AVAILABLE) {
             return
+        }
+        // StorySplitView.kt needs extension 3 to update the current reader without relaunching
+        // Reading.kt. Do not apply a saved preference when this device cannot toggle it back.
+        if (WindowSdkExtensions.getInstance().extensionVersion >= 3) {
+            val application = context.applicationContext as NbApplication
+            splitController.setSplitAttributesCalculator { params ->
+                calculateSplitAttributes(
+                    params.splitRuleTag,
+                    params.areDefaultConstraintsSatisfied,
+                    application.prefsRepo.get().isReaderFullscreenEnabled(),
+                    params.defaultSplitAttributes,
+                )
+            }
+            readerFullscreenSupported = true
         }
         RuleController.getInstance(context).setRules(buildRules(context))
         rulesInstalled = true
@@ -161,8 +181,50 @@ object StorySplitView {
 
     internal fun shouldInstallRules(smallestScreenWidthDp: Int): Boolean = smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
 
+    internal fun calculateSplitAttributes(
+        tag: String?,
+        constraintsSatisfied: Boolean,
+        fullscreenRequested: Boolean,
+        defaults: SplitAttributes,
+    ): SplitAttributes =
+        if (!constraintsSatisfied || (tag == TAG_STORY_LIST_READER && fullscreenRequested)) {
+            SplitAttributes
+                .Builder()
+                .setSplitType(SplitAttributes.SplitType.SPLIT_TYPE_EXPAND)
+                .setLayoutDirection(defaults.layoutDirection)
+                .build()
+        } else {
+            defaults
+        }
+
     // Split membership for each story list and reader, as last reported by splitInfoList (trackSplit).
     private val reportedSplitMembership = WeakHashMap<Activity, Boolean>()
+    private val reportedReaderPairing = WeakHashMap<Activity, Boolean>()
+    private val trackedStoryLists = WeakHashMap<ItemsList, Boolean>()
+
+    /** Reading.kt can offer the toggle for a real list/reader pair, including an expanded pair. */
+    @JvmStatic
+    fun canToggleReaderFullscreen(activity: Activity): Boolean =
+        rulesInstalled && readerFullscreenSupported && activity is Reading &&
+            !activity.isFinishing && !activity.isDestroyed && reportedReaderPairing[activity] == true
+
+    /** Returns the requested mode from PrefsRepo.kt, rather than mistaking a narrow window for it. */
+    @JvmStatic
+    fun isReaderFullscreen(activity: Activity): Boolean =
+        canToggleReaderFullscreen(activity) &&
+            (activity.applicationContext as NbApplication).prefsRepo.get().isReaderFullscreenEnabled()
+
+    /** Persists the mode in PrefsRepo.kt and updates the existing Reading.kt activity in place. */
+    @JvmStatic
+    fun setReaderFullscreen(
+        activity: Activity,
+        enabled: Boolean,
+    ): Boolean {
+        if (!canToggleReaderFullscreen(activity)) return false
+        (activity.applicationContext as NbApplication).prefsRepo.get().setReaderFullscreenEnabled(enabled)
+        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        return true
+    }
 
     /**
      * True when this activity is currently showing in one pane of a split. Reading.kt and
@@ -217,19 +279,42 @@ object StorySplitView {
      */
     @JvmStatic
     fun trackSplit(activity: ComponentActivity) {
+        trackSplit(activity) {}
+    }
+
+    /** Notifies Reading.kt only while STARTED, after its onCreate has initialized the binding. */
+    @JvmStatic
+    fun trackSplit(
+        activity: ComponentActivity,
+        callback: () -> Unit,
+    ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
         // Without rules (every phone) nothing can land in a split, so skip the subscription.
         if (!rulesInstalled) return
+        if (activity is ItemsList) trackedStoryLists[activity] = true
         var isOpaque = false
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 SplitController.getInstance(activity).splitInfoList(activity).collect { splits ->
                     val inSplit = isSideBySide(splits.map { split -> split.splitAttributes.splitType })
                     reportedSplitMembership[activity] = inSplit
-                    if (inSplit && !isOpaque) {
+                    // ActivityStack exposes contains(), not its activities. Track ItemsList.java
+                    // instances weakly so expanded readers stay eligible without retaining tasks.
+                    val pairedReader =
+                        activity is Reading && splits.any { split ->
+                            activity in split.secondaryActivityStack &&
+                                trackedStoryLists.keys.any { storyList ->
+                                    !storyList.isFinishing && !storyList.isDestroyed &&
+                                        storyList in split.primaryActivityStack
+                                }
+                        }
+                    reportedReaderPairing[activity] = pairedReader
+                    // A saved fullscreen preference can launch Reading.kt already expanded.
+                    if ((inSplit || pairedReader) && !isOpaque) {
                         isOpaque = true
                         activity.setTranslucent(false)
                     }
+                    callback()
                 }
             }
         }

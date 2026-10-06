@@ -732,6 +732,12 @@ class PrefsRepo(
 
     fun isAutoOpenFirstUnread() = prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
+    fun isReaderFullscreenEnabled() = prefs.getBoolean(PrefConstants.READER_FULLSCREEN, false)
+
+    fun setReaderFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.READER_FULLSCREEN, enabled) }
+    }
+
     fun isMarkReadOnFeedScroll() = getMarkStoryReadBehavior() == MarkStoryReadBehavior.ON_SCROLL
 
     fun setMarkReadOnScroll(value: Boolean) {
