@@ -146,6 +146,18 @@ public class ItemSetFragment extends NbFragment {
     private final View.OnLayoutChangeListener floatingStoryHeaderLayoutListener =
             (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> updateBottomNextFeedBottomInset();
     private int storyListScrollState = RecyclerView.SCROLL_STATE_IDLE;
+    private final RecyclerView.OnScrollListener storyScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            ItemSetFragment.this.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            ItemSetFragment.this.onScrolled(dy);
+            updateBottomNextFeedControl();
+        }
+    };
     private int bottomNextFeedActiveDragStartOffsetY;
     private int bottomNextFeedActivationAnchorOffsetY;
     private boolean hasBottomNextFeedActiveDragStartOffset;
@@ -268,18 +280,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        binding.itemgridfragmentGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                ItemSetFragment.this.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                ItemSetFragment.this.onScrolled(dy);
-                updateBottomNextFeedControl();
-            }
-        });
+        binding.itemgridfragmentGrid.addOnScrollListener(storyScrollListener);
         binding.itemgridfragmentGrid.addOnItemTouchListener(new StoryListBackTouchListener());
 
         return v;
@@ -595,6 +596,7 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+        if (adapter != null) adapter.onStoryListScrollStateChanged(newState);
         int oldState = storyListScrollState;
         storyListScrollState = newState;
 
@@ -972,7 +974,7 @@ public class ItemSetFragment extends NbFragment {
 
         // the list can be scrolled past the last item thanks to the offset footer, but don't fling
         // past the last item, which can be confusing to users who don't know about or need the offset
-        if ((!fullFlingComplete) &&
+        if (!adapter.isFollowingReadingStory() && (!fullFlingComplete) &&
                 (layoutManager.findLastCompletelyVisibleItemPosition() >= adapter.getStoryCount())) {
             binding.itemgridfragmentGrid.stopScroll();
             // but after halting at the end once, do allow scrolling past the bottom
@@ -980,7 +982,7 @@ public class ItemSetFragment extends NbFragment {
         }
 
         // if flinging downwards, pause at the last unread as a convenience
-        if ((indexOfLastUnread >= 0) &&
+        if (!adapter.isFollowingReadingStory() && (indexOfLastUnread >= 0) &&
                 (layoutManager.findLastCompletelyVisibleItemPosition() >= indexOfLastUnread)) {
             // but don't interrupt if already past the last unread
             if (indexOfLastUnread >= layoutManager.findFirstCompletelyVisibleItemPosition()) {
