@@ -565,6 +565,8 @@ abstract class Reading :
         }
 
         super.onConfigurationChanged(newConfig)
+        // StorySplitView.kt may keep the same expanded pair while the window gets narrower.
+        updateReaderFullscreenButton()
         restoreReadingAfterConfigurationChange()
     }
 
@@ -2053,7 +2055,7 @@ abstract class Reading :
     // the story list underneath with Reading.kt's phone swipe animation.
     private fun isInteractiveReaderBackEnabled(): Boolean =
         this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this) &&
-            !StorySplitView.canToggleReaderFullscreen(this)
+            !StorySplitView.isPairedReader(this)
 
     private fun supportsPredictiveReaderBack(): Boolean {
         val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())
