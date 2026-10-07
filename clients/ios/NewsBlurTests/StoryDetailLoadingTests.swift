@@ -1407,6 +1407,19 @@ import XCTest
     }
 
     func test_articleMotionRecorderDoesNotAssignDelayedSamplesToEarlierDisplayFrames() async throws {
+        try await assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: false)
+    }
+
+    func test_articleMotionRecorderDoesNotTimestampCachedPresentationAtCallbackCompletion() async throws {
+        try await assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: true)
+    }
+
+    func test_articleMotionRecorderStillRejectsARealSnapAfterDelayedObservation() async throws {
+        try await assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: true, injectSnap: true)
+    }
+
+    private func assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: Bool,
+                                                       injectSnap: Bool = false) async throws {
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previousWindow = scene.windows.first { $0.isKeyWindow }
         let window = trackFixtureWindow(UIWindow(windowScene: scene))
@@ -1430,13 +1443,22 @@ import XCTest
         recorder.start()
         try await requireState("The compositor control has stable initial samples") { recorder.positions.count >= 3 }
         let delayAfter = CACurrentMediaTime() + 0.1
+        var didSnap = false
+        let snap = DispatchWorkItem {
+            article.layer.removeAllAnimations()
+            didSnap = true
+        }
+        defer { snap.cancel() }
         recorder.beforeSample = { [weak recorder] in
             guard CACurrentMediaTime() >= delayAfter else { return }
             recorder?.beforeSample = nil
             // StoryDetailLoadingTests.swift delays only the observer; the compositor animation continues independently.
+            if cachesPresentationBeforeDelay { _ = article.layer.presentation() }
             Thread.sleep(forTimeInterval: 0.14)
+            // StoryDetailLoadingTests.swift injects a real jump after observation resumes, not a fabricated trace.
+            if injectSnap { DispatchQueue.main.asyncAfter(deadline: .now() + 0.04, execute: snap) }
         }
-        UIView.animate(withDuration: 0.35, delay: 0, options: .curveLinear) {
+        UIView.animate(withDuration: injectSnap ? 0.8 : 0.35, delay: 0, options: .curveLinear) {
             article.transform = CGAffineTransform(translationX: -660, y: 0)
         }
         try await requireState("The compositor control reaches its displayed endpoint") {
@@ -1447,7 +1469,12 @@ import XCTest
             positions: recorder.positions, times: recorder.sampleTimes,
             frameDurations: recorder.frameDurations, start: 660, end: 0)
         XCTAssertNil(recorder.beforeSample, "The delayed observation must actually occur")
-        XCTAssertTrue(failures.isEmpty, "An uninterrupted compositor animation must not look like a snap: \(failures)")
+        if injectSnap {
+            XCTAssertTrue(didSnap)
+            XCTAssertTrue(failures.contains { $0.hasPrefix("Jump at sample") }, "A real compositor snap must still fail: \(failures)")
+        } else {
+            XCTAssertTrue(failures.isEmpty, "An uninterrupted compositor animation must not look like a snap: \(failures)")
+        }
     }
 
     func test_nextButtonMotionSamplingAllowsOneDisplayFrameButRejectsASnapAfterADelayedCallback() {
@@ -3356,9 +3383,10 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     func start() {
         recordFrame(at: CACurrentMediaTime(), frameDuration: 1.0 / 60)
         guard let window else { return }
-        frameObserver = StoryPresentationFrameObserver(window: window) { [weak self] frameDuration in
+        frameObserver = StoryPresentationFrameObserver(window: window, beforeSample: { [weak self] in
             self?.beforeSample?()
-            self?.recordFrame(at: CACurrentMediaTime(), frameDuration: frameDuration)
+        }) { [weak self] time, frameDuration in
+            self?.recordFrame(at: time, frameDuration: frameDuration)
         }
     }
 
@@ -3375,16 +3403,33 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class StoryPresentationFrameObserver: NSObject {
-    private let sample: (CFTimeInterval) -> Void
+    private let sample: (CFTimeInterval, CFTimeInterval) -> Void
+    private let beforeSample: (() -> Void)?
+    private let clockLayer = CALayer()
+    private let clockStartedAt = CACurrentMediaTime()
 #if targetEnvironment(macCatalyst)
     private var displayLink: CADisplayLink?
 #else
     private var updateLink: UIUpdateLink?
 #endif
 
-    init(window: UIWindow, sample: @escaping (CFTimeInterval) -> Void) {
+    init(window: UIWindow, beforeSample: (() -> Void)? = nil,
+         sample: @escaping (CFTimeInterval, CFTimeInterval) -> Void) {
         self.sample = sample
+        self.beforeSample = beforeSample
         super.init()
+        // StoryDetailLoadingTests.swift reads time from the same presentation transaction as geometry.
+        // A cached snapshot can precede the callback by many frames; neither callback time nor
+        // UIUpdateInfo.modelTime identifies both cached and freshly created presentation snapshots.
+        clockLayer.opacity = 0
+        window.layer.addSublayer(clockLayer)
+        let clock = CABasicAnimation(keyPath: "position.x")
+        clock.fromValue = 0
+        clock.toValue = 3600
+        clock.duration = 3600
+        clock.beginTime = clockLayer.convertTime(clockStartedAt, from: nil)
+        clock.timingFunction = CAMediaTimingFunction(name: .linear)
+        clockLayer.add(clock, forKey: "presentation-clock")
 #if targetEnvironment(macCatalyst)
         let link = CADisplayLink(target: self, selector: #selector(sampleDisplayLink(_:)))
         link.add(to: .main, forMode: .common)
@@ -3394,7 +3439,7 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
         // callback can otherwise pair an older transaction's geometry with a newer display timestamp.
         let link = UIUpdateLink(view: window)
         let frameDuration = 1.0 / Double(window.screen.maximumFramesPerSecond)
-        link.addAction(to: .afterUpdateComplete) { _, _ in sample(frameDuration) }
+        link.addAction(to: .afterUpdateComplete) { [weak self] _, _ in self?.sampleFrame(frameDuration: frameDuration) }
         link.requiresContinuousUpdates = true
         link.isEnabled = true
         updateLink = link
@@ -3409,10 +3454,17 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
         updateLink?.isEnabled = false
         updateLink = nil
 #endif
+        clockLayer.removeFromSuperlayer()
+    }
+
+    private func sampleFrame(frameDuration: CFTimeInterval) {
+        beforeSample?()
+        guard let presentation = clockLayer.presentation() else { return }
+        sample(clockStartedAt + CFTimeInterval(presentation.position.x), frameDuration)
     }
 
 #if targetEnvironment(macCatalyst)
-    @objc private func sampleDisplayLink(_ link: CADisplayLink) { sample(link.duration) }
+    @objc private func sampleDisplayLink(_ link: CADisplayLink) { sampleFrame(frameDuration: link.duration) }
 #endif
 }
 
@@ -3492,15 +3544,14 @@ private final class NextButtonReadingStories: StoriesCollection {
         self.target = target
     }
     func start() {
-        frameObserver = StoryPresentationFrameObserver(window: window) { [weak self] frameDuration in
-            self?.sample(frameDuration: frameDuration)
+        frameObserver = StoryPresentationFrameObserver(window: window) { [weak self] time, frameDuration in
+            self?.sample(at: time, frameDuration: frameDuration)
         }
     }
     func stop() { frameObserver?.stop(); frameObserver = nil }
-    private func sample(frameDuration: CFTimeInterval) {
-        let now = CACurrentMediaTime()
+    private func sample(at now: CFTimeInterval, frameDuration: CFTimeInterval) {
         guard let presentation = table.layer.presentation(), let root = window.layer.presentation() else { return }
-        // StoryDetailLoadingTests.swift timestamps the geometry being read, not the display tick that scheduled a possibly delayed callback.
+        // StoryDetailLoadingTests.swift uses the presentation clock sampled with this geometry.
         offsets.append(presentation.bounds.origin.y)
         sampleTimes.append(now)
         frameDurations.append(frameDuration)
