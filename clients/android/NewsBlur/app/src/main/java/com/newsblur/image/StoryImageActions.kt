@@ -2,6 +2,7 @@ package com.newsblur.image
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ContentValues
@@ -30,7 +31,9 @@ object StoryImageActions {
     /** StoryImageViewer.kt opens the public image URL using the browser selected in PrefsRepo.kt. */
     fun openInBrowser(activity: Activity, source: StoryImageSource, prefsRepo: PrefsRepo) {
         val url = source.browserUrl ?: return
-        UIUtils.handleUri(activity, prefsRepo, Uri.parse(url))
+        if (!UIUtils.handleUri(activity, prefsRepo, Uri.parse(url))) {
+            throw ActivityNotFoundException("No browser is available to open this image")
+        }
     }
 
     // Photos handed to other apps live here, under the FileProvider's cache-path (file_paths.xml).
