@@ -1169,7 +1169,8 @@ import XCTest
                 if let value { defaults.set(value, forKey: key) } else { defaults.removeObject(forKey: key) }
             }
         }
-        let fixture = makePresentationFixture(width: 660)
+        let pager = NextButtonReadingScrollView()
+        let fixture = makePresentationFixture(width: 660, scrollView: pager)
         let pages = fixture.pages
         pages.regularPane = true
         pages.runsActualPageChanges = true
@@ -1324,17 +1325,21 @@ import XCTest
         XCTAssertTrue(articlePages.allSatisfy(\.readyForPresentation))
         XCTAssertTrue(UIView.areAnimationsEnabled)
         table.rowReloads = 0
+        table.animatedScrollRequests.removeAll()
+        pager.animatedScrollRequests.removeAll()
         feed.events.removeAll()
         feed.eventTimes.removeAll()
         let titlesFinished = expectation(description: "The native title reveal animation completes")
         feed.titleScrollDidFinish = { titlesFinished.fulfill() }
+        let articleFinished = expectation(description: "The native article scroll animation completes")
+        pages.nativeScrollDidFinish = { articleFinished.fulfill() }
         let articleStart = articlePages[0].view.convert(CGPoint.zero, to: window).x
         let articleEnd = articleStart - pages.scrollView.bounds.width
         let nextTappedAt = CACurrentMediaTime()
         // StoryDetailLoadingTests.swift drives the same UIButton action and real pager/list/read callbacks as the landscape app.
         next.sendActions(for: .touchUpInside)
         // StoryDetailLoadingTests.swift leaves both animations untouched while sampling; drawHierarchy(afterScreenUpdates:true) can complete UIKit animations.
-        await fulfillment(of: [titlesFinished], timeout: 15)
+        await fulfillment(of: [titlesFinished, articleFinished], timeout: 15)
         await waitForState("The completed title and article positions reach their displayed frames") {
             guard let titleOffset = titles.offsets.last, let articlePosition = motion.positions.last else { return false }
             let finalArticlePosition = articlePages[0].view.convert(CGPoint.zero, to: window).x
@@ -1351,11 +1356,13 @@ import XCTest
         XCTAssertFalse(collection.isStoryUnread(collection.activeFeedStories[3] as? [AnyHashable: Any]))
         XCTAssertTrue(collection.isStoryUnread(collection.activeFeedStories[4] as? [AnyHashable: Any]))
         XCTAssertEqual(table.rowReloads, 0, "The Next read update must preserve the ongoing title reveal")
+        XCTAssertTrue(table.animatedScrollRequests.contains(true), "Next must request an animated title reveal")
+        XCTAssertFalse(table.animatedScrollRequests.contains(false), "The read update must not snap or cancel the title reveal")
         XCTAssertGreaterThan(Set(titles.offsets.map { Int($0.rounded()) }).count, 5)
         XCTAssertGreaterThan(Set(titles.cellPositions.map { Int($0.rounded()) }).count, 5)
         let articleMotionFailures = StorySelectionFrameRecorder.motionFailures(
-            positions: motion.positions, times: motion.sampleTimes, frameDurations: motion.frameDurations,
-            start: articleStart, end: articleEnd)
+            positions: motion.positions, start: articleStart, end: articleEnd,
+            completed: pages.nativeScrollDidFinish == nil, animatedRequests: pager.animatedScrollRequests)
         XCTAssertTrue(articleMotionFailures.isEmpty, "The article must keep its normal page animation: \(articleMotionFailures)")
         for (earlier, later) in zip(titles.offsets, titles.offsets.dropFirst()) {
             XCTAssertGreaterThanOrEqual(later + 0.5, earlier, "Title table bounds must not jump backwards")
@@ -1363,63 +1370,27 @@ import XCTest
         for (earlier, later) in zip(titles.cellPositions, titles.cellPositions.dropFirst()) {
             XCTAssertLessThanOrEqual(later, earlier + 0.5, "The drawn fourth cell must continuously move up into view")
         }
-        func assertContinuous(_ values: [CGFloat], times: [CFTimeInterval], frameDurations: [CFTimeInterval], name: String) {
-            guard values.count > 1 else { return }
-            let travel = abs((values.last ?? 0) - (values.first ?? 0))
-            for index in 1..<values.count {
-                let elapsed = times[index] - times[index - 1]
-                let maximumStep = NextButtonReadingRecorder.maximumContinuousStep(
-                    travel: travel, elapsed: elapsed, frameDuration: frameDurations[index])
-                XCTAssertLessThanOrEqual(abs(values[index] - values[index - 1]), maximumStep,
-                                         "\(name) jumped in \(elapsed)s: \(values[index - 1]) → \(values[index])")
-            }
-        }
-        assertContinuous(titles.offsets, times: titles.sampleTimes, frameDurations: titles.frameDurations, name: "Title table")
-        assertContinuous(titles.cellPositions, times: titles.cellSampleTimes, frameDurations: titles.cellFrameDurations, name: "Drawn target cell")
+        // StoryDetailLoadingTests.swift verifies native completion and visible motion, not frame pacing:
+        // a stalled main thread delays UIScrollView updates even while a compositor clock keeps advancing.
         let body = try await pages.currentPage.webView.evaluateJavaScript("document.querySelector('#NB-story').textContent") as? String
         XCTAssertTrue(body?.contains("Prepared article 4") == true)
         attachPanes("Landscape after Next: fourth title selected and read beside the actual fourth article")
         print("NEXT_BUTTON_LANDSCAPE reloads=\(table.rowReloads) callbacks=\(feed.events) callback_times=\(feed.eventTimes.map { $0 - nextTappedAt }) times=\(titles.sampleTimes.map { $0 - nextTappedAt }) table=\(titles.offsets) drawn_cell=\(titles.cellPositions) article=\(motion.positions) article_times=\(motion.sampleTimes.map { $0 - nextTappedAt })")
     }
 
-    func test_nextButtonArticleMotionAcceptsHostedSamplingButRejectsMissingMotionAndSnaps() {
-        // StoryDetailLoadingTests.swift pairs the failed hosted run's post-tap article positions
-        // with its companion title display-link timestamps; the 176 ms callback gap skipped frames.
-        let positions: [CGFloat] = [440, 350.66666666666674, 205.66666666666674, -206, -220]
-        let times: [CFTimeInterval] = [-0.0006279166666445235, 0.09456354166673009,
-                                      0.13604666666674348, 0.3118309166668496, 0.34675745833351357]
-        func failures(_ positions: [CGFloat], _ times: [CFTimeInterval]) -> [String] {
-            StorySelectionFrameRecorder.motionFailures(
-                positions: positions, times: times,
-                frameDurations: Array(repeating: 1.0 / 60, count: positions.count), start: 440, end: -220)
-        }
-        XCTAssertTrue(failures(positions, times).isEmpty)
-        XCTAssertTrue(failures([440, -220], [0, 0.35]).contains("Missing intermediate motion"),
-                      "Correct endpoints alone cannot prove an animation")
-        XCTAssertTrue(failures([440, 205, -220], [0, 0.175, 0.35]).contains("Missing intermediate motion"),
-                      "One intermediate snapshot cannot prove continuous motion")
-        var snappedTimes = times
-        snappedTimes[3] = times[2] + 1.0 / 60
-        XCTAssertTrue(failures(positions, snappedTimes).contains { $0.hasPrefix("Jump at sample 3:") },
-                      "A one-frame snap must fail even with the expected endpoints and multiple intermediate positions")
-        XCTAssertTrue(failures([440, 440], [0, 0.35]).contains("Wrong endpoint"))
-        XCTAssertTrue(failures([440, 205, 350, -206, -220], times).contains("Wrong direction"))
+    func test_nativeScrollAnimationSurvivesADelayedMainThreadUpdate() async throws {
+        try await assertNativeScrollContract()
     }
 
-    func test_articleMotionRecorderDoesNotAssignDelayedSamplesToEarlierDisplayFrames() async throws {
-        try await assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: false)
+    func test_nativeScrollContractRejectsDisabledAnimation() async throws {
+        try await assertNativeScrollContract(animated: false)
     }
 
-    func test_articleMotionRecorderDoesNotTimestampCachedPresentationAtCallbackCompletion() async throws {
-        try await assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: true)
+    func test_nativeScrollContractRejectsInterruptionDespiteCorrectEndpoint() async throws {
+        try await assertNativeScrollContract(interrupt: true)
     }
 
-    func test_articleMotionRecorderStillRejectsARealSnapAfterDelayedObservation() async throws {
-        try await assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: true, injectSnap: true)
-    }
-
-    private func assertArticleMotionRecorderHandlesDelay(cachesPresentationBeforeDelay: Bool,
-                                                       injectSnap: Bool = false) async throws {
+    private func assertNativeScrollContract(animated: Bool = true, interrupt: Bool = false) async throws {
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previousWindow = scene.windows.first { $0.isKeyWindow }
         let window = trackFixtureWindow(UIWindow(windowScene: scene))
@@ -1427,9 +1398,14 @@ import XCTest
         let root = UIViewController()
         window.rootViewController = root
         window.makeKeyAndVisible()
+        let scroll = NextButtonReadingScrollView(frame: CGRect(x: 0, y: 0, width: 660, height: 600))
+        scroll.contentInsetAdjustmentBehavior = .never
+        scroll.contentSize = CGSize(width: 1320, height: 600)
+        let completion = NativeScrollCompletionObserver()
+        scroll.delegate = completion
+        root.view.addSubview(scroll)
         let article = UIView(frame: CGRect(x: 660, y: 0, width: 660, height: 600))
-        article.backgroundColor = .systemBackground
-        root.view.addSubview(article)
+        scroll.addSubview(article)
         let recorder = StorySelectionFrameRecorder(view: article, window: window, horizontal: true)
         defer {
             recorder.stop()
@@ -1437,70 +1413,42 @@ import XCTest
             window.rootViewController = nil
             previousWindow?.makeKey()
         }
-        try await requireState("The compositor control has a committed presentation layer") {
-            article.layer.presentation() != nil
-        }
+        try await requireState("The native scroll control has a presentation layer") { article.layer.presentation() != nil }
         recorder.start()
-        try await requireState("The compositor control has stable initial samples") { recorder.positions.count >= 3 }
-        let delayAfter = CACurrentMediaTime() + 0.1
-        var didSnap = false
-        let snap = DispatchWorkItem {
-            article.layer.removeAllAnimations()
-            didSnap = true
-        }
-        defer { snap.cancel() }
-        recorder.beforeSample = { [weak recorder] in
-            guard CACurrentMediaTime() >= delayAfter else { return }
-            recorder?.beforeSample = nil
-            // StoryDetailLoadingTests.swift delays only the observer; the compositor animation continues independently.
-            if cachesPresentationBeforeDelay { _ = article.layer.presentation() }
-            Thread.sleep(forTimeInterval: 0.14)
-            // StoryDetailLoadingTests.swift injects a real jump after observation resumes, not a fabricated trace.
-            if injectSnap { DispatchQueue.main.asyncAfter(deadline: .now() + 0.04, execute: snap) }
-        }
-        UIView.animate(withDuration: injectSnap ? 0.8 : 0.35, delay: 0, options: .curveLinear) {
-            article.transform = CGAffineTransform(translationX: -660, y: 0)
-        }
-        try await requireState("The compositor control reaches its displayed endpoint") {
-            recorder.positions.last.map { abs($0) < 0.5 } == true
-        }
-        recorder.stop()
-        let failures = StorySelectionFrameRecorder.motionFailures(
-            positions: recorder.positions, times: recorder.sampleTimes,
-            frameDurations: recorder.frameDurations, start: 660, end: 0)
-        XCTAssertNil(recorder.beforeSample, "The delayed observation must actually occur")
-        if injectSnap {
-            XCTAssertTrue(didSnap)
-            XCTAssertTrue(failures.contains { $0.hasPrefix("Jump at sample") }, "A real compositor snap must still fail: \(failures)")
-        } else {
-            XCTAssertTrue(failures.isEmpty, "An uninterrupted compositor animation must not look like a snap: \(failures)")
-        }
-    }
-
-    func test_nextButtonMotionSamplingAllowsOneDisplayFrameButRejectsASnapAfterADelayedCallback() {
-        // StoryDetailLoadingTests.swift replays the hosted trace that missed the 155.67-point
-        // presentation snapshot: 111 → 204.67 was reported only 13.47 ms apart after a callback gap.
-        let times: [CFTimeInterval] = [0.1277251667, 0.1443918333, 0.2642516667, 0.2777251667,
-                                      0.2943918333, 0.3110585, 0.3277251667, 0.3443918333,
-                                      0.3610585, 0.3777251667, 0.3943918333, 1.5831730417]
-        let offsets: [CGFloat] = [0, 0, 111, 204.6666666667, 257, 311, 365, 417.3333333333,
-                                  466.6666666667, 511, 549.3333333333, 622]
-        func excessiveSteps(_ positions: [CGFloat]) -> [Int] {
-            let travel = abs(positions.last! - positions.first!)
-            return (1..<positions.count).filter { index in
-                abs(positions[index] - positions[index - 1]) > NextButtonReadingRecorder.maximumContinuousStep(
-                    travel: travel, elapsed: times[index] - times[index - 1], frameDuration: 1.0 / 60)
+        try await requireState("The native scroll control has stable initial samples") { recorder.positions.count >= 3 }
+        scroll.animatedScrollRequests.removeAll()
+        if animated {
+            recorder.beforeSample = { [weak recorder] in
+                guard scroll.contentOffset.x > 150 else { return }
+                recorder?.beforeSample = nil
+                // StoryDetailLoadingTests.swift stalls UIKit, without cancelling or changing its native scroll animation.
+                Thread.sleep(forTimeInterval: 0.35)
+                if interrupt {
+                    // StoryDetailLoadingTests.swift cancels an in-flight scroll and snaps to the same destination.
+                    scroll.setContentOffset(CGPoint(x: 660, y: 0), animated: false)
+                }
             }
         }
-        XCTAssertTrue(excessiveSteps(offsets).isEmpty)
-        XCTAssertTrue(excessiveSteps(offsets.map { 660 - $0 }).isEmpty, "Drawn cell geometry has the same sampling tolerance")
-
-        var jumpedOffsets = offsets
-        jumpedOffsets[3] = 400
-        XCTAssertTrue(excessiveSteps(jumpedOffsets).contains(3), "The preceding 119.86 ms gap must not excuse a new sudden jump")
-        var snappedOffsets = offsets
-        for index in 3..<snappedOffsets.count { snappedOffsets[index] = 622 }
-        XCTAssertTrue(excessiveSteps(snappedOffsets).contains(3), "A snap to the destination must still fail")
+        scroll.setContentOffset(CGPoint(x: 660, y: 0), animated: animated)
+        try await requireState("The native scroll control reaches its displayed endpoint") {
+            recorder.positions.last.map { abs($0) < 0.5 } == true
+        }
+        await delay(0.05)
+        recorder.stop()
+        XCTAssertNil(recorder.beforeSample)
+        let failures = StorySelectionFrameRecorder.motionFailures(
+            positions: recorder.positions, start: 660, end: 0, completed: completion.finished,
+            animatedRequests: scroll.animatedScrollRequests)
+        XCTAssertFalse(failures.contains("Wrong endpoint"), "All controls must reach the same destination")
+        if interrupt {
+            XCTAssertFalse(failures.contains("Missing intermediate motion"), "The cancelled control must have started moving")
+            XCTAssertTrue(failures.contains("Nonanimated scroll request"), "A snap after intermediate motion must be rejected: \(failures)")
+        } else if !animated {
+            XCTAssertTrue(failures.contains("Missing intermediate motion"))
+            XCTAssertTrue(failures.contains("Missing native completion"))
+        } else {
+            XCTAssertTrue(failures.isEmpty, "An unmodified native scroll animation must not look interrupted: \(failures)")
+        }
     }
 
     func test_refreshWhileASelectedArticleIsPaintingDoesNotReturnToThePreviousStory() async throws {
@@ -2101,7 +2049,7 @@ import XCTest
         print("STORY_PREPARED_NATIVE_PUSH \(paint)")
     }
 
-    private func makePresentationFixture(width: CGFloat = 390) -> (app: StoryPresentationApp, pages: StoryPresentationPages, original: StoryLoadPage, stories: [NSMutableDictionary]) {
+    private func makePresentationFixture(width: CGFloat = 390, scrollView: UIScrollView? = nil) -> (app: StoryPresentationApp, pages: StoryPresentationPages, original: StoryLoadPage, stories: [NSMutableDictionary]) {
         let app = StoryPresentationApp()
         let pages = StoryPresentationPages()
         fixtureReaders.add(pages)
@@ -2122,7 +2070,8 @@ import XCTest
         app.storiesCollection.activeFeedStoryLocations = NSMutableArray(array: [0, 3, 9])
         app.activeStory = stories[0] as? [AnyHashable: Any]
         pages.loadViewIfNeeded()
-        pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: width, height: 844))
+        pages.scrollView = scrollView ?? UIScrollView()
+        pages.scrollView.frame = CGRect(x: 0, y: 0, width: width, height: 844)
         pages.scrollView.contentSize = CGSize(width: width * 3, height: 844 * 3)
         pages.view.addSubview(pages.scrollView)
         pages.currentPage = allPages[0]
@@ -3302,6 +3251,18 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class StoryPresentationPages: StoryLoadToolbarPages {
+    var nativeScrollDidFinish: (() -> Void)?
+    @objc(scrollViewDidEndScrollingAnimation:) func observeNativeScrollCompletion(_ scroll: UIScrollView) {
+        // StoryDetailLoadingTests.swift observes UIKit's completion while retaining the real reader delegate behavior.
+        let selector = NSSelectorFromString("scrollViewDidEndScrollingAnimation:")
+        typealias Call = @convention(c) (AnyObject, Selector, UIScrollView) -> Void
+        let implementation = class_getMethodImplementation(StoryPagesObjCViewController.self, selector)!
+        unsafeBitCast(implementation, to: Call.self)(self, selector, scroll)
+        guard scroll === scrollView else { return }
+        let completion = nativeScrollDidFinish
+        nativeScrollDidFinish = nil
+        completion?()
+    }
     var regularPane = false
     var simulatedPhone: Bool?
     override var isPhone: Bool { simulatedPhone ?? super.isPhone }
@@ -3346,15 +3307,17 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     private var frameObserver: StoryPresentationFrameObserver?
     private(set) var positions: [CGFloat] = []
     private(set) var sampleTimes: [CFTimeInterval] = []
-    private(set) var frameDurations: [CFTimeInterval] = []
     var beforeSample: (() -> Void)?
 
-    static func motionFailures(positions: [CGFloat], times: [CFTimeInterval],
-                               frameDurations: [CFTimeInterval], start: CGFloat, end: CGFloat) -> [String] {
-        guard positions.count > 1, times.count == positions.count, frameDurations.count == positions.count else {
+    static func motionFailures(positions: [CGFloat], start: CGFloat, end: CGFloat, completed: Bool,
+                               animatedRequests: [Bool]) -> [String] {
+        guard positions.count > 1 else {
             return ["Missing motion samples"]
         }
         var failures: [String] = []
+        if !animatedRequests.contains(true) { failures.append("Missing animated scroll request") }
+        if animatedRequests.contains(false) { failures.append("Nonanimated scroll request") }
+        if !completed { failures.append("Missing native completion") }
         if abs(positions[0] - start) > 0.5 { failures.append("Wrong start") }
         if abs(positions[positions.count - 1] - end) > 0.5 { failures.append("Wrong endpoint") }
         let lower = min(start, end), upper = max(start, end)
@@ -3364,12 +3327,6 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
         for index in 1..<positions.count {
             let step = positions[index] - positions[index - 1]
             if step * direction < -0.5 { failures.append("Wrong direction") }
-            let elapsed = max(0, times[index] - times[index - 1])
-            let maximumStep = NextButtonReadingRecorder.maximumContinuousStep(
-                travel: abs(end - start), elapsed: elapsed, frameDuration: frameDurations[index])
-            if abs(step) > maximumStep {
-                failures.append("Jump at sample \(index): \(positions[index - 1]) → \(positions[index]) in \(elapsed)s")
-            }
         }
         return failures
     }
@@ -3381,32 +3338,29 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     }
 
     func start() {
-        recordFrame(at: CACurrentMediaTime(), frameDuration: 1.0 / 60)
+        recordFrame(at: CACurrentMediaTime())
         guard let window else { return }
         frameObserver = StoryPresentationFrameObserver(window: window, beforeSample: { [weak self] in
             self?.beforeSample?()
-        }) { [weak self] time, frameDuration in
-            self?.recordFrame(at: time, frameDuration: frameDuration)
+        }) { [weak self] time in
+            self?.recordFrame(at: time)
         }
     }
 
     func stop() { frameObserver?.stop(); frameObserver = nil }
 
-    private func recordFrame(at time: CFTimeInterval, frameDuration: CFTimeInterval) {
+    private func recordFrame(at time: CFTimeInterval) {
         // StoryDetailLoadingTests.swift measures the actual presented article position through its animated ancestors.
         guard let layer = observedView?.layer.presentation(), let root = window?.layer.presentation() else { return }
         let point = layer.convert(CGPoint.zero, to: root)
         positions.append(horizontal ? point.x : point.y)
         sampleTimes.append(time)
-        frameDurations.append(frameDuration)
     }
 }
 
 @MainActor private final class StoryPresentationFrameObserver: NSObject {
-    private let sample: (CFTimeInterval, CFTimeInterval) -> Void
+    private let sample: (CFTimeInterval) -> Void
     private let beforeSample: (() -> Void)?
-    private let clockLayer = CALayer()
-    private let clockStartedAt = CACurrentMediaTime()
 #if targetEnvironment(macCatalyst)
     private var displayLink: CADisplayLink?
 #else
@@ -3414,32 +3368,19 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 #endif
 
     init(window: UIWindow, beforeSample: (() -> Void)? = nil,
-         sample: @escaping (CFTimeInterval, CFTimeInterval) -> Void) {
+         sample: @escaping (CFTimeInterval) -> Void) {
         self.sample = sample
         self.beforeSample = beforeSample
         super.init()
-        // StoryDetailLoadingTests.swift reads time from the same presentation transaction as geometry.
-        // A cached snapshot can precede the callback by many frames; neither callback time nor
-        // UIUpdateInfo.modelTime identifies both cached and freshly created presentation snapshots.
-        clockLayer.opacity = 0
-        window.layer.addSublayer(clockLayer)
-        let clock = CABasicAnimation(keyPath: "position.x")
-        clock.fromValue = 0
-        clock.toValue = 3600
-        clock.duration = 3600
-        clock.beginTime = clockLayer.convertTime(clockStartedAt, from: nil)
-        clock.timingFunction = CAMediaTimingFunction(name: .linear)
-        clockLayer.add(clock, forKey: "presentation-clock")
 #if targetEnvironment(macCatalyst)
         let link = CADisplayLink(target: self, selector: #selector(sampleDisplayLink(_:)))
         link.add(to: .main, forMode: .common)
         displayLink = link
 #else
-        // StoryDetailLoadingTests.swift observes after UIKit commits its scroll updates. A display-link
-        // callback can otherwise pair an older transaction's geometry with a newer display timestamp.
+        // StoryDetailLoadingTests.swift observes geometry after UIKit updates. Callback times are
+        // diagnostics only: presentation snapshots cannot establish native UIScrollView frame pacing.
         let link = UIUpdateLink(view: window)
-        let frameDuration = 1.0 / Double(window.screen.maximumFramesPerSecond)
-        link.addAction(to: .afterUpdateComplete) { [weak self] _, _ in self?.sampleFrame(frameDuration: frameDuration) }
+        link.addAction(to: .afterUpdateComplete) { [weak self] _, _ in self?.sampleFrame() }
         link.requiresContinuousUpdates = true
         link.isEnabled = true
         updateLink = link
@@ -3454,17 +3395,15 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
         updateLink?.isEnabled = false
         updateLink = nil
 #endif
-        clockLayer.removeFromSuperlayer()
     }
 
-    private func sampleFrame(frameDuration: CFTimeInterval) {
+    private func sampleFrame() {
         beforeSample?()
-        guard let presentation = clockLayer.presentation() else { return }
-        sample(clockStartedAt + CFTimeInterval(presentation.position.x), frameDuration)
+        sample(CACurrentMediaTime())
     }
 
 #if targetEnvironment(macCatalyst)
-    @objc private func sampleDisplayLink(_ link: CADisplayLink) { sampleFrame(frameDuration: link.duration) }
+    @objc private func sampleDisplayLink(_ link: CADisplayLink) { sampleFrame() }
 #endif
 }
 
@@ -3513,11 +3452,37 @@ private final class NextButtonReadingStories: StoriesCollection {
     @objc(updateBottomNextFeedControlForScroll:) func omitUnrelatedPullToNextFeedChrome(_ scroll: UIScrollView) {}
 }
 
+@MainActor private final class NativeScrollCompletionObserver: NSObject, UIScrollViewDelegate {
+    private(set) var finished = false
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) { finished = true }
+}
+
 @MainActor private final class NextButtonReadingTable: UITableView {
     var rowReloads = 0
+    var animatedScrollRequests: [Bool] = []
+    override func scrollToRow(at indexPath: IndexPath, at scrollPosition: UITableView.ScrollPosition, animated: Bool) {
+        animatedScrollRequests.append(animated)
+        super.scrollToRow(at: indexPath, at: scrollPosition, animated: animated)
+    }
+    override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+        animatedScrollRequests.append(animated)
+        super.setContentOffset(contentOffset, animated: animated)
+    }
     override func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
         rowReloads += 1
         super.reloadRows(at: indexPaths, with: animation)
+    }
+}
+
+@MainActor private final class NextButtonReadingScrollView: UIScrollView {
+    var animatedScrollRequests: [Bool] = []
+    override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
+        animatedScrollRequests.append(animated)
+        super.scrollRectToVisible(rect, animated: animated)
+    }
+    override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+        animatedScrollRequests.append(animated)
+        super.setContentOffset(contentOffset, animated: animated)
     }
 }
 
@@ -3529,37 +3494,24 @@ private final class NextButtonReadingStories: StoriesCollection {
     private(set) var offsets: [CGFloat] = []
     private(set) var cellPositions: [CGFloat] = []
     private(set) var sampleTimes: [CFTimeInterval] = []
-    private(set) var cellSampleTimes: [CFTimeInterval] = []
-    private(set) var frameDurations: [CFTimeInterval] = []
-    private(set) var cellFrameDurations: [CFTimeInterval] = []
-
-    static func maximumContinuousStep(travel: CGFloat, elapsed: CFTimeInterval, frameDuration: CFTimeInterval) -> CGFloat {
-        // StoryDetailLoadingTests.swift allows one nominal frame of presentation/timestamp skew,
-        // independent of any preceding callback delay; it never carries a stall forward as motion credit.
-        max(60, travel * CGFloat(elapsed + frameDuration) * 8.5 + 2)
-    }
     init(table: UITableView, window: UIWindow, target: IndexPath) {
         self.table = table
         self.window = window
         self.target = target
     }
     func start() {
-        frameObserver = StoryPresentationFrameObserver(window: window) { [weak self] time, frameDuration in
-            self?.sample(at: time, frameDuration: frameDuration)
+        frameObserver = StoryPresentationFrameObserver(window: window) { [weak self] time in
+            self?.sample(at: time)
         }
     }
     func stop() { frameObserver?.stop(); frameObserver = nil }
-    private func sample(at now: CFTimeInterval, frameDuration: CFTimeInterval) {
+    private func sample(at now: CFTimeInterval) {
         guard let presentation = table.layer.presentation(), let root = window.layer.presentation() else { return }
-        // StoryDetailLoadingTests.swift uses the presentation clock sampled with this geometry.
         offsets.append(presentation.bounds.origin.y)
         sampleTimes.append(now)
-        frameDurations.append(frameDuration)
         if let cell = table.cellForRow(at: target)?.layer.presentation() {
             // StoryDetailLoadingTests.swift measures the actual cell through all animated ancestors, not only UITableView's model offset.
             cellPositions.append(cell.convert(CGPoint.zero, to: root).y)
-            cellSampleTimes.append(now)
-            cellFrameDurations.append(frameDuration)
         }
     }
 }
