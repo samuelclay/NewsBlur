@@ -12,6 +12,8 @@
     <string name="image_viewer_save">Save Image</string>
     <string name="image_viewer_share">Share Image…</string>
     <string name="image_viewer_open_link">Open Link</string>
+    <string name="image_viewer_open_browser">Open Image in Browser</string>
+    <string name="image_viewer_open_failed">No browser is available to open this image.</string>
     <string name="image_viewer_copied">Image copied</string>
     <string name="image_viewer_saved">Saved to Pictures</string>
     <string name="image_viewer_save_failed">Could not save the image.</string>

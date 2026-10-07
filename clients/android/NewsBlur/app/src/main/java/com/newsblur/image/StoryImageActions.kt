@@ -25,6 +25,12 @@ import java.io.File
  * bytes rather than a re-encoded bitmap, so a GIF stays animated and a PNG keeps its transparency.
  */
 object StoryImageActions {
+    /** StoryImageViewer.kt opens the public image URL in the system browser, independently of an enclosing article link. */
+    fun openInBrowser(activity: Activity, source: StoryImageSource) {
+        val url = source.browserUrl ?: return
+        activity.startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+    }
+
     // Photos handed to other apps live here, under the FileProvider's cache-path (file_paths.xml).
     private const val SHARED_DIR = "shared_images"
 

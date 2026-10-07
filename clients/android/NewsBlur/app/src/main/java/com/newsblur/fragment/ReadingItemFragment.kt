@@ -1610,15 +1610,18 @@ class ReadingItemFragment :
     }
 
     private fun swapInOfflineImages(htmlString: String): String {
-        var html = htmlString
-        val imageTagMatcher = imgSniff.matcher(html)
+        val html = StringBuilder(htmlString.length)
+        var copiedUntil = 0
+        val imageTagMatcher = imgSniff.matcher(htmlString)
         while (imageTagMatcher.find()) {
             val url = imageTagMatcher.group(2) ?: continue
-            val sourceAttribute = imageTagMatcher.group(1) ?: continue
             val localPath = storyImageCache.getWebViewImageCache(url) ?: continue
-            html = html.replace(sourceAttribute + "\"" + url + "\"", "src=\"$localPath\"")
+            // ReadingItemFragment.kt replaces only original source spans, never attributes added for an earlier copy of the same image.
+            html.append(htmlString, copiedUntil, imageTagMatcher.start(1))
+            html.append("src=\"$localPath\" data-nb-original-src=\"$url\"")
+            copiedUntil = imageTagMatcher.end(2) + 1
         }
-        return html
+        return html.append(htmlString, copiedUntil, htmlString.length).toString()
     }
 
     /** We have pushed our desired content into the WebView.  */
