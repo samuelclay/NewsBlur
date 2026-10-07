@@ -33,6 +33,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import com.newsblur.R
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -58,6 +59,7 @@ class StoryImageViewer(
     private val origin: RectF,
     private val cache: FileCache,
     private val client: OkHttpClient,
+    private val prefsRepo: PrefsRepo,
     private val returnRect: ((RectF?) -> Unit) -> Unit,
     private val onClosed: () -> Unit,
     private val onOpenLink: (String) -> Unit = {},
@@ -157,7 +159,7 @@ class StoryImageViewer(
         if (source.browserUrl != null) {
             addActionRow(R.string.image_viewer_open_browser, R.drawable.ic_image_action_link) {
                 try {
-                    StoryImageActions.openInBrowser(hostActivity, source)
+                    StoryImageActions.openInBrowser(hostActivity, source, prefsRepo)
                     closeAnimated()
                 } catch (_: android.content.ActivityNotFoundException) {
                     toast(R.string.image_viewer_open_failed)

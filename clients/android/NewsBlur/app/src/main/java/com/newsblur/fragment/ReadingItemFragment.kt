@@ -2129,6 +2129,7 @@ class ReadingItemFragment :
             origin,
             storyImageCache,
             imageViewerClient,
+            prefsRepo = prefsRepo,
             returnRect = { finish ->
                 if (readingWebview !== webview || view == null || source.generation != webview.documentGeneration) {
                     finish(null)
