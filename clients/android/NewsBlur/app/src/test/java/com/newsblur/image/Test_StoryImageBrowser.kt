@@ -1,6 +1,7 @@
 package com.newsblur.image
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import com.newsblur.fragment.ReadingItemFragment
@@ -15,6 +16,7 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Test
 
 @Suppress("ktlint:standard:class-naming")
@@ -89,8 +91,67 @@ class Test_StoryImageBrowser {
         StoryImageActions.openInBrowser(activity, image, prefs)
 
         verify(exactly = 1) { constructedWith<Intent>(EqMatcher(Intent.ACTION_VIEW)).setData(uri) }
-        verify(exactly = 0) { anyConstructed<Intent>().setPackage(any()) }
+        verify(exactly = 0) { constructedWith<Intent>(EqMatcher(Intent.ACTION_VIEW)).setPackage(any()) }
         verify(exactly = 1) { activity.startActivity(any()) }
+    }
+
+    @Test(expected = ActivityNotFoundException::class)
+    fun test_missing_browser_preserves_failure_for_viewer_feedback() {
+        mockkStatic(android.util.Log::class)
+        every { android.util.Log.e(any(), any()) } returns 0
+        val prefs = mockk<PrefsRepo> { every { getDefaultBrowser() } returns DefaultBrowser.SYSTEM_DEFAULT }
+        val image = source()
+        val uri = mockk<Uri>()
+        every { uri.toString() } returns image.url
+        val activity = mockk<Activity>(relaxed = true)
+        every { activity.startActivity(any()) } throws ActivityNotFoundException()
+        mockkStatic(Uri::class)
+        every { Uri.parse(image.url) } returns uri
+        mockkConstructor(Intent::class)
+        every { constructedWith<Intent>(EqMatcher(Intent.ACTION_VIEW)).setData(uri) } answers { self as Intent }
+
+        StoryImageActions.openInBrowser(activity, image, prefs)
+    }
+
+    @Test fun test_missing_preferred_browser_falls_back_to_system_without_reporting_failure() {
+        withMissingPreferredBrowser(systemBrowserAvailable = true) { activity, image, prefs ->
+            StoryImageActions.openInBrowser(activity, image, prefs)
+            verify(exactly = 2) { activity.startActivity(any()) }
+            verify(exactly = 1) { constructedWith<Intent>(EqMatcher(Intent.ACTION_VIEW)).setPackage("org.mozilla.firefox") }
+        }
+    }
+
+    @Test fun test_missing_preferred_and_system_browsers_preserves_failure_after_both_attempts() {
+        withMissingPreferredBrowser(systemBrowserAvailable = false) { activity, image, prefs ->
+            assertThrows(ActivityNotFoundException::class.java) {
+                StoryImageActions.openInBrowser(activity, image, prefs)
+            }
+            verify(exactly = 2) { activity.startActivity(any()) }
+            verify(exactly = 1) { constructedWith<Intent>(EqMatcher(Intent.ACTION_VIEW)).setPackage("org.mozilla.firefox") }
+        }
+    }
+
+    private fun withMissingPreferredBrowser(
+        systemBrowserAvailable: Boolean,
+        check: (Activity, StoryImageSource, PrefsRepo) -> Unit,
+    ) {
+        mockkStatic(android.util.Log::class)
+        every { android.util.Log.e(any(), any()) } returns 0
+        val prefs = mockk<PrefsRepo> { every { getDefaultBrowser() } returns DefaultBrowser.FIREFOX }
+        val image = source()
+        val uri = mockk<Uri>()
+        every { uri.toString() } returns image.url
+        mockkStatic(Uri::class)
+        every { Uri.parse(image.url) } returns uri
+        mockkConstructor(Intent::class)
+        every { constructedWith<Intent>(EqMatcher(Intent.ACTION_VIEW)).setData(uri) } answers { self as Intent }
+        every { constructedWith<Intent>(EqMatcher(Intent.ACTION_VIEW)).setPackage("org.mozilla.firefox") } answers { self as Intent }
+        val activity = mockk<Activity>(relaxed = true)
+        var attempts = 0
+        every { activity.startActivity(any()) } answers {
+            if (++attempts == 1 || !systemBrowserAvailable) throw ActivityNotFoundException()
+        }
+        check(activity, image, prefs)
     }
 
     @Test fun test_non_browser_image_does_not_launch_an_activity() {
