@@ -452,6 +452,9 @@ abstract class Reading :
         latestReaderRef = WeakReference(this)
         // A parked reader leaves the reading session, which now belongs to another feed, alone.
         if (parked) return
+        // Reading.kt reapplies preferences after returning from Settings, preserving video suppression.
+        endControls?.update()
+        setOverlayAlpha(toolbarVisibleFraction)
         if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
         stopLoading = false
@@ -616,6 +619,7 @@ abstract class Reading :
             binding.contentBottomOverlayInner,
             { if (parked) null else readingFragment?.traversalControlsSlot() },
             { setOverlayAlpha(toolbarVisibleFraction) },
+            shouldDock = { !prefsRepo.isReaderControlsAlwaysVisible() },
         )
         endControls?.start()
 
@@ -1419,7 +1423,11 @@ abstract class Reading :
             binding.readingOverlaySend.visibility = if (overflowExtras) View.GONE else View.VISIBLE
             binding.readingOverlayLeftSeparator.visibility = if (overflowExtras) View.GONE else View.VISIBLE
 
-            val alpha = if (overlaysSuppressed) 0f else if (endControls?.isDocked == true) 1f else a
+            val alpha = when {
+                overlaysSuppressed -> 0f
+                prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isDocked == true -> 1f
+                else -> a
+            }
             UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, alpha, true)
             UIUtils.setViewAlpha(binding.readingOverlayRightGroup, alpha, true)
         }

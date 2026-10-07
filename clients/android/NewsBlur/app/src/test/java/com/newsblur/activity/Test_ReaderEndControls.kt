@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.content.SharedPreferences
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -7,6 +8,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.newsblur.databinding.ActivityReadingBinding
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.UIUtils
 import io.mockk.Runs
 import io.mockk.every
@@ -24,6 +26,89 @@ import org.junit.Test
 
 @Suppress("ktlint:standard:class-naming")
 class Test_ReaderEndControls {
+    @Test
+    fun test_pinned_controls_stay_visible_with_a_hidden_toolbar() = withFixture { f ->
+        f.firstFooter.top = 1100
+        f.alwaysShowControls = true
+        f.controller.start()
+        f.reading.enableOverlays()
+        assertEquals(1f, f.lastAlpha, 0f)
+        f.applyAlpha(0.2f)
+        assertEquals(1f, f.lastAlpha, 0f)
+        assertTrue(f.reading.isToolbarHidden())
+
+        f.alwaysShowControls = false
+        f.reading.enableOverlays()
+        assertEquals(0f, f.lastAlpha, 0f)
+    }
+
+    @Test
+    fun test_fullscreen_video_overrides_pinned_controls_and_restores_them_on_exit() = withFixture { f ->
+        f.firstFooter.top = 1100
+        f.alwaysShowControls = true
+        f.controller.start()
+        f.reading.disableOverlays()
+        assertEquals(0f, f.lastAlpha, 0f)
+        f.firstFooter.top = 700
+        f.frame.captured.onPreDraw()
+        f.applyAlpha(1f)
+        assertEquals(0f, f.lastAlpha, 0f)
+        assertSame(f.host, f.parent)
+        f.reading.enableOverlays()
+        assertEquals(1f, f.lastAlpha, 0f)
+    }
+
+    @Test
+    fun test_unset_preference_preserves_toolbar_fade_in_article_body() = withFixture { f ->
+        f.firstFooter.top = 1100
+        f.controller.start()
+        f.applyAlpha(0.4f)
+        assertEquals(0.4f, f.lastAlpha, 0f)
+        f.applyAlpha(0f)
+        assertEquals(0f, f.lastAlpha, 0f)
+        assertSame(f.host, f.parent)
+    }
+
+    @Test
+    fun test_pinned_controls_stay_floating_when_footer_scrolls_above_viewport() = withFixture { f ->
+        f.alwaysShowControls = true
+        f.controller.start()
+        f.reading.enableOverlays()
+        assertSame(f.host, f.parent)
+
+        f.firstFooter.top = -100
+        f.frame.captured.onPreDraw()
+        f.applyAlpha(0f)
+        assertFalse(f.controller.isDocked)
+        assertSame(f.host, f.parent)
+        assertEquals(1f, f.lastAlpha, 0f)
+        verify(exactly = 0) { f.firstFooter.view.addView(any(), any<ViewGroup.LayoutParams>()) }
+    }
+
+    @Test
+    fun test_preference_changes_return_docked_controls_to_host_and_restore_default_docking() = withFixture { f ->
+        f.controller.start()
+        assertSame(f.firstFooter.view, f.parent)
+
+        f.alwaysShowControls = true
+        f.controller.update()
+        assertSame(f.host, f.parent)
+        assertFalse(f.controller.isDocked)
+        assertEquals(1f, f.lastAlpha, 0f)
+        verify { f.firstFooter.view.removeOnAttachStateChangeListener(any()) }
+
+        f.alwaysShowControls = false
+        f.controller.update()
+        assertSame(f.firstFooter.view, f.parent)
+        assertTrue(f.controller.isDocked)
+        assertEquals(1f, f.lastAlpha, 0f)
+
+        f.firstFooter.top = 1100
+        f.frame.captured.onPreDraw()
+        assertSame(f.host, f.parent)
+        assertEquals(0f, f.lastAlpha, 0f)
+    }
+
     @Test
     fun test_article_end_restores_traversal_controls_without_revealing_top_toolbar() = withFixture { f ->
         f.controller.start()
@@ -157,11 +242,21 @@ class Test_ReaderEndControls {
         val hostAttachment = slot<View.OnAttachStateChangeListener>()
         var parent: ViewGroup? = host
         var lastAlpha = -1f
+        var alwaysShowControls: Boolean? = null
         val firstFooter = footer(top = 700)
         var activeFooter: Footer? = firstFooter
         val controller: ReaderEndControls
 
         init {
+            val preferences = mockk<SharedPreferences>(relaxed = true)
+            every { preferences.getBoolean(any(), any()) } answers {
+                if (firstArg<String>() == "reader_controls_always_visible") {
+                    alwaysShowControls ?: secondArg<Boolean>()
+                } else {
+                    secondArg<Boolean>()
+                }
+            }
+            every { reading.prefsRepo } returns PrefsRepo(preferences, mockk(relaxed = true))
             field(binding, ActivityReadingBinding::class.java, "readingOverlayLeftGroup", left)
             field(binding, ActivityReadingBinding::class.java, "readingOverlayRightGroup", right)
             field(binding, ActivityReadingBinding::class.java, "readingOverlaySend", mockk<AppCompatImageButton>(relaxed = true))
@@ -172,6 +267,7 @@ class Test_ReaderEndControls {
             every { reading.runOnUiThread(any()) } answers { firstArg<Runnable>().run() }
             every { reading.enableOverlays() } answers { callOriginal() }
             every { reading.disableOverlays() } answers { callOriginal() }
+            every { reading.isToolbarHidden() } answers { callOriginal() }
             every { reading["setOverlayAlpha"](any<Float>()) } answers { callOriginal() }
             every { UIUtils.setViewAlpha(any(), any(), any()) } just Runs
             every { UIUtils.setViewAlpha(left, any(), true) } answers { lastAlpha = secondArg() }
@@ -192,7 +288,13 @@ class Test_ReaderEndControls {
             every { host.addOnAttachStateChangeListener(capture(hostAttachment)) } just Runs
             every { host.removeView(controls) } answers { parent = null }
             every { host.addView(controls, params) } answers { parent = host }
-            controller = ReaderEndControls(host, controls, { activeFooter?.view }, ::applyAlpha)
+            controller = ReaderEndControls(
+                host,
+                controls,
+                { activeFooter?.view },
+                { applyAlpha(0f) },
+                shouldDock = { !reading.prefsRepo.isReaderControlsAlwaysVisible() },
+            )
             field(reading, Reading::class.java, "endControls", controller)
         }
 
@@ -209,10 +311,10 @@ class Test_ReaderEndControls {
             return footer
         }
 
-        private fun applyAlpha() {
+        fun applyAlpha(alpha: Float) {
             Reading::class.java.getDeclaredMethod("setOverlayAlpha", Float::class.javaPrimitiveType).apply {
                 isAccessible = true
-                invoke(reading, 0f)
+                invoke(reading, alpha)
             }
         }
 

@@ -139,6 +139,7 @@ public class PrefConstants {
     public static final String ASK_AI_MODEL = "ask_ai_model";
 
     public static final String READING_FONT = "reading_font";
+    public static final String READER_CONTROLS_ALWAYS_VISIBLE = "reader_controls_always_visible";
     public static final String WIDGET_FEED_SET = "widget_feed_set";
     public static final String FEED_CHOOSER_LIST_ORDER = "feed_chooser_list_order";
     public static final String FEED_CHOOSER_FEED_ORDER = "feed_chooser_feed_order";

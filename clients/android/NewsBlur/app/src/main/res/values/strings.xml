@@ -707,6 +707,8 @@ people together to talk about the world.</string>
     <string name="settings_social">Sharing stories</string>
     <string name="settings_show_public_comments">Show public comments</string>
     <string name="settings_reading">Reading</string>
+    <string name="settings_always_show_reading_controls">Always show reading controls</string>
+    <string name="settings_always_show_reading_controls_sum">Keep Previous, Next, and other reading controls visible while scrolling.</string>
     <string name="settings_show_ask_ai">Show Ask AI</string>
     <string name="settings_content_preview">Content preview text…</string>
     <string name="settings_thumbnails_style">Image preview thumbnails…</string>

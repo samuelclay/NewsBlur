@@ -11,6 +11,7 @@ internal class ReaderEndControls(
     private val controls: View,
     private val activeFooter: () -> FrameLayout?,
     private val onDockChanged: () -> Unit,
+    private val shouldDock: () -> Boolean = { true },
 ) {
     private val originalParams = controls.layoutParams
     private val hostLocation = IntArray(2)
@@ -45,6 +46,10 @@ internal class ReaderEndControls(
     }
 
     fun update() {
+        if (!shouldDock()) {
+            moveTo(null)
+            return
+        }
         val footer = activeFooter()
         if (footer == null || !footer.isAttachedToWindow || !footer.isShown || !footer.isLaidOut || !floatingHost.isLaidOut) {
             moveTo(null)
