@@ -473,6 +473,8 @@ class PrefsRepo(
 
     fun showPublicComments() = prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
 
+    fun isReaderControlsAlwaysVisible() = prefs.getBoolean(PrefConstants.READER_CONTROLS_ALWAYS_VISIBLE, false)
+
     fun getReadingTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
 
     fun setReadingTextSize(size: Float) {
