@@ -16,6 +16,8 @@ import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.UIUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -25,10 +27,10 @@ import java.io.File
  * bytes rather than a re-encoded bitmap, so a GIF stays animated and a PNG keeps its transparency.
  */
 object StoryImageActions {
-    /** StoryImageViewer.kt opens the public image URL in the system browser, independently of an enclosing article link. */
-    fun openInBrowser(activity: Activity, source: StoryImageSource) {
+    /** StoryImageViewer.kt opens the public image URL using the browser selected in PrefsRepo.kt. */
+    fun openInBrowser(activity: Activity, source: StoryImageSource, prefsRepo: PrefsRepo) {
         val url = source.browserUrl ?: return
-        activity.startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+        UIUtils.handleUri(activity, prefsRepo, Uri.parse(url))
     }
 
     // Photos handed to other apps live here, under the FileProvider's cache-path (file_paths.xml).
