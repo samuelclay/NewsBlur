@@ -41343,6 +41343,23 @@ span.NB-briefing-inline-favicon {
     line-height: 16px;
 }
 
+/* reader.css: Story thumbnails floated right of each briefing story (img embedded server-side).
+   Story content images get width:auto !important, so pin the thumbnail back to its square. */
+.NB-feed-story .NB-feed-story-content img.NB-briefing-story-thumbnail-image {
+    width: 80px !important;
+    height: 80px !important;
+    max-width: 80px !important;
+    object-fit: cover;
+    border-radius: 8px;
+    outline: 1px solid rgba(0, 0, 0, 0.08);
+    outline-offset: -1px;
+}
+
+.NB-briefing-story-thumbnail,
+.NB-briefing-story-thumbnail:hover {
+    border-bottom: none;
+}
+
 /* reader.css: Section icons in briefing summary h3 headers (img embedded server-side) */
 .NB-briefing-section-icon {
     display: inline-block;
