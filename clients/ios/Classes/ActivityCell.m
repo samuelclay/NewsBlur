@@ -96,7 +96,7 @@
     NSString *content = [self plainTextComment:[activity objectForKey:@"content"]];
     NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [activity objectForKey:@"title"]]];
-    NSString *time = [NSString stringWithFormat:@"%@ ago", [activity objectForKey:@"time_since"]];
+    NSString *time = [NSString stringWithFormat:[NBLocalization text:@"%@ ago"], [activity objectForKey:@"time_since"]];
     NSString *withUserUsername = @"";
     NSString *username = [NSString stringWithFormat:@"%@", [userProfile objectForKey:@"username"]];
         
@@ -147,26 +147,26 @@
     
     if ([category isEqualToString:@"follow"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ followed %@.", username, withUserUsername];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ followed %@."], username, withUserUsername];
     } else if ([category isEqualToString:@"comment_reply"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ replied to %@: \n \n%@", username, withUserUsername, comment];  
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ replied to %@: \n \n%@"], username, withUserUsername, comment];
     } else if ([category isEqualToString:@"comment_like"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@:\n \n%@", username, withUserUsername, title, comment];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ favorited %@'s comment on %@:\n \n%@"], username, withUserUsername, title, comment];
     } else if ([category isEqualToString:@"sharedstory"]) {
         if ([content class] == [NSNull class] || [content isEqualToString:@""] || content == nil) {
-            txt = [NSString stringWithFormat:@"%@ shared %@.", username, title]; 
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ shared %@."], username, title];
         } else {
-            txt = [NSString stringWithFormat:@"%@ shared %@:\n \n%@", username, title, comment];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ shared %@:\n \n%@"], username, title, comment];
         }
         
     } else if ([category isEqualToString:@"star"]) {
-        txt = [NSString stringWithFormat:@"You saved \"%@\".", content];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"You saved \"%@\"."], content];
     } else if ([category isEqualToString:@"feedsub"]) {
-        txt = [NSString stringWithFormat:@"You subscribed to %@.", content];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"You subscribed to %@."], content];
     } else if ([category isEqualToString:@"signup"]) {
-        txt = [NSString stringWithFormat:@"You signed up for NewsBlur."];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"You signed up for NewsBlur."]];
     }
 
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];

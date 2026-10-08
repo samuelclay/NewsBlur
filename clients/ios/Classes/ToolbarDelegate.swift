@@ -50,7 +50,7 @@ extension ToolbarDelegate: NSToolbarDelegate {
             case .toggleFullScreen:
                 let item = makeToolbarItem(itemIdentifier,
                                            image: UIImage(systemName: "arrow.up.left.and.arrow.down.right"),
-                                           label: "Full Screen",
+                                           label: NBLocalization.text("Full Screen"),
                                            action: #selector(BaseViewController.toggleTemporaryFullScreen(_:)))
                 fullScreenToolbarItem = item
                 return item
@@ -58,31 +58,31 @@ extension ToolbarDelegate: NSToolbarDelegate {
             case .reloadFeeds:
                 return makeToolbarItem(itemIdentifier,
                                        image: UIImage(systemName: "arrow.clockwise"),
-                                       label: "Reload Sites",
+                                       label: NBLocalization.text("Reload Sites"),
                                        action: #selector(BaseViewController.reloadFeeds(_:)))
 
             case .feedDetailUnread:
                 return makeToolbarItem(itemIdentifier,
                                        image: Utilities.imageNamed("mark-read", sized: 24),
-                                       label: "Mark as Read",
+                                       label: NBLocalization.text("Mark as Read"),
                                        action: #selector(BaseViewController.openMarkReadMenu(_:)))
 
             case .feedDetailSettings:
                 return makeToolbarItem(itemIdentifier,
                                        image: Utilities.imageNamed("settings", sized: 24),
-                                       label: "Site Settings",
+                                       label: NBLocalization.text("Site Settings"),
                                        action: #selector(BaseViewController.openSettingsMenu(_:)))
 
             case .storyPagesSettings:
                 return makeToolbarItem(itemIdentifier,
                                        image: Utilities.imageNamed("settings", sized: 24),
-                                       label: "Story Settings",
+                                       label: NBLocalization.text("Story Settings"),
                                        action: #selector(StoryPagesViewController.toggleFontSize(_:)))
 
             case .storyPagesBrowser:
                 return makeToolbarItem(itemIdentifier,
                                        image: Utilities.imageNamed("original_button.png", sized: 24),
-                                       label: "Show Original Story",
+                                       label: NBLocalization.text("Show Original Story"),
                                        action: #selector(StoryPagesViewController.showOriginalSubview(_:)))
 
             default:

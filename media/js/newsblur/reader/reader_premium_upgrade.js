@@ -58,65 +58,65 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             $.make('div', { className: 'NB-premium-upgrade-header' }, [
                 $.make('h2', { className: 'NB-modal-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    'Upgrade to Premium',
+                    gettext('Upgrade to Premium'),
                     $.make('div', { className: 'NB-icon-dropdown' })
                 ]),
                 (NEWSBLUR.Globals.is_premium_trial && $.make('div', { className: 'NB-premium-trial-badge' }, [
                     $.make('strong', NEWSBLUR.Globals.trial_days_remaining + ' day' + (NEWSBLUR.Globals.trial_days_remaining === 1 ? '' : 's')),
-                    ' left in your premium trial'
+                    gettext(' left in your premium trial')
                 ]))
             ]),
             $.make('div', { className: 'NB-premium-tiers' }, [
                 // Premium Tier
                 $.make('div', { className: 'NB-premium-tier NB-premium-tier-premium' }, [
                     $.make('div', { className: 'NB-premium-tier-header' }, [
-                        $.make('div', { className: 'NB-premium-tier-name' }, 'Premium'),
+                        $.make('div', { className: 'NB-premium-tier-name' }, gettext('Premium')),
                         $.make('div', { className: 'NB-premium-tier-price' }, [
                             $.make('span', { className: 'NB-premium-tier-price-amount' }, '$36'),
-                            $.make('span', { className: 'NB-premium-tier-price-period' }, '/year')
+                            $.make('span', { className: 'NB-premium-tier-price-period' }, gettext('/year'))
                         ])
                     ]),
                     $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-premium' }, [
-                        $.make('li', { className: 'NB-premium-tier-includes' }, 'Everything in Free, plus:'),
+                        $.make('li', { className: 'NB-premium-tier-includes' }, gettext('Everything in Free, plus:')),
                         $.make('li', { className: 'NB-1 NB-feature-site-limit' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Follow up to 1,024 sites'
+                            gettext('Follow up to 1,024 sites')
                         ]),
                         $.make('li', { className: 'NB-2 NB-feature-update-frequency' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Sites updated up to 5x more often'
+                            gettext('Sites updated up to 5x more often')
                         ]),
                         $.make('li', { className: 'NB-3 NB-feature-river' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'River of News (reading by folder)'
+                            gettext('River of News (reading by folder)')
                         ]),
                         $.make('li', { className: 'NB-4 NB-feature-search' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Search sites and folders'
+                            gettext('Search sites and folders')
                         ]),
                         $.make('li', { className: 'NB-5 NB-feature-saved-tags' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Save stories with searchable tags'
+                            gettext('Save stories with searchable tags')
                         ]),
                         $.make('li', { className: 'NB-6 NB-feature-privacy' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Privacy options for your blurblog'
+                            gettext('Privacy options for your blurblog')
                         ]),
                         $.make('li', { className: 'NB-7 NB-feature-saved-rss' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Custom RSS feeds for saved stories'
+                            gettext('Custom RSS feeds for saved stories')
                         ]),
                         $.make('li', { className: 'NB-8 NB-feature-text-view' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Text view extracts the story'
+                            gettext('Text view extracts the story')
                         ]),
                         $.make('li', { className: 'NB-9 NB-feature-discover' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Discover related stories and sites'
+                            gettext('Discover related stories and sites')
                         ]),
                         $.make('li', { className: 'NB-10 NB-feature-classifiers' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Natural language text and image classifiers'
+                            gettext('Natural language text and image classifiers')
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -126,85 +126,85 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 // Archive Tier
                 $.make('div', { className: 'NB-premium-tier NB-premium-tier-archive' }, [
                     $.make('div', { className: 'NB-premium-tier-header' }, [
-                        $.make('div', { className: 'NB-premium-tier-name' }, 'Premium Archive'),
+                        $.make('div', { className: 'NB-premium-tier-name' }, gettext('Premium Archive')),
                         $.make('div', { className: 'NB-premium-tier-price' }, [
                             $.make('span', { className: 'NB-premium-tier-price-amount' }, '$99'),
-                            $.make('span', { className: 'NB-premium-tier-price-period' }, '/year')
+                            $.make('span', { className: 'NB-premium-tier-price-period' }, gettext('/year'))
                         ])
                     ]),
                     $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-archive' }, [
-                        $.make('li', { className: 'NB-premium-tier-includes' }, 'Everything in Premium, plus:'),
+                        $.make('li', { className: 'NB-premium-tier-includes' }, gettext('Everything in Premium, plus:')),
                         $.make('li', { className: 'NB-1 NB-feature-site-limit' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Follow up to 4,096 sites'
+                            gettext('Follow up to 4,096 sites')
                         ]),
                         $.make('li', { className: 'NB-2 NB-feature-webfeeds' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Web Feeds from any website, even without RSS'
+                            gettext('Web Feeds from any website, even without RSS')
                         ]),
                         $.make('li', { className: 'NB-3 NB-feature-clustering' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Cluster duplicate stories across all your feeds'
+                            gettext('Cluster duplicate stories across all your feeds')
                         ]),
                         $.make('li', { className: 'NB-4 NB-feature-briefing' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Daily briefing with your top stories and keywords'
+                            gettext('Daily briefing with your top stories and keywords')
                         ]),
                         $.make('li', { className: 'NB-5 NB-feature-choose-mark-read' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Choose when stories are marked as read'
+                            gettext('Choose when stories are marked as read')
                         ]),
                         $.make('li', { className: 'NB-6 NB-feature-auto-mark-read' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Customize auto-read by site or folder'
+                            gettext('Customize auto-read by site or folder')
                         ]),
                         $.make('li', { className: 'NB-7 NB-feature-archive-forever' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Every story archived and searchable forever'
+                            gettext('Every story archived and searchable forever')
                         ]),
                         $.make('li', { className: 'NB-8 NB-feature-backfill' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Feeds back-filled for complete archive'
+                            gettext('Feeds back-filled for complete archive')
                         ]),
                         $.make('li', { className: 'NB-9 NB-feature-text-training' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Train stories on full text content'
+                            gettext('Train stories on full text content')
                         ]),
                         $.make('li', { className: 'NB-10 NB-feature-notifications' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Notifications on trained intelligence classifiers'
+                            gettext('Notifications on trained intelligence classifiers')
                         ]),
                         $.make('li', { className: 'NB-11 NB-feature-discover' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Discover related stories across your archive'
+                            gettext('Discover related stories across your archive')
                         ]),
                         $.make('li', { className: 'NB-12 NB-feature-export-folders' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Export trained stories from folders'
+                            gettext('Export trained stories from folders')
                         ]),
                         $.make('li', { className: 'NB-13 NB-feature-stay-unread' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Stories can stay unread forever'
+                            gettext('Stories can stay unread forever')
                         ]),
                         $.make('li', { className: 'NB-14 NB-feature-ask-ai' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Ask AI questions about stories'
+                            gettext('Ask AI questions about stories')
                         ]),
                         $.make('li', { className: 'NB-15 NB-feature-date-filter' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Filter stories by date range'
+                            gettext('Filter stories by date range')
                         ]),
                         $.make('li', { className: 'NB-16 NB-feature-training-scope' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Apply training across a folder'
+                            gettext('Apply training across a folder')
                         ]),
                         $.make('li', { className: 'NB-17 NB-feature-training-scope' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Apply training globally'
+                            gettext('Apply training globally')
                         ]),
                         $.make('li', { className: 'NB-18 NB-feature-mcp' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Connect AI agents with MCP server and CLI'
+                            gettext('Connect AI agents with MCP server and CLI')
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -214,29 +214,29 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 // Pro Tier
                 $.make('div', { className: 'NB-premium-tier NB-premium-tier-pro' }, [
                     $.make('div', { className: 'NB-premium-tier-header' }, [
-                        $.make('div', { className: 'NB-premium-tier-name' }, 'Premium Pro'),
+                        $.make('div', { className: 'NB-premium-tier-name' }, gettext('Premium Pro')),
                         $.make('div', { className: 'NB-premium-tier-price' }, [
                             $.make('span', { className: 'NB-premium-tier-price-amount' }, '$29'),
-                            $.make('span', { className: 'NB-premium-tier-price-period' }, '/month')
+                            $.make('span', { className: 'NB-premium-tier-price-period' }, gettext('/month'))
                         ])
                     ]),
                     $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-pro' }, [
-                        $.make('li', { className: 'NB-premium-tier-includes' }, 'Everything in Archive, plus:'),
+                        $.make('li', { className: 'NB-premium-tier-includes' }, gettext('Everything in Archive, plus:')),
                         $.make('li', { className: 'NB-1 NB-feature-site-limit' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Follow up to 10,000 sites'
+                            gettext('Follow up to 10,000 sites')
                         ]),
                         $.make('li', { className: 'NB-2 NB-feature-update-frequency' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'All feeds fetched every 5-15 minutes'
+                            gettext('All feeds fetched every 5-15 minutes')
                         ]),
                         $.make('li', { className: 'NB-3 NB-feature-regex' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Train stories with regular expressions'
+                            gettext('Train stories with regular expressions')
                         ]),
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Priority support'
+                            gettext('Priority support')
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -249,32 +249,32 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 // Free Tier
                 $.make('div', { className: 'NB-premium-tier NB-premium-tier-free' }, [
                     $.make('div', { className: 'NB-premium-tier-header' }, [
-                        $.make('div', { className: 'NB-premium-tier-name' }, 'Free')
+                        $.make('div', { className: 'NB-premium-tier-name' }, gettext('Free'))
                     ]),
                     $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-free' }, [
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Follow up to 64 sites')
+                            $.make('span', gettext('Follow up to 64 sites'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Real-time RSS updates')
+                            $.make('span', gettext('Real-time RSS updates'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Train stories by author, tag, title')
+                            $.make('span', gettext('Train stories by author, tag, title'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Public blurblog sharing')
+                            $.make('span', gettext('Public blurblog sharing'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Save stories for later')
+                            $.make('span', gettext('Save stories for later'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'iOS & Android apps')
+                            $.make('span', gettext('iOS & Android apps'))
                         ])
                     ]),
                     (NEWSBLUR.Globals.is_premium_trial && $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -284,25 +284,25 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 // Self-Hosted Tier
                 $.make('div', { className: 'NB-premium-tier NB-premium-tier-selfhosted' }, [
                     $.make('div', { className: 'NB-premium-tier-header' }, [
-                        $.make('div', { className: 'NB-premium-tier-label' }, 'DIY'),
-                        $.make('div', { className: 'NB-premium-tier-name' }, 'Self-Hosted')
+                        $.make('div', { className: 'NB-premium-tier-label' }, gettext('DIY')),
+                        $.make('div', { className: 'NB-premium-tier-name' }, gettext('Self-Hosted'))
                     ]),
                     $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-selfhosted' }, [
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Run your own NewsBlur')
+                            $.make('span', gettext('Run your own NewsBlur'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Complete data ownership')
+                            $.make('span', gettext('Complete data ownership'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'One command with Docker')
+                            $.make('span', gettext('One command with Docker'))
                         ]),
                         $.make('li', [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            $.make('span', 'Customize with Claude Code')
+                            $.make('span', gettext('Customize with Claude Code'))
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -312,7 +312,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             target: '_blank'
                         }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/github-mark.svg', className: 'NB-github-icon' }),
-                            'View on GitHub'
+                            gettext('View on GitHub')
                         ])
                     ])
                 ])
@@ -337,9 +337,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             return $.make('div', { className: 'NB-premium-tier-status' }, [
                 $.make('div', { className: 'NB-premium-tier-status-active' }, [
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
-                    $.make('div', { className: 'NB-premium-tier-status-text' }, 'Your ' + this.plan_name(plan).toLowerCase() + ' subscription is active')
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription is active"), {value_1: this.plan_name(plan).toLowerCase()}, true))
                 ]),
-                $.make('div', { className: 'NB-provider-button-change NB-modal-submit-button NB-modal-submit-grey' }, 'Change billing details')
+                $.make('div', { className: 'NB-provider-button-change NB-modal-submit-button NB-modal-submit-grey' }, gettext('Change billing details'))
             ]);
         }
 
@@ -348,12 +348,12 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             return $.make('div', { className: 'NB-premium-tier-buttons' }, [
                 $.make('div', { className: 'NB-premium-tier-status-active' }, [
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
-                    $.make('div', { className: 'NB-premium-tier-status-text' }, 'Your ' + this.plan_name(plan).toLowerCase() + ' subscription is active')
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription is active"), {value_1: this.plan_name(plan).toLowerCase()}, true))
                 ]),
                 $creditcards,
                 $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-green'
-                }, 'Restart your ' + this.plan_name(plan).toLowerCase() + ' subscription'),
+                }, interpolate(gettext("Restart your %(value_1)s subscription"), {value_1: this.plan_name(plan).toLowerCase()}, true)),
                 this.make_paypal_alternate(plan)
             ]);
         }
@@ -362,12 +362,12 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         if (is_trial && is_current_plan) {
             return $.make('div', { className: 'NB-premium-tier-buttons' }, [
                 $.make('div', { className: 'NB-premium-tier-trial-status' }, [
-                    'You are trialing this plan'
+                    gettext('You are trialing this plan')
                 ]),
                 $creditcards,
                 $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-green'
-                }, 'Upgrade to ' + this.plan_name(plan)),
+                }, interpolate(gettext("Upgrade to %(value_1)s"), {value_1: this.plan_name(plan)}, true)),
                 this.make_paypal_alternate(plan)
             ]);
         }
@@ -378,11 +378,11 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             return $.make('div', { className: 'NB-premium-tier-status' }, [
                 $.make('div', { className: 'NB-premium-tier-status-included' }, [
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
-                    $.make('div', { className: 'NB-premium-tier-status-text' }, 'Your ' + current_plan_name.toLowerCase() + ' subscription includes everything above')
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription includes everything above"), {value_1: current_plan_name.toLowerCase()}, true))
                 ]),
                 $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-grey'
-                }, 'Switch to ' + this.plan_name(plan).toLowerCase())
+                }, interpolate(gettext("Switch to %(value_1)s"), {value_1: this.plan_name(plan).toLowerCase()}, true))
             ]);
         }
 
@@ -391,7 +391,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             $creditcards,
             $.make('div', {
                 className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-green'
-            }, 'Upgrade to ' + this.plan_name(plan)),
+            }, interpolate(gettext("Upgrade to %(value_1)s"), {value_1: this.plan_name(plan)}, true)),
             this.make_paypal_alternate(plan),
             this.make_prorate_message(plan)
         ]);
@@ -432,11 +432,11 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             return $.make('div', { className: 'NB-provider-alternate' }, [
                 $.make('div', {
                     className: 'NB-stripe-button-switch-' + plan + ' NB-modal-submit-button NB-modal-submit-grey'
-                }, 'Switch to Credit Card')
+                }, gettext('Switch to Credit Card'))
             ]);
         }
         return $.make('div', { className: 'NB-provider-alternate' }, [
-            $.make('span', { className: 'NB-provider-text' }, 'or subscribe with '),
+            $.make('span', { className: 'NB-provider-text' }, gettext('or subscribe with ')),
             $.make('div', { className: 'NB-splash-link NB-paypal-button', 'data-plan': plan }, '')
         ]);
     },
@@ -445,7 +445,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         if (!_.contains(['paypal', 'stripe'], NEWSBLUR.Globals.active_provider)) return;
         if (plan === 'premium') return; // No prorate for base premium
         return $.make('div', { className: 'NB-premium-prorate-message' },
-            'Your subscription will be prorated'
+            gettext('Your subscription will be prorated')
         );
     },
 
@@ -457,8 +457,8 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             var days = NEWSBLUR.Globals.trial_days_remaining;
             return $.make('div', { className: 'NB-premium-tier-free-status' }, [
                 $.make('div', { className: 'NB-premium-tier-free-trial-notice' }, [
-                    'In ' + days + ' day' + (days === 1 ? '' : 's') + ', your premium trial ends ',
-                    'and you\'ll return to Free'
+                    interpolate(ngettext("In %(value_1)s day, your premium trial ends ", "In %(value_1)s days, your premium trial ends ", days), {value_1: days}, true),
+                    gettext('and you\'ll return to Free')
                 ])
             ]);
         }
@@ -500,7 +500,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         shape: 'rect',
                         color: 'silver',
                         layout: 'horizontal',
-                        label: 'paypal',
+                        label: gettext('paypal'),
                     },
 
                     createSubscription: function (data, actions) {
@@ -564,7 +564,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     open_stripe_checkout: function (plan, $button) {
         if ($button.hasClass('NB-disabled')) return;
         $button.attr('disabled', 'disabled');
-        $button.text("Loading checkout...");
+        $button.text(gettext("Loading checkout..."));
         $button.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true);
 
         $.redirectPost("/profile/switch_stripe_subscription", { "plan": plan });
@@ -573,7 +573,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     open_paypal_checkout: function (plan, $button) {
         if ($button.hasClass('NB-disabled')) return;
         $button.attr('disabled', 'disabled');
-        $button.text("Loading PayPal...");
+        $button.text(gettext("Loading PayPal..."));
         $button.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true);
 
         $.redirectPost("/profile/switch_paypal_subscription", { "plan": plan });

@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">Нічого не робити</string>
+    <string name="gesture_back">Назад до стрічок</string>
+    <string name="gesture_toggle_read">Прочитане / непрочитане</string>
+    <string name="gesture_markread">Позначити прочитаним</string>
+    <string name="gesture_markunread">Позначити як непрочитане</string>
+    <string name="gesture_save">Зберегти статтю</string>
+    <string name="gesture_unsave">Скасувати збереження публікації</string>
+    <string name="gesture_statistics">Статистика</string>
+    <string name="gesture_menu">Показати дії</string>
+    <string name="gesture_share">Поділитися</string>
+    <string name="gesture_toggle_save">Зберегти / скасувати збереження</string>
+    <string name="gesture_ask_ai">Запитати ШІ</string>
+    <string name="gesture_train">Навчити інтелект</string>
+    <string name="gesture_notifications">Сповіщення</string>
+    <string name="gesture_read_range">Виберіть, за який період позначати прочитаним</string>
+    <string name="gesture_feed_list">Список стрічок</string>
+    <string name="gesture_story_titles">Заголовки статей</string>
+    <string name="gesture_reading_story">Читання статті</string>
+    <string name="gesture_swipe_feeds">Гортання стрічок</string>
+    <string name="gesture_swipe_stories">Гортання публікацій</string>
+    <string name="gesture_left">Проведіть пальцем ліворуч</string>
+    <string name="gesture_right">Проведіть пальцем праворуч</string>
+    <string name="gesture_long_press">Натисніть і утримуйте</string>
+    <string name="gesture_double_tap">Подвійне торкання</string>
+    <string name="gesture_two_finger_double_tap">Подвійний дотик двома пальцями</string>
+    <string name="gesture_left_edge">Проведіть пальцем від лівого краю</string>
+    <string name="gesture_edge_footer">Проведення пальцем від лівого краю завжди повертає до стрічок, навіть якщо гортання статей вимкнено.</string>
+    <string name="gesture_mark_all">Позначити всі історії як прочитані</string>
+    <string name="gesture_original">Відкрити оригінал матеріалу</string>
+    <string name="gesture_text">Показати оригінальний текст</string>
+    <string name="gesture_unread">Позначити як непрочитане</string>
+    <string name="gesture_back_titles">Назад до заголовків дописів</string>
+    <string name="gesture_previous">Попередня стаття</string>
+    <string name="gesture_off">Вимкнено</string>
+    <string name="gesture_unread_stories">Непрочитані статті</string>
+    <string name="gesture_focus_stories">Зосередитися на новинах</string>
+    <string name="story_title_mark_story_read">Позначити статтю прочитаною…</string>
+    <string name="story_title_list_font_size">Розмір шрифту стрічки та заголовків статей</string>
+    <string name="language_title">Мова</string>
+    <string name="settings_cat_general">Загальні</string>
+    <string name="language_current">Мова: %1$s</string>
+    <string name="language_automatic">Автоматично (мова пристрою)</string>
+    <string name="language_save_failed">Не вдалося зберегти мову. Спробуйте ще раз.</string>
+    <string name="try_feed_instafetching">Новини миттєво завантажуються…</string>
+    <string name="try_feed_fetch_failed">Не вдалося завантажити статті. Торкніться, щоб спробувати ще раз.</string>
+    <string name="try_feed_empty">На цьому сайті поки немає доступних статей. Торкніться, щоб оновити.</string>
+    <string name="image_viewer_close">Закрити зображення</string>
+    <string name="image_viewer_loading">Завантаження зображення…</string>
+    <string name="image_viewer_failed">Не вдалося завантажити зображення повністю.</string>
+    <string name="image_viewer_retry">Спробувати ще раз</string>
+    <string name="image_viewer_copy">Копіювати зображення</string>
+    <string name="image_viewer_save">Зберегти зображення</string>
+    <string name="image_viewer_share">Поділитися зображенням…</string>
+    <string name="image_viewer_open_link">Відкрити посилання</string>
+    <string name="image_viewer_copied">Зображення скопійовано</string>
+    <string name="image_viewer_saved">Збережено в «Фото»</string>
+    <string name="image_viewer_save_failed">Не вдалося зберегти зображення.</string>
+    <string name="image_viewer_share_failed">Не вдалося поділитися зображенням.</string>
+    <string name="image_viewer_storage_permission">Надайте доступ до сховища, щоб зберегти зображення, а потім спробуйте ще раз.</string>
+    <string name="image_viewer_show_actions">Показувати дії із зображеннями</string>
+    <string name="settings_story_toolbar_position">Розташування панелі інструментів списку статей</string>
+    <string name="settings_story_toolbar_top">Вгорі</string>
+    <string name="settings_story_toolbar_bottom">Унизу</string>
+    <string name="story_header_mark_read_cutoff">Виберіть, за який період позначати прочитаним</string>
+    <string name="login_username_hint">ім’я користувача</string>
+    <string name="login_username_or_email_hint">ім’я користувача або електронна пошта</string>
+    <string name="login_password_hint">пароль</string>
+    <string name="login_registration_email_hint">адреса електронної пошти</string>
+    <string name="login_button_login">Увійти</string>
+    <string name="login_segment_sign_in">Увійти</string>
+    <string name="login_segment_sign_up">Зареєструватися</string>
+    <string name="login_forgot_password">Забули пароль</string>
+    <string name="login_custom_server">Власний сервер</string>
+    <string name="login_custom_server_subtitle">Використовуйте власну інсталяцію NewsBlur</string>
+    <string name="login_custom_server_active">Власний сервер: %1$s</string>
+    <string name="login_custom_server_edit">Торкніться, щоб змінити або скинути URL-адресу сервера</string>
+    <string name="login_custom_server_dialog_title">Власний сервер</string>
+    <string name="login_custom_server_dialog_body">Залиште поле порожнім, щоб використовувати NewsBlur, або введіть URL-адресу власного сервера. Зміни набудуть чинності відразу для входу й реєстрації.</string>
+    <string name="login_message_error">Не вдалося увійти в NewsBlur.</string>
+    <string name="login_logging_in">Вхід…</string>
+    <string name="login_logged_in">Переплетення сплайнів…</string>
+    <string name="login_retrieving_feeds">Отримання стрічок…</string>
+    <string name="login_next">Далі</string>
+    <string name="login_custom_server_scheme_error">У власній URL-адресі сервера бракує «https://\'</string>
+    <string name="login_custom_server_invalid">Введіть дійсну URL-адресу власного сервера.</string>
+    <string name="login_tagline">Персональна програма для читання новин,
+що об’єднує людей для обговорення світу.</string>
+    <string name="user_profile_picture">Зображення профілю користувача</string>
+    <string name="search_for_feed">Шукати стрічки</string>
+    <string name="loading">Завантаження…</string>
+    <string name="story_navigation_failed">Не вдалося відкрити статтю. Спробуйте ще раз.</string>
+    <string name="orig_text_loading">Завантаження тексту статті…</string>
+    <string name="follow_error">Не вдалося підписатися на користувача.</string>
+    <string name="unfollow_error">Не вдалося відписатися від користувача.</string>
+    <string name="description_login_button">Натисніть, щоб увійти</string>
+    <string name="description_login_logo">Логотип NewsBlur</string>
+    <string name="description_profile_picture">Зображення профілю користувача</string>
+    <string name="description_row_folder_icon">значок папки</string>
+    <string name="description_row_feed_icon">значок стрічки</string>
+    <string name="description_row_feed_mute_toggle">перемикач вимкнення стрічки</string>
+    <string name="description_activity_icon">Значок, що ілюструє активність користувача</string>
+    <string name="description_follow_button">Підписатися на користувача або скасувати підписку</string>
+    <string name="description_comment_user">Зображення користувача, який залишив коментар</string>
+    <string name="description_empty_list_image">Заповнювач порожнього списку</string>
+    <string name="description_menu">Меню</string>
+    <string name="story_settings">Налаштування публікації</string>
+    <string name="title_choose_folders">Виберіть папки для стрічки %s</string>
+    <string name="title_rename_feed">Перейменувати стрічку %s</string>
+    <string name="title_rename_folder">Перейменувати папку %s</string>
+    <string name="all_stories_title">Усі дописи сайту</string>
+    <string name="daily_briefing_title">Щоденний огляд</string>
+    <string name="infrequent_title">Матеріали сайтів, що рідко оновлюються</string>
+    <string name="widely_read_stories_title">Популярні статті</string>
+    <string name="long_reads_title">Довгі статті</string>
+    <string name="good_reads_title">Гарні матеріали</string>
+    <string name="all_shared_stories_title">Усі поширені статті</string>
+    <string name="global_shared_stories_title">Загальнодоступні поширені статті</string>
+    <string name="read_stories_title">Читати статті</string>
+    <string name="saved_stories_title">Збережені публікації</string>
+    <string name="saved_searches_title">Збережені пошукові запити</string>
+    <string name="feed_list">Список стрічок</string>
+    <string name="bottom_next_unread_site">Наступний сайт із непрочитаними, %1$s</string>
+    <string name="bottom_next_unread_folder">Наступна непрочитана папка, %1$s</string>
+    <string name="top_level">ВЕРХНІЙ РІВЕНЬ</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nНадіслано через NewsBlur</string>
+    <string name="share_comment_hint">Коментар до поширення (необов’язково)</string>
+    <string name="share_save_newsblur">Поділитися/зберегти \"%s\" у своєму Blurblog?</string>
+    <string name="share_this">Поділитися</string>
+    <string name="already_shared">Поширено</string>
+    <string name="share_this_story">Поділитися</string>
+    <string name="share_with_comment">Поділитися з коментарем</string>
+    <string name="unshare">Скасувати поширення</string>
+    <string name="update_shared">Оновити коментар</string>
+    <string name="rename">Перейменувати</string>
+    <string name="save_this">Зберегти</string>
+    <string name="unsave_this">Скасувати збереження</string>
+    <string name="train_this">Навчати</string>
+    <string name="ask_ai">Запитати ШІ</string>
+    <string name="story_mark_unread_state">Прочитане</string>
+    <string name="story_mark_read_state">Позначити статтю як прочитану</string>
+    <string name="overlay_next">Далі</string>
+    <string name="overlay_done">Готово</string>
+    <string name="overlay_count_toast_N">%d непрочитаних статей</string>
+    <string name="overlay_count_toast_1">1 непрочитаний запис</string>
+    <string name="overlay_text">Текст</string>
+    <string name="overlay_story">Стаття</string>
+    <string name="orig_text_failed">На жаль, не вдалося отримати текст статті.</string>
+    <string name="state_all">Усі</string>
+    <string name="state_unread">Непрочитане</string>
+    <string name="state_focus">Фокус</string>
+    <string name="state_saved">Збережено</string>
+    <string name="reply_to">Відповісти на \"%s\"</string>
+    <string name="edit_reply">Редагувати відповідь</string>
+    <string name="edit_reply_update">Оновити відповідь</string>
+    <string name="edit_reply_delete">Видалити відповідьY</string>
+    <string name="alert_dialog_ok">Гаразд</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">Готово</string>
+    <string name="alert_dialog_openlink">Відкрити посилання</string>
+    <string name="alert_dialog_openimage">Відкрити зображення</string>
+    <string name="dialog_folders_save">Зберегти папки</string>
+    <string name="dialog_story_intel_save">Зберегти навчання</string>
+    <string name="dialog_story_tags_save">Зберегти теги</string>
+    <string name="profile">Профіль</string>
+    <string name="profile_location_icon">Піктограма місцезнаходження</string>
+    <string name="profile_following">Стежить</string>
+    <string name="profile_followers">Підписники</string>
+    <string name="profile_shared">Поширені статті</string>
+    <string name="profile_ago">тому</string>
+    <string name="profile_recent_actvity">Активність</string>
+    <string name="profile_recent_interactions">Взаємодії</string>
+    <string name="profile_started_following">почав стежити</string>
+    <string name="profile_you">Ви</string>
+    <string name="profile_you_lower">ви</string>
+    <string name="profile_your">ваш</string>
+    <string name="profile_now_following">тепер стежить за %1$s</string>
+    <string name="profile_replied_to">У відповідь на</string>
+    <string name="profile_replied_to_your">відповів(-ла) %1$s</string>
+    <string name="profile_shared_story">поширено</string>
+    <string name="profile_comment">коментар</string>
+    <string name="profile_reply">відповісти</string>
+    <string name="profile_button_follow">Стежити</string>
+    <string name="profile_button_unfollow">Відписатися</string>
+    <string name="profile_subscribed_to">підписався на</string>
+    <string name="profile_saved">збережено</string>
+    <string name="profile_reshared">поширено повторно</string>
+    <string name="profile_favorited">додано до вибраного</string>
+    <string name="profile_favorited_comments">вподобав коментарі %1$s</string>
+    <string name="profile_signup">зареєструвався в Newsblur</string>
+    <string name="profile_comments_on">коментарі до</string>
+    <string name="profile_feed_not_available">Ви більше не підписані на цю стрічку</string>
+    <string name="profile_do_not_follow">Ви не стежите за цим користувачем</string>
+    <string name="profile_no_interactions">Немає взаємодій</string>
+    <string name="menu_profile">Профіль</string>
+    <string name="menu_search_feeds">Шукати у ваших стрічках</string>
+    <string name="menu_original">Переглянути оригінал</string>
+    <string name="menu_send_story">Надіслати посилання…</string>
+    <string name="menu_send_story_full">Надіслати публікацію…</string>
+    <string name="menu_mark_feed_as_read">Позначити стрічку як прочитану</string>
+    <string name="menu_delete_feed">Видалити стрічку</string>
+    <string name="menu_statistics">Статистика</string>
+    <string name="menu_delete_saved_search">Видалити збережений пошук</string>
+    <string name="menu_unfollow">Відписатися від користувача</string>
+    <string name="menu_choose_folders">Вибрати папки</string>
+    <string name="menu_notifications_choose">Сповіщення</string>
+    <string name="menu_notifications_disable">Вимкнути сповіщення</string>
+    <string name="menu_notifications_focus">Сповіщати про нові важливі статті</string>
+    <string name="menu_notifications_unread">Сповіщати про всі нові статті</string>
+    <string name="menu_mark_folder_as_read">Позначити папку як прочитану</string>
+    <string name="menu_sharenewsblur">Поділитися цією статтею</string>
+    <string name="menu_text_size">Розмір тексту</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">Шрифт</string>
+    <string name="menu_save_story">Зберегти цю статтю</string>
+    <string name="menu_unsave_story">Прибрати цю статтю зі збережених</string>
+    <string name="menu_newest_mark_older_stories_as_read">Позначити старіші як прочитані</string>
+    <string name="menu_newest_mark_newer_stories_as_read">Позначити новіші як прочитані</string>
+    <string name="menu_oldest_mark_older_stories_as_read">Позначити старіші як прочитані</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">Позначити новіші як прочитані</string>
+    <string name="story_menu_open_feed">Відкрити стрічку</string>
+    <string name="story_menu_share_link">Посилання для поширення…</string>
+    <string name="story_menu_share_story">Поділитися новиною…</string>
+    <string name="menu_mark_story_as_read">Позначити як прочитане</string>
+    <string name="menu_mark_unread">Позначити як непрочитане</string>
+    <string name="menu_search_stories">Пошук…</string>
+    <string name="menu_mute_feed">Вимкнути стрічку</string>
+    <string name="menu_unmute_feed">Увімкнути звук стрічки</string>
+    <string name="menu_mute_folder">Заглушити папку</string>
+    <string name="menu_unmute_folder">Увімкнути папку</string>
+    <string name="menu_delete_folder">Видалити папку</string>
+    <string name="menu_rename_folder">Перейменувати папку</string>
+    <string name="menu_instafetch_feed">Миттєво завантажити статті</string>
+    <string name="feed_menu_back_to_actions">Назад до дій зі стрічкою</string>
+    <string name="menu_infrequent_cutoff">Рідкісні статті на місяць</string>
+    <string name="menu_intel">Тренер інтелекту</string>
+    <string name="menu_rename_feed">Перейменувати стрічку</string>
+    <string name="menu_story_list_style_choose">Стиль списку</string>
+    <string name="menu_save_search">Зберегти пошук</string>
+    <string name="menu_web_search">Пошук в інтернеті</string>
+    <string name="menu_highlight">Виділення</string>
+    <string name="list_style_list">Список</string>
+    <string name="list_style_grid_f">Сітка (дрібна)</string>
+    <string name="list_style_grid_m">Сітка (середня)</string>
+    <string name="list_style_grid_c">Сітка (велика)</string>
+    <string name="story_content_preview_none">Лише заголовок (нічого)</string>
+    <string name="story_content_preview_small">2 рядки (малі)</string>
+    <string name="story_content_preview_medium">4 рядки (середній)</string>
+    <string name="story_content_preview_large">6 рядків (великий)</string>
+    <string name="mark_read_on_scroll_disabled">Залишати непрочитаним</string>
+    <string name="mark_read_on_scroll_enabled">Позначати прочитаним під час прокручування</string>
+    <string name="menu_sort_by">Сортувати за</string>
+    <string name="menu_sort_by_name">Назва</string>
+    <string name="menu_sort_by_subs">За кількістю підписників</string>
+    <string name="menu_sort_by_stories_month">Статей на місяць</string>
+    <string name="menu_sort_by_recent_story">Найновіший запис</string>
+    <string name="menu_sort_by_number_opens">Кількість відкриттів</string>
+    <string name="menu_sort_order">Порядок сортування</string>
+    <string name="menu_sort_order_ascending">За зростанням</string>
+    <string name="menu_sort_order_descending">За спаданням</string>
+    <string name="menu_folder_view">Перегляд папок</string>
+    <string name="menu_folder_view_nested">Вкладені</string>
+    <string name="menu_folder_view_flat">Плоский</string>
+    <string name="menu_mute_all">Вимкнути всі звуки</string>
+    <string name="menu_mute_none">Не вимикати нічого</string>
+    <string name="menu_select_all">Вибрати все</string>
+    <string name="menu_select_none">Зняти всі позначки</string>
+    <string name="menu_widget_background">Тло віджета</string>
+    <string name="menu_widget_background_default">За замовчуванням</string>
+    <string name="menu_widget_background_transparent">Прозорий</string>
+    <string name="toast_hold_to_select">Натисніть і утримуйте, щоб виділити текст</string>
+    <string name="logout_warning">Ви впевнені, що хочете вийти?</string>
+    <string name="search_mark_read_warning">Увага! Усі новини в стрічці/папці буде позначено як прочитані, а не лише результати пошуку. Якщо ви справді хочете позначити всі новини як прочитані, очистьте пошуковий запит для підтвердження.</string>
+    <string name="story_show_changes">Показати зміни в статті</string>
+    <string name="story_hide_changes">Приховати зміни в матеріалі</string>
+    <string name="story_changes_loading">Завантаження змін статті …</string>
+    <string name="story_saved_timestamp">Збережено %s</string>
+    <string name="your_feeds_search_hint">Пошук у ваших стрічках</string>
+    <string name="feed_list_clear_search">Очистити пошук</string>
+    <string name="story_search_hint">Пошук матеріалів</string>
+    <string name="discover_related_sites_title">Пов’язані сайти</string>
+    <string name="discover_show_grid">Показати сітку</string>
+    <string name="discover_show_list">Показати список</string>
+    <string name="discover_loading">Пошук схожих сайтів…</string>
+    <string name="discover_no_related_sites">Пов’язаних сайтів не знайдено</string>
+    <string name="discover_view_mode_grid">Сітка</string>
+    <string name="discover_view_mode_list">Список</string>
+    <string name="discover_try">Спробувати</string>
+    <string name="discover_add">Додати</string>
+    <string name="discover_subscribed">Підписано</string>
+    <string name="discover_updated_today">Оновлено сьогодні</string>
+    <string name="discover_updated_relative">Оновлено %s</string>
+    <string name="discover_stale_updated_relative">Застаріло — оновлено %s</string>
+    <string name="discover_stale_date">Неактивна. Остання стаття %s</string>
+    <string name="discover_last_fetched_relative">Отримано %s</string>
+    <string name="try_feed_banner_subtitle">Попередній перегляд. Ви ще не підписалися.</string>
+    <string name="try_feed_subscribe_button">Підписатися</string>
+    <string name="empty_search_notice">Введіть пошуковий запит, щоб почати</string>
+    <string name="menu_add_feed">Додати + знайти сайти</string>
+    <string name="adding_feed_progress">Додавання стрічки…</string>
+    <string name="feed_list_search_hint">Пошук стрічок</string>
+    <string name="add_folder_name">Введіть назву папки</string>
+    <string name="add_tag_name">Введіть назву тегу</string>
+    <string name="add_new_folder">+ Додати нову папку</string>
+    <string name="add_new_tag">+ Додати новий тег</string>
+    <string name="add_tag">Додати тег</string>
+    <string name="new_folder_name_hint">Введіть назву нової папки</string>
+    <string name="new_tag_name_hint">Введіть назву нового тегу</string>
+    <string name="add_feed_error">Не вдалося додати стрічку</string>
+    <string name="add_folder_error">Не вдалося додати папку</string>
+    <string name="menu_mark_all_as_read">Позначити все як прочитане</string>
+    <string name="menu_logout">Вийти</string>
+    <string name="contact_us">Зв’язатися з нами</string>
+    <string name="contact_description">NewsBlur — це новинний рідер і агрегатор, розроблений компанією NewsBlur, Inc. Зверніться до команди NewsBlur по допомогу із застосунком, із запитаннями чи відгуками.</string>
+    <string name="contact_email_label">Написати розробнику</string>
+    <string name="contact_send_email">Надіслати електронного листа</string>
+    <string name="contact_website_label">Вебсайт NewsBlur</string>
+    <string name="contact_open_website">Відвідати вебсайт</string>
+    <string name="contact_back">Назад</string>
+    <string name="contact_no_email_app">Поштову програму не встановлено. Ви можете виділити й скопіювати адресу електронної пошти на цій сторінці.</string>
+    <string name="contact_no_browser">Веббраузер не встановлено. Ви можете виділити й скопіювати адресу сайту на цій сторінці.</string>
+    <string name="menu_feedback">Надіслати відгук про застосунок</string>
+    <string name="menu_feedback_post">Створити допис із відгуком</string>
+    <string name="menu_feedback_email">Надіслати звіт про помилку електронною поштою</string>
+    <string name="menu_theme_choose">Тема</string>
+    <string name="menu_spacing">Інтервал</string>
+    <string name="menu_subscription">Підписка…</string>
+    <string name="description_add_new_folder_icon">Додати піктограму нової папки</string>
+    <string name="menu_loginas">Увійти як…</string>
+    <string name="loginas_title">Увійти як користувач</string>
+    <string name="empty_list_view_loading">Завантаження…</string>
+    <string name="story_loading_description">Завантаження статей</string>
+    <string name="empty_list_view_no_stories">Немає статей для читання</string>
+    <string name="empty_list_view_no_stories_unread">Немає непрочитаних статей</string>
+    <string name="reading_placeholder_select_story">Виберіть статтю для читання</string>
+    <string name="empty_list_view_no_unread_stories">У вас немає непрочитаних історій.</string>
+    <string name="empty_list_view_no_focus_stories">У розділі «Фокус» немає непрочитаних статей.\n\nПерейдіть до розділу «Усі» або «Непрочитані».</string>
+    <string name="empty_list_view_no_saved_stories">У вас немає збережених матеріалів.\n\nПерейдіть до «Усі» або «Непрочитані».</string>
+    <string name="login_registration_custom_server">Вказати власний сервер</string>
+    <string name="login_registration_reset_url">Скинути</string>
+    <string name="login_registration_register">Зареєструватися</string>
+    <string name="register_message_error">Не вдалося зареєструватися в NewsBlur.</string>
+    <string name="need_to_login">
+        <u>Мені потрібно увійти!</u>
+    </string>
+    <string name="need_to_register">
+        <u>Мені потрібно зареєструватися</u>
+    </string>
+    <string name="public_comment_count">%d публічних коментарів</string>
+    <string name="friends_comments_count">%d коментарів</string>
+    <string name="friends_shares_count">%d поширень</string>
+    <string name="unknown_user">Невідомий користувач</string>
+    <string name="delete_feed_message">Видалити стрічку \"%s\"?</string>
+    <string name="delete_saved_search_message">Видалити збережений пошук %s?</string>
+    <string name="delete_folder_message">Видалити папку \"%s\" і скасувати підписку на всі стрічки в ній?</string>
+    <string name="deleting_folder_message">Видалення теки \"%s\"</string>
+    <string name="add_saved_search_message">Зберегти пошук \"%s\"?</string>
+    <string name="unfollow_message">Відписатися від \"%s\"?</string>
+    <string name="feed_subscribers">%s підписників</string>
+    <string name="feed_opens">%d відкриттів</string>
+    <string name="feed_stories_per_month">%d публікацій на місяць</string>
+    <string name="forwarding_email_address">Адреса для пересилання електронної пошти</string>
+    <string name="setup_instructions">Інструкції з налаштування \u25bc</string>
+    <string name="setup_instructions_details">Щоб читати email-розсилки в NewsBlur, пересилайте їх на свою спеціальну адресу електронної пошти, указану вище.\n\nУ Gmail відкрийте Налаштування &gt; Пересилання та натисніть «Додати адресу для пересилання». Додайте свою спеціальну адресу NewsBlur.\n\nGmail проведе вас через підтвердження адреси електронної пошти. Після цього поверніться до NewsBlur і знайдіть лист із підтвердженням у папці «Розсилки».\n\nДалі створіть фільтр для всіх своїх розсилок, щоб вони пересилалися на спеціальну адресу NewsBlur.</string>
+    <string name="copy_email">Копіювати електронну адресу</string>
+    <string name="stories_shortcuts">Швидкі клавіші для записів</string>
+    <string name="feeds_shortcuts">Комбінації клавіш для стрічок</string>
+    <string name="import_export">Імпорт/експорт…</string>
+    <string name="settings">Налаштування…</string>
+    <string name="menu_mute_sites">Приглушити сайти…</string>
+    <string name="mute_sites">Ігнорувати сайти</string>
+    <string name="menu_widget">Віджет…</string>
+    <string name="menu_notifications">Сповіщення…</string>
+    <string name="widget">Віджет</string>
+    <string name="title_widget_setup">Торкніться, щоб налаштувати в NewsBlur</string>
+    <string name="title_no_subscriptions">Активних підписок не виявлено</string>
+    <string name="title_widget_loading">Завантаження…</string>
+    <string name="menu_newsletters">Розсилки…</string>
+    <string name="menu_shortcuts">Комбінації клавіш…</string>
+    <string name="main_menu_preferences">Налаштування</string>
+    <string name="main_menu_mute_sites">Ігнорувати сайти</string>
+    <string name="main_menu_widget_sites">Сайти віджетів</string>
+    <string name="main_menu_notifications">Сповіщення</string>
+    <string name="main_menu_interactions">Взаємодії</string>
+    <string name="main_menu_upgrade_premium">Перейти на Premium</string>
+    <string name="main_menu_upgrade_archive">Перейти на Архів</string>
+    <string name="main_menu_premium_archive">Преміум-архів</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">Форум підтримки</string>
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">Імпорт/експорт OPML</string>
+    <string name="notifications_title">Сповіщення</string>
+    <string name="premium_subscribers_folder">Повна стрічка новин — це преміумфункція</string>
+    <string name="premium_subscribers_allstories">Читання всіх новин із сайтів — преміумфункція</string>
+    <string name="premium_subscribers_saved_tag">Читання збережених статей за тегом — функція преміумпідписки</string>
+    <string name="premium_subscribers_search">Пошук доступний у преміум-підписці</string>
+    <string name="premium_subscribers">преміум-підписники</string>
+    <string name="premium_upgrade_button">Перейти на Premium</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
+    <string name="thank_you_for_subscribing">Дякуємо за підписку!</string>
+    <string name="premium_subscription_renewal">Термін дії вашої підписки буде поновлено %s</string>
+    <string name="premium_subscription_expiration">Термін дії вашої підписки закінчиться %s</string>
+    <string name="premium_subscription_no_expiration">Термін дії вашої підписки ніколи не закінчиться. Ого!</string>
+    <string name="premium_policies">Докладніше див. у <a href="https://newsblur.com/privacy">політиці конфіденційності</a> та <a href="https://newsblur.com/tos">умовах використання</a> NewsBlur.</string>
+    <string name="premium_subscription_header">Преміумпідписка</string>
+    <string name="archive_subscription_header">Преміум-архів</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">Підписка NewsBlur Premium</string>
+    <string name="archive_subscription_title">Преміум-архів NewsBlur</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">$35.99 на рік ($3.00/місяць)</string>
+    <string name="premium_subscription_active">Ваша преміум-підписка активна</string>
+    <string name="archive_subscription_active">Ваша підписка на преміум-архів активна</string>
+    <string name="pro_subscription_active">Ваша підписка Premium Pro активна</string>
+    <string name="subscription_manage">Керувати підпискою</string>
+    <string name="subscription_details_error">Не вдалося отримати відомості про підписку</string>
+    <string name="no_subscription_available">Підписка недоступна</string>
+    <string name="subscription_unavailable">Наразі недоступно на Android</string>
+    <string name="subscription_coming_soon">Незабаром</string>
+    <string name="subscription_upgrade_from_premium">Перейти з Premium</string>
+    <string name="subscription_upgrade_from_archive">Перейти з Archive</string>
+    <string name="subscription_price_yearly">%1$s/рік (%2$s/місяць)</string>
+    <string name="subscription_price_monthly">%1$s/місяць</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">Підписка Premium Archive включає все перелічене вище</string>
+    <string name="premium_pro_includes_above">Ваша підписка Premium Pro містить усе перелічене вище</string>
+    <string name="premium_enable_sites">Стежте за 1 024 сайтами</string>
+    <string name="premium_sync">Сайти оновлюються до 5 разів частіше</string>
+    <string name="premium_read_by_folder">Стрічка новин (читання за папками)</string>
+    <string name="premium_search">Шукати сайти й папки</string>
+    <string name="premium_searchable_tags">Зберігайте статті з тегами для пошуку</string>
+    <string name="premium_privacy_options">Налаштування приватності вашого blurblog</string>
+    <string name="premium_custom_rss">Власні RSS-стрічки для збережених статей</string>
+    <string name="premium_text_view">Текстовий режим зручно витягує текст історії</string>
+    <string name="premium_discover_related">Знайдіть пов’язані історії та сайти</string>
+    <string name="premium_shiloh">Ви годуєте Лірика, ненажерливого пса NewsBlur, уже 6 днів</string>
+    <string name="archive_everything_premium">Звісно, усе, що входить до преміумпідписки</string>
+    <string name="archive_enable_sites">Стежте за новинами на 4 096 сайтах</string>
+    <string name="archive_marked_as_read">Виберіть, коли історії автоматично позначатимуться як прочитані</string>
+    <string name="archive_customize_auto_read">Налаштувати автоматичне позначення прочитаним для сайтів і папок</string>
+    <string name="archive_story_searchable_forever">Усі статті з усіх сайтів архівуються та залишаються доступними для пошуку назавжди</string>
+    <string name="archive_back_filled">Стрічки з підтримкою посторінкового завантаження доповнюються для створення повного архіву</string>
+    <string name="archive_train_full_text">Навчати на повному тексті статей</string>
+    <string name="archive_discover_related">Знайдіть пов’язані статті у своєму архіві</string>
+    <string name="archive_export_trained_stories">Експортувати навчені статті з папок як RSS-стрічки</string>
+    <string name="archive_stories_unread_forever">Новини можуть залишатися непрочитаними безстроково</string>
+    <string name="archive_ask_ai">Ставте ШІ запитання про статті</string>
+    <string name="archive_filter_by_date_range">Фільтрувати статті за діапазоном дат</string>
+    <string name="archive_train_folder">Застосувати навчання до всієї папки</string>
+    <string name="archive_train_globally">Застосувати навчання для всіх</string>
+    <string name="pro_everything_archive">Звісно, усе, що входить до підписки на архів</string>
+    <string name="pro_enable_sites">Стежте за 10 000 сайтів</string>
+    <string name="pro_all_feeds_fetched">Усі стрічки оновлюються кожні 5–15 хвилин</string>
+    <string name="pro_regex_train">Навчайте фільтри публікаціям за допомогою регулярних виразів</string>
+    <string name="pro_priority_support">Пріоритетна підтримка</string>
+    <string name="pro_natural_language_filters">Фільтри природною мовою</string>
+    <string name="pro_natural_language_search">Пошук природною мовою</string>
+    <string name="settings_cat_offline">Читання офлайн</string>
+    <string name="settings_enable_offline">Завантажувати статті</string>
+    <string name="settings_enable_offline_sum">Періодично завантажувати статті у фоновому режимі</string>
+    <string name="settings_enable_image_prefetch">Завантажувати зображення</string>
+    <string name="settings_enable_image_prefetch_sum">Заздалегідь завантажувати зображення для читання офлайн</string>
+    <string name="settings_keep_old_stories">Зберігати статті після прочитання</string>
+    <string name="settings_keep_old_stories_sum">Вимкніть, щоб зменшити використання сховища</string>
+    <string name="mute_config_title">У безкоштовному стандартному обліковому записі можна стежити за 64 сайтами</string>
+    <string name="mute_config_message">Будь ласка, вимкніть %d сайтів або скиньте налаштування до найпопулярніших сайтів.</string>
+    <string name="mute_config_reset_button">Скинути до популярних сайтів</string>
+    <string name="mute_config_upgrade_to_premium">Перейдіть на Premium</string>
+    <string name="mute_config_upgrade_subtitle">Підпишіться на 1 024 сайти</string>
+    <string name="mute_config_upgrade">Оновити</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">Доступно сайтів: %d</string>
+    <string name="mute_config_sites_over">%d понад ліміт</string>
+    <string name="menu_network_select">Завантажити через…</string>
+    <string name="menu_network_select_sum">Обмежити фонове передавання даних вибраними мережами</string>
+    <string name="menu_network_select_opt_any">Будь-яка мережа</string>
+    <string name="menu_network_select_opt_nomo">Будь-яка Wi-Fi або Ethernet-мережа</string>
+    <string name="menu_network_select_opt_nomononme">Лише безлімітний Wi-Fi або Ethernet</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">Видалити офлайн-статті…</string>
+    <string name="menu_delete_offline_stories_sum">Звільніть місце, видаливши збережені статті й зображення</string>
+    <string name="menu_delete_offline_stories_confirmation">Усі статті й зображення видалено!</string>
+    <string name="menu_cache_age_select">Як довго зберігати статті…</string>
+    <string name="menu_cache_age_select_sum">Видалити збережені статті для читання офлайн</string>
+    <string name="menu_cache_age_select_opt_2d">2 дні (менше місця для зберігання)</string>
+    <string name="menu_cache_age_select_opt_7d">7 днів</string>
+    <string name="menu_cache_age_select_opt_14d">14 днів</string>
+    <string name="menu_cache_age_select_opt_30d">30 днів (менше навантаження на мережу)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">Список стрічок</string>
+    <string name="setting_feed_list_order">Порядок списку стрічок…</string>
+    <string name="settings_enable_row_global_shared">Показувати всіма доступні спільні статті</string>
+    <string name="settings_enable_row_global_shared_sum">Показувати папку Global Shared Stories</string>
+    <string name="settings_enable_row_infrequent_stories">Показувати рідкісні статті</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Показувати папку «Рідкісні матеріали сайту»</string>
+    <string name="settings_enable_row_daily_briefing">Показувати щоденний огляд</string>
+    <string name="settings_enable_row_daily_briefing_sum">Показувати папку «Щоденний огляд»</string>
+    <string name="settings_enable_row_widely_read_stories">Показувати популярні статті</string>
+    <string name="settings_enable_row_widely_read_stories_sum">Показувати папку «Популярні матеріали»</string>
+    <string name="settings_enable_row_long_reads">Показувати довгі матеріали</string>
+    <string name="settings_enable_row_long_reads_sum">Показувати папку «Довгі читання»</string>
+    <string name="settings_enable_row_good_reads">Показувати хороші записи</string>
+    <string name="settings_enable_row_good_reads_sum">Показувати папку «Гарні матеріали»</string>
+    <string name="settings_cat_story_list">Список статей</string>
+    <string name="settings_cat_story_layout">Макет статей</string>
+    <string name="settings_app_icon">Піктограма застосунку</string>
+    <string name="settings_app_icon_choose">Вибрати піктограму</string>
+    <string name="settings_app_icon_summary">12 колірних варіантів зі світлим і темним оформленням.</string>
+    <string name="settings_app_icon_footer">Підписники Premium можуть вибрати власну іконку NewsBlur. Кожен варіант має світлу й темну версії.</string>
+    <string name="settings_app_icon_premium">Преміум</string>
+    <string name="settings_app_icon_light">Світла</string>
+    <string name="settings_app_icon_dark">Темний</string>
+    <string name="settings_app_icon_save_failed">Не вдалося змінити іконку застосунку</string>
+    <string name="settings_app_icon_appearance_light">Світла</string>
+    <string name="settings_app_icon_appearance_auto">Використовувати обидва</string>
+    <string name="settings_app_icon_appearance_dark">Темна</string>
+    <string name="settings_app_icon_appearance_light_caption">Завжди відображає світлу іконку, незалежно від налаштувань пристрою.</string>
+    <string name="settings_app_icon_appearance_auto_caption">Піктограма відповідає світлому або темному оформленню вашого пристрою.</string>
+    <string name="settings_app_icon_appearance_dark_caption">Зберігає темну іконку незалежно від налаштувань пристрою.</string>
+    <string name="oldest">Найстаріші</string>
+    <string name="newest">Найновіші</string>
+    <string name="menu_story_order">Порядок матеріалів</string>
+    <string name="settings_story_order">Порядок статей…</string>
+    <string name="story_header_options">Параметри</string>
+    <string name="story_header_search">Пошук</string>
+    <string name="story_header_related_sites">Пов’язані сайти</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">Зручний</string>
+    <string name="compact">Компактний</string>
+    <string name="alphabetical">За абеткою</string>
+    <string name="most_used_at_top">Найуживаніші — вгорі</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">Усі статті</string>
+    <string name="unread_only">Лише непрочитані</string>
+    <string name="menu_story_content_preview">Попередній перегляд вмісту допису</string>
+    <string name="menu_story_thumbnail_preview">Попередній перегляд мініатюри</string>
+    <string name="menu_mark_read_on_scroll">Позначати прочитаним під час прокручування</string>
+    <string name="settings_read_filter">Фільтр прочитаних історій…</string>
+    <string name="settings_read_filter_title">Показані статті</string>
+    <string name="menu_read_filter">Фільтр прочитаних статей</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>Позначити все як прочитане</item>
+        <item>Скасувати</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Позначати старіші новини як прочитані</item>
+        <item>Скасувати</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="few">Старші за %d дні</item>
+        <item quantity="many">Старіші за %d днів</item>
+        <item quantity="one">Старіші за %d день</item>
+        <item quantity="other">Старші за %d днів</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="few">%s підписники</item>
+        <item quantity="many">%s підписників</item>
+        <item quantity="one">%s підписник</item>
+        <item quantity="other">%s підписників</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="few">%s статей/міс.</item>
+        <item quantity="many">%s статей/міс.</item>
+        <item quantity="one">%s допис на місяць</item>
+        <item quantity="other">%s записів/міс.</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="few">Також опубліковано на %d сайтах</item>
+        <item quantity="many">Також опубліковано на %d сайтах</item>
+        <item quantity="one">Також опубліковано на сайті %d</item>
+        <item quantity="other">Також опубліковано на %d сайтах</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="few">+ ще %d сайтів</item>
+        <item quantity="many">+ ще %d сайтів</item>
+        <item quantity="one">+ ще %d сайт</item>
+        <item quantity="other">+ ще %d сайтів</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>Позначати новіші статті як прочитані</item>
+        <item>Скасувати</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">Автоматично відкривати першу непрочитану статтю</string>
+    <string name="settings_auto_open_first_unread_sum">Автоматично відкривати першу непрочитану статтю у списку</string>
+    <string name="settings_mark_read_on_feed_scroll">Позначати заголовки статей як прочитані під час прокручування</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Автоматично позначати статті як прочитані під час прокручування стрічки</string>
+    <string name="settings_story_clustering">Групувати пов’язані статті</string>
+    <string name="settings_story_clustering_summary">Показувати дублікати статей з інших стрічок під заголовком статті</string>
+    <string name="settings_cluster_matches">Збіги в групах</string>
+    <string name="settings_cluster_matches_summary">Виберіть, чи показувати в кластерах лише дублікати заголовків або також схожі статті</string>
+    <string name="settings_story_clustering_save_failed">Не вдалося зберегти налаштування групування статей</string>
+    <string name="settings_story_clustering_title_only">Лише заголовок</string>
+    <string name="settings_cluster_mode_title_match_only">Збіг лише в заголовку</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Збіг за заголовком і пов’язані статті</string>
+    <string name="settings_cluster_mark_read_matches">Позначати відповідні новини як прочитані</string>
+    <string name="settings_cluster_mark_read_related">Позначати пов’язані статті як прочитані</string>
+    <string name="settings_cluster_mark_read_matches_summary">Коли ви читаєте статтю, позначати як прочитані також відповідні їй статті.</string>
+    <string name="settings_cluster_mark_read_related_summary">Коли ви читаєте історію, також позначати як прочитані відповідні та пов’язані історії.</string>
+    <string name="settings_cluster_mark_read_save_failed">Не вдалося зберегти налаштування прочитання пов’язаних історій</string>
+    <string name="settings_story_clustering_title">Заголовок</string>
+    <string name="settings_story_clustering_only">лише</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">Збіг</string>
+    <string name="story_cluster_badge_related">Пов’язані</string>
+    <string name="settings_mark_story_read">Позначити статтю як прочитану…</string>
+    <string name="settings_mark_story_read_title">Позначати статті як прочитані</string>
+    <string name="mark_story_read_immediately">Лише після вибору</string>
+    <string name="mark_story_read_on_scroll">Під час прокручування або вибору</string>
+    <string name="mark_story_read_1_second">Через 1 секунду</string>
+    <string name="mark_story_read_2_seconds">Через 2 секунди</string>
+    <string name="mark_story_read_3_seconds">Через 3 секунди</string>
+    <string name="mark_story_read_5_seconds">Через 5 секунд</string>
+    <string name="mark_story_read_10_seconds">Через 10 секунд</string>
+    <string name="mark_story_read_20_seconds">Через 20 секунд</string>
+    <string name="mark_story_read_30_seconds">Через 30 секунд</string>
+    <string name="mark_story_read_45_seconds">Через 45 секунд</string>
+    <string name="mark_story_read_60_seconds">Через 60 секунд</string>
+    <string name="mark_story_read_manually">Вручну</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">Поширення матеріалів</string>
+    <string name="settings_show_public_comments">Показувати публічні коментарі</string>
+    <string name="settings_reading">Читання</string>
+    <string name="settings_show_ask_ai">Показувати «Запитати ШІ»</string>
+    <string name="settings_content_preview">Текст попереднього перегляду вмісту…</string>
+    <string name="settings_thumbnails_style">Мініатюри для попереднього перегляду зображень…</string>
+    <string name="settings_preview_images_title">Попередній перегляд зображень</string>
+    <string name="settings_preview_images_segment_off">Вимкнено</string>
+    <string name="settings_preview_images_segment_left_small">Маленьке зображення L</string>
+    <string name="settings_preview_images_segment_left_large">L — великий</string>
+    <string name="settings_preview_images_segment_right_small">R малий</string>
+    <string name="settings_preview_images_segment_right_large">R великий</string>
+    <string name="settings_notifications">Сповіщення</string>
+    <string name="settings_enable_notifications">Увімкнути сповіщення</string>
+    <string name="ask_ai_upgrade_archive">Перейдіть на Преміум, щоб отримати архів</string>
+    <string name="ask_ai_ask_question">Поставте запитання…</string>
+    <string name="ask_ai_follow_up">Уточнити…</string>
+    <string name="ask_ai_ask">Запитати</string>
+    <string name="ask_ai_send">Надіслати</string>
+    <string name="ask_ai_reask">Запитати ще раз</string>
+    <string name="ask_ai_recording">Запис…</string>
+    <string name="ask_ai_transcribing">Триває транскрибування…</string>
+    <string name="ask_ai_microphone_permission_denied">Доступ до мікрофона заборонено</string>
+    <string name="ask_ai_microphone_error">Не вдалося записати аудіо</string>
+    <string name="settings_confirm_mark_all_read_note">Для позначення всіх історій сайту як прочитаних завжди потрібно підтвердження. Натисніть і утримуйте кнопку позначення прочитаним, щоб побачити інші параметри.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">Обидва</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">Папки</string>
+    <string name="settings_confirm_mark_all_read_segment_never">Ніколи</string>
+    <string name="settings_after_mark_read_title">Після позначення як прочитаного</string>
+    <string name="settings_after_mark_read_next">Відкрити наступний список</string>
+    <string name="settings_after_mark_read_stay">Залишитися тут</string>
+    <string name="settings_when_opening_site_title">Під час відкриття сайту</string>
+    <string name="settings_when_opening_site_stories">Показувати публікації</string>
+    <string name="settings_when_opening_site_first_story">Відкрити першу статтю</string>
+    <string name="story_cluster_upgrade_archive">Преміум-архів</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">Мініатюра ліворуч, маленька</string>
+    <string name="story_thumbnail_left_hand_large">Великий ліворуч</string>
+    <string name="story_thumbnail_right_hand_small">Праворуч, мале</string>
+    <string name="story_thumbnail_right_hand_large">Великий праворуч</string>
+    <string name="story_thumbnail_no_image_preview">Попередній перегляд зображення недоступний</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">Статті із сайтів із</string>
+    <string name="infrequent_5">&lt; 5 статей/місяць</string>
+    <string name="infrequent_15">&lt; 15 історій на місяць</string>
+    <string name="infrequent_30">&lt; 30 статей на місяць</string>
+    <string name="infrequent_60">&lt; 60 статей на місяць</string>
+    <string name="infrequent_90">&lt; 90 матеріалів на місяць</string>
+    <string name="story_intel_dialog_title">Що вам подобається чи не подобається в цій публікації?</string>
+    <string name="feed_intel_dialog_title">Що вам подобається й не подобається на цьому сайті?</string>
+    <string name="intel_title_header">Заголовки статей</string>
+    <string name="feed_intel_title_header">Заголовки</string>
+    <string name="intel_tag_header">Теги статті</string>
+    <string name="feed_intel_tag_header">Теги</string>
+    <string name="intel_author_header">Автори статей</string>
+    <string name="feed_intel_author_header">Автори</string>
+    <string name="intel_feed_header">Усе від видавця</string>
+    <string name="intel_super_dislike">Дуже не подобається</string>
+    <string name="explainer_super_dislike">Категорично не подобається</string>
+    <string name="explainer_like">Подобається</string>
+    <string name="explainer_dislike">Не подобається</string>
+    <string name="explainer_beats">удари</string>
+    <string name="explainer_example1_header">Одна вподобайка переважує будь-яку кількість дизлайків</string>
+    <string name="explainer_example1_result">Публікація відображається в режимі фокуса</string>
+    <string name="explainer_example2_header">Одне супернеподобання переважає все</string>
+    <string name="explainer_example2_result">Стаття завжди прихована</string>
+    <string name="auto">Автоматично</string>
+    <string name="light">Світла</string>
+    <string name="sepia">Сепія</string>
+    <string name="dark">Темна</string>
+    <string name="black">Чорний</string>
+    <string name="settings_gestures">Жести</string>
+    <string name="sync_status_housekeeping">Упорядковуємо…</string>
+    <string name="sync_status_actions">Синхронізація дій читання %d…</string>
+    <string name="sync_status_recounts">Синхронізуємо дії з прочитання…</string>
+    <string name="sync_status_ffsync">Уже в дорозі…</string>
+    <string name="sync_status_cleanup">Очищення…</string>
+    <string name="sync_status_starred">Синхронізація дій зі збереженими статтями…</string>
+    <string name="sync_status_stories">Завантаження нових дописів…</string>
+    <string name="sync_status_unreads">Збереження%sнепрочитаних матеріалів…</string>
+    <string name="sync_status_images">Зберігання зображень %d…</string>
+    <string name="sync_status_offline">Не в мережі</string>
+    <string name="sync_status_feed_add">Додавання стрічки</string>
+    <string name="sync_status_done">Готово</string>
+    <string name="volume_key_navigation">Керування клавішами гучності…</string>
+    <string name="off">Вимкнено</string>
+    <string name="volume_up_next">Вгору = наступна стаття</string>
+    <string name="volume_down_next">Вниз = наступна стаття</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">Відкривати наступну стрічку/папку після позначення прочитаним</string>
+    <string name="settings_load_next_on_mark_read_summary">Завантажувати наступну стрічку/теку після позначення як прочитаного</string>
+    <string name="settings_confirm_mark_all_read">Підтверджувати позначення всього прочитаним у…</string>
+    <string name="none">Ні те, ні інше</string>
+    <string name="feed_and_folder">Стрічки та папки</string>
+    <string name="folder_only">Лише папки</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">Підтверджувати позначення старіших/новіших статей як прочитаних</string>
+    <string name="settings_ltr_gesture_action">Свайп праворуч у списку статей…</string>
+    <string name="gest_action_none">Без дії</string>
+    <string name="gest_action_back">Повернутися до попереднього списку</string>
+    <string name="gest_action_toggle_read">Перемкнути статус прочитання статті</string>
+    <string name="gest_action_markread">Позначити статтю як прочитану</string>
+    <string name="gest_action_markunread">Позначити матеріал як непрочитаний</string>
+    <string name="gest_action_save">Зберегти статтю</string>
+    <string name="gest_action_unsave">Скасувати збереження публікації</string>
+    <string name="gest_action_statistics">Статистика сайту</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">Проведіть пальцем ліворуч по заголовку матеріалу…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">Браузер за замовчуванням…</string>
+    <string name="font">Шрифт…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>Системний за замовчуванням</item>
+        <item>Вбудований браузер</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">Нові статті</string>
+    <string name="go_to_feed">Перейти до стрічки</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">Пошук</string>
+    <string name="add_feed">Додати стрічку</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">Електронна пошта</string>
+    <string name="notification_web">Веб</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">Немає сповіщень зі стрічок</string>
+    <string name="notification_permissions_context">Для надсилання сповіщень потрібен дозвіл</string>
+    <string name="notification_permissions_rationale">Перш ніж знову спробувати ввімкнути сповіщення, потрібно вручну надати дозвіл у налаштуваннях програми</string>
+    <string name="write_storage_permission_opml">Для експорту OPML потрібен дозвіл на запис у сховище</string>
+    <string name="story_saved">Матеріал збережено</string>
+    <string name="story_unsaved">Матеріал позначено як незбережений</string>
+    <string name="story_read">Статтю позначено як прочитану</string>
+    <string name="story_unread">Статтю позначено як непрочитану</string>
+    <string name="unread_stories">Непрочитані статті</string>
+    <string name="focused_stories">Вибрані статті</string>
+    <string name="saved_stories">Збережені статті</string>
+    <string name="short_next_story">Наступна публікація</string>
+    <string name="short_previous_story">Попередня стаття</string>
+    <string name="short_text_view">Текстовий вигляд</string>
+    <string name="short_page_down">Сторінка вниз</string>
+    <string name="short_page_down_key">пробіл</string>
+    <string name="short_page_up">Сторінка вгору</string>
+    <string name="short_page_up_key">\u21E7 пробіл</string>
+    <string name="short_next_unread_story">Наступна непрочитана новина</string>
+    <string name="short_toggle_read_unread">Перемкнути прочитане/непрочитане</string>
+    <string name="short_save_unsave_story">Зберегти/скасувати збереження статті</string>
+    <string name="short_open_in_browser">Відкрити в браузері</string>
+    <string name="short_share_this_story">Поділитися цією історією</string>
+    <string name="short_scroll_to_comments">Прокрутити до коментарів</string>
+    <string name="short_open_story_trainer">Відкрити тренер матеріалів</string>
+    <string name="short_open_all_stories">Відкрити всі статті сайту</string>
+    <string name="short_switch_views">Перемкнути вигляд</string>
+    <string name="short_add_site">Додати сайт</string>
+    <string name="registering">Реєстрація...</string>
+    <string name="renaming_feed_message">Перейменування стрічки %s</string>
+    <string name="renaming_folder_message">Перейменування папки %s</string>
+    <string name="parent_folder">Батьківська папка</string>
+    <string name="folder_added">Папку додано</string>
+    <string name="new_folder_parent">У: %1$s</string>
+    <string name="ui_014f8b8d982f">Додавайте власні фільтри за ключовими словами, щоб створювати окремі розділи зведення</string>
+    <string name="ui_05392d13e2f2">Оглядів поки немає</string>
+    <string name="ui_0a4444676244">Не вдалося зберегти</string>
+    <string name="ui_0a8adac9d6d5">Розклад</string>
+    <string name="ui_13b7bfcac438">Виконується…</string>
+    <string name="ui_2eb56be3c2d9">Джерела</string>
+    <string name="ui_314ef761a08f">Додати розділ ключових слів</string>
+    <string name="ui_3af014d03229">Джерело стрічки</string>
+    <string name="ui_3e4a49541e18">Включати вже прочитані статті</string>
+    <string name="ui_4a24ff492222">Отримуйте щоденні огляди найважливіших статей</string>
+    <string name="ui_4e9f59082144">Преміум-архів</string>
+    <string name="ui_5b170811b992">Перейти на Premium Archive</string>
+    <string name="ui_67a31d6fa581">Виберіть, куди надсилати сповіщення щоденного огляду</string>
+    <string name="ui_67d0be0dd546">Налаштуйте, скільки включати та як це записувати</string>
+    <string name="ui_68c2cc7f0cea">Модель</string>
+    <string name="ui_710089545189">Довжина й стиль</string>
+    <string name="ui_753a22b2eb61">Сповіщення</string>
+    <string name="ui_771ee100da2b">Розділи за ключовими словами</string>
+    <string name="ui_7c522fb68f07">Отримуйте добірку найважливіших новин у зручний для вас час.</string>
+    <string name="ui_7f7e956b2244">Налаштуйте «Щоденний огляд», щоб створювати зведення найважливіших для вас статей.</string>
+    <string name="ui_7ff5a6dafd80">Розділи</string>
+    <string name="ui_80f7bcbc57b0">Виберіть, як часто й коли створювати ваш огляд</string>
+    <string name="ui_a4d5830966af">Автоматично створюйте дайджести за розкладом</string>
+    <string name="ui_a92076d4b9e3">Виберіть модель, яка готуватиме ваш щоденний огляд</string>
+    <string name="ui_a970fbbd6df8">Створити автоматично</string>
+    <string name="ui_a9dc7e4dcba7">Налаштування щоденного огляду</string>
+    <string name="ui_bbfa773e5a63">Закрити</string>
+    <string name="ui_c2d462f8f6da">Виберіть, які статті включати до щоденного огляду</string>
+    <string name="ui_d521ea8640b5">Створити щоденний огляд</string>
+    <string name="ui_df174a3f2faa">Увімкнено</string>
+    <string name="ui_df2164622bcf">Не вдалося завантажити щоденний огляд</string>
+    <string name="ui_eaed56ec84ae">Щоденний огляд</string>
+    <string name="ui_efc007a393f6">Зберегти</string>
+    <string name="ui_f530db58b3e5">Ключові слова</string>
+    <string name="ui_fdafe86c10a4">Буде включено лише розділи зі статтями, що відповідають умовам</string>
+    <string name="ui_690910f6ed17">Імпортувати OPML</string>
+    <string name="ui_244fd5e426f0">Експортувати OPML</string>
+    <string name="ui_768e0c1c6957">Назва</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">Збережені теги</string>
+    <string name="ui_6e914f494515">Теги історії</string>
+    <string name="ui_e912ab619a72">Інші мітки</string>
+    <string name="i18n_add_site">Додати сайт</string>
+    <string name="i18n_add">Додати</string>
+    <string name="i18n_retry">Повторити</string>
+    <string name="i18n_no_sites_found_try_another_search">Сайтів не знайдено. Спробуйте інший запит.</string>
+    <string name="i18n_load_more">Завантажити ще</string>
+    <string name="i18n_follow_any_website">Стежте за будь-яким сайтом</string>
+    <string name="i18n_mark_updated_stories_unread">Позначати оновлені статті як непрочитані</string>
+    <string name="i18n_follow_news_that_matters_to_you">Стежте за важливими для вас новинами</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">Виберіть тему або створіть стрічку Google News для будь-якого пошукового запиту.</string>
+    <string name="i18n_subscribe">Підписатися</string>
+    <string name="i18n_tech">технології</string>
+    <string name="i18n_review">відгук</string>
+    <string name="i18n_sponsored">реклама</string>
+    <string name="i18n_discover_more_to_read">Знайдіть, що ще почитати</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">Сайтів не знайдено. Також можна додати сайт за URL-адресою.</string>
+    <string name="i18n_add_discover_sites">Додати + знайти сайти</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">Створіть стрічку зі сторінки без RSS. NewsBlur знаходить її статті та перевіряє наявність оновлень. Потрібен Premium Archive.</string>
+</resources>

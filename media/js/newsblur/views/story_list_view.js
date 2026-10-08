@@ -159,7 +159,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             $.make('div', { className: 'NB-world' }),
-            'Select a story to read'
+            gettext('Select a story to read')
         ]);
 
         this.$el.append($empty);
@@ -183,10 +183,10 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             hidden_stories = false;
         }
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
-            'No stories to read',
+            gettext('No stories to read'),
             $.make('div', { className: 'NB-world' }),
             (hidden_stories && $.make('div', { className: 'NB-story-list-empty-subtitle' }, [
-                'There ',
+                gettext('There '),
                 Inflector.pluralize('is', hidden_stories),
                 ' ',
                 Inflector.pluralize('hidden story', hidden_stories, true)
@@ -382,20 +382,20 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     append_river_premium_only_notification: function () {
         var message = [
             'The full River of News is a ',
-            $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'river' }, 'premium feature'),
+            $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'river' }, gettext('premium feature')),
             '.'
         ];
         if (NEWSBLUR.reader.flags['starred_view']) {
             message = [
                 'Reading saved stories by tag is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'saved-tags' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'saved-tags' }, gettext('premium feature')),
                 '.'
             ];
         }
         if (NEWSBLUR.reader.active_feed == "read") {
             message = [
                 'This read stories list is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                $.make('a', { href: '#', className: 'NB-splash-link' }, gettext('premium feature')),
                 '.'
             ];
         }
@@ -416,8 +416,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     append_search_premium_only_notification: function () {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
-                'Search is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'search' }, 'premium feature'),
+                gettext('Search is a '),
+                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'search' }, gettext('premium feature')),
                 '.'
             ])
         ]);

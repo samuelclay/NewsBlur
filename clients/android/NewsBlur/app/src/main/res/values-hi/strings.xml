@@ -1,0 +1,926 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">कुछ न करें</string>
+    <string name="gesture_back">फ़ीड पर वापस जाएँ</string>
+    <string name="gesture_toggle_read">पढ़ा हुआ / अपठित</string>
+    <string name="gesture_markread">पढ़ा हुआ चिह्नित करें</string>
+    <string name="gesture_markunread">बिना पढ़ा चिह्नित करें</string>
+    <string name="gesture_save">स्टोरी सहेजें</string>
+    <string name="gesture_unsave">कहानी को सेव से हटाएँ</string>
+    <string name="gesture_statistics">आँकड़े</string>
+    <string name="gesture_menu">कार्रवाइयाँ दिखाएँ</string>
+    <string name="gesture_share">शेयर करें</string>
+    <string name="gesture_toggle_save">सहेजें / सहेजना हटाएँ</string>
+    <string name="gesture_ask_ai">AI से पूछें</string>
+    <string name="gesture_train">बुद्धिमत्ता को प्रशिक्षित करें</string>
+    <string name="gesture_notifications">सूचनाएँ</string>
+    <string name="gesture_read_range">चुनें कि कितने पुराने लेखों को पढ़ा हुआ चिह्नित करना है</string>
+    <string name="gesture_feed_list">फ़ीड सूची</string>
+    <string name="gesture_story_titles">स्टोरी के शीर्षक</string>
+    <string name="gesture_reading_story">कहानी पढ़ना</string>
+    <string name="gesture_swipe_feeds">फ़ीड पर स्वाइप करें</string>
+    <string name="gesture_swipe_stories">स्टोरीज़ पर स्वाइप करें</string>
+    <string name="gesture_left">बाईं ओर स्वाइप करें</string>
+    <string name="gesture_right">दाईं ओर स्वाइप करें</string>
+    <string name="gesture_long_press">देर तक दबाएँ</string>
+    <string name="gesture_double_tap">दो बार टैप करें</string>
+    <string name="gesture_two_finger_double_tap">दो उँगलियों से डबल टैप</string>
+    <string name="gesture_left_edge">बाएँ किनारे से स्वाइप करें</string>
+    <string name="gesture_edge_footer">बाएँ किनारे से स्वाइप करने पर हमेशा फ़ीड पर लौटेंगे, भले ही लेखों पर स्वाइप बंद हों।</string>
+    <string name="gesture_mark_all">सभी स्टोरीज़ को पढ़ा हुआ चिह्नित करें</string>
+    <string name="gesture_original">मूल कहानी खोलें</string>
+    <string name="gesture_text">मूल पाठ दिखाएँ</string>
+    <string name="gesture_unread">बिना पढ़ा हुआ चिह्नित करें</string>
+    <string name="gesture_back_titles">स्टोरी शीर्षकों पर वापस जाएँ</string>
+    <string name="gesture_previous">पिछली स्टोरी</string>
+    <string name="gesture_off">बंद</string>
+    <string name="gesture_unread_stories">अपठित लेख</string>
+    <string name="gesture_focus_stories">कहानी पर ध्यान केंद्रित करें</string>
+    <string name="story_title_mark_story_read">कहानी को पढ़ा हुआ चिह्नित करें…</string>
+    <string name="story_title_list_font_size">फ़ीड और कहानी के शीर्षक का फ़ॉन्ट आकार</string>
+    <string name="language_title">भाषा</string>
+    <string name="settings_cat_general">सामान्य</string>
+    <string name="language_current">भाषा: %1$s</string>
+    <string name="language_automatic">स्वचालित (डिवाइस की भाषा)</string>
+    <string name="language_save_failed">आपकी भाषा सेव नहीं हो सकी। कृपया फिर से कोशिश करें।</string>
+    <string name="try_feed_instafetching">कहानियाँ तुरंत फ़ेच की जा रही हैं…</string>
+    <string name="try_feed_fetch_failed">कहानियाँ लोड नहीं हो सकीं। फिर से कोशिश करने के लिए टैप करें।</string>
+    <string name="try_feed_empty">इस साइट से अभी कोई कहानी उपलब्ध नहीं है। रीफ़्रेश करने के लिए टैप करें।</string>
+    <string name="image_viewer_close">छवि बंद करें</string>
+    <string name="image_viewer_loading">चित्र लोड हो रहा है…</string>
+    <string name="image_viewer_failed">पूरी इमेज लोड नहीं हो सकी।</string>
+    <string name="image_viewer_retry">फिर से कोशिश करें</string>
+    <string name="image_viewer_copy">इमेज कॉपी करें</string>
+    <string name="image_viewer_save">छवि सहेजें</string>
+    <string name="image_viewer_share">छवि साझा करें…</string>
+    <string name="image_viewer_open_link">लिंक खोलें</string>
+    <string name="image_viewer_copied">छवि कॉपी की गई</string>
+    <string name="image_viewer_saved">तस्वीरों में सहेजा गया</string>
+    <string name="image_viewer_save_failed">छवि सहेजी नहीं जा सकी।</string>
+    <string name="image_viewer_share_failed">छवि साझा नहीं की जा सकी।</string>
+    <string name="image_viewer_storage_permission">तस्वीरें सहेजने के लिए स्टोरेज एक्सेस की अनुमति दें, फिर दोबारा कोशिश करें।</string>
+    <string name="image_viewer_show_actions">छवि के क्रियाकलाप दिखाएँ</string>
+    <string name="settings_story_toolbar_position">लेख सूची टूलबार की स्थिति</string>
+    <string name="settings_story_toolbar_top">ऊपर</string>
+    <string name="settings_story_toolbar_bottom">नीचे</string>
+    <string name="story_header_mark_read_cutoff">चुनें कि कितनी पुरानी कहानियों को पढ़ा हुआ चिह्नित करना है</string>
+    <string name="login_username_hint">उपयोगकर्ता नाम</string>
+    <string name="login_username_or_email_hint">उपयोगकर्ता नाम या ईमेल</string>
+    <string name="login_password_hint">पासवर्ड</string>
+    <string name="login_registration_email_hint">ईमेल पता</string>
+    <string name="login_button_login">लॉगिन</string>
+    <string name="login_segment_sign_in">लॉग इन करें</string>
+    <string name="login_segment_sign_up">साइन अप करें</string>
+    <string name="login_forgot_password">पासवर्ड भूल गए</string>
+    <string name="login_custom_server">स्वयं होस्ट किया गया कस्टम सर्वर</string>
+    <string name="login_custom_server_subtitle">अपना NewsBlur इंस्टॉलेशन इस्तेमाल करें</string>
+    <string name="login_custom_server_active">कस्टम सर्वर: %1$s</string>
+    <string name="login_custom_server_edit">अपने सर्वर URL को संपादित करने या रीसेट करने के लिए टैप करें</string>
+    <string name="login_custom_server_dialog_title">कस्टम सर्वर</string>
+    <string name="login_custom_server_dialog_body">NewsBlur इस्तेमाल करने के लिए इसे खाली छोड़ें, या अपने स्वयं-होस्ट किए गए इंस्टॉलेशन का URL दर्ज करें। यह लॉगिन और साइनअप के लिए तुरंत प्रभावी होगा।</string>
+    <string name="login_message_error">NewsBlur में लॉग इन करने में समस्या हुई।</string>
+    <string name="login_logging_in">लॉग इन हो रहा है…</string>
+    <string name="login_logged_in">स्प्लाइन को फिर से व्यवस्थित किया जा रहा है…</string>
+    <string name="login_retrieving_feeds">फ़ीड प्राप्त हो रही हैं…</string>
+    <string name="login_next">अगला</string>
+    <string name="login_custom_server_scheme_error">कस्टम सर्वर URL में \'https://\' अपेक्षित था</string>
+    <string name="login_custom_server_invalid">मान्य कस्टम सर्वर URL दर्ज करें।</string>
+    <string name="login_tagline">एक निजी समाचार रीडर, जो
+दुनिया के बारे में बातचीत करने के लिए लोगों को साथ लाता है।</string>
+    <string name="user_profile_picture">उपयोगकर्ता की प्रोफ़ाइल तस्वीर</string>
+    <string name="search_for_feed">फ़ीड खोजें</string>
+    <string name="loading">लोड हो रहा है…</string>
+    <string name="story_navigation_failed">लेख नहीं खुल सका। कृपया फिर कोशिश करें।</string>
+    <string name="orig_text_loading">कहानी का पाठ लाया जा रहा है…</string>
+    <string name="follow_error">उपयोगकर्ता को फ़ॉलो करने में समस्या हुई।</string>
+    <string name="unfollow_error">उपयोगकर्ता को अनफ़ॉलो करने में समस्या हुई।</string>
+    <string name="description_login_button">लॉग इन करने के लिए दबाएँ</string>
+    <string name="description_login_logo">NewsBlur लोगो</string>
+    <string name="description_profile_picture">उपयोगकर्ता की प्रोफ़ाइल तस्वीर</string>
+    <string name="description_row_folder_icon">फ़ोल्डर आइकन</string>
+    <string name="description_row_feed_icon">फ़ीड आइकन</string>
+    <string name="description_row_feed_mute_toggle">फ़ीड म्यूट टॉगल</string>
+    <string name="description_activity_icon">उपयोगकर्ता की गतिविधि दर्शाने वाला आइकन</string>
+    <string name="description_follow_button">किसी उपयोगकर्ता को फ़ॉलो या अनफ़ॉलो करें</string>
+    <string name="description_comment_user">टिप्पणी करने वाले उपयोगकर्ता की छवि</string>
+    <string name="description_empty_list_image">खाली सूची का प्लेसहोल्डर</string>
+    <string name="description_menu">मेन्यू</string>
+    <string name="story_settings">स्टोरी सेटिंग्स</string>
+    <string name="title_choose_folders">फ़ीड %s के लिए फ़ोल्डर चुनें</string>
+    <string name="title_rename_feed">फ़ीड का नाम बदलें %s</string>
+    <string name="title_rename_folder">फ़ोल्डर %s का नाम बदलें</string>
+    <string name="all_stories_title">सभी साइटों की कहानियाँ</string>
+    <string name="daily_briefing_title">दैनिक सारांश</string>
+    <string name="infrequent_title">कम बार आने वाली साइट की कहानियाँ</string>
+    <string name="widely_read_stories_title">व्यापक रूप से पढ़ी गई कहानियाँ</string>
+    <string name="long_reads_title">लंबे लेख</string>
+    <string name="good_reads_title">अच्छी पुस्तकें</string>
+    <string name="all_shared_stories_title">सभी साझा की गई खबरें</string>
+    <string name="global_shared_stories_title">वैश्विक साझा कहानियाँ</string>
+    <string name="read_stories_title">स्टोरीज़ पढ़ें</string>
+    <string name="saved_stories_title">सहेजी गई स्टोरीज़</string>
+    <string name="saved_searches_title">सहेजी गई खोजें</string>
+    <string name="feed_list">फ़ीड सूची</string>
+    <string name="bottom_next_unread_site">अगली अपठित साइट, %1$s</string>
+    <string name="bottom_next_unread_folder">अगला अपठित फ़ोल्डर, %1$s</string>
+    <string name="top_level">शीर्ष स्तर</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nके साथ साझा किया गया NewsBlur</string>
+    <string name="share_comment_hint">टिप्पणी साझा करें (वैकल्पिक)</string>
+    <string name="share_save_newsblur">क्या \"%s\" को अपने Blurblog पर साझा/सेव करना चाहते हैं?</string>
+    <string name="share_this">साझा करें</string>
+    <string name="already_shared">साझा किया गया</string>
+    <string name="share_this_story">शेयर करें</string>
+    <string name="share_with_comment">टिप्पणी के साथ साझा करें</string>
+    <string name="unshare">शेयर हटाएँ</string>
+    <string name="update_shared">टिप्पणी अपडेट करें</string>
+    <string name="rename">नाम बदलें</string>
+    <string name="save_this">सहेजें</string>
+    <string name="unsave_this">सहेजना रद्द करें</string>
+    <string name="train_this">प्रशिक्षित करें</string>
+    <string name="ask_ai">AI से पूछें</string>
+    <string name="story_mark_unread_state">पढ़ा गया</string>
+    <string name="story_mark_read_state">स्टोरी को पढ़ा हुआ चिह्नित करें</string>
+    <string name="overlay_next">अगला</string>
+    <string name="overlay_done">हो गया</string>
+    <string name="overlay_count_toast_N">%d अपठित लेख</string>
+    <string name="overlay_count_toast_1">1 अपठित कहानी</string>
+    <string name="overlay_text">पाठ</string>
+    <string name="overlay_story">खबर</string>
+    <string name="orig_text_failed">क्षमा करें, कहानी का पाठ निकाला नहीं जा सका।</string>
+    <string name="state_all">सभी</string>
+    <string name="state_unread">अपठित</string>
+    <string name="state_focus">फ़ोकस</string>
+    <string name="state_saved">सहेजा गया</string>
+    <string name="reply_to">\"%s\" को जवाब दें</string>
+    <string name="edit_reply">जवाब संपादित करें</string>
+    <string name="edit_reply_update">जवाब अपडेट करें</string>
+    <string name="edit_reply_delete">replyY हटाएँ</string>
+    <string name="alert_dialog_ok">ठीक है</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">हो गया</string>
+    <string name="alert_dialog_openlink">लिंक खोलें</string>
+    <string name="alert_dialog_openimage">छवि खोलें</string>
+    <string name="dialog_folders_save">फ़ोल्डर सहेजें</string>
+    <string name="dialog_story_intel_save">प्रशिक्षण सहेजें</string>
+    <string name="dialog_story_tags_save">टैग सहेजें</string>
+    <string name="profile">प्रोफ़ाइल</string>
+    <string name="profile_location_icon">स्थान आइकन</string>
+    <string name="profile_following">फ़ॉलो कर रहे हैं</string>
+    <string name="profile_followers">फ़ॉलोअर</string>
+    <string name="profile_shared">साझा की गई कहानियाँ</string>
+    <string name="profile_ago">पहले</string>
+    <string name="profile_recent_actvity">गतिविधियाँ</string>
+    <string name="profile_recent_interactions">गतिविधियाँ</string>
+    <string name="profile_started_following">फ़ॉलो किया</string>
+    <string name="profile_you">आप</string>
+    <string name="profile_you_lower">आप</string>
+    <string name="profile_your">आपका</string>
+    <string name="profile_now_following">अब %1$s को फ़ॉलो कर रहे हैं</string>
+    <string name="profile_replied_to">को जवाब दिया</string>
+    <string name="profile_replied_to_your">ने %1$s को जवाब दिया</string>
+    <string name="profile_shared_story">साझा किया गया</string>
+    <string name="profile_comment">टिप्पणी</string>
+    <string name="profile_reply">जवाब दें</string>
+    <string name="profile_button_follow">फ़ॉलो करें</string>
+    <string name="profile_button_unfollow">अनफ़ॉलो करें</string>
+    <string name="profile_subscribed_to">की सदस्यता ली</string>
+    <string name="profile_saved">सहेजा गया</string>
+    <string name="profile_reshared">फिर से साझा किया</string>
+    <string name="profile_favorited">पसंदीदा</string>
+    <string name="profile_favorited_comments">%1$s टिप्पणियों को पसंद किया</string>
+    <string name="profile_signup">Newsblur पर साइन अप किया</string>
+    <string name="profile_comments_on">पर टिप्पणियाँ</string>
+    <string name="profile_feed_not_available">अब आपने इस फ़ीड की सदस्यता नहीं ली है</string>
+    <string name="profile_do_not_follow">आप इस उपयोगकर्ता को फ़ॉलो नहीं करते हैं</string>
+    <string name="profile_no_interactions">कोई गतिविधि नहीं</string>
+    <string name="menu_profile">प्रोफ़ाइल</string>
+    <string name="menu_search_feeds">अपने फ़ीड खोजें</string>
+    <string name="menu_original">मूल देखें</string>
+    <string name="menu_send_story">लिंक भेजें…</string>
+    <string name="menu_send_story_full">स्टोरी यहाँ भेजें…</string>
+    <string name="menu_mark_feed_as_read">फ़ीड को पढ़ा हुआ चिह्नित करें</string>
+    <string name="menu_delete_feed">फ़ीड हटाएँ</string>
+    <string name="menu_statistics">आँकड़े</string>
+    <string name="menu_delete_saved_search">सहेजी गई खोज हटाएँ</string>
+    <string name="menu_unfollow">उपयोगकर्ता को अनफ़ॉलो करें</string>
+    <string name="menu_choose_folders">फ़ोल्डर चुनें</string>
+    <string name="menu_notifications_choose">सूचनाएँ</string>
+    <string name="menu_notifications_disable">सूचनाएँ बंद करें</string>
+    <string name="menu_notifications_focus">नई फ़ोकस स्टोरीज़ पर सूचित करें</string>
+    <string name="menu_notifications_unread">सभी नई कहानियों की सूचनाएँ दें</string>
+    <string name="menu_mark_folder_as_read">फ़ोल्डर को पढ़ा हुआ चिह्नित करें</string>
+    <string name="menu_sharenewsblur">यह कहानी साझा करें</string>
+    <string name="menu_text_size">टेक्स्ट का आकार</string>
+    <string name="menu_text_size_xs">एक्सएस</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">फ़ॉन्ट</string>
+    <string name="menu_save_story">इस स्टोरी को सहेजें</string>
+    <string name="menu_unsave_story">इस लेख को सहेजे गए से हटाएँ</string>
+    <string name="menu_newest_mark_older_stories_as_read">पुरानी खबरों को पढ़ा हुआ चिह्नित करें</string>
+    <string name="menu_newest_mark_newer_stories_as_read">नई कहानियों को पढ़ा हुआ चिह्नित करें</string>
+    <string name="menu_oldest_mark_older_stories_as_read">पुरानी कहानियों को पढ़ा हुआ चिह्नित करें</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">नई कहानियों को पढ़ा हुआ चिह्नित करें</string>
+    <string name="story_menu_open_feed">फ़ीड खोलें</string>
+    <string name="story_menu_share_link">लिंक साझा करें…</string>
+    <string name="story_menu_share_story">स्टोरी साझा करें…</string>
+    <string name="menu_mark_story_as_read">पढ़ा हुआ चिह्नित करें</string>
+    <string name="menu_mark_unread">अपठित के रूप में चिह्नित करें</string>
+    <string name="menu_search_stories">खोजें…</string>
+    <string name="menu_mute_feed">फ़ीड म्यूट करें</string>
+    <string name="menu_unmute_feed">फ़ीड को अनम्यूट करें</string>
+    <string name="menu_mute_folder">फ़ोल्डर म्यूट करें</string>
+    <string name="menu_unmute_folder">फ़ोल्डर की आवाज़ चालू करें</string>
+    <string name="menu_delete_folder">फ़ोल्डर हटाएँ</string>
+    <string name="menu_rename_folder">फ़ोल्डर का नाम बदलें</string>
+    <string name="menu_instafetch_feed">स्टोरीज़ तुरंत लोड करें</string>
+    <string name="feed_menu_back_to_actions">फ़ीड कार्रवाइयों पर वापस जाएँ</string>
+    <string name="menu_infrequent_cutoff">प्रति माह कम बार आने वाली स्टोरी</string>
+    <string name="menu_intel">इंटेलिजेंस ट्रेनर</string>
+    <string name="menu_rename_feed">फ़ीड का नाम बदलें</string>
+    <string name="menu_story_list_style_choose">सूची शैली</string>
+    <string name="menu_save_search">खोज सहेजें</string>
+    <string name="menu_web_search">वेब खोज</string>
+    <string name="menu_highlight">हाइलाइट</string>
+    <string name="list_style_list">सूची</string>
+    <string name="list_style_grid_f">ग्रिड (सूक्ष्म)</string>
+    <string name="list_style_grid_m">ग्रिड (मध्यम)</string>
+    <string name="list_style_grid_c">ग्रिड (मोटा)</string>
+    <string name="story_content_preview_none">केवल शीर्षक (कुछ नहीं)</string>
+    <string name="story_content_preview_small">2 पंक्तियाँ (छोटा)</string>
+    <string name="story_content_preview_medium">4 पंक्तियाँ (मध्यम)</string>
+    <string name="story_content_preview_large">6 पंक्तियाँ (बड़ा)</string>
+    <string name="mark_read_on_scroll_disabled">अपठित छोड़ें</string>
+    <string name="mark_read_on_scroll_enabled">स्क्रॉल करने पर पढ़ा हुआ मानें</string>
+    <string name="menu_sort_by">क्रमबद्ध करें</string>
+    <string name="menu_sort_by_name">नाम</string>
+    <string name="menu_sort_by_subs">सदस्य</string>
+    <string name="menu_sort_by_stories_month">प्रति माह कहानियाँ</string>
+    <string name="menu_sort_by_recent_story">सबसे नई कहानी</string>
+    <string name="menu_sort_by_number_opens">खोलने की संख्या</string>
+    <string name="menu_sort_order">क्रम व्यवस्था</string>
+    <string name="menu_sort_order_ascending">आरोही</string>
+    <string name="menu_sort_order_descending">अवरोही</string>
+    <string name="menu_folder_view">फ़ोल्डर दृश्य</string>
+    <string name="menu_folder_view_nested">नेस्टेड</string>
+    <string name="menu_folder_view_flat">समतल</string>
+    <string name="menu_mute_all">सभी को म्यूट करें</string>
+    <string name="menu_mute_none">कुछ भी म्यूट न करें</string>
+    <string name="menu_select_all">सभी चुनें</string>
+    <string name="menu_select_none">कुछ भी न चुनें</string>
+    <string name="menu_widget_background">विजेट की पृष्ठभूमि</string>
+    <string name="menu_widget_background_default">डिफ़ॉल्ट</string>
+    <string name="menu_widget_background_transparent">पारदर्शी</string>
+    <string name="toast_hold_to_select">टेक्स्ट चुनने के लिए दबाकर रखें</string>
+    <string name="logout_warning">क्या आप वाकई लॉग आउट करना चाहते हैं?</string>
+    <string name="search_mark_read_warning">ध्यान दें! फ़ीड/फ़ोल्डर की सभी खबरें पढ़ी हुई चिह्नित होंगी, केवल खोज परिणाम नहीं। यदि आप वाकई सभी खबरों को पढ़ा हुआ चिह्नित करना चाहते हैं, तो पुष्टि के लिए अपनी खोज क्वेरी मिटाएँ।</string>
+    <string name="story_show_changes">स्टोरी में बदलाव दिखाएँ</string>
+    <string name="story_hide_changes">कहानी में बदलाव छिपाएँ</string>
+    <string name="story_changes_loading">स्टोरी में बदलाव लोड हो रहे हैं…</string>
+    <string name="story_saved_timestamp">%s को सहेजा गया</string>
+    <string name="your_feeds_search_hint">अपने फ़ीड खोजें</string>
+    <string name="feed_list_clear_search">खोज साफ़ करें</string>
+    <string name="story_search_hint">लेख खोजें</string>
+    <string name="discover_related_sites_title">संबंधित साइटें</string>
+    <string name="discover_show_grid">ग्रिड दिखाएँ</string>
+    <string name="discover_show_list">सूची दिखाएँ</string>
+    <string name="discover_loading">संबंधित साइटें खोजी जा रही हैं…</string>
+    <string name="discover_no_related_sites">कोई संबंधित साइट नहीं मिली</string>
+    <string name="discover_view_mode_grid">ग्रिड</string>
+    <string name="discover_view_mode_list">सूची</string>
+    <string name="discover_try">आज़माएँ</string>
+    <string name="discover_add">जोड़ें</string>
+    <string name="discover_subscribed">सदस्यता ली गई</string>
+    <string name="discover_updated_today">आज अपडेट किया गया</string>
+    <string name="discover_updated_relative">%s अपडेट किया गया</string>
+    <string name="discover_stale_updated_relative">पुराना — अपडेट %s</string>
+    <string name="discover_stale_date">पुरानी। आख़िरी कहानी %s</string>
+    <string name="discover_last_fetched_relative">%s प्राप्त किया गया</string>
+    <string name="try_feed_banner_subtitle">पूर्वावलोकन। अभी सदस्यता नहीं ली गई है।</string>
+    <string name="try_feed_subscribe_button">सदस्यता लें</string>
+    <string name="empty_search_notice">शुरू करने के लिए खोज शब्द लिखें</string>
+    <string name="menu_add_feed">फ़ीड जोड़ें + साइटें खोजें</string>
+    <string name="adding_feed_progress">फ़ीड जोड़ी जा रही है…</string>
+    <string name="feed_list_search_hint">फ़ीड खोजें</string>
+    <string name="add_folder_name">कृपया फ़ोल्डर का नाम दर्ज करें</string>
+    <string name="add_tag_name">कृपया टैग का नाम जोड़ें</string>
+    <string name="add_new_folder">+ नया फ़ोल्डर जोड़ें</string>
+    <string name="add_new_tag">+ नया टैग जोड़ें</string>
+    <string name="add_tag">टैग जोड़ें</string>
+    <string name="new_folder_name_hint">नए फ़ोल्डर का नाम दर्ज करें</string>
+    <string name="new_tag_name_hint">नए टैग का नाम दर्ज करें</string>
+    <string name="add_feed_error">फ़ीड नहीं जोड़ी जा सकी</string>
+    <string name="add_folder_error">फ़ोल्डर नहीं जोड़ा जा सका</string>
+    <string name="menu_mark_all_as_read">सभी को पढ़ा हुआ चिह्नित करें</string>
+    <string name="menu_logout">लॉग आउट</string>
+    <string name="contact_us">हमसे संपर्क करें</string>
+    <string name="contact_description">NewsBlur, NewsBlur, Inc. द्वारा विकसित एक न्यूज़ रीडर और एग्रीगेटर है। ऐप सहायता, सवालों या सुझावों के लिए NewsBlur टीम से संपर्क करें।</string>
+    <string name="contact_email_label">डेवलपर को ईमेल करें</string>
+    <string name="contact_send_email">ईमेल भेजें</string>
+    <string name="contact_website_label">NewsBlur वेबसाइट</string>
+    <string name="contact_open_website">वेबसाइट पर जाएँ</string>
+    <string name="contact_back">वापस</string>
+    <string name="contact_no_email_app">कोई ईमेल ऐप इंस्टॉल नहीं है। आप इस पेज पर ईमेल पता चुनकर कॉपी कर सकते हैं।</string>
+    <string name="contact_no_browser">कोई वेब ब्राउज़र इंस्टॉल नहीं है। आप इस पृष्ठ पर वेबसाइट का पता चुनकर कॉपी कर सकते हैं।</string>
+    <string name="menu_feedback">ऐप पर प्रतिक्रिया भेजें</string>
+    <string name="menu_feedback_post">फ़ीडबैक पोस्ट बनाएँ</string>
+    <string name="menu_feedback_email">बग रिपोर्ट ईमेल करें</string>
+    <string name="menu_theme_choose">थीम</string>
+    <string name="menu_spacing">अंतराल</string>
+    <string name="menu_subscription">सदस्यता…</string>
+    <string name="description_add_new_folder_icon">नया फ़ोल्डर जोड़ने का आइकन</string>
+    <string name="menu_loginas">इस रूप में लॉगिन करें…</string>
+    <string name="loginas_title">उपयोगकर्ता के रूप में लॉगिन करें</string>
+    <string name="empty_list_view_loading">लोड हो रहा है…</string>
+    <string name="story_loading_description">लेख लोड हो रहे हैं</string>
+    <string name="empty_list_view_no_stories">पढ़ने के लिए कोई स्टोरी नहीं</string>
+    <string name="empty_list_view_no_stories_unread">कोई अपठित कहानी नहीं</string>
+    <string name="reading_placeholder_select_story">पढ़ने के लिए कोई कहानी चुनें</string>
+    <string name="empty_list_view_no_unread_stories">आपके पास कोई अपठित स्टोरी नहीं है।</string>
+    <string name="empty_list_view_no_focus_stories">फ़ोकस में कोई अपठित कहानी नहीं है।\n\nसभी या अपठित पर जाएँ।</string>
+    <string name="empty_list_view_no_saved_stories">आपके पास कोई सहेजी हुई कहानी नहीं है.\n\nसभी या अपठित पर जाएँ।</string>
+    <string name="login_registration_custom_server">कस्टम सर्वर सेट करें</string>
+    <string name="login_registration_reset_url">रीसेट करें</string>
+    <string name="login_registration_register">रजिस्टर करें</string>
+    <string name="register_message_error">NewsBlur के लिए पंजीकरण करते समय समस्या हुई।</string>
+    <string name="need_to_login">
+        <u>मुझे लॉग इन करना है!</u>
+    </string>
+    <string name="need_to_register">
+        <u>मुझे पंजीकरण करना है</u>
+    </string>
+    <string name="public_comment_count">%d सार्वजनिक टिप्पणियाँ</string>
+    <string name="friends_comments_count">%d टिप्पणियाँ</string>
+    <string name="friends_shares_count">%d शेयर</string>
+    <string name="unknown_user">अज्ञात उपयोगकर्ता</string>
+    <string name="delete_feed_message">फ़ीड \"%s\" मिटाएँ?</string>
+    <string name="delete_saved_search_message">सहेजी गई खोज %s हटाएँ?</string>
+    <string name="delete_folder_message">फ़ोल्डर \"%s\" मिटाएँ और उसके अंदर की सभी फ़ीड से सदस्यता समाप्त करें?</string>
+    <string name="deleting_folder_message">फ़ोल्डर \"%s\" मिटाया जा रहा है</string>
+    <string name="add_saved_search_message">क्या खोज \"%s\" सहेजें?</string>
+    <string name="unfollow_message">क्या \"%s\" को अनफ़ॉलो करें?</string>
+    <string name="feed_subscribers">%s सदस्य</string>
+    <string name="feed_opens">%d बार खोला गया</string>
+    <string name="feed_stories_per_month">%d कहानियाँ/महीना</string>
+    <string name="forwarding_email_address">ईमेल फ़ॉरवर्ड करने का पता</string>
+    <string name="setup_instructions">सेटअप निर्देश \u25bc</string>
+    <string name="setup_instructions_details">NewsBlur में अपने ईमेल न्यूज़लेटर पढ़ने के लिए, उन्हें ऊपर दिखाए गए अपने कस्टम ईमेल पते पर फ़ॉरवर्ड करें।\n\nGmail में, Settings &gt; Forwarding पर जाएँ और Add a forwarding address पर क्लिक करें। अपना कस्टम NewsBlur ईमेल पता जोड़ें।\n\nGmail आपको ईमेल पते की पुष्टि करने की प्रक्रिया में मार्गदर्शन करेगा। फिर NewsBlur पर वापस आकर \"Newsletters\" फ़ोल्डर में पुष्टि वाला ईमेल देखें।\n\nइसके बाद, अपने सभी न्यूज़लेटर के लिए एक फ़िल्टर बनाएँ ताकि वे NewsBlur के कस्टम पते पर फ़ॉरवर्ड हों।</string>
+    <string name="copy_email">ईमेल कॉपी करें</string>
+    <string name="stories_shortcuts">खबरों के शॉर्टकट</string>
+    <string name="feeds_shortcuts">फ़ीड शॉर्टकट</string>
+    <string name="import_export">आयात/निर्यात…</string>
+    <string name="settings">प्राथमिकताएँ…</string>
+    <string name="menu_mute_sites">साइटें म्यूट करें…</string>
+    <string name="mute_sites">साइटें म्यूट करें</string>
+    <string name="menu_widget">विजेट…</string>
+    <string name="menu_notifications">सूचनाएँ…</string>
+    <string name="widget">विजेट</string>
+    <string name="title_widget_setup">NewsBlur में सेटअप करने के लिए टैप करें</string>
+    <string name="title_no_subscriptions">कोई सक्रिय सब्सक्रिप्शन नहीं मिला</string>
+    <string name="title_widget_loading">लोड हो रहा है…</string>
+    <string name="menu_newsletters">न्यूज़लेटर…</string>
+    <string name="menu_shortcuts">शॉर्टकट…</string>
+    <string name="main_menu_preferences">प्राथमिकताएँ</string>
+    <string name="main_menu_mute_sites">साइटें म्यूट करें</string>
+    <string name="main_menu_widget_sites">विजेट साइटें</string>
+    <string name="main_menu_notifications">सूचनाएँ</string>
+    <string name="main_menu_interactions">इंटरैक्शन</string>
+    <string name="main_menu_upgrade_premium">प्रीमियम में अपग्रेड करें</string>
+    <string name="main_menu_upgrade_archive">आर्काइव पर अपग्रेड करें</string>
+    <string name="main_menu_premium_archive">प्रीमियम आर्काइव</string>
+    <string name="main_menu_premium_pro">प्रीमियम प्रो</string>
+    <string name="main_menu_support_forum">सहायता फ़ोरम</string>
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">OPML आयात/निर्यात</string>
+    <string name="notifications_title">सूचनाएँ</string>
+    <string name="premium_subscribers_folder">पूरी River of News एक प्रीमियम सुविधा है</string>
+    <string name="premium_subscribers_allstories">सभी साइटों के लेख पढ़ना प्रीमियम सुविधा है</string>
+    <string name="premium_subscribers_saved_tag">टैग के अनुसार सहेजे गए लेख पढ़ना प्रीमियम सुविधा है</string>
+    <string name="premium_subscribers_search">खोज प्रीमियम सुविधा है</string>
+    <string name="premium_subscribers">प्रीमियम सदस्य</string>
+    <string name="premium_upgrade_button">Premium में अपग्रेड करें</string>
+    <string name="subscription_toolbar_title">NewsBlur प्रीमियम</string>
+    <string name="thank_you_for_subscribing">सदस्यता लेने के लिए धन्यवाद!</string>
+    <string name="premium_subscription_renewal">आपकी सदस्यता का नवीनीकरण %s को होगा</string>
+    <string name="premium_subscription_expiration">आपकी सदस्यता %s को समाप्त हो जाएगी</string>
+    <string name="premium_subscription_no_expiration">आपकी सदस्यता कभी समाप्त नहीं होगी। वाह!</string>
+    <string name="premium_policies">विवरण के लिए NewsBlur\'की <a href="https://newsblur.com/privacy">गोपनीयता नीति</a> और <a href="https://newsblur.com/tos">उपयोग की शर्तें</a> देखें।</string>
+    <string name="premium_subscription_header">प्रीमियम सदस्यता</string>
+    <string name="archive_subscription_header">प्रीमियम संग्रह</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">NewsBlur प्रीमियम सदस्यता</string>
+    <string name="archive_subscription_title">NewsBlur प्रीमियम संग्रह</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">$35.99 प्रति वर्ष ($3.00/माह)</string>
+    <string name="premium_subscription_active">आपकी प्रीमियम सदस्यता सक्रिय है</string>
+    <string name="archive_subscription_active">आपकी प्रीमियम संग्रह सदस्यता सक्रिय है</string>
+    <string name="pro_subscription_active">आपकी प्रीमियम प्रो सदस्यता सक्रिय है</string>
+    <string name="subscription_manage">सदस्यता प्रबंधित करें</string>
+    <string name="subscription_details_error">सदस्यता विवरण प्राप्त करने में त्रुटि</string>
+    <string name="no_subscription_available">कोई सदस्यता उपलब्ध नहीं है</string>
+    <string name="subscription_unavailable">फ़िलहाल Android पर उपलब्ध नहीं</string>
+    <string name="subscription_coming_soon">जल्द आ रहा है</string>
+    <string name="subscription_upgrade_from_premium">Premium से अपग्रेड करें</string>
+    <string name="subscription_upgrade_from_archive">आर्काइव से अपग्रेड करें</string>
+    <string name="subscription_price_yearly">%1$s/वर्ष (%2$s/माह)</string>
+    <string name="subscription_price_monthly">%1$s/माह</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">आपकी प्रीमियम आर्काइव सदस्यता में ऊपर दी गई सभी सुविधाएँ शामिल हैं</string>
+    <string name="premium_pro_includes_above">आपकी प्रीमियम प्रो सदस्यता में ऊपर दी गई सभी सुविधाएँ शामिल हैं</string>
+    <string name="premium_enable_sites">1,024 साइटों तक फ़ॉलो करें</string>
+    <string name="premium_sync">साइटें 5 गुना तक अधिक बार अपडेट होती हैं</string>
+    <string name="premium_read_by_folder">समाचार धारा (फ़ोल्डर के अनुसार पढ़ना)</string>
+    <string name="premium_search">साइटें और फ़ोल्डर खोजें</string>
+    <string name="premium_searchable_tags">खोजे जा सकने वाले टैग के साथ स्टोरीज़ सहेजें</string>
+    <string name="premium_privacy_options">आपके ब्लरब्लॉग के लिए गोपनीयता विकल्प</string>
+    <string name="premium_custom_rss">सहेजी गई स्टोरीज़ के लिए कस्टम RSS फ़ीड</string>
+    <string name="premium_text_view">टेक्स्ट दृश्य सुविधाजनक रूप से स्टोरी निकालता है</string>
+    <string name="premium_discover_related">संबंधित ख़बरें और साइटें खोजें</string>
+    <string name="premium_shiloh">आप 6 दिनों से Lyric, NewsBlur के भूखे शिकारी कुत्ते को खाना खिला रहे हैं</string>
+    <string name="archive_everything_premium">प्रीमियम सदस्यता में सब कुछ शामिल है, ज़ाहिर है</string>
+    <string name="archive_enable_sites">4,096 तक साइटों को फ़ॉलो करें</string>
+    <string name="archive_marked_as_read">चुनें कि लेखों को अपने-आप पढ़ा हुआ कब चिह्नित किया जाए</string>
+    <string name="archive_customize_auto_read">साइट या फ़ोल्डर के अनुसार ऑटो-रीड अनुकूलित करें</string>
+    <string name="archive_story_searchable_forever">हर साइट की हर स्टोरी हमेशा के लिए संग्रहित और खोजने योग्य रहती है</string>
+    <string name="archive_back_filled">पेजिंग का समर्थन करने वाले फ़ीड को पूरा संग्रह बनाने के लिए पीछे की तारीखों तक भरा जाता है</string>
+    <string name="archive_train_full_text">पूरे टेक्स्ट की सामग्री पर कहानियों को प्रशिक्षित करें</string>
+    <string name="archive_discover_related">अपने संग्रह में संबंधित लेख खोजें</string>
+    <string name="archive_export_trained_stories">फ़ोल्डरों से प्रशिक्षित कहानियाँ RSS फ़ीड के रूप में निर्यात करें</string>
+    <string name="archive_stories_unread_forever">खबरें हमेशा अपठित रह सकती हैं</string>
+    <string name="archive_ask_ai">खबरों के बारे में AI से सवाल पूछें</string>
+    <string name="archive_filter_by_date_range">तारीख़ की सीमा के अनुसार कहानियाँ फ़िल्टर करें</string>
+    <string name="archive_train_folder">किसी फ़ोल्डर पर प्रशिक्षण लागू करें</string>
+    <string name="archive_train_globally">प्रशिक्षण सभी जगह लागू करें</string>
+    <string name="pro_everything_archive">बेशक, आर्काइव सदस्यता की सभी सुविधाएँ</string>
+    <string name="pro_enable_sites">10,000 तक साइटों को फ़ॉलो करें</string>
+    <string name="pro_all_feeds_fetched">सभी फ़ीड हर 5–15 मिनट में प्राप्त की जाती हैं</string>
+    <string name="pro_regex_train">रेगुलर एक्सप्रेशन से स्टोरीज़ को प्रशिक्षित करें</string>
+    <string name="pro_priority_support">प्राथमिकता सहायता</string>
+    <string name="pro_natural_language_filters">प्राकृतिक भाषा फ़िल्टर</string>
+    <string name="pro_natural_language_search">प्राकृतिक भाषा में खोज</string>
+    <string name="settings_cat_offline">ऑफ़लाइन पढ़ना</string>
+    <string name="settings_enable_offline">स्टोरी डाउनलोड करें</string>
+    <string name="settings_enable_offline_sum">बैकग्राउंड में समय-समय पर कहानियाँ फ़ेच करें</string>
+    <string name="settings_enable_image_prefetch">छवियाँ डाउनलोड करें</string>
+    <string name="settings_enable_image_prefetch_sum">ऑफ़लाइन पढ़ने के लिए छवियाँ पहले से लोड करें</string>
+    <string name="settings_keep_old_stories">पढ़ने के बाद लेख रखें</string>
+    <string name="settings_keep_old_stories_sum">स्टोरेज का उपयोग कम करने के लिए अक्षम करें</string>
+    <string name="mute_config_title">मुफ़्त मानक खाते से आप अधिकतम 64 साइटों का अनुसरण कर सकते हैं</string>
+    <string name="mute_config_message">कृपया %d साइटों को म्यूट करें या सबसे लोकप्रिय साइटों पर रीसेट करें।</string>
+    <string name="mute_config_reset_button">लोकप्रिय साइटों पर रीसेट करें</string>
+    <string name="mute_config_upgrade_to_premium">प्रीमियम पर अपग्रेड करें</string>
+    <string name="mute_config_upgrade_subtitle">1,024 साइटों की सदस्यता लें</string>
+    <string name="mute_config_upgrade">अपग्रेड करें</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">%d साइटें उपलब्ध</string>
+    <string name="mute_config_sites_over">%d सीमा से अधिक</string>
+    <string name="menu_network_select">इससे डाउनलोड करें…</string>
+    <string name="menu_network_select_sum">बैकग्राउंड डेटा को चुने हुए नेटवर्क तक सीमित करें</string>
+    <string name="menu_network_select_opt_any">कोई भी नेटवर्क</string>
+    <string name="menu_network_select_opt_nomo">कोई भी वाई-फ़ाई या ईथरनेट</string>
+    <string name="menu_network_select_opt_nomononme">केवल अनलिमिटेड Wi-Fi या ईथरनेट</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">ऑफ़लाइन कहानियाँ हटाएँ…</string>
+    <string name="menu_delete_offline_stories_sum">संग्रहित लेख और चित्र हटाकर जगह खाली करें</string>
+    <string name="menu_delete_offline_stories_confirmation">सभी स्टोरीज़ और इमेज हटा दी गईं!</string>
+    <string name="menu_cache_age_select">स्टोरीज़ कितने समय तक रखें…</string>
+    <string name="menu_cache_age_select_sum">ऑफ़लाइन पढ़ने के लिए संग्रहित लेख हटाएँ</string>
+    <string name="menu_cache_age_select_opt_2d">2 दिन (स्टोरेज का उपयोग कम करें)</string>
+    <string name="menu_cache_age_select_opt_7d">7 दिन</string>
+    <string name="menu_cache_age_select_opt_14d">14 दिन</string>
+    <string name="menu_cache_age_select_opt_30d">30 दिन (नेटवर्क उपयोग कम करें)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">फ़ीड सूची</string>
+    <string name="setting_feed_list_order">फ़ीड सूची का क्रम…</string>
+    <string name="settings_enable_row_global_shared">वैश्विक साझा कहानियाँ दिखाएँ</string>
+    <string name="settings_enable_row_global_shared_sum">वैश्विक साझा कहानियों का फ़ोल्डर दिखाएँ</string>
+    <string name="settings_enable_row_infrequent_stories">कम बार आने वाली स्टोरीज़ दिखाएँ</string>
+    <string name="settings_enable_row_infrequent_stories_sum">कम अपडेट होने वाली साइटों के लेखों का फ़ोल्डर दिखाएँ</string>
+    <string name="settings_enable_row_daily_briefing">दैनिक ब्रीफ़िंग दिखाएँ</string>
+    <string name="settings_enable_row_daily_briefing_sum">Daily Briefing फ़ोल्डर दिखाएँ</string>
+    <string name="settings_enable_row_widely_read_stories">व्यापक रूप से पढ़ी गई कहानियाँ दिखाएँ</string>
+    <string name="settings_enable_row_widely_read_stories_sum">व्यापक रूप से पढ़ी जाने वाली खबरें फ़ोल्डर दिखाएँ</string>
+    <string name="settings_enable_row_long_reads">लंबी कहानियाँ दिखाएँ</string>
+    <string name="settings_enable_row_long_reads_sum">Long Reads फ़ोल्डर दिखाएँ</string>
+    <string name="settings_enable_row_good_reads">अच्छी कहानियाँ दिखाएँ</string>
+    <string name="settings_enable_row_good_reads_sum">अच्छी खबरें फ़ोल्डर दिखाएँ</string>
+    <string name="settings_cat_story_list">लेख सूची</string>
+    <string name="settings_cat_story_layout">स्टोरी लेआउट</string>
+    <string name="settings_app_icon">ऐप आइकन</string>
+    <string name="settings_app_icon_choose">आइकन चुनें</string>
+    <string name="settings_app_icon_summary">हल्के और गहरे रंगों के विकल्पों के साथ 12 रंग रूप।</string>
+    <string name="settings_app_icon_footer">Premium सदस्य अपनी पसंद का NewsBlur आइकन चुन सकते हैं। हर शैली में हल्के और गहरे रंग के विकल्प शामिल हैं।</string>
+    <string name="settings_app_icon_premium">प्रीमियम</string>
+    <string name="settings_app_icon_light">हल्का</string>
+    <string name="settings_app_icon_dark">डार्क</string>
+    <string name="settings_app_icon_save_failed">ऐप आइकन बदला नहीं जा सका</string>
+    <string name="settings_app_icon_appearance_light">हल्का</string>
+    <string name="settings_app_icon_appearance_auto">दोनों का उपयोग करें</string>
+    <string name="settings_app_icon_appearance_dark">गहरा</string>
+    <string name="settings_app_icon_appearance_light_caption">आपके डिवाइस की सेटिंग चाहे जो हो, हल्का आइकन बनाए रखता है।</string>
+    <string name="settings_app_icon_appearance_auto_caption">आइकन आपके डिवाइस के लाइट और डार्क रूप के अनुसार बदलता है।</string>
+    <string name="settings_app_icon_appearance_dark_caption">आपके डिवाइस की सेटिंग चाहे जो हो, गहरा आइकन ही बना रहता है।</string>
+    <string name="oldest">सबसे पुराना</string>
+    <string name="newest">नवीनतम</string>
+    <string name="menu_story_order">स्टोरी क्रम</string>
+    <string name="settings_story_order">कहानी क्रम…</string>
+    <string name="story_header_options">विकल्प</string>
+    <string name="story_header_search">खोजें</string>
+    <string name="story_header_related_sites">संबंधित साइटें</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">आरामदायक</string>
+    <string name="compact">संक्षिप्त</string>
+    <string name="alphabetical">वर्णानुक्रम में</string>
+    <string name="most_used_at_top">सबसे ज़्यादा उपयोग किए गए सबसे ऊपर</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">सभी कहानियाँ</string>
+    <string name="unread_only">केवल अपठित</string>
+    <string name="menu_story_content_preview">कहानी की सामग्री का पूर्वावलोकन</string>
+    <string name="menu_story_thumbnail_preview">थंबनेल पूर्वावलोकन</string>
+    <string name="menu_mark_read_on_scroll">स्क्रॉल करते समय पढ़ा हुआ चिह्नित करें</string>
+    <string name="settings_read_filter">पढ़ी गई स्टोरी फ़िल्टर…</string>
+    <string name="settings_read_filter_title">दिखाई गई स्टोरीज़</string>
+    <string name="menu_read_filter">पढ़ी गई स्टोरी का फ़िल्टर</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>सभी को पढ़ा हुआ चिह्नित करें</item>
+        <item>रद्द करें</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>पुरानी कहानियों को पढ़ा हुआ चिह्नित करें</item>
+        <item>रद्द करें</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="one">%d दिन से पुरानी</item>
+        <item quantity="other">%d दिनों से पुराने</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="one">%s सदस्य</item>
+        <item quantity="other">%s सदस्य</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="one">प्रति माह %s स्टोरी</item>
+        <item quantity="other">%s खबरें/माह</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="one">%d साइट द्वारा भी प्रकाशित</item>
+        <item quantity="other">%d साइटों द्वारा भी प्रकाशित</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="one">+ %d और साइट</item>
+        <item quantity="other">+ %d और साइटें</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>नई कहानियों को पढ़ा हुआ चिह्नित करें</item>
+        <item>रद्द करें</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">पहली कहानी अपने-आप खोलें</string>
+    <string name="settings_auto_open_first_unread_sum">लेखों की सूची में पहली अपठित कहानी अपने-आप खोलें</string>
+    <string name="settings_mark_read_on_feed_scroll">स्क्रॉल करते समय स्टोरी शीर्षकों को पढ़ा हुआ चिह्नित करें</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">स्क्रॉल करके आगे बढ़ने पर कहानियों को अपने-आप पढ़ा हुआ चिह्नित करें</string>
+    <string name="settings_story_clustering">संबंधित कहानियों को समूहित करें</string>
+    <string name="settings_story_clustering_summary">किसी कहानी के शीर्षक के नीचे अन्य फ़ीड की डुप्लिकेट कहानियाँ दिखाएँ</string>
+    <string name="settings_cluster_matches">मिलते-जुलते क्लस्टर</string>
+    <string name="settings_cluster_matches_summary">चुनें कि क्लस्टर में केवल डुप्लिकेट शीर्षक दिखें या संबंधित कहानियाँ भी</string>
+    <string name="settings_story_clustering_save_failed">कहानी समूह बनाने की प्राथमिकता सहेजी नहीं जा सकी</string>
+    <string name="settings_story_clustering_title_only">केवल शीर्षक</string>
+    <string name="settings_cluster_mode_title_match_only">केवल शीर्षक से मिलान</string>
+    <string name="settings_cluster_mode_title_match_plus_related">शीर्षक मिलान और संबंधित</string>
+    <string name="settings_cluster_mark_read_matches">मेल खाती कहानियों को पढ़ा हुआ चिह्नित करें</string>
+    <string name="settings_cluster_mark_read_related">संबंधित कहानियों को पढ़ा हुआ चिह्नित करें</string>
+    <string name="settings_cluster_mark_read_matches_summary">जब आप कोई कहानी पढ़ें, तो उससे मेल खाने वाली कहानियों को भी पढ़ा हुआ चिह्नित करें।</string>
+    <string name="settings_cluster_mark_read_related_summary">जब आप कोई स्टोरी पढ़ें, तो उससे मेल खाने वाली और संबंधित स्टोरीज़ को भी पढ़ा हुआ चिह्नित करें।</string>
+    <string name="settings_cluster_mark_read_save_failed">संबंधित कहानियों को पढ़ा हुआ मानने की प्राथमिकता सहेजी नहीं जा सकी</string>
+    <string name="settings_story_clustering_title">शीर्षक</string>
+    <string name="settings_story_clustering_only">केवल</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">मेल खाता है</string>
+    <string name="story_cluster_badge_related">संबंधित</string>
+    <string name="settings_mark_story_read">खबर को पढ़ा हुआ चिह्नित करें…</string>
+    <string name="settings_mark_story_read_title">स्टोरीज़ को पढ़ी गई के रूप में चिह्नित करें</string>
+    <string name="mark_story_read_immediately">केवल चयन करने पर</string>
+    <string name="mark_story_read_on_scroll">स्क्रॉल करने या चुनने पर</string>
+    <string name="mark_story_read_1_second">1 सेकंड बाद</string>
+    <string name="mark_story_read_2_seconds">2 सेकंड बाद</string>
+    <string name="mark_story_read_3_seconds">3 सेकंड बाद</string>
+    <string name="mark_story_read_5_seconds">5 सेकंड बाद</string>
+    <string name="mark_story_read_10_seconds">10 सेकंड बाद</string>
+    <string name="mark_story_read_20_seconds">20 सेकंड बाद</string>
+    <string name="mark_story_read_30_seconds">30 सेकंड बाद</string>
+    <string name="mark_story_read_45_seconds">45 सेकंड बाद</string>
+    <string name="mark_story_read_60_seconds">60 सेकंड बाद</string>
+    <string name="mark_story_read_manually">मैन्युअल रूप से</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">कहानियाँ साझा करना</string>
+    <string name="settings_show_public_comments">सार्वजनिक टिप्पणियाँ दिखाएँ</string>
+    <string name="settings_reading">पढ़ना</string>
+    <string name="settings_show_ask_ai">Ask AI दिखाएँ</string>
+    <string name="settings_content_preview">सामग्री पूर्वावलोकन पाठ…</string>
+    <string name="settings_thumbnails_style">छवि पूर्वावलोकन थंबनेल…</string>
+    <string name="settings_preview_images_title">छवियों का पूर्वावलोकन</string>
+    <string name="settings_preview_images_segment_off">बंद</string>
+    <string name="settings_preview_images_segment_left_small">L छोटा</string>
+    <string name="settings_preview_images_segment_left_large">L बड़ा</string>
+    <string name="settings_preview_images_segment_right_small">R छोटा</string>
+    <string name="settings_preview_images_segment_right_large">दाईं ओर बड़ा</string>
+    <string name="settings_notifications">सूचनाएँ</string>
+    <string name="settings_enable_notifications">सूचनाएँ चालू करें</string>
+    <string name="ask_ai_upgrade_archive">प्रीमियम आर्काइव में अपग्रेड करें</string>
+    <string name="ask_ai_ask_question">कोई सवाल पूछें…</string>
+    <string name="ask_ai_follow_up">आगे पूछें…</string>
+    <string name="ask_ai_ask">पूछें</string>
+    <string name="ask_ai_send">भेजें</string>
+    <string name="ask_ai_reask">फिर से पूछें</string>
+    <string name="ask_ai_recording">रिकॉर्ड किया जा रहा है…</string>
+    <string name="ask_ai_transcribing">लिप्यंतरण हो रहा है…</string>
+    <string name="ask_ai_microphone_permission_denied">माइक्रोफ़ोन की अनुमति अस्वीकृत</string>
+    <string name="ask_ai_microphone_error">ऑडियो रिकॉर्ड नहीं किया जा सका</string>
+    <string name="settings_confirm_mark_all_read_note">साइट की सभी स्टोरीज़ को पढ़ा हुआ चिह्नित करने से पहले हमेशा पुष्टि माँगी जाती है। अन्य विकल्प देखने के लिए, पढ़ा हुआ चिह्नित करने वाले बटन को देर तक दबाएँ।</string>
+    <string name="settings_confirm_mark_all_read_segment_both">दोनों</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">फ़ोल्डर</string>
+    <string name="settings_confirm_mark_all_read_segment_never">कभी नहीं</string>
+    <string name="settings_after_mark_read_title">पढ़ा हुआ चिह्नित करने के बाद</string>
+    <string name="settings_after_mark_read_next">अगली सूची खोलें</string>
+    <string name="settings_after_mark_read_stay">यहीं रहें</string>
+    <string name="settings_when_opening_site_title">साइट खोलते समय</string>
+    <string name="settings_when_opening_site_stories">स्टोरीज़ दिखाएँ</string>
+    <string name="settings_when_opening_site_first_story">पहला लेख खोलें</string>
+    <string name="story_cluster_upgrade_archive">प्रीमियम संग्रह</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">बाईं ओर छोटा</string>
+    <string name="story_thumbnail_left_hand_large">बाईं ओर बड़ा</string>
+    <string name="story_thumbnail_right_hand_small">दाईं ओर छोटा</string>
+    <string name="story_thumbnail_right_hand_large">दाईं ओर बड़ा</string>
+    <string name="story_thumbnail_no_image_preview">छवि का पूर्वावलोकन उपलब्ध नहीं</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">ऐसी साइटों की कहानियाँ जिनमें</string>
+    <string name="infrequent_5">&lt; 5 स्टोरी/माह</string>
+    <string name="infrequent_15">&lt; 15 स्टोरी/माह</string>
+    <string name="infrequent_30">&lt; 30 खबरें/माह</string>
+    <string name="infrequent_60">&lt; 60 कहानियाँ/माह</string>
+    <string name="infrequent_90">&lt; 90 कहानियाँ/माह</string>
+    <string name="story_intel_dialog_title">इस स्टोरी में आपको क्या पसंद या नापसंद है?</string>
+    <string name="feed_intel_dialog_title">इस साइट में आपको क्या पसंद या नापसंद है?</string>
+    <string name="intel_title_header">कहानी के शीर्षक</string>
+    <string name="feed_intel_title_header">शीर्षक</string>
+    <string name="intel_tag_header">खबर के टैग</string>
+    <string name="feed_intel_tag_header">टैग</string>
+    <string name="intel_author_header">लेख के लेखक</string>
+    <string name="feed_intel_author_header">लेखक</string>
+    <string name="intel_feed_header">प्रकाशक की सभी सामग्री</string>
+    <string name="intel_super_dislike">बहुत नापसंद</string>
+    <string name="explainer_super_dislike">सुपर नापसंद</string>
+    <string name="explainer_like">पसंद करें</string>
+    <string name="explainer_dislike">नापसंद</string>
+    <string name="explainer_beats">बीट्स</string>
+    <string name="explainer_example1_header">एक लाइक कितनी भी नापसंदगी को मात देता है</string>
+    <string name="explainer_example1_result">स्टोरी फ़ोकस दृश्य में दिखाई देती है</string>
+    <string name="explainer_example2_header">एक सुपर नापसंद बाकी सब पर भारी पड़ता है</string>
+    <string name="explainer_example2_result">स्टोरी हमेशा छिपी रहती है</string>
+    <string name="auto">ऑटो</string>
+    <string name="light">हल्का</string>
+    <string name="sepia">सेपिया</string>
+    <string name="dark">गहरा</string>
+    <string name="black">काला</string>
+    <string name="settings_gestures">जेस्चर</string>
+    <string name="sync_status_housekeeping">सफ़ाई हो रही है…</string>
+    <string name="sync_status_actions">पढ़ने की %d कार्रवाइयाँ समन्वित की जा रही हैं…</string>
+    <string name="sync_status_recounts">पढ़ने की कार्रवाइयों का मिलान किया जा रहा है…</string>
+    <string name="sync_status_ffsync">रास्ते में…</string>
+    <string name="sync_status_cleanup">साफ़ किया जा रहा है…</string>
+    <string name="sync_status_starred">सहेजी गई कहानियों की कार्रवाइयाँ सिंक हो रही हैं…</string>
+    <string name="sync_status_stories">नई कहानियाँ लाई जा रही हैं…</string>
+    <string name="sync_status_unreads">संग्रहित हो रही हैं%sअपठित लेख…</string>
+    <string name="sync_status_images">%d छवियाँ संग्रहीत की जा रही हैं…</string>
+    <string name="sync_status_offline">ऑफ़लाइन</string>
+    <string name="sync_status_feed_add">फ़ीड जोड़ी जा रही है</string>
+    <string name="sync_status_done">सब पूरा हुआ</string>
+    <string name="volume_key_navigation">वॉल्यूम कुंजी नेविगेशन…</string>
+    <string name="off">बंद</string>
+    <string name="volume_up_next">ऊपर = अगली स्टोरी</string>
+    <string name="volume_down_next">नीचे = अगली कहानी</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">पढ़ने के बाद अगली फ़ीड/फ़ोल्डर खोलें</string>
+    <string name="settings_load_next_on_mark_read_summary">पढ़ा हुआ चिह्नित करने के बाद अगला फ़ीड/फ़ोल्डर लोड करें</string>
+    <string name="settings_confirm_mark_all_read">इन पर सब कुछ पढ़ा हुआ चिह्नित करने की पुष्टि करें…</string>
+    <string name="none">कोई भी नहीं</string>
+    <string name="feed_and_folder">फ़ीड और फ़ोल्डर</string>
+    <string name="folder_only">केवल फ़ोल्डर</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">पुरानी/नई स्टोरीज़ को पढ़ा हुआ चिह्नित करने की पुष्टि करें</string>
+    <string name="settings_ltr_gesture_action">खबरों की सूची पर दाईं ओर स्वाइप…</string>
+    <string name="gest_action_none">कोई कार्रवाई नहीं</string>
+    <string name="gest_action_back">पिछली सूची पर वापस जाएँ</string>
+    <string name="gest_action_toggle_read">स्टोरी पढ़ी गई है या नहीं, यह बदलें</string>
+    <string name="gest_action_markread">कहानी को पढ़ा हुआ चिह्नित करें</string>
+    <string name="gest_action_markunread">स्टोरी को अपठित चिह्नित करें</string>
+    <string name="gest_action_save">कहानी सहेजें</string>
+    <string name="gest_action_unsave">स्टोरी को सहेजे गए से हटाएँ</string>
+    <string name="gest_action_statistics">साइट के आँकड़े</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">कहानी के शीर्षक पर बाईं ओर स्वाइप…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">डिफ़ॉल्ट ब्राउज़र…</string>
+    <string name="font">फ़ॉन्ट…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">क्रॉनिकल</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>सिस्टम डिफ़ॉल्ट</item>
+        <item>ऐप के भीतर ब्राउज़र</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">नई खबरें</string>
+    <string name="go_to_feed">फ़ीड पर जाएँ</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">खोजें</string>
+    <string name="add_feed">फ़ीड जोड़ें</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">ईमेल</string>
+    <string name="notification_web">वेब</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">कोई फ़ीड सूचना नहीं</string>
+    <string name="notification_permissions_context">सूचनाएँ भेजने के लिए अनुमति आवश्यक है</string>
+    <string name="notification_permissions_rationale">सूचनाएँ सक्षम करने के लिए दोबारा कोशिश करने से पहले, ऐप की सेटिंग में सूचनाओं की अनुमति मैन्युअल रूप से जोड़नी होगी।</string>
+    <string name="write_storage_permission_opml">OPML निर्यात के लिए स्टोरेज में लिखने की अनुमति आवश्यक है</string>
+    <string name="story_saved">लेख को सहेजा हुआ चिह्नित किया गया</string>
+    <string name="story_unsaved">कहानी को असहेज के रूप में चिह्नित किया गया</string>
+    <string name="story_read">कहानी को पढ़ा हुआ चिह्नित किया गया</string>
+    <string name="story_unread">लेख को अपठित के रूप में चिह्नित किया गया</string>
+    <string name="unread_stories">अपठित कहानियाँ</string>
+    <string name="focused_stories">चुनी हुई कहानियाँ</string>
+    <string name="saved_stories">सहेजे गए लेख</string>
+    <string name="short_next_story">अगली स्टोरी</string>
+    <string name="short_previous_story">पिछली खबर</string>
+    <string name="short_text_view">पाठ दृश्य</string>
+    <string name="short_page_down">पेज डाउन</string>
+    <string name="short_page_down_key">स्पेस</string>
+    <string name="short_page_up">पेज अप</string>
+    <string name="short_page_up_key">\u21E7 स्पेस</string>
+    <string name="short_next_unread_story">अगली अपठित खबर</string>
+    <string name="short_toggle_read_unread">पढ़ा हुआ/अपठित टॉगल करें</string>
+    <string name="short_save_unsave_story">कहानी सहेजें/सहेजना हटाएँ</string>
+    <string name="short_open_in_browser">ब्राउज़र में खोलें</string>
+    <string name="short_share_this_story">यह स्टोरी साझा करें</string>
+    <string name="short_scroll_to_comments">टिप्पणियों तक स्क्रॉल करें</string>
+    <string name="short_open_story_trainer">लेख प्रशिक्षक खोलें</string>
+    <string name="short_open_all_stories">सभी साइट की कहानियाँ खोलें</string>
+    <string name="short_switch_views">दृश्य बदलें</string>
+    <string name="short_add_site">साइट जोड़ें</string>
+    <string name="registering">पंजीकरण हो रहा है...</string>
+    <string name="renaming_feed_message">फ़ीड का नाम बदला जा रहा है %s</string>
+    <string name="renaming_folder_message">फ़ोल्डर का नाम बदला जा रहा है %s</string>
+    <string name="parent_folder">पैरेंट फ़ोल्डर</string>
+    <string name="folder_added">फ़ोल्डर जोड़ा गया</string>
+    <string name="new_folder_parent">में: %1$s</string>
+    <string name="ui_014f8b8d982f">ऐसे कस्टम कीवर्ड फ़िल्टर जोड़ें जो अपने अलग ब्रीफ़िंग अनुभाग बन जाते हैं</string>
+    <string name="ui_05392d13e2f2">अभी कोई ब्रीफ़िंग नहीं</string>
+    <string name="ui_0a4444676244">सहेजना विफल रहा</string>
+    <string name="ui_0a8adac9d6d5">शेड्यूल</string>
+    <string name="ui_13b7bfcac438">काम जारी है…</string>
+    <string name="ui_2eb56be3c2d9">स्रोत</string>
+    <string name="ui_314ef761a08f">कीवर्ड अनुभाग जोड़ें</string>
+    <string name="ui_3af014d03229">फ़ीड स्रोत</string>
+    <string name="ui_3e4a49541e18">पहले से पढ़े गए लेख शामिल करें</string>
+    <string name="ui_4a24ff492222">अपनी सभी शीर्ष खबरों का दैनिक सार पाएँ</string>
+    <string name="ui_4e9f59082144">प्रीमियम संग्रह</string>
+    <string name="ui_5b170811b992">Premium Archive में अपग्रेड करें</string>
+    <string name="ui_67a31d6fa581">चुनें कि दैनिक ब्रीफ़िंग की सूचनाएँ कहाँ भेजी जाएँ</string>
+    <string name="ui_67d0be0dd546">शामिल सामग्री की मात्रा और लिखने का तरीका नियंत्रित करें</string>
+    <string name="ui_68c2cc7f0cea">मॉडल</string>
+    <string name="ui_710089545189">लंबाई और शैली</string>
+    <string name="ui_753a22b2eb61">सूचनाएँ</string>
+    <string name="ui_771ee100da2b">कीवर्ड अनुभाग</string>
+    <string name="ui_7c522fb68f07">अपनी सुविधानुसार समय पर अपनी शीर्ष कहानियों का सारांश पाएँ।</string>
+    <string name="ui_7f7e956b2244">आपके लिए सबसे महत्वपूर्ण लेखों का सारांश पाने के लिए दैनिक ब्रीफ़िंग सेट करें।</string>
+    <string name="ui_7ff5a6dafd80">अनुभाग</string>
+    <string name="ui_80f7bcbc57b0">चुनें कि आपकी ब्रीफ़िंग कितनी बार और कब तैयार की जाए</string>
+    <string name="ui_a4d5830966af">अपने समय-सारणी के अनुसार अपने-आप ब्रीफ़िंग बनाएँ</string>
+    <string name="ui_a92076d4b9e3">चुनें कि आपकी दैनिक ब्रीफ़िंग कौन-सा मॉडल लिखे</string>
+    <string name="ui_a970fbbd6df8">अपने आप बनाएँ</string>
+    <string name="ui_a9dc7e4dcba7">दैनिक ब्रीफ़िंग सेटिंग्स</string>
+    <string name="ui_bbfa773e5a63">बंद करें</string>
+    <string name="ui_c2d462f8f6da">चुनें कि डेली ब्रीफिंग में कौन-सी कहानियाँ शामिल की जा सकती हैं</string>
+    <string name="ui_d521ea8640b5">दैनिक ब्रीफ़िंग बनाएँ</string>
+    <string name="ui_df174a3f2faa">सक्षम</string>
+    <string name="ui_df2164622bcf">डेली ब्रीफिंग लोड नहीं हो सकी</string>
+    <string name="ui_eaed56ec84ae">दैनिक संक्षिप्त समाचार</string>
+    <string name="ui_efc007a393f6">सहेजें</string>
+    <string name="ui_f530db58b3e5">कीवर्ड</string>
+    <string name="ui_fdafe86c10a4">केवल मेल खाती स्टोरीज़ वाले अनुभाग शामिल होंगे</string>
+    <string name="ui_690910f6ed17">OPML आयात करें</string>
+    <string name="ui_244fd5e426f0">OPML निर्यात करें</string>
+    <string name="ui_768e0c1c6957">शीर्षक</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">सहेजे गए टैग</string>
+    <string name="ui_6e914f494515">कहानी टैग</string>
+    <string name="ui_e912ab619a72">अन्य टैग</string>
+    <string name="i18n_add_site">साइट जोड़ें</string>
+    <string name="i18n_add">जोड़ें</string>
+    <string name="i18n_retry">फिर कोशिश करें</string>
+    <string name="i18n_no_sites_found_try_another_search">कोई साइट नहीं मिली। कोई दूसरा खोज शब्द आज़माएँ।</string>
+    <string name="i18n_load_more">और लोड करें</string>
+    <string name="i18n_follow_any_website">किसी भी वेबसाइट को फ़ॉलो करें</string>
+    <string name="i18n_mark_updated_stories_unread">अपडेट की गई स्टोरीज़ को अपठित चिह्नित करें</string>
+    <string name="i18n_follow_news_that_matters_to_you">उन ख़बरों को फ़ॉलो करें जो आपके लिए मायने रखती हैं</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">कोई विषय चुनें या किसी भी खोज के लिए Google News फ़ीड बनाएँ।</string>
+    <string name="i18n_subscribe">सदस्यता लें</string>
+    <string name="i18n_tech">तकनीक</string>
+    <string name="i18n_review">समीक्षा करें</string>
+    <string name="i18n_sponsored">प्रायोजित</string>
+    <string name="i18n_discover_more_to_read">पढ़ने के लिए और सामग्री खोजें</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">कोई साइट नहीं मिली। आप URL से भी साइट जोड़ सकते हैं।</string>
+    <string name="i18n_add_discover_sites">जोड़ें + साइटें खोजें</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">RSS के बिना किसी पेज से फ़ीड बनाएँ। NewsBlur उसकी कहानियाँ खोजता है और अपडेट जाँचता है। इसके लिए Premium Archive आवश्यक है।</string>
+</resources>

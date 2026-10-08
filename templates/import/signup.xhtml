@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
 
@@ -11,7 +12,7 @@
       
       <div class="NB-module">
         <h5>
-          <div class="NB-module-header-signup">Signup</div>
+          <div class="NB-module-header-signup">{% trans "Signup" %}</div>
         </h5>
 
         <div class="NB-import-signup" style="margin-top: 24px;">
@@ -21,7 +22,7 @@
               {{ signup_form.username }}
             </div>
             <div class="">
-              <div class="NB-signup-optional">Optional</div>
+              <div class="NB-signup-optional">{% trans "Optional" %}</div>
               {{ signup_form.password.label_tag }}
               {{ signup_form.password }}
             </div>
@@ -43,8 +44,8 @@
         </div>
         
         <div class="NB-signup NB-import-signup-text">
-          <h3>Almost There!</h3>
-          <p>To complete the import,<br />just choose a username.</p>
+          <h3>{% trans "Almost There!" %}</h3>
+          <p>{% trans "To complete the import," %}<br />{% trans "just choose a username." %}</p>
         </div>
         
       </div>

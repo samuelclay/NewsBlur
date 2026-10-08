@@ -8,6 +8,7 @@
 
 #import "MenuViewController.h"
 #import "MenuTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 NSString * const MenuTitle = @"title";
 NSString * const MenuIcon = @"icon";
@@ -300,7 +301,7 @@ NSString * const MenuHandler = @"handler";
     UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:NO];
     UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:NO];
 
-    [segmentedControl insertSegmentWithTitle:@"Auto" atIndex:0 animated:NO];
+    [segmentedControl insertSegmentWithTitle:[NBLocalization text:@"Auto"] atIndex:0 animated:NO];
     [segmentedControl insertSegmentWithImage:lightImage atIndex:1 animated:NO];
     [segmentedControl insertSegmentWithImage:sepiaImage atIndex:2 animated:NO];
     [segmentedControl insertSegmentWithImage:mediumImage atIndex:3 animated:NO];

@@ -69,7 +69,7 @@
     self.invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     self.invisibleHeaderButton.alpha = 0.1;
     self.invisibleHeaderButton.tag = self.section;
-    self.invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder", self.title];
+    self.invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ folder"], self.title];
     self.invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;
     [self.invisibleHeaderButton addTarget:self.delegate
                               action:@selector(didSelectTitleView:)

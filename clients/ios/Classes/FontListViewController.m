@@ -32,7 +32,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    self.title = @"Font";
+    self.title = [NBLocalization text:@"Font"];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

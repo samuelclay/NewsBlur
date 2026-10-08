@@ -16,9 +16,9 @@ NEWSBLUR.ClassifierConstants = {
     // manage tab, filter banner). One entry per scope with its tooltip
     // label and inline SVG source.
     SCOPE_ICON_DATA: [
-        { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
-        { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
-        { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
+        { key: 'feed', title: gettext('This site only'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
+        { key: 'folder', title: gettext('All sites in folder'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
+        { key: 'global', title: gettext('All sites'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
     ]
 };
 
@@ -345,7 +345,7 @@ var classifier_prototype = {
             this.make_trainer_outro();
             this.reload_modal();
         } else {
-            $begin.text('Begin Training')
+            $begin.text(gettext('Begin Training'))
                 .addClass('NB-modal-submit-green')
                 .removeClass('NB-modal-submit-grey')
                 .removeClass('NB-disabled');
@@ -353,7 +353,7 @@ var classifier_prototype = {
     },
 
     retrain_all_sites: function () {
-        $('.NB-modal-submit-reset', this.$modal).text('Rewinding...').attr('disabled', true).addClass('NB-disabled');
+        $('.NB-modal-submit-reset', this.$modal).text(gettext('Rewinding...')).attr('disabled', true).addClass('NB-disabled');
 
         this.model.retrain_all_sites(_.bind(function (data) {
             this.load_feeds_trainer(null, data);
@@ -411,34 +411,34 @@ var classifier_prototype = {
         var self = this;
 
         var $intro_content = $.make('div', { className: 'NB-trainer-intro-content' }, [
-            $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what to do:'),
+            $.make('h3', { className: 'NB-modal-subtitle' }, gettext('Here\'s what to do:')),
             $.make('ol', { className: 'NB-trainer-points NB-classifiers' }, [
                 $.make('li', [
                     $.make('div', { className: 'NB-classifier-example' }),
-                    $.make('b', 'You will see a bunch of tags and authors.'),
-                    ' Sites will be ordered by popularity. Click on what you like and don\'t like.'
+                    $.make('b', gettext('You will see a bunch of tags and authors.')),
+                    gettext(' Sites will be ordered by popularity. Click on what you like and don\'t like.')
                 ]),
                 $.make('li', [
-                    $.make('b', 'The intelligence slider filters stories.'),
+                    $.make('b', gettext('The intelligence slider filters stories.')),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-focus.svg' }),
-                    ' are stories you like',
+                    gettext(' are stories you like'),
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-unread.svg' }),
-                    ' are stories you have not yet rated',
+                    gettext(' are stories you have not yet rated'),
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-hidden.svg' }),
-                    ' are stories you don\'t like'
+                    gettext(' are stories you don\'t like')
                 ]),
                 $.make('li', [
-                    $.make('b', 'Stop any time you like.'),
-                    ' You can easily train individual stories as you read.'
+                    $.make('b', gettext('Stop any time you like.')),
+                    gettext(' You can easily train individual stories as you read.')
                 ])
             ]),
-            (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
+            (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, gettext('Please create an account and add sites you read. Then you can train them.'))),
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-grey NB-modal-submit-button' }, 'Close')),
-                    (NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-begin NB-modal-submit-button NB-modal-submit-grey NB-disabled' }, 'Loading Training...'))
+                    (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-grey NB-modal-submit-button' }, gettext('Close'))),
+                    (NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-modal-submit-begin NB-modal-submit-button NB-modal-submit-grey NB-disabled' }, gettext('Loading Training...')))
                 ])
             ])
         ]);
@@ -447,13 +447,13 @@ var classifier_prototype = {
             $.make('div', { className: 'NB-trainer-header' }, [
                 $.make('h2', { className: 'NB-modal-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    'Intelligence Trainer',
+                    gettext('Intelligence Trainer'),
                     $.make('div', { className: 'NB-icon-dropdown' })
                 ]),
                 $.make('div', { className: 'NB-modal-tabs' }, [
                     $.make('div', { className: 'NB-modal-loading' }),
-                    $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-sitebyside' }, 'Site by Site'),
-                    $.make('div', { className: 'NB-modal-tab NB-modal-tab-manage' }, 'Manage Training')
+                    $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-sitebyside' }, gettext('Site by Site')),
+                    $.make('div', { className: 'NB-modal-tab NB-modal-tab-manage' }, gettext('Manage Training'))
                 ])
             ]),
             $.make('div', { className: 'NB-tab NB-tab-sitebyside NB-active' }, [
@@ -462,7 +462,7 @@ var classifier_prototype = {
             $.make('div', { className: 'NB-tab NB-tab-manage' }, [
                 $.make('div', { className: 'NB-manage-loading' }, [
                     $.make('div', { className: 'NB-modal-loading NB-active' }),
-                    $.make('div', { className: 'NB-manage-loading-text' }, 'Loading classifiers...')
+                    $.make('div', { className: 'NB-manage-loading-text' }, gettext('Loading classifiers...'))
                 ])
             ])
         ]);
@@ -473,39 +473,39 @@ var classifier_prototype = {
         var self = this;
 
         var $outro_content = $.make('div', { className: 'NB-trainer-outro-content' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Congratulations! You\'re done.'),
-            $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what happens next:'),
+            $.make('h2', { className: 'NB-modal-title' }, gettext('Congratulations! You\'re done.')),
+            $.make('h3', { className: 'NB-modal-subtitle' }, gettext('Here\'s what happens next:')),
             $.make('ol', { className: 'NB-trainer-points' }, [
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135 }),
-                    $.make('b', 'You can change your opinions.'),
-                    ' You can click the ',
+                    $.make('b', gettext('You can change your opinions.')),
+                    gettext(' You can click the '),
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-up.svg', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-down.svg', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
-                    ' buttons next to stories as you read them.'
+                    gettext(' buttons next to stories as you read them.')
                 ]),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
-                    $.make('b', 'As a reminder, use the intelligence slider to select a filter:'),
+                    $.make('b', gettext('As a reminder, use the intelligence slider to select a filter:')),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-hidden.svg' }),
-                    ' are stories you don\'t like',
+                    gettext(' are stories you don\'t like'),
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-unread.svg' }),
-                    ' are stories you have not yet rated',
+                    gettext(' are stories you have not yet rated'),
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-focus.svg' }),
-                    ' are stories you like'
+                    gettext(' are stories you like')
 
                 ]),
                 $.make('li', [
-                    $.make('b', 'You can also filter out stories you don\'t want to read.'),
-                    ' As great as finding good stuff is, you can just as easily ignore the stories you do not like.'
+                    $.make('b', gettext('You can also filter out stories you don\'t want to read.')),
+                    gettext(' As great as finding good stuff is, you can just as easily ignore the stories you do not like.')
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-reset' }, $.entity('&laquo;') + ' Retrain all sites'),
-                    $.make('div', { className: 'NB-modal-submit-end NB-modal-submit-button' }, 'Close Training and Start Reading')
+                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-reset' }, interpolate(gettext("%(value_1)s Retrain all sites"), {value_1: $.entity('&laquo;')}, true)),
+                    $.make('div', { className: 'NB-modal-submit-end NB-modal-submit-button' }, gettext('Close Training and Start Reading'))
                 ])
             ])
         ]);
@@ -538,37 +538,37 @@ var classifier_prototype = {
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post', className: 'NB-publisher' }, [
                     ((!_.isEmpty(this.user_classifiers.titles) || !_.isEmpty(this.user_classifiers.title_regex)) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Title Phrases'),
+                        $.make('h5', gettext('Title Phrases')),
                         $.make('div', { className: 'NB-classifier-titles NB-fieldset-fields NB-classifiers' },
                             this.make_user_titles().concat(this.make_user_title_regex())
                         )
                     ])),
                     ((!_.isEmpty(this.user_classifiers.texts) || !_.isEmpty(this.user_classifiers.text_regex) || !_.isEmpty(this.user_classifiers.regex)) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Text Phrases'),
+                        $.make('h5', gettext('Text Phrases')),
                         $.make('div', { className: 'NB-classifier-texts NB-fieldset-fields NB-classifiers' },
                             this.make_user_texts().concat(this.make_user_text_regex())
                         )
                     ])),
                     (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Authors'),
+                        $.make('h5', gettext('Authors')),
                         $.make('div', { className: 'NB-classifier-authors NB-fieldset-fields NB-classifiers' },
                             this.make_authors(this.feed_authors).concat(this.make_user_authors())
                         )
                     ])),
                     (this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Categories &amp; Tags'),
+                        $.make('h5', gettext('Categories &amp; Tags')),
                         $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                             this.make_tags(this.feed_tags).concat(this.make_user_tags())
                         )
                     ])),
                     (this.feed_publishers && this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
-                        $.make('h5', 'Sharing Stories From These Sites'),
+                        $.make('h5', gettext('Sharing Stories From These Sites')),
                         $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },
                             this.make_publishers(this.feed_publishers)
                         )
                     ])),
                     $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Everything by This Publisher'),
+                        $.make('h5', gettext('Everything by This Publisher')),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
                             this.make_publisher(feed)
                         )
@@ -580,16 +580,16 @@ var classifier_prototype = {
             (this.options['training'] && $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' Back'),
-                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-next NB-modal-submit-save' }, 'Save & Next ' + $.entity('&raquo;')),
-                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey' }, 'Close')
+                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-back' }, interpolate(gettext("%(value_1)s Back"), {value_1: $.entity('&laquo;')}, true)),
+                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-next NB-modal-submit-save' }, interpolate(gettext("Save & Next %(value_1)s"), {value_1: $.entity('&raquo;')}, true)),
+                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey' }, gettext('Close'))
                 ])
             ])),
             (!this.options['training'] && $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Check what you like above...')
+                    $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, gettext('Check what you like above...'))
                 ])
             ]))
         ]);
@@ -606,18 +606,18 @@ var classifier_prototype = {
 
             this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
                 $.make('h2', { className: 'NB-modal-title' }, [
-                    'What do you ',
-                    $.make('span', { className: 'NB-classifier-like NB-like' }, 'like'),
-                    ' and ',
-                    $.make('span', { className: 'NB-classifier-dislike NB-dislike' }, 'dislike'),
-                    ' about this site?'
+                    gettext('What do you '),
+                    $.make('span', { className: 'NB-classifier-like NB-like' }, gettext('like')),
+                    gettext(' and '),
+                    $.make('span', { className: 'NB-classifier-dislike NB-dislike' }, gettext('dislike')),
+                    gettext(' about this site?')
                 ]),
                 $.make('div', { className: 'NB-modal-header' }, [
                     $subtitle,
                     $.make('div', { className: 'NB-modal-tabs' }, [
                         $.make('div', { className: 'NB-modal-loading' }),
-                        $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-feed' }, 'Train this site'),
-                        $.make('div', { className: 'NB-modal-tab NB-modal-tab-manage' }, 'Manage Training')
+                        $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-feed' }, gettext('Train this site')),
+                        $.make('div', { className: 'NB-modal-tab NB-modal-tab-manage' }, gettext('Manage Training'))
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-feed NB-active' }, [
@@ -626,7 +626,7 @@ var classifier_prototype = {
                 $.make('div', { className: 'NB-tab NB-tab-manage' }, [
                     $.make('div', { className: 'NB-manage-loading' }, [
                         $.make('div', { className: 'NB-modal-loading NB-active' }),
-                        $.make('div', { className: 'NB-manage-loading-text' }, 'Loading classifiers...')
+                        $.make('div', { className: 'NB-manage-loading-text' }, gettext('Loading classifiers...'))
                     ])
                 ])
             ]);
@@ -647,11 +647,11 @@ var classifier_prototype = {
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
-                'What do you ',
-                $.make('span', { className: 'NB-classifier-like NB-like' }, 'like'),
-                ' and ',
-                $.make('span', { className: 'NB-classifier-dislike NB-dislike' }, 'dislike'),
-                ' about this story?'
+                gettext('What do you '),
+                $.make('span', { className: 'NB-classifier-like NB-like' }, gettext('like')),
+                gettext(' and '),
+                $.make('span', { className: 'NB-classifier-dislike NB-dislike' }, gettext('dislike')),
+                gettext(' about this story?')
             ]),
             $.make('div', { className: 'NB-modal-header' }, [
                 $.make('h2', { className: 'NB-modal-subtitle' }, [
@@ -667,8 +667,8 @@ var classifier_prototype = {
                 ]),
                 $.make('div', { className: 'NB-modal-tabs' }, [
                     $.make('div', { className: 'NB-modal-loading' }),
-                    $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-story' }, 'Train this story'),
-                    $.make('div', { className: 'NB-modal-tab NB-modal-tab-manage' }, 'Manage Training')
+                    $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-story' }, gettext('Train this story')),
+                    $.make('div', { className: 'NB-modal-tab NB-modal-tab-manage' }, gettext('Manage Training'))
                 ])
             ]),
             $.make('div', { className: 'NB-tab NB-tab-story NB-active' }, [
@@ -698,14 +698,14 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-modal-submit' }, [
                         $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                         $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                        $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Check what you like above...')
+                        $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, gettext('Check what you like above...'))
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-tab NB-tab-manage' }, [
                 $.make('div', { className: 'NB-manage-loading' }, [
                     $.make('div', { className: 'NB-modal-loading NB-active' }),
-                    $.make('div', { className: 'NB-manage-loading-text' }, 'Loading classifiers...')
+                    $.make('div', { className: 'NB-manage-loading-text' }, gettext('Loading classifiers...'))
                 ])
             ])
         ]);
@@ -732,34 +732,34 @@ var classifier_prototype = {
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-text-section', 'data-section': 'text' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
-                $.make('span', 'Story Text'),
+                $.make('span', gettext('Story Text')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
                     (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-archive-notice' }, [
-                        'Requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ])),
                     (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        'Regex requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                        gettext('Regex requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        'Classifier scope requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Classifier scope requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        'Notifications require ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Notifications require '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ]))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-section-explainer' }, 'Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill.'),
+                $.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill.')),
                 $.make('div', { className: 'NB-classifier-input-row' }, [
-                    $.make('input', { type: 'text', value: selected_text || '', className: 'NB-classifier-text-input', placeholder: 'Enter text to match...' }),
+                    $.make('input', { type: 'text', value: selected_text || '', className: 'NB-classifier-text-input', placeholder: gettext('Enter text to match...') }),
                     $.make('div', { className: 'NB-classifier-match-type-control' }, [
-                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, gettext('Exact phrase')),
                         $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
-                            'Regex',
+                            gettext('Regex'),
                             $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
                         ])
                     ])
@@ -790,30 +790,30 @@ var classifier_prototype = {
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-title-section', 'data-section': 'title' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
-                $.make('span', 'Story Title'),
+                $.make('span', gettext('Story Title')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
                     (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        'Regex requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                        gettext('Regex requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        'Classifier scope requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Classifier scope requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        'Notifications require ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Notifications require '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ]))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-section-explainer' }, 'Highlight words in the title to train on specific phrases.'),
+                $.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Highlight words in the title to train on specific phrases.')),
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('input', { type: 'text', value: story_title || '', className: 'NB-classifier-title-input' }),
                     $.make('div', { className: 'NB-classifier-match-type-control' }, [
-                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, gettext('Exact phrase')),
                         $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
-                            'Regex',
+                            gettext('Regex'),
                             $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
                         ])
                     ])
@@ -853,30 +853,30 @@ var classifier_prototype = {
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-url-section', 'data-section': 'url' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
-                $.make('span', 'Story URL'),
+                $.make('span', gettext('Story URL')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
                     (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        'Regex requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                        gettext('Regex requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        'Classifier scope requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Classifier scope requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        'Notifications require ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Notifications require '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ]))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-section-explainer' }, 'Select part of the URL to match patterns like sections or categories.'),
+                $.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Select part of the URL to match patterns like sections or categories.')),
                 $.make('div', { className: 'NB-classifier-input-row' }, [
-                    $.make('input', { type: 'text', value: story_url || '', className: 'NB-classifier-url-input', placeholder: 'Enter URL pattern to match...' }),
+                    $.make('input', { type: 'text', value: story_url || '', className: 'NB-classifier-url-input', placeholder: gettext('Enter URL pattern to match...') }),
                     $.make('div', { className: 'NB-classifier-match-type-control' }, [
-                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, gettext('Exact phrase')),
                         $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
-                            'Regex',
+                            gettext('Regex'),
                             $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
                         ])
                     ])
@@ -895,43 +895,43 @@ var classifier_prototype = {
             $.make('div', { className: 'NB-classifier-regex-popover-content' }, [
                 $.make('div', { className: 'NB-classifier-regex-popover-columns' }, [
                     $.make('div', { className: 'NB-classifier-regex-popover-column' }, [
-                        $.make('div', { className: 'NB-regex-tip-category' }, 'Word Matching'),
+                        $.make('div', { className: 'NB-regex-tip-category' }, gettext('Word Matching')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', '\\bcat\\b'), ' — Whole word "cat" only']),
-                            $.make('li', [$.make('code', '\\bthe cat\\b'), ' — Exact phrase "the cat"']),
-                            $.make('li', [$.make('code', 'cat|dog|bird'), ' — Any of these words']),
-                            $.make('li', [$.make('code', '\\b(new|latest) release\\b'), ' — "new release" or "latest release"']),
-                            $.make('li', [$.make('code', 'colou?r'), ' — "color" or "colour" (optional letter)'])
+                            $.make('li', [$.make('code', gettext('\\bcat\\b')), gettext(' — Whole word "cat" only')]),
+                            $.make('li', [$.make('code', gettext('\\bthe cat\\b')), gettext(' — Exact phrase "the cat"')]),
+                            $.make('li', [$.make('code', gettext('cat|dog|bird')), gettext(' — Any of these words')]),
+                            $.make('li', [$.make('code', gettext('\\b(new|latest) release\\b')), gettext(' — "new release" or "latest release"')]),
+                            $.make('li', [$.make('code', gettext('colou?r')), gettext(' — "color" or "colour" (optional letter)')])
                         ]),
-                        $.make('div', { className: 'NB-regex-tip-category' }, 'Position & Greedy'),
+                        $.make('div', { className: 'NB-regex-tip-category' }, gettext('Position & Greedy')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', '^Breaking'), ' — Starts with "Breaking"']),
-                            $.make('li', [$.make('code', 'update$'), ' — Ends with "update"']),
-                            $.make('li', [$.make('code', '^\\[Video\\]'), ' — Starts with "[Video]"']),
-                            $.make('li', [$.make('code', 'breaking.*news'), ' — "breaking" then anything then "news"']),
-                            $.make('li', [$.make('code', '".*?"'), ' — Non-greedy: each quoted phrase'])
+                            $.make('li', [$.make('code', gettext('^Breaking')), gettext(' — Starts with "Breaking"')]),
+                            $.make('li', [$.make('code', gettext('update$')), gettext(' — Ends with "update"')]),
+                            $.make('li', [$.make('code', gettext('^\\[Video\\]')), gettext(' — Starts with "[Video]"')]),
+                            $.make('li', [$.make('code', gettext('breaking.*news')), gettext(' — "breaking" then anything then "news"')]),
+                            $.make('li', [$.make('code', '".*?"'), gettext(' — Non-greedy: each quoted phrase')])
                         ])
                     ]),
                     $.make('div', { className: 'NB-classifier-regex-popover-column' }, [
-                        $.make('div', { className: 'NB-regex-tip-category' }, 'Numbers & Symbols'),
+                        $.make('div', { className: 'NB-regex-tip-category' }, gettext('Numbers & Symbols')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', 'v\\d+'), ' — "v" followed by numbers (v1, v2, v10)']),
-                            $.make('li', [$.make('code', '\\$\\d+'), ' — Dollar amounts ($5, $100)']),
-                            $.make('li', [$.make('code', '#\\w+'), ' — Hashtags (#news, #tech)']),
-                            $.make('li', [$.make('code', '@\\w+'), ' — Mentions (@user, @company)']),
-                            $.make('li', [$.make('code', '^\\d+\\.'), ' — Starts with number and period'])
+                            $.make('li', [$.make('code', gettext('v\\d+')), gettext(' — "v" followed by numbers (v1, v2, v10)')]),
+                            $.make('li', [$.make('code', gettext('\\$\\d+')), gettext(' — Dollar amounts ($5, $100)')]),
+                            $.make('li', [$.make('code', '#\\w+'), gettext(' — Hashtags (#news, #tech)')]),
+                            $.make('li', [$.make('code', gettext('@\\w+')), gettext(' — Mentions (@user, @company)')]),
+                            $.make('li', [$.make('code', gettext('^\\d+\\.')), gettext(' — Starts with number and period')])
                         ]),
-                        $.make('div', { className: 'NB-regex-tip-category' }, 'Exclusions & Advanced'),
+                        $.make('div', { className: 'NB-regex-tip-category' }, gettext('Exclusions & Advanced')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', '^(?!.*sponsor)'), ' — NOT containing "sponsor"']),
-                            $.make('li', [$.make('code', '^(?!.*\\bad\\b)'), ' — NOT containing word "ad"']),
-                            $.make('li', [$.make('code', '\\d{4}'), ' — Exactly 4 digits (years)']),
-                            $.make('li', [$.make('code', '.{50,}'), ' — At least 50 characters']),
-                            $.make('li', [$.make('code', '[A-Z]{2,}'), ' — Two or more capital letters'])
+                            $.make('li', [$.make('code', gettext('^(?!.*sponsor)')), gettext(' — NOT containing "sponsor"')]),
+                            $.make('li', [$.make('code', gettext('^(?!.*\\bad\\b)')), gettext(' — NOT containing word "ad"')]),
+                            $.make('li', [$.make('code', gettext('\\d{4}')), gettext(' — Exactly 4 digits (years)')]),
+                            $.make('li', [$.make('code', '.{50,}'), gettext(' — At least 50 characters')]),
+                            $.make('li', [$.make('code', gettext('[A-Z]{2,}')), gettext(' — Two or more capital letters')])
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-classifier-regex-popover-note' }, 'All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.')
+                $.make('div', { className: 'NB-classifier-regex-popover-note' }, gettext('All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.'))
             ])
         ]);
     },
@@ -964,7 +964,7 @@ var classifier_prototype = {
             $.make('div', { className: 'NB-scoring-popover-content' }, [
                 // Section 1: Like beats dislikes
                 $.make('div', { className: 'NB-scoring-example' }, [
-                    $.make('div', { className: 'NB-scoring-example-header' }, 'A single like overrides any number of dislikes'),
+                    $.make('div', { className: 'NB-scoring-example-header' }, gettext('A single like overrides any number of dislikes')),
                     $.make('div', { className: 'NB-scoring-example-pills' }, [
                         make_mini_pill('tech', 'tag', 'dislike'),
                         make_mini_pill('review', 'tag', 'dislike'),
@@ -974,13 +974,13 @@ var classifier_prototype = {
                     ]),
                     $.make('div', { className: 'NB-scoring-example-result NB-scoring-result-focus' }, [
                         $.make('img', { src: '/media/embed/icons/nouns/indicator-focus.svg', className: 'NB-scoring-result-indicator' }),
-                        $.make('span', { className: 'NB-scoring-result-label' }, 'Story shows in Focus view')
+                        $.make('span', { className: 'NB-scoring-result-label' }, gettext('Story shows in Focus view'))
                     ])
                 ]),
                 $.make('hr', { className: 'NB-scoring-divider' }),
                 // Section 2: Super dislike beats everything
                 $.make('div', { className: 'NB-scoring-example' }, [
-                    $.make('div', { className: 'NB-scoring-example-header' }, 'A single super dislike overrides everything'),
+                    $.make('div', { className: 'NB-scoring-example-header' }, gettext('A single super dislike overrides everything')),
                     $.make('div', { className: 'NB-scoring-example-pills' }, [
                         make_mini_pill('John Gruber', 'author', 'like'),
                         make_mini_pill('Apple', 'tag', 'like'),
@@ -989,7 +989,7 @@ var classifier_prototype = {
                     ]),
                     $.make('div', { className: 'NB-scoring-example-result NB-scoring-result-hidden' }, [
                         $.make('img', { src: '/media/embed/icons/nouns/indicator-hidden.svg', className: 'NB-scoring-result-indicator' }),
-                        $.make('span', { className: 'NB-scoring-result-label' }, 'Story is always hidden')
+                        $.make('span', { className: 'NB-scoring-result-label' }, gettext('Story is always hidden'))
                     ])
                 ])
             ])
@@ -1032,29 +1032,29 @@ var classifier_prototype = {
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-author-section', 'data-section': 'author' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
-                $.make('span', 'Story Authors'),
+                $.make('span', gettext('Story Authors')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
                     (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        'Regex requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                        gettext('Regex requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        'Classifier scope requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Classifier scope requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        'Notifications require ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Notifications require '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ]))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-classifier-input-row' }, [
-                    $.make('input', { type: 'text', value: story_author || '', className: 'NB-classifier-author-input', placeholder: 'Enter author pattern...' }),
+                    $.make('input', { type: 'text', value: story_author || '', className: 'NB-classifier-author-input', placeholder: gettext('Enter author pattern...') }),
                     $.make('div', { className: 'NB-classifier-match-type-control' }, [
-                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, gettext('Exact phrase')),
                         $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
-                            'Regex',
+                            gettext('Regex'),
                             $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
                         ])
                     ])
@@ -1117,15 +1117,15 @@ var classifier_prototype = {
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
-                $.make('span', 'Story Categories &amp; Tags'),
+                $.make('span', gettext('Story Categories &amp; Tags')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        'Classifier scope requires ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Classifier scope requires '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ])),
                     (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        'Notifications require ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                        gettext('Notifications require '),
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
                     ]))
                 ])
             ]),
@@ -1142,9 +1142,9 @@ var classifier_prototype = {
             this.make_scoped_groups(this.make_publishers(this.feed_publishers), current_folder_names) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-            $.make('h5', 'Publisher'),
+            $.make('h5', gettext('Publisher')),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                [$.make('div', { className: 'NB-classifier-section-explainer' }, 'Focus or hide all stories from this publisher.'),
+                [$.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Focus or hide all stories from this publisher.')),
                 this.make_publisher(feed)].concat($scoped_groups)
             )
         ]);
@@ -1166,21 +1166,21 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', { className: 'NB-content-filter-header' }, [
                     $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
-                    'Natural Language Text Classifier'
+                    gettext('Natural Language Text Classifier')
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-section-explainer' }, 'Describe a topic and AI will score each story against your prompt to focus or hide matches.'),
+                $.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Describe a topic and AI will score each story against your prompt to focus or hide matches.')),
                 $.make('div', { className: 'NB-ai-cost-estimate' }),
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('input', {
                         type: 'text',
                         className: 'NB-classifier-content-prompt-input',
-                        placeholder: 'e.g., "AI and machine learning" or "local politics"'
+                        placeholder: gettext('e.g., "AI and machine learning" or "local politics"')
                     }),
                     (story && $.make('div', {
                         className: 'NB-content-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
-                    }, 'Test on this story'))
+                    }, gettext('Test on this story')))
                 ]),
                 $.make('div', { className: 'NB-content-filter-test-status' }),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
@@ -1212,13 +1212,13 @@ var classifier_prototype = {
                 $btn.removeClass('NB-disabled');
                 if (!can_use_ai) {
                     $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                        $.make('b', 'AI filters are saved but won\'t run until you '),
-                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                        $.make('b', gettext('AI filters are saved but won\'t run until you ')),
+                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
                         $.make('b', '.')
                     ])).show();
                 }
             } else {
-                $placeholder.html('Describe what to focus or hide');
+                $placeholder.html(gettext('Describe what to focus or hide'));
                 $placeholder.css('font-style', 'italic');
                 $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
@@ -1240,7 +1240,7 @@ var classifier_prototype = {
 
             var $btn = $('.NB-content-filter-test-button', $section);
             var $status = $('.NB-content-filter-test-status', $section);
-            $btn.text('Testing on this story...').addClass('NB-disabled');
+            $btn.text(gettext('Testing on this story...')).addClass('NB-disabled');
             $status.empty();
 
             NEWSBLUR.assets.test_prompt_classifier({
@@ -1250,7 +1250,7 @@ var classifier_prototype = {
                 classifier_type: $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus',
                 feed_id: feed_id
             }, function (resp) {
-                $btn.text('Test on this story').removeClass('NB-disabled');
+                $btn.text(gettext('Test on this story')).removeClass('NB-disabled');
                 if (resp.cost_estimate) self.update_ai_cost_estimates(resp.cost_estimate);
                 if (resp.code === 0) {
                     var cls = resp.classification;
@@ -1293,7 +1293,7 @@ var classifier_prototype = {
 
             $input.val('').focus();
             $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
-            $placeholder.html('Describe what to focus or hide');
+            $placeholder.html(gettext('Describe what to focus or hide'));
             $placeholder.css('font-style', 'italic');
             $('.NB-content-filter-test-status', $section).empty();
             var $btn = $('.NB-content-filter-test-button', $section);
@@ -1303,8 +1303,8 @@ var classifier_prototype = {
             if (!can_use_ai) {
                 var $banner = $('.NB-ai-filter-upgrade-banner', $section);
                 $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                    $.make('b', 'AI filters are saved but won\'t run until you '),
-                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                    $.make('b', gettext('AI filters are saved but won\'t run until you ')),
+                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
                     $.make('b', '.')
                 ])).show();
             }
@@ -1358,8 +1358,8 @@ var classifier_prototype = {
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
         if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
             $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                $.make('b', 'AI filters are saved but won\'t run until you '),
-                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                $.make('b', gettext('AI filters are saved but won\'t run until you ')),
+                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
                 $.make('b', '.')
             ])).show();
         } else {
@@ -1417,22 +1417,22 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', { className: 'NB-image-filter-header' }, [
                     $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
-                    'Natural Language Image Classifier'
+                    gettext('Natural Language Image Classifier')
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-section-explainer' }, 'Describe what to look for and AI will analyze each story\u2019s images against your prompt.'),
+                $.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Describe what to look for and AI will analyze each story\u2019s images against your prompt.')),
                 $.make('div', { className: 'NB-ai-cost-estimate' }),
                 $image_grid,
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('input', {
                         type: 'text',
                         className: 'NB-classifier-prompt-input',
-                        placeholder: 'e.g., "food photography" or "charts and graphs"'
+                        placeholder: gettext('e.g., "food photography" or "charts and graphs"')
                     }),
                     (image_urls.length > 0 && $.make('div', {
                         className: 'NB-image-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
-                    }, image_urls.length === 1 ? 'Test on this image' : 'Test on these images'))
+                    }, image_urls.length === 1 ? gettext('Test on this image') : gettext('Test on these images')))
                 ]),
                 $.make('div', { className: 'NB-image-filter-test-status' }),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
@@ -1465,13 +1465,13 @@ var classifier_prototype = {
                 $btn.removeClass('NB-disabled');
                 if (!can_use_ai) {
                     $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                        $.make('b', 'AI filters are saved but won\'t run until you '),
-                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                        $.make('b', gettext('AI filters are saved but won\'t run until you ')),
+                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
                         $.make('b', '.')
                     ])).show();
                 }
             } else {
-                $placeholder.html('Describe what to focus or hide');
+                $placeholder.html(gettext('Describe what to focus or hide'));
                 $placeholder.css('font-style', 'italic');
                 $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
@@ -1493,7 +1493,7 @@ var classifier_prototype = {
 
             var $btn = $('.NB-image-filter-test-button', $section);
             var $status = $('.NB-image-filter-test-status', $section);
-            $btn.text('Analyzing images...').addClass('NB-disabled');
+            $btn.text(gettext('Analyzing images...')).addClass('NB-disabled');
             $status.empty();
 
             // Show loading state on images
@@ -1508,7 +1508,7 @@ var classifier_prototype = {
                 classifier_type: $pill_classifier.is('.NB-classifier-dislike') ? 'hidden' : 'focus',
                 feed_id: feed_id
             }, function (resp) {
-                $btn.text(image_urls.length === 1 ? 'Test on this image' : 'Test on these images').removeClass('NB-disabled');
+                $btn.text(image_urls.length === 1 ? gettext('Test on this image') : gettext('Test on these images')).removeClass('NB-disabled');
                 if (resp.cost_estimate) self.update_ai_cost_estimates(resp.cost_estimate);
                 var $thumbs = $('.NB-image-filter-thumb', $section);
                 $thumbs.removeClass('NB-image-filter-thumb-testing');
@@ -1577,7 +1577,7 @@ var classifier_prototype = {
 
             $input.val('').focus();
             $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
-            $placeholder.html('Describe what to focus or hide');
+            $placeholder.html(gettext('Describe what to focus or hide'));
             $placeholder.css('font-style', 'italic');
             self.clear_image_test_results($section);
             var $btn = $('.NB-image-filter-test-button', $section);
@@ -1587,8 +1587,8 @@ var classifier_prototype = {
             if (!can_use_ai) {
                 var $banner = $('.NB-ai-filter-upgrade-banner', $section);
                 $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                    $.make('b', 'AI filters are saved but won\'t run until you '),
-                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                    $.make('b', gettext('AI filters are saved but won\'t run until you ')),
+                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
                     $.make('b', '.')
                 ])).show();
             }
@@ -1712,12 +1712,12 @@ var classifier_prototype = {
         $content.push($.make('div', { className: 'NB-ai-cost-amounts' }, [
             $.make('span', { className: 'NB-ai-cost-monthly' }, [
                 self._format_cost(monthly),
-                $.make('small', '/mo')
+                $.make('small', gettext('/mo'))
             ]),
             $.make('span', { className: 'NB-ai-cost-separator' }, '\u00b7'),
             $.make('span', { className: 'NB-ai-cost-daily' }, [
                 self._format_cost(daily),
-                $.make('small', '/day')
+                $.make('small', gettext('/day'))
             ])
         ]));
 
@@ -1754,13 +1754,13 @@ var classifier_prototype = {
         if (NEWSBLUR.Globals.is_usage_billing) {
             $billing_btn = $.make('a', {
                 href: '#', className: 'NB-ai-billing-manage NB-modal-submit-button NB-modal-submit-green'
-            }, 'Manage billing and limits');
+            }, gettext('Manage billing and limits'));
         } else if (NEWSBLUR.Globals.is_self_hosted_ai) {
             $billing_btn = '';
         } else {
             $billing_btn = $.make('a', {
                 href: '#', className: 'NB-ai-billing-setup NB-modal-submit-button NB-modal-submit-green'
-            }, 'Set up billing');
+            }, gettext('Set up billing'));
         }
 
         $el.empty().append([$cost_info, $billing_btn]).show();
@@ -1771,9 +1771,9 @@ var classifier_prototype = {
         $banners.each(function () {
             var $banner = $(this);
             $banner.html($.make('div', { className: 'NB-ai-filter-limit-reached-banner-inner' }, [
-                $.make('b', 'Monthly spending limit reached. '),
-                $.make('span', 'Natural language classifiers are paused until next billing cycle. '),
-                $.make('a', { href: '#', className: 'NB-ai-billing-manage' }, 'Increase or remove your limit')
+                $.make('b', gettext('Monthly spending limit reached. ')),
+                $.make('span', gettext('Natural language classifiers are paused until next billing cycle. ')),
+                $.make('a', { href: '#', className: 'NB-ai-billing-manage' }, gettext('Increase or remove your limit'))
             ])).show();
         });
     },
@@ -1811,9 +1811,9 @@ var classifier_prototype = {
 
         // Scope toggle icons — same as make_classifier() for non-feed types
         var scope_icon_data = [
-            { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
-            { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
-            { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
+            { key: 'feed', title: gettext('This site only'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
+            { key: 'folder', title: gettext('All sites in folder'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
+            { key: 'global', title: gettext('All sites'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
         ];
         var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
         _.each(scope_icon_data, function (icon) {
@@ -1933,8 +1933,8 @@ var classifier_prototype = {
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
         if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
             $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                $.make('b', 'AI filters are saved but won\'t run until you '),
-                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, 'set up usage-based billing'),
+                $.make('b', gettext('AI filters are saved but won\'t run until you ')),
+                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
                 $.make('b', '.')
             ])).show();
         } else {
@@ -1966,11 +1966,11 @@ var classifier_prototype = {
         var $modal_title = $('.NB-modal-title', $container);
 
         var $title = $.make('div', [
-            'What do you ',
-            $.make('b', { className: 'NB-classifier-title-like' }, 'like'),
-            ' and ',
-            $.make('b', { className: 'NB-classifier-title-dislike' }, 'dislike'),
-            ' about this ',
+            gettext('What do you '),
+            $.make('b', { className: 'NB-classifier-title-like' }, gettext('like')),
+            gettext(' and '),
+            $.make('b', { className: 'NB-classifier-title-dislike' }, gettext('dislike')),
+            gettext(' about this '),
             (this.flags['publisher'] && 'site'),
             (this.flags['story'] && 'story'),
             '?'
@@ -1979,7 +1979,7 @@ var classifier_prototype = {
         var $explainer = $.make('div', { className: 'NB-classifier-explainer' }, [
             $.make('div', { className: 'NB-explainer-hierarchy' }, [
                 $.make('span', { className: 'NB-explainer-level NB-explainer-level-super' }, [
-                    $.make('span', { className: 'NB-classifier-title-super-dislike' }, 'Super Dislike '),
+                    $.make('span', { className: 'NB-classifier-title-super-dislike' }, gettext('Super Dislike ')),
                     $.make('span', { className: 'NB-explainer-icon-double-dislike' }, [
                         $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike' }),
                         $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike NB-explainer-icon-super-dislike-shadow' })
@@ -1987,20 +1987,20 @@ var classifier_prototype = {
                 ]),
                 $.make('span', { className: 'NB-explainer-separator' }, [
                     $.make('span', { className: 'NB-explainer-separator-line' }),
-                    $.make('span', { className: 'NB-explainer-separator-label' }, 'beats any'),
+                    $.make('span', { className: 'NB-explainer-separator-label' }, gettext('beats any')),
                     $.make('span', { className: 'NB-explainer-separator-line' })
                 ]),
                 $.make('span', { className: 'NB-explainer-level NB-explainer-level-like' }, [
-                    $.make('span', { className: 'NB-classifier-title-like' }, 'Like '),
+                    $.make('span', { className: 'NB-classifier-title-like' }, gettext('Like ')),
                     $.make('img', { src: '/media/embed/icons/nouns/thumbs-up.svg', className: 'NB-explainer-icon NB-explainer-icon-like' })
                 ]),
                 $.make('span', { className: 'NB-explainer-separator' }, [
                     $.make('span', { className: 'NB-explainer-separator-line' }),
-                    $.make('span', { className: 'NB-explainer-separator-label' }, 'beats any'),
+                    $.make('span', { className: 'NB-explainer-separator-label' }, gettext('beats any')),
                     $.make('span', { className: 'NB-explainer-separator-line' })
                 ]),
                 $.make('span', { className: 'NB-explainer-level NB-explainer-level-dislike' }, [
-                    $.make('span', { className: 'NB-classifier-title-dislike' }, 'Dislike '),
+                    $.make('span', { className: 'NB-classifier-title-dislike' }, gettext('Dislike ')),
                     $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-dislike' })
                 ]),
                 $.make('span', { className: 'NB-explainer-scoring-info' }, 'ⓘ')
@@ -2717,7 +2717,7 @@ var classifier_prototype = {
         var $filter_view_button = has_filter_view && $.make('button', {
             type: 'button',
             className: 'NB-classifier-filter-view-btn',
-            'aria-label': 'View matching stories',
+            'aria-label': gettext('View matching stories'),
             'data-tooltip': 'View matching stories'
         }, NEWSBLUR.ClassifierConstants.MATCHING_STORIES_ICON);
 
@@ -2750,14 +2750,14 @@ var classifier_prototype = {
                     $scope_badge,
                     this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name, score, is_regex),
                     $type_label,
-                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
+                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, gettext('REGEX'))),
                     (classifier_type === 'feed' && $.favicon_el(classifier)),
                     $.make('span', classifier_title)
                 ])
             ]),
             $filter_view_button,
             (classifier_count && $.make('span', { className: 'NB-classifier-count' }, [
-                '&times;&nbsp;',
+                gettext('&times;&nbsp;'),
                 classifier_count
             ]))
         ]);
@@ -3080,7 +3080,7 @@ var classifier_prototype = {
         }
 
         if (this.options['training']) {
-            $close.text('Save & Close');
+            $close.text(gettext('Save & Close'));
         } else {
             this.update_save_button();
         }
@@ -3181,12 +3181,12 @@ var classifier_prototype = {
                         // Regex validation
                         var validation_result = self.validate_regex(text);
                         if (validation_result.valid) {
-                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, gettext('✓ Valid')));
                             if (validation_result.regex.test(story_content) ||
                                 (original_text && validation_result.regex.test(original_text))) {
-                                $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches story'));
+                                $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, gettext('✓ Matches story')));
                             } else {
-                                $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in story'));
+                                $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('No match in story')));
                             }
                         } else {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
@@ -3196,9 +3196,9 @@ var classifier_prototype = {
                         var text_lower = text.toLowerCase();
                         if (story_content.toLowerCase().indexOf(text_lower) !== -1 ||
                             (original_text && original_text.toLowerCase().indexOf(text_lower) !== -1)) {
-                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Found in story'));
+                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, gettext('✓ Found in story')));
                         } else {
-                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in story'));
+                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('Not found in story')));
                         }
                     }
 
@@ -3206,13 +3206,13 @@ var classifier_prototype = {
                     if (is_full_match) {
                         $text_validation.append($.make('div', { className: 'NB-regex-full-match-warning' }, [
                             $.make('span', { className: 'NB-regex-warning-icon' }, '⚠'),
-                            $.make('span', { className: 'NB-regex-warning-text' }, 'This matches the entire story text and will only match this exact story. Consider using a shorter phrase or pattern.')
+                            $.make('span', { className: 'NB-regex-warning-text' }, gettext('This matches the entire story text and will only match this exact story. Consider using a shorter phrase or pattern.'))
                         ]));
                     }
                 }
             } else {
                 $text_classifier.show();
-                $text_placeholder.text('Enter text above');
+                $text_placeholder.text(gettext('Enter text above'));
                 $text_placeholder.css('font-style', 'italic');
             }
         };
@@ -3268,11 +3268,11 @@ var classifier_prototype = {
                     // Regex validation
                     var validation_result = self.validate_regex(text);
                     if (validation_result.valid) {
-                        $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                        $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, gettext('✓ Valid')));
                         if (validation_result.regex.test(story_title)) {
-                            $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches title'));
+                            $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, gettext('✓ Matches title')));
                         } else {
-                            $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in title'));
+                            $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('No match in title')));
                         }
                     } else {
                         $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
@@ -3281,7 +3281,7 @@ var classifier_prototype = {
                     // media/js/newsblur/reader/reader_classifier.js: Validate exact title phrases
                     // with the same word-start semantics used when the classifier is applied.
                     if (NEWSBLUR.title_classifier_utils.find_match_position(story_title, text) === -1) {
-                        $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in title'));
+                        $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('Not found in title')));
                     }
                 }
 
@@ -3289,7 +3289,7 @@ var classifier_prototype = {
                 if (is_full_match) {
                     $title_validation.append($.make('div', { className: 'NB-regex-full-match-warning' }, [
                         $.make('span', { className: 'NB-regex-warning-icon' }, '⚠'),
-                        $.make('span', { className: 'NB-regex-warning-text' }, 'This matches the entire title and will only match this exact story. Select a portion of the title instead.')
+                        $.make('span', { className: 'NB-regex-warning-text' }, gettext('This matches the entire title and will only match this exact story. Select a portion of the title instead.'))
                     ]));
                 }
             }
@@ -3356,11 +3356,11 @@ var classifier_prototype = {
                         // Regex validation
                         var validation_result = self.validate_regex(text);
                         if (validation_result.valid) {
-                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, gettext('✓ Valid')));
                             if (validation_result.regex.test(story_url)) {
-                                $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches URL'));
+                                $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, gettext('✓ Matches URL')));
                             } else {
-                                $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in URL'));
+                                $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('No match in URL')));
                             }
                         } else {
                             $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
@@ -3368,7 +3368,7 @@ var classifier_prototype = {
                     } else {
                         // Exact phrase - only show badge when NOT found (since selected text is usually found)
                         if (story_url.toLowerCase().indexOf(text.toLowerCase()) === -1) {
-                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in URL'));
+                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('Not found in URL')));
                         }
                     }
 
@@ -3376,7 +3376,7 @@ var classifier_prototype = {
                     if (is_full_match) {
                         $url_validation.append($.make('div', { className: 'NB-regex-full-match-warning' }, [
                             $.make('span', { className: 'NB-regex-warning-icon' }, '⚠'),
-                            $.make('span', { className: 'NB-regex-warning-text' }, 'This matches the entire URL and will only match this exact story. Select a portion of the URL instead.')
+                            $.make('span', { className: 'NB-regex-warning-text' }, gettext('This matches the entire URL and will only match this exact story. Select a portion of the URL instead.'))
                         ]));
                     }
                 }
@@ -3437,18 +3437,18 @@ var classifier_prototype = {
                     if (is_regex_mode) {
                         var validation_result = self.validate_regex(text);
                         if (validation_result.valid) {
-                            $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                            $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, gettext('✓ Valid')));
                             if (validation_result.regex.test(story_author)) {
-                                $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches author'));
+                                $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, gettext('✓ Matches author')));
                             } else {
-                                $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in author'));
+                                $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('No match in author')));
                             }
                         } else {
                             $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
                         }
                     } else {
                         if (story_author.toLowerCase().indexOf(text.toLowerCase()) === -1) {
-                            $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in author'));
+                            $author_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, gettext('Not found in author')));
                         }
                     }
                 }
@@ -3500,13 +3500,13 @@ var classifier_prototype = {
                 // Update input styling for regex mode
                 $input.addClass('NB-classifier-input-regex-mode');
                 if (section_type === 'text') {
-                    $input.attr('placeholder', 'e.g., \\bcat\\b or dog|bird');
+                    $input.attr('placeholder', gettext('e.g., \\bcat\\b or dog|bird'));
                 } else if (section_type === 'title') {
-                    $input.attr('placeholder', 'e.g., \\bbreaking\\b or urgent|alert');
+                    $input.attr('placeholder', gettext('e.g., \\bbreaking\\b or urgent|alert'));
                 } else if (section_type === 'url') {
-                    $input.attr('placeholder', 'e.g., /news/\\d+ or /category/');
+                    $input.attr('placeholder', gettext('e.g., /news/\\d+ or /category/'));
                 } else if (section_type === 'author') {
-                    $input.attr('placeholder', 'e.g., ^Sam or smith|jones');
+                    $input.attr('placeholder', gettext('e.g., ^Sam or smith|jones'));
                 }
 
                 // Change classifier to regex type for saving
@@ -3519,7 +3519,7 @@ var classifier_prototype = {
                 // Add small "REGEX" badge after the label text (keep "Text:" or "Title:")
                 var $existing_badge = $label.find('.NB-classifier-regex-badge');
                 if (!$existing_badge.length) {
-                    $label.find('b').after($.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX'));
+                    $label.find('b').after($.make('span', { className: 'NB-classifier-regex-badge' }, gettext('REGEX')));
                 }
             } else {
                 $section.removeClass('NB-classifier-section-regex-active');
@@ -3529,11 +3529,11 @@ var classifier_prototype = {
                 // Update input styling for exact mode
                 $input.removeClass('NB-classifier-input-regex-mode');
                 if (section_type === 'text') {
-                    $input.attr('placeholder', 'Enter text to match...');
+                    $input.attr('placeholder', gettext('Enter text to match...'));
                 } else if (section_type === 'url') {
-                    $input.attr('placeholder', 'Enter URL pattern to match...');
+                    $input.attr('placeholder', gettext('Enter URL pattern to match...'));
                 } else if (section_type === 'author') {
-                    $input.attr('placeholder', 'Enter author pattern...');
+                    $input.attr('placeholder', gettext('Enter author pattern...'));
                 } else {
                     $input.attr('placeholder', '');
                 }
@@ -3738,7 +3738,7 @@ var classifier_prototype = {
 
     render_regex_preview: function ($preview, content, matches, label) {
         if (!matches.length) {
-            $preview.html('<span class="NB-preview-label">' + label + ':</span> <span class="NB-no-matches">No matches</span>');
+            $preview.html(interpolate(gettext("<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no-matches\">No matches</span>"), {value_1: label}, true));
             return;
         }
 
@@ -3849,7 +3849,7 @@ var classifier_prototype = {
             $('.NB-tab-manage', self.$modal).html([
                 $.make('div', { className: 'NB-manage-loading' }, [
                     $.make('div', { className: 'NB-modal-loading NB-active' }),
-                    $.make('div', { className: 'NB-manage-loading-text' }, 'Loading classifiers...')
+                    $.make('div', { className: 'NB-manage-loading-text' }, gettext('Loading classifiers...'))
                 ])
             ]);
             self.switch_trainer_tab('manage');
@@ -4073,7 +4073,7 @@ var classifier_prototype = {
             // so cached modals would show stale scope state.
             delete this.cache[this.feed_id];
         }
-        $save.text('Saving...');
+        $save.text(gettext('Saving...'));
         $save.addClass('NB-disabled');
 
         this.update_opinions();
@@ -4353,7 +4353,7 @@ var classifier_prototype = {
             $('.NB-tab-manage', this.$modal).html([
                 $.make('div', { className: 'NB-manage-loading' }, [
                     $.make('div', { className: 'NB-modal-loading NB-active' }),
-                    $.make('div', { className: 'NB-manage-loading-text' }, 'Loading classifiers...')
+                    $.make('div', { className: 'NB-manage-loading-text' }, gettext('Loading classifiers...'))
                 ])
             ]);
 
@@ -4371,11 +4371,11 @@ var classifier_prototype = {
         var $error = $.make('div', { className: 'NB-manage-training-error' }, [
             $.make('div', { className: 'NB-manage-training-error-icon' }),
             $.make('div', { className: 'NB-manage-training-error-message' }, [
-                $.make('h3', 'Error Loading Classifiers'),
-                $.make('p', 'There was a problem loading your training data. Please try again.'),
+                $.make('h3', gettext('Error Loading Classifiers')),
+                $.make('p', gettext('There was a problem loading your training data. Please try again.')),
                 $.make('div', {
                     className: 'NB-modal-submit-button NB-modal-submit-green NB-manage-retry'
-                }, 'Try Again')
+                }, gettext('Try Again'))
             ])
         ]);
         $('.NB-tab-manage', this.$modal).empty().append($error);
@@ -4411,11 +4411,11 @@ var classifier_prototype = {
             $content = $.make('div', { className: 'NB-manage-training-empty' }, [
                 $.make('div', { className: 'NB-manage-training-empty-icon' }),
                 $.make('div', { className: 'NB-manage-training-empty-message' }, [
-                    $.make('h3', 'No Trained Classifiers Yet'),
-                    $.make('p', 'Train your feeds to filter stories you like and dislike.'),
+                    $.make('h3', gettext('No Trained Classifiers Yet')),
+                    $.make('p', gettext('Train your feeds to filter stories you like and dislike.')),
                     $.make('div', {
                         className: 'NB-modal-submit-button NB-modal-submit-green NB-manage-switch-to-sitebyside'
-                    }, 'Start Training Site by Site')
+                    }, gettext('Start Training Site by Site'))
                 ])
             ]);
         } else {
@@ -4446,7 +4446,7 @@ var classifier_prototype = {
                 if ($global_items.length) {
                     $scoped_section.push($.make('div', { className: 'NB-manage-folder NB-manage-scoped-section', 'data-feed-id': 0 }, [
                         $.make('div', { className: 'NB-manage-folder-title NB-manage-scoped-title' }, [
-                            $.make('span', 'Global Classifiers'),
+                            $.make('span', gettext('Global Classifiers')),
                             $.make('span', { className: 'NB-manage-scoped-count' }, String($global_items.length))
                         ]),
                         $.make('div', { className: 'NB-manage-folder-feeds NB-classifiers' }, $global_items)
@@ -4508,13 +4508,13 @@ var classifier_prototype = {
                 $.make('div', { className: 'NB-manage-training-folders' }, $scoped_section.concat($folders)),
                 $.make('div', { className: 'NB-modal-submit-bottom' }, [
                     $.make('div', { className: 'NB-modal-submit NB-manage-submit-area' }, [
-                        $.make('span', { className: 'NB-manage-saved-message' }, 'Saved'),
+                        $.make('span', { className: 'NB-manage-saved-message' }, gettext('Saved')),
                         $.make('div', {
                             className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled NB-manage-prompt'
-                        }, 'Check what you like above...'),
+                        }, gettext('Check what you like above...')),
                         $.make('div', {
                             className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-manage-save'
-                        }, 'Save')
+                        }, gettext('Save'))
                     ])
                 ])
             ]);
@@ -4783,7 +4783,7 @@ var classifier_prototype = {
 
         // Add "All Folders & Sites" as first option at the root level
         if (!$feed_chooser.find('> option[value=""]').length) {
-            $feed_chooser.prepend($.make('option', { value: '' }, 'All Folders & Sites'));
+            $feed_chooser.prepend($.make('option', { value: '' }, gettext('All Folders & Sites')));
         }
         if (!this.manage_filter_feed) {
             $feed_chooser.val('');
@@ -4811,7 +4811,7 @@ var classifier_prototype = {
                     $.make('input', {
                         type: 'text',
                         className: 'NB-manage-search-input',
-                        placeholder: 'Filter by site or classifier...',
+                        placeholder: gettext('Filter by site or classifier...'),
                         value: this.manage_filter_search
                     })
                 ])
@@ -4824,7 +4824,7 @@ var classifier_prototype = {
                             className: 'NB-manage-filter-sentiment-all' + (this.manage_filter_sentiment === 'all' ? ' NB-active' : '') + (counts.sentiment_all === 0 ? ' NB-zero-count' : ''),
                             'data-sentiment': 'all'
                         }, [
-                            $.make('span', { className: 'NB-type-label' }, 'All'),
+                            $.make('span', { className: 'NB-type-label' }, gettext('All')),
                             $.make('span', { className: 'NB-type-count' }, counts.sentiment_all)
                         ]),
                         $.make('li', {
@@ -4832,7 +4832,7 @@ var classifier_prototype = {
                             'data-sentiment': 'like'
                         }, [
                             $.make('span', { className: 'NB-manage-filter-icon NB-icon-like' }),
-                            $.make('span', { className: 'NB-type-label' }, 'Likes'),
+                            $.make('span', { className: 'NB-type-label' }, gettext('Likes')),
                             $.make('span', { className: 'NB-type-count' }, counts.sentiment_likes)
                         ]),
                         $.make('li', {
@@ -4840,7 +4840,7 @@ var classifier_prototype = {
                             'data-sentiment': 'dislike'
                         }, [
                             $.make('span', { className: 'NB-manage-filter-icon NB-icon-dislike' }),
-                            $.make('span', { className: 'NB-type-label' }, 'Dislikes'),
+                            $.make('span', { className: 'NB-type-label' }, gettext('Dislikes')),
                             $.make('span', { className: 'NB-type-count' }, counts.sentiment_dislikes)
                         ])
                     ])
@@ -4851,7 +4851,7 @@ var classifier_prototype = {
                             className: 'NB-manage-filter-scope-all' + (this.manage_filter_scope === 'all' ? ' NB-active' : '') + (counts.scope_all === 0 ? ' NB-zero-count' : ''),
                             'data-scope': 'all'
                         }, [
-                            $.make('span', { className: 'NB-type-label' }, 'All'),
+                            $.make('span', { className: 'NB-type-label' }, gettext('All')),
                             $.make('span', { className: 'NB-type-count' }, counts.scope_all)
                         ]),
                         $.make('li', {
@@ -4859,7 +4859,7 @@ var classifier_prototype = {
                             'data-scope': 'feed'
                         }, [
                             $scope_feed_icon,
-                            $.make('span', { className: 'NB-type-label' }, 'Per Site'),
+                            $.make('span', { className: 'NB-type-label' }, gettext('Per Site')),
                             $.make('span', { className: 'NB-type-count' }, counts.scope_feed)
                         ]),
                         $.make('li', {
@@ -4867,7 +4867,7 @@ var classifier_prototype = {
                             'data-scope': 'folder'
                         }, [
                             $scope_folder_icon,
-                            $.make('span', { className: 'NB-type-label' }, 'Per Folder'),
+                            $.make('span', { className: 'NB-type-label' }, gettext('Per Folder')),
                             $.make('span', { className: 'NB-type-count' }, counts.scope_folder)
                         ]),
                         $.make('li', {
@@ -4875,7 +4875,7 @@ var classifier_prototype = {
                             'data-scope': 'global'
                         }, [
                             $scope_global_icon,
-                            $.make('span', { className: 'NB-type-label' }, 'Global'),
+                            $.make('span', { className: 'NB-type-label' }, gettext('Global')),
                             $.make('span', { className: 'NB-type-count' }, counts.scope_global)
                         ])
                     ])
@@ -4883,9 +4883,9 @@ var classifier_prototype = {
             ]),
             // Archive banner for scope filter (hidden by default)
             $.make('div', { className: 'NB-manage-scope-pro-banner' }, [
-                $.make('span', 'Scoped classifiers are only available to '),
-                $.make('a', { href: '#', className: 'NB-manage-scope-pro-link' }, 'Premium Archive'),
-                $.make('span', ' subscribers.')
+                $.make('span', gettext('Scoped classifiers are only available to ')),
+                $.make('a', { href: '#', className: 'NB-manage-scope-pro-link' }, gettext('Premium Archive')),
+                $.make('span', gettext(' subscribers.'))
             ]),
             // Row 3: Type control (full width)
             $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-3' }, [
@@ -4894,63 +4894,63 @@ var classifier_prototype = {
                         className: 'NB-manage-filter-type-all' + (this.manage_filter_types === 'all' ? ' NB-active' : '') + (counts.type_all === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'all'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'All'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('All')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_all)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-title' + (this.manage_filter_types === 'title' ? ' NB-active' : '') + (counts.type_title === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'title'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'Title'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('Title')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_title)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-author' + (this.manage_filter_types === 'author' ? ' NB-active' : '') + (counts.type_author === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'author'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'Author'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('Author')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_author)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-tag' + (this.manage_filter_types === 'tag' ? ' NB-active' : '') + (counts.type_tag === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'tag'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'Tag'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('Tag')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_tag)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-text' + (this.manage_filter_types === 'text' ? ' NB-active' : '') + (counts.type_text === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'text'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'Text'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('Text')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_text)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-feed' + (this.manage_filter_types === 'feed' ? ' NB-active' : '') + (counts.type_feed === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'feed'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'Site'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('Site')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_feed)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-url' + (this.manage_filter_types === 'url' ? ' NB-active' : '') + (counts.type_url === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'url'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'URL'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('URL')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_url)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-prompt' + (this.manage_filter_types === 'prompt' ? ' NB-active' : '') + (counts.type_prompt === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'prompt'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'Content Filter'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('Content Filter')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_prompt)
                     ]),
                     $.make('li', {
                         className: 'NB-manage-filter-type-image_prompt' + (this.manage_filter_types === 'image_prompt' ? ' NB-active' : '') + (counts.type_image_prompt === 0 ? ' NB-zero-count' : ''),
                         'data-type': 'image_prompt'
                     }, [
-                        $.make('span', { className: 'NB-type-label' }, 'Image Filter'),
+                        $.make('span', { className: 'NB-type-label' }, gettext('Image Filter')),
                         $.make('span', { className: 'NB-type-count' }, counts.type_image_prompt)
                     ])
                 ])
@@ -5227,7 +5227,7 @@ var classifier_prototype = {
         var $filter_view_button = has_filter_view && $.make('button', {
             type: 'button',
             className: 'NB-classifier-filter-view-btn',
-            'aria-label': 'View matching stories',
+            'aria-label': gettext('View matching stories'),
             'data-tooltip': 'View matching stories'
         }, NEWSBLUR.ClassifierConstants.MATCHING_STORIES_ICON);
 
@@ -5253,7 +5253,7 @@ var classifier_prototype = {
                     $scope_badge,
                     this.make_notification_bell(type, value, effective_scope, folder_name, score, is_regex),
                     (type !== 'feed' ? $type_label_el : null),
-                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
+                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, gettext('REGEX'))),
                     (type === 'feed' && $.favicon_el(feed_id)),
                     $.make('span', value)
                 ])
@@ -5434,7 +5434,7 @@ var classifier_prototype = {
             return;
         }
 
-        $save.addClass('NB-disabled').text('Saving...');
+        $save.addClass('NB-disabled').text(gettext('Saving...'));
 
         // Separate scoped classifiers (feed_id=0, non-feed scope) from feed-level ones
         var classifiers_by_feed = {};

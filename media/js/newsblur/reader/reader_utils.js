@@ -15,7 +15,7 @@ NEWSBLUR.utils = {
     make_archive_callout: function (message, options) {
         options = options || {};
         var $callout = $.make('div', { className: 'NB-archive-callout', role: 'button' }, [
-            $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
+            $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive')),
             $.make('span', { className: 'NB-archive-callout-text' }, message)
         ]);
         $callout.on('click', function (e) {
@@ -213,11 +213,11 @@ NEWSBLUR.utils = {
     make_feed_chooser: function (options) {
         options = options || {};
         var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
-        var $folders_optgroup = $.make('optgroup', { label: "Folders" });
-        var $feeds_optgroup = $.make('optgroup', { label: "Sites" });
-        var $social_feeds_optgroup = $.make('optgroup', { label: "Blurblogs" });
-        var $saved_searches_optgroup = $.make('optgroup', { label: "Saved Searches" });
-        var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
+        var $folders_optgroup = $.make('optgroup', { label: gettext("Folders") });
+        var $feeds_optgroup = $.make('optgroup', { label: gettext("Sites") });
+        var $social_feeds_optgroup = $.make('optgroup', { label: gettext("Blurblogs") });
+        var $saved_searches_optgroup = $.make('optgroup', { label: gettext("Saved Searches") });
+        var $starred_feeds_optgroup = $.make('optgroup', { label: gettext("Saved Tags") });
         var current_feed_id = options.feed_id;
         var selected_feed_prefix = '';
 
@@ -303,37 +303,37 @@ NEWSBLUR.utils = {
         var $options = $.make('select', { className: 'NB-folders', name: select_name });
 
         if (include_special_folders) {
-            var $option = $.make('option', { value: 'river:global' }, "Global Shared Stories");
+            var $option = $.make('option', { value: 'river:global' }, gettext("Global Shared Stories"));
             $options.append($option);
             if (selected_folder_title == "river:global") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'river:blurblogs' }, "All Shared Stories");
+            var $option = $.make('option', { value: 'river:blurblogs' }, gettext("All Shared Stories"));
             $options.append($option);
             if (selected_folder_title == "river:blurblogs") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'river:infrequent' }, "Infrequent Site Stories");
+            var $option = $.make('option', { value: 'river:infrequent' }, gettext("Infrequent Site Stories"));
             $options.append($option);
             if (selected_folder_title == "river:infrequent") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'trending:well_read' }, "Widely Read Stories");
+            var $option = $.make('option', { value: 'trending:well_read' }, gettext("Widely Read Stories"));
             $options.append($option);
             if (selected_folder_title == "trending:well_read") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'trending:long_reads' }, "Long Reads");
+            var $option = $.make('option', { value: 'trending:long_reads' }, gettext("Long Reads"));
             $options.append($option);
             if (selected_folder_title == "trending:long_reads") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'trending:good_reads' }, "Good Reads");
+            var $option = $.make('option', { value: 'trending:good_reads' }, gettext("Good Reads"));
             $options.append($option);
             if (selected_folder_title == "trending:good_reads") {
                 $option.attr('selected', true);
@@ -462,7 +462,7 @@ NEWSBLUR.utils = {
         if (days < 30) return days + ' days';
         if (days < 365) {
             var months = Math.round(days / 30);
-            return months + (months == 1 ? ' month' : ' months');
+            return interpolate(ngettext("%(count)s month", "%(count)s months", months), {count: months}, true);
         }
         return '1 year';
     },

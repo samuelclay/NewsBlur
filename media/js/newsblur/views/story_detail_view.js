@@ -635,23 +635,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var header_children = [
             $.make('span', { className: 'NB-story-cluster-detail-title' },
-                'Also published by ' + stories.length + ' site' + (stories.length !== 1 ? 's' : ''))
+                interpolate(ngettext("Also published by %(value_1)s site", "Also published by %(value_1)s sites", stories.length), {value_1: stories.length}, true))
         ];
         if (!is_archive) {
             header_children.push($.make('span', { className: 'NB-clustering-detail-info' }, [
                 $.make('span', { className: 'NB-clustering-detail-info-icon', title: '' }, '\u24D8'),
                 $.make('span', { className: 'NB-clustering-detail-info-tooltip' }, [
-                    'These clusters were found because other subscribers share these feeds.',
+                    gettext('These clusters were found because other subscribers share these feeds.'),
                     $.make('br'),
                     $.make('br'),
-                    'Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster.'
+                    gettext('Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster.')
                 ])
             ]));
             if (hidden_count === 0) {
                 header_children.push($.make('a', {
                     href: '#',
                     className: 'NB-clustering-detail-upgrade-pill NB-archive-badge'
-                }, 'Premium Archive'));
+                }, gettext('Premium Archive')));
             }
         }
         var $header = $.make('div', { className: 'NB-story-cluster-detail-header' }, header_children);
@@ -692,11 +692,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!is_archive && hidden_count > 0) {
             var $upsell = $.make('div', { className: 'NB-cluster-locked-upsell' }, [
                 $.make('span', { className: 'NB-cluster-locked-text' },
-                    '+ ' + hidden_count + ' more site' + (hidden_count !== 1 ? 's' : '')),
+                    interpolate(ngettext("+ %(value_1)s more site", "+ %(value_1)s more sites", hidden_count), {value_1: hidden_count}, true)),
                 $.make('a', {
                     href: '#',
                     className: 'NB-clustering-detail-upgrade-pill NB-archive-badge'
-                }, 'Premium Archive')
+                }, gettext('Premium Archive'))
             ]);
             $container.append($upsell);
         }
@@ -725,7 +725,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     render_story_content: function () {
-        this.$(".NB-feed-story-show-changes-text").text((this.model.get('showing_diff') ? "Hide" : "Show") + " story changes");
+        this.$(".NB-feed-story-show-changes-text").text(interpolate(gettext("%(value_1)s story changes"), {value_1: this.model.get('showing_diff') ? "Hide" : "Show"}, true));
         this.$(".NB-feed-story-content").html(this.model.story_content());
 
         this.attach_handlers();
@@ -761,8 +761,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $badge_container = $.make('div', { className: 'NB-briefing-admin-badge' }, [
             badge,
             $.make('div', { className: 'NB-briefing-admin-meta' }, [
-                Inflector.commas(curated_count) + ' curated ' +
-                Inflector.pluralize('story', curated_count)
+                interpolate(gettext("%(value_1)s curated %(value_2)s"), {value_1: Inflector.commas(curated_count), value_2: Inflector.pluralize('story', curated_count)}, true)
             ])
         ]);
         this.$('.NB-feed-story-content').before($badge_container);
@@ -1078,13 +1077,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $sideoption_title = this.$('.NB-feed-story-save .NB-sideoption-title');
 
         if (story.get('starred')) {
-            $sideoption_title.text('Saved');
+            $sideoption_title.text(gettext('Saved'));
         } else {
-            $sideoption_title.text('Removed');
+            $sideoption_title.text(gettext('Removed'));
             $sideoption_title.one('mouseleave', function () {
                 _.delay(function () {
                     if (!story.get('starred')) {
-                        $sideoption_title.text('Save');
+                        $sideoption_title.text(gettext('Save'));
                     }
                 }, 200);
             });
@@ -1312,11 +1311,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var $thirdparty = $target.closest('.NB-sideoption-thirdparty-writerules');
 
             if ($thirdparty.length) {
-                $sideoption.find(".NB-sideoption-title").text("AI Filter");
+                $sideoption.find(".NB-sideoption-title").text(gettext("AI Filter"));
                 $thirdparty.addClass("NB-hover");
                 $sideoption.find(".NB-sideoption-icon-train").addClass("NB-dimmed");
             } else {
-                $sideoption.find(".NB-sideoption-title").text("Train");
+                $sideoption.find(".NB-sideoption-title").text(gettext("Train"));
                 $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
                 $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
             }
@@ -1326,7 +1325,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     mouseleave_sideoption_train: function (event) {
         var $sideoption = $(event.currentTarget);
         $sideoption.off('mousemove.train');
-        $sideoption.find(".NB-sideoption-title").text("Train");
+        $sideoption.find(".NB-sideoption-title").text(gettext("Train"));
         $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
         $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
     },
@@ -2071,7 +2070,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         NEWSBLUR.reader.send_story_to_thirdparty(this.model.id, service);
 
         if (service == 'copyurl' || service == 'copytext') {
-            $sideoption.find(".NB-sideoption-title").text("Copied");
+            $sideoption.find(".NB-sideoption-title").text(gettext("Copied"));
             setTimeout(function () {
                 var label = NEWSBLUR.assets.third_party_sharing_services[service];
                 $sideoption.find(".NB-sideoption-title").text(label);
@@ -2466,22 +2465,22 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             recorder = new NEWSBLUR.VoiceRecorder({
                 on_recording_start: function () {
                     $voice_button.addClass('NB-recording');
-                    $input.attr('placeholder', 'Recording...');
-                    $voice_button.attr('title', 'Stop recording');
+                    $input.attr('placeholder', gettext('Recording...'));
+                    $voice_button.attr('title', gettext('Stop recording'));
                 },
                 on_recording_stop: function () {
                     $voice_button.removeClass('NB-recording');
                     $voice_button.addClass('NB-transcribing');
-                    $input.attr('placeholder', 'Transcribing...');
-                    $voice_button.attr('title', 'Transcribing audio');
+                    $input.attr('placeholder', gettext('Transcribing...'));
+                    $voice_button.attr('title', gettext('Transcribing audio'));
                 },
                 on_transcription_start: function () {
                     // Already showing transcribing state
                 },
                 on_transcription_complete: function (text) {
                     $voice_button.removeClass('NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Ask a question...');
+                    $voice_button.attr('title', gettext('Record voice question'));
+                    $input.attr('placeholder', gettext('Ask a question...'));
 
                     // Set the transcribed text and submit the question automatically
                     $input.val(text);
@@ -2494,7 +2493,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 },
                 on_transcription_error: function (error) {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
+                    $voice_button.attr('title', gettext('Record voice question'));
 
                     // Check if this is a quota/limit error
                     var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
@@ -2502,7 +2501,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     if (is_quota_error) {
                         // Store the error and open Ask AI view to display it
                         $menu.data('transcription_error', error);
-                        $input.attr('placeholder', 'Quota exceeded');
+                        $input.attr('placeholder', gettext('Quota exceeded'));
                         // Auto-submit to open Ask AI view which will show the full error
                         _.delay(function () {
                             self.submit_custom_question_from_menu($menu);

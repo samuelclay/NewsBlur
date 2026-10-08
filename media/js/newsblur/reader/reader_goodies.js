@@ -28,16 +28,16 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
 
     this.$modal = $.make('div', { className: 'NB-modal-goodies NB-modal' }, [
       $.make('div', { className: 'NB-modal-tabs' }, [
-        $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-ios' }, 'iPhone &amp; iPad'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-android' }, 'Android'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-mac' }, 'Mac'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-windows' }, 'Windows &amp; Linux'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-browser' }, 'Browser'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-extras' }, 'Extras')
+        $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-ios' }, gettext('iPhone &amp; iPad')),
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-android' }, gettext('Android')),
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-mac' }, gettext('Mac')),
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-windows' }, gettext('Windows &amp; Linux')),
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-browser' }, gettext('Browser')),
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-extras' }, gettext('Extras'))
       ]),
       $.make('h2', { className: 'NB-modal-title' }, [
         $.make('div', { className: 'NB-icon' }),
-        'Goodies &amp; Extras',
+        gettext('Goodies &amp; Extras'),
         $.make('div', { className: 'NB-icon-dropdown' })
       ]),
       this.make_ios_tab(),
@@ -404,14 +404,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
           button: 'Add to Firefox'
         }),
         $.make('div', { className: 'NB-goodies-tip' }, [
-          $.make('div', { className: 'NB-goodies-app-name' }, 'Open links in a background tab'),
+          $.make('div', { className: 'NB-goodies-app-name' }, gettext('Open links in a background tab')),
           $.make('div', { className: 'NB-goodies-app-meta' }, [
-            'In a new tab, open ',
-            $.make('b', 'about:config'),
-            ', search for ',
-            $.make('b', 'browser.tabs.loadDivertedInBackground'),
-            ', and set it to ',
-            $.make('b', 'true'),
+            gettext('In a new tab, open '),
+            $.make('b', gettext('about:config')),
+            gettext(', search for '),
+            $.make('b', gettext('browser.tabs.loadDivertedInBackground')),
+            gettext(', and set it to '),
+            $.make('b', gettext('true')),
             '. Stories opened with \'o\' will then load in the background.'
           ])
         ])
@@ -454,8 +454,8 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         $.make('div', { className: 'NB-goodies-app' }, [
           $.make('div', { className: 'NB-goodies-app-header' }, [
             $.make('div', { className: 'NB-goodies-app-info' }, [
-              $.make('div', { className: 'NB-goodies-app-name' }, 'Add Site &amp; Share Story Bookmarklet'),
-              $.make('div', { className: 'NB-goodies-app-meta' }, 'Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you\'re reading.')
+              $.make('div', { className: 'NB-goodies-app-name' }, gettext('Add Site &amp; Share Story Bookmarklet')),
+              $.make('div', { className: 'NB-goodies-app-meta' }, gettext('Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you\'re reading.'))
             ]),
             NEWSBLUR.generate_bookmarklet()
           ])
@@ -466,8 +466,8 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         $.make('div', { className: 'NB-goodies-app' }, [
           $.make('div', { className: 'NB-goodies-app-header' }, [
             $.make('div', { className: 'NB-goodies-app-info' }, [
-              $.make('div', { className: 'NB-goodies-app-name' }, 'Custom Add Site URL'),
-              $.make('div', { className: 'NB-goodies-app-meta' }, 'Use this URL template in browser extensions and feed readers to subscribe on NewsBlur.')
+              $.make('div', { className: 'NB-goodies-app-name' }, gettext('Custom Add Site URL')),
+              $.make('div', { className: 'NB-goodies-app-meta' }, gettext('Use this URL template in browser extensions and feed readers to subscribe on NewsBlur.'))
             ]),
             $.make('input', {
               className: 'NB-goodies-custom-input',
@@ -521,7 +521,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
     $.targetIs(e, { tagSelector: '.NB-goodies-bookmarklet-button' }, function ($t, $p) {
       e.preventDefault();
 
-      alert('Drag this button to your bookmark toolbar.');
+      alert(gettext('Drag this button to your bookmark toolbar.'));
     });
 
     $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function ($t, $p) {

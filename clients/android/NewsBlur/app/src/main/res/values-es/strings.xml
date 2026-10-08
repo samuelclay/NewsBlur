@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">No hacer nada</string>
+    <string name="gesture_back">Volver a los feeds</string>
+    <string name="gesture_toggle_read">Leído / sin leer</string>
+    <string name="gesture_markread">Marcar como leído</string>
+    <string name="gesture_markunread">Marcar como no leído</string>
+    <string name="gesture_save">Guardar historia</string>
+    <string name="gesture_unsave">Desguardar historia</string>
+    <string name="gesture_statistics">Estadísticas</string>
+    <string name="gesture_menu">Mostrar acciones</string>
+    <string name="gesture_share">Compartir</string>
+    <string name="gesture_toggle_save">Guardar / Desguardar</string>
+    <string name="gesture_ask_ai">Preguntar a la IA</string>
+    <string name="gesture_train">Entrenar inteligencia</string>
+    <string name="gesture_notifications">Notificaciones</string>
+    <string name="gesture_read_range">Elige hasta cuándo marcar como leído</string>
+    <string name="gesture_feed_list">Lista de feeds</string>
+    <string name="gesture_story_titles">Títulos de historias</string>
+    <string name="gesture_reading_story">Leyendo una historia</string>
+    <string name="gesture_swipe_feeds">Deslizar en fuentes</string>
+    <string name="gesture_swipe_stories">Deslizar en artículos</string>
+    <string name="gesture_left">Deslizar a la izquierda</string>
+    <string name="gesture_right">Deslizar a la derecha</string>
+    <string name="gesture_long_press">Mantener pulsado</string>
+    <string name="gesture_double_tap">Doble toque</string>
+    <string name="gesture_two_finger_double_tap">Doble toque con dos dedos</string>
+    <string name="gesture_left_edge">Deslizar desde el borde izquierdo</string>
+    <string name="gesture_edge_footer">Deslizar desde el borde izquierdo siempre regresa a las fuentes, incluso cuando los deslizamientos de historias están desactivados.</string>
+    <string name="gesture_mark_all">Marcar todas las historias como leídas</string>
+    <string name="gesture_original">Abrir historia original</string>
+    <string name="gesture_text">Mostrar texto original</string>
+    <string name="gesture_unread">Marcar como no leído</string>
+    <string name="gesture_back_titles">Volver a los títulos de las historias</string>
+    <string name="gesture_previous">Historia anterior</string>
+    <string name="gesture_off">Desactivado</string>
+    <string name="gesture_unread_stories">Historias no leídas</string>
+    <string name="gesture_focus_stories">Historias de enfoque</string>
+    <string name="story_title_mark_story_read">Marcar historia como leída…</string>
+    <string name="story_title_list_font_size">Tamaño de fuente del título de la fuente y la noticia</string>
+    <string name="language_title">Idioma</string>
+    <string name="settings_cat_general">General</string>
+    <string name="language_current">Idioma: %1$s</string>
+    <string name="language_automatic">Automático (idioma del dispositivo)</string>
+    <string name="language_save_failed">No se pudo guardar tu idioma. Por favor, inténtalo de nuevo.</string>
+    <string name="try_feed_instafetching">Cargando historias...</string>
+    <string name="try_feed_fetch_failed">No se pudieron obtener las historias. Toca para intentarlo de nuevo.</string>
+    <string name="try_feed_empty">Aún no hay historias disponibles de este sitio. Toca para actualizar.</string>
+    <string name="image_viewer_close">Cerrar imagen</string>
+    <string name="image_viewer_loading">Cargando imagen…</string>
+    <string name="image_viewer_failed">No se pudo cargar la imagen completa.</string>
+    <string name="image_viewer_retry">Intentar de nuevo</string>
+    <string name="image_viewer_copy">Copiar imagen</string>
+    <string name="image_viewer_save">Guardar imagen</string>
+    <string name="image_viewer_share">Compartir Imagen…</string>
+    <string name="image_viewer_open_link">Abrir enlace</string>
+    <string name="image_viewer_copied">Imagen copiada</string>
+    <string name="image_viewer_saved">Guardado en Fotos</string>
+    <string name="image_viewer_save_failed">No se pudo guardar la imagen.</string>
+    <string name="image_viewer_share_failed">No se pudo compartir la imagen.</string>
+    <string name="image_viewer_storage_permission">Permite el acceso al almacenamiento para guardar imágenes, luego intenta de nuevo.</string>
+    <string name="image_viewer_show_actions">Mostrar acciones de imagen</string>
+    <string name="settings_story_toolbar_position">Posición de la barra de herramientas de la lista de artículos</string>
+    <string name="settings_story_toolbar_top">Superior</string>
+    <string name="settings_story_toolbar_bottom">Abajo</string>
+    <string name="story_header_mark_read_cutoff">Elige hasta dónde marcar como leído</string>
+    <string name="login_username_hint">nombre de usuario</string>
+    <string name="login_username_or_email_hint">nombre de usuario o correo electrónico</string>
+    <string name="login_password_hint">contraseña</string>
+    <string name="login_registration_email_hint">dirección de correo electrónico</string>
+    <string name="login_button_login">Iniciar sesión</string>
+    <string name="login_segment_sign_in">Iniciar sesión</string>
+    <string name="login_segment_sign_up">Registrarse</string>
+    <string name="login_forgot_password">Olvidé mi contraseña</string>
+    <string name="login_custom_server">Servidor personalizado autoalojado</string>
+    <string name="login_custom_server_subtitle">Usa tu propia instalación de NewsBlur</string>
+    <string name="login_custom_server_active">Servidor personalizado: %1$s</string>
+    <string name="login_custom_server_edit">Toca para editar o restablecer la URL de tu servidor</string>
+    <string name="login_custom_server_dialog_title">Servidor personalizado</string>
+    <string name="login_custom_server_dialog_body">Deja esto en blanco para usar NewsBlur, o introduce la URL de tu instalación autoalojada. Tiene efecto inmediato para el inicio de sesión y el registro.</string>
+    <string name="login_message_error">Se produjo un problema al iniciar sesión en NewsBlur.</string>
+    <string name="login_logging_in">Iniciando sesión…</string>
+    <string name="login_logged_in">Retículando polígonos…</string>
+    <string name="login_retrieving_feeds">Recuperando fuentes...</string>
+    <string name="login_next">Siguiente</string>
+    <string name="login_custom_server_scheme_error">Se esperaba \'https://\' en la URL del servidor personalizado</string>
+    <string name="login_custom_server_invalid">Introduce una URL de servidor personalizada válida.</string>
+    <string name="login_tagline">Un lector de noticias personal que une
+personas para hablar sobre el mundo.</string>
+    <string name="user_profile_picture">Foto de perfil del usuario</string>
+    <string name="search_for_feed">Buscar feeds</string>
+    <string name="loading">Cargando…</string>
+    <string name="story_navigation_failed">No se pudo abrir la historia. Por favor, inténtalo de nuevo.</string>
+    <string name="orig_text_loading">Obteniendo texto de la noticia…</string>
+    <string name="follow_error">Hubo un problema al seguir al usuario.</string>
+    <string name="unfollow_error">Hubo un problema al dejar de seguir al usuario.</string>
+    <string name="description_login_button">Pulsa para iniciar sesión</string>
+    <string name="description_login_logo">Logotipo de NewsBlur</string>
+    <string name="description_profile_picture">La imagen de perfil del usuario</string>
+    <string name="description_row_folder_icon">icono de carpeta</string>
+    <string name="description_row_feed_icon">icono de feed</string>
+    <string name="description_row_feed_mute_toggle">interruptor de silencio de fuente</string>
+    <string name="description_activity_icon">Un icono que ilustra la actividad del usuario</string>
+    <string name="description_follow_button">Seguir o dejar de seguir a un usuario</string>
+    <string name="description_comment_user">Imagen de usuario del comentario</string>
+    <string name="description_empty_list_image">Marcador de lista vacía</string>
+    <string name="description_menu">Menú</string>
+    <string name="story_settings">Configuración de historia</string>
+    <string name="title_choose_folders">Elegir carpetas para el feed %s</string>
+    <string name="title_rename_feed">Renombrar feed %s</string>
+    <string name="title_rename_folder">Renombrar carpeta %s</string>
+    <string name="all_stories_title">Todas las historias del sitio</string>
+    <string name="daily_briefing_title">Resumen Diario</string>
+    <string name="infrequent_title">Historias Infrecuentes del Sitio</string>
+    <string name="widely_read_stories_title">Historias Ampliamente Leídas</string>
+    <string name="long_reads_title">Lecturas Largas</string>
+    <string name="good_reads_title">Good Reads</string>
+    <string name="all_shared_stories_title">Todas las Historias Compartidas</string>
+    <string name="global_shared_stories_title">Historias Compartidas Globales</string>
+    <string name="read_stories_title">Historias leídas</string>
+    <string name="saved_stories_title">Artículos guardados</string>
+    <string name="saved_searches_title">Búsquedas guardadas</string>
+    <string name="feed_list">Lista de feeds</string>
+    <string name="bottom_next_unread_site">Sitio siguiente sin leer, %1$s</string>
+    <string name="bottom_next_unread_folder">Siguiente carpeta sin leer, %1$s</string>
+    <string name="top_level">NIVEL SUPERIOR</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nCompartido con NewsBlur</string>
+    <string name="share_comment_hint">Comentar (Opcional)</string>
+    <string name="share_save_newsblur">¿Compartir/Guardar \"%s\" en tu Blurblog?</string>
+    <string name="share_this">Compartir</string>
+    <string name="already_shared">Compartido</string>
+    <string name="share_this_story">Compartir</string>
+    <string name="share_with_comment">Compartir con comentario</string>
+    <string name="unshare">Eliminar compartir</string>
+    <string name="update_shared">Actualizar comentario</string>
+    <string name="rename">Renombrar</string>
+    <string name="save_this">Guardar</string>
+    <string name="unsave_this">Desguardar</string>
+    <string name="train_this">Entrenar</string>
+    <string name="ask_ai">Preguntar a la IA</string>
+    <string name="story_mark_unread_state">Leído</string>
+    <string name="story_mark_read_state">Marcar historia como leída</string>
+    <string name="overlay_next">Siguiente</string>
+    <string name="overlay_done">Hecho</string>
+    <string name="overlay_count_toast_N">%d artículos no leídos</string>
+    <string name="overlay_count_toast_1">1 historia sin leer</string>
+    <string name="overlay_text">Texto</string>
+    <string name="overlay_story">Historia</string>
+    <string name="orig_text_failed">Lo sentimos, no se pudo extraer el texto de la historia.</string>
+    <string name="state_all">Todo</string>
+    <string name="state_unread">No leído</string>
+    <string name="state_focus">Enfoque</string>
+    <string name="state_saved">Guardado</string>
+    <string name="reply_to">Responder a \"%s\"</string>
+    <string name="edit_reply">Editar respuesta</string>
+    <string name="edit_reply_update">Actualizar respuesta</string>
+    <string name="edit_reply_delete">Eliminar respuesta</string>
+    <string name="alert_dialog_ok">Aceptar</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">Hecho</string>
+    <string name="alert_dialog_openlink">Abrir enlace</string>
+    <string name="alert_dialog_openimage">Abrir imagen</string>
+    <string name="dialog_folders_save">Guardar carpetas</string>
+    <string name="dialog_story_intel_save">Guardar entrenamiento</string>
+    <string name="dialog_story_tags_save">Guardar etiquetas</string>
+    <string name="profile">Perfil</string>
+    <string name="profile_location_icon">Icono de ubicación</string>
+    <string name="profile_following">Siguiendo</string>
+    <string name="profile_followers">Seguidores</string>
+    <string name="profile_shared">Historias compartidas</string>
+    <string name="profile_ago">hace</string>
+    <string name="profile_recent_actvity">Actividades</string>
+    <string name="profile_recent_interactions">Interacciones</string>
+    <string name="profile_started_following">seguido</string>
+    <string name="profile_you">Tú</string>
+    <string name="profile_you_lower">tú</string>
+    <string name="profile_your">tu</string>
+    <string name="profile_now_following">ahora sigue a %1$s</string>
+    <string name="profile_replied_to">Respondido a</string>
+    <string name="profile_replied_to_your">respondió a %1$s</string>
+    <string name="profile_shared_story">compartido</string>
+    <string name="profile_comment">comentario</string>
+    <string name="profile_reply">responder</string>
+    <string name="profile_button_follow">Seguir</string>
+    <string name="profile_button_unfollow">Dejar de seguir</string>
+    <string name="profile_subscribed_to">suscrito a</string>
+    <string name="profile_saved">guardado</string>
+    <string name="profile_reshared">recompartido</string>
+    <string name="profile_favorited">favoritos</string>
+    <string name="profile_favorited_comments">comentarios favoritos de %1$s en</string>
+    <string name="profile_signup">se registró en Newsblur</string>
+    <string name="profile_comments_on">comentarios en</string>
+    <string name="profile_feed_not_available">Ya no estás suscrito a esta fuente</string>
+    <string name="profile_do_not_follow">No sigues a este usuario</string>
+    <string name="profile_no_interactions">Sin interacciones</string>
+    <string name="menu_profile">Perfil</string>
+    <string name="menu_search_feeds">Busca tus feeds</string>
+    <string name="menu_original">Ver original</string>
+    <string name="menu_send_story">Enviar enlace a…</string>
+    <string name="menu_send_story_full">Enviar artículo a…</string>
+    <string name="menu_mark_feed_as_read">Marcar feed como leído</string>
+    <string name="menu_delete_feed">Eliminar feed</string>
+    <string name="menu_statistics">Estadísticas</string>
+    <string name="menu_delete_saved_search">Eliminar búsqueda guardada</string>
+    <string name="menu_unfollow">Dejar de seguir usuario</string>
+    <string name="menu_choose_folders">Elegir carpetas</string>
+    <string name="menu_notifications_choose">Notificaciones</string>
+    <string name="menu_notifications_disable">Desactivar notificaciones</string>
+    <string name="menu_notifications_focus">Notificar sobre historias de enfoque nuevas</string>
+    <string name="menu_notifications_unread">Notificar sobre todas las historias nuevas</string>
+    <string name="menu_mark_folder_as_read">Marcar carpeta como leída</string>
+    <string name="menu_sharenewsblur">Compartir esta noticia</string>
+    <string name="menu_text_size">Tamaño del texto</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">P</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">Fuente</string>
+    <string name="menu_save_story">Guardar esta historia</string>
+    <string name="menu_unsave_story">Desguardar esta historia</string>
+    <string name="menu_newest_mark_older_stories_as_read">Marcar anteriores como leídas</string>
+    <string name="menu_newest_mark_newer_stories_as_read">Marcar las más nuevas como leídas</string>
+    <string name="menu_oldest_mark_older_stories_as_read">Marcar como leído lo anterior</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">Marcar las más nuevas como leídas</string>
+    <string name="story_menu_open_feed">Abrir feed</string>
+    <string name="story_menu_share_link">Compartir enlace…</string>
+    <string name="story_menu_share_story">Compartir artículo…</string>
+    <string name="menu_mark_story_as_read">Marcar como leído</string>
+    <string name="menu_mark_unread">Marcar como no leído</string>
+    <string name="menu_search_stories">Buscar…</string>
+    <string name="menu_mute_feed">Silenciar fuente</string>
+    <string name="menu_unmute_feed">Silenciar feed</string>
+    <string name="menu_mute_folder">Silenciar carpeta</string>
+    <string name="menu_unmute_folder">Activar sonido de la carpeta</string>
+    <string name="menu_delete_folder">Eliminar carpeta</string>
+    <string name="menu_rename_folder">Renombrar carpeta</string>
+    <string name="menu_instafetch_feed">Historias de Insta-fetch</string>
+    <string name="feed_menu_back_to_actions">Volver a acciones del feed</string>
+    <string name="menu_infrequent_cutoff">Artículos poco frecuentes al mes</string>
+    <string name="menu_intel">Entrenador de inteligencia</string>
+    <string name="menu_rename_feed">Renombrar feed</string>
+    <string name="menu_story_list_style_choose">Estilo de lista</string>
+    <string name="menu_save_search">Guardar Búsqueda</string>
+    <string name="menu_web_search">Búsqueda web</string>
+    <string name="menu_highlight">Resaltar</string>
+    <string name="list_style_list">Lista</string>
+    <string name="list_style_grid_f">Cuadrícula (pequeña)</string>
+    <string name="list_style_grid_m">Cuadrícula (mediana)</string>
+    <string name="list_style_grid_c">Cuadrícula (gruesa)</string>
+    <string name="story_content_preview_none">Solo título (ninguno)</string>
+    <string name="story_content_preview_small">2 líneas (pequeño)</string>
+    <string name="story_content_preview_medium">4 líneas (medio)</string>
+    <string name="story_content_preview_large">6 líneas (grande)</string>
+    <string name="mark_read_on_scroll_disabled">Dejar sin leer</string>
+    <string name="mark_read_on_scroll_enabled">Leer al desplazarse</string>
+    <string name="menu_sort_by">Ordenar por</string>
+    <string name="menu_sort_by_name">Nombre</string>
+    <string name="menu_sort_by_subs">Suscriptores</string>
+    <string name="menu_sort_by_stories_month">Historias por mes</string>
+    <string name="menu_sort_by_recent_story">Historia más reciente</string>
+    <string name="menu_sort_by_number_opens">Número de Aperturas</string>
+    <string name="menu_sort_order">Orden de clasificación</string>
+    <string name="menu_sort_order_ascending">Ascendente</string>
+    <string name="menu_sort_order_descending">Descendente</string>
+    <string name="menu_folder_view">Vista de carpeta</string>
+    <string name="menu_folder_view_nested">Anidado</string>
+    <string name="menu_folder_view_flat">Plano</string>
+    <string name="menu_mute_all">Silenciar todo</string>
+    <string name="menu_mute_none">Silenciar Ninguno</string>
+    <string name="menu_select_all">Seleccionar todo</string>
+    <string name="menu_select_none">No seleccionar ninguno</string>
+    <string name="menu_widget_background">Fondo del widget</string>
+    <string name="menu_widget_background_default">Predeterminado</string>
+    <string name="menu_widget_background_transparent">Transparente</string>
+    <string name="toast_hold_to_select">Mantén presionado para seleccionar texto</string>
+    <string name="logout_warning">¿Seguro que quieres cerrar sesión?</string>
+    <string name="search_mark_read_warning">¡Cuidado! Todas las historias del feed/carpeta se marcarán como leídas, no solo los resultados de la búsqueda. Si realmente desea marcar todas las historias como leídas, por favor, borre su consulta de búsqueda para confirmar.</string>
+    <string name="story_show_changes">Mostrar cambios de la historia</string>
+    <string name="story_hide_changes">Ocultar cambios de historia</string>
+    <string name="story_changes_loading">Cargando cambios de noticias...</string>
+    <string name="story_saved_timestamp">Guardado %s</string>
+    <string name="your_feeds_search_hint">Busca en tus feeds</string>
+    <string name="feed_list_clear_search">Borrar búsqueda</string>
+    <string name="story_search_hint">Buscar historias</string>
+    <string name="discover_related_sites_title">Sitios Relacionados</string>
+    <string name="discover_show_grid">Mostrar cuadrícula</string>
+    <string name="discover_show_list">Mostrar lista</string>
+    <string name="discover_loading">Encontrando sitios relacionados…</string>
+    <string name="discover_no_related_sites">No se encontraron sitios relacionados</string>
+    <string name="discover_view_mode_grid">Cuadrícula</string>
+    <string name="discover_view_mode_list">Lista</string>
+    <string name="discover_try">Probar</string>
+    <string name="discover_add">Añadir</string>
+    <string name="discover_subscribed">Suscrito</string>
+    <string name="discover_updated_today">Actualizado hoy</string>
+    <string name="discover_updated_relative">Actualizado %s</string>
+    <string name="discover_stale_updated_relative">Antiguo — actualizado %s</string>
+    <string name="discover_stale_date">Antigua. Última historia %s</string>
+    <string name="discover_last_fetched_relative">Recibido hace %s</string>
+    <string name="try_feed_banner_subtitle">Vista previa. Aún no suscrito.</string>
+    <string name="try_feed_subscribe_button">Suscribirse</string>
+    <string name="empty_search_notice">Escribe un término de búsqueda para empezar</string>
+    <string name="menu_add_feed">Añadir + Descubrir sitios</string>
+    <string name="adding_feed_progress">Añadiendo feed…</string>
+    <string name="feed_list_search_hint">Busca feeds</string>
+    <string name="add_folder_name">Por favor, introduce el nombre de la carpeta</string>
+    <string name="add_tag_name">Por favor, añade un nombre de etiqueta</string>
+    <string name="add_new_folder">+ Añadir nueva carpeta</string>
+    <string name="add_new_tag">+ Añadir nueva etiqueta</string>
+    <string name="add_tag">Añadir etiqueta</string>
+    <string name="new_folder_name_hint">Introduce el nuevo nombre de la carpeta</string>
+    <string name="new_tag_name_hint">Introduce el nuevo nombre de la etiqueta</string>
+    <string name="add_feed_error">No se pudo añadir el feed</string>
+    <string name="add_folder_error">No se pudo añadir la carpeta</string>
+    <string name="menu_mark_all_as_read">Marcar todo como leído</string>
+    <string name="menu_logout">Cerrar sesión</string>
+    <string name="contact_us">Contáctanos</string>
+    <string name="contact_description">NewsBlur es un lector y agregador de noticias desarrollado por NewsBlur, Inc. Contacta al equipo de NewsBlur para soporte de la aplicación, preguntas o comentarios.</string>
+    <string name="contact_email_label">Enviar correo electrónico al desarrollador</string>
+    <string name="contact_send_email">Enviar correo electrónico</string>
+    <string name="contact_website_label">Sitio web de NewsBlur</string>
+    <string name="contact_open_website">Visitar sitio web</string>
+    <string name="contact_back">Atrás</string>
+    <string name="contact_no_email_app">No hay ninguna aplicación de correo electrónico instalada. Puedes seleccionar y copiar la dirección de correo electrónico en esta página.</string>
+    <string name="contact_no_browser">No hay navegador web instalado. Puedes seleccionar y copiar la dirección del sitio web en esta página.</string>
+    <string name="menu_feedback">Enviar comentarios de la app</string>
+    <string name="menu_feedback_post">Crear una publicación de comentarios</string>
+    <string name="menu_feedback_email">Enviar un informe de error por email</string>
+    <string name="menu_theme_choose">Tema</string>
+    <string name="menu_spacing">Espaciado</string>
+    <string name="menu_subscription">Suscripción…</string>
+    <string name="description_add_new_folder_icon">Icono para añadir una carpeta nueva</string>
+    <string name="menu_loginas">Iniciar sesión como…</string>
+    <string name="loginas_title">Iniciar sesión como usuario</string>
+    <string name="empty_list_view_loading">Cargando…</string>
+    <string name="story_loading_description">Cargando historias</string>
+    <string name="empty_list_view_no_stories">No hay artículos para leer</string>
+    <string name="empty_list_view_no_stories_unread">No hay historias sin leer</string>
+    <string name="reading_placeholder_select_story">Selecciona una historia para leer</string>
+    <string name="empty_list_view_no_unread_stories">No tienes historias sin leer.</string>
+    <string name="empty_list_view_no_focus_stories">No tienes historias sin leer en Enfoque.\n\nCambia a Todas o Sin leer.</string>
+    <string name="empty_list_view_no_saved_stories">No tienes historias guardadas.\n\nCambiar a Todas o Sin leer.</string>
+    <string name="login_registration_custom_server">Configurar servidor personalizado</string>
+    <string name="login_registration_reset_url">Restablecer</string>
+    <string name="login_registration_register">Registrarse</string>
+    <string name="register_message_error">Hubo un problema al registrarse en NewsBlur.</string>
+    <string name="need_to_login">
+        <u>¡Tengo que iniciar sesión!</u>
+    </string>
+    <string name="need_to_register">
+        <u>Necesito registrarme</u>
+    </string>
+    <string name="public_comment_count">%d comentarios públicos</string>
+    <string name="friends_comments_count">%d comentarios</string>
+    <string name="friends_shares_count">%d compartidos</string>
+    <string name="unknown_user">Usuario desconocido</string>
+    <string name="delete_feed_message">¿Eliminar feed \"%s\"?</string>
+    <string name="delete_saved_search_message">¿Eliminar búsqueda guardada %s?</string>
+    <string name="delete_folder_message">Eliminar la carpeta \"%s\" y darse de baja de todos los feeds dentro?</string>
+    <string name="deleting_folder_message">Eliminando la carpeta \"%s\"</string>
+    <string name="add_saved_search_message">Guardar búsqueda \"%s\"?</string>
+    <string name="unfollow_message">Dejar de seguir \"%s\"?</string>
+    <string name="feed_subscribers">%s suscriptores</string>
+    <string name="feed_opens">%d aperturas</string>
+    <string name="feed_stories_per_month">%d historias/mes</string>
+    <string name="forwarding_email_address">Dirección de correo electrónico de reenvío</string>
+    <string name="setup_instructions">Instrucciones de configuración \u25bc</string>
+    <string name="setup_instructions_details">Para leer tus boletines por correo electrónico en NewsBlur, reenvíalos a la dirección de correo personalizada que aparece arriba.\n\nEn Gmail, ve a Configuración &gt; Reenvío y haz clic en Añadir una dirección de reenvío. Añade tu dirección personalizada de NewsBlur.\n\nGmail te guiará para confirmar la dirección de correo. Luego, vuelve a NewsBlur y busca el correo de confirmación en la carpeta «Boletines».\n\nA continuación, crea un filtro para todos tus boletines y configúralo para que los reenvíe a la dirección personalizada de NewsBlur.</string>
+    <string name="copy_email">Copiar correo electrónico</string>
+    <string name="stories_shortcuts">Atajos de historias</string>
+    <string name="feeds_shortcuts">Accesos directos de feeds</string>
+    <string name="import_export">Importar/Exportar…</string>
+    <string name="settings">Preferencias…</string>
+    <string name="menu_mute_sites">Silenciar sitios...</string>
+    <string name="mute_sites">Silenciar sitios</string>
+    <string name="menu_widget">Widget…</string>
+    <string name="menu_notifications">Notificaciones…</string>
+    <string name="widget">Widget</string>
+    <string name="title_widget_setup">Toca para configurar en NewsBlur</string>
+    <string name="title_no_subscriptions">No se detectaron suscripciones activas</string>
+    <string name="title_widget_loading">Cargando…</string>
+    <string name="menu_newsletters">Boletines informativos…</string>
+    <string name="menu_shortcuts">Atajos…</string>
+    <string name="main_menu_preferences">Preferencias</string>
+    <string name="main_menu_mute_sites">Silenciar Sitios</string>
+    <string name="main_menu_widget_sites">Sitios de widgets</string>
+    <string name="main_menu_notifications">Notificaciones</string>
+    <string name="main_menu_interactions">Interacciones</string>
+    <string name="main_menu_upgrade_premium">Actualizar a Premium</string>
+    <string name="main_menu_upgrade_archive">Actualizar a Archivo</string>
+    <string name="main_menu_premium_archive">Archivo Premium</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">Foro de soporte</string>
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">Importar/Exportar OPML</string>
+    <string name="notifications_title">Notificaciones</string>
+    <string name="premium_subscribers_folder">El River of News completo es una función premium</string>
+    <string name="premium_subscribers_allstories">Leer todas las historias del sitio es una función premium</string>
+    <string name="premium_subscribers_saved_tag">Leer historias guardadas por etiqueta es una función premium</string>
+    <string name="premium_subscribers_search">La búsqueda es una función premium</string>
+    <string name="premium_subscribers">suscriptores premium</string>
+    <string name="premium_upgrade_button">Actualizar a Premium</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
+    <string name="thank_you_for_subscribing">¡Gracias por suscribirte!</string>
+    <string name="premium_subscription_renewal">Tu suscripción se renovará el %s</string>
+    <string name="premium_subscription_expiration">Tu suscripción expirará el %s</string>
+    <string name="premium_subscription_no_expiration">Tu suscripción está configurada para nunca expirar. ¡Wow!</string>
+    <string name="premium_policies">Consulta la <a href="https://newsblur.com/privacy">política de privacidad</a> y los <a href="https://newsblur.com/tos">términos de uso</a> de NewsBlur para obtener detalles.</string>
+    <string name="premium_subscription_header">Suscripción Premium</string>
+    <string name="archive_subscription_header">Archivo Premium</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">Suscripción Premium de NewsBlur</string>
+    <string name="archive_subscription_title">Archivo Premium de NewsBlur</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">$35.99 por año ($3.00/mes)</string>
+    <string name="premium_subscription_active">Tu suscripción premium está activa</string>
+    <string name="archive_subscription_active">Tu suscripción premium al archivo está activa</string>
+    <string name="pro_subscription_active">Tu suscripción premium pro está activa</string>
+    <string name="subscription_manage">Gestionar suscripción</string>
+    <string name="subscription_details_error">Error al recuperar detalles de la suscripción</string>
+    <string name="no_subscription_available">No hay suscripción disponible</string>
+    <string name="subscription_unavailable">Actualmente no disponible en Android</string>
+    <string name="subscription_coming_soon">Próximamente</string>
+    <string name="subscription_upgrade_from_premium">Actualizar desde Premium</string>
+    <string name="subscription_upgrade_from_archive">Actualizar desde Archivo</string>
+    <string name="subscription_price_yearly">%1$s/año (%2$s/mes)</string>
+    <string name="subscription_price_monthly">%1$s/mes</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">Tu suscripción premium de archivo incluye todo lo anterior</string>
+    <string name="premium_pro_includes_above">Tu suscripción premium pro incluye todo lo anterior</string>
+    <string name="premium_enable_sites">Sigue hasta 1.024 sitios</string>
+    <string name="premium_sync">Sitios actualizados hasta 5 veces más a menudo</string>
+    <string name="premium_read_by_folder">Río de noticias (lectura por carpeta)</string>
+    <string name="premium_search">Busca sitios y carpetas</string>
+    <string name="premium_searchable_tags">Guarda historias con etiquetas buscables</string>
+    <string name="premium_privacy_options">Opciones de privacidad para tu blurblog</string>
+    <string name="premium_custom_rss">Feeds RSS personalizados para historias guardadas</string>
+    <string name="premium_text_view">La vista de texto extrae convenientemente la noticia</string>
+    <string name="premium_discover_related">Descubre historias y sitios relacionados</string>
+    <string name="premium_shiloh">Alimentas a Lyric, el perro hambriento de NewsBlur, durante 6 días</string>
+    <string name="archive_everything_premium">Todo en la suscripción premium, por supuesto</string>
+    <string name="archive_enable_sites">Sigue hasta 4.096 sitios</string>
+    <string name="archive_marked_as_read">Elige cuándo se marcan las historias como leídas automáticamente</string>
+    <string name="archive_customize_auto_read">Personaliza la lectura automática por sitio o carpeta</string>
+    <string name="archive_story_searchable_forever">Cada historia de cada sitio se archiva y se puede buscar para siempre</string>
+    <string name="archive_back_filled">Las fuentes que admiten paginación se rellenan para un archivo completo</string>
+    <string name="archive_train_full_text">Entrenar historias con contenido de texto completo</string>
+    <string name="archive_discover_related">Descubre historias relacionadas en tu archivo</string>
+    <string name="archive_export_trained_stories">Exportar historias entrenadas de carpetas como feeds RSS</string>
+    <string name="archive_stories_unread_forever">Las historias pueden permanecer sin leer para siempre</string>
+    <string name="archive_ask_ai">Haz preguntas a la IA sobre artículos</string>
+    <string name="archive_filter_by_date_range">Filtrar historias por rango de fechas</string>
+    <string name="archive_train_folder">Aplicar entrenamiento a una carpeta</string>
+    <string name="archive_train_globally">Aplicar entrenamiento globalmente</string>
+    <string name="pro_everything_archive">Todo en la suscripción de archivo, por supuesto</string>
+    <string name="pro_enable_sites">Sigue hasta 10.000 sitios</string>
+    <string name="pro_all_feeds_fetched">Todos los feeds se obtienen cada 5-15 minutos</string>
+    <string name="pro_regex_train">Entrenar artículos con expresiones regulares</string>
+    <string name="pro_priority_support">Soporte prioritario</string>
+    <string name="pro_natural_language_filters">Filtros de lenguaje natural</string>
+    <string name="pro_natural_language_search">Búsqueda en lenguaje natural</string>
+    <string name="settings_cat_offline">Lectura sin conexión</string>
+    <string name="settings_enable_offline">Descargar historias</string>
+    <string name="settings_enable_offline_sum">Obtener historias periódicamente en segundo plano</string>
+    <string name="settings_enable_image_prefetch">Descargar imágenes</string>
+    <string name="settings_enable_image_prefetch_sum">Pre-descargar imágenes para lectura sin conexión</string>
+    <string name="settings_keep_old_stories">Conservar historias después de leerlas</string>
+    <string name="settings_keep_old_stories_sum">Desactivar para reducir el uso de almacenamiento</string>
+    <string name="mute_config_title">Puedes seguir hasta 64 sitios con una cuenta estándar gratuita</string>
+    <string name="mute_config_message">Por favor, silencia %d sitios o restablece a los sitios más populares.</string>
+    <string name="mute_config_reset_button">Restablecer a sitios populares</string>
+    <string name="mute_config_upgrade_to_premium">Mejorar a Premium</string>
+    <string name="mute_config_upgrade_subtitle">Suscríbete a 1.024 sitios</string>
+    <string name="mute_config_upgrade">Actualizar</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">%d sitios disponibles</string>
+    <string name="mute_config_sites_over">%d por encima del límite</string>
+    <string name="menu_network_select">Descargar usando…</string>
+    <string name="menu_network_select_sum">Restringir datos en segundo plano a redes elegidas</string>
+    <string name="menu_network_select_opt_any">Cualquier Red</string>
+    <string name="menu_network_select_opt_nomo">Cualquier Wifi o Ethernet</string>
+    <string name="menu_network_select_opt_nomononme">Solo Wifi o Ethernet sin medidor</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">Eliminar noticias sin conexión…</string>
+    <string name="menu_delete_offline_stories_sum">Libera espacio borrando historias e imágenes almacenadas</string>
+    <string name="menu_delete_offline_stories_confirmation">¡Se han borrado todas las historias e imágenes!</string>
+    <string name="menu_cache_age_select">Cuánto tiempo conservar los artículos…</string>
+    <string name="menu_cache_age_select_sum">Borrar historias almacenadas para lectura sin conexión</string>
+    <string name="menu_cache_age_select_opt_2d">2 días (reduce el uso de almacenamiento)</string>
+    <string name="menu_cache_age_select_opt_7d">7 días</string>
+    <string name="menu_cache_age_select_opt_14d">14 días</string>
+    <string name="menu_cache_age_select_opt_30d">30 días (reduce el uso de red)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">Lista de feeds</string>
+    <string name="setting_feed_list_order">Orden de la lista de feeds...</string>
+    <string name="settings_enable_row_global_shared">Mostrar noticias compartidas globales</string>
+    <string name="settings_enable_row_global_shared_sum">Mostrar la carpeta global de historias compartidas</string>
+    <string name="settings_enable_row_infrequent_stories">Mostrar historias infrecuentes</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Mostrar la carpeta de historias infrecuentes del sitio</string>
+    <string name="settings_enable_row_daily_briefing">Mostrar resumen diario</string>
+    <string name="settings_enable_row_daily_briefing_sum">Mostrar la carpeta del Resumen Diario</string>
+    <string name="settings_enable_row_widely_read_stories">Mostrar artículos muy leídos</string>
+    <string name="settings_enable_row_widely_read_stories_sum">Mostrar la carpeta Historias más leídas</string>
+    <string name="settings_enable_row_long_reads">Mostrar lecturas largas</string>
+    <string name="settings_enable_row_long_reads_sum">Mostrar la carpeta de Lecturas Largas</string>
+    <string name="settings_enable_row_good_reads">Mostrar buenas lecturas</string>
+    <string name="settings_enable_row_good_reads_sum">Mostrar la carpeta Buenas lecturas</string>
+    <string name="settings_cat_story_list">Lista de historias</string>
+    <string name="settings_cat_story_layout">Diseño de Historias</string>
+    <string name="settings_app_icon">Icono de la aplicación</string>
+    <string name="settings_app_icon_choose">Elegir Icono</string>
+    <string name="settings_app_icon_summary">12 sabores de color con variantes claras y oscuras.</string>
+    <string name="settings_app_icon_footer">Los suscriptores Premium pueden elegir un icono personalizado de NewsBlur. Cada opción incluye variantes claras y oscuras.</string>
+    <string name="settings_app_icon_premium">Premium</string>
+    <string name="settings_app_icon_light">Claro</string>
+    <string name="settings_app_icon_dark">Oscuro</string>
+    <string name="settings_app_icon_save_failed">No se pudo cambiar el icono de la aplicación</string>
+    <string name="settings_app_icon_appearance_light">Claro</string>
+    <string name="settings_app_icon_appearance_auto">Usar ambos</string>
+    <string name="settings_app_icon_appearance_dark">Oscuro</string>
+    <string name="settings_app_icon_appearance_light_caption">Mantiene el ícono de luz sin importar la configuración de tu dispositivo.</string>
+    <string name="settings_app_icon_appearance_auto_caption">El icono sigue la apariencia clara y oscura de tu dispositivo.</string>
+    <string name="settings_app_icon_appearance_dark_caption">Mantiene el icono oscuro sin importar cómo esté configurado tu dispositivo.</string>
+    <string name="oldest">Más antiguo</string>
+    <string name="newest">Más reciente</string>
+    <string name="menu_story_order">Orden de historias</string>
+    <string name="settings_story_order">Orden de historias...</string>
+    <string name="story_header_options">Opciones</string>
+    <string name="story_header_search">Buscar</string>
+    <string name="story_header_related_sites">Sitios Relacionados</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">Cómodo</string>
+    <string name="compact">Compacto</string>
+    <string name="alphabetical">Alfabético</string>
+    <string name="most_used_at_top">Los más usados arriba</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">Todas las historias</string>
+    <string name="unread_only">Solo no leídos</string>
+    <string name="menu_story_content_preview">Vista previa del contenido de la noticia</string>
+    <string name="menu_story_thumbnail_preview">Vista previa de miniatura</string>
+    <string name="menu_mark_read_on_scroll">Marcar como leído al desplazarse</string>
+    <string name="settings_read_filter">Filtrar historias leídas…</string>
+    <string name="settings_read_filter_title">Artículos mostrados</string>
+    <string name="menu_read_filter">Filtro de historias leídas</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>Marcar todo como leído</item>
+        <item>Cancelar</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Marcar historias antiguas como leídas</item>
+        <item>Cancelar</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="many">Más antiguo que %d días</item>
+        <item quantity="one">Mayor que %d día</item>
+        <item quantity="other">Más antiguo que %d días</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="many">%s suscriptores</item>
+        <item quantity="one">%s suscriptor</item>
+        <item quantity="other">%s suscriptores</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="many">%s historias/mes</item>
+        <item quantity="one">%s historia/mes</item>
+        <item quantity="other">%s historias/mes</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="many">También publicado por %d sitios</item>
+        <item quantity="one">También publicado por el sitio %d</item>
+        <item quantity="other">También publicado por %d sitios</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="many">+ %d sitios más</item>
+        <item quantity="one">+ %d sitio más</item>
+        <item quantity="other">+ %d sitios más</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>Marcar historias más recientes como leídas</item>
+        <item>Cancelar</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">Abrir automáticamente la primera historia</string>
+    <string name="settings_auto_open_first_unread_sum">Abrir automáticamente la primera historia no leída en la lista de historias</string>
+    <string name="settings_mark_read_on_feed_scroll">Marcar títulos de historias como leídos al desplazarse</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Marcar automáticamente las noticias como leídas al pasar por encima</string>
+    <string name="settings_story_clustering">Agrupar historias relacionadas</string>
+    <string name="settings_story_clustering_summary">Mostrar historias duplicadas de otros feeds debajo del título de una historia</string>
+    <string name="settings_cluster_matches">Coincidencias de clúster</string>
+    <string name="settings_cluster_matches_summary">Elige si los clústeres muestran solo títulos duplicados o también historias relacionadas</string>
+    <string name="settings_story_clustering_save_failed">No se pudo guardar la preferencia de agrupación de historias</string>
+    <string name="settings_story_clustering_title_only">Solo título</string>
+    <string name="settings_cluster_mode_title_match_only">Solo coincidencia de título</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Coincidencia del título y relacionados</string>
+    <string name="settings_cluster_mark_read_matches">Marcar historias coincidentes como leídas</string>
+    <string name="settings_cluster_mark_read_related">Marcar artículos relacionados como leídos</string>
+    <string name="settings_cluster_mark_read_matches_summary">Cuando lees una historia, también marcas sus historias coincidentes como leídas.</string>
+    <string name="settings_cluster_mark_read_related_summary">Cuando lee una historia, marque también como leídas las historias coincidentes y relacionadas.</string>
+    <string name="settings_cluster_mark_read_save_failed">No se pudo guardar la preferencia de lectura de historias relacionadas</string>
+    <string name="settings_story_clustering_title">Título</string>
+    <string name="settings_story_clustering_only">solo</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">Coincidencia</string>
+    <string name="story_cluster_badge_related">Relacionado</string>
+    <string name="settings_mark_story_read">Marcar una historia como leída...</string>
+    <string name="settings_mark_story_read_title">Marcar historias como leídas</string>
+    <string name="mark_story_read_immediately">Solo al seleccionar</string>
+    <string name="mark_story_read_on_scroll">Al desplazarse o seleccionar</string>
+    <string name="mark_story_read_1_second">Después de 1 segundo</string>
+    <string name="mark_story_read_2_seconds">Después de 2 segundos</string>
+    <string name="mark_story_read_3_seconds">Después de 3 segundos</string>
+    <string name="mark_story_read_5_seconds">Después de 5 segundos</string>
+    <string name="mark_story_read_10_seconds">Después de 10 segundos</string>
+    <string name="mark_story_read_20_seconds">Después de 20 segundos</string>
+    <string name="mark_story_read_30_seconds">Después de 30 segundos</string>
+    <string name="mark_story_read_45_seconds">Después de 45 segundos</string>
+    <string name="mark_story_read_60_seconds">Después de 60 segundos</string>
+    <string name="mark_story_read_manually">Manualmente</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">Compartir historias</string>
+    <string name="settings_show_public_comments">Mostrar comentarios públicos</string>
+    <string name="settings_reading">Lectura</string>
+    <string name="settings_show_ask_ai">Mostrar Ask AI</string>
+    <string name="settings_content_preview">Texto de vista previa del contenido…</string>
+    <string name="settings_thumbnails_style">Miniaturas de vista previa de imágenes…</string>
+    <string name="settings_preview_images_title">Vista previa de imágenes</string>
+    <string name="settings_preview_images_segment_off">Desactivado</string>
+    <string name="settings_preview_images_segment_left_small">L pequeño</string>
+    <string name="settings_preview_images_segment_left_large">L grande</string>
+    <string name="settings_preview_images_segment_right_small">R pequeño</string>
+    <string name="settings_preview_images_segment_right_large">R grande</string>
+    <string name="settings_notifications">Notificaciones</string>
+    <string name="settings_enable_notifications">Habilitar notificaciones</string>
+    <string name="ask_ai_upgrade_archive">Actualizar a Archivo Premium</string>
+    <string name="ask_ai_ask_question">Haz una pregunta…</string>
+    <string name="ask_ai_follow_up">Pregunta de seguimiento…</string>
+    <string name="ask_ai_ask">Preguntar</string>
+    <string name="ask_ai_send">Enviar</string>
+    <string name="ask_ai_reask">Volver a preguntar</string>
+    <string name="ask_ai_recording">Grabando…</string>
+    <string name="ask_ai_transcribing">Transcribiendo…</string>
+    <string name="ask_ai_microphone_permission_denied">Permiso de micrófono denegado</string>
+    <string name="ask_ai_microphone_error">No se puede grabar audio</string>
+    <string name="settings_confirm_mark_all_read_note">Marcar todas las historias del sitio como leídas siempre pide confirmación. Mantén presionado el botón de marcar como leído para más opciones.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">Ambos</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">Carpetas</string>
+    <string name="settings_confirm_mark_all_read_segment_never">Nunca</string>
+    <string name="settings_after_mark_read_title">Después de marcar como leído</string>
+    <string name="settings_after_mark_read_next">Abrir siguiente lista</string>
+    <string name="settings_after_mark_read_stay">Permanecer aquí</string>
+    <string name="settings_when_opening_site_title">Al abrir un sitio</string>
+    <string name="settings_when_opening_site_stories">Mostrar historias</string>
+    <string name="settings_when_opening_site_first_story">Abrir primera historia</string>
+    <string name="story_cluster_upgrade_archive">Archivo Premium</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">Pequeña a la izquierda</string>
+    <string name="story_thumbnail_left_hand_large">Izquierda grande</string>
+    <string name="story_thumbnail_right_hand_small">Pequeña a la derecha</string>
+    <string name="story_thumbnail_right_hand_large">Derecha grande</string>
+    <string name="story_thumbnail_no_image_preview">Sin vista previa de imagen</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">Historias de sitios con</string>
+    <string name="infrequent_5">&lt; 5 historias/mes</string>
+    <string name="infrequent_15">&lt; 15 historias/mes</string>
+    <string name="infrequent_30">&lt; 30 historias/mes</string>
+    <string name="infrequent_60">&lt; 60 historias/mes</string>
+    <string name="infrequent_90">&lt; 90 historias/mes</string>
+    <string name="story_intel_dialog_title">¿Qué te gusta y qué no te gusta de este artículo?</string>
+    <string name="feed_intel_dialog_title">¿Qué te gusta y qué no te gusta de este sitio?</string>
+    <string name="intel_title_header">Títulos de historias</string>
+    <string name="feed_intel_title_header">Títulos</string>
+    <string name="intel_tag_header">Etiquetas de historias</string>
+    <string name="feed_intel_tag_header">Etiquetas</string>
+    <string name="intel_author_header">Autores de historias</string>
+    <string name="feed_intel_author_header">Autores</string>
+    <string name="intel_feed_header">Todo por publicador</string>
+    <string name="intel_super_dislike">Rechazo total</string>
+    <string name="explainer_super_dislike">Super Dislike</string>
+    <string name="explainer_like">Me gusta</string>
+    <string name="explainer_dislike">No me gusta</string>
+    <string name="explainer_beats">temas</string>
+    <string name="explainer_example1_header">Un solo \"me gusta\" anula cualquier número de \"no me gusta\"</string>
+    <string name="explainer_example1_result">El artículo se muestra en la vista de Enfoque</string>
+    <string name="explainer_example2_header">Un solo «me disgusta mucho» lo anula todo</string>
+    <string name="explainer_example2_result">La historia siempre está oculta</string>
+    <string name="auto">Automático</string>
+    <string name="light">Claro</string>
+    <string name="sepia">Sepia</string>
+    <string name="dark">Oscuro</string>
+    <string name="black">Negro</string>
+    <string name="settings_gestures">Gestos</string>
+    <string name="sync_status_housekeeping">Limpiando…</string>
+    <string name="sync_status_actions">Poniendo al día %d acciones de lectura…</string>
+    <string name="sync_status_recounts">Poniendo al día las acciones de lectura...</string>
+    <string name="sync_status_ffsync">En camino…</string>
+    <string name="sync_status_cleanup">Limpiando…</string>
+    <string name="sync_status_starred">Sincronizando acciones de historias guardadas…</string>
+    <string name="sync_status_stories">Obteniendo historias nuevas...</string>
+    <string name="sync_status_unreads">Almacenando %s historias no leídas…</string>
+    <string name="sync_status_images">Almacenando %d imágenes…</string>
+    <string name="sync_status_offline">Desconectado</string>
+    <string name="sync_status_feed_add">Añadiendo fuente</string>
+    <string name="sync_status_done">Todo listo</string>
+    <string name="volume_key_navigation">Navegación con teclas de volumen…</string>
+    <string name="off">Desactivado</string>
+    <string name="volume_up_next">Arriba = siguiente historia</string>
+    <string name="volume_down_next">Abajo = siguiente historia</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">Abrir siguiente fuente/carpeta después de leer</string>
+    <string name="settings_load_next_on_mark_read_summary">Cargar el siguiente feed/carpeta después de marcar como leído</string>
+    <string name="settings_confirm_mark_all_read">Confirmar marcar todo como leído en…</string>
+    <string name="none">Ninguno</string>
+    <string name="feed_and_folder">Fuentes y carpetas</string>
+    <string name="folder_only">Solo carpetas</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">Confirmar marcar como leídos los anteriores/posteriores</string>
+    <string name="settings_ltr_gesture_action">Deslizamiento hacia la derecha en la lista de historias...</string>
+    <string name="gest_action_none">Ninguna acción</string>
+    <string name="gest_action_back">Volver a la lista anterior</string>
+    <string name="gest_action_toggle_read">Alternar estado de lectura de la historia</string>
+    <string name="gest_action_markread">Marcar historia como leída</string>
+    <string name="gest_action_markunread">Marcar historia como no leída</string>
+    <string name="gest_action_save">Guardar noticia</string>
+    <string name="gest_action_unsave">Guardar historia</string>
+    <string name="gest_action_statistics">Estadísticas del sitio</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">Deslizar hacia la izquierda en el título de la historia…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">Navegador predeterminado…</string>
+    <string name="font">Fuente…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Fuente anónima</string>
+    <string-array name="default_browser_entries">
+        <item>Predeterminado del sistema</item>
+        <item>Navegador en la aplicación</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">Historias nuevas</string>
+    <string name="go_to_feed">Ir al feed</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">Buscar</string>
+    <string name="add_feed">Añadir feed</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">Correo electrónico</string>
+    <string name="notification_web">Web</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">Sin notificaciones de feed</string>
+    <string name="notification_permissions_context">Se requieren permisos para publicar notificaciones</string>
+    <string name="notification_permissions_rationale">El permiso de notificaciones debe agregarse manualmente en la configuración de la aplicación antes de intentar habilitar las notificaciones de nuevo</string>
+    <string name="write_storage_permission_opml">Se requiere permiso de escritura de almacenamiento para la exportación de OPML</string>
+    <string name="story_saved">Historia marcada como guardada</string>
+    <string name="story_unsaved">Historia marcada como no guardada</string>
+    <string name="story_read">Historia marcada como leída</string>
+    <string name="story_unread">Historia marcada como no leída</string>
+    <string name="unread_stories">Historias no leídas</string>
+    <string name="focused_stories">Historias enfocadas</string>
+    <string name="saved_stories">Historias guardadas</string>
+    <string name="short_next_story">Siguiente Historia</string>
+    <string name="short_previous_story">Historia Anterior</string>
+    <string name="short_text_view">Vista de Texto</string>
+    <string name="short_page_down">Bajar página</string>
+    <string name="short_page_down_key">espacio</string>
+    <string name="short_page_up">Página arriba</string>
+    <string name="short_page_up_key">espacio \u21E7</string>
+    <string name="short_next_unread_story">Siguiente Historia No Leída</string>
+    <string name="short_toggle_read_unread">Alternar Leído/No leído</string>
+    <string name="short_save_unsave_story">Guardar/Desguardar Historia</string>
+    <string name="short_open_in_browser">Abrir en el navegador</string>
+    <string name="short_share_this_story">Compartir esta historia</string>
+    <string name="short_scroll_to_comments">Desplazarse a los comentarios</string>
+    <string name="short_open_story_trainer">Abrir Entrenador de Historias</string>
+    <string name="short_open_all_stories">Abrir todas las noticias del sitio</string>
+    <string name="short_switch_views">Cambiar Vistas</string>
+    <string name="short_add_site">Añadir sitio</string>
+    <string name="registering">Registrando...</string>
+    <string name="renaming_feed_message">Renombrando feed %s</string>
+    <string name="renaming_folder_message">Renombrando carpeta %s</string>
+    <string name="parent_folder">Carpeta padre</string>
+    <string name="folder_added">Carpeta añadida</string>
+    <string name="new_folder_parent">En: %1$s</string>
+    <string name="ui_014f8b8d982f">Añade filtros personalizados por palabras clave que se convertirán en secciones del resumen</string>
+    <string name="ui_05392d13e2f2">Aún no hay resúmenes</string>
+    <string name="ui_0a4444676244">Error al guardar</string>
+    <string name="ui_0a8adac9d6d5">Programación</string>
+    <string name="ui_13b7bfcac438">Procesando…</string>
+    <string name="ui_2eb56be3c2d9">Fuentes</string>
+    <string name="ui_314ef761a08f">Añadir sección de palabras clave</string>
+    <string name="ui_3af014d03229">Fuente del feed</string>
+    <string name="ui_3e4a49541e18">Incluir artículos ya leídos</string>
+    <string name="ui_4a24ff492222">Recibe resúmenes diarios con tus noticias más destacadas</string>
+    <string name="ui_4e9f59082144">Archivo Premium</string>
+    <string name="ui_5b170811b992">Mejorar a Archivo Premium</string>
+    <string name="ui_67a31d6fa581">Elige dónde recibir las alertas del resumen diario</string>
+    <string name="ui_67d0be0dd546">Controla cuánto contenido se incluye y cómo se redacta</string>
+    <string name="ui_68c2cc7f0cea">Modelo</string>
+    <string name="ui_710089545189">Longitud y estilo</string>
+    <string name="ui_753a22b2eb61">Notificaciones</string>
+    <string name="ui_771ee100da2b">Secciones de palabras clave</string>
+    <string name="ui_7c522fb68f07">Recibe un resumen de tus mejores historias cuando quieras.</string>
+    <string name="ui_7f7e956b2244">Configura el resumen diario para generar un resumen de las noticias que más te interesan.</string>
+    <string name="ui_7ff5a6dafd80">Secciones</string>
+    <string name="ui_80f7bcbc57b0">Elige con qué frecuencia y cuándo se genera tu resumen</string>
+    <string name="ui_a4d5830966af">Crea resúmenes automáticamente según tu horario</string>
+    <string name="ui_a92076d4b9e3">Elige qué modelo redacta tu resumen diario</string>
+    <string name="ui_a970fbbd6df8">Generar automáticamente</string>
+    <string name="ui_a9dc7e4dcba7">Configuración del resumen diario</string>
+    <string name="ui_bbfa773e5a63">Cerrar</string>
+    <string name="ui_c2d462f8f6da">Elige qué artículos pueden aparecer en el resumen diario</string>
+    <string name="ui_d521ea8640b5">Generar resumen diario</string>
+    <string name="ui_df174a3f2faa">Activado</string>
+    <string name="ui_df2164622bcf">No se pudo cargar el resumen diario</string>
+    <string name="ui_eaed56ec84ae">Resumen diario</string>
+    <string name="ui_efc007a393f6">Guardar</string>
+    <string name="ui_f530db58b3e5">Palabras clave</string>
+    <string name="ui_fdafe86c10a4">Solo se incluirán las secciones con artículos coincidentes</string>
+    <string name="ui_690910f6ed17">Importar OPML</string>
+    <string name="ui_244fd5e426f0">Exportar OPML</string>
+    <string name="ui_768e0c1c6957">Título</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">Etiquetas guardadas</string>
+    <string name="ui_6e914f494515">Etiquetas de noticias</string>
+    <string name="ui_e912ab619a72">Otras etiquetas</string>
+    <string name="i18n_add_site">Añadir sitio</string>
+    <string name="i18n_add">Añadir</string>
+    <string name="i18n_retry">Reintentar</string>
+    <string name="i18n_no_sites_found_try_another_search">No se encontraron sitios. Prueba con otra búsqueda.</string>
+    <string name="i18n_load_more">Cargar más</string>
+    <string name="i18n_follow_any_website">Seguir cualquier sitio web</string>
+    <string name="i18n_mark_updated_stories_unread">Marcar como no leídos los artículos actualizados</string>
+    <string name="i18n_follow_news_that_matters_to_you">Sigue las noticias que te interesan</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">Elige un tema o crea un feed de Google News para cualquier búsqueda.</string>
+    <string name="i18n_subscribe">Suscribirse</string>
+    <string name="i18n_tech">tecnología</string>
+    <string name="i18n_review">reseña</string>
+    <string name="i18n_sponsored">patrocinado</string>
+    <string name="i18n_discover_more_to_read">Descubre más para leer</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">No se encontraron sitios. También puedes añadir un sitio mediante su URL.</string>
+    <string name="i18n_add_discover_sites">Añadir + descubrir sitios</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">Crea un feed desde una página sin RSS. NewsBlur encuentra sus artículos y comprueba si hay novedades. Requiere Premium Archive.</string>
+</resources>

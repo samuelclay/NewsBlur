@@ -84,15 +84,15 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         if (this.folder) {
             this.$modal.addClass('NB-modal-folder-settings');
             this.$modal.removeClass('NB-modal-feed-settings');
-            $(".NB-modal-title", this.$modal).text("Folder Settings");
+            $(".NB-modal-title", this.$modal).text(gettext("Folder Settings"));
         } else if (this.feed && this.feed.get('exception_type')) {
             this.$modal.removeClass('NB-modal-folder-settings');
             this.$modal.removeClass('NB-modal-feed-settings');
-            $(".NB-modal-title", this.$modal).text("Fix a misbehaving site");
+            $(".NB-modal-title", this.$modal).text(gettext("Fix a misbehaving site"));
         } else if (this.feed) {
             this.$modal.removeClass('NB-modal-folder-settings');
             this.$modal.addClass('NB-modal-feed-settings');
-            $(".NB-modal-title", this.$modal).text("Site Settings");
+            $(".NB-modal-title", this.$modal).text(gettext("Site Settings"));
         }
 
         this.setup_mute_state();
@@ -112,11 +112,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $mute_section.removeClass('NB-mute-state-active NB-mute-state-timed NB-mute-state-permanent');
         if (!is_muted) {
             $mute_section.addClass('NB-mute-state-active');
-            $status_text.text('This site is active and receiving stories.');
+            $status_text.text(gettext('This site is active and receiving stories.'));
         } else if (mute_expires_at) {
             $mute_section.addClass('NB-mute-state-timed');
             var remaining = NEWSBLUR.utils.mute_time_remaining(mute_expires_at);
-            $status_text.text('Muted \u00b7 unmutes in ' + remaining.replace(' left', ''));
+            $status_text.text(interpolate(gettext("Muted · unmutes in %(value_1)s"), {value_1: remaining.replace(' left', '')}, true));
             // Find closest slider stop to remaining days
             var days_left = Math.max(1, Math.round((new Date(mute_expires_at) - new Date()) / (1000 * 60 * 60 * 24)));
             var closest_index = 0;
@@ -127,10 +127,10 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }
             $slider.val(closest_index);
             var days = stops[closest_index];
-            $('.NB-mute-settings-timed-save', this.$modal).text('Mute for ' + NEWSBLUR.utils.format_mute_days(days));
+            $('.NB-mute-settings-timed-save', this.$modal).text(interpolate(gettext("Mute for %(value_1)s"), {value_1: NEWSBLUR.utils.format_mute_days(days)}, true));
         } else {
             $mute_section.addClass('NB-mute-state-permanent');
-            $status_text.text('Muted indefinitely.');
+            $status_text.text(gettext('Muted indefinitely.'));
         }
 
         // Bind slider input
@@ -138,13 +138,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             var index = parseInt($(this).val(), 10);
             var days = NEWSBLUR.utils.mute_slider_to_days(index);
             var label = NEWSBLUR.utils.format_mute_days(days);
-            $('.NB-mute-settings-timed-save', self.$modal).text('Mute for ' + label);
+            $('.NB-mute-settings-timed-save', self.$modal).text(interpolate(gettext("Mute for %(value_1)s"), {value_1: label}, true));
         });
     },
 
     animate_mute_saved: function () {
         var $status = $('.NB-exception-option-mute .NB-mute-status', this.$modal);
-        $status.text('Saved').animate({
+        $status.text(gettext('Saved')).animate({
             'opacity': 1
         }, {
             'queue': false,
@@ -189,23 +189,23 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 this.make_feed_chooser()
             ])),
             $.make('div', { className: 'NB-modal-loading' }),
-            $.make('h2', { className: 'NB-modal-title NB-exception-block-only' }, 'Fix a misbehaving site'),
-            $.make('h2', { className: 'NB-modal-title' }, 'Site settings'),
+            $.make('h2', { className: 'NB-modal-title NB-exception-block-only' }, gettext('Fix a misbehaving site')),
+            $.make('h2', { className: 'NB-modal-title' }, gettext('Site settings')),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon' }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }),
                     $.make('span', { className: 'NB-modal-feed-subscribers' }),
-                    $.make('a', { className: 'NB-folder-icon-clear-header', href: '#', style: 'display: none' }, 'Clear icon')
+                    $.make('a', { className: 'NB-folder-icon-clear-header', href: '#', style: 'display: none' }, gettext('Clear icon'))
                 ])
             ]),
             (this.folder && $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, 'Settings'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-folder-icon' }, 'Folder Icon')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, gettext('Settings')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-folder-icon' }, gettext('Folder Icon'))
             ])),
             (this.feed && !this.feed.is_starred() && !this.feed.is_social() && $.make('div', { className: 'NB-modal-tabs NB-modal-tabs-feed' }, [
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, 'Settings'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feed-icon' }, 'Feed Icon')
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, gettext('Settings')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feed-icon' }, gettext('Feed Icon'))
             ])),
             $.make('div', { className: 'NB-tab NB-tab-settings NB-active' }),
             $.make('div', { className: 'NB-tab NB-tab-folder-icon' }),
@@ -214,54 +214,54 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-status NB-right' }),
                     $.make('div', { className: 'NB-exception-option-meta' }),
-                    'View settings'
+                    gettext('View settings')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     // Reading view row
                     $.make('div', { className: 'NB-view-setting-row' }, [
-                        $.make('div', { className: 'NB-view-setting-label' }, 'Reading view'),
+                        $.make('div', { className: 'NB-view-setting-label' }, gettext('Reading view')),
                         $.make('ul', { className: 'segmented-control NB-view-setting-control' }, [
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-original', 'data-value': 'page' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/content-view-original.svg' }),
-                                $.make('span', 'Original')
+                                $.make('span', gettext('Original'))
                             ]),
                             $.make('li', { className: 'NB-view-setting-option', 'data-value': 'feed' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/content-view-feed.svg' }),
-                                $.make('span', 'Feed')
+                                $.make('span', gettext('Feed'))
                             ]),
                             $.make('li', { className: 'NB-view-setting-option', 'data-value': 'text' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/content-view-text.svg' }),
-                                $.make('span', 'Text')
+                                $.make('span', gettext('Text'))
                             ]),
                             $.make('li', { className: 'NB-view-setting-option', 'data-value': 'story' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/content-view-story.svg' }),
-                                $.make('span', 'Story')
+                                $.make('span', gettext('Story'))
                             ])
                         ])
                     ]),
                     // Story layout row
                     $.make('div', { className: 'NB-view-setting-row' }, [
-                        $.make('div', { className: 'NB-view-setting-label' }, 'Story layout'),
+                        $.make('div', { className: 'NB-view-setting-label' }, gettext('Story layout')),
                         $.make('ul', { className: 'segmented-control NB-layout-setting-control' }, [
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'full' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-full.svg' }),
-                                $.make('span', 'Full')
+                                $.make('span', gettext('Full'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'split' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-split.svg' }),
-                                $.make('span', 'Split')
+                                $.make('span', gettext('Split'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'list' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-list.svg' }),
-                                $.make('span', 'List')
+                                $.make('span', gettext('List'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'grid' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-grid.svg' }),
-                                $.make('span', 'Grid')
+                                $.make('span', gettext('Grid'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'magazine' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-magazine.svg' }),
-                                $.make('span', 'Magazine')
+                                $.make('span', gettext('Magazine'))
                             ])
                         ])
                     ])
@@ -270,16 +270,16 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-auto-mark-read NB-modal-submit NB-settings-only' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-status' }),
-                    'Auto Mark as Read',
+                    gettext('Auto Mark as Read'),
                     (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-auto-mark-read-upgrade-notice NB-premium-link', href: '#' }, [
-                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                        $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                     ]))
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('ul', { className: 'segmented-control NB-menu-manage-auto-mark-read' }, [
-                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-default', 'data-value': 'default', role: 'button' }, 'Default'),
-                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-days', 'data-value': 'days', role: 'button' }, 'Days'),
-                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-never', 'data-value': 'never', role: 'button' }, 'Never')
+                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-default', 'data-value': 'default', role: 'button' }, gettext('Default')),
+                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-days', 'data-value': 'days', role: 'button' }, gettext('Days')),
+                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-never', 'data-value': 'never', role: 'button' }, gettext('Never'))
                     ]),
                     $.make('div', { className: 'NB-auto-mark-read-slider-container' }, [
                         $.make('input', {
@@ -296,7 +296,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-mark-unread NB-modal-submit NB-settings-only' }, [
                 $.make('h5', [
-                    'Mark Stories as Unread'
+                    gettext('Mark Stories as Unread')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-mark-unread-slider-container' }, [
@@ -311,12 +311,12 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ]),
                     $.make('div', { className: 'NB-mark-unread-premium-notice' }),
                     $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-mark-unread' },
-                        this.folder ? 'Mark folder stories as unread' : 'Mark stories as unread')
+                        this.folder ? gettext('Mark folder stories as unread') : gettext('Mark stories as unread'))
                 ])
             ]),
             (this.feed && !this.feed.is_social() && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-mute NB-modal-submit NB-settings-only' }, [
                 $.make('h5', [
-                    'Mute',
+                    gettext('Mute'),
                     $.make('div', { className: 'NB-exception-option-status NB-mute-status' })
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -331,11 +331,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                             step: '1'
                         }),
                         $.make('div', { className: 'NB-mute-buttons NB-mute-buttons-mute' }, [
-                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-timed-save', role: 'button' }, 'Mute for 1 week'),
-                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-forever-save', role: 'button' }, 'Mute indefinitely')
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-timed-save', role: 'button' }, gettext('Mute for 1 week')),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-forever-save', role: 'button' }, gettext('Mute indefinitely'))
                         ]),
                         $.make('div', { className: 'NB-mute-buttons NB-mute-buttons-unmute' }, [
-                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-unmute-save', role: 'button' }, 'Unmute')
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-unmute-save', role: 'button' }, gettext('Unmute'))
                         ])
                     ])
                 ])
@@ -343,13 +343,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit NB-exception-block-only' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 1:'),
-                    'Retry'
+                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, gettext('Option 1:')),
+                    gettext('Retry')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-retry' }, 'Retry fetching and parsing'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-retry' }, gettext('Retry fetching and parsing')),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -357,20 +357,20 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             (this.feed && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-feed NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 2:'),
-                    'Change RSS Feed Address'
+                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, gettext('Option 2:')),
+                    gettext('Change RSS Feed Address')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-exception-input-wrapper' }, [
                         $.make('div', { className: 'NB-loading' }),
                         $.make('label', { 'for': 'NB-exception-input-address', className: 'NB-exception-label' }, [
                             $.make('div', { className: 'NB-folder-icon' }),
-                            'RSS/XML URL: '
+                            gettext('RSS/XML URL: ')
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address NB-input', name: 'feed_address', value: this.feed.get('feed_address') })
                     ]),
                     (this.feed.is_feed() && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-address' }, 'Parse this RSS/XML Feed'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-address' }, gettext('Parse this RSS/XML Feed')),
                         $.make('div', { className: 'NB-error' }),
                         $.make('div', { className: 'NB-exception-feed-history' })
                     ]))
@@ -379,20 +379,20 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             (this.feed && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-page NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 3:'),
-                    'Change Website Address'
+                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, gettext('Option 3:')),
+                    gettext('Change Website Address')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-exception-input-wrapper' }, [
                         $.make('div', { className: 'NB-loading' }),
                         $.make('label', { 'for': 'NB-exception-input-link', className: 'NB-exception-label' }, [
                             $.make('div', { className: 'NB-folder-icon' }),
-                            'Website URL: '
+                            gettext('Website URL: ')
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed.get('feed_link') })
                     ]),
                     (this.feed.is_feed() && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-link' }, 'Fetch Feed From Website'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-link' }, gettext('Fetch Feed From Website')),
                         $.make('div', { className: 'NB-error' }),
                         $.make('div', { className: 'NB-exception-page-history' })
                     ]))
@@ -401,11 +401,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             (this.folder && $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-feed NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
-                    'Folder RSS Feed Address'
+                    gettext('Folder RSS Feed Address')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-folder-rss-row' }, [
-                        $.make('div', { className: 'NB-folder-rss-label' }, 'Unread+Focus:'),
+                        $.make('div', { className: 'NB-folder-rss-label' }, gettext('Unread+Focus:')),
                         $.make('div', { className: 'NB-folder-rss-wrapper' }, [
                             $.make('input', {
                                 type: 'text',
@@ -415,11 +415,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                                 value: this.folder.rss_url('unread'),
                                 readonly: 'readonly'
                             }),
-                            $.make('div', { className: 'NB-folder-rss-copy NB-modal-submit-button NB-modal-submit-grey', 'data-url-type': 'unread' }, 'Copy')
+                            $.make('div', { className: 'NB-folder-rss-copy NB-modal-submit-button NB-modal-submit-grey', 'data-url-type': 'unread' }, gettext('Copy'))
                         ])
                     ]),
                     $.make('div', { className: 'NB-folder-rss-row' }, [
-                        $.make('div', { className: 'NB-folder-rss-label' }, 'Only Focus:'),
+                        $.make('div', { className: 'NB-folder-rss-label' }, gettext('Only Focus:')),
                         $.make('div', { className: 'NB-folder-rss-wrapper' }, [
                             $.make('input', {
                                 type: 'text',
@@ -429,13 +429,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                                 value: this.folder.rss_url('focus'),
                                 readonly: 'readonly'
                             }),
-                            $.make('div', { className: 'NB-folder-rss-copy NB-modal-submit-button NB-modal-submit-grey', 'data-url-type': 'focus' }, 'Copy')
+                            $.make('div', { className: 'NB-folder-rss-copy NB-modal-submit-button NB-modal-submit-grey', 'data-url-type': 'focus' }, gettext('Copy'))
                         ])
                     ]),
                     (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-only' }, [
                         $.make('div', { className: 'NB-premium-only-text' }, [
-                            'RSS feeds for folders is a ',
-                            $.make('a', { href: '#', className: 'NB-premium-only-link NB-splash-link' }, 'premium feature'),
+                            gettext('RSS feeds for folders is a '),
+                            $.make('a', { href: '#', className: 'NB-premium-only-link NB-splash-link' }, gettext('premium feature')),
                             '.'
                         ])
                     ]))
@@ -443,13 +443,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             ])),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-exception-block-only NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 4:'),
-                    'Just Delete This Feed'
+                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, gettext('Option 4:')),
+                    gettext('Just Delete This Feed')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-modal-submit-delete' }, 'Delete It. It Just Won\'t Work!'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-modal-submit-delete' }, gettext('Delete It. It Just Won\'t Work!')),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -486,20 +486,20 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         if (!is_400) {
             $meta_retry.addClass('NB-exception-option-meta-recommended');
-            $meta_retry.text('Recommended');
+            $meta_retry.text(gettext('Recommended'));
             return;
         }
         if (this.feed.get('exception_type') == 'feed') {
             $meta_page.addClass('NB-exception-option-meta-recommended');
-            $meta_page.text('Recommended');
+            $meta_page.text(gettext('Recommended'));
         }
         if (this.feed.get('exception_type') == 'page') {
             if (is_400) {
                 $meta_feed.addClass('NB-exception-option-meta-recommended');
-                $meta_feed.text('Recommended');
+                $meta_feed.text(gettext('Recommended'));
             } else {
                 $meta_page.addClass('NB-exception-option-meta-recommended');
-                $meta_page.text('Recommended');
+                $meta_page.text(gettext('Recommended'));
             }
         }
     },
@@ -802,7 +802,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
     animate_saved: function () {
         var $status = $('.NB-exception-option-view .NB-exception-option-status', this.$modal);
-        $status.text('Saved').animate({
+        $status.text(gettext('Saved')).animate({
             'opacity': 1
         }, {
             'queue': false,
@@ -822,9 +822,9 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $input[0].select();
         document.execCommand('copy');
 
-        $button.text('Copied!');
+        $button.text(gettext('Copied!'));
         _.delay(function () {
-            $button.text('Copy');
+            $button.text(gettext('Copy'));
         }, 1500);
     },
 
@@ -959,8 +959,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $banner = $.make('div', { className: 'NB-feed-icon-reset-wrapper', style: 'height: 0; overflow: hidden; opacity: 0' }, [
             $.make('div', { className: 'NB-feed-icon-reset-banner' }, [
                 $.make('img', { className: 'NB-feed-icon-reset-favicon', src: favicon_url }),
-                $.make('div', { className: 'NB-feed-icon-reset-text' }, 'Reset to original favicon'),
-                $.make('div', { className: 'NB-feed-icon-reset-action' }, 'Reset')
+                $.make('div', { className: 'NB-feed-icon-reset-text' }, gettext('Reset to original favicon')),
+                $.make('div', { className: 'NB-feed-icon-reset-action' }, gettext('Reset'))
             ])
         ]);
         var $editor = NEWSBLUR.IconPicker.make_icon_editor({
@@ -998,7 +998,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         } else if (icon.icon_type === 'upload') {
             $preview.empty().append(
                 $.make('img', { src: 'data:image/png;base64,' + icon.icon_data }),
-                $.make('span', 'Custom icon')
+                $.make('span', gettext('Custom icon'))
             ).addClass('NB-active');
         }
     },
@@ -1292,13 +1292,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         // Validate file type
         if (!file.type.match(/^image\/(png|jpeg|gif|webp|svg\+xml)$/)) {
-            $error.text('Please select a valid image file (PNG, JPG, GIF, SVG, or WebP)').show();
+            $error.text(gettext('Please select a valid image file (PNG, JPG, GIF, SVG, or WebP)')).show();
             return;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            $error.text('Image must be smaller than 5MB').show();
+            $error.text(gettext('Image must be smaller than 5MB')).show();
             return;
         }
 
@@ -1330,7 +1330,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 img.onerror = function () {
                     $button.removeClass('NB-uploading');
                     $loading.removeClass('NB-active');
-                    $error.text('Failed to load SVG image').show();
+                    $error.text(gettext('Failed to load SVG image')).show();
                 };
                 img.src = e.target.result;
             };
@@ -1399,7 +1399,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     // Show preview
                     $preview.empty().append(
                         $.make('img', { src: 'data:image/png;base64,' + response.icon_data }),
-                        $.make('span', 'Uploaded!')
+                        $.make('span', gettext('Uploaded!'))
                     ).addClass('NB-active');
 
                     self.update_header_icon();
@@ -1415,7 +1415,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             error: function (xhr, status, error) {
                 $button.removeClass('NB-uploading');
                 $loading.removeClass('NB-active');
-                $error.text('Upload failed. Please check your connection and try again.').show();
+                $error.text(gettext('Upload failed. Please check your connection and try again.')).show();
             }
         });
     },
@@ -1601,7 +1601,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         // Calculate default values
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
         var default_days = site_wide_days;
-        var default_source = 'site-wide preference';
+        var default_source = gettext('site-wide preference');
 
         var auto_mark_days;
         if (this.folder) {
@@ -1662,14 +1662,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var html = '';
         if (mode === 'default') {
             if (days === 0) {
-                html = 'Using default: <b>never</b> (from ' + source + ')';
+                html = interpolate(gettext("Using default: <b>never</b> (from %(source)s)"), {source: source}, true);
             } else {
-                html = 'Using default: <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b> (from ' + source + ')';
+                html = interpolate(ngettext("Using default: <b>%(days)s day</b> (from %(source)s)", "Using default: <b>%(days)s days</b> (from %(source)s)", days), {days: days, source: source}, true);
             }
         } else if (mode === 'never') {
-            html = 'Stories will <b>never</b> be marked as read';
+            html = gettext('Stories will <b>never</b> be marked as read');
         } else {
-            html = 'Stories marked as read at <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
+            html = interpolate(ngettext("Stories marked as read at <b>%(days)s day</b>", "Stories marked as read at <b>%(days)s days</b>", days), {days: days}, true);
         }
         $element.html(html);
     },
@@ -1704,7 +1704,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     get_auto_mark_read_defaults: function () {
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
         var default_days = site_wide_days;
-        var default_source = 'site-wide preference';
+        var default_source = gettext('site-wide preference');
 
         if (this.folder) {
             var parent_folder_title = this.get_parent_folder_title(this.folder_title);
@@ -1852,7 +1852,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
 
     animate_auto_mark_read_saved: function ($status) {
-        $status.text('Saved').animate({
+        $status.text(gettext('Saved')).animate({
             'opacity': 1
         }, {
             'queue': false,
@@ -1901,26 +1901,26 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         if (value > max_days) {
             $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + limit_percent + '%, #f5a623 ' + limit_percent + '%, #f5a623 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 100%)');
-            $slider_value.html('<b>' + value + ' day' + (value !== 1 ? 's' : '') + '</b> &mdash; exceeds your plan limit of ' + max_days + ' days');
+            $slider_value.html(interpolate(ngettext("<b>%(value_1)s day</b> &mdash; exceeds your plan limit of %(value_3)s days", "<b>%(value_1)s days</b> &mdash; exceeds your plan limit of %(value_3)s days", value), {value_1: value, value_3: max_days}, true));
             $button.hide();
             if (NEWSBLUR.Globals.is_premium) {
                 $notice.html('').append(
                     $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
-                        $.make('span', { className: 'NB-archive-badge' }, 'Upgrade to Premium Archive'),
-                        ' for up to 365 days'
+                        $.make('span', { className: 'NB-archive-badge' }, gettext('Upgrade to Premium Archive')),
+                        gettext(' for up to 365 days')
                     ])
                 ).show();
             } else {
                 $notice.html('').append(
                     $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
-                        $.make('span', { className: 'NB-premium-badge' }, 'Upgrade to Premium'),
-                        ' for up to ' + NEWSBLUR.Globals.default_days_of_unread + ' days'
+                        $.make('span', { className: 'NB-premium-badge' }, gettext('Upgrade to Premium')),
+                        interpolate(gettext(" for up to %(value_1)s days"), {value_1: NEWSBLUR.Globals.default_days_of_unread}, true)
                     ])
                 ).show();
             }
         } else {
             $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 100%)');
-            $slider_value.html('Mark stories from the last <b>' + value + ' day' + (value !== 1 ? 's' : '') + '</b> as unread');
+            $slider_value.html(interpolate(ngettext("Mark stories from the last <b>%(value_1)s day</b> as unread", "Mark stories from the last <b>%(value_1)s days</b> as unread", value), {value_1: value}, true));
             $notice.hide();
             $button.show();
         }
@@ -1937,7 +1937,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         if (days > max_days) return;
 
-        $button.text('Marking as unread...').addClass('NB-disabled').attr('disabled', true);
+        $button.text(gettext('Marking as unread...')).addClass('NB-disabled').attr('disabled', true);
 
         NEWSBLUR.assets.mark_stories_as_unread(days, feed_id, folder, _.bind(function (data) {
             if (data.code === -1) {
@@ -1958,7 +1958,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 NEWSBLUR.reader.start_count_unreads_after_import();
             }
         }, this), _.bind(function () {
-            $button.text('Error. Try again.').removeClass('NB-disabled').removeAttr('disabled');
+            $button.text(gettext('Error. Try again.')).removeClass('NB-disabled').removeAttr('disabled');
         }, this));
     }
 

@@ -834,9 +834,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this._fullscreen_handler = function () {
             var $btn = self.$('.NB-media-player-fullscreen');
             if (document.fullscreenElement) {
-                $btn.html(self.SVG_FULLSCREEN_EXIT).attr('title', 'Exit fullscreen');
+                $btn.html(self.SVG_FULLSCREEN_EXIT).attr('title', gettext('Exit fullscreen'));
             } else {
-                $btn.html(self.SVG_FULLSCREEN).attr('title', 'Fullscreen');
+                $btn.html(self.SVG_FULLSCREEN).attr('title', gettext('Fullscreen'));
             }
         };
         document.addEventListener('fullscreenchange', this._fullscreen_handler);

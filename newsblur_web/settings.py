@@ -86,7 +86,11 @@ PAYPAL_RECEIVER_EMAIL = "samuel@ofbrooklyn.com"
 TIME_ZONE = "GMT"
 LANGUAGE_CODE = "en-us"
 SITE_ID = 1
-USE_I18N = False
+USE_I18N = True
+from utils.languages import LANGUAGES as UI_LANGUAGES
+
+LANGUAGES = [(code.lower(), name) for code, name in UI_LANGUAGES.items()]
+LOCALE_PATHS = (os.path.join(NEWSBLUR_DIR, "locale"),)
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/account/login"
 MEDIA_URL = "/media/"
@@ -133,6 +137,7 @@ MIDDLEWARE = (
     "utils.prometheus_middleware.PrometheusBeforeMiddlewareWrapper",
     "apps.profile.middleware.UserAgentBanMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    "apps.profile.language.LanguageCatalogMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "subdomains.middleware.SubdomainMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -147,6 +152,7 @@ MIDDLEWARE = (
     "apps.profile.middleware.SimpsonsMiddleware",
     "apps.profile.middleware.ServerHostnameMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
+    "apps.profile.language.NewsBlurLocaleMiddleware",
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     "utils.request_introspection_middleware.DumpRequestMiddleware",
     "apps.profile.middleware.DBProfilerMiddleware",
@@ -913,6 +919,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
+                "apps.profile.language.language_context",
                 "django.contrib.messages.context_processors.messages",
             ],
             "loaders": template_loaders,

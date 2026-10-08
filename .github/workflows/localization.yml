@@ -1,0 +1,84 @@
+name: Localization
+
+on:
+  pull_request:
+    paths:
+      - 'localization/**'
+      - 'templates/**'
+      - 'media/js/newsblur/**'
+      - 'clients/ios/**'
+      - 'clients/android/**'
+      - 'apps/**'
+      - '.github/workflows/localization.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'templates/**'
+      - 'media/js/newsblur/**'
+      - 'clients/ios/Classes/**'
+      - 'clients/ios/Resources/Localizable.stringsdict'
+      - 'clients/android/NewsBlur/app/src/main/**'
+      - 'apps/**'
+      - 'localization/languages.json'
+  workflow_dispatch:
+  schedule:
+    - cron: '23 8 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: localization-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r localization/requirements.txt
+      - run: python -m unittest localization.test_manage
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: node --test localization/test_web.js
+      - run: python localization/audit.py
+      - name: Validate existing translations (new strings use English until the update PR)
+        run: python localization/manage.py check --allow-missing
+
+  translate:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r localization/requirements.txt
+      - name: Translate only new or changed strings with Luna
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python localization/manage.py translate --provider luna --budget 5
+      - run: python localization/manage.py check
+      - run: python localization/audit.py
+      - name: Open translation update for review
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automated-translations
+          title: Update interface translations
+          commit-message: Update interface translations
+          body: |
+            Translate new or changed web, iOS and Android interface strings with GPT-6 Luna.
+            Placeholder and catalog checks passed. English remains the fallback.
+          add-paths: |
+            localization/translations/
+            locale/
+            clients/ios/Resources/
+            clients/android/NewsBlur/app/src/main/res/values-*/strings.xml

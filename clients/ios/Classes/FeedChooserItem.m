@@ -58,7 +58,7 @@
     NSString *title = self.info[@"feed_title"];
     
     if (self.search != nil) {
-        return [NSString stringWithFormat:@"\"%@\" in %@", self.search, title];
+        return [NSString stringWithFormat:[NBLocalization text:@"\"%@\" in %@"], self.search, title];
     }
     
     if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
@@ -134,11 +134,11 @@
     
     switch (sort) {
         case FeedChooserSortSubscribers:
-            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ subscribers", @"number of subscribers"), self.info[@"num_subscribers"]];
+            return [NBLocalization plural:@"%@ subscribers" count:self.info[@"num_subscribers"]];
             break;
             
         case FeedChooserSortFrequency:
-            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ stories/month", @"average stories per month"), self.info[@"average_stories_per_month"]];
+            return [NBLocalization plural:@"%@ stories/month" count:self.info[@"average_stories_per_month"]];
             break;
             
         case FeedChooserSortRecency:
@@ -163,19 +163,19 @@
             
             NSDate *date = [dateFormatter dateFromString:self.info[@"last_story_date"]];
             
-            return [NSString stringWithFormat:@"%@ ago",  [componentsFormatter stringFromTimeInterval:-date.timeIntervalSinceNow]];
+            return [NSString stringWithFormat:[NBLocalization text:@"%@ ago"],  [componentsFormatter stringFromTimeInterval:-date.timeIntervalSinceNow]];
             break;
         }
         
         default:
-            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ opens", @"number of feed opens"), self.info[@"feed_opens"]];
+            return [NBLocalization plural:@"%@ opens" count:self.info[@"feed_opens"]];
             break;
     }
 }
 
 - (NSString *)description {
     if (self.contents) {
-        return [NSString stringWithFormat:@"%@ %@ (contains %@ items)", [super description], self.title, @(self.contents.count)];
+        return [NSString stringWithFormat:[NBLocalization text:@"%@ %@ (contains %@ items)"], [super description], self.title, @(self.contents.count)];
     } else {
         return [NSString stringWithFormat:@"%@ %@ (%@)", [super description], self.title, self.identifier];
     }

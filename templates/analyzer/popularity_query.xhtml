@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load typogrify_tags utils_tags %}
 
@@ -12,12 +13,12 @@
 <div class="NB-static-form-wrapper">
     <div class="NB-delete-form NB-static-form">
         
-        <h2>NewsBlur News Popularity Spreadsheet Creator</h2>
+        <h2>{% trans "NewsBlur News Popularity Spreadsheet Creator" %}</h2>
         
-        <h5>Search for topics across millions of stories from millions of publishers</h5>
+        <h5>{% trans "Search for topics across millions of stories from millions of publishers" %}</h5>
         
         {% if success %}
-            <h4 style="color: #1C6130; text-align: center">Got it!<br>Email should be sent within the next few minutes.</h4>
+            <h4 style="color: #1C6130; text-align: center">{% trans "Got it!" %}<br>{% trans "Email should be sent within the next few minutes." %}</h4>
         {% else %}
             <form action="" method="POST">{% csrf_token %}
                 <div class="NB-fields">
@@ -26,7 +27,7 @@
 
                     {{ popularity_query_form.query.label_tag }}
                     {{ popularity_query_form.query }}
-                    <h6 class="NB-label-right">Example: <i>pebble watch, philips hue, alexa</i></h6>
+                    <h6 class="NB-label-right">{% trans "Example:" %} <i>{% trans "pebble watch, philips hue, alexa" %}</i></h6>
                 </div>
             
                 {% if popularity_query_form.errors %}

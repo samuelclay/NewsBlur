@@ -361,12 +361,12 @@
 
 - (void)showFolderMenu {
     MenuViewController *viewController = [MenuViewController new];
-    viewController.title = @"Add To";
+    viewController.title = [NBLocalization text:@"Add To"];
     
     __weak __typeof(&*self)weakSelf = self;
     
-    [viewController addTitle:@"Top Level" iconName:@"menu_icn_all.png" selectionShouldDismiss:NO handler:^{
-        weakSelf.inFolderInput.text = @"— Top Level —";
+    [viewController addTitle:[NBLocalization text:@"Top Level"] iconName:@"menu_icn_all.png" selectionShouldDismiss:NO handler:^{
+        weakSelf.inFolderInput.text = [NBLocalization text:@"— Top Level —"];
         [self.navigationController popViewControllerAnimated:YES];
     }];
     
@@ -443,7 +443,7 @@
     cell.feedTitle.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     cell.feedUrl.text = [result objectForKey:@"value"];
     cell.feedUrl.textColor = UIColorFromLightDarkRGB(NEWSBLUR_LINK_COLOR, 0x3B7CC5);
-    cell.feedSubs.text = [NSString stringWithFormat:@"%@ subscriber%@",
+    cell.feedSubs.text = [NSString stringWithFormat:[NBLocalization text:@"%@ subscriber%@"],
                            [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"];
     cell.feedSubs.textColor = UIColorFromRGB(0x808080);
     cell.feedFavicon.image = faviconImage;

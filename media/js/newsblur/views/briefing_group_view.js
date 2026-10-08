@@ -45,7 +45,7 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-group-collapse-icon' }),
             $.make('div', { className: 'NB-briefing-group-date' }, date_label),
             $.make('div', { className: 'NB-briefing-group-count' }, [
-                $.make('span', story_count + (story_count === 1 ? ' story' : ' stories'))
+                $.make('span', interpolate(ngettext("%(count)s story", "%(count)s stories", story_count), {count: story_count}, true))
             ])
         ]);
     },

@@ -67,6 +67,9 @@ open class SyncService :
     JobService(),
     CoroutineScope {
     @Inject
+    lateinit var languageUserApi: com.newsblur.network.UserApi
+
+    @Inject
     lateinit var storyApi: StoryApi
 
     @Inject
@@ -481,6 +484,14 @@ open class SyncService :
                 prefsRepo.putString(PrefConstants.CLUSTER_MODE, it)
             }
             prefsRepo.putBoolean(PrefConstants.CLUSTER_MARK_READ, feedResponse.clusterMarkRead)
+            val localLanguage = com.newsblur.util.LanguageSettings.selected(this)
+            if (com.newsblur.util.LanguageSettings.pending(this)) {
+                if (languageUserApi.setPreference("language", localLanguage)) {
+                    com.newsblur.util.LanguageSettings.select(this, localLanguage)
+                }
+            } else if (localLanguage != feedResponse.language) {
+                com.newsblur.util.LanguageSettings.select(this, feedResponse.language)
+            }
 
             // note all feeds that belong to some folder so we can find orphans
             for (folder in feedResponse.folders) {

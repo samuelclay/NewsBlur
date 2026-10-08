@@ -3,6 +3,7 @@
 import redis
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.translation import gettext
 
 from apps.notifications.models import (
     MUserClassifierNotification,
@@ -84,7 +85,7 @@ def set_classifier_notification(request):
     user = get_user(request)
 
     if not user.profile.is_archive:
-        return {"code": -1, "message": "Premium Archive required for classifier notifications"}
+        return {"code": -1, "message": gettext("Premium Archive required for classifier notifications")}
 
     classifier_type = request.POST.get("classifier_type", "")
     classifier_value = request.POST.get("classifier_value", "")
@@ -97,10 +98,10 @@ def set_classifier_notification(request):
     )
 
     if not classifier_type or not classifier_value:
-        return {"code": -1, "message": "classifier_type and classifier_value are required"}
+        return {"code": -1, "message": gettext("classifier_type and classifier_value are required")}
 
     if classifier_type not in ("title", "author", "tag", "text", "url", "prompt", "image_prompt"):
-        return {"code": -1, "message": "Invalid classifier_type"}
+        return {"code": -1, "message": gettext("Invalid classifier_type")}
 
     # is_regex only applies to title, text, url, author classifiers
     if is_regex and classifier_type not in ("title", "text", "url", "author"):
@@ -157,15 +158,15 @@ def set_apns_token(request):
     tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
     apns_token = request.POST.get("apns_token")
     if not apns_token:
-        return {"code": -1, "message": "Missing apns_token."}
+        return {"code": -1, "message": gettext("Missing apns_token.")}
 
     logging.user(user, "~FCUpdating APNS push token")
     if apns_token not in tokens.ios_tokens:
         tokens.ios_tokens.append(apns_token)
         tokens.save()
-        return {"message": "Token saved."}
+        return {"message": gettext("Token saved.")}
 
-    return {"message": "Token already saved."}
+    return {"message": gettext("Token already saved.")}
 
 
 @ajax_login_required
@@ -183,9 +184,9 @@ def set_android_token(request):
     if token not in tokens.android_tokens:
         tokens.android_tokens.append(token)
         tokens.save()
-        return {"message": "Token saved."}
+        return {"message": gettext("Token saved.")}
 
-    return {"message": "Token already saved."}
+    return {"message": gettext("Token already saved.")}
 
 
 @required_params(feed_id=int)

@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">不執行任何動作</string>
+    <string name="gesture_back">返回訂閱來源</string>
+    <string name="gesture_toggle_read">已讀／未讀</string>
+    <string name="gesture_markread">標示為已讀</string>
+    <string name="gesture_markunread">標記為未讀</string>
+    <string name="gesture_save">儲存文章</string>
+    <string name="gesture_unsave">取消收藏文章</string>
+    <string name="gesture_statistics">統計資料</string>
+    <string name="gesture_menu">顯示操作選項</string>
+    <string name="gesture_share">分享</string>
+    <string name="gesture_toggle_save">儲存／取消儲存</string>
+    <string name="gesture_ask_ai">詢問 AI</string>
+    <string name="gesture_train">訓練智慧分類器</string>
+    <string name="gesture_notifications">通知</string>
+    <string name="gesture_read_range">選擇要將多久以前的文章標記為已讀</string>
+    <string name="gesture_feed_list">動態消息清單</string>
+    <string name="gesture_story_titles">文章標題</string>
+    <string name="gesture_reading_story">閱讀文章時</string>
+    <string name="gesture_swipe_feeds">在動態消息上滑動</string>
+    <string name="gesture_swipe_stories">在文章上滑動</string>
+    <string name="gesture_left">向左滑動</string>
+    <string name="gesture_right">向右滑動</string>
+    <string name="gesture_long_press">長按</string>
+    <string name="gesture_double_tap">點兩下</string>
+    <string name="gesture_two_finger_double_tap">雙指點兩下</string>
+    <string name="gesture_left_edge">從左側邊緣滑動</string>
+    <string name="gesture_edge_footer">即使關閉文章滑動手勢，從左側邊緣滑動仍會返回資訊來源。</string>
+    <string name="gesture_mark_all">將所有文章標記為已讀</string>
+    <string name="gesture_original">開啟原始文章</string>
+    <string name="gesture_text">顯示原文</string>
+    <string name="gesture_unread">標記為未讀</string>
+    <string name="gesture_back_titles">返回文章標題</string>
+    <string name="gesture_previous">上一篇文章</string>
+    <string name="gesture_off">關閉</string>
+    <string name="gesture_unread_stories">未讀文章</string>
+    <string name="gesture_focus_stories">聚焦文章</string>
+    <string name="story_title_mark_story_read">將故事標示為已讀…</string>
+    <string name="story_title_list_font_size">訂閱源與文章標題字級</string>
+    <string name="language_title">語言</string>
+    <string name="settings_cat_general">一般</string>
+    <string name="language_current">語言：%1$s</string>
+    <string name="language_automatic">自動（裝置語言）</string>
+    <string name="language_save_failed">無法儲存你的語言設定。請再試一次。</string>
+    <string name="try_feed_instafetching">正在即時擷取文章…</string>
+    <string name="try_feed_fetch_failed">無法取得文章。點一下重試。</string>
+    <string name="try_feed_empty">此網站目前沒有可用文章。點一下以重新整理。</string>
+    <string name="image_viewer_close">關閉圖片</string>
+    <string name="image_viewer_loading">正在載入圖片…</string>
+    <string name="image_viewer_failed">無法載入完整圖片。</string>
+    <string name="image_viewer_retry">再試一次</string>
+    <string name="image_viewer_copy">複製圖片</string>
+    <string name="image_viewer_save">儲存圖片</string>
+    <string name="image_viewer_share">分享圖片…</string>
+    <string name="image_viewer_open_link">開啟連結</string>
+    <string name="image_viewer_copied">圖片已複製</string>
+    <string name="image_viewer_saved">已儲存至「照片」</string>
+    <string name="image_viewer_save_failed">無法儲存圖片。</string>
+    <string name="image_viewer_share_failed">無法分享圖片。</string>
+    <string name="image_viewer_storage_permission">允許存取儲存空間以儲存圖片，然後再試一次。</string>
+    <string name="image_viewer_show_actions">顯示圖片操作</string>
+    <string name="settings_story_toolbar_position">文章清單工具列位置</string>
+    <string name="settings_story_toolbar_top">頂端</string>
+    <string name="settings_story_toolbar_bottom">底部</string>
+    <string name="story_header_mark_read_cutoff">選擇將多久以前的文章標示為已讀</string>
+    <string name="login_username_hint">使用者名稱</string>
+    <string name="login_username_or_email_hint">使用者名稱或電子郵件</string>
+    <string name="login_password_hint">密碼</string>
+    <string name="login_registration_email_hint">電子郵件地址</string>
+    <string name="login_button_login">登入</string>
+    <string name="login_segment_sign_in">登入</string>
+    <string name="login_segment_sign_up">註冊</string>
+    <string name="login_forgot_password">忘記密碼</string>
+    <string name="login_custom_server">自架自訂伺服器</string>
+    <string name="login_custom_server_subtitle">使用您自己的 NewsBlur 安裝版本</string>
+    <string name="login_custom_server_active">自訂伺服器：%1$s</string>
+    <string name="login_custom_server_edit">點一下即可編輯或重設伺服器網址</string>
+    <string name="login_custom_server_dialog_title">自訂伺服器</string>
+    <string name="login_custom_server_dialog_body">留白以使用 NewsBlur，或輸入您自行託管版本的網址。此設定會立即套用於登入和註冊。</string>
+    <string name="login_message_error">登入 NewsBlur 時發生問題。</string>
+    <string name="login_logging_in">正在登入…</string>
+    <string name="login_logged_in">正在整理樣條曲線…</string>
+    <string name="login_retrieving_feeds">正在擷取動態消息…</string>
+    <string name="login_next">下一步</string>
+    <string name="login_custom_server_scheme_error">自訂伺服器 URL 中應包含 \'https://\'</string>
+    <string name="login_custom_server_invalid">請輸入有效的自訂伺服器網址。</string>
+    <string name="login_tagline">個人化新聞閱讀器，讓
+人們聚在一起討論世界。</string>
+    <string name="user_profile_picture">使用者個人資料圖片</string>
+    <string name="search_for_feed">搜尋訂閱來源</string>
+    <string name="loading">載入中…</string>
+    <string name="story_navigation_failed">無法開啟文章。請再試一次。</string>
+    <string name="orig_text_loading">正在擷取文章文字…</string>
+    <string name="follow_error">追蹤此使用者時發生問題。</string>
+    <string name="unfollow_error">取消追蹤使用者時發生問題。</string>
+    <string name="description_login_button">按下以登入</string>
+    <string name="description_login_logo">NewsBlur 標誌</string>
+    <string name="description_profile_picture">使用者的個人檔案圖片</string>
+    <string name="description_row_folder_icon">資料夾圖示</string>
+    <string name="description_row_feed_icon">摘要圖示</string>
+    <string name="description_row_feed_mute_toggle">動態消息靜音切換</string>
+    <string name="description_activity_icon">說明使用者活動的圖示</string>
+    <string name="description_follow_button">追蹤或取消追蹤使用者</string>
+    <string name="description_comment_user">留言使用者圖片</string>
+    <string name="description_empty_list_image">空清單佔位圖</string>
+    <string name="description_menu">選單</string>
+    <string name="story_settings">文章設定</string>
+    <string name="title_choose_folders">選擇訂閱來源 %s 的資料夾</string>
+    <string name="title_rename_feed">重新命名動態消息 %s</string>
+    <string name="title_rename_folder">重新命名資料夾 %s</string>
+    <string name="all_stories_title">所有網站文章</string>
+    <string name="daily_briefing_title">每日摘要</string>
+    <string name="infrequent_title">不常更新的網站文章</string>
+    <string name="widely_read_stories_title">廣受閱讀的故事</string>
+    <string name="long_reads_title">長篇閱讀</string>
+    <string name="good_reads_title">好文推薦</string>
+    <string name="all_shared_stories_title">所有分享的文章</string>
+    <string name="global_shared_stories_title">全球分享文章</string>
+    <string name="read_stories_title">閱讀文章</string>
+    <string name="saved_stories_title">已儲存的文章</string>
+    <string name="saved_searches_title">已儲存的搜尋</string>
+    <string name="feed_list">動態消息清單</string>
+    <string name="bottom_next_unread_site">下一個未讀網站，%1$s</string>
+    <string name="bottom_next_unread_folder">下一個未讀資料夾，%1$s</string>
+    <string name="top_level">頂層</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\n與 NewsBlur 分享</string>
+    <string name="share_comment_hint">分享留言（選填）</string>
+    <string name="share_save_newsblur">要將「%s」分享／儲存至您的 Blurblog 嗎？</string>
+    <string name="share_this">分享</string>
+    <string name="already_shared">已分享</string>
+    <string name="share_this_story">分享</string>
+    <string name="share_with_comment">附上留言分享</string>
+    <string name="unshare">刪除分享</string>
+    <string name="update_shared">更新留言</string>
+    <string name="rename">重新命名</string>
+    <string name="save_this">儲存</string>
+    <string name="unsave_this">取消儲存</string>
+    <string name="train_this">訓練</string>
+    <string name="ask_ai">詢問 AI</string>
+    <string name="story_mark_unread_state">已讀</string>
+    <string name="story_mark_read_state">將文章標記為已讀</string>
+    <string name="overlay_next">下一步</string>
+    <string name="overlay_done">完成</string>
+    <string name="overlay_count_toast_N">%d 篇未讀文章</string>
+    <string name="overlay_count_toast_1">1 篇未讀文章</string>
+    <string name="overlay_text">文字</string>
+    <string name="overlay_story">文章</string>
+    <string name="orig_text_failed">抱歉，無法擷取文章\'s 的文字。</string>
+    <string name="state_all">全部</string>
+    <string name="state_unread">未讀</string>
+    <string name="state_focus">專注</string>
+    <string name="state_saved">已儲存</string>
+    <string name="reply_to">回覆給 \"%s\"</string>
+    <string name="edit_reply">編輯回覆</string>
+    <string name="edit_reply_update">更新回覆</string>
+    <string name="edit_reply_delete">刪除回覆Y</string>
+    <string name="alert_dialog_ok">確定</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">完成</string>
+    <string name="alert_dialog_openlink">開啟連結</string>
+    <string name="alert_dialog_openimage">開啟圖片</string>
+    <string name="dialog_folders_save">儲存資料夾</string>
+    <string name="dialog_story_intel_save">儲存訓練資料</string>
+    <string name="dialog_story_tags_save">儲存標籤</string>
+    <string name="profile">個人檔案</string>
+    <string name="profile_location_icon">位置圖示</string>
+    <string name="profile_following">正在追蹤</string>
+    <string name="profile_followers">追蹤者</string>
+    <string name="profile_shared">分享的文章</string>
+    <string name="profile_ago">前</string>
+    <string name="profile_recent_actvity">動態</string>
+    <string name="profile_recent_interactions">互動</string>
+    <string name="profile_started_following">已追蹤</string>
+    <string name="profile_you">你</string>
+    <string name="profile_you_lower">你</string>
+    <string name="profile_your">你的</string>
+    <string name="profile_now_following">目前正在追蹤 %1$s</string>
+    <string name="profile_replied_to">回覆給</string>
+    <string name="profile_replied_to_your">回覆了 %1$s</string>
+    <string name="profile_shared_story">已分享</string>
+    <string name="profile_comment">留言</string>
+    <string name="profile_reply">回覆</string>
+    <string name="profile_button_follow">追蹤</string>
+    <string name="profile_button_unfollow">取消追蹤</string>
+    <string name="profile_subscribed_to">已訂閱</string>
+    <string name="profile_saved">已儲存</string>
+    <string name="profile_reshared">再次分享</string>
+    <string name="profile_favorited">已加入最愛</string>
+    <string name="profile_favorited_comments">收藏了 %1$s 則留言，對象是</string>
+    <string name="profile_signup">註冊了 Newsblur</string>
+    <string name="profile_comments_on">對其留言</string>
+    <string name="profile_feed_not_available">你已取消訂閱此動態消息</string>
+    <string name="profile_do_not_follow">您沒有追蹤此使用者</string>
+    <string name="profile_no_interactions">沒有互動</string>
+    <string name="menu_profile">個人資料</string>
+    <string name="menu_search_feeds">搜尋你的訂閱來源</string>
+    <string name="menu_original">檢視原文</string>
+    <string name="menu_send_story">傳送連結至…</string>
+    <string name="menu_send_story_full">傳送文章至…</string>
+    <string name="menu_mark_feed_as_read">將資訊來源標示為已讀</string>
+    <string name="menu_delete_feed">刪除訂閱來源</string>
+    <string name="menu_statistics">統計資料</string>
+    <string name="menu_delete_saved_search">刪除已儲存的搜尋</string>
+    <string name="menu_unfollow">取消追蹤使用者</string>
+    <string name="menu_choose_folders">選擇資料夾</string>
+    <string name="menu_notifications_choose">通知</string>
+    <string name="menu_notifications_disable">停用通知</string>
+    <string name="menu_notifications_focus">有新的焦點文章時通知</string>
+    <string name="menu_notifications_unread">有新文章時一律通知</string>
+    <string name="menu_mark_folder_as_read">將資料夾標記為已讀</string>
+    <string name="menu_sharenewsblur">分享這篇文章</string>
+    <string name="menu_text_size">文字大小</string>
+    <string name="menu_text_size_xs">極小</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">特大</string>
+    <string name="menu_text_size_xxl">超特大</string>
+    <string name="menu_font">字型</string>
+    <string name="menu_save_story">儲存這篇文章</string>
+    <string name="menu_unsave_story">取消儲存此文章</string>
+    <string name="menu_newest_mark_older_stories_as_read">將較舊文章標示為已讀</string>
+    <string name="menu_newest_mark_newer_stories_as_read">將較新的文章標記為已讀</string>
+    <string name="menu_oldest_mark_older_stories_as_read">將較舊的標示為已讀</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">將較新的標為已讀</string>
+    <string name="story_menu_open_feed">開啟動態</string>
+    <string name="story_menu_share_link">分享連結…</string>
+    <string name="story_menu_share_story">分享文章…</string>
+    <string name="menu_mark_story_as_read">標記為已讀</string>
+    <string name="menu_mark_unread">標示為未讀</string>
+    <string name="menu_search_stories">搜尋…</string>
+    <string name="menu_mute_feed">將動態消息設為靜音</string>
+    <string name="menu_unmute_feed">取消訂閱來源靜音</string>
+    <string name="menu_mute_folder">靜音資料夾</string>
+    <string name="menu_unmute_folder">取消靜音資料夾</string>
+    <string name="menu_delete_folder">刪除資料夾</string>
+    <string name="menu_rename_folder">重新命名資料夾</string>
+    <string name="menu_instafetch_feed">立即擷取文章</string>
+    <string name="feed_menu_back_to_actions">返回資訊來源操作</string>
+    <string name="menu_infrequent_cutoff">每月低頻故事數</string>
+    <string name="menu_intel">智慧訓練器</string>
+    <string name="menu_rename_feed">重新命名動態消息</string>
+    <string name="menu_story_list_style_choose">清單樣式</string>
+    <string name="menu_save_search">儲存搜尋</string>
+    <string name="menu_web_search">網路搜尋</string>
+    <string name="menu_highlight">醒目標示</string>
+    <string name="list_style_list">清單</string>
+    <string name="list_style_grid_f">格狀（細）</string>
+    <string name="list_style_grid_m">方格（中）</string>
+    <string name="list_style_grid_c">格狀（粗略）</string>
+    <string name="story_content_preview_none">僅標題（無）</string>
+    <string name="story_content_preview_small">2 行（小）</string>
+    <string name="story_content_preview_medium">4 行（中）</string>
+    <string name="story_content_preview_large">6 行（大型）</string>
+    <string name="mark_read_on_scroll_disabled">設為未讀</string>
+    <string name="mark_read_on_scroll_enabled">捲動時標記為已讀</string>
+    <string name="menu_sort_by">排序方式</string>
+    <string name="menu_sort_by_name">名稱</string>
+    <string name="menu_sort_by_subs">訂閱者數</string>
+    <string name="menu_sort_by_stories_month">每月文章數</string>
+    <string name="menu_sort_by_recent_story">最新文章</string>
+    <string name="menu_sort_by_number_opens">開啟次數</string>
+    <string name="menu_sort_order">排序方式</string>
+    <string name="menu_sort_order_ascending">遞增</string>
+    <string name="menu_sort_order_descending">降冪</string>
+    <string name="menu_folder_view">資料夾檢視</string>
+    <string name="menu_folder_view_nested">巢狀</string>
+    <string name="menu_folder_view_flat">平面</string>
+    <string name="menu_mute_all">全部靜音</string>
+    <string name="menu_mute_none">取消全部靜音</string>
+    <string name="menu_select_all">全選</string>
+    <string name="menu_select_none">取消全選</string>
+    <string name="menu_widget_background">小工具背景</string>
+    <string name="menu_widget_background_default">預設</string>
+    <string name="menu_widget_background_transparent">透明</string>
+    <string name="toast_hold_to_select">按住以選取文字</string>
+    <string name="logout_warning">確定要登出嗎？</string>
+    <string name="search_mark_read_warning">請注意！訂閱源／資料夾中的所有新聞都會標記為已讀，不只有搜尋結果。若確定要將所有新聞標記為已讀，請清除搜尋查詢以確認。</string>
+    <string name="story_show_changes">顯示文章變更</string>
+    <string name="story_hide_changes">隱藏文章變更</string>
+    <string name="story_changes_loading">正在載入文章變更…</string>
+    <string name="story_saved_timestamp">已儲存 %s</string>
+    <string name="your_feeds_search_hint">搜尋您的訂閱來源</string>
+    <string name="feed_list_clear_search">清除搜尋</string>
+    <string name="story_search_hint">搜尋文章</string>
+    <string name="discover_related_sites_title">相關網站</string>
+    <string name="discover_show_grid">顯示格狀檢視</string>
+    <string name="discover_show_list">顯示清單</string>
+    <string name="discover_loading">正在尋找相關網站…</string>
+    <string name="discover_no_related_sites">找不到相關網站</string>
+    <string name="discover_view_mode_grid">網格</string>
+    <string name="discover_view_mode_list">清單</string>
+    <string name="discover_try">試試</string>
+    <string name="discover_add">新增</string>
+    <string name="discover_subscribed">已訂閱</string>
+    <string name="discover_updated_today">今日更新</string>
+    <string name="discover_updated_relative">更新於 %s</string>
+    <string name="discover_stale_updated_relative">過時 — 更新於 %s</string>
+    <string name="discover_stale_date">已過時。最後一篇文章 %s</string>
+    <string name="discover_last_fetched_relative">擷取於 %s</string>
+    <string name="try_feed_banner_subtitle">預覽中，尚未訂閱。</string>
+    <string name="try_feed_subscribe_button">訂閱</string>
+    <string name="empty_search_notice">輸入搜尋字詞以開始</string>
+    <string name="menu_add_feed">新增 + 探索網站</string>
+    <string name="adding_feed_progress">正在新增動態消息…</string>
+    <string name="feed_list_search_hint">搜尋資訊來源</string>
+    <string name="add_folder_name">請輸入資料夾名稱</string>
+    <string name="add_tag_name">請新增標籤名稱</string>
+    <string name="add_new_folder">+ 新增資料夾</string>
+    <string name="add_new_tag">+ 新增標籤</string>
+    <string name="add_tag">新增標籤</string>
+    <string name="new_folder_name_hint">輸入新資料夾名稱</string>
+    <string name="new_tag_name_hint">輸入新標籤名稱</string>
+    <string name="add_feed_error">無法新增訂閱來源</string>
+    <string name="add_folder_error">無法新增資料夾</string>
+    <string name="menu_mark_all_as_read">全部標示為已讀</string>
+    <string name="menu_logout">登出</string>
+    <string name="contact_us">聯絡我們</string>
+    <string name="contact_description">NewsBlur 是由 NewsBlur, Inc. 開發的新聞閱讀器與聚合器。如需應用程式支援、提出問題或提供意見回饋，請聯絡 NewsBlur 團隊。</string>
+    <string name="contact_email_label">寄電子郵件給開發者</string>
+    <string name="contact_send_email">寄送電子郵件</string>
+    <string name="contact_website_label">NewsBlur 網站</string>
+    <string name="contact_open_website">造訪網站</string>
+    <string name="contact_back">返回</string>
+    <string name="contact_no_email_app">未安裝電子郵件應用程式。您可以在此頁面選取並複製電子郵件地址。</string>
+    <string name="contact_no_browser">未安裝網頁瀏覽器。你可以在此頁選取並複製網站網址。</string>
+    <string name="menu_feedback">傳送應用程式意見</string>
+    <string name="menu_feedback_post">建立意見回饋貼文</string>
+    <string name="menu_feedback_email">以電子郵件回報錯誤</string>
+    <string name="menu_theme_choose">佈景主題</string>
+    <string name="menu_spacing">間距</string>
+    <string name="menu_subscription">訂閱…</string>
+    <string name="description_add_new_folder_icon">新增資料夾圖示</string>
+    <string name="menu_loginas">以…身分登入</string>
+    <string name="loginas_title">以使用者身分登入</string>
+    <string name="empty_list_view_loading">載入中…</string>
+    <string name="story_loading_description">正在載入文章</string>
+    <string name="empty_list_view_no_stories">沒有可閱讀的報導</string>
+    <string name="empty_list_view_no_stories_unread">沒有未讀文章</string>
+    <string name="reading_placeholder_select_story">選擇要閱讀的故事</string>
+    <string name="empty_list_view_no_unread_stories">您沒有未讀文章。</string>
+    <string name="empty_list_view_no_focus_stories">焦點中沒有未讀文章。\n\n切換至「全部」或「未讀」。</string>
+    <string name="empty_list_view_no_saved_stories">你沒有已儲存的文章。\n\n切換至「全部」或「未讀」。</string>
+    <string name="login_registration_custom_server">設定自訂伺服器</string>
+    <string name="login_registration_reset_url">重設</string>
+    <string name="login_registration_register">註冊</string>
+    <string name="register_message_error">註冊 NewsBlur 時發生問題。</string>
+    <string name="need_to_login">
+        <u>我需要登入！</u>
+    </string>
+    <string name="need_to_register">
+        <u>我需要註冊</u>
+    </string>
+    <string name="public_comment_count">%d 則公開留言</string>
+    <string name="friends_comments_count">%d 則留言</string>
+    <string name="friends_shares_count">%d 次分享</string>
+    <string name="unknown_user">未知使用者</string>
+    <string name="delete_feed_message">要刪除訂閱源 \"%s\" 嗎？</string>
+    <string name="delete_saved_search_message">要刪除已儲存的搜尋「%s」嗎？</string>
+    <string name="delete_folder_message">刪除資料夾 \"%s\" 並取消訂閱其中的所有資訊來源？</string>
+    <string name="deleting_folder_message">正在刪除資料夾 \"%s\"</string>
+    <string name="add_saved_search_message">要儲存搜尋「%s」嗎？</string>
+    <string name="unfollow_message">要取消追蹤「%s」嗎？</string>
+    <string name="feed_subscribers">%s 位訂閱者</string>
+    <string name="feed_opens">%d 次開啟</string>
+    <string name="feed_stories_per_month">每月 %d 篇文章</string>
+    <string name="forwarding_email_address">轉寄電子郵件地址</string>
+    <string name="setup_instructions">設定說明 \u25bc</string>
+    <string name="setup_instructions_details">若要在 NewsBlur 閱讀電子報，請將電子報轉寄至上方顯示的專屬電子郵件地址。\n\n在 Gmail 中，前往「設定」&gt;「轉寄和 POP/IMAP」，然後點選「新增轉寄地址」。新增您的專屬 NewsBlur 電子郵件地址。\n\nGmail 會引導您完成電子郵件地址的確認。接著請回到 NewsBlur，並在「電子報」資料夾中尋找確認郵件。\n\n接著，為所有電子報建立篩選器，讓它們轉寄至 NewsBlur 上的專屬地址。</string>
+    <string name="copy_email">複製電子郵件</string>
+    <string name="stories_shortcuts">文章快捷鍵</string>
+    <string name="feeds_shortcuts">動態消息快捷鍵</string>
+    <string name="import_export">匯入／匯出…</string>
+    <string name="settings">偏好設定…</string>
+    <string name="menu_mute_sites">靜音網站…</string>
+    <string name="mute_sites">靜音網站</string>
+    <string name="menu_widget">小工具…</string>
+    <string name="menu_notifications">通知…</string>
+    <string name="widget">小工具</string>
+    <string name="title_widget_setup">點一下即可在 NewsBlur 中設定</string>
+    <string name="title_no_subscriptions">未偵測到有效訂閱</string>
+    <string name="title_widget_loading">載入中…</string>
+    <string name="menu_newsletters">電子報…</string>
+    <string name="menu_shortcuts">捷徑…</string>
+    <string name="main_menu_preferences">偏好設定</string>
+    <string name="main_menu_mute_sites">靜音網站</string>
+    <string name="main_menu_widget_sites">小工具網站</string>
+    <string name="main_menu_notifications">通知</string>
+    <string name="main_menu_interactions">互動</string>
+    <string name="main_menu_upgrade_premium">升級至 Premium</string>
+    <string name="main_menu_upgrade_archive">升級至 Archive</string>
+    <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">支援論壇</string>
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">匯入／匯出 OPML</string>
+    <string name="notifications_title">通知</string>
+    <string name="premium_subscribers_folder">完整新聞流是付費功能</string>
+    <string name="premium_subscribers_allstories">閱讀所有網站的文章是進階功能</string>
+    <string name="premium_subscribers_saved_tag">依標籤閱讀已儲存文章是進階功能</string>
+    <string name="premium_subscribers_search">搜尋是付費功能</string>
+    <string name="premium_subscribers">付費訂閱者</string>
+    <string name="premium_upgrade_button">升級至 Premium</string>
+    <string name="subscription_toolbar_title">NewsBlur 高級版</string>
+    <string name="thank_you_for_subscribing">感謝訂閱！</string>
+    <string name="premium_subscription_renewal">你的訂閱將於 %s 續訂</string>
+    <string name="premium_subscription_expiration">您的訂閱將於 %s 到期</string>
+    <string name="premium_subscription_no_expiration">你的訂閱設定為永不過期。哇！</string>
+    <string name="premium_policies">詳情請參閱 NewsBlur\'s <a href="https://newsblur.com/privacy">隱私權政策</a> 和 <a href="https://newsblur.com/tos">使用條款</a>。</string>
+    <string name="premium_subscription_header">進階訂閱</string>
+    <string name="archive_subscription_header">進階封存</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">NewsBlur 進階訂閱</string>
+    <string name="archive_subscription_title">NewsBlur 進階版封存</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">每年 $35.99（每月 $3.00）</string>
+    <string name="premium_subscription_active">你的進階訂閱方案已啟用</string>
+    <string name="archive_subscription_active">你的 Premium 封存訂閱已啟用</string>
+    <string name="pro_subscription_active">你的進階專業版訂閱已啟用</string>
+    <string name="subscription_manage">管理訂閱</string>
+    <string name="subscription_details_error">擷取訂閱詳細資料時發生錯誤</string>
+    <string name="no_subscription_available">沒有可用的訂閱方案</string>
+    <string name="subscription_unavailable">目前無法在 Android 上使用</string>
+    <string name="subscription_coming_soon">即將推出</string>
+    <string name="subscription_upgrade_from_premium">從 Premium 升級</string>
+    <string name="subscription_upgrade_from_archive">從封存方案升級</string>
+    <string name="subscription_price_yearly">%1$s/年（%2$s/月）</string>
+    <string name="subscription_price_monthly">%1$s/月</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">您的進階典藏訂閱包含以上所有功能</string>
+    <string name="premium_pro_includes_above">您的 premium pro 訂閱包含以上所有功能</string>
+    <string name="premium_enable_sites">最多追蹤 1,024 個網站</string>
+    <string name="premium_sync">網站更新頻率最高提升 5 倍</string>
+    <string name="premium_read_by_folder">新聞河流（依資料夾閱讀）</string>
+    <string name="premium_search">搜尋網站和資料夾</string>
+    <string name="premium_searchable_tags">儲存含可搜尋標籤的文章</string>
+    <string name="premium_privacy_options">blurblog 隱私選項</string>
+    <string name="premium_custom_rss">已儲存文章的自訂 RSS 摘要</string>
+    <string name="premium_text_view">文字檢視會方便地擷取文章內容</string>
+    <string name="premium_discover_related">探索相關文章與網站</string>
+    <string name="premium_shiloh">你餵了 Lyric（NewsBlur 的飢餓獵犬）6 天</string>
+    <string name="archive_everything_premium">當然包含進階訂閱的所有功能</string>
+    <string name="archive_enable_sites">追蹤最多 4,096 個網站</string>
+    <string name="archive_marked_as_read">選擇自動將文章標記為已讀的時機</string>
+    <string name="archive_customize_auto_read">依網站或資料夾自訂自動標示為已讀</string>
+    <string name="archive_story_searchable_forever">永久封存並搜尋所有網站的每篇文章</string>
+    <string name="archive_back_filled">支援分頁的動態消息會回填內容，建立完整封存</string>
+    <string name="archive_train_full_text">使用全文內容訓練文章</string>
+    <string name="archive_discover_related">探索封存內容中的相關文章</string>
+    <string name="archive_export_trained_stories">將資料夾中的訓練文章匯出為 RSS 摘要</string>
+    <string name="archive_stories_unread_forever">文章可永遠保持未讀</string>
+    <string name="archive_ask_ai">針對文章詢問 AI</string>
+    <string name="archive_filter_by_date_range">依日期範圍篩選文章</string>
+    <string name="archive_train_folder">將訓練套用至整個資料夾</string>
+    <string name="archive_train_globally">全域套用訓練</string>
+    <string name="pro_everything_archive">當然也包含典藏訂閱方案的所有功能</string>
+    <string name="pro_enable_sites">追蹤多達 10,000 個網站</string>
+    <string name="pro_all_feeds_fetched">所有動態消息每 5 至 15 分鐘擷取一次</string>
+    <string name="pro_regex_train">使用正規表示式訓練文章</string>
+    <string name="pro_priority_support">優先支援</string>
+    <string name="pro_natural_language_filters">自然語言篩選器</string>
+    <string name="pro_natural_language_search">自然語言搜尋</string>
+    <string name="settings_cat_offline">離線閱讀</string>
+    <string name="settings_enable_offline">下載文章</string>
+    <string name="settings_enable_offline_sum">在背景定期擷取文章</string>
+    <string name="settings_enable_image_prefetch">下載圖片</string>
+    <string name="settings_enable_image_prefetch_sum">預先擷取圖片以供離線閱讀</string>
+    <string name="settings_keep_old_stories">閱讀後保留文章</string>
+    <string name="settings_keep_old_stories_sum">停用以減少儲存空間用量</string>
+    <string name="mute_config_title">免費標準帳戶最多可追蹤 64 個網站</string>
+    <string name="mute_config_message">請將 %d 個網站設為靜音，或重設為最熱門的網站。</string>
+    <string name="mute_config_reset_button">重設為熱門網站</string>
+    <string name="mute_config_upgrade_to_premium">升級至 Premium</string>
+    <string name="mute_config_upgrade_subtitle">訂閱 1,024 個網站</string>
+    <string name="mute_config_upgrade">升級</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">可用網站數：%d</string>
+    <string name="mute_config_sites_over">超出上限 %d</string>
+    <string name="menu_network_select">下載方式…</string>
+    <string name="menu_network_select_sum">限制背景資料僅使用選定的網路</string>
+    <string name="menu_network_select_opt_any">任何網路</string>
+    <string name="menu_network_select_opt_nomo">任何 Wi-Fi 或乙太網路</string>
+    <string name="menu_network_select_opt_nomononme">僅限不限量 Wi-Fi 或乙太網路</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">刪除離線文章…</string>
+    <string name="menu_delete_offline_stories_sum">清除已儲存的文章和圖片以釋放空間</string>
+    <string name="menu_delete_offline_stories_confirmation">已清除所有文章和圖片！</string>
+    <string name="menu_cache_age_select">文章要保留多久…</string>
+    <string name="menu_cache_age_select_sum">清除供離線閱讀的已儲存文章</string>
+    <string name="menu_cache_age_select_opt_2d">2 天（減少儲存空間用量）</string>
+    <string name="menu_cache_age_select_opt_7d">7 天</string>
+    <string name="menu_cache_age_select_opt_14d">14 天</string>
+    <string name="menu_cache_age_select_opt_30d">30 天（減少網路用量）</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">訂閱來源清單</string>
+    <string name="setting_feed_list_order">動態消息清單排序…</string>
+    <string name="settings_enable_row_global_shared">顯示全域分享文章</string>
+    <string name="settings_enable_row_global_shared_sum">顯示「全球分享文章」資料夾</string>
+    <string name="settings_enable_row_infrequent_stories">顯示較少出現的文章</string>
+    <string name="settings_enable_row_infrequent_stories_sum">顯示「不常更新的網站文章」資料夾</string>
+    <string name="settings_enable_row_daily_briefing">顯示每日簡報</string>
+    <string name="settings_enable_row_daily_briefing_sum">顯示每日簡報資料夾</string>
+    <string name="settings_enable_row_widely_read_stories">顯示廣受閱讀的文章</string>
+    <string name="settings_enable_row_widely_read_stories_sum">顯示「廣泛閱讀」資料夾</string>
+    <string name="settings_enable_row_long_reads">顯示長篇文章</string>
+    <string name="settings_enable_row_long_reads_sum">顯示「長篇閱讀」資料夾</string>
+    <string name="settings_enable_row_good_reads">顯示優質文章</string>
+    <string name="settings_enable_row_good_reads_sum">顯示「優質閱讀」資料夾</string>
+    <string name="settings_cat_story_list">文章列表</string>
+    <string name="settings_cat_story_layout">文章版面配置</string>
+    <string name="settings_app_icon">App 圖示</string>
+    <string name="settings_app_icon_choose">選擇圖示</string>
+    <string name="settings_app_icon_summary">12 種色彩風格，皆提供淺色與深色版本。</string>
+    <string name="settings_app_icon_footer">Premium 訂閱者可選擇自訂的 NewsBlur 圖示。每種樣式皆提供淺色與深色版本。</string>
+    <string name="settings_app_icon_premium">進階版</string>
+    <string name="settings_app_icon_light">淺色</string>
+    <string name="settings_app_icon_dark">深色</string>
+    <string name="settings_app_icon_save_failed">無法變更 App 圖示</string>
+    <string name="settings_app_icon_appearance_light">淺色</string>
+    <string name="settings_app_icon_appearance_auto">兩者皆用</string>
+    <string name="settings_app_icon_appearance_dark">深色</string>
+    <string name="settings_app_icon_appearance_light_caption">無論裝置設定如何，皆維持淺色圖示。</string>
+    <string name="settings_app_icon_appearance_auto_caption">圖示會跟隨您裝置的淺色或深色外觀。</string>
+    <string name="settings_app_icon_appearance_dark_caption">無論裝置設定為何，圖示都會維持深色。</string>
+    <string name="oldest">最舊</string>
+    <string name="newest">最新</string>
+    <string name="menu_story_order">文章排序</string>
+    <string name="settings_story_order">文章排序…</string>
+    <string name="story_header_options">選項</string>
+    <string name="story_header_search">搜尋</string>
+    <string name="story_header_related_sites">相關網站</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">舒適</string>
+    <string name="compact">精簡</string>
+    <string name="alphabetical">依字母排序</string>
+    <string name="most_used_at_top">最常使用的排在最上方</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">所有文章</string>
+    <string name="unread_only">僅未讀</string>
+    <string name="menu_story_content_preview">文章內容預覽</string>
+    <string name="menu_story_thumbnail_preview">縮圖預覽</string>
+    <string name="menu_mark_read_on_scroll">捲動時標示為已讀</string>
+    <string name="settings_read_filter">已讀文章篩選條件…</string>
+    <string name="settings_read_filter_title">顯示的文章</string>
+    <string name="menu_read_filter">已讀文章篩選器</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>全部標記為已讀</item>
+        <item>取消</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>將較舊的文章標示為已讀</item>
+        <item>取消</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="other">超過 %d 天</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="other">%s 位訂閱者</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="other">每月 %s 篇文章</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="other">也由 %d 個網站發布</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="other">+ %d 個網站</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>將較新的文章標示為已讀</item>
+        <item>取消</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">自動開啟第一篇文章</string>
+    <string name="settings_auto_open_first_unread_sum">在文章列表中自動開啟第一篇未讀文章</string>
+    <string name="settings_mark_read_on_feed_scroll">捲動時將文章標題標示為已讀</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">捲動瀏覽文章時自動標記為已讀</string>
+    <string name="settings_story_clustering">將相關文章分群</string>
+    <string name="settings_story_clustering_summary">在文章標題下方顯示其他訂閱來源中的重複文章</string>
+    <string name="settings_cluster_matches">群組比對</string>
+    <string name="settings_cluster_matches_summary">選擇群集只顯示重複標題，或也顯示相關報導</string>
+    <string name="settings_story_clustering_save_failed">無法儲存文章分群偏好設定</string>
+    <string name="settings_story_clustering_title_only">僅標題</string>
+    <string name="settings_cluster_mode_title_match_only">僅比對標題</string>
+    <string name="settings_cluster_mode_title_match_plus_related">標題相符加上相關內容</string>
+    <string name="settings_cluster_mark_read_matches">將符合條件的文章標示為已讀</string>
+    <string name="settings_cluster_mark_read_related">將相關文章標記為已讀</string>
+    <string name="settings_cluster_mark_read_matches_summary">閱讀故事時，也將相符的故事標記為已讀。</string>
+    <string name="settings_cluster_mark_read_related_summary">閱讀文章時，也將符合條件及相關文章標記為已讀。</string>
+    <string name="settings_cluster_mark_read_save_failed">無法儲存相關文章的已讀偏好設定</string>
+    <string name="settings_story_clustering_title">標題</string>
+    <string name="settings_story_clustering_only">僅限</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">符合</string>
+    <string name="story_cluster_badge_related">相關</string>
+    <string name="settings_mark_story_read">將文章標示為已讀…</string>
+    <string name="settings_mark_story_read_title">將故事標記為已讀</string>
+    <string name="mark_story_read_immediately">僅在選取時</string>
+    <string name="mark_story_read_on_scroll">捲動或選取時</string>
+    <string name="mark_story_read_1_second">1 秒後</string>
+    <string name="mark_story_read_2_seconds">2 秒後</string>
+    <string name="mark_story_read_3_seconds">3 秒後</string>
+    <string name="mark_story_read_5_seconds">5 秒後</string>
+    <string name="mark_story_read_10_seconds">10 秒後</string>
+    <string name="mark_story_read_20_seconds">20 秒後</string>
+    <string name="mark_story_read_30_seconds">30 秒後</string>
+    <string name="mark_story_read_45_seconds">45 秒後</string>
+    <string name="mark_story_read_60_seconds">60 秒後</string>
+    <string name="mark_story_read_manually">手動</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">分享文章</string>
+    <string name="settings_show_public_comments">顯示公開留言</string>
+    <string name="settings_reading">閱讀</string>
+    <string name="settings_show_ask_ai">顯示「詢問 AI」</string>
+    <string name="settings_content_preview">內容預覽文字…</string>
+    <string name="settings_thumbnails_style">文章圖片預覽縮圖…</string>
+    <string name="settings_preview_images_title">預覽圖片</string>
+    <string name="settings_preview_images_segment_off">關閉</string>
+    <string name="settings_preview_images_segment_left_small">L 小</string>
+    <string name="settings_preview_images_segment_left_large">L 大</string>
+    <string name="settings_preview_images_segment_right_small">右側小</string>
+    <string name="settings_preview_images_segment_right_large">右側大圖</string>
+    <string name="settings_notifications">通知</string>
+    <string name="settings_enable_notifications">啟用通知</string>
+    <string name="ask_ai_upgrade_archive">升級至進階典藏版</string>
+    <string name="ask_ai_ask_question">提出問題…</string>
+    <string name="ask_ai_follow_up">追問…</string>
+    <string name="ask_ai_ask">詢問</string>
+    <string name="ask_ai_send">傳送</string>
+    <string name="ask_ai_reask">重新詢問</string>
+    <string name="ask_ai_recording">錄製中…</string>
+    <string name="ask_ai_transcribing">正在轉錄…</string>
+    <string name="ask_ai_microphone_permission_denied">麥克風權限遭拒</string>
+    <string name="ask_ai_microphone_error">無法錄製音訊</string>
+    <string name="settings_confirm_mark_all_read_note">將網站上的所有文章標記為已讀時，一律會要求確認。長按「標記為已讀」按鈕可查看更多選項。</string>
+    <string name="settings_confirm_mark_all_read_segment_both">兩者</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">資料夾</string>
+    <string name="settings_confirm_mark_all_read_segment_never">永不</string>
+    <string name="settings_after_mark_read_title">標記為已讀後</string>
+    <string name="settings_after_mark_read_next">開啟下一個清單</string>
+    <string name="settings_after_mark_read_stay">留在此處</string>
+    <string name="settings_when_opening_site_title">開啟網站時</string>
+    <string name="settings_when_opening_site_stories">顯示文章</string>
+    <string name="settings_when_opening_site_first_story">開啟第一篇文章</string>
+    <string name="story_cluster_upgrade_archive">進階封存</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">左側小型</string>
+    <string name="story_thumbnail_left_hand_large">左側大型</string>
+    <string name="story_thumbnail_right_hand_small">右側小圖</string>
+    <string name="story_thumbnail_right_hand_large">右側大型</string>
+    <string name="story_thumbnail_no_image_preview">沒有圖片預覽</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">來自更新頻率</string>
+    <string name="infrequent_5">每月少於 5 篇文章</string>
+    <string name="infrequent_15">每月少於 15 篇文章</string>
+    <string name="infrequent_30">&lt; 每月 30 篇文章</string>
+    <string name="infrequent_60">每月少於 60 篇</string>
+    <string name="infrequent_90">每月少於 90 篇文章</string>
+    <string name="story_intel_dialog_title">你喜歡和不喜歡這篇文章的哪些地方？</string>
+    <string name="feed_intel_dialog_title">你喜歡或不喜歡這個網站的哪些地方？</string>
+    <string name="intel_title_header">文章標題</string>
+    <string name="feed_intel_title_header">標題</string>
+    <string name="intel_tag_header">文章標籤</string>
+    <string name="feed_intel_tag_header">標籤</string>
+    <string name="intel_author_header">故事作者</string>
+    <string name="feed_intel_author_header">作者</string>
+    <string name="intel_feed_header">依發布者顯示全部</string>
+    <string name="intel_super_dislike">超級不喜歡</string>
+    <string name="explainer_super_dislike">超級倒讚</string>
+    <string name="explainer_like">喜歡</string>
+    <string name="explainer_dislike">不喜歡</string>
+    <string name="explainer_beats">節拍</string>
+    <string name="explainer_example1_header">一個讚就能抵過任意數量的倒讚</string>
+    <string name="explainer_example1_result">文章會顯示在聚焦檢視中</string>
+    <string name="explainer_example2_header">單一超級踩會凌駕所有設定</string>
+    <string name="explainer_example2_result">故事一律隱藏</string>
+    <string name="auto">自動</string>
+    <string name="light">淺色</string>
+    <string name="sepia">棕褐色</string>
+    <string name="dark">深色</string>
+    <string name="black">黑色</string>
+    <string name="settings_gestures">手勢</string>
+    <string name="sync_status_housekeeping">正在整理…</string>
+    <string name="sync_status_actions">正在補上 %d 個閱讀動作…</string>
+    <string name="sync_status_recounts">正在追補閱讀操作…</string>
+    <string name="sync_status_ffsync">即將送達…</string>
+    <string name="sync_status_cleanup">正在清理…</string>
+    <string name="sync_status_starred">同步已儲存文章的操作…</string>
+    <string name="sync_status_stories">正在擷取最新文章…</string>
+    <string name="sync_status_unreads">正在儲存%s篇未讀文章…</string>
+    <string name="sync_status_images">正在儲存 %d 張圖片…</string>
+    <string name="sync_status_offline">離線</string>
+    <string name="sync_status_feed_add">正在新增資訊流</string>
+    <string name="sync_status_done">全部完成</string>
+    <string name="volume_key_navigation">音量鍵導覽…</string>
+    <string name="off">關閉</string>
+    <string name="volume_up_next">向上 = 下一篇文章</string>
+    <string name="volume_down_next">向下 = 下一篇文章</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">標記為已讀後開啟下一個資訊來源／資料夾</string>
+    <string name="settings_load_next_on_mark_read_summary">標記為已讀後載入下一個資訊來源／資料夾</string>
+    <string name="settings_confirm_mark_all_read">確認將全部標示為已讀的時機…</string>
+    <string name="none">都不是</string>
+    <string name="feed_and_folder">資訊來源與資料夾</string>
+    <string name="folder_only">僅資料夾</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">確認將較舊／較新的項目標示為已讀</string>
+    <string name="settings_ltr_gesture_action">在文章列表向右滑動…</string>
+    <string name="gest_action_none">不執行任何動作</string>
+    <string name="gest_action_back">返回上一個清單</string>
+    <string name="gest_action_toggle_read">切換文章已讀狀態</string>
+    <string name="gest_action_markread">將文章標記為已讀</string>
+    <string name="gest_action_markunread">將文章標記為未讀</string>
+    <string name="gest_action_save">儲存文章</string>
+    <string name="gest_action_unsave">取消收藏文章</string>
+    <string name="gest_action_statistics">網站統計</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">在文章標題上向左滑動…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">預設瀏覽器…</string>
+    <string name="font">字型…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>系統預設</item>
+        <item>應用程式內瀏覽器</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">新文章</string>
+    <string name="go_to_feed">前往來源</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">搜尋</string>
+    <string name="add_feed">新增資訊來源</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">電子郵件</string>
+    <string name="notification_web">網頁</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">沒有動態通知</string>
+    <string name="notification_permissions_context">張貼通知需要權限</string>
+    <string name="notification_permissions_rationale">再次嘗試啟用通知前，必須先在應用程式的設定中手動授予通知權限</string>
+    <string name="write_storage_permission_opml">OPML 匯出需要寫入儲存空間的權限</string>
+    <string name="story_saved">文章已標記為已儲存</string>
+    <string name="story_unsaved">文章已標記為未儲存</string>
+    <string name="story_read">文章已標為已讀</string>
+    <string name="story_unread">文章已標記為未讀</string>
+    <string name="unread_stories">未讀文章</string>
+    <string name="focused_stories">焦點文章</string>
+    <string name="saved_stories">已儲存的故事</string>
+    <string name="short_next_story">下一篇文章</string>
+    <string name="short_previous_story">上一則文章</string>
+    <string name="short_text_view">文字檢視</string>
+    <string name="short_page_down">Page Down</string>
+    <string name="short_page_down_key">空白鍵</string>
+    <string name="short_page_up">向上翻頁</string>
+    <string name="short_page_up_key">\u21E7 空白鍵</string>
+    <string name="short_next_unread_story">下一則未讀新聞</string>
+    <string name="short_toggle_read_unread">切換已讀／未讀</string>
+    <string name="short_save_unsave_story">收藏／取消收藏文章</string>
+    <string name="short_open_in_browser">在瀏覽器中開啟</string>
+    <string name="short_share_this_story">分享這篇文章</string>
+    <string name="short_scroll_to_comments">捲動至留言</string>
+    <string name="short_open_story_trainer">開啟文章訓練器</string>
+    <string name="short_open_all_stories">開啟所有網站文章</string>
+    <string name="short_switch_views">切換檢視模式</string>
+    <string name="short_add_site">新增網站</string>
+    <string name="registering">正在註冊……</string>
+    <string name="renaming_feed_message">正在重新命名動態消息 %s</string>
+    <string name="renaming_folder_message">正在重新命名資料夾 %s</string>
+    <string name="parent_folder">上層資料夾</string>
+    <string name="folder_added">資料夾已新增</string>
+    <string name="new_folder_parent">位於：%1$s</string>
+    <string name="ui_014f8b8d982f">新增自訂關鍵字篩選器，並將其設為獨立的簡報區段</string>
+    <string name="ui_05392d13e2f2">目前沒有簡報</string>
+    <string name="ui_0a4444676244">儲存失敗</string>
+    <string name="ui_0a8adac9d6d5">排程</string>
+    <string name="ui_13b7bfcac438">處理中…</string>
+    <string name="ui_2eb56be3c2d9">來源</string>
+    <string name="ui_314ef761a08f">新增關鍵字區段</string>
+    <string name="ui_3af014d03229">資訊來源</string>
+    <string name="ui_3e4a49541e18">包含已讀文章</string>
+    <string name="ui_4a24ff492222">每天取得包含所有精選文章的簡報</string>
+    <string name="ui_4e9f59082144">Premium 封存庫</string>
+    <string name="ui_5b170811b992">升級至進階封存</string>
+    <string name="ui_67a31d6fa581">選擇每日摘要提醒的接收位置</string>
+    <string name="ui_67d0be0dd546">控制包含的內容及撰寫方式</string>
+    <string name="ui_68c2cc7f0cea">模型</string>
+    <string name="ui_710089545189">長度與風格</string>
+    <string name="ui_753a22b2eb61">通知</string>
+    <string name="ui_771ee100da2b">關鍵字區段</string>
+    <string name="ui_7c522fb68f07">依照您的時間安排，傳送熱門文章摘要。</string>
+    <string name="ui_7f7e956b2244">設定每日簡報，為你整理最重要文章的摘要。</string>
+    <string name="ui_7ff5a6dafd80">區段</string>
+    <string name="ui_80f7bcbc57b0">選擇摘要產生的頻率與時間</string>
+    <string name="ui_a4d5830966af">依照你的排程自動建立簡報</string>
+    <string name="ui_a92076d4b9e3">選擇用來撰寫每日簡報的模型</string>
+    <string name="ui_a970fbbd6df8">自動產生</string>
+    <string name="ui_a9dc7e4dcba7">每日摘要設定</string>
+    <string name="ui_bbfa773e5a63">關閉</string>
+    <string name="ui_c2d462f8f6da">選擇哪些文章可納入每日摘要</string>
+    <string name="ui_d521ea8640b5">產生日報</string>
+    <string name="ui_df174a3f2faa">已啟用</string>
+    <string name="ui_df2164622bcf">無法載入每日摘要</string>
+    <string name="ui_eaed56ec84ae">每日簡報</string>
+    <string name="ui_efc007a393f6">儲存</string>
+    <string name="ui_f530db58b3e5">關鍵字</string>
+    <string name="ui_fdafe86c10a4">只會包含有相符文章的區段</string>
+    <string name="ui_690910f6ed17">匯入 OPML</string>
+    <string name="ui_244fd5e426f0">匯出 OPML</string>
+    <string name="ui_768e0c1c6957">標題</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">已儲存的標籤</string>
+    <string name="ui_6e914f494515">文章標籤</string>
+    <string name="ui_e912ab619a72">其他標籤</string>
+    <string name="i18n_add_site">新增網站</string>
+    <string name="i18n_add">新增</string>
+    <string name="i18n_retry">重試</string>
+    <string name="i18n_no_sites_found_try_another_search">找不到網站。請嘗試其他搜尋。</string>
+    <string name="i18n_load_more">載入更多</string>
+    <string name="i18n_follow_any_website">追蹤任何網站</string>
+    <string name="i18n_mark_updated_stories_unread">將更新的文章標示為未讀</string>
+    <string name="i18n_follow_news_that_matters_to_you">追蹤對你重要的新聞</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">選擇主題，或為任何搜尋建立 Google 新聞動態。</string>
+    <string name="i18n_subscribe">訂閱</string>
+    <string name="i18n_tech">科技</string>
+    <string name="i18n_review">評論</string>
+    <string name="i18n_sponsored">贊助內容</string>
+    <string name="i18n_discover_more_to_read">探索更多文章</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">找不到網站。您也可以透過網址新增網站。</string>
+    <string name="i18n_add_discover_sites">新增 + 探索網站</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">從沒有 RSS 的頁面建立供稿。NewsBlur 會找出頁面中的故事並檢查更新。需要 Premium Archive。</string>
+</resources>

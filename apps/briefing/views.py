@@ -6,6 +6,7 @@ import redis
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
+from django.utils.translation import gettext
 
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
@@ -481,7 +482,7 @@ def generate_briefing(request):
     Triggers on-demand briefing generation with real-time progress via WebSocket.
     """
     if request.method != "POST":
-        return {"code": -1, "message": "POST required"}
+        return {"code": -1, "message": gettext("POST required")}
 
     from apps.briefing.tasks import GenerateUserBriefing
 

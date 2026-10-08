@@ -107,6 +107,9 @@
                                 <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="3p1-tq-Hxk"/>
                                 <action selector="doNextUnreadStory:" destination="-1" eventType="touchUpInside" id="56v-Nl-KaO"/>
                             </connections>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute keyPath='nbLocalizedText' type='string' value='NEXT'/>
+                        </userDefinedRuntimeAttributes>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="81">
                             <rect key="frame" x="9" y="9" width="87" height="34"/>
@@ -130,6 +133,9 @@
                                 <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="FZm-dS-Naz"/>
                                 <action selector="toggleTextView:" destination="-1" eventType="touchUpInside" id="cUj-T3-lKc"/>
                             </connections>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute keyPath='nbLocalizedText' type='string' value='TEXT'/>
+                        </userDefinedRuntimeAttributes>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="85">
                             <rect key="frame" x="97" y="9" width="44" height="34"/>

@@ -18,13 +18,9 @@ import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import (
-    Http404,
-    HttpResponse,
-    HttpResponseForbidden,
-    HttpResponseRedirect,
-)
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext
 from django.views.decorators.http import condition
 
 from apps.analyzer.models import get_classifiers_for_user
@@ -40,11 +36,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince, relative_timeuntil
 from utils.ratelimit import ratelimit
-from utils.url_safety import (
-    BLOCKED_PRIVATE_URL_MESSAGE,
-    UnsafeUrlError,
-    validate_public_url,
-)
+from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import get_argument_or_404, is_true, required_params
 from vendor.timezones.utilities import localtime_for_timezone
@@ -119,7 +111,7 @@ def feed_autocomplete(request):
     #     return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
 
     if not query:
-        return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
+        return dict(code=-1, message=gettext("Specify a search 'term'."), feeds=[], term=query)
 
     if "." in query:
         try:
@@ -404,7 +396,7 @@ def find_or_create_feed_for_branch(original_feed, feed_address, feed_link):
 def exception_change_feed_address(request):
     feed_id = normalize_feed_id(request.POST.get("feed_id"))
     if not feed_id:
-        return {"code": -1, "message": "Missing or invalid feed id."}
+        return {"code": -1, "message": gettext("Missing or invalid feed id.")}
 
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
@@ -506,7 +498,7 @@ def exception_change_feed_address(request):
 def exception_change_feed_link(request):
     feed_id = normalize_feed_id(request.POST.get("feed_id"))
     if not feed_id:
-        return {"code": -1, "message": "Missing or invalid feed id."}
+        return {"code": -1, "message": gettext("Missing or invalid feed id.")}
 
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
@@ -645,7 +637,7 @@ def original_text(request):
     debug = GET_POST.get("debug", False)
 
     if not story_hash and not story_id:
-        return {"code": -1, "message": "Missing story_hash.", "original_text": None, "failed": True}
+        return {"code": -1, "message": gettext("Missing story_hash."), "original_text": None, "failed": True}
 
     if story_hash:
         story, _ = MStory.find_story(story_hash=story_hash)
@@ -654,7 +646,7 @@ def original_text(request):
 
     if not story:
         logging.user(request, "~FYFetching ~FGoriginal~FY story text: ~FRstory not found")
-        return {"code": -1, "message": "Story not found.", "original_text": None, "failed": True}
+        return {"code": -1, "message": gettext("Story not found."), "original_text": None, "failed": True}
 
     original_text = story.fetch_original_text(force=force, request=request, debug=debug)
 
@@ -695,7 +687,7 @@ def story_changes(request):
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:
         logging.user(request, "~FYFetching ~FGoriginal~FY story page: ~FRstory not found")
-        return {"code": -1, "message": "Story not found.", "original_page": None, "failed": True}
+        return {"code": -1, "message": gettext("Story not found."), "original_page": None, "failed": True}
 
     return {"story": Feed.format_story(story, show_changes=show_changes)}
 
@@ -718,7 +710,7 @@ def discover_feeds(request, feed_id=None):
         similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
         similar_feed_ids = [result["_source"]["feed_id"] for result in similar_feeds]
     else:
-        return {"code": -1, "message": "Missing feed_ids.", "discover_feeds": None, "failed": True}
+        return {"code": -1, "message": gettext("Missing feed_ids."), "discover_feeds": None, "failed": True}
 
     feeds = Feed.objects.filter(pk__in=similar_feed_ids)
     discover_feeds = defaultdict(dict)
@@ -740,7 +732,7 @@ def discover_stories(request, story_hash):
     offset = (page - 1) * limit
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:
-        return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
+        return {"code": -1, "message": gettext("Story not found."), "discover_stories": None, "failed": True}
 
     user_search = MUserSearch.get_user(request.user.pk)
     user_search.touch_discover_date()

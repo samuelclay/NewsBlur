@@ -528,9 +528,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var none_highlighted = this.no_children_highlighted();
 
         if (all_highlighted) {
-            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-on' }, 'ON'));
+            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-on' }, gettext('ON')));
         } else if (none_highlighted) {
-            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-off' }, 'OFF'));
+            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-off' }, gettext('OFF')));
         }
         // If mixed, don't show any status
     },

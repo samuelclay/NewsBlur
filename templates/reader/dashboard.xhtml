@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load recommendations_tags utils_tags statistics_tags %}
 
@@ -44,7 +45,7 @@
 {% block content %}
 
 <h1 class="NB-splash-heading">NewsBlur</h1>
-<h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
+<h2 class="NB-splash-heading">{% trans "- The best stories from your friends and favorite blogs, all in one place." %}</h2>
 
 <div id="NB-splash" style="left: {% firstof user_profile.feed_pane_size 242 %}px">
   <div class="NB-splash-modules">
@@ -96,20 +97,20 @@
                             <h3 class="NB-module-content-header">
                                 <div class="NB-module-content-subtitle NB-module-content-account-realtime-subtitle"></div>
                                 <div class="NB-module-content-account-realtime" title=""></div>
-                                Your account
+                                {% trans "Your account" %}
                             </h3>
                             <div class="NB-module-stats-counts">
                                 <div class="NB-module-stats-count NB-module-account-subscription">
                                     <div class="NB-module-stats-count-number"></div>
                                     <div class="NB-module-stats-count-description">
                                         {% if user_profile.is_pro %}
-                                            Premium Pro subscription
+                                            {% trans "Premium Pro subscription" %}
                                         {% elif user_profile.is_archive %}
-                                            Premium Archive subscription
+                                            {% trans "Premium Archive subscription" %}
                                         {% elif user_profile.is_premium %}
-                                            Premium subscription
+                                            {% trans "Premium subscription" %}
                                         {% else %}
-                                            Free account
+                                            {% trans "Free account" %}
                                         {% endif %}
                                     </div>
                                 </div>
@@ -140,19 +141,19 @@
 
             <div class="NB-module-search NB-module">
                 <h5 class="NB-module-header">
-                    <div class="NB-module-header-text">Search Sites and People</div>
+                    <div class="NB-module-header-text">{% trans "Search Sites and People" %}</div>
                 </h5>
                 
                 <div class="NB-module-search-container">
                     <div class="NB-module-search-input NB-module-search-sites">
                         <div class="NB-search-close"></div>
                         <label for="search_site"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
-                        <input id="search_site" name="search_site" placeholder="Site name or address...">
+                        <input id="search_site" name="search_site" placeholder="{% trans 'Site name or address...' %}">
                     </div>
                     <div class="NB-module-search-input NB-module-search-people">
                         <div class="NB-search-close"></div>
                         <label for="search_people"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
-                        <input id="search_people" name="search_people" placeholder="Username or email...">
+                        <input id="search_people" name="search_people" placeholder="{% trans 'Username or email...' %}">
                     </div>
                     <div class="NB-module-search-results"></div>
                 </div>

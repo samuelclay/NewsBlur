@@ -44,7 +44,7 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
         var rss_url = this.feed ? this.feed.get('feed_address') : '';
 
         this.$modal = $.make('div', { className: 'NB-modal-tag-settings NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Tag Settings'),
+            $.make('h2', { className: 'NB-modal-title' }, gettext('Tag Settings')),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/tag.svg' }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
@@ -55,50 +55,50 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('span', { className: 'NB-exception-option-status' }),
-                    'View settings'
+                    gettext('View settings')
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     // Reading view row
                     $.make('div', { className: 'NB-tag-setting-row' }, [
-                        $.make('div', { className: 'NB-tag-setting-label' }, 'Reading view'),
+                        $.make('div', { className: 'NB-tag-setting-label' }, gettext('Reading view')),
                         $.make('ul', { className: 'segmented-control NB-tag-view-control' }, [
                             $.make('li', { className: 'NB-view-setting-option', 'data-value': 'feed' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/content-view-feed.svg' }),
-                                $.make('span', 'Feed')
+                                $.make('span', gettext('Feed'))
                             ]),
                             $.make('li', { className: 'NB-view-setting-option', 'data-value': 'text' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/content-view-text.svg' }),
-                                $.make('span', 'Text')
+                                $.make('span', gettext('Text'))
                             ]),
                             $.make('li', { className: 'NB-view-setting-option', 'data-value': 'story' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/content-view-story.svg' }),
-                                $.make('span', 'Story')
+                                $.make('span', gettext('Story'))
                             ])
                         ])
                     ]),
                     // Story layout row
                     $.make('div', { className: 'NB-tag-setting-row' }, [
-                        $.make('div', { className: 'NB-tag-setting-label' }, 'Story layout'),
+                        $.make('div', { className: 'NB-tag-setting-label' }, gettext('Story layout')),
                         $.make('ul', { className: 'segmented-control NB-tag-layout-control' }, [
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'full' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-full.svg' }),
-                                $.make('span', 'Full')
+                                $.make('span', gettext('Full'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'split' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-split.svg' }),
-                                $.make('span', 'Split')
+                                $.make('span', gettext('Split'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'list' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-list.svg' }),
-                                $.make('span', 'List')
+                                $.make('span', gettext('List'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'grid' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-grid.svg' }),
-                                $.make('span', 'Grid')
+                                $.make('span', gettext('Grid'))
                             ]),
                             $.make('li', { className: 'NB-layout-setting-option', 'data-value': 'magazine' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/layout-magazine.svg' }),
-                                $.make('span', 'Magazine')
+                                $.make('span', gettext('Magazine'))
                             ])
                         ])
                     ])
@@ -106,7 +106,7 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
             ]),
             // RSS Feed Address
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
-                $.make('h5', 'Tag RSS Feed'),
+                $.make('h5', gettext('Tag RSS Feed')),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-tag-rss-wrapper' }, [
                         $.make('input', {
@@ -117,12 +117,12 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
                             value: rss_url || '',
                             readonly: 'readonly'
                         }),
-                        $.make('div', { className: 'NB-tag-rss-copy NB-modal-submit-button NB-modal-submit-grey' }, 'Copy')
+                        $.make('div', { className: 'NB-tag-rss-copy NB-modal-submit-button NB-modal-submit-grey' }, gettext('Copy'))
                     ]),
                     (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-only' }, [
                         $.make('div', { className: 'NB-premium-only-text' }, [
-                            'RSS feeds for saved story tags is a ',
-                            $.make('a', { href: '#', className: 'NB-premium-only-link NB-splash-link' }, 'premium feature'),
+                            gettext('RSS feeds for saved story tags is a '),
+                            $.make('a', { href: '#', className: 'NB-premium-only-link NB-splash-link' }, gettext('premium feature')),
                             '.'
                         ])
                     ]))
@@ -130,7 +130,7 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
             ]),
             // Rename Tag
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
-                $.make('h5', 'Rename Tag'),
+                $.make('h5', gettext('Rename Tag')),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-tag-rename-wrapper' }, [
                         $.make('input', {
@@ -138,23 +138,23 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
                             className: 'NB-input NB-tag-rename-input',
                             name: 'new_tag_name',
                             value: this.tag_name,
-                            placeholder: 'New tag name'
+                            placeholder: gettext('New tag name')
                         }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-tag-rename-save' }, 'Rename')
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-tag-rename-save' }, gettext('Rename'))
                     ]),
                     $.make('div', { className: 'NB-tag-rename-error NB-error' })
                 ])
             ]),
             // Delete Tag
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
-                $.make('h5', 'Delete Tag'),
+                $.make('h5', gettext('Delete Tag')),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-tag-delete-info' }, [
-                        'This removes the tag from all saved stories. Stories will remain saved without this tag.'
+                        gettext('This removes the tag from all saved stories. Stories will remain saved without this tag.')
                     ]),
                     $.make('div', { className: 'NB-tag-delete-wrapper' }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-tag-delete' }, 'Delete Tag'),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-tag-delete-confirm' }, 'Yes, delete it')
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-tag-delete' }, gettext('Delete Tag')),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-tag-delete-confirm' }, gettext('Yes, delete it'))
                     ]),
                     $.make('div', { className: 'NB-tag-delete-error NB-error' })
                 ])
@@ -173,7 +173,7 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
 
     animate_saved: function () {
         var $status = $('.NB-exception-option-status', this.$modal);
-        $status.text('Saved').addClass('NB-visible');
+        $status.text(gettext('Saved')).addClass('NB-visible');
         _.delay(function () {
             $status.removeClass('NB-visible');
         }, 1200);
@@ -186,9 +186,9 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
         $input[0].select();
         document.execCommand('copy');
 
-        $button.text('Copied!');
+        $button.text(gettext('Copied!'));
         _.delay(function () {
-            $button.text('Copy');
+            $button.text(gettext('Copy'));
         }, 1500);
     },
 
@@ -201,20 +201,20 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
         $error.hide().html('');
 
         if (!new_tag_name) {
-            $error.html('Please enter a tag name.').show();
+            $error.html(gettext('Please enter a tag name.')).show();
             return;
         }
 
         if (new_tag_name.length > 128) {
-            $error.html('Tag name must be 128 characters or less.').show();
+            $error.html(gettext('Tag name must be 128 characters or less.')).show();
             return;
         }
 
-        $button.addClass('NB-disabled').text('Renaming...');
+        $button.addClass('NB-disabled').text(gettext('Renaming...'));
 
         this.model.rename_starred_tag(this.tag_name, new_tag_name, function (data) {
             if (data.code < 0) {
-                $button.removeClass('NB-disabled').text('Rename');
+                $button.removeClass('NB-disabled').text(gettext('Rename'));
                 $error.html(data.message || 'Failed to rename tag.').show();
                 return;
             }
@@ -229,8 +229,8 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
             // Navigate to the renamed tag
             NEWSBLUR.reader.open_starred_stories({ tag: new_tag_name });
         }, function () {
-            $button.removeClass('NB-disabled').text('Rename');
-            $error.html('An error occurred. Please try again.').show();
+            $button.removeClass('NB-disabled').text(gettext('Rename'));
+            $error.html(gettext('An error occurred. Please try again.')).show();
         });
     },
 
@@ -240,11 +240,11 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
         var $error = $('.NB-tag-delete-error', this.$modal);
 
         $error.hide().html('');
-        $button.addClass('NB-disabled').text('Deleting...');
+        $button.addClass('NB-disabled').text(gettext('Deleting...'));
 
         this.model.delete_starred_tag(this.tag_name, function (data) {
             if (data.code < 0) {
-                $button.removeClass('NB-disabled').text('Yes, delete it');
+                $button.removeClass('NB-disabled').text(gettext('Yes, delete it'));
                 $error.html(data.message || 'Failed to delete tag.').show();
                 return;
             }
@@ -256,8 +256,8 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
 
             $.modal.close();
         }, function () {
-            $button.removeClass('NB-disabled').text('Yes, delete it');
-            $error.html('An error occurred. Please try again.').show();
+            $button.removeClass('NB-disabled').text(gettext('Yes, delete it'));
+            $error.html(gettext('An error occurred. Please try again.')).show();
         });
     },
 

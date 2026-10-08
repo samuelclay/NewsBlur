@@ -18,7 +18,7 @@ struct DiscoverCategoryPillsView: View {
         VStack(spacing: 6) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    pillButton(label: "All", count: nil, isActive: selectedCategory == nil) {
+                    pillButton(label: NBLocalization.text("All"), count: nil, isActive: selectedCategory == nil) {
                         selectedCategory = nil
                         selectedSubcategory = nil
                     }
@@ -46,7 +46,7 @@ struct DiscoverCategoryPillsView: View {
             if let category = selectedCategory, !category.subcategories.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        pillButton(label: "All", count: nil, isActive: selectedSubcategory == nil) {
+                        pillButton(label: NBLocalization.text("All"), count: nil, isActive: selectedSubcategory == nil) {
                             selectedSubcategory = nil
                         }
 

@@ -12,6 +12,7 @@ from datetime import datetime
 import redis
 from django.conf import settings
 from django.http import HttpResponse
+from django.utils.translation import gettext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -124,7 +125,7 @@ def ingest(request):
         return _json_response(
             {
                 "code": 1,
-                "message": "URL is blocked",
+                "message": gettext("URL is blocked"),
                 "blocked": True,
             }
         )
@@ -1330,7 +1331,7 @@ def bulk_categorize(request):
             {
                 "code": 0,
                 "queued_count": 0,
-                "message": "No uncategorized archives found",
+                "message": gettext("No uncategorized archives found"),
             }
         )
 

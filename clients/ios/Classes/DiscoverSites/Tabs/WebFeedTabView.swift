@@ -18,29 +18,29 @@ struct WebFeedTabView: View {
         WebFeedExplainerCard(
             id: "any-site",
             assetName: "web-feed-any-site",
-            title: "Works on any website",
-            description: "Paste any URL and NewsBlur creates a feed from the page, even without RSS.",
+            title: NBLocalization.text("Works on any website"),
+            description: NBLocalization.text("Paste any URL and NewsBlur creates a feed from the page, even without RSS."),
             detail: "The page HTML is fetched and parsed to extract content structure."
         ),
         WebFeedExplainerCard(
             id: "ai-analyze",
             assetName: "web-feed-ai-analyze",
-            title: "AI finds the stories",
-            description: "You're presented with multiple story pattern options to choose from.",
+            title: NBLocalization.text("AI finds the stories"),
+            description: NBLocalization.text("You're presented with multiple story pattern options to choose from."),
             detail: "XPath patterns identify story blocks, headlines, links, and images."
         ),
         WebFeedExplainerCard(
             id: "refine",
             assetName: "web-feed-refine",
-            title: "Refine with a hint",
-            description: "If none of the options match, type a story title you see on the page and we'll re-analyze.",
+            title: NBLocalization.text("Refine with a hint"),
+            description: NBLocalization.text("If none of the options match, type a story title you see on the page and we'll re-analyze."),
             detail: "A second pass uses your hint to find the right pattern on the page."
         ),
         WebFeedExplainerCard(
             id: "updates",
             assetName: "web-feed-updates",
-            title: "Updates come to you",
-            description: "NewsBlur checks for changes and delivers new stories to your feed.",
+            title: NBLocalization.text("Updates come to you"),
+            description: NBLocalization.text("NewsBlur checks for changes and delivers new stories to your feed."),
             detail: "New stories arrive alongside your other feeds."
         )
     ]
@@ -66,14 +66,14 @@ struct WebFeedTabView: View {
 
                 if let feedURL = viewModel.webFeedState.detectedFeedURL {
                     VStack(alignment: .leading, spacing: 12) {
-                        Label("This site already has a feed", systemImage: "dot.radiowaves.left.and.right")
+                        Label(NBLocalization.text("This site already has a feed"), systemImage: "dot.radiowaves.left.and.right")
                             .font(.headline)
-                        Text("Add it directly to your selected folder.").font(.subheadline)
+                        Text(NBLocalization.text("Add it directly to your selected folder.")).font(.subheadline)
                         HStack(spacing: 8) {
                             Spacer(minLength: 0)
                             DiscoverFolderPicker(viewModel: viewModel,
                                                  identifier: "discover-folder-picker-webfeed-detected")
-                            Button("Add feed") { viewModel.addFeed(url: feedURL) }
+                            Button(NBLocalization.text("Add feed")) { viewModel.addFeed(url: feedURL) }
                                 .frame(minHeight: 44)
                                 .buttonStyle(.borderedProminent).tint(DiscoverColors.accent)
                                 .disabled(viewModel.isAdding)
@@ -85,10 +85,10 @@ struct WebFeedTabView: View {
                 }
                 if !viewModel.webFeedState.isAnalyzing && (!viewModel.webFeedState.variants.isEmpty || viewModel.webFeedState.errorMessage != nil) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Not the stories you wanted?").font(.headline)
-                        TextField("Paste a story title from the page", text: $storyHint)
+                        Text(NBLocalization.text("Not the stories you wanted?")).font(.headline)
+                        TextField(NBLocalization.text("Paste a story title from the page"), text: $storyHint)
                             .textFieldStyle(.roundedBorder)
-                        Button("Refine with this title") {
+                        Button(NBLocalization.text("Refine with this title")) {
                             viewModel.analyzeWebFeed(url: viewModel.webFeedState.url, hint: storyHint)
                         }
                         .frame(minHeight: 44)
@@ -114,11 +114,11 @@ struct WebFeedTabView: View {
 
     private var urlInputSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Create a feed from any web page")
+            Text(NBLocalization.text("Create a feed from any web page"))
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
 
-            Text("Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to.")
+            Text(NBLocalization.text("Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to."))
                 .font(.system(size: 13))
                 .foregroundColor(DiscoverColors.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -129,7 +129,7 @@ struct WebFeedTabView: View {
                         .font(.system(size: 14))
                         .foregroundColor(DiscoverColors.textSecondary)
 
-                    TextField("Enter a web page URL...", text: $viewModel.webFeedState.url)
+                    TextField(NBLocalization.text("Enter a web page URL..."), text: $viewModel.webFeedState.url)
                         .font(.system(size: 15))
                         .foregroundColor(DiscoverColors.textPrimary)
                         .autocapitalization(.none)
@@ -152,7 +152,7 @@ struct WebFeedTabView: View {
                 Button(action: {
                     viewModel.analyzeWebFeed(url: viewModel.webFeedState.url)
                 }) {
-                    Text("Analyze")
+                    Text(NBLocalization.text("Analyze"))
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 14)
@@ -262,7 +262,7 @@ struct WebFeedTabView: View {
 
     private var variantsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Select a feed variant")
+            Text(NBLocalization.text("Select a feed variant"))
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
 
@@ -354,17 +354,17 @@ struct WebFeedTabView: View {
 
     private var configureSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Configure")
+            Text(NBLocalization.text("Configure"))
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
 
             // Custom title
             VStack(alignment: .leading, spacing: 4) {
-                Text("Feed Title")
+                Text(NBLocalization.text("Feed Title"))
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(DiscoverColors.textSecondary)
 
-                TextField("Custom feed title", text: $viewModel.webFeedState.feedTitle)
+                TextField(NBLocalization.text("Custom feed title"), text: $viewModel.webFeedState.feedTitle)
                     .font(.system(size: 14))
                     .foregroundColor(DiscoverColors.textPrimary)
                     .padding(.horizontal, 10)
@@ -380,7 +380,7 @@ struct WebFeedTabView: View {
             // Staleness slider
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text("Alert after no new stories for")
+                    Text(NBLocalization.text("Alert after no new stories for"))
                         .font(.system(size: 13, weight: .medium))
                         .foregroundColor(DiscoverColors.textSecondary)
 
@@ -401,7 +401,7 @@ struct WebFeedTabView: View {
 
             // Mark unread toggle
             Toggle(isOn: $viewModel.webFeedState.markUnreadOnChange) {
-                Text("Mark stories as unread on change")
+                Text(NBLocalization.text("Mark stories as unread on change"))
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(DiscoverColors.textSecondary)
             }
@@ -448,7 +448,7 @@ struct WebFeedTabView: View {
             }
             .buttonStyle(PlainButtonStyle())
             .disabled(viewModel.webFeedState.selectedVariantIndex == nil || viewModel.webFeedState.isSubscribing)
-            .accessibilityLabel("Subscribe to Web Feed")
+            .accessibilityLabel(NBLocalization.text("Subscribe to Web Feed"))
             .accessibilityIdentifier("discover-subscribe-webfeed")
         }
     }

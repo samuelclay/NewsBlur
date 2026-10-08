@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gesture_none">Jangan lakukan apa pun</string>
+    <string name="gesture_back">Kembali ke feed</string>
+    <string name="gesture_toggle_read">Dibaca / belum dibaca</string>
+    <string name="gesture_markread">Tandai sudah dibaca</string>
+    <string name="gesture_markunread">Tandai belum dibaca</string>
+    <string name="gesture_save">Simpan artikel</string>
+    <string name="gesture_unsave">Batalkan simpan cerita</string>
+    <string name="gesture_statistics">Statistik</string>
+    <string name="gesture_menu">Tampilkan tindakan</string>
+    <string name="gesture_share">Bagikan</string>
+    <string name="gesture_toggle_save">Simpan / batal simpan</string>
+    <string name="gesture_ask_ai">Tanya AI</string>
+    <string name="gesture_train">Latih kecerdasan</string>
+    <string name="gesture_notifications">Notifikasi</string>
+    <string name="gesture_read_range">Pilih rentang waktu untuk menandai sebagai telah dibaca</string>
+    <string name="gesture_feed_list">Daftar feed</string>
+    <string name="gesture_story_titles">Judul cerita</string>
+    <string name="gesture_reading_story">Saat membaca cerita</string>
+    <string name="gesture_swipe_feeds">Geser pada feed</string>
+    <string name="gesture_swipe_stories">Geser pada berita</string>
+    <string name="gesture_left">Geser ke kiri</string>
+    <string name="gesture_right">Geser ke kanan</string>
+    <string name="gesture_long_press">Tekan lama</string>
+    <string name="gesture_double_tap">Ketuk dua kali</string>
+    <string name="gesture_two_finger_double_tap">Ketuk dua kali dengan dua jari</string>
+    <string name="gesture_left_edge">Geser dari tepi kiri</string>
+    <string name="gesture_edge_footer">Mengusap dari tepi kiri selalu kembali ke feed, meskipun usapan berita dinonaktifkan.</string>
+    <string name="gesture_mark_all">Tandai semua artikel telah dibaca</string>
+    <string name="gesture_original">Buka cerita asli</string>
+    <string name="gesture_text">Tampilkan teks asli</string>
+    <string name="gesture_unread">Tandai sebagai belum dibaca</string>
+    <string name="gesture_back_titles">Kembali ke judul artikel</string>
+    <string name="gesture_previous">Cerita sebelumnya</string>
+    <string name="gesture_off">Nonaktif</string>
+    <string name="gesture_unread_stories">Artikel belum dibaca</string>
+    <string name="gesture_focus_stories">Fokus pada artikel</string>
+    <string name="story_title_mark_story_read">Tandai cerita telah dibaca…</string>
+    <string name="story_title_list_font_size">Ukuran font judul feed dan artikel</string>
+    <string name="language_title">Bahasa</string>
+    <string name="settings_cat_general">Umum</string>
+    <string name="language_current">Bahasa: %1$s</string>
+    <string name="language_automatic">Otomatis (bahasa perangkat)</string>
+    <string name="language_save_failed">Bahasa tidak dapat disimpan. Silakan coba lagi.</string>
+    <string name="try_feed_instafetching">Mengambil cerita secara instan…</string>
+    <string name="try_feed_fetch_failed">Cerita gagal dimuat. Ketuk untuk mencoba lagi.</string>
+    <string name="try_feed_empty">Belum ada artikel dari situs ini. Ketuk untuk memuat ulang.</string>
+    <string name="image_viewer_close">Tutup gambar</string>
+    <string name="image_viewer_loading">Memuat gambar…</string>
+    <string name="image_viewer_failed">Tidak dapat memuat gambar penuh.</string>
+    <string name="image_viewer_retry">Coba lagi</string>
+    <string name="image_viewer_copy">Salin Gambar</string>
+    <string name="image_viewer_save">Simpan Gambar</string>
+    <string name="image_viewer_share">Bagikan Gambar…</string>
+    <string name="image_viewer_open_link">Buka Tautan</string>
+    <string name="image_viewer_copied">Gambar disalin</string>
+    <string name="image_viewer_saved">Disimpan ke Foto</string>
+    <string name="image_viewer_save_failed">Tidak dapat menyimpan gambar.</string>
+    <string name="image_viewer_share_failed">Tidak dapat membagikan gambar.</string>
+    <string name="image_viewer_storage_permission">Izinkan akses penyimpanan untuk menyimpan gambar, lalu coba lagi.</string>
+    <string name="image_viewer_show_actions">Tampilkan aksi gambar</string>
+    <string name="settings_story_toolbar_position">Posisi bilah alat daftar artikel</string>
+    <string name="settings_story_toolbar_top">Atas</string>
+    <string name="settings_story_toolbar_bottom">Bawah</string>
+    <string name="story_header_mark_read_cutoff">Pilih rentang waktu untuk menandai sebagai telah dibaca</string>
+    <string name="login_username_hint">nama pengguna</string>
+    <string name="login_username_or_email_hint">nama pengguna atau email</string>
+    <string name="login_password_hint">kata sandi</string>
+    <string name="login_registration_email_hint">alamat email</string>
+    <string name="login_button_login">Masuk</string>
+    <string name="login_segment_sign_in">Masuk</string>
+    <string name="login_segment_sign_up">Daftar</string>
+    <string name="login_forgot_password">Lupa kata sandi</string>
+    <string name="login_custom_server">Server kustom yang di-host sendiri</string>
+    <string name="login_custom_server_subtitle">Gunakan instalasi NewsBlur Anda sendiri</string>
+    <string name="login_custom_server_active">Server kustom: %1$s</string>
+    <string name="login_custom_server_edit">Ketuk untuk mengedit atau mengatur ulang URL server</string>
+    <string name="login_custom_server_dialog_title">Server khusus</string>
+    <string name="login_custom_server_dialog_body">Kosongkan untuk menggunakan NewsBlur, atau masukkan URL instalasi yang Anda host sendiri. Perubahan langsung berlaku untuk login dan pendaftaran.</string>
+    <string name="login_message_error">Terjadi masalah saat masuk ke NewsBlur.</string>
+    <string name="login_logging_in">Sedang masuk…</string>
+    <string name="login_logged_in">Sedang merangkai spline…</string>
+    <string name="login_retrieving_feeds">Mengambil feed…</string>
+    <string name="login_next">Berikutnya</string>
+    <string name="login_custom_server_scheme_error">Seharusnya ada \'https://\' di URL server khusus</string>
+    <string name="login_custom_server_invalid">Masukkan URL server khusus yang valid.</string>
+    <string name="login_tagline">Pembaca berita pribadi yang mempertemukan
+orang-orang untuk membicarakan dunia.</string>
+    <string name="user_profile_picture">Foto profil pengguna</string>
+    <string name="search_for_feed">Cari feed</string>
+    <string name="loading">Memuat…</string>
+    <string name="story_navigation_failed">Tidak dapat membuka cerita. Silakan coba lagi.</string>
+    <string name="orig_text_loading">Mengambil teks cerita…</string>
+    <string name="follow_error">Terjadi masalah saat mengikuti pengguna tersebut.</string>
+    <string name="unfollow_error">Terjadi masalah saat berhenti mengikuti pengguna.</string>
+    <string name="description_login_button">Tekan untuk masuk</string>
+    <string name="description_login_logo">Logo NewsBlur</string>
+    <string name="description_profile_picture">Foto profil pengguna</string>
+    <string name="description_row_folder_icon">ikon folder</string>
+    <string name="description_row_feed_icon">ikon feed</string>
+    <string name="description_row_feed_mute_toggle">pengalih senyap feed</string>
+    <string name="description_activity_icon">Ikon yang menggambarkan aktivitas pengguna</string>
+    <string name="description_follow_button">Ikuti atau berhenti mengikuti pengguna</string>
+    <string name="description_comment_user">Gambar pengguna komentar</string>
+    <string name="description_empty_list_image">Placeholder daftar kosong</string>
+    <string name="description_menu">Menu</string>
+    <string name="story_settings">Pengaturan berita</string>
+    <string name="title_choose_folders">Pilih folder untuk feed %s</string>
+    <string name="title_rename_feed">Ganti nama feed %s</string>
+    <string name="title_rename_folder">Ganti nama folder %s</string>
+    <string name="all_stories_title">Semua Artikel Situs</string>
+    <string name="daily_briefing_title">Ringkasan Harian</string>
+    <string name="infrequent_title">Artikel Situs yang Jarang Diperbarui</string>
+    <string name="widely_read_stories_title">Artikel yang Banyak Dibaca</string>
+    <string name="long_reads_title">Bacaan Panjang</string>
+    <string name="good_reads_title">Bacaan Bagus</string>
+    <string name="all_shared_stories_title">Semua Berita yang Dibagikan</string>
+    <string name="global_shared_stories_title">Kisah yang Dibagikan Secara Global</string>
+    <string name="read_stories_title">Baca Berita</string>
+    <string name="saved_stories_title">Artikel Tersimpan</string>
+    <string name="saved_searches_title">Pencarian Tersimpan</string>
+    <string name="feed_list">Daftar feed</string>
+    <string name="bottom_next_unread_site">Situs belum dibaca berikutnya, %1$s</string>
+    <string name="bottom_next_unread_folder">Folder belum dibaca berikutnya, %1$s</string>
+    <string name="top_level">TINGKAT TERATAS</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nDibagikan dengan NewsBlur</string>
+    <string name="share_comment_hint">Bagikan komentar (Opsional)</string>
+    <string name="share_save_newsblur">Bagikan/Simpan \"%s\" ke Blurblog Anda?</string>
+    <string name="share_this">Bagikan</string>
+    <string name="already_shared">Dibagikan</string>
+    <string name="share_this_story">Bagikan</string>
+    <string name="share_with_comment">Bagikan dengan komentar</string>
+    <string name="unshare">Hapus berbagi</string>
+    <string name="update_shared">Perbarui komentar</string>
+    <string name="rename">Ganti nama</string>
+    <string name="save_this">Simpan</string>
+    <string name="unsave_this">Hapus dari tersimpan</string>
+    <string name="train_this">Latih</string>
+    <string name="ask_ai">Tanya AI</string>
+    <string name="story_mark_unread_state">Dibaca</string>
+    <string name="story_mark_read_state">Tandai artikel sudah dibaca</string>
+    <string name="overlay_next">Berikutnya</string>
+    <string name="overlay_done">Selesai</string>
+    <string name="overlay_count_toast_N">%d artikel belum dibaca</string>
+    <string name="overlay_count_toast_1">1 cerita belum dibaca</string>
+    <string name="overlay_text">Teks</string>
+    <string name="overlay_story">Artikel</string>
+    <string name="orig_text_failed">Maaf, teks artikel tidak dapat diekstrak.</string>
+    <string name="state_all">Semua</string>
+    <string name="state_unread">Belum dibaca</string>
+    <string name="state_focus">Fokus</string>
+    <string name="state_saved">Disimpan</string>
+    <string name="reply_to">Balas kepada \"%s\"</string>
+    <string name="edit_reply">Edit balasan</string>
+    <string name="edit_reply_update">Perbarui balasan</string>
+    <string name="edit_reply_delete">Hapus balasanY</string>
+    <string name="alert_dialog_ok">Oke</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">Selesai</string>
+    <string name="alert_dialog_openlink">Buka tautan</string>
+    <string name="alert_dialog_openimage">Buka Gambar</string>
+    <string name="dialog_folders_save">Simpan folder</string>
+    <string name="dialog_story_intel_save">Simpan pelatihan</string>
+    <string name="dialog_story_tags_save">Simpan tag</string>
+    <string name="profile">Profil</string>
+    <string name="profile_location_icon">Ikon lokasi</string>
+    <string name="profile_following">Mengikuti</string>
+    <string name="profile_followers">Pengikut</string>
+    <string name="profile_shared">Artikel yang dibagikan</string>
+    <string name="profile_ago">yang lalu</string>
+    <string name="profile_recent_actvity">Aktivitas</string>
+    <string name="profile_recent_interactions">Interaksi</string>
+    <string name="profile_started_following">mengikuti</string>
+    <string name="profile_you">Anda</string>
+    <string name="profile_you_lower">Anda</string>
+    <string name="profile_your">Anda</string>
+    <string name="profile_now_following">kini mengikuti %1$s</string>
+    <string name="profile_replied_to">Membalas</string>
+    <string name="profile_replied_to_your">membalas %1$s</string>
+    <string name="profile_shared_story">dibagikan</string>
+    <string name="profile_comment">komentar</string>
+    <string name="profile_reply">balas</string>
+    <string name="profile_button_follow">Ikuti</string>
+    <string name="profile_button_unfollow">Berhenti mengikuti</string>
+    <string name="profile_subscribed_to">berlangganan</string>
+    <string name="profile_saved">disimpan</string>
+    <string name="profile_reshared">dibagikan ulang</string>
+    <string name="profile_favorited">difavoritkan</string>
+    <string name="profile_favorited_comments">menyukai %1$s komentar pada</string>
+    <string name="profile_signup">mendaftar ke Newsblur</string>
+    <string name="profile_comments_on">mengomentari</string>
+    <string name="profile_feed_not_available">Anda tidak lagi berlangganan feed ini</string>
+    <string name="profile_do_not_follow">Anda tidak mengikuti pengguna ini</string>
+    <string name="profile_no_interactions">Tidak ada interaksi</string>
+    <string name="menu_profile">Profil</string>
+    <string name="menu_search_feeds">Cari di feed Anda</string>
+    <string name="menu_original">Lihat sumber asli</string>
+    <string name="menu_send_story">Kirim tautan ke…</string>
+    <string name="menu_send_story_full">Kirim berita ke…</string>
+    <string name="menu_mark_feed_as_read">Tandai feed sebagai telah dibaca</string>
+    <string name="menu_delete_feed">Hapus feed</string>
+    <string name="menu_statistics">Statistik</string>
+    <string name="menu_delete_saved_search">Hapus pencarian tersimpan</string>
+    <string name="menu_unfollow">Berhenti mengikuti pengguna</string>
+    <string name="menu_choose_folders">Pilih folder</string>
+    <string name="menu_notifications_choose">Notifikasi</string>
+    <string name="menu_notifications_disable">Nonaktifkan notifikasi</string>
+    <string name="menu_notifications_focus">Beri tahu saat ada artikel fokus baru</string>
+    <string name="menu_notifications_unread">Beri tahu untuk semua artikel baru</string>
+    <string name="menu_mark_folder_as_read">Tandai folder sudah dibaca</string>
+    <string name="menu_sharenewsblur">Bagikan artikel ini</string>
+    <string name="menu_text_size">Ukuran teks</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
+    <string name="menu_font">Font</string>
+    <string name="menu_save_story">Simpan cerita ini</string>
+    <string name="menu_unsave_story">Hapus artikel ini dari tersimpan</string>
+    <string name="menu_newest_mark_older_stories_as_read">Tandai yang lebih lama sebagai telah dibaca</string>
+    <string name="menu_newest_mark_newer_stories_as_read">Tandai yang lebih baru sebagai telah dibaca</string>
+    <string name="menu_oldest_mark_older_stories_as_read">Tandai yang lebih lama sebagai telah dibaca</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">Tandai yang lebih baru sebagai sudah dibaca</string>
+    <string name="story_menu_open_feed">Buka feed</string>
+    <string name="story_menu_share_link">Bagikan tautan…</string>
+    <string name="story_menu_share_story">Bagikan artikel…</string>
+    <string name="menu_mark_story_as_read">Tandai sudah dibaca</string>
+    <string name="menu_mark_unread">Tandai belum dibaca</string>
+    <string name="menu_search_stories">Cari…</string>
+    <string name="menu_mute_feed">Bisukan feed</string>
+    <string name="menu_unmute_feed">Aktifkan suara feed</string>
+    <string name="menu_mute_folder">Bisukan folder</string>
+    <string name="menu_unmute_folder">Bunyikan folder</string>
+    <string name="menu_delete_folder">Hapus folder</string>
+    <string name="menu_rename_folder">Ganti nama folder</string>
+    <string name="menu_instafetch_feed">Ambil Cerita Insta-fetch</string>
+    <string name="feed_menu_back_to_actions">Kembali ke tindakan feed</string>
+    <string name="menu_infrequent_cutoff">Artikel jarang per bulan</string>
+    <string name="menu_intel">Pelatih kecerdasan</string>
+    <string name="menu_rename_feed">Ganti nama feed</string>
+    <string name="menu_story_list_style_choose">Gaya daftar</string>
+    <string name="menu_save_search">Simpan Pencarian</string>
+    <string name="menu_web_search">Penelusuran web</string>
+    <string name="menu_highlight">Sorot</string>
+    <string name="list_style_list">Daftar</string>
+    <string name="list_style_grid_f">Kisi (rapat)</string>
+    <string name="list_style_grid_m">Kisi (sedang)</string>
+    <string name="list_style_grid_c">Kisi (kasar)</string>
+    <string name="story_content_preview_none">Judul saja (tidak ada)</string>
+    <string name="story_content_preview_small">2 baris (kecil)</string>
+    <string name="story_content_preview_medium">4 baris (sedang)</string>
+    <string name="story_content_preview_large">6 baris (besar)</string>
+    <string name="mark_read_on_scroll_disabled">Biarkan belum dibaca</string>
+    <string name="mark_read_on_scroll_enabled">Tandai telah dibaca saat menggulir</string>
+    <string name="menu_sort_by">Urutkan Berdasarkan</string>
+    <string name="menu_sort_by_name">Nama</string>
+    <string name="menu_sort_by_subs">Pelanggan</string>
+    <string name="menu_sort_by_stories_month">Artikel per Bulan</string>
+    <string name="menu_sort_by_recent_story">Cerita Terbaru</string>
+    <string name="menu_sort_by_number_opens">Jumlah Dibuka</string>
+    <string name="menu_sort_order">Urutan pengurutan</string>
+    <string name="menu_sort_order_ascending">Urutan naik</string>
+    <string name="menu_sort_order_descending">Menurun</string>
+    <string name="menu_folder_view">Tampilan Folder</string>
+    <string name="menu_folder_view_nested">Bersarang</string>
+    <string name="menu_folder_view_flat">Datar</string>
+    <string name="menu_mute_all">Bisukan Semua</string>
+    <string name="menu_mute_none">Bisukan Tidak Ada</string>
+    <string name="menu_select_all">Pilih Semua</string>
+    <string name="menu_select_none">Jangan pilih apa pun</string>
+    <string name="menu_widget_background">Latar belakang widget</string>
+    <string name="menu_widget_background_default">Default</string>
+    <string name="menu_widget_background_transparent">Transparan</string>
+    <string name="toast_hold_to_select">Tekan dan tahan untuk memilih teks</string>
+    <string name="logout_warning">Anda yakin ingin keluar?</string>
+    <string name="search_mark_read_warning">Perhatian! Semua cerita dalam feed/folder akan ditandai telah dibaca, bukan hanya hasil pencarian. Jika Anda benar-benar ingin menandai semua cerita sebagai telah dibaca, hapus kueri pencarian untuk mengonfirmasi.</string>
+    <string name="story_show_changes">Tampilkan Perubahan Artikel</string>
+    <string name="story_hide_changes">Sembunyikan Perubahan Artikel</string>
+    <string name="story_changes_loading">Memuat perubahan artikel …</string>
+    <string name="story_saved_timestamp">Disimpan %s</string>
+    <string name="your_feeds_search_hint">Cari feed Anda</string>
+    <string name="feed_list_clear_search">Hapus pencarian</string>
+    <string name="story_search_hint">Cari artikel</string>
+    <string name="discover_related_sites_title">Situs Terkait</string>
+    <string name="discover_show_grid">Tampilkan kisi</string>
+    <string name="discover_show_list">Tampilkan daftar</string>
+    <string name="discover_loading">Mencari situs terkait…</string>
+    <string name="discover_no_related_sites">Tidak ditemukan situs terkait</string>
+    <string name="discover_view_mode_grid">Kisi</string>
+    <string name="discover_view_mode_list">Daftar</string>
+    <string name="discover_try">Coba</string>
+    <string name="discover_add">Tambah</string>
+    <string name="discover_subscribed">Berlangganan</string>
+    <string name="discover_updated_today">Diperbarui hari ini</string>
+    <string name="discover_updated_relative">Diperbarui %s</string>
+    <string name="discover_stale_updated_relative">Usang — diperbarui %s</string>
+    <string name="discover_stale_date">Usang. Artikel terakhir %s</string>
+    <string name="discover_last_fetched_relative">Diambil %s</string>
+    <string name="try_feed_banner_subtitle">Pratinjau. Belum berlangganan.</string>
+    <string name="try_feed_subscribe_button">Berlangganan</string>
+    <string name="empty_search_notice">Ketik istilah pencarian untuk memulai</string>
+    <string name="menu_add_feed">Tambah + Temukan Situs</string>
+    <string name="adding_feed_progress">Menambahkan feed…</string>
+    <string name="feed_list_search_hint">Cari feed</string>
+    <string name="add_folder_name">Masukkan nama folder</string>
+    <string name="add_tag_name">Harap tambahkan nama tag</string>
+    <string name="add_new_folder">+ Tambah folder baru</string>
+    <string name="add_new_tag">+ Tambah tag baru</string>
+    <string name="add_tag">Tambahkan Tag</string>
+    <string name="new_folder_name_hint">Masukkan nama folder baru</string>
+    <string name="new_tag_name_hint">Masukkan nama tag baru</string>
+    <string name="add_feed_error">Tidak dapat menambahkan feed</string>
+    <string name="add_folder_error">Folder tidak dapat ditambahkan</string>
+    <string name="menu_mark_all_as_read">Tandai semua sebagai telah dibaca</string>
+    <string name="menu_logout">Keluar</string>
+    <string name="contact_us">Hubungi kami</string>
+    <string name="contact_description">NewsBlur adalah pembaca dan agregator berita yang dikembangkan oleh NewsBlur, Inc. Hubungi tim NewsBlur untuk bantuan aplikasi, pertanyaan, atau masukan.</string>
+    <string name="contact_email_label">Email pengembang</string>
+    <string name="contact_send_email">Kirim email</string>
+    <string name="contact_website_label">Situs web NewsBlur</string>
+    <string name="contact_open_website">Kunjungi situs web</string>
+    <string name="contact_back">Kembali</string>
+    <string name="contact_no_email_app">Tidak ada aplikasi email yang terpasang. Anda dapat memilih dan menyalin alamat email di halaman ini.</string>
+    <string name="contact_no_browser">Tidak ada browser web yang terpasang. Anda dapat memilih dan menyalin alamat situs web di halaman ini.</string>
+    <string name="menu_feedback">Kirim masukan tentang aplikasi</string>
+    <string name="menu_feedback_post">Buat postingan masukan</string>
+    <string name="menu_feedback_email">Kirim laporan bug lewat email</string>
+    <string name="menu_theme_choose">Tema</string>
+    <string name="menu_spacing">Jarak</string>
+    <string name="menu_subscription">Langganan…</string>
+    <string name="description_add_new_folder_icon">Ikon tambah folder baru</string>
+    <string name="menu_loginas">Masuk sebagai…</string>
+    <string name="loginas_title">Masuk Sebagai Pengguna</string>
+    <string name="empty_list_view_loading">Memuat…</string>
+    <string name="story_loading_description">Memuat cerita</string>
+    <string name="empty_list_view_no_stories">Tidak ada artikel untuk dibaca</string>
+    <string name="empty_list_view_no_stories_unread">Tidak ada artikel belum dibaca</string>
+    <string name="reading_placeholder_select_story">Pilih cerita untuk dibaca</string>
+    <string name="empty_list_view_no_unread_stories">Anda tidak memiliki cerita yang belum dibaca.</string>
+    <string name="empty_list_view_no_focus_stories">Tidak ada cerita belum dibaca di Fokus.\n\nBeralih ke Semua atau Belum Dibaca.</string>
+    <string name="empty_list_view_no_saved_stories">Anda tidak memiliki cerita tersimpan.\n\nBeralih ke Semua atau Belum Dibaca.</string>
+    <string name="login_registration_custom_server">Atur server kustom</string>
+    <string name="login_registration_reset_url">Atur ulang</string>
+    <string name="login_registration_register">Daftar</string>
+    <string name="register_message_error">Terjadi masalah saat mendaftar ke NewsBlur.</string>
+    <string name="need_to_login">
+        <u>Saya perlu masuk!</u>
+    </string>
+    <string name="need_to_register">
+        <u>Saya perlu mendaftar</u>
+    </string>
+    <string name="public_comment_count">%d komentar publik</string>
+    <string name="friends_comments_count">%d komentar</string>
+    <string name="friends_shares_count">%d kali dibagikan</string>
+    <string name="unknown_user">Pengguna Tidak Dikenal</string>
+    <string name="delete_feed_message">Hapus feed \"%s\"?</string>
+    <string name="delete_saved_search_message">Hapus penelusuran tersimpan %s?</string>
+    <string name="delete_folder_message">Hapus folder \"%s\" dan berhenti berlangganan dari semua feed di dalamnya?</string>
+    <string name="deleting_folder_message">Menghapus folder \"%s\"</string>
+    <string name="add_saved_search_message">Simpan penelusuran \"%s\"?</string>
+    <string name="unfollow_message">Berhenti mengikuti \"%s\"?</string>
+    <string name="feed_subscribers">%s pelanggan</string>
+    <string name="feed_opens">%d kali dibuka</string>
+    <string name="feed_stories_per_month">%d cerita/bulan</string>
+    <string name="forwarding_email_address">Alamat email penerusan</string>
+    <string name="setup_instructions">Petunjuk penyiapan \u25bc</string>
+    <string name="setup_instructions_details">Untuk membaca buletin email Anda di NewsBlur, teruskan buletin Anda ke alamat email khusus yang ditampilkan di atas.\n\nDi Gmail, buka Setelan &gt; Penerusan lalu klik Tambahkan alamat penerusan. Tambahkan alamat email NewsBlur khusus Anda.\n\nGmail akan memandu Anda mengonfirmasi alamat email tersebut. Anda perlu kembali ke NewsBlur dan mencari email konfirmasi di folder \"Buletin\".\n\nSelanjutnya, buat filter untuk semua buletin Anda agar diteruskan ke alamat khusus di NewsBlur.</string>
+    <string name="copy_email">Salin email</string>
+    <string name="stories_shortcuts">Pintasan cerita</string>
+    <string name="feeds_shortcuts">Pintasan feed</string>
+    <string name="import_export">Impor/Ekspor…</string>
+    <string name="settings">Preferensi…</string>
+    <string name="menu_mute_sites">Bisukan Situs…</string>
+    <string name="mute_sites">Bisukan Situs</string>
+    <string name="menu_widget">Widget…</string>
+    <string name="menu_notifications">Notifikasi…</string>
+    <string name="widget">Widget</string>
+    <string name="title_widget_setup">Ketuk untuk menyiapkan di NewsBlur</string>
+    <string name="title_no_subscriptions">Tidak ada langganan aktif yang terdeteksi</string>
+    <string name="title_widget_loading">Memuat…</string>
+    <string name="menu_newsletters">Buletin…</string>
+    <string name="menu_shortcuts">Pintasan…</string>
+    <string name="main_menu_preferences">Preferensi</string>
+    <string name="main_menu_mute_sites">Bisukan Situs</string>
+    <string name="main_menu_widget_sites">Situs Widget</string>
+    <string name="main_menu_notifications">Notifikasi</string>
+    <string name="main_menu_interactions">Interaksi</string>
+    <string name="main_menu_upgrade_premium">Upgrade ke Premium</string>
+    <string name="main_menu_upgrade_archive">Upgrade ke Archive</string>
+    <string name="main_menu_premium_archive">Arsip Premium</string>
+    <string name="main_menu_premium_pro">Premium Pro</string>
+    <string name="main_menu_support_forum">Forum Dukungan</string>
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
+    <string name="import_export_title">Impor/Ekspor OPML</string>
+    <string name="notifications_title">Notifikasi</string>
+    <string name="premium_subscribers_folder">River of News lengkap adalah fitur premium</string>
+    <string name="premium_subscribers_allstories">Membaca semua artikel dari situs adalah fitur premium</string>
+    <string name="premium_subscribers_saved_tag">Membaca artikel tersimpan berdasarkan tag adalah fitur premium</string>
+    <string name="premium_subscribers_search">Pencarian adalah fitur Premium</string>
+    <string name="premium_subscribers">pelanggan premium</string>
+    <string name="premium_upgrade_button">Tingkatkan ke Premium</string>
+    <string name="subscription_toolbar_title">NewsBlur Premium</string>
+    <string name="thank_you_for_subscribing">Terima kasih telah berlangganan!</string>
+    <string name="premium_subscription_renewal">Langganan Anda akan diperpanjang pada %s</string>
+    <string name="premium_subscription_expiration">Langganan Anda akan berakhir pada %s</string>
+    <string name="premium_subscription_no_expiration">Langganan Anda tidak akan pernah kedaluwarsa. Wah!</string>
+    <string name="premium_policies">Lihat <a href="https://newsblur.com/privacy">kebijakan privasi</a> dan <a href="https://newsblur.com/tos">ketentuan penggunaan</a> NewsBlur untuk detailnya.</string>
+    <string name="premium_subscription_header">Langganan Premium</string>
+    <string name="archive_subscription_header">Arsip Premium</string>
+    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="premium_subscription_title">Langganan NewsBlur Premium</string>
+    <string name="archive_subscription_title">Arsip Premium NewsBlur</string>
+    <string name="pro_subscription_title">NewsBlur Premium Pro</string>
+    <string name="premium_subscription_price">$35.99 per tahun ($3.00/bulan)</string>
+    <string name="premium_subscription_active">Langganan premium Anda aktif</string>
+    <string name="archive_subscription_active">Langganan arsip premium Anda aktif</string>
+    <string name="pro_subscription_active">Langganan Premium Pro Anda aktif</string>
+    <string name="subscription_manage">Kelola Langganan</string>
+    <string name="subscription_details_error">Terjadi kesalahan saat mengambil detail langganan</string>
+    <string name="no_subscription_available">Tidak ada langganan yang tersedia</string>
+    <string name="subscription_unavailable">Saat ini tidak tersedia di Android</string>
+    <string name="subscription_coming_soon">Segera hadir</string>
+    <string name="subscription_upgrade_from_premium">Upgrade dari Premium</string>
+    <string name="subscription_upgrade_from_archive">Tingkatkan dari Arsip</string>
+    <string name="subscription_price_yearly">%1$s/tahun (%2$s/bulan)</string>
+    <string name="subscription_price_monthly">%1$s/bulan</string>
+    <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="premium_archive_includes_above">Langganan arsip premium Anda mencakup semua hal di atas</string>
+    <string name="premium_pro_includes_above">Langganan premium pro Anda mencakup semua yang disebutkan di atas</string>
+    <string name="premium_enable_sites">Ikuti hingga 1,024 situs</string>
+    <string name="premium_sync">Situs diperbarui hingga 5x lebih sering</string>
+    <string name="premium_read_by_folder">Aliran Berita (membaca berdasarkan folder)</string>
+    <string name="premium_search">Telusuri situs dan folder</string>
+    <string name="premium_searchable_tags">Simpan cerita dengan tag yang dapat dicari</string>
+    <string name="premium_privacy_options">Opsi privasi untuk blurblog Anda</string>
+    <string name="premium_custom_rss">Feed RSS khusus untuk cerita tersimpan</string>
+    <string name="premium_text_view">Tampilan teks mengekstrak cerita dengan praktis</string>
+    <string name="premium_discover_related">Temukan artikel dan situs terkait</string>
+    <string name="premium_shiloh">Anda memberi makan Lyric, anjing pemburu NewsBlur yang lapar, selama 6 hari</string>
+    <string name="archive_everything_premium">Tentu saja, semua yang ada dalam langganan premium</string>
+    <string name="archive_enable_sites">Ikuti hingga 4.096 situs</string>
+    <string name="archive_marked_as_read">Pilih kapan berita otomatis ditandai sebagai telah dibaca</string>
+    <string name="archive_customize_auto_read">Sesuaikan penandaan otomatis sudah dibaca per situs atau folder</string>
+    <string name="archive_story_searchable_forever">Setiap cerita dari semua situs diarsipkan dan dapat dicari selamanya</string>
+    <string name="archive_back_filled">Feed yang mendukung penomoran halaman diisi ulang agar arsipnya lengkap</string>
+    <string name="archive_train_full_text">Latih cerita berdasarkan konten teks lengkap</string>
+    <string name="archive_discover_related">Temukan berita terkait di seluruh arsip Anda</string>
+    <string name="archive_export_trained_stories">Ekspor artikel terlatih dari folder sebagai feed RSS</string>
+    <string name="archive_stories_unread_forever">Cerita dapat tetap belum dibaca selamanya</string>
+    <string name="archive_ask_ai">Ajukan pertanyaan kepada AI tentang artikel</string>
+    <string name="archive_filter_by_date_range">Filter artikel berdasarkan rentang tanggal</string>
+    <string name="archive_train_folder">Terapkan pelatihan ke seluruh folder</string>
+    <string name="archive_train_globally">Terapkan pelatihan secara global</string>
+    <string name="pro_everything_archive">Tentu saja, semua yang ada dalam langganan arsip</string>
+    <string name="pro_enable_sites">Ikuti hingga 10.000 situs</string>
+    <string name="pro_all_feeds_fetched">Semua feed diperbarui setiap 5–15 menit</string>
+    <string name="pro_regex_train">Latih berita dengan ekspresi reguler</string>
+    <string name="pro_priority_support">Dukungan prioritas</string>
+    <string name="pro_natural_language_filters">Filter bahasa alami</string>
+    <string name="pro_natural_language_search">Pencarian bahasa alami</string>
+    <string name="settings_cat_offline">Membaca offline</string>
+    <string name="settings_enable_offline">Unduh artikel</string>
+    <string name="settings_enable_offline_sum">Ambil artikel secara berkala di latar belakang</string>
+    <string name="settings_enable_image_prefetch">Unduh gambar</string>
+    <string name="settings_enable_image_prefetch_sum">Ambil gambar terlebih dahulu untuk dibaca secara offline</string>
+    <string name="settings_keep_old_stories">Simpan artikel setelah dibaca</string>
+    <string name="settings_keep_old_stories_sum">Nonaktifkan untuk mengurangi penggunaan penyimpanan</string>
+    <string name="mute_config_title">Anda dapat mengikuti hingga 64 situs dengan akun standar gratis</string>
+    <string name="mute_config_message">Bisukan situs %d atau atur ulang ke situs terpopuler.</string>
+    <string name="mute_config_reset_button">Atur ulang ke situs populer</string>
+    <string name="mute_config_upgrade_to_premium">Tingkatkan ke Premium</string>
+    <string name="mute_config_upgrade_subtitle">Berlangganan ke 1.024 situs</string>
+    <string name="mute_config_upgrade">Upgrade</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
+    <string name="mute_config_sites_available">%d situs tersedia</string>
+    <string name="mute_config_sites_over">%d melebihi batas</string>
+    <string name="menu_network_select">Unduh menggunakan…</string>
+    <string name="menu_network_select_sum">Batasi data latar belakang ke jaringan yang dipilih</string>
+    <string name="menu_network_select_opt_any">Jaringan apa pun</string>
+    <string name="menu_network_select_opt_nomo">Wi-Fi atau Ethernet apa pun</string>
+    <string name="menu_network_select_opt_nomononme">Hanya Wi-Fi tanpa batas atau Ethernet</string>
+    <string-array name="default_network_select_entries">
+        <item>@string/menu_network_select_opt_any</item>
+        <item>@string/menu_network_select_opt_nomo</item>
+        <item>@string/menu_network_select_opt_nomononme</item>
+    </string-array>
+    <string name="menu_delete_offline_stories">Hapus artikel offline…</string>
+    <string name="menu_delete_offline_stories_sum">Kosongkan ruang dengan menghapus artikel dan gambar yang tersimpan</string>
+    <string name="menu_delete_offline_stories_confirmation">Semua berita dan gambar telah dihapus!</string>
+    <string name="menu_cache_age_select">Berapa lama artikel disimpan…</string>
+    <string name="menu_cache_age_select_sum">Hapus artikel tersimpan untuk dibaca offline</string>
+    <string name="menu_cache_age_select_opt_2d">2 hari (kurangi penggunaan penyimpanan)</string>
+    <string name="menu_cache_age_select_opt_7d">7 hari</string>
+    <string name="menu_cache_age_select_opt_14d">14 hari</string>
+    <string name="menu_cache_age_select_opt_30d">30 hari (kurangi penggunaan jaringan)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string name="settings_cat_feed_list">Daftar feed</string>
+    <string name="setting_feed_list_order">Urutan daftar feed…</string>
+    <string name="settings_enable_row_global_shared">Tampilkan Artikel yang Dibagikan Secara Global</string>
+    <string name="settings_enable_row_global_shared_sum">Tampilkan folder Artikel yang Dibagikan Secara Global</string>
+    <string name="settings_enable_row_infrequent_stories">Tampilkan Artikel yang Jarang Muncul</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Tampilkan folder Artikel Situs yang Jarang Diperbarui</string>
+    <string name="settings_enable_row_daily_briefing">Tampilkan Ringkasan Harian</string>
+    <string name="settings_enable_row_daily_briefing_sum">Tampilkan folder Ringkasan Harian</string>
+    <string name="settings_enable_row_widely_read_stories">Tampilkan Berita yang Banyak Dibaca</string>
+    <string name="settings_enable_row_widely_read_stories_sum">Tampilkan folder Cerita yang Banyak Dibaca</string>
+    <string name="settings_enable_row_long_reads">Tampilkan Bacaan Panjang</string>
+    <string name="settings_enable_row_long_reads_sum">Tampilkan folder Bacaan Panjang</string>
+    <string name="settings_enable_row_good_reads">Tampilkan Bacaan Bagus</string>
+    <string name="settings_enable_row_good_reads_sum">Tampilkan folder Good Reads</string>
+    <string name="settings_cat_story_list">Daftar Artikel</string>
+    <string name="settings_cat_story_layout">Tata Letak Artikel</string>
+    <string name="settings_app_icon">Ikon aplikasi</string>
+    <string name="settings_app_icon_choose">Pilih Ikon</string>
+    <string name="settings_app_icon_summary">12 pilihan warna dengan varian terang dan gelap.</string>
+    <string name="settings_app_icon_footer">Pelanggan Premium dapat memilih ikon NewsBlur khusus. Setiap pilihan mencakup varian terang dan gelap.</string>
+    <string name="settings_app_icon_premium">Premium</string>
+    <string name="settings_app_icon_light">Terang</string>
+    <string name="settings_app_icon_dark">Gelap</string>
+    <string name="settings_app_icon_save_failed">Tidak dapat mengubah ikon aplikasi</string>
+    <string name="settings_app_icon_appearance_light">Terang</string>
+    <string name="settings_app_icon_appearance_auto">Gunakan keduanya</string>
+    <string name="settings_app_icon_appearance_dark">Gelap</string>
+    <string name="settings_app_icon_appearance_light_caption">Ikon terang akan tetap digunakan apa pun pengaturan perangkat Anda.</string>
+    <string name="settings_app_icon_appearance_auto_caption">Ikon mengikuti tampilan terang atau gelap perangkat Anda.</string>
+    <string name="settings_app_icon_appearance_dark_caption">Ikon gelap akan tetap digunakan apa pun pengaturan perangkat Anda.</string>
+    <string name="oldest">Terlama</string>
+    <string name="newest">Terbaru</string>
+    <string name="menu_story_order">Urutan artikel</string>
+    <string name="settings_story_order">Urutan artikel…</string>
+    <string name="story_header_options">Opsi</string>
+    <string name="story_header_search">Cari</string>
+    <string name="story_header_related_sites">Situs Terkait</string>
+    <string-array name="default_story_order_entries">
+        <item>@string/newest</item>
+        <item>@string/oldest</item>
+    </string-array>
+    <string name="comfortable">Nyaman</string>
+    <string name="compact">Ringkas</string>
+    <string name="alphabetical">Alfabetis</string>
+    <string name="most_used_at_top">Paling sering digunakan di atas</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string name="all_stories">Semua artikel</string>
+    <string name="unread_only">Hanya yang belum dibaca</string>
+    <string name="menu_story_content_preview">Pratinjau konten cerita</string>
+    <string name="menu_story_thumbnail_preview">Pratinjau gambar mini</string>
+    <string name="menu_mark_read_on_scroll">Tandai telah dibaca saat menggulir</string>
+    <string name="settings_read_filter">Filter cerita yang dibaca…</string>
+    <string name="settings_read_filter_title">Berita yang ditampilkan</string>
+    <string name="menu_read_filter">Filter berita yang telah dibaca</string>
+    <string-array name="default_read_filter_entries">
+        <item>@string/all_stories</item>
+        <item>@string/unread_only</item>
+    </string-array>
+    <string-array name="mark_all_read_options">
+        <item>Tandai semua sudah dibaca</item>
+        <item>Batal</item>
+    </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Tandai berita yang lebih lama sebagai telah dibaca</item>
+        <item>Batal</item>
+    </string-array>
+    <plurals name="story_header_mark_read_older_than_days">
+        <item quantity="other">Lebih lama dari %d hari</item>
+    </plurals>
+    <plurals name="discover_subscribers">
+        <item quantity="other">%s pelanggan</item>
+    </plurals>
+    <plurals name="discover_stories_per_month">
+        <item quantity="other">%s cerita/bln</item>
+    </plurals>
+    <plurals name="story_cluster_header">
+        <item quantity="other">Juga diterbitkan oleh %d situs</item>
+    </plurals>
+    <plurals name="story_cluster_more_sites">
+        <item quantity="other">+ %d situs lainnya</item>
+    </plurals>
+    <string-array name="mark_newer_read_options">
+        <item>Tandai artikel yang lebih baru sebagai telah dibaca</item>
+        <item>Batal</item>
+    </string-array>
+    <string name="settings_auto_open_first_unread">Buka artikel pertama secara otomatis</string>
+    <string name="settings_auto_open_first_unread_sum">Buka artikel pertama yang belum dibaca secara otomatis di daftar artikel</string>
+    <string name="settings_mark_read_on_feed_scroll">Tandai judul artikel sebagai telah dibaca saat menggulir</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Tandai artikel sebagai telah dibaca secara otomatis saat digulir melewatinya</string>
+    <string name="settings_story_clustering">Kelompokkan cerita terkait</string>
+    <string name="settings_story_clustering_summary">Tampilkan cerita duplikat dari feed lain di bawah judul cerita</string>
+    <string name="settings_cluster_matches">Kecocokan klaster</string>
+    <string name="settings_cluster_matches_summary">Pilih apakah klaster hanya menampilkan judul duplikat atau juga artikel terkait</string>
+    <string name="settings_story_clustering_save_failed">Tidak dapat menyimpan preferensi pengelompokan berita</string>
+    <string name="settings_story_clustering_title_only">Judul saja</string>
+    <string name="settings_cluster_mode_title_match_only">Hanya cocokkan judul</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Kecocokan judul plus terkait</string>
+    <string name="settings_cluster_mark_read_matches">Tandai berita yang cocok sebagai telah dibaca</string>
+    <string name="settings_cluster_mark_read_related">Tandai berita terkait sebagai telah dibaca</string>
+    <string name="settings_cluster_mark_read_matches_summary">Saat Anda membaca sebuah cerita, tandai juga cerita terkait sebagai telah dibaca.</string>
+    <string name="settings_cluster_mark_read_related_summary">Saat Anda membaca sebuah berita, tandai juga berita yang cocok dan terkait sebagai telah dibaca.</string>
+    <string name="settings_cluster_mark_read_save_failed">Tidak dapat menyimpan preferensi baca untuk cerita terkait</string>
+    <string name="settings_story_clustering_title">Judul</string>
+    <string name="settings_story_clustering_only">saja</string>
+    <string name="settings_story_clustering_plus">+</string>
+    <string name="story_cluster_badge_match">Cocok</string>
+    <string name="story_cluster_badge_related">Terkait</string>
+    <string name="settings_mark_story_read">Tandai artikel sebagai telah dibaca…</string>
+    <string name="settings_mark_story_read_title">Tandai cerita sebagai telah dibaca</string>
+    <string name="mark_story_read_immediately">Hanya saat dipilih</string>
+    <string name="mark_story_read_on_scroll">Saat menggulir atau memilih</string>
+    <string name="mark_story_read_1_second">Setelah 1 detik</string>
+    <string name="mark_story_read_2_seconds">Setelah 2 detik</string>
+    <string name="mark_story_read_3_seconds">Setelah 3 detik</string>
+    <string name="mark_story_read_5_seconds">Setelah 5 detik</string>
+    <string name="mark_story_read_10_seconds">Setelah 10 detik</string>
+    <string name="mark_story_read_20_seconds">Setelah 20 detik</string>
+    <string name="mark_story_read_30_seconds">Setelah 30 detik</string>
+    <string name="mark_story_read_45_seconds">Setelah 45 detik</string>
+    <string name="mark_story_read_60_seconds">Setelah 60 detik</string>
+    <string name="mark_story_read_manually">Secara manual</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_on_scroll</item>
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_1_second</item>
+        <item>@string/mark_story_read_2_seconds</item>
+        <item>@string/mark_story_read_3_seconds</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+    <string name="settings_social">Berbagi artikel</string>
+    <string name="settings_show_public_comments">Tampilkan komentar publik</string>
+    <string name="settings_reading">Membaca</string>
+    <string name="settings_show_ask_ai">Tampilkan Tanya AI</string>
+    <string name="settings_content_preview">Teks pratinjau konten…</string>
+    <string name="settings_thumbnails_style">Gambar mini pratinjau…</string>
+    <string name="settings_preview_images_title">Pratinjau gambar</string>
+    <string name="settings_preview_images_segment_off">Nonaktif</string>
+    <string name="settings_preview_images_segment_left_small">L kecil</string>
+    <string name="settings_preview_images_segment_left_large">L besar</string>
+    <string name="settings_preview_images_segment_right_small">R kecil</string>
+    <string name="settings_preview_images_segment_right_large">R besar</string>
+    <string name="settings_notifications">Notifikasi</string>
+    <string name="settings_enable_notifications">Aktifkan notifikasi</string>
+    <string name="ask_ai_upgrade_archive">Upgrade ke Arsip Premium</string>
+    <string name="ask_ai_ask_question">Ajukan pertanyaan…</string>
+    <string name="ask_ai_follow_up">Tindak lanjuti…</string>
+    <string name="ask_ai_ask">Tanya</string>
+    <string name="ask_ai_send">Kirim</string>
+    <string name="ask_ai_reask">Tanyakan lagi</string>
+    <string name="ask_ai_recording">Merekam…</string>
+    <string name="ask_ai_transcribing">Mentranskripsikan…</string>
+    <string name="ask_ai_microphone_permission_denied">Izin mikrofon ditolak</string>
+    <string name="ask_ai_microphone_error">Tidak dapat merekam audio</string>
+    <string name="settings_confirm_mark_all_read_note">Menandai semua berita situs sebagai telah dibaca selalu meminta konfirmasi. Tekan lama tombol tandai telah dibaca untuk opsi lainnya.</string>
+    <string name="settings_confirm_mark_all_read_segment_both">Keduanya</string>
+    <string name="settings_confirm_mark_all_read_segment_folders">Folder</string>
+    <string name="settings_confirm_mark_all_read_segment_never">Tidak pernah</string>
+    <string name="settings_after_mark_read_title">Setelah ditandai dibaca</string>
+    <string name="settings_after_mark_read_next">Buka daftar berikutnya</string>
+    <string name="settings_after_mark_read_stay">Tetap di sini</string>
+    <string name="settings_when_opening_site_title">Saat membuka situs</string>
+    <string name="settings_when_opening_site_stories">Tampilkan berita</string>
+    <string name="settings_when_opening_site_first_story">Buka cerita pertama</string>
+    <string name="story_cluster_upgrade_archive">Arsip Premium</string>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+    <string name="story_thumbnail_left_hand_small">Kiri, kecil</string>
+    <string name="story_thumbnail_left_hand_large">Besar di sisi kiri</string>
+    <string name="story_thumbnail_right_hand_small">Kanan kecil</string>
+    <string name="story_thumbnail_right_hand_large">Besar di kanan</string>
+    <string name="story_thumbnail_no_image_preview">Tanpa pratinjau gambar</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+    <string name="infrequent_choice_title">Artikel dari situs dengan</string>
+    <string name="infrequent_5">&lt; 5 artikel/bulan</string>
+    <string name="infrequent_15">&lt; 15 artikel/bulan</string>
+    <string name="infrequent_30">&lt; 30 artikel/bulan</string>
+    <string name="infrequent_60">&lt; 60 cerita/bulan</string>
+    <string name="infrequent_90">&lt; 90 cerita/bulan</string>
+    <string name="story_intel_dialog_title">Apa yang Anda sukai dan tidak sukai dari artikel ini?</string>
+    <string name="feed_intel_dialog_title">Apa yang Anda sukai dan tidak sukai dari situs ini?</string>
+    <string name="intel_title_header">Judul artikel</string>
+    <string name="feed_intel_title_header">Judul</string>
+    <string name="intel_tag_header">Tag artikel</string>
+    <string name="feed_intel_tag_header">Tag</string>
+    <string name="intel_author_header">Penulis berita</string>
+    <string name="feed_intel_author_header">Penulis</string>
+    <string name="intel_feed_header">Semua dari penerbit</string>
+    <string name="intel_super_dislike">Sangat tidak suka</string>
+    <string name="explainer_super_dislike">Sangat Tidak Suka</string>
+    <string name="explainer_like">Suka</string>
+    <string name="explainer_dislike">Tidak suka</string>
+    <string name="explainer_beats">ketukan</string>
+    <string name="explainer_example1_header">Satu suka mengalahkan berapa pun jumlah tidak suka</string>
+    <string name="explainer_example1_result">Berita ditampilkan dalam tampilan Fokus</string>
+    <string name="explainer_example2_header">Satu super tidak suka mengalahkan semuanya</string>
+    <string name="explainer_example2_result">Berita selalu disembunyikan</string>
+    <string name="auto">Otomatis</string>
+    <string name="light">Terang</string>
+    <string name="sepia">Sepia</string>
+    <string name="dark">Gelap</string>
+    <string name="black">Hitam</string>
+    <string name="settings_gestures">Gestur</string>
+    <string name="sync_status_housekeeping">Sedang merapikan…</string>
+    <string name="sync_status_actions">Menyinkronkan %d tindakan membaca…</string>
+    <string name="sync_status_recounts">Mengejar ketertinggalan dalam tindakan membaca…</string>
+    <string name="sync_status_ffsync">Sedang dikirim…</string>
+    <string name="sync_status_cleanup">Membersihkan…</string>
+    <string name="sync_status_starred">Menyinkronkan tindakan pada cerita tersimpan…</string>
+    <string name="sync_status_stories">Mengambil artikel terbaru…</string>
+    <string name="sync_status_unreads">Menyimpan%sartikel belum dibaca…</string>
+    <string name="sync_status_images">Menyimpan %d gambar…</string>
+    <string name="sync_status_offline">Luring</string>
+    <string name="sync_status_feed_add">Menambahkan feed</string>
+    <string name="sync_status_done">Selesai</string>
+    <string name="volume_key_navigation">Navigasi tombol volume…</string>
+    <string name="off">Nonaktif</string>
+    <string name="volume_up_next">Atas = artikel berikutnya</string>
+    <string name="volume_down_next">Bawah = cerita berikutnya</string>
+    <string-array name="volume_key_navigation_entries">
+        <item>@string/off</item>
+        <item>@string/volume_up_next</item>
+        <item>@string/volume_down_next</item>
+    </string-array>
+    <string name="settings_load_next_on_mark_read">Buka feed/folder berikutnya setelah ditandai dibaca</string>
+    <string name="settings_load_next_on_mark_read_summary">Muat feed/folder berikutnya setelah ditandai telah dibaca</string>
+    <string name="settings_confirm_mark_all_read">Konfirmasi tandai semua sudah dibaca pada…</string>
+    <string name="none">Tidak keduanya</string>
+    <string name="feed_and_folder">Feed dan folder</string>
+    <string name="folder_only">Hanya folder</string>
+    <string-array name="confirm_mark_all_read_entries">
+        <item>@string/feed_and_folder</item>
+        <item>@string/folder_only</item>
+        <item>@string/none</item>
+    </string-array>
+    <string name="settings_confirm_mark_range_read">Konfirmasi tandai yang lebih lama/baru sebagai telah dibaca</string>
+    <string name="settings_ltr_gesture_action">Geser ke kanan pada daftar berita…</string>
+    <string name="gest_action_none">Tidak ada tindakan</string>
+    <string name="gest_action_back">Kembali ke daftar sebelumnya</string>
+    <string name="gest_action_toggle_read">Ubah status baca artikel</string>
+    <string name="gest_action_markread">Tandai cerita sebagai telah dibaca</string>
+    <string name="gest_action_markunread">Tandai artikel sebagai belum dibaca</string>
+    <string name="gest_action_save">Simpan artikel</string>
+    <string name="gest_action_unsave">Batalkan penyimpanan artikel</string>
+    <string name="gest_action_statistics">Statistik situs</string>
+    <string-array name="ltr_gesture_action_entries">
+        <item>@string/gest_action_back</item>
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="settings_rtl_gesture_action">Geser ke kiri pada judul cerita…</string>
+    <string-array name="rtl_gesture_action_entries">
+        <item>@string/gest_action_toggle_read</item>
+        <item>@string/gest_action_none</item>
+        <item>@string/gest_action_markread</item>
+        <item>@string/gest_action_markunread</item>
+        <item>@string/gest_action_save</item>
+        <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
+    </string-array>
+    <string name="default_browser">Browser default…</string>
+    <string name="font">Font…</string>
+    <string name="default_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_browser_entries">
+        <item>Default sistem</item>
+        <item>Browser dalam aplikasi</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/roboto_font</item>
+    </string-array>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="story_notification_channel_name">Artikel baru</string>
+    <string name="go_to_feed">Buka feed</string>
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+    <string name="search">Cari</string>
+    <string name="add_feed">Tambahkan feed</string>
+    <string name="story_author">• %s</string>
+    <string name="notification_email">Email</string>
+    <string name="notification_web">Web</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">Tidak ada notifikasi feed</string>
+    <string name="notification_permissions_context">Izin diperlukan untuk mengirim notifikasi</string>
+    <string name="notification_permissions_rationale">Izin notifikasi harus ditambahkan secara manual di pengaturan aplikasi sebelum mencoba mengaktifkan notifikasi lagi</string>
+    <string name="write_storage_permission_opml">Izin menulis penyimpanan diperlukan untuk ekspor OPML</string>
+    <string name="story_saved">Berita ditandai sebagai tersimpan</string>
+    <string name="story_unsaved">Kisah ditandai belum disimpan</string>
+    <string name="story_read">Cerita ditandai telah dibaca</string>
+    <string name="story_unread">Cerita ditandai sebagai belum dibaca</string>
+    <string name="unread_stories">Artikel belum dibaca</string>
+    <string name="focused_stories">Artikel terfokus</string>
+    <string name="saved_stories">Cerita tersimpan</string>
+    <string name="short_next_story">Berita Berikutnya</string>
+    <string name="short_previous_story">Artikel Sebelumnya</string>
+    <string name="short_text_view">Tampilan Teks</string>
+    <string name="short_page_down">Halaman Berikutnya</string>
+    <string name="short_page_down_key">spasi</string>
+    <string name="short_page_up">Page Up</string>
+    <string name="short_page_up_key">\u21E7 spasi</string>
+    <string name="short_next_unread_story">Cerita Belum Dibaca Berikutnya</string>
+    <string name="short_toggle_read_unread">Alihkan status dibaca/belum dibaca</string>
+    <string name="short_save_unsave_story">Simpan/Batalkan Simpan Berita</string>
+    <string name="short_open_in_browser">Buka di Browser</string>
+    <string name="short_share_this_story">Bagikan Cerita ini</string>
+    <string name="short_scroll_to_comments">Gulir ke Komentar</string>
+    <string name="short_open_story_trainer">Buka Pelatih Artikel</string>
+    <string name="short_open_all_stories">Buka Semua Artikel Situs</string>
+    <string name="short_switch_views">Ganti Tampilan</string>
+    <string name="short_add_site">Tambah Situs</string>
+    <string name="registering">Mendaftar...</string>
+    <string name="renaming_feed_message">Mengganti nama feed %s</string>
+    <string name="renaming_folder_message">Mengganti nama folder %s</string>
+    <string name="parent_folder">Folder induk</string>
+    <string name="folder_added">Folder ditambahkan</string>
+    <string name="new_folder_parent">Di: %1$s</string>
+    <string name="ui_014f8b8d982f">Tambahkan filter kata kunci khusus yang menjadi bagian tersendiri di ringkasan</string>
+    <string name="ui_05392d13e2f2">Belum ada ringkasan</string>
+    <string name="ui_0a4444676244">Gagal menyimpan</string>
+    <string name="ui_0a8adac9d6d5">Jadwalkan</string>
+    <string name="ui_13b7bfcac438">Memproses…</string>
+    <string name="ui_2eb56be3c2d9">Sumber</string>
+    <string name="ui_314ef761a08f">Tambahkan bagian kata kunci</string>
+    <string name="ui_3af014d03229">Sumber feed</string>
+    <string name="ui_3e4a49541e18">Sertakan cerita yang sudah dibaca</string>
+    <string name="ui_4a24ff492222">Dapatkan ringkasan harian berisi semua berita utama Anda</string>
+    <string name="ui_4e9f59082144">Arsip Premium</string>
+    <string name="ui_5b170811b992">Tingkatkan ke Arsip Premium</string>
+    <string name="ui_67a31d6fa581">Pilih tujuan notifikasi Ringkasan Harian</string>
+    <string name="ui_67d0be0dd546">Atur seberapa banyak konten yang disertakan dan cara penulisannya</string>
+    <string name="ui_68c2cc7f0cea">Model</string>
+    <string name="ui_710089545189">Panjang &amp; Gaya</string>
+    <string name="ui_753a22b2eb61">Notifikasi</string>
+    <string name="ui_771ee100da2b">Bagian Kata Kunci</string>
+    <string name="ui_7c522fb68f07">Dapatkan ringkasan artikel teratas sesuai jadwal Anda.</string>
+    <string name="ui_7f7e956b2244">Siapkan Ringkasan Harian untuk membuat rangkuman artikel yang paling penting bagi Anda.</string>
+    <string name="ui_7ff5a6dafd80">Bagian</string>
+    <string name="ui_80f7bcbc57b0">Pilih seberapa sering dan kapan ringkasan Anda dibuat</string>
+    <string name="ui_a4d5830966af">Buat ringkasan otomatis sesuai jadwal Anda</string>
+    <string name="ui_a92076d4b9e3">Pilih model yang akan menulis Ringkasan Harian Anda</string>
+    <string name="ui_a970fbbd6df8">Buat otomatis</string>
+    <string name="ui_a9dc7e4dcba7">Pengaturan Ringkasan Harian</string>
+    <string name="ui_bbfa773e5a63">Tutup</string>
+    <string name="ui_c2d462f8f6da">Pilih artikel yang memenuhi syarat untuk Ringkasan Harian</string>
+    <string name="ui_d521ea8640b5">Buat Ringkasan Harian</string>
+    <string name="ui_df174a3f2faa">Diaktifkan</string>
+    <string name="ui_df2164622bcf">Tidak dapat memuat Ringkasan Harian</string>
+    <string name="ui_eaed56ec84ae">Ringkasan Harian</string>
+    <string name="ui_efc007a393f6">Simpan</string>
+    <string name="ui_f530db58b3e5">Kata kunci</string>
+    <string name="ui_fdafe86c10a4">Hanya bagian yang memiliki artikel yang cocok yang akan disertakan</string>
+    <string name="ui_690910f6ed17">Impor OPML</string>
+    <string name="ui_244fd5e426f0">Ekspor OPML</string>
+    <string name="ui_768e0c1c6957">Judul</string>
+    <string name="ui_0c2dd345a681">\u24D8</string>
+    <string name="ui_5fc52b1a5a92">\u2192</string>
+    <string name="ui_e17c700c2575">Tag Tersimpan</string>
+    <string name="ui_6e914f494515">Tag Cerita</string>
+    <string name="ui_e912ab619a72">Tag Lainnya</string>
+    <string name="i18n_add_site">Tambahkan situs</string>
+    <string name="i18n_add">Tambah</string>
+    <string name="i18n_retry">Coba lagi</string>
+    <string name="i18n_no_sites_found_try_another_search">Situs tidak ditemukan. Coba penelusuran lain.</string>
+    <string name="i18n_load_more">Muat lebih banyak</string>
+    <string name="i18n_follow_any_website">Ikuti situs web apa pun</string>
+    <string name="i18n_mark_updated_stories_unread">Tandai artikel yang diperbarui sebagai belum dibaca</string>
+    <string name="i18n_follow_news_that_matters_to_you">Ikuti berita yang penting bagi Anda</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">Pilih topik atau buat feed Google News untuk penelusuran apa pun.</string>
+    <string name="i18n_subscribe">Berlangganan</string>
+    <string name="i18n_tech">teknologi</string>
+    <string name="i18n_review">ulasan</string>
+    <string name="i18n_sponsored">bersponsor</string>
+    <string name="i18n_discover_more_to_read">Temukan lebih banyak bacaan</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">Tidak ada situs yang ditemukan. Anda juga dapat menambahkan situs melalui URL.</string>
+    <string name="i18n_add_discover_sites">Tambah + Temukan Situs</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">Buat feed dari halaman tanpa RSS. NewsBlur menemukan ceritanya dan memeriksa pembaruan. Memerlukan Premium Archive.</string>
+</resources>

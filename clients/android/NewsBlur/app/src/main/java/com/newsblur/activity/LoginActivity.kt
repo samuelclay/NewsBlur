@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.net.toUri
-import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.newsblur.compose.LoginScreen
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginActivity : FragmentActivity() {
+class LoginActivity : AppCompatActivity() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
 

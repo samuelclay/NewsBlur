@@ -40,43 +40,43 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-icon' }),
-                'Organize sites',
+                gettext('Organize sites'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('div', { className: 'NB-organizer-sidebar' }, [
                 $.make('div', { className: 'NB-organizer-sidebar-hierarchy' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Show Folders'),
+                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Show Folders')),
                     $.make('div', { className: 'NB-organizer-sidebar-container' }, [
                         $.make('ul', { className: 'segmented-control' }, [
-                            $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-nested NB-active' }, 'Nested'),
-                            $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-flat' }, 'Flat')
+                            $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-nested NB-active' }, gettext('Nested')),
+                            $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-flat' }, gettext('Flat'))
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-organizer-sidebar-move' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Move to folder'),
+                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Move to folder')),
                     $.make('div', { className: 'NB-organizer-sidebar-container' }, [
                         NEWSBLUR.utils.make_folders(),
-                        $.make('div', { className: 'NB-icon-add', title: "Add folder" }),
+                        $.make('div', { className: 'NB-icon-add', title: gettext("Add folder") }),
                         $.make('div', { className: "NB-add-folder NB-hidden" }, [
                             $.make('div', { className: 'NB-icon-subfolder' }),
-                            $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: "New folder name..." })
+                            $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: gettext("New folder name...") })
                         ]),
                         $.make('div', { className: 'NB-error-move NB-error' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, 'Move'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, gettext('Move')),
                         $.make('div', { className: 'NB-loading' })
                     ])
                 ]),
                 $.make('div', { className: 'NB-organizer-sidebar-delete' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Delete sites'),
+                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Delete sites')),
                     $.make('div', { className: 'NB-organizer-sidebar-container' }, [
                         $.make('div', { className: 'NB-error-delete NB-error' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-disabled NB-action-delete' }, 'Delete'),
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-disabled NB-action-delete' }, gettext('Delete')),
                         $.make('div', { className: 'NB-loading' })
                     ])
                 ]),
                 $.make('div', { className: 'NB-organizer-sidebar-jump' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Jump to Folder'),
+                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Jump to Folder')),
                     $.make('div', { className: 'NB-organizer-sidebar-container' }, [
                         this.make_folders()
                     ])
@@ -84,17 +84,17 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             ]),
             $.make('div', { className: 'NB-organizer-actionbar' }, [
                 $.make('div', { className: 'NB-organizer-sorts' }, [
-                    $.make('div', { className: 'NB-organizer-action-title' }, 'Sort '),
-                    $.make('div', { className: 'NB-organizer-action NB-action-alphabetical NB-active' }, 'Name'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, 'Subscribers'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-frequency' }, 'Frequency'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-recency' }, 'Recency'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, 'Opens')
+                    $.make('div', { className: 'NB-organizer-action-title' }, gettext('Sort ')),
+                    $.make('div', { className: 'NB-organizer-action NB-action-alphabetical NB-active' }, gettext('Name')),
+                    $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, gettext('Subscribers')),
+                    $.make('div', { className: 'NB-organizer-action NB-action-frequency' }, gettext('Frequency')),
+                    $.make('div', { className: 'NB-organizer-action NB-action-recency' }, gettext('Recency')),
+                    $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, gettext('Opens'))
                 ]),
                 $.make('div', { className: 'NB-organizer-selects' }, [
-                    $.make('div', { className: 'NB-organizer-action-title' }, 'Select'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-select-all' }, 'All'),
-                    $.make('div', { className: 'NB-organizer-action NB-action-select-none' }, 'None')
+                    $.make('div', { className: 'NB-organizer-action-title' }, gettext('Select')),
+                    $.make('div', { className: 'NB-organizer-action NB-action-select-all' }, gettext('All')),
+                    $.make('div', { className: 'NB-organizer-action NB-action-select-none' }, gettext('None'))
                 ])
             ]),
             this.make_feeds()
@@ -201,15 +201,15 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var $delete = $(".NB-action-delete", this.$modal);
         var count = this.feedlist.folder_view.highlighted_count_unique_folders();
         // console.log(['change_selection', count]);
-        $title.text(count ? count + " selected" : "Select");
+        $title.text(count ? interpolate(gettext("%(value_1)s selected"), {value_1: count}, true) : gettext("Select"));
         $error.text('');
 
         if (!count) {
-            $delete.text('Delete').addClass('NB-disabled');
-            $move.text('Move').addClass('NB-disabled');
+            $delete.text(gettext('Delete')).addClass('NB-disabled');
+            $move.text(gettext('Move')).addClass('NB-disabled');
         } else {
-            $delete.text('Delete ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
-            $move.text('Move ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
+            $delete.text(interpolate(gettext("Delete %(value_1)s"), {value_1: Inflector.pluralize('site', count, true)}, true)).removeClass('NB-disabled');
+            $move.text(interpolate(gettext("Move %(value_1)s"), {value_1: Inflector.pluralize('site', count, true)}, true)).removeClass('NB-disabled');
         }
 
         NEWSBLUR.assets.feeds.off('change:highlighted')
@@ -273,7 +273,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var $feedlist = $(".NB-feedlist", this.$modal);
         var to_folder = $('.NB-folders').val();
         $loading.addClass('NB-active');
-        $move.addClass('NB-disabled').text('Moving...');
+        $move.addClass('NB-disabled').text(gettext('Moving...'));
         NEWSBLUR.reader.flags['reloading_feeds'] = true;
 
         if (!this._open_folder) new_folder = null;
@@ -287,7 +287,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             self.reset_feeds();
             $feedlist.replaceWith(self.make_feeds());
             self.change_selection();
-            $move.text('Moved!');
+            $move.text(gettext('Moved!'));
             if (self._open_folder) self.toggle_folder_add();
             self.replace_folders();
             $new_folder.val('');
@@ -295,7 +295,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.change_selection();
-            $error.show().text("Sorry, there was a problem moving feeds.");
+            $error.show().text(gettext("Sorry, there was a problem moving feeds."));
         });
     },
 
@@ -307,7 +307,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var $delete = $('.NB-action-delete', this.$modal);
         var $feedlist = $(".NB-feedlist", this.$modal);
         $loading.addClass('NB-active');
-        $delete.addClass('NB-disabled').text('Deleting...');
+        $delete.addClass('NB-disabled').text(gettext('Deleting...'));
         NEWSBLUR.reader.flags['reloading_feeds'] = true;
 
         console.log(["Deleting feeds by folder", highlighted_feeds]);
@@ -326,13 +326,13 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             $feedlist.replaceWith(self.make_feeds());
             self.change_selection();
             NEWSBLUR.assets.feeds.trigger('reset');
-            $delete.text('Deleted!');
+            $delete.text(gettext('Deleted!'));
             if (self._open_folder) self.toggle_folder_add();
         }, function (error) {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.change_selection();
-            $error.show().text("Sorry, there was a problem deleting feeds.");
+            $error.show().text(gettext("Sorry, there was a problem deleting feeds."));
         });
     },
 

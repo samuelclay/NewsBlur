@@ -363,7 +363,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
             });
 
             $header.removeClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Collapse All Folders');
+            $toggle_icon.attr('title', gettext('Collapse All Folders'));
         } else {
             // Collapse all folders (when any folder is expanded)
             _.each(folder_names, function (folder_name) {
@@ -396,7 +396,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
             });
 
             $header.addClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Expand All Folders');
+            $toggle_icon.attr('title', gettext('Expand All Folders'));
         }
 
         return false;
@@ -413,10 +413,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
         if (all_collapsed) {
             $header.addClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Expand All Folders');
+            $toggle_icon.attr('title', gettext('Expand All Folders'));
         } else {
             $header.removeClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Collapse All Folders');
+            $toggle_icon.attr('title', gettext('Collapse All Folders'));
         }
     }
 

@@ -1,7 +1,9 @@
+{% load i18n %}
 {% load utils_tags %}
 <!DOCTYPE html>
-<html>
+<html lang="{{ ui_language }}" dir="{% if ui_language_rtl %}rtl{% else %}ltr{% endif %}">
 <head>
+  {% include "includes/i18n_scripts.html" %}
   <title>{% block title %}NewsBlur{% endblock %}</title>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <link rel="shortcut icon" HREF="/media/img/favicon.png">
@@ -67,28 +69,28 @@
       <div id="NB-feed-list"></div>
     </div>
     <div data-role="footer">
-      <div class="NB-footer-site-count ui-li-count">12 sites</div>
+      <div class="NB-footer-site-count ui-li-count">{% trans "12 sites" %}</div>
     </div>
   </div>
   
   <div data-role="page" data-url="stories" id="NB-page-stories"> 
     <div data-role="header"> 
-      <a href="#" data-icon="arrow-l" data-back-btn-text="Sites" data-rel="back">Sites</a>
-      <h1>Stories</h1>
+      <a href="#" data-icon="arrow-l" data-back-btn-text="Sites" data-rel="back">{% trans "Sites" %}</a>
+      <h1>{% trans "Stories" %}</h1>
     </div>
     <div data-role="content">
       <div id="NB-story-list"></div>
     </div>
     <div data-role="footer" class="ui-header"> 1
-      <div class="NB-footer-site-count ui-li-count">12 sites</div>
+      <div class="NB-footer-site-count ui-li-count">{% trans "12 sites" %}</div>
     </div>
   </div>
   
   <div data-role="page" data-url="story" id="NB-page-story"> 
     <div data-role="header"> 
-      <a href="#" data-icon="arrow-l" data-back-btn-text="Stories" data-rel="back">Stories</a>
-      <h1>Story</h1>
-      <a href="#" data-icon="arrow-d" class="ui-btn-right NB-next">Next Unread</a>
+      <a href="#" data-icon="arrow-l" data-back-btn-text="Stories" data-rel="back">{% trans "Stories" %}</a>
+      <h1>{% trans "Story" %}</h1>
+      <a href="#" data-icon="arrow-d" class="ui-btn-right NB-next">{% trans "Next Unread" %}</a>
     </div>
     <div data-role="content">
       <div id="NB-story-detail">
@@ -96,9 +98,9 @@
       </div>
     </div>
     <div data-role="footer" class="ui-header">
-      <a href="#" data-icon="arrow-u" class="NB-previous">Previous</a>
+      <a href="#" data-icon="arrow-u" class="NB-previous">{% trans "Previous" %}</a>
       <h1>...</h1>
-      <a href="#" data-icon="arrow-d" class="ui-btn-right NB-next">Next Unread</a>
+      <a href="#" data-icon="arrow-d" class="ui-btn-right NB-next">{% trans "Next Unread" %}</a>
     </div>
   </div>
   

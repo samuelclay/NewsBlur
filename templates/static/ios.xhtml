@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load utils_tags %}
 
 {% block bodyclass %}NB-static NB-static-iphone{% endblock %}
 
-{% block title %}The NewsBlur iPad &amp; iPhone App{% endblock %}
+{% block title %}{% trans "The NewsBlur iPad" %} &amp; {% trans "iPhone App" %}{% endblock %}
 
 {% block head %}
     <meta name="description" content="NewsBlur for iOS. A personal news reader with intelligence training, full-text search, and more.">
@@ -23,7 +24,7 @@
 {% block content %}
 
   <div class="NB-static-title">
-    The NewsBlur iPad &amp; iPhone App
+    {% trans "The NewsBlur iPad" %} &amp; {% trans "iPhone App" %}
   </div>
 
   <div class="NB-ios-mockup">
@@ -44,8 +45,8 @@
   <div class="NB-ios-main">
     
     <div class="NB-ios-title">
-        <div><a href="/">NewsBlur</a> is a personal news reader.</div>
-        <div class="NB-ios-subtitle">Built <a href="http://github.com/samuelclay/">in the open</a> in New York and San Francisco.</div>
+        <div><a href="/">NewsBlur</a> {% trans "is a personal news reader." %}</div>
+        <div class="NB-ios-subtitle">{% trans "Built" %} <a href="http://github.com/samuelclay/">{% trans "in the open" %}</a> {% trans "in New York and San Francisco." %}</div>
         
     </div>
     
@@ -54,7 +55,7 @@
     <a href="http://itunes.apple.com/us/app/newsblur/id463981119"  class="NB-ios-download">
         <button>
             <img src="{{ MEDIA_URL }}img/reader/download.png" />
-          Download the free NewsBlur iOS app on the<br /><span class="NB-big">iOS App Store</span>
+          {% trans "Download the free NewsBlur iOS app on the" %}<br /><span class="NB-big">{% trans "iOS App Store" %}</span>
         </button>
     </a>
     </div>
@@ -64,20 +65,20 @@
         <li class="NB-ios-feature" data-screenshot="1">
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPad - 1.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPhone 5 - 1.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">Sites &amp; Friends</div>
-            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+            <div class="NB-ios-feature-title">{% trans "Sites" %} &amp; {% trans "Friends" %}</div>
+            {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
         <li class="NB-ios-feature" data-screenshot="2">
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPad - 2.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPhone 5 - 2.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">River of News</div>
-            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+            <div class="NB-ios-feature-title">{% trans "River of News" %}</div>
+            {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
         <li class="NB-ios-feature" data-screenshot="3">
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPad - 3.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPhone 5 - 3.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">Easy reading</div>
-            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+            <div class="NB-ios-feature-title">{% trans "Easy reading" %}</div>
+            {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
     </ul>
     <br />
@@ -85,20 +86,20 @@
         <li class="NB-ios-feature" data-screenshot="4">
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPad - 4.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPhone 5 - 4.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">Expand your network</div>
-            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+            <div class="NB-ios-feature-title">{% trans "Expand your network" %}</div>
+            {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
         <li class="NB-ios-feature" data-screenshot="5">
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPad - 5.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/iphone/v2.0 - iPhone 5 - 5.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">Comments from friends</div>
-            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+            <div class="NB-ios-feature-title">{% trans "Comments from friends" %}</div>
+            {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
         <li class="NB-ios-feature NB-active" data-screenshot="6">
             <img src="{{ MEDIA_URL }}img/iphone/iPad Default.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/iphone/Default-568h@2x.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">The NewsBlur<br />iOS App</div>
-            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+            <div class="NB-ios-feature-title">{% trans "The NewsBlur" %}<br />{% trans "iOS App" %}</div>
+            {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
     </ul>
 

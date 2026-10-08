@@ -65,6 +65,7 @@ class NetworkClientImpl(
         val request = Request.Builder().url(urlString + "?" + valueMap.getParameterString())
         addCookieHeader(request)
         request.header("User-Agent", customUserAgent)
+        request.header("Accept-Language", com.newsblur.util.LanguageSettings.requestLanguages(context))
         return suspendCancellableCoroutine { continuation ->
             // NetworkClientImpl.kt keeps bounded preview refreshes cancellable during headers and body reads.
             val call = client.newCall(request.build())
@@ -186,6 +187,7 @@ class NetworkClientImpl(
         val requestBuilder = Request.Builder().url(urlString)
         addCookieHeader(requestBuilder)
         requestBuilder.header("User-Agent", customUserAgent)
+        requestBuilder.header("Accept-Language", com.newsblur.util.LanguageSettings.requestLanguages(context))
 
         return APIResponse(client, requestBuilder.build())
     }
@@ -215,6 +217,7 @@ class NetworkClientImpl(
         val requestBuilder = Request.Builder().url(urlString)
         addCookieHeader(requestBuilder)
         requestBuilder.post(formBody)
+        requestBuilder.header("Accept-Language", com.newsblur.util.LanguageSettings.requestLanguages(context))
 
         return APIResponse(requestClient, requestBuilder.build())
     }

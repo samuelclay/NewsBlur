@@ -52,7 +52,7 @@ $(function () {
             $("button[type=submit]").attr("disabled", "disabled");
             $("button[type=submit]").addClass("NB-disabled");
             $("button[type=submit]").removeClass("NB-modal-submit-green");
-            $("button[type=submit]").text("Submitting...");
+            $("button[type=submit]").text(gettext("Submitting..."));
 
             Stripe.createToken({
                 number: $('.card-number').val(),
@@ -65,7 +65,7 @@ $(function () {
                     $("button[type=submit]").removeAttr("disabled");
                     $("button[type=submit]").removeClass("NB-disabled");
                     $("button[type=submit]").addClass("NB-modal-submit-green");
-                    $("button[type=submit]").text("Submit Payment");
+                    $("button[type=submit]").text(gettext("Submit Payment"));
 
                     // show the error
                     $(".payment-errors").html(response.error.message);

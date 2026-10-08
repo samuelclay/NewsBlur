@@ -327,6 +327,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [NBLocalization configureDirection];
     [ReaderPerformance install];
     if ([UIApplicationShortcutItem class] && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
         self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
@@ -528,7 +529,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    self.title = @"All";
+    self.title = [NBLocalization text:@"All"];
 }
 
 - (void)registerBackgroundTask {
@@ -623,16 +624,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }];
     
     //    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
-    //                                                                            title:@"View story"
+    //                                                                            title:[NBLocalization text:@"View story"]
     //                                                                          options:UNNotificationActionOptionForeground];
     UNNotificationAction *readAction = [UNNotificationAction actionWithIdentifier:@"MARK_READ_IDENTIFIER"
-                                                                            title:@"Mark read"
+                                                                            title:[NBLocalization text:@"Mark read"]
                                                                           options:UNNotificationActionOptionNone];
     UNNotificationAction *starAction = [UNNotificationAction actionWithIdentifier:@"STAR_IDENTIFIER"
-                                                                            title:@"Save story"
+                                                                            title:[NBLocalization text:@"Save story"]
                                                                           options:UNNotificationActionOptionNone];
     UNNotificationAction *dismissAction = [UNNotificationAction actionWithIdentifier:@"DISMISS_IDENTIFIER"
-                                                                               title:@"Dismiss"
+                                                                               title:[NBLocalization text:@"Dismiss"]
                                                                              options:UNNotificationActionOptionDestructive];
     UNNotificationCategory *storyCategory = [UNNotificationCategory categoryWithIdentifier:@"STORY_CATEGORY"
                                                                                    actions:@[readAction, starAction, dismissAction]
@@ -1113,9 +1114,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
     NSString *preferenceKey = @"split_behavior";
 #if TARGET_OS_MACCATALYST
-    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full window"];
+    NSArray *titles = @[[NBLocalization text:@"Auto"], @"columns_triple.png", @"columns_double.png", [NBLocalization text:@"Full window"]];
 #else
-    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
+    NSArray *titles = @[[NBLocalization text:@"Auto"], @"columns_triple.png", @"columns_double.png", [NBLocalization text:@"Full screen"]];
 #endif
     NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
     
@@ -1269,7 +1270,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     
     if (text) {
-        NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
+        NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:[NBLocalization text:@" via %@"], feedTitle] : @"";
         text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
     }
     
@@ -1679,7 +1680,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else {
         // iOS 14 fallback - show alert that feature requires iOS 15
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Ask AI"
-                                                                       message:@"This feature requires iOS 15 or later."
+                                                                       message:[NBLocalization text:@"This feature requires iOS 15 or later."]
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self.feedsNavigationController presentViewController:alert animated:YES completion:nil];
@@ -2034,6 +2035,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         UA = [NSString stringWithFormat:@"NewsBlur iPad App v%@", currentVersion];
     }
     [networkManager.requestSerializer setValue:UA forHTTPHeaderField:@"User-Agent"];
+    [networkManager.requestSerializer setValue:[NBLocalization resolvedLanguage] forHTTPHeaderField:@"Accept-Language"];
 }
 
 - (NSString *)beginNetworkOperation {
@@ -2258,6 +2260,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.dictSocialFeeds = @{};
     self.dictSocialProfile = nil;
     self.dictUserProfile = nil;
+    [NBLocalization reset];
     self.dictSocialServices = nil;
     self.dictSavedStoryTags = @{};
     self.dictSavedStoryFeedCounts = @{};
@@ -2316,7 +2319,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
-                                          initWithTitle: @"All"
+                                          initWithTitle: [NBLocalization text:@"All"]
                                           style: UIBarButtonItemStylePlain
                                           target: nil
                                           action: nil];
@@ -2681,7 +2684,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [self.storyPagesViewController showShareHUD:@"Finding story..."];
         } else {
             MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
-            HUD.labelText = @"Finding story...";
+            HUD.labelText = [NBLocalization text:@"Finding story..."];
         }
     }
 }
@@ -2850,7 +2853,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Logging out...";
+    HUD.labelText = [NBLocalization text:@"Logging out..."];
 }
 
 - (void)showConnectToService:(NSString *)serviceName {
@@ -3016,7 +3019,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self updateFeedDetailTitleView];
     
     if (self.isCompactWidth && feedDetailView == self.feedDetailViewController && feedDetailView.view.window == nil) {
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: [NBLocalization text:@"All"]
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil
                                                                          action: nil];
@@ -3225,7 +3228,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     if (!url) {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Nowhere to go"
-                                                                       message:@"The story doesn't link anywhere."
+                                                                       message:[NBLocalization text:@"The story doesn't link anywhere."]
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Oh well" style:UIAlertActionStyleDefault
@@ -3515,7 +3518,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (void)donateRefresh {
     NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.newsblur.refresh"];
     
-    activity.title = @"Refresh NewsBlur";
+    activity.title = [NBLocalization text:@"Refresh NewsBlur"];
     activity.userInfo = @{};
     activity.requiredUserInfoKeys = [NSSet new];
     activity.eligibleForSearch = YES;
@@ -3540,33 +3543,33 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (folder == nil || title == nil) {
         return;
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
-        activity.title = @"Read All Shared Stories";
+        activity.title = [NBLocalization text:@"Read All Shared Stories"];
     } else if ([folder isEqualToString:@"river_global"]) {
-        activity.title = @"Read Global Shared Stories";
+        activity.title = [NBLocalization text:@"Read Global Shared Stories"];
     } else if ([folder isEqualToString:@"trending:well_read"]) {
-        activity.title = @"Read Widely Read Stories";
+        activity.title = [NBLocalization text:@"Read Widely Read Stories"];
     } else if ([folder isEqualToString:@"trending:long_reads"]) {
-        activity.title = @"Read Long Reads";
+        activity.title = [NBLocalization text:@"Read Long Reads"];
     } else if ([folder isEqualToString:@"trending:good_reads"]) {
-        activity.title = @"Read Good Reads";
+        activity.title = [NBLocalization text:@"Read Good Reads"];
     } else if ([folder isEqualToString:@"dashboard"]) {
-        activity.title = @"NewsBlur Dashboard";
+        activity.title = [NBLocalization text:@"NewsBlur Dashboard"];
     } else if ([folder isEqualToString:@"everything"]) {
-        activity.title = @"Read All the Stories";
+        activity.title = [NBLocalization text:@"Read All the Stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {
-        activity.title = @"Read Infrequent Site Stories";
+        activity.title = [NBLocalization text:@"Read Infrequent Site Stories"];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
-        activity.title = [NSString stringWithFormat:@"Read %@", storiesCollection.activeSavedStoryTag];
+        activity.title = [NSString stringWithFormat:[NBLocalization text:@"Read %@"], storiesCollection.activeSavedStoryTag];
     } else if ([folder isEqualToString:@"widget_stories"]) {
-        activity.title = @"Read Widget Site Stories";
+        activity.title = [NBLocalization text:@"Read Widget Site Stories"];
     } else if ([folder isEqualToString:@"read_stories"]) {
-        activity.title = @"Re-read Stories";
+        activity.title = [NBLocalization text:@"Re-read Stories"];
     } else if ([folder isEqualToString:@"saved_searches"]) {
-        activity.title = @"Re-read Saved Searches";
+        activity.title = [NBLocalization text:@"Re-read Saved Searches"];
     } else if ([folder isEqualToString:@"saved_stories"]) {
-        activity.title = @"Re-read Saved Stories";
+        activity.title = [NBLocalization text:@"Re-read Saved Stories"];
     } else {
-        activity.title = [NSString stringWithFormat:@"Read %@", title];
+        activity.title = [NSString stringWithFormat:[NBLocalization text:@"Read %@"], title];
     }
     
     activity.userInfo = @{@"folder" : folder};
@@ -3577,7 +3580,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
     
-    attributes.contentDescription = [NSString stringWithFormat:@"Go to the %@ folder in NewsBlur.", title];
+    attributes.contentDescription = [NSString stringWithFormat:[NBLocalization text:@"Go to the %@ folder in NewsBlur."], title];
     
     activity.contentAttributeSet = attributes;
     
@@ -3592,7 +3595,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSString *title = storiesCollection.activeTitle;
     NSString *feedID = [NSString stringWithFormat:@"%@", feed[@"id"]];
     
-    activity.title = [NSString stringWithFormat:@"Read %@", title];
+    activity.title = [NSString stringWithFormat:[NBLocalization text:@"Read %@"], title];
     activity.eligibleForSearch = YES;
     
     if (folder != nil) {
@@ -3612,7 +3615,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     UIImage *thumbnailImage = [self getFavicon:feedID isSocial:isSocial isSaved:isSaved];
     UIImage *scaledImage = [Utilities imageWithImage:thumbnailImage convertToSize:CGSizeMake(128, 128)];
     
-    attributes.contentDescription = [NSString stringWithFormat:@"Go to the %@ feed in NewsBlur.", title];
+    attributes.contentDescription = [NSString stringWithFormat:[NBLocalization text:@"Go to the %@ feed in NewsBlur."], title];
     attributes.thumbnailData = UIImagePNGRepresentation(scaledImage);
     
     activity.contentAttributeSet = attributes;
@@ -4846,43 +4849,43 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     UILabel *titleLabel = [[UILabel alloc] init];
     if (storiesCollection.isSocialRiverView &&
         [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     All Shared Stories"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     All Shared Stories"]];
     } else if (storiesCollection.isSocialRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-            titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
+            titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Global Shared Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Widely Read Stories"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Widely Read Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Long Reads"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Long Reads"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Good Reads"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Good Reads"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     NewsBlur Dashboard"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     NewsBlur Dashboard"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     All Site Stories"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     All Site Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Infrequent Site Stories"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Infrequent Site Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Daily Briefing"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Daily Briefing"]];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
         } else {
-            titleLabel.text = [NSString stringWithFormat:@"     Saved Stories - %@", storiesCollection.activeSavedStoryTag];
+            titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Saved Stories - %@"], storiesCollection.activeSavedStoryTag];
         }
     } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Widget Site Stories"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Widget Site Stories"]];
     } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Read Stories"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Read Stories"]];
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
+        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Saved Stories"]];
     } else if (storiesCollection.isSocialView) {
         NSString *feedTitle = [feed objectForKey:@"feed_title"];
         if (!feedTitle || [feedTitle isKindOfClass:[NSNull class]]) {

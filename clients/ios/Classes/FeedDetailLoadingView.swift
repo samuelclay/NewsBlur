@@ -23,11 +23,11 @@ struct FeedDetailLoadingView: View {
                 }
 
                 if feedDetailInteraction.isPremiumRestriction {
-                    Text("Reading by folder is only available to")
+                    Text(NBLocalization.text("Reading by folder is only available to"))
                         .font(.system(size: 14))
                         .foregroundColor(Color.themed([0x0c0c0c]))
                         .padding(.top)
-                    Text("premium subscribers")
+                    Text(NBLocalization.text("premium subscribers"))
                         .font(.system(size: 14))
                         .foregroundColor(Color.themed([0x2030C0]))
                 }

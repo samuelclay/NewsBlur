@@ -49,7 +49,7 @@ class AuxSceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let controller = OriginalStoryViewController()
         
-        windowScene.title = "Loading…"
+        windowScene.title = NBLocalization.text("Loading…")
         window?.rootViewController = controller
         
         appDelegate.activeOriginalStoryURL = url
