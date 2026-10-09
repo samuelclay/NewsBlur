@@ -3,6 +3,7 @@ package com.newsblur.preference
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
@@ -36,7 +37,6 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
-import android.content.res.Configuration
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StateFilter
@@ -68,6 +68,19 @@ class PrefsRepo(
 
     fun clearCustomServer() {
         prefs.edit { remove(PrefConstants.PREF_CUSTOM_SERVER) }
+    }
+
+// PrefsRepo.kt scopes setup completion to the account and server, while keeping last-used authentication after logout.
+    fun completeOnboarding() {
+        prefs.edit { putBoolean("onboarding_complete_${getCustomServer()}_${getUserName()}", true) }
+    }
+
+    fun hasCompletedOnboarding() = prefs.getBoolean("onboarding_complete_${getCustomServer()}_${getUserName()}", false)
+
+    fun lastAuthProvider(): String? = prefs.getString("last_auth_provider", null)
+
+    fun saveLastAuthProvider(provider: String) {
+        prefs.edit { putString("last_auth_provider", provider) }
     }
 
     fun saveLogin(
@@ -199,8 +212,15 @@ class PrefsRepo(
 
         NotificationUtils.clear(context)
 
-        // wipe the prefs store
-        prefs.edit { clear() }
+        // PrefsRepo.kt retains only onboarding history across logout, never account data or credentials.
+        val onboardingHistory = prefs.all.filterKeys { it == "last_auth_provider" || it.startsWith("onboarding_complete_") }
+        prefs.edit {
+            clear()
+            onboardingHistory.forEach { (key, value) ->
+                if (value is String) putString(key, value)
+                if (value is Boolean) putBoolean(key, value)
+            }
+        }
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
@@ -452,6 +472,8 @@ class PrefsRepo(
     fun isEnableRowGoodReads() = prefs.getBoolean(PrefConstants.ENABLE_ROW_GOOD_READS, true)
 
     fun showPublicComments() = prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
+
+    fun isReaderControlsAlwaysVisible() = prefs.getBoolean(PrefConstants.READER_CONTROLS_ALWAYS_VISIBLE, false)
 
     fun getReadingTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
 
@@ -712,6 +734,12 @@ class PrefsRepo(
 
     fun isAutoOpenFirstUnread() = prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
+    fun isReaderFullscreenEnabled() = prefs.getBoolean(PrefConstants.READER_FULLSCREEN, false)
+
+    fun setReaderFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.READER_FULLSCREEN, enabled) }
+    }
+
     fun isMarkReadOnFeedScroll() = getMarkStoryReadBehavior() == MarkStoryReadBehavior.ON_SCROLL
 
     fun setMarkReadOnScroll(value: Boolean) {
@@ -834,23 +862,36 @@ class PrefsRepo(
 
     fun isConfirmMarkRangeRead() = prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
 
-    fun gestureAction(key: String, fallback: GestureAction): GestureAction {
+    fun gestureAction(
+        key: String,
+        fallback: GestureAction,
+    ): GestureAction {
         val saved = prefs.getString(key, fallback.name)
         return GestureAction.entries.firstOrNull { it.name == saved } ?: fallback
     }
 
     fun getLeftToRightGestureAction() = gestureAction(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK)
+
     fun getRightToLeftGestureAction() = gestureAction(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ)
+
     fun isFeedSwipesEnabled() = prefs.getBoolean("enable_feed_swipes", true)
+
     fun isStorySwipesEnabled() = prefs.getBoolean("enable_story_swipes", true)
-    fun getFeedSwipeAction(right: Boolean) = gestureAction(
-        if (right) "feed_swipe_right" else "feed_swipe_left",
-        if (right) GestureAction.GEST_ACTION_NOTIFICATIONS else GestureAction.GEST_ACTION_MARKREAD,
-    )
+
+    fun getFeedSwipeAction(right: Boolean) =
+        gestureAction(
+            if (right) "feed_swipe_right" else "feed_swipe_left",
+            if (right) GestureAction.GEST_ACTION_NOTIFICATIONS else GestureAction.GEST_ACTION_MARKREAD,
+        )
+
     fun getFeedLongPressAction() = gestureAction("feed_long_press", GestureAction.GEST_ACTION_MENU)
+
     fun getStoryLongPressAction() = gestureAction("story_long_press", GestureAction.GEST_ACTION_MENU)
 
-    fun getReaderGesture(key: String, fallback: String): String = prefs.getString(key, fallback) ?: fallback
+    fun getReaderGesture(
+        key: String,
+        fallback: String,
+    ): String = prefs.getString(key, fallback) ?: fallback
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 

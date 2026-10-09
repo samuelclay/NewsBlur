@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load utils_tags social_auth_tags %}
+{% block bodyclass %}NB-static NB-static-oauth NB-static-login{% endblock %}
+{% block extra_head_js %}{% include_stylesheets "common" %}{% endblock %}
+{% block title %}Sign in to NewsBlur{% endblock %}
+{% block content %}
+{% autoescape on %}
+<div class="NB-static-card-wrapper">
+    <div class="NB-static-card">
+        <a href="{% url 'index' %}" class="NB-static-card-logo"><img src="{{ MEDIA_URL }}img/logo_512.png" alt="NewsBlur" /></a>
+        <h1 class="NB-static-card-title">{% if step == 'username' %}Choose your username{% elif step == 'link' or connecting %}Connect your account{% else %}Sign in to NewsBlur{% endif %}</h1>
+        <p class="NB-static-card-tagline" role="status">{{ message }}</p>
+        {% if step %}
+        <form method="post" action="{% url 'web-social-continue' %}">
+            {% csrf_token %}
+            {% if step == 'link' %}<input type="hidden" name="action" value="link" />{% endif %}
+            <div class="NB-static-card-field">
+                <label for="social-username">{% if step == 'link' %}Username or email{% else %}NewsBlur username{% endif %}</label>
+                <input id="social-username" name="username" type="text" value="{{ username }}" autocomplete="username" required {% if step != 'link' or not username %}autofocus{% endif %} />
+            </div>
+            {% if step == 'link' %}
+            <div class="NB-static-card-field">
+                <label for="social-password">NewsBlur password</label>
+                <input id="social-password" name="password" type="password" autocomplete="current-password" required {% if username %}autofocus{% endif %} />
+            </div>
+            {% endif %}
+            <button type="submit" class="NB-static-card-submit">{% if step == 'link' %}Connect {{ provider|title }}{% else %}Create account{% endif %}</button>
+            {% if step == 'username' %}
+            <div class="NB-social-existing-account">
+                <p>Already have a NewsBlur account?</p>
+                <button type="submit" name="action" value="link" formnovalidate class="NB-social-signin-button">Connect an existing account</button>
+            </div>
+            {% elif step == 'link' and can_choose_username %}
+            <button type="submit" name="action" value="choose_username" formnovalidate class="NB-static-card-altlink">Create a new account instead</button>
+            {% endif %}
+        </form>
+        {% if step == 'link' %}<a class="NB-static-card-altlink" href="{% url 'profile-forgot-password' %}">Forgot password?</a>{% endif %}
+        {% elif not connecting %}
+        {% social_signin_buttons %}
+        {% endif %}
+        {% if connecting %}
+        <a href="{% url 'index' %}?next=account" class="NB-static-card-altlink">Back to account</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="NB-static-card-altlink">Back to login</a>
+        {% endif %}
+    </div>
+</div>
+{% endautoescape %}
+{% endblock %}

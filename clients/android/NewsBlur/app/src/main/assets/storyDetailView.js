@@ -40,6 +40,8 @@ function NB_open_story_image(image, show_actions) {
         !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
     var src = image.currentSrc || image.src;
     if (!/^(https?:|data:image\/)/i.test(src)) return false;
+    var browser_src = /^https:\/\/appassets\.androidplatform\.net\/images\//i.test(src) ?
+        image.getAttribute('data-nb-original-src') : src;
     var token = image.getAttribute('data-nb-viewer-token');
     if (!token) {
         token = String(++NB_story_image_sequence);
@@ -48,6 +50,7 @@ function NB_open_story_image(image, show_actions) {
     var link = image.closest('a[href]');
     window.NewsBlurImages.postMessage(JSON.stringify({
         generation: load.content, token: token, src: src, title: image.alt || image.title || 'Story image',
+        browserSrc: browser_src,
         hoverText: image.title || '', showActions: show_actions === true,
         link: show_actions === true && link && /^https?:/i.test(link.href) ? link.href : null,
         naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,

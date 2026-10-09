@@ -27,7 +27,9 @@ import android.widget.TextView
 import androidx.core.view.doOnLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.BuildConfig
 import com.newsblur.R
@@ -76,7 +78,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.SupervisorJob
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -101,6 +102,9 @@ class StoryViewAdapter(
 
     private var oldScrollState: Parcelable? = null
     private var pendingScrollStoryHash: String? = null
+    private var smoothPendingStoryScroll = false
+    var isFollowingReadingStory = false
+        private set
     private var pendingHighlightStoryHash: String? = null
     private var returnPresentationReady = true
     private var returnHighlight: ReturnedStoryHighlight? = null
@@ -231,6 +235,8 @@ class StoryViewAdapter(
             invalidateStoryDiffs()
             oldScrollState = null
             pendingScrollStoryHash = null
+            smoothPendingStoryScroll = false
+            isFollowingReadingStory = false
             pendingHighlightStoryHash = null
             returnHighlight?.cancel()
             returnHighlight = null
@@ -253,6 +259,8 @@ class StoryViewAdapter(
         invalidateStoryDiffs()
         oldScrollState = null
         pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
+        isFollowingReadingStory = false
         pendingHighlightStoryHash = null
         returnHighlight?.cancel()
         returnHighlight = null
@@ -412,9 +420,13 @@ class StoryViewAdapter(
         val subscribedFeedIds = if (showClusterRows) subscribedFeedIds() else emptySet()
         val isArchiveUser = isArchiveUser()
         val clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo)
+        // StoryViewAdapter.kt must diff the same preview rows that RecyclerView can display.
+        // Capping only itemCount sends inserts for hidden stories and corrupts RecyclerView's positions.
+        val visibleStories =
+            if (fs?.let { UIUtils.needsSubscriptionAccess(it, prefsRepo) } == true) stories.take(3) else stories
 
         return buildList {
-            stories.forEachIndexed { storyIndex, story ->
+            visibleStories.forEachIndexed { storyIndex, story ->
                 add(DisplayItem.StoryRow(story, storyIndex))
 
                 if (!showClusterRows || story.isBriefingSummary) return@forEachIndexed
@@ -511,6 +523,7 @@ class StoryViewAdapter(
 
     fun setPendingScrollStoryHash(storyHash: String?) {
         pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = false
     }
 
     fun setPendingHighlightStoryHash(storyHash: String?) {
@@ -535,12 +548,29 @@ class StoryViewAdapter(
 
     @JvmOverloads
     fun requestStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean = true) {
+        queueStoryReturn(storyHash, rv, presentationReady, false)
+    }
+
+    fun followReadingStory(storyHash: String?, rv: RecyclerView) {
         if (storyHash.isNullOrBlank()) return
+        // StoryViewAdapter.kt cancels the previous swipe's target even when the new row is already visible.
+        rv.stopScroll()
+        queueStoryReturn(storyHash, rv, false, true)
+    }
+
+    fun onStoryListScrollStateChanged(newState: Int) {
+        if (newState != RecyclerView.SCROLL_STATE_SETTLING) isFollowingReadingStory = false
+    }
+
+    private fun queueStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean, smoothScroll: Boolean) {
+        if (storyHash.isNullOrBlank()) return
+        isFollowingReadingStory = false
         if (pendingHighlightStoryHash != storyHash && returnHighlight?.storyHash != storyHash) {
             returnHighlight?.cancel()
             returnHighlight = null
         }
         pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = smoothScroll
         pendingHighlightStoryHash = storyHash
         returnPresentationReady = presentationReady
         applyPendingStoryReturn(rv)
@@ -557,12 +587,34 @@ class StoryViewAdapter(
                 val llm = lm as? LinearLayoutManager
                 val first = llm?.findFirstVisibleItemPosition() ?: -1
                 val last = llm?.findLastVisibleItemPosition() ?: -1
-                if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)) {
-                    if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
+                val hasVisibleAnchor = first >= 0 && last >= first
+                val row = if (smoothPendingStoryScroll) lm.findViewByPosition(position) else null
+                val shouldScroll = if (smoothPendingStoryScroll && hasVisibleAnchor) {
+                    row == null || lm.getDecoratedTop(row) < rv.paddingTop ||
+                        lm.getDecoratedBottom(row) > rv.height - rv.paddingBottom
+                } else ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)
+                if (replacingEmptyList || shouldScroll) {
+                    // StoryViewAdapter.kt animates live reading only after a list has a visible anchor.
+                    if (smoothPendingStoryScroll && !replacingEmptyList && hasVisibleAnchor) {
+                        // StoryViewAdapter.kt keeps the fling-stop exemption until the animation ends, not just until it starts.
+                        isFollowingReadingStory = true
+                        // StoryViewAdapter.kt counts visual rows, including variable-span tiles, before keeping a preceding row.
+                        val grid = lm as? GridLayoutManager
+                        fun rowIndex(item: Int) = grid?.spanSizeLookup?.getSpanGroupIndex(item, grid.spanCount) ?: item
+                        var target = position
+                        if (rowIndex(last) - rowIndex(first) + 1 > 4) {
+                            val precedingRow = (rowIndex(position) - 1).coerceAtLeast(0)
+                            while (target > 0 && rowIndex(target - 1) >= precedingRow) target--
+                        }
+                        lm.startSmoothScroll(object : LinearSmoothScroller(rv.context) {
+                            override fun getVerticalSnapPreference() = SNAP_TO_START
+                        }.apply { targetPosition = target })
+                    } else if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
                     else lm.scrollToPosition(position)
                 }
                 // StoryViewAdapter.kt retains the identity until its page exists in a committed batch.
                 pendingScrollStoryHash = null
+                smoothPendingStoryScroll = false
             }
         }
         val hash = pendingHighlightStoryHash ?: return
@@ -600,6 +652,7 @@ class StoryViewAdapter(
         }
         // StoryViewAdapter.kt holds the tap through launch; only the existing reader-return path starts its fade.
         pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
         pendingHighlightStoryHash = null
         returnPresentationReady = false
         returnHighlight?.cancel()
@@ -665,6 +718,7 @@ class StoryViewAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
+        isFollowingReadingStory = false
         recyclerView.viewTreeObserver.takeIf { it.isAlive }?.let { observer ->
             returnPreDrawListener?.let(observer::removeOnPreDrawListener)
             returnFocusListener?.let(observer::removeOnWindowFocusChangeListener)
@@ -1629,32 +1683,7 @@ class StoryViewAdapter(
 
     private fun isArchiveUser(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
 
-    private fun visibleDisplayItemCount(): Int {
-        if (fs == null || !UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
-            return displayItems.size
-        }
-
-        val visibleStories = min(3.0, stories.size.toDouble()).toInt()
-        if (visibleStories <= 0) {
-            return 0
-        }
-
-        var seenStories = 0
-        displayItems.forEachIndexed { index, item ->
-            if (item is DisplayItem.StoryRow) {
-                seenStories++
-                if (seenStories == visibleStories) {
-                    var end = index + 1
-                    while (end < displayItems.size && displayItems[end] is DisplayItem.ClusterRow) {
-                        end++
-                    }
-                    return end
-                }
-            }
-        }
-
-        return displayItems.size
-    }
+    private fun visibleDisplayItemCount(): Int = displayItems.size
 
     private fun rebuildStoryDisplayPositions() {
         storyDisplayPositions.clear()

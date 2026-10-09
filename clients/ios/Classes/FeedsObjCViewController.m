@@ -112,6 +112,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 @interface FeedsObjCViewController () <PreferencesViewDelegate>
 
 @property (atomic) NSUInteger feedListAccountGeneration;
+@property (atomic) NSUInteger feedListRequestGeneration;
 @property (nonatomic) BOOL awaitingAuthenticatedFeedList;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
@@ -241,6 +242,8 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateOnboardingFeedLoading)
+                                               name:@"OnboardingFeedLoadingChanged" object:nil];
     
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
@@ -726,6 +729,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    [self.syncNotifier updateFrameInSuperview];
 
     BOOL usesVerticalToolbar = [self usesVerticalFeedToolbar];
     BOOL hasScrollingHeader = self.scrollingFeedHeaderView && self.feedTitlesTable.tableHeaderView == self.scrollingFeedHeaderView;
@@ -1172,6 +1176,8 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (void)resetForAccountChange {
     [appDelegate resetFeedSubscriptionForAccountChange];
     self.feedListAccountGeneration++;
+    self.feedListRequestGeneration++;
+    [[OnboardingFeedLoading shared] reset];
     self.awaitingAuthenticatedFeedList = YES;
     [(FeedsViewController *)self cancelPendingFeedListWorkForAccountChange];
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
@@ -1207,6 +1213,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 -(void)fetchFeedList:(BOOL)showLoader {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
+    NSUInteger requestGeneration = ++self.feedListRequestGeneration;
     NSString *urlFeedList;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
@@ -1224,11 +1231,12 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     
     [appDelegate GET:urlFeedList parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        if (accountGeneration != self.feedListAccountGeneration) return;
+        if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-        if (accountGeneration != self.feedListAccountGeneration) return;
+        if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
+        [[OnboardingFeedLoading shared] refreshDidFinish];
         [self finishedWithError:error statusCode:httpResponse.statusCode];
     }];
 
@@ -1279,6 +1287,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)finishLoadingFeedList:(NSDictionary *)results {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
+    NSUInteger requestGeneration = self.feedListRequestGeneration;
     NSString *responseUsername = [results[@"user"] isKindOfClass:[NSString class]] ? results[@"user"] : nil;
     BOOL restoresAuthenticatedLayout = self.awaitingAuthenticatedFeedList;
     self.awaitingAuthenticatedFeedList = NO;
@@ -1310,9 +1319,9 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        if (accountGeneration != self.feedListAccountGeneration) return;
+        if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            if (accountGeneration != self.feedListAccountGeneration) return;
+            if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
             [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", responseUsername];
             [db executeUpdate:@"INSERT INTO accounts"
              "(username, download_date, feeds_json) VALUES "
@@ -1340,8 +1349,9 @@ static BOOL NBBoolPreferenceValue(id value) {
             }
         }];
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (accountGeneration != self.feedListAccountGeneration) return;
+            if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
             [self finishLoadingFeedListWithDict:results finished:YES];
+            if (requestGeneration == self.feedListRequestGeneration) [[OnboardingFeedLoading shared] refreshDidFinish];
         });
     });
 
@@ -1616,7 +1626,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     if (!self.isOffline) {
         // start up the first time user experience
         if ([[results objectForKey:@"social_feeds"] count] == 0 &&
-            [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
+            [[[results objectForKey:@"feeds"] allKeys] count] == 0 &&
+            [OnboardingViewController shouldShowForUsername:appDelegate.activeUsername]) {
             [self layoutHeaderCounts:0];
             [self refreshHeaderCounts];
             [appDelegate showFirstTimeUser];
@@ -1712,6 +1723,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (void)loadOfflineFeeds:(BOOL)failed {
     if (self.awaitingAuthenticatedFeedList) return;
     NSUInteger accountGeneration = self.feedListAccountGeneration;
+    NSUInteger requestGeneration = self.feedListRequestGeneration;
     __block __typeof__(self) _self = self;
     self.isOffline = YES;
     NSLog(@"Loading offline feeds: %d", failed);
@@ -1723,7 +1735,7 @@ static BOOL NBBoolPreferenceValue(id value) {
                 return;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (accountGeneration != self.feedListAccountGeneration) return;
+                    if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
                     [self fetchFeedList:YES];
                 });
                 return;
@@ -1735,7 +1747,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     NSString *accountUsername = [appDelegate.activeUsername copy];
 
     [appDelegate.database inDatabase:^(FMDatabase *db) {
-        if (accountGeneration != self.feedListAccountGeneration) return;
+        if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         NSDictionary *results;
 
         
@@ -1754,7 +1766,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         [cursor close];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (accountGeneration != self.feedListAccountGeneration) return;
+            if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
             [_self finishLoadingFeedListWithDict:results finished:failed];
             [_self fetchFeedList:NO];
         });
@@ -1824,6 +1836,10 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     
     [viewController startNewSection];
+
+    [viewController addFeedListTitle:@"Import or upload sites" iconName:@"dialog-import" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showFirstTimeUser];
+    }];
 
     [viewController addFeedListTitle:@"Mute Sites" iconName:@"feed-menu-mute" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showMuteSites];
@@ -2345,9 +2361,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         }
     } else if ([key isEqualToString:@"delete_account"]) {
         [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
-            NSString *urlString = [NSString stringWithFormat:@"%@/profile/delete_account",
-                                   self.appDelegate.url];
-            [self.appDelegate showInAppBrowser:[NSURL URLWithString:urlString] withCustomTitle:@"Delete Account" fromSender:nil];
+            [AccountDeletionController presentFromController:self.appDelegate.splitViewController];
         }];
     } else if ([key isEqualToString:@"app_icon"]) {
         [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
@@ -4574,9 +4588,12 @@ heightForHeaderInSection:(NSInteger)section {
     if (!self.syncNotifier) {
         self.syncNotifier = [[SyncNotifierView alloc] initWithTitle:@""];
     }
+    self.syncNotifier.horizontalLayoutView = self.view;
+    self.syncNotifier.accountNameLabel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? userLabel : nil;
     // Re-add to userInfoView since userInfoView is recreated each time
     [self.syncNotifier removeFromSuperview];
     [self.userInfoView addSubview:self.syncNotifier];
+    if ([OnboardingFeedLoading shared].loading) [self updateOnboardingFeedLoading];
 
 //    self.userInfoView.backgroundColor = UIColor.blueColor;
 
@@ -4698,22 +4715,35 @@ heightForHeaderInSection:(NSInteger)section {
     [self refreshHeaderCounts];
 }
 
+- (void)updateOnboardingFeedLoading {
+    if ([OnboardingFeedLoading shared].loading) {
+        [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Loading your feeds…"];
+    } else {
+        [self.syncNotifier hideAfter:0.25];
+        [self finishRefresh];
+    }
+}
+
 - (void)showRefreshNotifier {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"On its way..."];
     [self finishRefresh];
 }
 
 - (void)showCountingNotifier {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Counting is difficult..."];
     [self finishRefresh];
 }
 
 - (void)showSyncingNotifier {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Syncing stories..."];
     [self finishRefresh];
 }
 
 - (void)showDoneNotifier {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     [self.syncNotifier showWithStyle:SyncNotifierStyleDone title:@"All done"];
     [self finishRefresh];
 
@@ -4722,6 +4752,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showSyncingNotifier:(float)progress hoursBack:(NSInteger)hours {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     NSString *title;
     if (hours < 2) {
         title = @"Storing past hour";
@@ -4736,6 +4767,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showCachingNotifier:(NSString *)prefix progress:(float)progress hoursBack:(NSInteger)hours {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     NSString *title;
     if (hours < 2) {
         title = [NSString stringWithFormat:@"%@ from last hour", prefix];
@@ -4750,10 +4782,12 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showOfflineNotifier {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     [self.syncNotifier showWithStyle:SyncNotifierStyleOffline title:@"Offline"];
 }
 
 - (void)hideNotifier {
+    if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     [self.syncNotifier hideAfter:0.25];
 }
 

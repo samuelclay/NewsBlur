@@ -130,3 +130,6 @@ webencodings==0.5.1
 XlsxWriter==1.3.7
 zope.event==4.5.0
 zope.interface==5.4.0
+
+# Native Apple and Google identity verification (apps/api/social_auth.py).
+PyJWT[crypto]==2.12.1

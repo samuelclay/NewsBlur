@@ -414,7 +414,13 @@ public class FeedSet implements Serializable {
     }
 
     public static FeedSet fromCompactSerial(String s) {
-        return DatabaseConstants.JsonHelper.fromJson(s, FeedSet.class);
+        FeedSet feedSet = DatabaseConstants.JsonHelper.fromJson(s, FeedSet.class);
+        // FeedSet.java travels in reader Intents. Gson's map needs a private serialization hook
+        // that R8 removes, so restore social feeds into a platform-serializable collection.
+        if (feedSet != null && feedSet.socialFeeds != null) {
+            feedSet.socialFeeds = new HashMap<>(feedSet.socialFeeds);
+        }
+        return feedSet;
     }
 
     @Override

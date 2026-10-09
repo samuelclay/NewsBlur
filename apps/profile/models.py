@@ -4435,7 +4435,8 @@ def create_profile(sender, instance, created, **kwargs):
             is_premium_trial=True,
             premium_expire=now + datetime.timedelta(days=30),
         )
-        EmailNewPremiumTrial.delay(user_id=instance.pk)
+        # models.py also creates profiles inside apps/api/social_auth.py's signup transaction.
+        transaction.on_commit(lambda: EmailNewPremiumTrial.delay(user_id=instance.pk))
         logging.user(
             instance,
             "~BY~SK~FW~SBNEW USER WITH PREMIUM TRIAL! Expires %s~SN" % profile.premium_expire,
@@ -4951,6 +4952,16 @@ def change_password(user, old_password, new_password, only_check=False):
         return 1
 
 
+class SocialIdentity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="social_identities")
+    provider = models.CharField(max_length=16)
+    subject = models.CharField(max_length=255)
+    email = models.EmailField()
+
+    class Meta:
+        unique_together = (("provider", "subject"),)
+
+
 def blank_authenticate(username, password=""):
     try:
         user = User.objects.get(username__iexact=username)
@@ -4959,6 +4970,10 @@ def blank_authenticate(username, password=""):
 
     if user.password == "!":
         return user
+
+    # apps/api/social_auth.py creates provider-only accounts with unusable passwords.
+    if not user.has_usable_password():
+        return None
 
     algorithm, salt, hash = user.password.split("$", 2)
     encoded_blank = hashlib.sha1((salt + password).encode(encoding="utf-8")).hexdigest()
