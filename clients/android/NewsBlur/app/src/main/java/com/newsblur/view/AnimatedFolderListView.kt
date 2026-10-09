@@ -207,7 +207,12 @@ class AnimatedFolderListView
 
         override fun dispatchDraw(canvas: Canvas) {
             val checkpoint = canvas.save()
-            canvas.clipRect(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom)
+            // AnimatedFolderListView.kt honors Main.java's floating-toolbar padding without cutting off rows behind it.
+            val left = if (clipToPadding) paddingLeft else 0
+            val top = if (clipToPadding) paddingTop else 0
+            val right = width - if (clipToPadding) paddingRight else 0
+            val bottom = height - if (clipToPadding) paddingBottom else 0
+            canvas.clipRect(left, top, right, bottom)
             if (animator != null) {
                 // row_folder.xml supplies every theme's surface; fading snapshots must not uncover
                 // the window behind AnimatedFolderListView.kt while following folders are moving.
@@ -215,7 +220,7 @@ class AnimatedFolderListView
                     transitionBackground ?: context.getDrawable(
                         UIUtils.getThemedResource(context, R.attr.selectorFolderBackground, android.R.attr.background),
                     )?.mutate()?.also { transitionBackground = it }
-                surface?.setBounds(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom)
+                surface?.setBounds(left, top, right, bottom)
                 surface?.draw(canvas)
             }
             for ((snapshot, motion) in leavingRows) {

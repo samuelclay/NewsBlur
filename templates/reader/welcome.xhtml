@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load recommendations_tags utils_tags statistics_tags %}
+{% load social_auth_tags %}
 
 {% block title %}NewsBlur — Personal News Reader with Intelligence Training{% endblock %}
 {% block head %}
@@ -93,6 +94,7 @@
                 </div>
 
                 <div class="NB-formcard-panel NB-formcard-login {% if not post_request or login_form.errors %}NB-active{% endif %}">
+                    {% social_signin_buttons %}
                     <form method="post" action="{% url "welcome-login" %}">
                         {% csrf_token %}
                         <div class="NB-formcard-field">
@@ -116,6 +118,7 @@
                 </div>
 
                 <div class="NB-formcard-panel NB-formcard-signup {% if post_request and signup_form.errors %}NB-active{% endif %}">
+                    {% social_signin_buttons %}
                     <form method="post" action="{% url "welcome-signup" %}">
                         {% csrf_token %}
                         <div class="NB-formcard-field">

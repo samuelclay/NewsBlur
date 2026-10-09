@@ -1,4 +1,6 @@
 <resources>
+    <string name="reader_enter_fullscreen">Read full screen</string>
+    <string name="reader_exit_fullscreen">Show story list</string>
     <string name="try_feed_instafetching">Insta-fetching stories…</string>
     <string name="try_feed_fetch_failed">Unable to fetch stories. Tap to try again.</string>
     <string name="try_feed_empty">No stories are available from this site yet. Tap to refresh.</string>
@@ -10,6 +12,8 @@
     <string name="image_viewer_save">Save Image</string>
     <string name="image_viewer_share">Share Image…</string>
     <string name="image_viewer_open_link">Open Link</string>
+    <string name="image_viewer_open_browser">Open Image in Browser</string>
+    <string name="image_viewer_open_failed">No browser is available to open this image.</string>
     <string name="image_viewer_copied">Image copied</string>
     <string name="image_viewer_saved">Saved to Pictures</string>
     <string name="image_viewer_save_failed">Could not save the image.</string>
@@ -705,6 +709,8 @@ people together to talk about the world.</string>
     <string name="settings_social">Sharing stories</string>
     <string name="settings_show_public_comments">Show public comments</string>
     <string name="settings_reading">Reading</string>
+    <string name="settings_always_show_reading_controls">Always show reading controls</string>
+    <string name="settings_always_show_reading_controls_sum">Keep Previous, Next, and other reading controls visible while scrolling.</string>
     <string name="settings_show_ask_ai">Show Ask AI</string>
     <string name="settings_content_preview">Content preview text…</string>
     <string name="settings_thumbnails_style">Image preview thumbnails…</string>

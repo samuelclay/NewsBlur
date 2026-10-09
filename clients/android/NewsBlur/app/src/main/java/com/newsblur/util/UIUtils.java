@@ -651,25 +651,27 @@ public class UIUtils {
         return result;
     }
 
-    public static void handleUri(Context context, PrefsRepo prefsRepo, Uri uri) {
+    public static boolean handleUri(Context context, PrefsRepo prefsRepo, Uri uri) {
         Intent briefingIntent = DailyBriefingDeepLink.createLaunchIntent(context, uri);
         if (briefingIntent != null) {
             context.startActivity(briefingIntent);
-            return;
+            return true;
         }
 
         DefaultBrowser defaultBrowser = prefsRepo.getDefaultBrowser();
         if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
-            openSystemDefaultBrowser(context, uri);
+            return openSystemDefaultBrowser(context, uri);
         } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
             openInAppBrowser(context, prefsRepo, uri);
+            return true;
         } else if (defaultBrowser == DefaultBrowser.CHROME) {
-            openExternalBrowserApp(context, uri, "com.android.chrome");
+            return openExternalBrowserApp(context, uri, "com.android.chrome");
         } else if (defaultBrowser == DefaultBrowser.FIREFOX) {
-            openExternalBrowserApp(context, uri, "org.mozilla.firefox");
+            return openExternalBrowserApp(context, uri, "org.mozilla.firefox");
         } else if (defaultBrowser == DefaultBrowser.OPERA_MINI) {
-            openExternalBrowserApp(context, uri, "com.opera.mini.native");
+            return openExternalBrowserApp(context, uri, "com.opera.mini.native");
         }
+        return false;
     }
 
     private static void openInAppBrowser(Context context, PrefsRepo prefsRepo, Uri uri) {
@@ -687,26 +689,29 @@ public class UIUtils {
         customTabsIntent.launchUrl(context, uri);
     }
 
-    public static void openSystemDefaultBrowser(Context context, Uri uri) {
+    public static boolean openSystemDefaultBrowser(Context context, Uri uri) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(uri);
             context.startActivity(intent);
+            return true;
         } catch (Exception e) {
             com.newsblur.util.Log.e(context.getClass().getName(), "device cannot open URLs");
+            return false;
         }
     }
 
-    public static void openExternalBrowserApp(Context context, Uri uri, String packageName) {
+    public static boolean openExternalBrowserApp(Context context, Uri uri, String packageName) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(uri);
             intent.setPackage(packageName);
             context.startActivity(intent);
+            return true;
         } catch (Exception e) {
             com.newsblur.util.Log.e(context.getClass().getName(), "apps not available to open URLs");
             // fallback to system default if apps cannot be opened
-            openSystemDefaultBrowser(context, uri);
+            return openSystemDefaultBrowser(context, uri);
         }
     }
 

@@ -33,6 +33,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import com.newsblur.R
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -58,6 +59,7 @@ class StoryImageViewer(
     private val origin: RectF,
     private val cache: FileCache,
     private val client: OkHttpClient,
+    private val prefsRepo: PrefsRepo,
     private val returnRect: ((RectF?) -> Unit) -> Unit,
     private val onClosed: () -> Unit,
     private val onOpenLink: (String) -> Unit = {},
@@ -154,6 +156,16 @@ class StoryImageViewer(
         addActionRow(R.string.image_viewer_copy, R.drawable.ic_image_action_copy) { copyImage() }
         addActionRow(R.string.image_viewer_save, R.drawable.ic_image_action_save) { saveImage() }
         addActionRow(R.string.image_viewer_share, R.drawable.ic_image_action_share) { shareImage() }
+        if (source.browserUrl != null) {
+            addActionRow(R.string.image_viewer_open_browser, R.drawable.ic_image_action_link) {
+                try {
+                    StoryImageActions.openInBrowser(hostActivity, source, prefsRepo)
+                    closeAnimated()
+                } catch (_: android.content.ActivityNotFoundException) {
+                    toast(R.string.image_viewer_open_failed)
+                }
+            }
+        }
         source.linkUrl?.let { link -> addActionRow(R.string.image_viewer_open_link, R.drawable.ic_image_action_link) { openLink(link) } }
         root.addView(hoverPanel, FrameLayout.LayoutParams(1, 1, Gravity.TOP or Gravity.START))
         root.addView(actionsPanel, FrameLayout.LayoutParams(1, -2, Gravity.TOP or Gravity.START))
@@ -457,11 +469,11 @@ class StoryImageViewer(
         actionRows.add(row)
     }
 
-    // Copy, Save, and Share wait for the photo's bytes; Open Link never does.
+    // StoryImageViewer.kt waits for bytes for Copy, Save, and Share; browser and link actions never do.
     private fun updateActionsEnabled() {
         val loaded = imageData != null
         actionRows.forEachIndexed { index, row ->
-            val enabled = loaded || index == LINK_ROW_INDEX
+            val enabled = loaded || index > SHARE_ROW_INDEX
             row.isEnabled = enabled
             row.alpha = if (enabled) 1f else 0.4f
         }
@@ -620,13 +632,12 @@ class StoryImageViewer(
         const val MENU_WIDTH_DP = 260
         const val RESIZE_MS = 220L
 
-        // The menu's rows, in order; Open Link only shows for a linked photo.
+        // StoryImageViewer.kt only shows temporary confirmation labels for the byte-dependent rows.
         const val COPY_ROW_INDEX = 0
         const val SAVE_ROW_INDEX = 1
         const val SHARE_ROW_INDEX = 2
-        const val LINK_ROW_INDEX = 3
         val ACTION_TITLES =
-            listOf(R.string.image_viewer_copy, R.string.image_viewer_save, R.string.image_viewer_share, R.string.image_viewer_open_link)
+            listOf(R.string.image_viewer_copy, R.string.image_viewer_save, R.string.image_viewer_share)
         const val CONFIRMATION_MS = 1_600L
 
         // UIColor(white: 0.14) and white at 12%, as the iOS viewer's panels and separators use.

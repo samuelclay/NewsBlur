@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load typogrify_tags utils_tags zebra_tags %}
+{% load social_auth_tags %}
 
 {% block bodyclass %}NB-static NB-static-oauth NB-static-login{% endblock %}
 {% block extra_head_js %}
@@ -28,6 +29,7 @@
         <h1 class="NB-static-card-title">Log In</h1>
         <p class="NB-static-card-tagline">A personal news reader bringing people together to talk about the world</p>
 
+        {% social_signin_buttons %}
         <form method="post" action="{% url "login" %}">
             {% if form.errors %}
                 <div class="NB-static-card-error">

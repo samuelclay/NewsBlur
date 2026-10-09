@@ -26227,10 +26227,120 @@ h5.NB-classifier-section-header {
     box-shadow: 2px 2px 0 #D0D0D0;
 }
 
+.NB-modal-account .NB-preference-username .NB-preference-label,
+.NB-modal-account .NB-preference-email .NB-preference-label {
+    padding-top: 4px;
+}
+
 .NB-modal-preferences .NB-link-account-preferences {
     float: right;
     line-height: 30px;
     text-decoration: none;
+}
+
+/* reader_account.js groups provider identities beneath the account email. */
+.NB-account-connected-accounts {
+    clear: both;
+    padding: 14px 4px 2px;
+}
+.NB-account-connected-heading {
+    color: #606060;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.NB-account-connected-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+}
+.NB-account-connected-actions .NB-social-signin-button {
+    min-height: 40px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    flex-wrap: nowrap;
+    gap: 8px;
+}
+.NB-account-connected-actions:not(:empty) {
+    margin-top: 14px;
+}
+.NB-account-disconnect-provider {
+    cursor: pointer;
+    color: #505050;
+    background: #fafafa;
+    border: 1px solid #d4d4d4;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 18px;
+    padding: 2px 7px;
+}
+.NB-account-disconnect-provider:hover {
+    background: #eee;
+    border-color: #aaa;
+}
+.NB-account-disconnect-provider:focus-visible {
+    outline: 2px solid #728f35;
+    outline-offset: 2px;
+}
+.NB-account-disconnect-provider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    flex: 0 0 24px;
+    margin-left: auto;
+    padding: 0;
+    font-size: 18px;
+    line-height: 22px;
+    background: transparent;
+    border-color: transparent;
+}
+.NB-account-disconnect-provider:disabled {
+    opacity: .4;
+    cursor: wait;
+}
+.NB-account-connected-message {
+    color: #606060;
+    font-size: 12px;
+    line-height: 18px;
+}
+.NB-account-connected-message:not(:empty) {
+    margin-top: 8px;
+}
+.NB-account-connected-message.NB-error {
+    color: #a03030;
+}
+.NB-account-connected-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.NB-account-connected-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 18px;
+}
+.NB-account-connected-icon {
+    align-self: center;
+    flex: 0 0 16px;
+}
+.NB-account-connected-provider {
+    flex: 0 0 48px;
+    font-weight: bold;
+}
+.NB-account-connected-email {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.NB-account-connected-empty {
+    color: #808080;
+    font-size: 12px;
 }
 
 .NB-modal-account .NB-block {
@@ -29784,6 +29894,16 @@ h5.NB-classifier-section-header {
     text-decoration: none;
     font-weight: normal;
     transition: color 0.2s ease;
+}
+
+/* reader.css gives the account-linking form button the same treatment as alternate links. */
+button.NB-static-card-altlink {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
 }
 
 .NB-static-card-altlink:hover {
@@ -42462,4 +42582,121 @@ span.NB-briefing-inline-favicon {
     font-size: 12px;
     line-height: 16px;
     color: #6E7068;
+}
+
+/* accounts/social_buttons.html keeps provider controls shared across all web entry points. */
+.NB-social-signin form {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+}
+.NB-social-signin-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 50px;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.65);
+    color: #2d261a;
+    font-family: 'Whitney SSm A', 'Whitney SSm B', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.NB-welcome-header-formcard .NB-social-signin-button {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(0, 0, 0, 0.08);
+    font-size: 16px;
+}
+.NB-social-signin-button:hover {
+    border-color: rgba(217, 166, 33, 0.4);
+    background: rgba(255, 255, 255, 0.85);
+}
+.NB-social-signin-button:active {
+    background: rgba(255, 255, 255, 0.6);
+}
+.NB-social-signin-button:focus-visible {
+    outline: 2px solid #D9A621;
+    outline-offset: 3px;
+}
+.NB-social-signin-button span {
+    white-space: nowrap;
+}
+.NB-social-signin-button img {
+    flex: 0 0 20px;
+}
+.NB-social-signin-button small {
+    font-size: 10px;
+    line-height: 14px;
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: rgba(138, 109, 27, 0.09);
+    color: #786224;
+    white-space: nowrap;
+}
+.NB-social-signin-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    color: #76766e;
+    font-size: 12px;
+}
+.NB-social-signin-divider::before,
+.NB-social-signin-divider::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid currentColor;
+    opacity: 0.25;
+}
+.NB-dark .NB-social-signin-divider {
+    color: #b0b0a8;
+}
+.NB-dark .NB-social-signin-button {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+.NB-dark .NB-social-signin-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(217, 166, 33, 0.5);
+}
+.NB-dark .NB-social-signin-button:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+.NB-dark .NB-social-signin-apple img {
+    filter: brightness(0) invert(1);
+}
+.NB-dark .NB-social-signin-button small {
+    background: rgba(251, 219, 155, 0.12);
+    color: #FBDB9B;
+}
+
+/* social_continue.html separates existing-account linking from new-account creation. */
+.NB-social-existing-account {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(138, 109, 27, 0.2);
+}
+.NB-social-existing-account p {
+    margin: 0 0 12px;
+    color: #786224;
+    font-size: 14px;
+}
+.NB-social-existing-account .NB-social-signin-button {
+    font-weight: 600;
+}
+.NB-dark .NB-social-existing-account {
+    border-color: rgba(251, 219, 155, 0.2);
+}
+.NB-dark .NB-social-existing-account p {
+    color: #FBDB9B;
 }

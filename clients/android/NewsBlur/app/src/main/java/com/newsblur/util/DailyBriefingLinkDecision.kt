@@ -32,7 +32,7 @@ object DailyBriefingLinkDecision {
                 val key = pair.substring(0, separatorIndex)
                 if (key != "story") return@mapNotNull null
 
-                URLDecoder.decode(pair.substring(separatorIndex + 1), StandardCharsets.UTF_8)
+                URLDecoder.decode(pair.substring(separatorIndex + 1), StandardCharsets.UTF_8.name())
                     .takeIf { it.isNotBlank() }
             }.firstOrNull()
     }
