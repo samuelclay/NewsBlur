@@ -10,4 +10,12 @@
 - Bundle, mapping, and release notes archived under `~/Library/Mobile Documents/com~apple~CloudDocs/NewsBlur/Android/Builds/NewsBlur-15.1*`.
 - Production rollout target: 100%, with managed publishing off.
 
-The signed bundle is prepared for submission. Store submission status will be recorded after Play confirms it.
+## Play submission
+
+Submitted on October 9, 2026. Play's Publishing overview confirms `Changes in review` for `15.1`, with `Start full rollout` and managed publishing off. Automated quick checks were still running when this state was recorded; the release is not yet confirmed approved or publicly available.
+
+- Production release: `95`.
+- Release source: `44971474c2deabf027ff191b94017edeb441d86a`.
+- Play accepted the uploaded bundle as `291 (15.1)` with its embedded ReTrace mapping file.
+- No blocking validation errors. Play reports the existing recommendation to upload native debug symbols.
+- Review URL: https://play.google.com/console/u/3/developers/6280481402178293168/app/4972990522498280751/tracks/4699046005160626232/releases/95/review
