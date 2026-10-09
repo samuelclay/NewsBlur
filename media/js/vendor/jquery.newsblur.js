@@ -258,6 +258,8 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/blaze.svg';
                 if (feed_id == 'trending:long_reads')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/moon.svg';
+                if (feed_id == 'trending:discovery')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/discover.svg';
                 if (feed_id == 'trending:good_reads')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/star.svg';
                 if (_.string.startsWith(feed_id, 'river:')) {

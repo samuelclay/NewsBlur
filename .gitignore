@@ -97,3 +97,6 @@ plans
 
 # PyPI build artifacts
 newsblur_mcp/dist/
+
+# Private Discovery experiment inputs, model responses, and scratch scripts.
+/.jev-discover/
