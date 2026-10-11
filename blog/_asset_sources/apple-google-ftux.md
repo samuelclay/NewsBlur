@@ -1,6 +1,6 @@
 # Apple/Google sign-in and mobile onboarding screenshots
 
-Captured October 9, 2026 for `2026-10-11-sign-in-with-apple-and-google.md` and `2026-10-12-new-first-time-experience-ios-android.md`.
+Captured October 9, 2026 for `2026-10-11-sign-in-with-apple-and-google.md` and `2026-10-11-new-first-time-experience-ios-android.md`.
 
 - `apple-google-web-signin.png`: Sam's supplied welcome-page screenshot, `Screenshot 2026-10-09 at 7.35.39 AM.png`.
 - `apple-google-connected-accounts.png`: Sam's supplied Account dialog screenshot, `Screenshot 2026-10-09 at 7.35.23 AM.png`.
