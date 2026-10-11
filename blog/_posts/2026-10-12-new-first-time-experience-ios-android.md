@@ -39,4 +39,4 @@ On both platforms, **Import OPML** brings your feeds and folders from another re
 
 You don't need a new account to use the bundles. Existing readers can open **Import or upload sites** from the iOS menu or **Import and feed bundles** from the Android menu. It's a way to explore a new interest whenever you want to add something to your reading.
 
-The new setup experience is coming in the next iOS and Android updates, alongside <a href="{% post_url 2026-10-09-sign-in-with-apple-and-google %}">Sign in with Apple and Google</a>. I'd love to hear how the first few minutes feel, whether you're starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.
+The new setup experience is coming in the next iOS and Android updates, alongside <a href="{% post_url 2026-10-11-sign-in-with-apple-and-google %}">Sign in with Apple and Google</a>. I'd love to hear how the first few minutes feel, whether you're starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.

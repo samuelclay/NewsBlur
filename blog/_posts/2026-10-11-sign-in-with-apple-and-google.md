@@ -39,6 +39,6 @@ Android gets both provider buttons as well, including Sign in with Apple. The ac
 
 {% include mobile-release-phone.html image="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" %}
 
-For new readers, both mobile apps also have a <a href="{% post_url 2026-10-09-new-first-time-experience-ios-android %}">new first-time experience</a> that helps you choose your first feeds and get reading.
+For new readers, both mobile apps also have a <a href="{% post_url 2026-10-12-new-first-time-experience-ios-android %}">new first-time experience</a> that helps you choose your first feeds and get reading.
 
 Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.
