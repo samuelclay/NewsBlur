@@ -11,6 +11,10 @@
 
   {%- seo -%}
   <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
+  {%- if page.mobile_release or content contains 'mobile-release-phone' %}
+  <link rel="stylesheet" href="{{ '/assets/mobile-release.css' | relative_url }}">
+  <script src="{{ '/assets/mobile-release.js' | relative_url }}" defer></script>
+  {% endif %}
   {% comment %}
     blog/_includes/head.html: the Hoefler cloud fonts only answer requests
     referred from blog.newsblur.com and otherwise hold the connection open,

@@ -202,8 +202,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var $largest;
             // console.log(["Images loaded", this.model.get('story_title').substr(0, 30), this.$("img")]);
             this.$("img").each(function () {
-                // story_detail_view.js: Skip briefing inline favicons from image sizing
+                // story_detail_view.js: Skip briefing inline favicons and story thumbnails from image sizing
                 if ($(this).hasClass('NB-briefing-inline-favicon')) return;
+                if ($(this).hasClass('NB-briefing-story-thumbnail-image')) return;
                 // console.log(["Largest?", this.width, this.naturalWidth, this.height, this.naturalHeight, largest, pane_width, this.src]);
                 if (this.width > 60 && this.width > largest) {
                     largest = this.width;
@@ -1215,9 +1216,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (e.which >= 2) return;
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
 
-        // story_detail_view.js: Handle briefing story links by selecting the story
-        if ($target.hasClass('NB-briefing-story-link')) {
-            var story_hash = $target.data('story-hash');
+        // story_detail_view.js: Handle briefing story links and thumbnails by selecting the story
+        if ($target.hasClass('NB-briefing-story-link') || $target.hasClass('NB-briefing-story-thumbnail')) {
+            var story_hash = $target.data('story-hash') || $target.data('thumbnail-story-hash');
             if (story_hash && NEWSBLUR.reader.flags.briefing_view) {
                 var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
                 if (story) {

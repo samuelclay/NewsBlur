@@ -1,0 +1,5 @@
+New tablet and foldable layout with your story list and reader side by side. Slide the feed list over the reader to switch sites without losing your place.
+
+Long press story images to see hover text, copy, save, or share the original image. Tap to zoom and swipe to dismiss.
+
+Includes faster scrolling, floating controls, Add + Discover Sites, and fixes for story navigation, read counts, and crashes.

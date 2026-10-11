@@ -286,6 +286,8 @@ abstract class Reading :
     private lateinit var binding: ActivityReadingBinding
     private lateinit var readingViewModel: ReadingViewModel
     private lateinit var traverseBar: ReadingTraverseBar
+    private var endControls: ReaderEndControls? = null
+    private var overlaysSuppressed = false
 
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
@@ -332,7 +334,6 @@ abstract class Reading :
             PendingTransitionUtils.overrideEnterTransition(this)
         }
         window.setBackgroundDrawableResource(android.R.color.transparent)
-        StorySplitView.trackSplit(this)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
@@ -396,6 +397,12 @@ abstract class Reading :
         toolbarVisibleFraction = if (savedInstanceBundle?.getBoolean(EXTRA_TOOLBAR_HIDDEN)
             ?: intent.getBooleanExtra(EXTRA_TOOLBAR_HIDDEN, false)) 0f else 1f
         setupViews()
+        StorySplitView.trackSplit(this) {
+            updateReaderFullscreenButton()
+            if (!parked && StorySplitView.isInSplit(this)) {
+                ItemsList.peekReadingLaunchParent(taskId)?.followReadingStory(currentReadingStory()?.storyHash)
+            }
+        }
         setupListeners()
         setupObservers()
         setupOnBackPressed()
@@ -445,6 +452,9 @@ abstract class Reading :
         latestReaderRef = WeakReference(this)
         // A parked reader leaves the reading session, which now belongs to another feed, alone.
         if (parked) return
+        // Reading.kt reapplies preferences after returning from Settings, preserving video suppression.
+        endControls?.update()
+        setOverlayAlpha(toolbarVisibleFraction)
         if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
         stopLoading = false
@@ -505,6 +515,8 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
+        endControls?.close()
+        endControls = null
         if (latestReaderRef.get() === this) latestReaderRef.clear()
         cancelStoryDwell(clearStory = true)
         preparedPageNavigation?.cancel()
@@ -556,7 +568,18 @@ abstract class Reading :
         }
 
         super.onConfigurationChanged(newConfig)
+        // StorySplitView.kt may keep the same expanded pair while the window gets narrower.
+        updateReaderFullscreenButton()
         restoreReadingAfterConfigurationChange()
+    }
+
+    private fun updateReaderFullscreenButton() {
+        val button = binding.includeToolbar.toolbarFullscreenButton
+        button.visibility = if (!parked && StorySplitView.canToggleReaderFullscreen(this)) View.VISIBLE else View.GONE
+        val fullscreen = StorySplitView.isReaderFullscreen(this)
+        button.setImageResource(if (fullscreen) R.drawable.ic_reader_fullscreen_exit else R.drawable.ic_reader_fullscreen)
+        button.contentDescription = getString(if (fullscreen) R.string.reader_exit_fullscreen else R.string.reader_enter_fullscreen)
+        button.tooltipText = button.contentDescription
     }
 
     private fun setupViews() {
@@ -582,9 +605,23 @@ abstract class Reading :
         if (toolbarVisibleFraction == 0f) appBar.setExpanded(false, false)
 
         findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener { openStorySettingsMenu(it) }
+        binding.includeToolbar.toolbarFullscreenButton.setOnClickListener {
+            if (StorySplitView.setReaderFullscreen(this, !prefsRepo.isReaderFullscreenEnabled())) {
+                updateReaderFullscreenButton()
+            }
+        }
+        updateReaderFullscreenButton()
 
         traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
         traverseBar.setup()
+        endControls = ReaderEndControls(
+            binding.contentBottomOverlay,
+            binding.contentBottomOverlayInner,
+            { if (parked) null else readingFragment?.traversalControlsSlot() },
+            { setOverlayAlpha(toolbarVisibleFraction) },
+            shouldDock = { !prefsRepo.isReaderControlsAlwaysVisible() },
+        )
+        endControls?.start()
 
         ViewUtils.setViewElevation(binding.readingOverlayLeftGroup, OVERLAY_ELEVATION_DP)
         ViewUtils.setViewElevation(binding.readingOverlayRightGroup, OVERLAY_ELEVATION_DP)
@@ -986,6 +1023,7 @@ abstract class Reading :
     fun park() {
         if (parked) return
         parked = true
+        updateReaderFullscreenButton()
         stopLoading = true
         cancelStoryDwell(clearStory = true)
         cancelUnreadSearch()
@@ -1351,7 +1389,7 @@ abstract class Reading :
             // In a tablet split (StorySplitView.kt) the story list stays visible, so move its
             // highlight to the story being read instead of waiting for the reader to close.
             if (StorySplitView.isInSplit(this)) {
-                ItemsList.peekReadingLaunchParent(taskId)?.prepareReturnToStory(story.storyHash)
+                ItemsList.peekReadingLaunchParent(taskId)?.followReadingStory(story.storyHash)
             }
             // Reading.kt schedules dwell synchronously with selection; old IO callbacks cannot replace its timer.
             if (!isRestoringSelection) triggerMarkStoryReadBehavior(story)
@@ -1385,8 +1423,13 @@ abstract class Reading :
             binding.readingOverlaySend.visibility = if (overflowExtras) View.GONE else View.VISIBLE
             binding.readingOverlayLeftSeparator.visibility = if (overflowExtras) View.GONE else View.VISIBLE
 
-            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, a, true)
+            val alpha = when {
+                overlaysSuppressed -> 0f
+                prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isDocked == true -> 1f
+                else -> a
+            }
+            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, alpha, true)
+            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, alpha, true)
         }
     }
 
@@ -1395,6 +1438,7 @@ abstract class Reading :
      */
     fun enableOverlays() {
         runOnUiThread {
+            overlaysSuppressed = false
             setOverlayAlpha(toolbarVisibleFraction)
         }
     }
@@ -1402,6 +1446,7 @@ abstract class Reading :
     fun isToolbarHidden(): Boolean = toolbarVisibleFraction == 0f
 
     fun disableOverlays() {
+        overlaysSuppressed = true
         setOverlayAlpha(0.0f)
     }
 
@@ -2014,8 +2059,11 @@ abstract class Reading :
 
     private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
 
-    // The swipe back reveals the story list underneath, but in a tablet split the list is its own pane.
-    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this)
+    // StorySplitView.kt keeps paired readers opaque even when expanded, so they cannot reveal
+    // the story list underneath with Reading.kt's phone swipe animation.
+    private fun isInteractiveReaderBackEnabled(): Boolean =
+        this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this) &&
+            !StorySplitView.isPairedReader(this)
 
     private fun supportsPredictiveReaderBack(): Boolean {
         val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())

@@ -159,6 +159,7 @@ data class SettingsUiState(
     val markStoryReadBehavior: String = MarkStoryReadBehavior.IMMEDIATELY.name,
     val defaultBrowser: String = DefaultBrowser.SYSTEM_DEFAULT.name,
     val readingFont: String = "DEFAULT",
+    val readerControlsAlwaysVisible: Boolean = false,
     val volumeKeyNavigation: String = VolumeKeyNavigation.OFF.name,
     val showPublicComments: Boolean = true,
     val ltrGestureAction: String = GestureAction.GEST_ACTION_BACK.name,
@@ -227,6 +228,7 @@ fun buildSettingsUiState(
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior().name,
         defaultBrowser = prefsRepo.getDefaultBrowser().name,
         readingFont = prefsRepo.getFontString(),
+        readerControlsAlwaysVisible = prefsRepo.isReaderControlsAlwaysVisible(),
         volumeKeyNavigation = prefsRepo.getVolumeKeyNavigation().name,
         showPublicComments = prefsRepo.showPublicComments(),
         ltrGestureAction = prefsRepo.getLeftToRightGestureAction().name,
@@ -824,6 +826,16 @@ fun SettingsScreen(
                 options = volumeKeyOptions,
                 palette = palette,
                 onSelected = { onStringChanged(PrefConstants.VOLUME_KEY_NAVIGATION, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_always_show_reading_controls),
+                subtitle = stringResource(R.string.settings_always_show_reading_controls_sum),
+                icon = Icons.Rounded.TouchApp,
+                iconColor = NewsblurBlue,
+                checked = state.readerControlsAlwaysVisible,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.READER_CONTROLS_ALWAYS_VISIBLE, it) },
             )
             RowDivider(palette)
             ToggleSettingsRow(

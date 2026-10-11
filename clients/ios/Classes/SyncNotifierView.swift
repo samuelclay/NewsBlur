@@ -45,6 +45,7 @@ class SyncNotifierView: UIView {
         label.layer.shadowOpacity = 0.8
         label.layer.shadowRadius = 1
         label.layer.masksToBounds = false
+        label.accessibilityIdentifier = "feed-list-sync-status"
         return label
     }()
     
@@ -101,12 +102,31 @@ class SyncNotifierView: UIView {
     private var pendingShow = false
     private var pendingShowDuration: TimeInterval = 0
     private var hideWorkItem: DispatchWorkItem?
+    private var visibilityGeneration = 0
     
     private var lastSuperviewBounds: CGRect = .zero
+    // FeedsObjCViewController.m supplies the column because its navigation title view can be narrower.
+    weak var horizontalLayoutView: UIView?
+    // FeedsObjCViewController.m uses the navigation title's actual available space on iPad.
+    weak var accountNameLabel: UILabel? {
+        didSet {
+            titleLabel.font = UIFont(name: "WhitneySSm-Book", size: accountNameLabel == nil ? 13 : 11)
+            activityIndicator.transform = accountNameLabel == nil ? .identity : CGAffineTransform(scaleX: 0.75, y: 0.75)
+            layer.cornerRadius = pillHeight / 2
+            updateFrameInSuperview()
+        }
+    }
+    var isPresentationSuppressed = false {
+        didSet {
+            isHidden = isPresentationSuppressed || !isShowing
+            updateFrameInSuperview()
+        }
+    }
     
     var title: String = "" {
         didSet {
             titleLabel.text = title
+            titleLabel.accessibilityLabel = title
         }
     }
     
@@ -118,7 +138,7 @@ class SyncNotifierView: UIView {
     
     // MARK: - Constants
     
-    private let pillHeight: CGFloat = 28
+    private var pillHeight: CGFloat { accountNameLabel == nil ? 28 : 22 }
     private let horizontalPadding: CGFloat = 10
     private let iconSize: CGFloat = 16
     private let animationDuration: TimeInterval = 0.3
@@ -275,7 +295,8 @@ class SyncNotifierView: UIView {
     }
 
     private func visibleContentFrame(in superview: UIView) -> CGRect {
-        let safeBounds = superview.bounds.inset(by: superview.safeAreaInsets)
+        let container = horizontalLayoutView ?? superview
+        let safeBounds = superview.convert(container.bounds.inset(by: container.safeAreaInsets), from: container)
 
         guard let window = window else {
             return safeBounds.insetBy(dx: screenEdgePadding, dy: 0)
@@ -288,7 +309,7 @@ class SyncNotifierView: UIView {
         let visibleFrame = safeBounds.intersection(windowSafeBoundsInSuperview)
 
         if visibleFrame.isNull || visibleFrame.width <= 0 {
-            return windowSafeBoundsInSuperview
+            return safeBounds.insetBy(dx: screenEdgePadding, dy: 0)
         }
 
         return visibleFrame
@@ -297,6 +318,27 @@ class SyncNotifierView: UIView {
     private func frameInSuperview(for size: CGSize) -> CGRect? {
         guard let superview = superview else { return nil }
 
+        if let accountNameLabel = accountNameLabel, accountNameLabel.superview === superview {
+            // SyncNotifierView.swift shares only the account-name row, leaving unread counts below untouched.
+            // UIKit has already excluded the sidebar button from this title view's bounds.
+            let availableWidth = max(0, superview.bounds.maxX - accountNameLabel.frame.minX - 4)
+            let nameWidth = accountNameLabel.intrinsicContentSize.width
+            let gap: CGFloat = 8
+            let showing = (isShowing || pendingShow) && !isPresentationSuppressed
+            let minimumStatusWidth = horizontalPadding * 2 + iconSize + 6
+            let statusWidth = min(size.width, 130, max(0, availableWidth - gap),
+                                  max(minimumStatusWidth, availableWidth - gap - min(nameWidth, 60)))
+            let fittedNameWidth = min(nameWidth, max(0, availableWidth - (showing ? statusWidth + gap : 0)))
+            accountNameLabel.frame.size.width = fittedNameWidth
+            titleLabel.isHidden = statusWidth < horizontalPadding * 2 + iconSize + 20
+            isAccessibilityElement = titleLabel.isHidden
+            accessibilityLabel = titleLabel.isHidden ? title : nil
+            return CGRect(x: accountNameLabel.frame.maxX + gap,
+                          y: accountNameLabel.frame.midY - size.height / 2,
+                          width: statusWidth, height: size.height)
+        }
+
+        titleLabel.isHidden = false
         let visibleFrame = visibleContentFrame(in: superview)
         let safeBounds = superview.bounds.inset(by: superview.safeAreaInsets)
         let width = min(size.width, visibleFrame.width)
@@ -309,7 +351,9 @@ class SyncNotifierView: UIView {
     private func setFrameInSuperview(for size: CGSize) {
         guard let newFrame = frameInSuperview(for: size) else { return }
 
-        frame = newFrame
+        // SyncNotifierView.swift must not assign frame while its slide transform is active.
+        bounds.size = newFrame.size
+        center = CGPoint(x: newFrame.midX, y: newFrame.midY)
     }
     
     private func updateFrameInSuperview(animated: Bool, duration: TimeInterval, targetSize: CGSize) {
@@ -325,7 +369,7 @@ class SyncNotifierView: UIView {
     
     override func sizeToFit() {
         let size = intrinsicContentSize
-        frame.size = size
+        bounds.size = size
     }
     
     @objc func updateFrameInSuperview() {
@@ -333,18 +377,16 @@ class SyncNotifierView: UIView {
     }
     
     private func updateFrameInSuperview(animated: Bool, duration: TimeInterval = 0.2) {
-        guard let superview = superview else { return }
+        guard superview != nil else { return }
         
         let newSize = intrinsicContentSize
-        guard let newFrame = frameInSuperview(for: newSize) else { return }
-        
         if animated {
             UIView.animate(withDuration: duration) {
-                self.frame = newFrame
+                self.setFrameInSuperview(for: newSize)
                 self.layoutIfNeeded()
             }
         } else {
-            frame = newFrame
+            setFrameInSuperview(for: newSize)
         }
         
         // Keep the offscreen transform correct if we're hidden/not showing (optional safety)
@@ -462,16 +504,17 @@ class SyncNotifierView: UIView {
         }
         
         isShowing = true
+        visibilityGeneration += 1
         pendingHide = false
         pendingShow = false
-        isHidden = false
+        isHidden = isPresentationSuppressed
         
         // Update frame and z-order before animating
         updateFrameInSuperview()
         superview?.bringSubviewToFront(self)
         
         // Start off-screen to the right
-        transform = CGAffineTransform(translationX: frame.width + 20, y: 0)
+        transform = accountNameLabel == nil ? CGAffineTransform(translationX: frame.width + 20, y: 0) : .identity
         alpha = 0
         
         UIView.animate(
@@ -507,6 +550,9 @@ class SyncNotifierView: UIView {
         }
         
         pendingHide = false
+        isShowing = false
+        visibilityGeneration += 1
+        let generation = visibilityGeneration
         
         UIView.animate(
             withDuration: duration,
@@ -514,10 +560,11 @@ class SyncNotifierView: UIView {
             options: [.curveEaseIn]
         ) {
             self.alpha = 0
-            self.transform = CGAffineTransform(translationX: self.frame.width + 20, y: 0)
+            self.transform = self.accountNameLabel == nil ? CGAffineTransform(translationX: self.frame.width + 20, y: 0) : .identity
+            self.updateFrameInSuperview()
         } completion: { _ in
+            guard self.visibilityGeneration == generation else { return }
             self.isHidden = true
-            self.isShowing = false
         }
     }
     

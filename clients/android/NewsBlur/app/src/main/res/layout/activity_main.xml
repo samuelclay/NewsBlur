@@ -235,6 +235,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <fragment
+            android:id="@+id/folderfeed_list"
             android:name="com.newsblur.fragment.FolderListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

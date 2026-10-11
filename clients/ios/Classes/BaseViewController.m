@@ -77,7 +77,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         return [self informError:@"The server barfed!"];
     } else {
         errorMessage = [error localizedDescription];
-        if ([error code] == 4 &&
+        if ([(NSError *)error code] == 4 &&
             [errorMessage rangeOfString:@"cancelled"].location != NSNotFound) {
             return;
         }

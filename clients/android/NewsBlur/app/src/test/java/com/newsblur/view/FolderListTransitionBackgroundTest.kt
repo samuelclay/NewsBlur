@@ -12,16 +12,67 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import io.mockk.verifyOrder
-import java.lang.reflect.InvocationTargetException
-import java.nio.file.Files
-import java.nio.file.Paths
-import javax.xml.parsers.DocumentBuilderFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.w3c.dom.Element
+import java.lang.reflect.InvocationTargetException
+import java.nio.file.Files
+import java.nio.file.Paths
+import javax.xml.parsers.DocumentBuilderFactory
 
 class FolderListTransitionBackgroundTest {
+    @Test
+    fun floatingToolbarPaddingDoesNotClipRowsOrTheirTransitionSurface() {
+        val fixture = fixture(animating = true, clipToPadding = false)
+        try {
+            fixture.draw()
+            verifyOrder {
+                fixture.canvas.clipRect(0, 0, 600, 800)
+                fixture.background.setBounds(0, 0, 600, 800)
+                fixture.background.draw(fixture.canvas)
+            }
+        } finally {
+            unmockkStatic(UIUtils::class)
+        }
+    }
+
+    @Test
+    fun emptyPaddingUsesTheExistingTopLevelSurfaceInEveryTheme() {
+        val layout = document("layout/fragment_folderfeedlist.xml")
+        val attribute = layout.getAttribute("style").removePrefix("?")
+        assertTrue("The feed list must paint its empty padding using a theme surface", attribute.isNotEmpty())
+        val themes = document("values/theme.xml")
+        val styles = document("values/styles.xml")
+        val palette =
+            listOf(
+                "NewsBlurTheme" to "feed_list_top_background",
+                "NewsBlurSepiaTheme" to "feed_list_top_background_sepia",
+                "NewsBlurDarkTheme" to "feed_list_top_background_dark",
+                "NewsBlurBlackTheme" to "feed_list_top_background_black",
+            )
+        for ((theme, expectedColor) in palette) {
+            val themeStyle = elements(themes, "style").single { it.getAttribute("name") == theme }
+            val styleName =
+                elements(themeStyle, "item")
+                    .single { it.getAttribute("name") == attribute }
+                    .textContent
+                    .removePrefix("@style/")
+            val surfaceStyle = elements(styles, "style").single { it.getAttribute("name") == styleName }
+            val drawable =
+                elements(surfaceStyle, "item")
+                    .single { it.getAttribute("name") == "android:background" }
+                    .textContent
+                    .removePrefix("@drawable/")
+            val surface = document("drawable-nodpi/$drawable.xml")
+            assertEquals(
+                "$theme empty padding must match the top-level rows",
+                "@color/$expectedColor",
+                elements(surface, "solid").single().getAttribute("android:color"),
+            )
+        }
+    }
+
     @Test
     fun fadingRowsAreDrawnOverTheFolderSurfaceInsideTheViewportClip() {
         val fixture = fixture(animating = true)
@@ -54,19 +105,26 @@ class FolderListTransitionBackgroundTest {
         val themes = document("values/theme.xml")
         val styles = document("values/styles.xml")
         val colors = document("values/colors.xml")
-        val palette = listOf(
-            "NewsBlurTheme" to "feed_list_row_background",
-            "NewsBlurSepiaTheme" to "folder_background_sepia",
-            "NewsBlurDarkTheme" to "dark_folder_background",
-            "NewsBlurBlackTheme" to "black_folder_background",
-        )
+        val palette =
+            listOf(
+                "NewsBlurTheme" to "feed_list_row_background",
+                "NewsBlurSepiaTheme" to "folder_background_sepia",
+                "NewsBlurDarkTheme" to "dark_folder_background",
+                "NewsBlurBlackTheme" to "black_folder_background",
+            )
         for ((theme, expectedColor) in palette) {
             val themeStyle = elements(themes, "style").single { it.getAttribute("name") == theme }
-            val styleName = elements(themeStyle, "item").single { it.getAttribute("name") == "selectorFolderBackground" }
-                .textContent.removePrefix("@style/")
+            val styleName =
+                elements(themeStyle, "item")
+                    .single { it.getAttribute("name") == "selectorFolderBackground" }
+                    .textContent
+                    .removePrefix("@style/")
             val rowStyle = elements(styles, "style").single { it.getAttribute("name") == styleName }
-            val selectorName = elements(rowStyle, "item").single { it.getAttribute("name") == "android:background" }
-                .textContent.removePrefix("@drawable/")
+            val selectorName =
+                elements(rowStyle, "item")
+                    .single { it.getAttribute("name") == "android:background" }
+                    .textContent
+                    .removePrefix("@drawable/")
             val selector = document("drawable-nodpi/$selectorName.xml")
             val defaultItem = elements(selector, "item").single { it.attributes.length == 1 }
             val surfaceName = defaultItem.getAttribute("android:drawable").removePrefix("@drawable/")
@@ -84,7 +142,10 @@ class FolderListTransitionBackgroundTest {
         }
     }
 
-    private fun fixture(animating: Boolean): Fixture {
+    private fun fixture(
+        animating: Boolean,
+        clipToPadding: Boolean = true,
+    ): Fixture {
         val view = mockk<AnimatedFolderListView>(relaxed = true)
         val canvas = mockk<Canvas>(relaxed = true)
         val context = mockk<Context>(relaxed = true)
@@ -94,6 +155,7 @@ class FolderListTransitionBackgroundTest {
         every { context.getDrawable(123) } returns background
         every { background.mutate() } returns background
         every { view.context } returns context
+        every { view.clipToPadding } returns clipToPadding
         every { view.paddingLeft } returns 4
         every { view.paddingRight } returns 4
         every { view.paddingTop } returns 8
@@ -101,8 +163,13 @@ class FolderListTransitionBackgroundTest {
         every { view.width } returns 600
         every { view.height } returns 800
         every { view["dispatchDraw"](canvas) } answers { callOriginal() }
-        AnimatedFolderListView::class.java.getDeclaredField("leavingRows").apply { isAccessible = true }.set(view, emptyList<Any>())
-        AnimatedFolderListView::class.java.getDeclaredField("animator").apply { isAccessible = true }
+        AnimatedFolderListView::class.java
+            .getDeclaredField("leavingRows")
+            .apply { isAccessible = true }
+            .set(view, emptyList<Any>())
+        AnimatedFolderListView::class.java
+            .getDeclaredField("animator")
+            .apply { isAccessible = true }
             .set(view, if (animating) mockk<ValueAnimator>() else null)
         return Fixture(view, canvas, background)
     }
@@ -114,8 +181,10 @@ class FolderListTransitionBackgroundTest {
     ) {
         fun draw() {
             try {
-                AnimatedFolderListView::class.java.getDeclaredMethod("dispatchDraw", Canvas::class.java)
-                    .apply { isAccessible = true }.invoke(view, canvas)
+                AnimatedFolderListView::class.java
+                    .getDeclaredMethod("dispatchDraw", Canvas::class.java)
+                    .apply { isAccessible = true }
+                    .invoke(view, canvas)
             } catch (exception: InvocationTargetException) {
                 // AnimatedFolderListView.kt's real overlay drawing runs before Android's JVM stub.
                 // Only stop at that platform boundary; application errors must still fail this test.
@@ -128,10 +197,17 @@ class FolderListTransitionBackgroundTest {
 
     private fun document(path: String) =
         Files.newInputStream(Paths.get("src/main/res/$path")).use {
-            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(it).documentElement
+            DocumentBuilderFactory
+                .newInstance()
+                .newDocumentBuilder()
+                .parse(it)
+                .documentElement
         }
 
-    private fun elements(parent: Element, tag: String): List<Element> {
+    private fun elements(
+        parent: Element,
+        tag: String,
+    ): List<Element> {
         val nodes = parent.getElementsByTagName(tag)
         return (0 until nodes.length).map { nodes.item(it) as Element }
     }

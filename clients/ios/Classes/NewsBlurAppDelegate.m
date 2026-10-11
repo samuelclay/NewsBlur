@@ -1450,7 +1450,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.activitiesViewController = [ActivitiesViewController new];
     self.friendsListViewController = [FriendsListViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
-    self.loginViewController = [LoginViewController new];
+    self.loginViewController = [OnboardingAccountViewController new];
     self.addSiteViewController = [AddSiteViewController new];
     self.moveSiteViewController = [MoveSiteViewController new];
     self.trainerViewController = [TrainerViewController new];
@@ -1538,24 +1538,21 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showFirstTimeUser {
+    if (self.ftuxNavigationController.presentingViewController) return;
     //    [self.feedsViewController changeToAllMode];
     
-    UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
+    UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:[OnboardingViewController new]];
     
     self.ftuxNavigationController = ftux;
     self.ftuxNavigationController.navigationBar.translucent = NO;
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+    // NewsBlurAppDelegate.m keeps import and discovery dismissible over the current reader.
+    self.ftuxNavigationController.modalPresentationStyle = self.isPhone ? UIModalPresentationPageSheet : UIModalPresentationFormSheet;
+    self.ftuxNavigationController.preferredContentSize = CGSizeMake(760, 900);
+    self.ftuxNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
     [self.splitViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
     
-    self.ftuxNavigationController.view.superview.frame = CGRectMake(0, 0, 540, 540);//it's important to do this after
-    UIInterfaceOrientation orientation = self.window.windowScene.interfaceOrientation;
-    if (UIInterfaceOrientationIsPortrait(orientation)) {
-        self.ftuxNavigationController.view.superview.center = self.view.center;
-    } else {
-        self.ftuxNavigationController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
-    }
 }
 
 - (void)showMoveSite {

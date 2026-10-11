@@ -625,3 +625,134 @@ class Test_NewAIToolFalsePositive(TestCase):
                     members,
                     "Font-rendering should not be in the same cluster as UK copyright",
                 )
+
+
+class Test_SameFeedClusterFolding(TestCase):
+    """A feed's own distinct stories must not be folded into each other.
+
+    Reproduces the NewsBlur 15 blog posts: the iOS and Android posts were
+    republished by two NewsBlur Forum feeds, and the semantic tier chained the
+    iOS and Android title clusters into one "Title + related" cluster. In the
+    blog's own feed view, apply_clustering_to_stories then removed the Android
+    post from the list and showed it underneath the iOS post as a Related
+    sibling, so the feed looked like it had deduplicated its own story.
+    """
+
+    IOS_TITLE = "NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites"
+    ANDROID_TITLE = "NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites"
+
+    def setUp(self):
+        import redis
+        from django.conf import settings
+        from django.contrib.auth.models import User
+
+        from apps.reader.models import UserSubscription
+        from apps.rss_feeds.models import Feed
+
+        self.redis = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        self.user = User.objects.create_user(
+            username="clusterfold", password="testpass", email="fold@test.com"
+        )
+        self.blog = Feed.objects.create(
+            feed_address="http://blog.fold.example.com/feed.xml",
+            feed_link="http://blog.fold.example.com",
+            feed_title="The NewsBlur Blog",
+        )
+        self.forum_posts = Feed.objects.create(
+            feed_address="http://forum.fold.example.com/posts.rss",
+            feed_link="http://forum.fold.example.com",
+            feed_title="The NewsBlur Forum - Latest posts",
+        )
+        self.forum_topics = Feed.objects.create(
+            feed_address="http://forum.fold.example.com/latest.rss",
+            feed_link="http://forum.fold.example.com",
+            feed_title="The NewsBlur Forum - Latest topics",
+        )
+        for feed in (self.blog, self.forum_posts, self.forum_topics):
+            UserSubscription.objects.create(user=self.user, feed=feed, is_trained=False)
+        self.cluster_keys = []
+
+    def tearDown(self):
+        if self.cluster_keys:
+            self.redis.delete(*self.cluster_keys)
+
+    def story(self, feed, guid, title, score=0):
+        return {
+            "story_hash": "%s:%s" % (feed.pk, guid),
+            "story_feed_id": feed.pk,
+            "story_title": title,
+            "story_date": "2026-10-03 04:00",
+            "story_timestamp": "1790740800",
+            "story_authors": "",
+            "score": score,
+            "read_status": 0,
+        }
+
+    def store_cluster(self, cluster_id, members):
+        """Write one merged-namespace cluster the way store_clusters_to_redis does."""
+        skey_prefix, zkey_prefix = cluster_mode_prefixes(CLUSTER_TIER_RELATED)
+        zkey = "%s:%s" % (zkey_prefix, cluster_id)
+        self.redis.delete(zkey)
+        for story_hash in members:
+            skey = "%s:%s" % (skey_prefix, story_hash)
+            self.redis.set(skey, cluster_id, ex=600)
+            self.redis.zadd(zkey, {story_hash: 1})
+            self.cluster_keys.append(skey)
+        self.redis.expire(zkey, 600)
+        self.cluster_keys.append(zkey)
+
+    def test_feed_keeps_distinct_stories_chained_through_other_feeds(self):
+        from apps.clustering.models import apply_clustering_to_stories
+
+        ios_blog = self.story(self.blog, "f01d10", self.IOS_TITLE)
+        android_blog = self.story(self.blog, "f01d20", self.ANDROID_TITLE)
+        members = [
+            "%s:f01d21" % self.forum_posts.pk,
+            "%s:f01d11" % self.forum_posts.pk,
+            "%s:f01d12" % self.forum_topics.pk,
+            "%s:f01d22" % self.forum_topics.pk,
+            android_blog["story_hash"],
+            ios_blog["story_hash"],
+        ]
+        self.store_cluster(members[0], members)
+
+        result = apply_clustering_to_stories([ios_blog, android_blog], self.user)
+
+        rows = [s["story_hash"] for s in result]
+        self.assertIn(ios_blog["story_hash"], rows)
+        self.assertIn(
+            android_blog["story_hash"],
+            rows,
+            "The Android post is a different story from the same feed and must keep its own row",
+        )
+        under_ios = [s["story_hash"] for s in result[0].get("cluster_stories", [])]
+        self.assertNotIn(android_blog["story_hash"], under_ios)
+
+    def test_feed_still_folds_its_own_duplicate_headline(self):
+        from apps.clustering.models import apply_clustering_to_stories
+
+        original = self.story(self.blog, "d0b100", self.IOS_TITLE, score=1)
+        repost = self.story(self.blog, "d0b200", self.IOS_TITLE)
+        forum_copy = "%s:d0b300" % self.forum_posts.pk
+        self.store_cluster(forum_copy, [forum_copy, original["story_hash"], repost["story_hash"]])
+
+        result = apply_clustering_to_stories([original, repost], self.user)
+
+        rows = [s["story_hash"] for s in result]
+        self.assertEqual(rows, [original["story_hash"]])
+        under_original = [s["story_hash"] for s in result[0].get("cluster_stories", [])]
+        self.assertIn(repost["story_hash"], under_original)
+
+    def test_river_still_folds_related_story_from_another_feed(self):
+        from apps.clustering.models import apply_clustering_to_stories
+
+        ios_blog = self.story(self.blog, "a11e10", self.IOS_TITLE, score=1)
+        android_forum = self.story(self.forum_posts, "a11e20", self.ANDROID_TITLE)
+        self.store_cluster(ios_blog["story_hash"], [ios_blog["story_hash"], android_forum["story_hash"]])
+
+        result = apply_clustering_to_stories([ios_blog, android_forum], self.user)
+
+        rows = [s["story_hash"] for s in result]
+        self.assertEqual(rows, [ios_blog["story_hash"]])
+        under_ios = {s["story_hash"]: s["cluster_tier"] for s in result[0].get("cluster_stories", [])}
+        self.assertEqual(under_ios.get(android_forum["story_hash"]), CLUSTER_TIER_RELATED)
