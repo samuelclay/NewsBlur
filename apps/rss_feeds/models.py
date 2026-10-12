@@ -2390,9 +2390,16 @@ class Feed(models.Model):
     def story_cutoff(self):
         return self.number_of_stories_to_store()
 
-    def number_of_stories_to_store(self, pre_archive=False, new_story_count=0):
+    def number_of_stories_to_store(self, pre_archive=False, published_count=0):
+        cutoff, _ = self.story_retention(pre_archive=pre_archive, published_count=published_count)
+        return cutoff
+
+    def story_retention(self, pre_archive=False, published_count=0):
+        """How many stories this feed keeps, and whether the no-reads cap set that number.
+        published_count is the number of stories in the feed's current response.
+        apps/rss_feeds/models.py"""
         if self.archive_subscribers and self.archive_subscribers > 0 and not pre_archive:
-            return 10000
+            return 10000, False
 
         cutoff = 500
         if self.active_subscribers <= 0:
@@ -2432,12 +2439,14 @@ class Feed(models.Model):
             pipeline.get(feed_read_key)
         read_stories_per_week = pipeline.execute()
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
+        unread_capped = False
         if not pre_archive and read_stories_last_month == 0:
+            unread_capped = True
             original_cutoff = cutoff
-            # apps/rss_feeds/models.py still keeps every story the latest fetch added, so a feed that
-            # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives.
-            # Feeds that add a few stories at a time stay at 10.
-            cutoff = min(cutoff, max(10, new_story_count))
+            # apps/rss_feeds/models.py still keeps every story in the feed's current response, so a feed that
+            # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives, and
+            # stories it trimmed aren't re-added as new on every fetch.
+            cutoff = min(cutoff, max(10, published_count))
             try:
                 logging.debug(
                     "   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)"
@@ -2459,15 +2468,20 @@ class Feed(models.Model):
         if getattr(settings, "OVERRIDE_STORY_COUNT_MAX", None):
             cutoff = settings.OVERRIDE_STORY_COUNT_MAX
 
-        return int(cutoff)
+        return int(cutoff), unread_capped
 
-    def trim_feed(self, verbose=False, cutoff=None, new_story_hashes=None):
-        new_story_hashes = new_story_hashes or []
+    def trim_feed(self, verbose=False, cutoff=None, fetched_story_hashes=None):
+        fetched_story_hashes = fetched_story_hashes or []
+        keep_story_hashes = None
         if not cutoff:
-            cutoff = self.number_of_stories_to_store(new_story_count=len(new_story_hashes))
+            cutoff, unread_capped = self.story_retention(published_count=len(fetched_story_hashes))
+            if unread_capped:
+                # apps/rss_feeds/models.py ranks the current response first only under the no-reads cap;
+                # read and archive feeds keep trimming purely by date.
+                keep_story_hashes = fetched_story_hashes
 
         stories_removed = MStory.trim_feed(
-            feed=self, cutoff=cutoff, verbose=verbose, keep_story_hashes=new_story_hashes
+            feed=self, cutoff=cutoff, verbose=verbose, keep_story_hashes=keep_story_hashes
         )
 
         if not self.fs_size_bytes:
@@ -4257,7 +4271,7 @@ class MStory(mongo.Document):
         if not feed:
             feed = feed_id
 
-        stories = cls.objects(story_feed_id=feed_id).only("story_date", "story_hash").order_by("-story_date")
+        stories = cls.objects(story_feed_id=feed_id).only("story_date").order_by("-story_date")
 
         if stories.count() > cutoff:
             logging.debug(
@@ -4265,11 +4279,19 @@ class MStory(mongo.Document):
                 % (str(feed)[:30], stories.count(), cutoff)
             )
             if keep_story_hashes:
-                # apps/rss_feeds/models.py ranks the stories the fetch just added ahead of older stored ones,
-                # so an issue whose articles are dated before the previous issue survives the cutoff (forum #13884).
-                keep_story_hashes = set(keep_story_hashes)
-                ranked = sorted(stories, key=lambda story: story.story_hash not in keep_story_hashes)
-                extra_stories = cls.objects(id__in=[story.id for story in ranked[cutoff:]])
+                # apps/rss_feeds/models.py ranks the stories in the feed's current response ahead of older stored
+                # ones, so an issue whose articles are dated before the previous issue survives the cutoff
+                # (forum #13884). Both date-ordered lookups load only the stories past the cutoff.
+                keep_story_hashes = list(set(keep_story_hashes))
+                current = cls.objects(story_feed_id=feed_id, story_hash__in=keep_story_hashes).order_by(
+                    "-story_date"
+                )
+                older = cls.objects(story_feed_id=feed_id, story_hash__nin=keep_story_hashes).order_by(
+                    "-story_date"
+                )
+                current_count = current.count()
+                extra_stories = list(current.skip(cutoff)) + list(older.skip(max(0, cutoff - current_count)))
+                extra_stories_count = len(extra_stories)
             else:
                 try:
                     story_trim_date = stories[cutoff].story_date
@@ -4281,7 +4303,7 @@ class MStory(mongo.Document):
                     return extra_stories_count
 
                 extra_stories = cls.objects(story_feed_id=feed_id, story_date__lte=story_trim_date)
-            extra_stories_count = extra_stories.count()
+                extra_stories_count = extra_stories.count()
             shared_story_count = 0
             for story in extra_stories:
                 if story.share_count:
