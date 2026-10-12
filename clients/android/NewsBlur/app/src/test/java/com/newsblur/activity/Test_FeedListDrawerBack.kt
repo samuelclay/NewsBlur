@@ -27,6 +27,6 @@ class Test_FeedListDrawerBack {
         }
         callback.captured.handleOnBackPressed()
         verify(exactly = 1) { drawer.moveTaskToBack(true) }
-        verify(exactly = 0) { drawer.close() }
+        verify(exactly = 0) { drawer.finish() }
     }
 }

@@ -76,6 +76,8 @@ public class PrefConstants {
     public static final String READER_FULLSCREEN = "reader_fullscreen";
     public static final String STORY_LIST_FULLSCREEN = "story_list_fullscreen";
     public static final String FEED_LIST_FULLSCREEN = "feed_list_fullscreen";
+    public static final String STORY_LIST_SPLIT_RATIO = "story_list_split_ratio";
+    public static final String FEED_LIST_WIDTH_RATIO = "feed_list_width_ratio";
     public static final String STORY_MARK_READ_BEHAVIOR = "pref_story_mark_read_behavior";
     public static final String STORY_CLUSTERING = "story_clustering";
     public static final String CLUSTER_MODE = "cluster_mode";

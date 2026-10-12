@@ -728,31 +728,26 @@ class ReadingItemFragment :
 
             R.id.menu_theme_auto -> {
                 prefsRepo.setSelectedTheme(ThemeValue.AUTO)
-                UIUtils.restartActivity(requireActivity())
                 true
             }
 
             R.id.menu_theme_light -> {
                 prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
-                UIUtils.restartActivity(requireActivity())
                 true
             }
 
             R.id.menu_theme_sepia -> {
                 prefsRepo.setSelectedTheme(ThemeValue.SEPIA)
-                UIUtils.restartActivity(requireActivity())
                 true
             }
 
             R.id.menu_theme_dark -> {
                 prefsRepo.setSelectedTheme(ThemeValue.DARK)
-                UIUtils.restartActivity(requireActivity())
                 true
             }
 
             R.id.menu_theme_black -> {
                 prefsRepo.setSelectedTheme(ThemeValue.BLACK)
-                UIUtils.restartActivity(requireActivity())
                 true
             }
 

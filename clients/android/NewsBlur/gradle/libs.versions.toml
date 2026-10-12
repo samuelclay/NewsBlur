@@ -44,7 +44,7 @@ espressoCore = "3.7.0"
 composeMaterial3 = "1.5.3"
 composeMaterialIcons = "1.7.8"
 webkit = "1.14.0"
-window = "1.4.0"
+window = "1.5.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
