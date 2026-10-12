@@ -19,6 +19,16 @@ Run tests:
 xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' test
 ```
 
+### Writing unit tests that stay green on CI
+
+GitHub's macOS runners have 3 slow cores. The main thread and low-priority queues stall for seconds, and WebKit has taken 18 seconds there (52 locally) just to launch a WebContent process. Rules for `NewsBlurTests`:
+- Wait on the real condition, never a fixed sleep. Waits on work the test does not schedule itself (real `WKWebView` navigation, fonts or layout, production background queues, UIKit transitions) use `SimulatorTestTiming.realWorkTimeout`, not a few seconds.
+- A semaphore that holds a worker for the test must only be released by the test (`wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)`). A gate that releases itself after 2 seconds lets the held work run early when the main thread stalls.
+- Production real-time deadlines race fixture code. `StoryLoadPage` gives the one-second font fallback in `StoryDetailObjCViewController.m` a 60 second deadline; tests of that fallback set `fontPreparationDeadline = 1`.
+- Use real WebKit only when the test is about WebKit. For incidental geometry, give a `WKWebView` subclass its own scroll view (see `FirstPageArticleWebView` and `RecordedStoryLoadWebView`).
+- Count work done off main with a thread-aware, locked counter; a plain counter races the worker.
+- A short inverted expectation (nothing should happen) can stay short: a stall can hide a late event but never fails a correct test.
+
 ## App Store Releases
 
 - **Always release automatically after Apple approves the submission.** Select "Automatically release this version" in App Store Connect. This is Sam's standing preference; do not ask again unless he explicitly requests a manual hold for a particular release.
