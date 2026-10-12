@@ -930,7 +930,7 @@
     <string name="onboarding_apple_account_settings">Apple Accountの設定</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">アカウントを削除すると、フィード、保存した記事、アカウントデータが完全に削除されます。この操作は取り消せません。</string>
     <string name="onboarding_confirm_your_password">パスワードを確認</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">アカウントを完全に削除するには、「Delete」と入力してください。</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">アカウントを完全に削除するには、%1$s と入力してください。</string>
     <string name="onboarding_delete">削除</string>
     <string name="onboarding_permanently_delete_account">アカウントを完全に削除</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">世界について語り合う人々をつなぐ\nパーソナルニュースリーダー。</string>

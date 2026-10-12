@@ -940,7 +940,7 @@
     <string name="onboarding_apple_account_settings">הגדרות חשבון Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">מחיקת החשבון תסיר לצמיתות את העדכונים, הסיפורים השמורים ונתוני החשבון שלכם. אי אפשר לבטל פעולה זו.</string>
     <string name="onboarding_confirm_your_password">אימות הסיסמה</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">יש להקליד Delete כדי למחוק את החשבון לצמיתות.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">הקלידו %1$s כדי למחוק את החשבון לצמיתות.</string>
     <string name="onboarding_delete">מחיקה</string>
     <string name="onboarding_permanently_delete_account">מחיקת החשבון לצמיתות</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">קורא חדשות אישי שמחבר בין \n אנשים כדי לדבר על העולם.</string>

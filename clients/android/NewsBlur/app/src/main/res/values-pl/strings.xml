@@ -945,7 +945,7 @@
     <string name="onboarding_apple_account_settings">Ustawienia konta Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Usunięcie konta trwale skasuje Twoje kanały, zapisane artykuły i dane konta. Tej operacji nie można cofnąć.</string>
     <string name="onboarding_confirm_your_password">Potwierdź hasło</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Wpisz „Delete”, aby trwale usunąć konto.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Wpisz %1$s, aby trwale usunąć swoje konto.</string>
     <string name="onboarding_delete">Usuń</string>
     <string name="onboarding_permanently_delete_account">Trwale usuń konto</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Osobisty czytnik wiadomości, który łączy\nludzi, by rozmawiali o świecie.</string>

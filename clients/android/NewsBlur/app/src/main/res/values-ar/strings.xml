@@ -955,7 +955,7 @@
     <string name="onboarding_apple_account_settings">إعدادات حساب Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">يؤدي حذف حسابك إلى إزالة خلاصاتك والقصص المحفوظة وبيانات حسابك نهائيًا. لا يمكن التراجع عن ذلك.</string>
     <string name="onboarding_confirm_your_password">أكّد كلمة المرور</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">اكتب Delete لحذف حسابك نهائيًا.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">اكتب %1$s لحذف حسابك نهائيًا.</string>
     <string name="onboarding_delete">حذف</string>
     <string name="onboarding_permanently_delete_account">حذف الحساب نهائيًا</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">قارئ أخبار شخصي يجمع\nالناس للحديث عن العالم.</string>

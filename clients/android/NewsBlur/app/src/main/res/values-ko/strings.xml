@@ -930,7 +930,7 @@
     <string name="onboarding_apple_account_settings">Apple 계정 설정</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">계정을 삭제하면 피드, 저장한 스토리, 계정 데이터가 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.</string>
     <string name="onboarding_confirm_your_password">비밀번호 확인</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">계정을 영구적으로 삭제하려면 Delete를 입력하세요.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">계정을 영구적으로 삭제하려면 %1$s을 입력하세요.</string>
     <string name="onboarding_delete">삭제</string>
     <string name="onboarding_permanently_delete_account">계정 영구 삭제</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">사람들을 \n 하나로 모아 세상에 대해 이야기하는 개인 뉴스 리더입니다.</string>

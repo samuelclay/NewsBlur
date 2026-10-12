@@ -798,6 +798,7 @@
 "Two Rows" = "Два рядки";
 "Two finger double tap" = "Подвійне торкання двома пальцями";
 "Two-finger swipe to switch" = "Проведіть двома пальцями, щоб перемкнутися";
+"Type %@ to permanently delete %@." = "Введіть %@, щоб назавжди видалити %@.";
 "Unable to Subscribe" = "Не вдалося підписатися";
 "Unable to load Daily Briefing" = "Не вдалося завантажити щоденний огляд";
 "Unable to load Daily Briefing." = "Не вдалося завантажити щоденне зведення.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "або";
 "premium subscribers" = "передплатники Premium";
+"your account" = "ваш обліковий запис";
 "— Top Level —" = "— Верхній рівень —";
 "‹ Feeds" = "‹ Стрічки";

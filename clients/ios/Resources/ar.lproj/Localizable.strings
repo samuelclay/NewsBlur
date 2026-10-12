@@ -798,6 +798,7 @@
 "Two Rows" = "صفّان";
 "Two finger double tap" = "نقرتان مزدوجتان بإصبعين";
 "Two-finger swipe to switch" = "اسحب بإصبعين للتبديل";
+"Type %@ to permanently delete %@." = "اكتب %@ لحذف %@ نهائيًا.";
 "Unable to Subscribe" = "تعذّر الاشتراك";
 "Unable to load Daily Briefing" = "تعذّر تحميل الموجز اليومي";
 "Unable to load Daily Briefing." = "تعذّر تحميل الإحاطة اليومية.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "أو";
 "premium subscribers" = "مشتركو Premium";
+"your account" = "حسابك";
 "— Top Level —" = "— المستوى الأعلى —";
 "‹ Feeds" = "‹ الموجزات";

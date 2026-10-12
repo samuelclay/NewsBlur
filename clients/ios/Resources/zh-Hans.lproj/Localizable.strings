@@ -798,6 +798,7 @@
 "Two Rows" = "两行";
 "Two finger double tap" = "双指双击";
 "Two-finger swipe to switch" = "双指滑动切换";
+"Type %@ to permanently delete %@." = "输入 %@ 以永久删除 %@。";
 "Unable to Subscribe" = "无法订阅";
 "Unable to load Daily Briefing" = "无法加载每日简报";
 "Unable to load Daily Briefing." = "无法加载每日简报。";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "或";
 "premium subscribers" = "高级订阅用户";
+"your account" = "你的账户";
 "— Top Level —" = "— 顶层 —";
 "‹ Feeds" = "‹ 订阅源";

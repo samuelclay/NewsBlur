@@ -798,6 +798,7 @@
 "Two Rows" = "İki Satır";
 "Two finger double tap" = "İki parmakla çift dokunma";
 "Two-finger swipe to switch" = "Geçiş yapmak için iki parmakla kaydırın";
+"Type %@ to permanently delete %@." = "%@ öğesini kalıcı olarak silmek için %@ yazın.";
 "Unable to Subscribe" = "Abone Olunamadı";
 "Unable to load Daily Briefing" = "Günlük Özeti yüklenemedi";
 "Unable to load Daily Briefing." = "Günlük Özet yüklenemedi.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "veya";
 "premium subscribers" = "premium aboneler";
+"your account" = "hesabınız";
 "— Top Level —" = "— En Üst Düzey —";
 "‹ Feeds" = "‹ Akışlar";

@@ -940,7 +940,7 @@ les gens pour parler du monde.</string>
     <string name="onboarding_apple_account_settings">Réglages du compte Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">La suppression de votre compte efface définitivement vos flux, vos articles enregistrés et les données de votre compte. Cette action est irréversible.</string>
     <string name="onboarding_confirm_your_password">Confirmez votre mot de passe</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Saisissez Delete pour supprimer définitivement votre compte.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Saisissez %1$s pour supprimer définitivement votre compte.</string>
     <string name="onboarding_delete">Supprimer</string>
     <string name="onboarding_permanently_delete_account">Supprimer définitivement le compte</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Un lecteur d’actualités personnel qui rassemble\ndes personnes pour échanger sur le monde.</string>

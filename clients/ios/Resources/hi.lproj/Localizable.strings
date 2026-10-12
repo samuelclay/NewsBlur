@@ -798,6 +798,7 @@
 "Two Rows" = "दो पंक्तियाँ";
 "Two finger double tap" = "दो उँगलियों से डबल टैप";
 "Two-finger swipe to switch" = "बदलने के लिए दो उँगलियों से स्वाइप करें";
+"Type %@ to permanently delete %@." = "%@ को स्थायी रूप से हटाने के लिए %@ टाइप करें।";
 "Unable to Subscribe" = "सदस्यता लेने में असमर्थ";
 "Unable to load Daily Briefing" = "डेली ब्रीफिंग लोड नहीं हो सकी";
 "Unable to load Daily Briefing." = "दैनिक ब्रीफ़िंग लोड नहीं हो सकी।";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "या";
 "premium subscribers" = "प्रीमियम ग्राहक";
+"your account" = "आपका खाता";
 "— Top Level —" = "— शीर्ष स्तर —";
 "‹ Feeds" = "‹ फ़ीड";

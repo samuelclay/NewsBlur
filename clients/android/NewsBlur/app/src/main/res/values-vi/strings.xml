@@ -930,7 +930,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="onboarding_apple_account_settings">Cài đặt Tài khoản Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Việc xóa tài khoản sẽ xóa vĩnh viễn nguồn cấp dữ liệu, tin đã lưu và dữ liệu tài khoản của bạn. Không thể hoàn tác.</string>
     <string name="onboarding_confirm_your_password">Xác nhận mật khẩu</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Nhập Delete để xóa tài khoản vĩnh viễn.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Nhập %1$s để xóa vĩnh viễn tài khoản của bạn.</string>
     <string name="onboarding_delete">Xóa</string>
     <string name="onboarding_permanently_delete_account">Xóa tài khoản vĩnh viễn</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Trình đọc tin tức cá nhân giúp\nmọi người kết nối và cùng thảo luận về thế giới.</string>

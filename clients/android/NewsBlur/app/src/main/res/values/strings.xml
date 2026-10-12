@@ -1138,7 +1138,8 @@ people together to talk about the world.</string>
     <string name="onboarding_apple_account_settings">Apple Account settings</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone.</string>
     <string name="onboarding_confirm_your_password">Confirm your password</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Type Delete to permanently delete your account.</string>
+    <string name="account_deletion_confirmation_word" translatable="false">Delete</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Type %1$s to permanently delete your account.</string>
     <string name="onboarding_delete">Delete</string>
     <string name="onboarding_permanently_delete_account">Permanently delete account</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">A personal news reader bringing\npeople together to talk about the world.</string>

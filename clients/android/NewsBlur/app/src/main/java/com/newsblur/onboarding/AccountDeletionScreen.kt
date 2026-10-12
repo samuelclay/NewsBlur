@@ -104,10 +104,11 @@ fun AccountDeletionScreen(
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
-                    Text(stringResource(R.string.onboarding_type_delete_to_permanently_delete_your_account), color = colors.textPrimary)
+                    val confirmationWord = stringResource(R.string.account_deletion_confirmation_word)
+                    Text(stringResource(R.string.onboarding_type_delete_to_permanently_delete_your_account, confirmationWord), color = colors.textPrimary)
                     OutlinedTextField(confirmation, {
                         confirmation = it
-                    }, label = { Text(stringResource(R.string.onboarding_delete)) }, singleLine = true, enabled = !state.busy, modifier = Modifier.fillMaxWidth())
+                    }, label = { Text(confirmationWord) }, singleLine = true, enabled = !state.busy, modifier = Modifier.fillMaxWidth())
                     Button(
                         onClick = { model.deleteAccount(confirmation, password) },
                         enabled =

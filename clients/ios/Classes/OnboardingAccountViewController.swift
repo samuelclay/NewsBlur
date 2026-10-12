@@ -450,8 +450,9 @@ private struct AccountDeletionView: View {
                         .foregroundStyle(DiscoverColors.textSecondary)
                     if model.loading { ProgressView("Loading account…").frame(maxWidth: .infinity).padding() }
                     else if model.isVerified {
-                        Text("Type Delete to permanently delete \(model.session.username ?? "your account").").font(.subheadline)
-                        TextField(NBLocalization.text("Delete"), text: $model.confirmation)
+                        Text(String(format: NBLocalization.text("Type %@ to permanently delete %@."),
+                                    "Delete", model.session.username ?? NBLocalization.text("your account"))).font(.subheadline)
+                        TextField(text: $model.confirmation) { Text(verbatim: "Delete") }
                             .textInputAutocapitalization(.never).autocorrectionDisabled()
                             .padding(14).background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
                             .accessibilityIdentifier("account-deletion.confirmation")
