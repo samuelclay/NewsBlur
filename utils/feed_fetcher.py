@@ -183,6 +183,10 @@ FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 # far apart, before the archive walk stops at that page. utils/feed_fetcher.py
 ARCHIVE_PAGE_LOCK_ATTEMPTS = 3
 ARCHIVE_PAGE_LOCK_WAIT_SECONDS = 30
+# A walk stopped at a locked page is queued again at most this many times within the window,
+# so a feed whose lock stays taken can't keep queuing its own walk forever. utils/feed_fetcher.py
+ARCHIVE_WALK_MAX_REQUEUES = 3
+ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS = 60 * 60 * 6
 
 # Statuses a site uses to refuse a request because of its User-Agent rather than because the
 # feed is gone: bugs.kde.org answers any UA carrying a desktop browser string with 403 (forum
@@ -2342,8 +2346,28 @@ class FeedFetcherWorker:
         already stored are matched as unchanged. utils/feed_fetcher.py"""
         from apps.profile.tasks import FetchArchiveFeedsChunk
 
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        requeue_key = "archive_walk_requeues:%s" % feed.pk
+        requeues = r.incr(requeue_key)
+        if requeues == 1:
+            r.expire(requeue_key, ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS)
+        if requeues > ARCHIVE_WALK_MAX_REQUEUES:
+            logging.info(
+                "   ---> [%-30s] ~FRArchive import already queued again %s times, not queuing it again"
+                % (feed.log_title[:30], ARCHIVE_WALK_MAX_REQUEUES)
+            )
+            return
+
+        # Back on the archive queue with the archive time limits, the same as the backfill
+        # (apps/reader/models.py fetch_archive_feeds_for_user). On the default queue it ran on
+        # the work servers under the 360 second global limit, which a long walk never finishes in.
         FetchArchiveFeedsChunk.apply_async(
-            args=[[feed.pk]], kwargs={"user_id": None}, countdown=FETCH_LOCK_DEFERRAL_SECONDS
+            args=[[feed.pk]],
+            kwargs={"user_id": None},
+            queue="search_indexer",
+            countdown=FETCH_LOCK_DEFERRAL_SECONDS,
+            time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
         )
         logging.info(
             "   ---> [%-30s] ~FYArchive import queued again in %s seconds"

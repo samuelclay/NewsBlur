@@ -1607,7 +1607,31 @@ class Feed(models.Model):
             )
             return before_story_count, before_story_count
 
-        self.update(archive_page=starting_page)
+        # One walk per feed at a time. Copies of the same walk that run together only fight over
+        # the feed's lock, wait on it, and queue the walk again (utils/feed_fetcher.py
+        # process_archive_page). The lock lasts as long as the backfill task's time limit, so a
+        # walk killed at that limit frees the feed for the next one.
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        walk_lock = r.lock(
+            "archive_walk:%s" % self.pk,
+            timeout=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            blocking=False,
+        )
+        if not walk_lock.acquire():
+            logging.debug(
+                "   ---> [%-30s] ~FBNot filling out archive stories, another walk of this feed is running"
+                % (self.log_title[:30])
+            )
+            return before_story_count, before_story_count
+
+        try:
+            self.update(archive_page=starting_page)
+        finally:
+            try:
+                walk_lock.release()
+            except LockError:
+                # The walk outlasted the lock, which has already expired.
+                pass
 
         after_story_count = MStory.objects(story_feed_id=self.pk).count()
         logging.debug(
