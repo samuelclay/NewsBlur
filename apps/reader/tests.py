@@ -552,17 +552,34 @@ class Test_ArchiveBackfillScheduling(TestCase):
 
     @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
     def test_a_backfill_that_fails_before_queuing_its_feeds_can_be_scheduled_again(self, mock_apply):
-        from apps.profile.tasks import FetchArchiveFeedsForUser
-
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
         with patch.object(
-            UserSubscription, "fetch_archive_feeds_for_user", side_effect=RuntimeError("mongo unreachable")
+            UserSubscription, "build_archive_backfill", side_effect=RuntimeError("mongo unreachable")
         ):
             with self.assertRaises(RuntimeError):
-                FetchArchiveFeedsForUser(user_id=self.user.pk)
+                UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
 
         self.assertEqual(mock_apply.call_count, 2)
+
+    @patch("apps.reader.models.celery")
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_a_backfill_that_fails_while_queuing_its_feeds_keeps_its_claim(self, mock_apply, mock_celery):
+        """Publishing the chord can fail after some feed tasks are queued. Starting the whole
+        backfill again would walk those feeds a second time, so the claim stays."""
+        from kombu.exceptions import OperationalError
+
+        mock_celery.chord.return_value.side_effect = OperationalError("broker dropped mid-publish")
+
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        with patch.object(
+            UserSubscription, "build_archive_backfill", return_value=([MagicMock()], MagicMock())
+        ):
+            with self.assertRaises(OperationalError):
+                UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 1)
 
 
 class Test_FinishArchiveFeedsSyncRedis(TestCase):

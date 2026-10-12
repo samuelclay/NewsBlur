@@ -1203,6 +1203,20 @@ class UserSubscription(models.Model):
     # Should be run as a background task
     @classmethod
     def fetch_archive_feeds_for_user(cls, user_id):
+        try:
+            search_chunks, callback = cls.build_archive_backfill(user_id)
+        except Exception:
+            # Nothing was queued yet, so free the claim for the next upgrade event. A failure
+            # publishing the chord below keeps the claim, since part of it may already be queued
+            # and a second backfill would walk those feeds again.
+            cls.release_archive_backfill_claim(user_id)
+            raise
+        celery.chord(search_chunks)(callback)
+
+    @classmethod
+    def build_archive_backfill(cls, user_id):
+        """The staggered per-feed archive tasks and their completion callback for a user's
+        backfill, built without queuing anything (apps/reader/models.py fetch_archive_feeds_for_user)."""
         from apps.profile.tasks import FetchArchiveFeedsChunk, FinishFetchArchiveFeeds
 
         start_time = time.time()
@@ -1249,7 +1263,7 @@ class UserSubscription(models.Model):
         callback = FinishFetchArchiveFeeds.s(
             user_id=user_id, start_time=start_time, starting_story_count=starting_story_count
         ).set(queue="search_indexer", time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH)
-        celery.chord(search_chunks)(callback)
+        return search_chunks, callback
 
     @classmethod
     def fetch_archive_feeds_chunk(cls, feed_ids, user_id=None):
