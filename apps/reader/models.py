@@ -24,6 +24,7 @@ from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.template.defaultfilters import slugify
 from mongoengine.queryset import NotUniqueError, OperationError
+from redis.exceptions import LockError
 
 from apps.analyzer.models import (
     MClassifierAuthor,
@@ -63,10 +64,23 @@ from utils.folder_paths import InvalidFolderPath, resolve_folder_path
 
 # apps/reader/models.py: An archive backfill starts one feed's walk this many seconds apart, queuing
 # a batch at a time so no countdown waits anywhere near the broker's one hour visibility timeout
-# (dispatch_archive_backfill). The claim that keeps a user to one backfill is renewed by each batch.
+# (dispatch_archive_backfill).
 ARCHIVE_BACKFILL_STAGGER_SECONDS = 10
 ARCHIVE_BACKFILL_BATCH_SIZE = 60
-ARCHIVE_BACKFILL_CLAIM_SECONDS = 2 * 60 * 60
+# A backfill's state, its list of feeds, and the user's claim last this long past the last dispatch,
+# well beyond any delay a dispatch can see, so a slow backfill is never mistaken for an abandoned one.
+ARCHIVE_BACKFILL_STATE_SECONDS = 2 * 24 * 60 * 60
+# The finish checks this often for walks still going, this many times, before it runs anyway.
+ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS = 5 * 60
+ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS = 12
+# Changes a backfill's count of walks still going only while the backfill exists, so a walk that
+# ends after the finish can't leave a stray count behind. apps/reader/models.py
+ARCHIVE_BACKFILL_COUNT_WALKS_SCRIPT = """
+if redis.call('EXISTS', KEYS[1]) == 1 then
+    return redis.call('HINCRBY', KEYS[1], 'pending_walks', ARGV[1])
+end
+return nil
+"""
 
 
 def unread_cutoff_default():
@@ -1178,7 +1192,7 @@ class UserSubscription(models.Model):
         # backfill of the same 3,910 feeds. Each dispatch renews the claim, so it lasts as long
         # as the backfill keeps going (apps/reader/models.py dispatch_archive_backfill).
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-        if not r.set(cls.archive_backfill_claim_key(user_id), 1, nx=True, ex=ARCHIVE_BACKFILL_CLAIM_SECONDS):
+        if not r.set(cls.archive_backfill_claim_key(user_id), 1, nx=True, ex=ARCHIVE_BACKFILL_STATE_SECONDS):
             logging.debug(" ---> ~FCArchive backfill already scheduled for user %s, skipping" % user_id)
             return
 
@@ -1202,11 +1216,53 @@ class UserSubscription(models.Model):
         return "archive_backfill_feeds:%s" % user_id
 
     @classmethod
+    def archive_backfill_state_key(cls, user_id):
+        return "archive_backfill_state:%s" % user_id
+
+    @classmethod
+    def archive_backfill_dispatch_lock_key(cls, user_id):
+        return "archive_backfill_dispatch:%s" % user_id
+
+    @classmethod
+    def archive_backfill_finished_key(cls, user_id, start_time):
+        return "archive_backfill_finished:%s:%r" % (user_id, start_time)
+
+    @classmethod
     def release_archive_backfill_claim(cls, user_id):
         """Let a new archive backfill start for this user, after one failed before it began
         (apps/reader/models.py schedule_fetch_archive_feeds_for_user)."""
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         r.delete(cls.archive_backfill_claim_key(user_id))
+
+    @classmethod
+    def store_archive_backfill(cls, user_id, feed_ids):
+        """Record a user's backfill: the feeds whose walks are still to be queued, and its state,
+        which counts the walks queued but not yet ended. The state exists from here until the
+        finish runs, so a dispatch can tell a backfill whose feeds have all been queued from one
+        that was abandoned (apps/reader/models.py dispatch_archive_backfill)."""
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        feeds_key = cls.archive_backfill_feeds_key(user_id)
+        state_key = cls.archive_backfill_state_key(user_id)
+        p = r.pipeline()
+        p.delete(feeds_key, state_key)
+        if feed_ids:
+            p.rpush(feeds_key, *feed_ids)
+            p.expire(feeds_key, ARCHIVE_BACKFILL_STATE_SECONDS)
+        p.hset(state_key, "pending_walks", 0)
+        p.expire(state_key, ARCHIVE_BACKFILL_STATE_SECONDS)
+        p.execute()
+
+    @classmethod
+    def count_archive_backfill_walks(cls, user_id, change):
+        """Raise or lower the count of a backfill's walks queued but not yet ended. A walk that
+        ends after its backfill finished or expired changes nothing (apps/reader/models.py)."""
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        r.eval(ARCHIVE_BACKFILL_COUNT_WALKS_SCRIPT, 1, cls.archive_backfill_state_key(user_id), change)
+
+    @classmethod
+    def archive_backfill_walks_pending(cls, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        return int(r.hget(cls.archive_backfill_state_key(user_id), "pending_walks") or 0)
 
     # Should be run as a background task
     @classmethod
@@ -1215,14 +1271,7 @@ class UserSubscription(models.Model):
 
         try:
             feed_ids, start_time, starting_story_count = cls.build_archive_backfill(user_id)
-            r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-            feeds_key = cls.archive_backfill_feeds_key(user_id)
-            p = r.pipeline()
-            p.delete(feeds_key)
-            if feed_ids:
-                p.rpush(feeds_key, *feed_ids)
-                p.expire(feeds_key, ARCHIVE_BACKFILL_CLAIM_SECONDS)
-            p.execute()
+            cls.store_archive_backfill(user_id, feed_ids)
             DispatchArchiveBackfill.apply_async(
                 kwargs=dict(
                     user_id=user_id, start_time=start_time, starting_story_count=starting_story_count
@@ -1275,9 +1324,12 @@ class UserSubscription(models.Model):
         Queuing every walk up front left countdown tasks waiting in a worker for hours. The
         broker hands out any task unacknowledged past its one hour visibility timeout again,
         so on 2026-10-10 every feed of a 3,910 feed backfill was walked once per hour it had
-        waited. Batches keep every countdown here well under that hour. A feed comes off the
-        list only after its walk is queued, so a broker error leaves the rest for the retry
-        (apps/profile/tasks.py DispatchArchiveBackfill)."""
+        waited. Batches keep every countdown here well under that hour.
+
+        A feed comes off the list only after its walk is queued, and by value, so a broker
+        error leaves the rest for the retry (apps/profile/tasks.py DispatchArchiveBackfill)
+        and a second delivery of the same dispatch can't take off feeds nobody queued. The
+        lock keeps two deliveries from dispatching at once."""
         from apps.profile.tasks import (
             DispatchArchiveBackfill,
             FetchArchiveFeedsChunk,
@@ -1286,67 +1338,139 @@ class UserSubscription(models.Model):
 
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         feeds_key = cls.archive_backfill_feeds_key(user_id)
-        r.expire(cls.archive_backfill_claim_key(user_id), ARCHIVE_BACKFILL_CLAIM_SECONDS)
-        r.expire(feeds_key, ARCHIVE_BACKFILL_CLAIM_SECONDS)
-
-        batch = [int(feed_id) for feed_id in r.lrange(feeds_key, 0, ARCHIVE_BACKFILL_BATCH_SIZE - 1)]
-        queued = 0
-        try:
-            for i, feed_id in enumerate(batch):
-                FetchArchiveFeedsChunk.apply_async(
-                    kwargs=dict(feed_ids=[feed_id], user_id=user_id),
-                    queue="search_indexer",
-                    countdown=i * ARCHIVE_BACKFILL_STAGGER_SECONDS,
-                    time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
-                    soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
-                )
-                queued += 1
-        finally:
-            if queued:
-                r.ltrim(feeds_key, queued, -1)
-
-        backfill_kwargs = dict(
-            user_id=user_id, start_time=start_time, starting_story_count=starting_story_count
-        )
-        if r.llen(feeds_key):
-            DispatchArchiveBackfill.apply_async(
-                kwargs=backfill_kwargs,
-                queue="search_indexer",
-                countdown=len(batch) * ARCHIVE_BACKFILL_STAGGER_SECONDS,
+        state_key = cls.archive_backfill_state_key(user_id)
+        if not r.exists(state_key):
+            logging.debug(
+                " ---> ~FCNo archive backfill to dispatch for user %s, it ended or expired" % user_id
             )
             return
 
-        # Every feed is queued. Finish once the last walk has had its full time limit.
-        r.delete(feeds_key)
-        last_walk_countdown = max(len(batch) - 1, 0) * ARCHIVE_BACKFILL_STAGGER_SECONDS
-        FinishFetchArchiveFeeds.apply_async(
-            args=(None,),
-            kwargs=backfill_kwargs,
-            queue="search_indexer",
-            countdown=last_walk_countdown + settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED if batch else 0,
-            time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
+        dispatch_lock = r.lock(
+            cls.archive_backfill_dispatch_lock_key(user_id),
+            timeout=ARCHIVE_BACKFILL_BATCH_SIZE * ARCHIVE_BACKFILL_STAGGER_SECONDS,
+            blocking=False,
         )
+        if not dispatch_lock.acquire():
+            logging.debug(" ---> ~FCArchive backfill for user %s is already being dispatched" % user_id)
+            return
+
+        try:
+            for key in (cls.archive_backfill_claim_key(user_id), feeds_key, state_key):
+                r.expire(key, ARCHIVE_BACKFILL_STATE_SECONDS)
+
+            batch = [int(feed_id) for feed_id in r.lrange(feeds_key, 0, ARCHIVE_BACKFILL_BATCH_SIZE - 1)]
+            for i, feed_id in enumerate(batch):
+                # Counted before it is queued, so a walk that ends at once can't leave the count
+                # short; a failed publish takes the count back.
+                cls.count_archive_backfill_walks(user_id, 1)
+                try:
+                    FetchArchiveFeedsChunk.apply_async(
+                        kwargs=dict(feed_ids=[feed_id], user_id=user_id),
+                        queue="search_indexer",
+                        countdown=i * ARCHIVE_BACKFILL_STAGGER_SECONDS,
+                        time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+                        soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
+                    )
+                except Exception:
+                    cls.count_archive_backfill_walks(user_id, -1)
+                    raise
+                r.lrem(feeds_key, 1, feed_id)
+
+            backfill_kwargs = dict(
+                user_id=user_id, start_time=start_time, starting_story_count=starting_story_count
+            )
+            if r.llen(feeds_key):
+                DispatchArchiveBackfill.apply_async(
+                    kwargs=backfill_kwargs,
+                    queue="search_indexer",
+                    countdown=len(batch) * ARCHIVE_BACKFILL_STAGGER_SECONDS,
+                )
+                return
+
+            # Every feed is queued. The finish first checks once the last walk could have had its
+            # full time limit, then waits for any walk still going (archive_backfill_ready_to_finish).
+            last_walk_countdown = max(len(batch) - 1, 0) * ARCHIVE_BACKFILL_STAGGER_SECONDS
+            FinishFetchArchiveFeeds.apply_async(
+                args=(None,),
+                kwargs=backfill_kwargs,
+                queue="search_indexer",
+                countdown=last_walk_countdown + settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED
+                if batch
+                else 0,
+                time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
+            )
+        finally:
+            try:
+                dispatch_lock.release()
+            except LockError:
+                # The dispatch outlasted the lock, which has already expired.
+                pass
+
+    @classmethod
+    def archive_backfill_ready_to_finish(cls, user_id, start_time, starting_story_count, rechecks):
+        """Whether a backfill's finish should run now. While walks are still going it queues
+        itself to check again, for up to ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS times, since a
+        walk killed at its hard time limit never lowers the count. Only one finish runs per
+        backfill, however many copies of it arrive (apps/profile/tasks.py FinishFetchArchiveFeeds)."""
+        from apps.profile.tasks import FinishFetchArchiveFeeds
+
+        pending_walks = cls.archive_backfill_walks_pending(user_id)
+        if pending_walks > 0 and rechecks < ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS:
+            logging.debug(
+                " ---> ~FCArchive backfill for user %s still has %s walks going, checking again in %s seconds"
+                % (user_id, pending_walks, ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS)
+            )
+            FinishFetchArchiveFeeds.apply_async(
+                args=(None,),
+                kwargs=dict(
+                    user_id=user_id,
+                    start_time=start_time,
+                    starting_story_count=starting_story_count,
+                    rechecks=rechecks + 1,
+                ),
+                queue="search_indexer",
+                countdown=ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS,
+                time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
+            )
+            return False
+
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        if not r.set(
+            cls.archive_backfill_finished_key(user_id, start_time),
+            1,
+            nx=True,
+            ex=ARCHIVE_BACKFILL_STATE_SECONDS,
+        ):
+            logging.debug(" ---> ~FCArchive backfill for user %s already finished" % user_id)
+            return False
+        r.delete(cls.archive_backfill_feeds_key(user_id), cls.archive_backfill_state_key(user_id))
+        return True
 
     @classmethod
     def fetch_archive_feeds_chunk(cls, feed_ids, user_id=None):
         from apps.rss_feeds.models import Feed
 
-        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        if user_id:
-            user = User.objects.get(pk=user_id)
-            logging.user(user, "~FCFetching archive stories from %s feeds..." % len(feed_ids))
-        else:
-            logging.debug("~FCFetching archive stories from %s feeds..." % len(feed_ids))
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            if user_id:
+                user = User.objects.get(pk=user_id)
+                logging.user(user, "~FCFetching archive stories from %s feeds..." % len(feed_ids))
+            else:
+                logging.debug("~FCFetching archive stories from %s feeds..." % len(feed_ids))
 
-        for feed_id in feed_ids:
-            feed = Feed.get_by_id(feed_id)
-            if not feed:
-                continue
+            for feed_id in feed_ids:
+                feed = Feed.get_by_id(feed_id)
+                if not feed:
+                    continue
 
-            feed.fill_out_archive_stories()
+                feed.fill_out_archive_stories()
 
-        if user_id:
-            r.publish(user.username, "fetch_archive:feeds:%s" % ",".join([str(f) for f in feed_ids]))
+            if user_id:
+                r.publish(user.username, "fetch_archive:feeds:%s" % ",".join([str(f) for f in feed_ids]))
+        finally:
+            if user_id:
+                # The backfill's finish waits for this walk (archive_backfill_ready_to_finish).
+                cls.count_archive_backfill_walks(user_id, -1)
 
     @classmethod
     def finish_fetch_archive_feeds(cls, user_id, start_time, starting_story_count):

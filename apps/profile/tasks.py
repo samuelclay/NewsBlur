@@ -54,8 +54,14 @@ def DispatchArchiveBackfill(user_id, start_time, starting_story_count):
 # big subscription list, and an unacknowledged task is handed to another worker once the broker's one
 # hour visibility timeout passes, which would send the archive email twice.
 @app.task(acks_late=False)
-def FinishFetchArchiveFeeds(results, user_id, start_time, starting_story_count):
+def FinishFetchArchiveFeeds(results, user_id, start_time, starting_story_count, rechecks=0):
     # logging.debug(" ---> Fetching archive stories finished for %s" % (user_id))
+
+    # Waits for the backfill's walks to end, and runs once per backfill (apps/reader/models.py).
+    if not UserSubscription.archive_backfill_ready_to_finish(
+        user_id, start_time, starting_story_count, rechecks
+    ):
+        return
 
     ending_story_count, pre_archive_count = UserSubscription.finish_fetch_archive_feeds(
         user_id, start_time, starting_story_count
