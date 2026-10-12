@@ -41,10 +41,23 @@ def FetchArchiveFeedsChunk(feed_ids, user_id=None):
     UserSubscription.fetch_archive_feeds_chunk(feed_ids, user_id)
 
 
+class ArchiveBackfillDispatchTask(app.Task):
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        # apps/profile/tasks.py: Out of retries, so the backfill is abandoned. Drop it and free the
+        # user's claim, so a later upgrade event can start a new backfill instead of being skipped.
+        user_id = kwargs.get("user_id", args[0] if args else None)
+        if user_id:
+            UserSubscription.abandon_archive_backfill(user_id)
+
+
 # apps/profile/tasks.py: Queues the next batch of a user's archive backfill. A broker error partway
 # through leaves the unqueued feeds on the user's list, so the retry picks up where it stopped.
 @app.task(
-    autoretry_for=(Exception,), retry_backoff=30, retry_backoff_max=600, retry_kwargs={"max_retries": 8}
+    base=ArchiveBackfillDispatchTask,
+    autoretry_for=(Exception,),
+    retry_backoff=30,
+    retry_backoff_max=600,
+    retry_kwargs={"max_retries": 8},
 )
 def DispatchArchiveBackfill(user_id, start_time, starting_story_count):
     UserSubscription.dispatch_archive_backfill(user_id, start_time, starting_story_count)
