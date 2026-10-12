@@ -736,6 +736,18 @@ class PrefsRepo(
 
     fun isReaderFullscreenEnabled() = prefs.getBoolean(PrefConstants.READER_FULLSCREEN, false)
 
+    fun isStoryListFullscreenEnabled() = prefs.getBoolean(PrefConstants.STORY_LIST_FULLSCREEN, false)
+
+    fun setStoryListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.STORY_LIST_FULLSCREEN, enabled) }
+    }
+
+    fun isFeedListFullscreenEnabled() = prefs.getBoolean(PrefConstants.FEED_LIST_FULLSCREEN, false)
+
+    fun setFeedListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.FEED_LIST_FULLSCREEN, enabled) }
+    }
+
     fun setReaderFullscreenEnabled(enabled: Boolean) {
         prefs.edit { putBoolean(PrefConstants.READER_FULLSCREEN, enabled) }
     }

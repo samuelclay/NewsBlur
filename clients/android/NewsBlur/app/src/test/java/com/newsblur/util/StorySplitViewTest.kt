@@ -112,6 +112,31 @@ class StorySplitViewTest {
     }
 
     @Test
+    fun test_fullscreen_titles_and_reader_choices_are_independent() {
+        val defaults = SplitAttributes.Builder()
+            .setSplitType(SplitAttributes.SplitType.ratio(StorySplitView.STORY_LIST_SPLIT_RATIO))
+            .build()
+        for (titlesFullscreen in listOf(false, true)) {
+            for (readerFullscreen in listOf(false, true)) {
+                // StorySplitView.kt suppresses the nonsticky placeholder when returning to full-width titles.
+                assertEquals(
+                    if (titlesFullscreen) SplitAttributes.SplitType.SPLIT_TYPE_EXPAND else defaults.splitType,
+                    StorySplitView.calculateSplitAttributes("empty_reader", true, readerFullscreen, defaults, titlesFullscreen).splitType,
+                )
+                assertEquals(
+                    if (readerFullscreen) SplitAttributes.SplitType.SPLIT_TYPE_EXPAND else defaults.splitType,
+                    StorySplitView.calculateSplitAttributes("story_list_reader", true, readerFullscreen, defaults, titlesFullscreen).splitType,
+                )
+                assertEquals(
+                    SplitAttributes.SplitType.SPLIT_TYPE_EXPAND,
+                    StorySplitView.calculateSplitAttributes("empty_reader", false, readerFullscreen, defaults, titlesFullscreen).splitType,
+                )
+                assertEquals(defaults, StorySplitView.calculateSplitAttributes("unrelated", true, readerFullscreen, defaults, titlesFullscreen))
+            }
+        }
+    }
+
+    @Test
     fun everyReader_opensBesideItsStoryList() {
         // A reader missing from StorySplitView.kt would cover its story list on tablets.
         assertEquals(concreteSubclassesOf(Reading::class.java), StorySplitView.READING_ACTIVITIES.toSet())
