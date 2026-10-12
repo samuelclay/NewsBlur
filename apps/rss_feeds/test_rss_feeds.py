@@ -8570,3 +8570,97 @@ class Test_TextImporterBlockedFallsBackToProxy(TestCase):
         self.assertIn("Chris Brown is slamming", result["content"])
         self.assertNotIn("Checking your browser", result["content"])
         self.assertEqual(mock_scrapingbee_get.call_count, 1)
+
+
+class Test_TrimKeepsTheFetchedBatch(TestCase):
+    """Forum #13884: IEEE publishes each issue's table of contents as one batch of about 50
+    items, dated by each article's online publication, with the issue's front matter dated
+    newest. A feed nobody has read lately is capped at 10 stories (Feed.number_of_stories_to_store)
+    and the fetch trims right after saving (utils/feed_fetcher.py), so most of the issue was
+    deleted the moment it arrived and only the front matter was left to read."""
+
+    options = {"verbose": False, "force": False, "updates_off": False}
+    FRONT_MATTER = 7
+    ARTICLES = 43
+
+    def _issue_xml(self):
+        items = []
+        for number in range(self.FRONT_MATTER):
+            items.append(
+                "<item><title>Front matter %s</title><link>https://ieee.example.com/document/f%s</link>"
+                "<guid>https://ieee.example.com/document/f%s</guid><description>null</description>"
+                "<pubDate>Thu, 10 Sep 2026 05:07:%02d GMT</pubDate></item>" % (number, number, number, number)
+            )
+        first_article = datetime.datetime(2026, 7, 20, 13, 16)
+        for number in range(self.ARTICLES):
+            published = first_article + datetime.timedelta(days=number)
+            items.append(
+                "<item><title>Article %s</title><link>https://ieee.example.com/document/a%s</link>"
+                "<guid>https://ieee.example.com/document/a%s</guid>"
+                "<description>Abstract of article %s in this issue.</description>"
+                "<pubDate>%s</pubDate></item>"
+                % (number, number, number, number, published.strftime("%a, %d %b %Y %H:%M:%S GMT"))
+            )
+        return (
+            '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>'
+            "<title>IEEE Transactions - new TOC</title><link>https://ieee.example.com</link>%s"
+            "</channel></rss>" % "".join(items)
+        )
+
+    def _feed(self):
+        feed = Feed.objects.create(
+            feed_address="https://ieee.example.com/rss/TOC63.XML",
+            feed_link="https://ieee.example.com",
+            feed_title="IEEE Transactions - new TOC",
+        )
+        # One active Premium reader who hasn't opened the feed in weeks, like the forum report.
+        Feed.objects.filter(pk=feed.pk).update(
+            active_subscribers=1,
+            active_premium_subscribers=1,
+            premium_subscribers=1,
+            average_stories_per_month=73,
+            stories_last_month=7,
+        )
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        return Feed.objects.get(pk=feed.pk)
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_fetched_issue_survives_the_trim_on_a_feed_nobody_has_read_lately(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        import feedparser
+
+        from utils.feed_fetcher import FEED_OK, ProcessFeed
+
+        feed = self._feed()
+        # No reads recorded in any recent week (the fR:<feed>:<week> counters are empty).
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        self.assertEqual(feed.number_of_stories_to_store(), 10)
+
+        pfeed = ProcessFeed(feed.pk, feedparser.parse(self._issue_xml()), dict(self.options))
+        pfeed.refresh_feed()
+        ret_feed, ret_values = pfeed.process()
+
+        self.assertEqual(ret_feed, FEED_OK)
+        self.assertEqual(ret_values["new"], self.FRONT_MATTER + self.ARTICLES)
+        stored = MStory.objects(story_feed_id=feed.pk)
+        self.assertEqual(stored.count(), self.FRONT_MATTER + self.ARTICLES)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk, story_title__startswith="Article").count(), 43)
+
+    @patch("apps.rss_feeds.models.redis")
+    def test_the_unread_cap_grows_to_the_published_batch_but_not_past_the_normal_cutoff(self, mock_redis):
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+
+        self.assertEqual(feed.number_of_stories_to_store(), 10)
+        self.assertEqual(feed.number_of_stories_to_store(published_count=4), 10)
+        self.assertEqual(feed.number_of_stories_to_store(published_count=50), 50)
+        # One active Premium subscriber stores up to 200 when the feed is read, and no more here.
+        self.assertEqual(feed.number_of_stories_to_store(published_count=500), 200)
+
+        # A feed with recent reads already keeps its normal cutoff.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        self.assertEqual(feed.number_of_stories_to_store(published_count=50), 200)

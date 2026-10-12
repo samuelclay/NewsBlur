@@ -2390,7 +2390,7 @@ class Feed(models.Model):
     def story_cutoff(self):
         return self.number_of_stories_to_store()
 
-    def number_of_stories_to_store(self, pre_archive=False):
+    def number_of_stories_to_store(self, pre_archive=False, published_count=0):
         if self.archive_subscribers and self.archive_subscribers > 0 and not pre_archive:
             return 10000
 
@@ -2434,7 +2434,9 @@ class Feed(models.Model):
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
         if not pre_archive and read_stories_last_month == 0:
             original_cutoff = cutoff
-            cutoff = min(cutoff, 10)
+            # apps/rss_feeds/models.py keeps the batch the feed is publishing right now, so a feed that
+            # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives.
+            cutoff = min(cutoff, max(10, published_count))
             try:
                 logging.debug(
                     "   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)"
@@ -2458,9 +2460,9 @@ class Feed(models.Model):
 
         return int(cutoff)
 
-    def trim_feed(self, verbose=False, cutoff=None):
+    def trim_feed(self, verbose=False, cutoff=None, published_count=0):
         if not cutoff:
-            cutoff = self.story_cutoff
+            cutoff = self.number_of_stories_to_store(published_count=published_count)
 
         stories_removed = MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
 
