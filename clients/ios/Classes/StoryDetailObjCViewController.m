@@ -76,6 +76,7 @@
 - (void)refreshClusterStories;
 - (void)invalidateStoryLoad;
 - (BOOL)isCurrentStoryLoad:(NSUInteger)generation;
+- (NSTimeInterval)fontPreparationTimeout;
 - (void)updateReaderScrollIndicatorInsets:(BOOL)independentHeader;
 
 @end
@@ -3054,7 +3055,8 @@
             WKNavigation *navigation = self.fontWarmupNavigation;
             WKWebView *preparingWebView = self.webView;
             __weak typeof(self) weakSelf = self;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self fontPreparationTimeout] * NSEC_PER_SEC)),
+                           dispatch_get_main_queue(), ^{
                 if (![weakSelf isCurrentStoryLoad:generation] || !weakSelf.fullStoryHTML) return;
                 [weakSelf finishFontPreparationForWebView:preparingWebView navigation:navigation
                                                    error:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorTimedOut userInfo:nil]];
@@ -3101,6 +3103,11 @@
                        });
     }
     
+}
+
+- (NSTimeInterval)fontPreparationTimeout {
+    // StoryDetailObjCViewController.m gives an article one second of bundled-font preparation before falling back.
+    return 1.0;
 }
 
 - (void)revealCurrentStory {
