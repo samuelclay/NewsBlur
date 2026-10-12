@@ -1708,7 +1708,10 @@ class Profile(models.Model):
                 or (self.premium_expire and new_premium_expire > self.premium_expire)
             ):
                 self.premium_expire = new_premium_expire
-                self.save()
+                # Only the field that changed: payment webhooks run this concurrently, and a
+                # whole-row save from a profile loaded before another webhook's tier change
+                # writes the old tier back (apps/profile/models.py activate_archive).
+                self.save(update_fields=["premium_expire"])
 
         if self.premium_renewal != premium_renewal or self.active_provider != active_provider:
             active_sub_id = self.stripe_id
@@ -1721,7 +1724,7 @@ class Profile(models.Model):
             )
             self.premium_renewal = premium_renewal
             self.active_provider = active_provider
-            self.save()
+            self.save(update_fields=["premium_renewal", "active_provider"])
 
         logging.user(
             self.user,
@@ -2629,7 +2632,9 @@ class Profile(models.Model):
 
         if not self.paypal_sub_id:
             self.paypal_sub_id = ipns[0].subscr_id
-            self.save()
+            # Only the field that changed, for the same concurrent webhook reason as
+            # setup_premium_history (apps/profile/models.py).
+            self.save(update_fields=["paypal_sub_id"])
 
         paypal_ids = set()
         for ipn in ipns:

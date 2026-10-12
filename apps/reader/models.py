@@ -1167,6 +1167,17 @@ class UserSubscription(models.Model):
     def schedule_fetch_archive_feeds_for_user(cls, user_id):
         from apps.profile.tasks import FetchArchiveFeedsForUser
 
+        # One backfill per user at a time. Several payment webhooks for the same upgrade can
+        # reach activate_archive together, and on 2026-10-10 four of them each started a
+        # backfill of the same 3,910 feeds. The claim lasts as long as a backfill can run.
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        claim_seconds = (
+            settings.MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW + settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH
+        )
+        if not r.set("archive_fetch_scheduled:%s" % user_id, 1, nx=True, ex=claim_seconds):
+            logging.debug(" ---> ~FCArchive backfill already scheduled for user %s, skipping" % user_id)
+            return
+
         FetchArchiveFeedsForUser.apply_async(
             kwargs=dict(user_id=user_id),
             queue="search_indexer",

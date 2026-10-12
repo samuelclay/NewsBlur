@@ -4,6 +4,7 @@ import threading
 import time
 from unittest.mock import MagicMock, call, patch
 
+import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
@@ -513,6 +514,27 @@ class Test_ArchiveFetchStaggering(TestCase):
             + settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
             visibility_timeout,
         )
+
+
+class Test_ArchiveBackfillScheduling(TestCase):
+    """Concurrent payment webhooks for one archive upgrade must start one backfill of the
+    user's feeds, not one per webhook (apps/reader/models.py schedule_fetch_archive_feeds_for_user)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="backfillonce", password="password", email="backfillonce@test.com"
+        )
+        self.claim_key = "archive_fetch_scheduled:%s" % self.user.pk
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        r.delete(self.claim_key)
+        self.addCleanup(r.delete, self.claim_key)
+
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_archive_backfill_is_scheduled_once_while_one_is_running(self, mock_apply):
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 1)
 
 
 class Test_FinishArchiveFeedsSyncRedis(TestCase):
