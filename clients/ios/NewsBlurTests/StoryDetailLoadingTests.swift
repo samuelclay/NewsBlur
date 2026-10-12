@@ -2541,7 +2541,7 @@ import XCTest
         fixture.page.drawStory()
         await drainMainQueue()
         restoreScroll(on: fixture.page)
-        await fulfillment(of: [database.started], timeout: 2)
+        await fulfillment(of: [database.started], timeout: SimulatorTestTiming.realWorkTimeout)
         database.release()
         // StoryDetailLoadingTests.swift waits for the released database result to reach the main queue before asserting its exact position.
         try await requireState("The delayed scroll restoration completes for the same story") {
@@ -2572,7 +2572,7 @@ import XCTest
         fixture.page.drawStory()
         await drainMainQueue()
         restoreScroll(on: fixture.page)
-        await fulfillment(of: [database.started], timeout: 2)
+        await fulfillment(of: [database.started], timeout: SimulatorTestTiming.realWorkTimeout)
 
         fixture.page.activeStory = story("second", body: "Latest body")
         fixture.page.drawStory()
@@ -2616,7 +2616,7 @@ import XCTest
         fixture.web.scrollView.contentOffset = .zero
         XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, true)
         // StoryDetailLoadingTests.swift must capture the low-priority database read before releasing it; a timed-out wait must not consume an empty fixture.
-        let queryStarted = await XCTWaiter.fulfillment(of: [database.started], timeout: 15)
+        let queryStarted = await XCTWaiter.fulfillment(of: [database.started], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertEqual(queryStarted, .completed, "The saved-position query must be held before the page disappears")
         guard queryStarted == .completed else { return }
 
@@ -2626,13 +2626,13 @@ import XCTest
 
         let restored = expectation(description: "The held saved-position result reaches its main-queue restoration callback")
         database.release { restored.fulfill() }
-        await fulfillment(of: [restored], timeout: 15)
+        await fulfillment(of: [restored], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false)
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, fixture.web.scrollView.contentSize.height / 2)
         let stored = expectation(description: "Restored progress reaches the asynchronous position writer")
         app.observeNextPosition { _ in stored.fulfill() }
         fixture.page.viewWillDisappear(false)
-        await fulfillment(of: [stored], timeout: 15)
+        await fulfillment(of: [stored], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertEqual(app.positions, [500])
     }
 
@@ -2648,7 +2648,7 @@ import XCTest
             fixture.web.scrollView.contentInset = .zero
             fixture.web.scrollView.contentOffset = CGPoint(x: 0, y: up ? 1_600 : 0)
             restoreScroll(on: fixture.page)
-            await fulfillment(of: [database.started], timeout: 2)
+            await fulfillment(of: [database.started], timeout: SimulatorTestTiming.realWorkTimeout)
 
             if up { fixture.page.scrollPageUp(nil) }
             else { fixture.page.scrollPageDown(nil) }
@@ -2659,7 +2659,7 @@ import XCTest
             XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false)
             XCTAssertEqual(fixture.page.value(forKey: "hasScrolled") as? Bool, true)
             fixture.page.viewWillDisappear(false)
-            await fulfillment(of: [stored], timeout: 2)
+            await fulfillment(of: [stored], timeout: SimulatorTestTiming.realWorkTimeout)
             XCTAssertEqual(app.positions, [Int(floor(keyboardPosition / 5_000 * 1_000))])
             database.release()
             await delay(0.05)
@@ -2685,7 +2685,7 @@ import XCTest
         XCTAssertEqual(fixture.page.value(forKey: "awaitingStoryScrollRestoration") as? Bool, false)
         XCTAssertEqual(fixture.page.value(forKey: "hasScrolled") as? Bool, true)
         fixture.page.viewWillDisappear(false)
-        await fulfillment(of: [stored], timeout: 2)
+        await fulfillment(of: [stored], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertGreaterThan(keyboardPosition, 0)
         XCTAssertEqual(app.positions, [Int(floor(keyboardPosition / 5_000 * 1_000))])
@@ -2710,7 +2710,7 @@ import XCTest
         let stored = expectation(description: "Status-bar top reaches the asynchronous position writer")
         app.observeNextPosition { _ in stored.fulfill() }
         fixture.page.viewWillDisappear(false)
-        await fulfillment(of: [stored], timeout: 2)
+        await fulfillment(of: [stored], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertEqual(app.positions, [0])
         XCTAssertEqual(fixture.page.value(forKey: "scrollPct") as? Double, 0)
@@ -2725,7 +2725,7 @@ import XCTest
         fixture.page.drawStory()
         await delay(0.15)
         restoreScroll(on: fixture.page)
-        await fulfillment(of: [database.started], timeout: 2)
+        await fulfillment(of: [database.started], timeout: SimulatorTestTiming.realWorkTimeout)
         fixture.web.scrollView.contentInset.top = 64
 
         XCTAssertTrue(requestScrollToTop(on: fixture.page))
@@ -2735,7 +2735,7 @@ import XCTest
         app.observeNextPosition { _ in stored.fulfill() }
         fixture.page.viewWillDisappear(false)
         database.release { oldReadDelivered.fulfill() }
-        await fulfillment(of: [stored, oldReadDelivered], timeout: 2)
+        await fulfillment(of: [stored, oldReadDelivered], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertEqual(fixture.web.scrollView.contentOffset.y, -64)
         XCTAssertEqual(app.positions, [0])
@@ -2817,7 +2817,7 @@ import XCTest
                 unsafeBitCast(fixture.page.method(for: selector), to: Call.self)(fixture.page, selector, fixture.web.scrollView)
                 XCTAssertEqual(fixture.page.positionStorageRequests - storageRequests, reusesPage ? 0 : 1,
                                "A reused document must reject the old scroll completion before scheduling persistence")
-                if let stored { await fulfillment(of: [stored], timeout: 5) }
+                if let stored { await fulfillment(of: [stored], timeout: SimulatorTestTiming.realWorkTimeout) }
                 XCTAssertEqual(app.positions, reusesPage ? [] : [0])
             }
         }
@@ -2836,7 +2836,7 @@ import XCTest
         fixture.page.drawStory()
         await drainMainQueue()
         restoreScroll(on: fixture.page)
-        await fulfillment(of: [database.started], timeout: 2)
+        await fulfillment(of: [database.started], timeout: SimulatorTestTiming.realWorkTimeout)
 
         fixture.web.trackedScroll.simulatesDragging = true
         fixture.web.scrollView.contentOffset = CGPoint(x: 0, y: 120)
