@@ -653,6 +653,7 @@ import WebKit
         let articles = (5...7).map { index -> DuoPagerResizePage in
             let page = DuoPagerResizePage()
             page.appDelegate = app
+            page.recordsDocumentLoads = true
             page.loadViewIfNeeded()
             page.pageIndex = index
             page.activeStory = NSMutableDictionary(dictionary: collection.activeFeedStories[index] as! [AnyHashable: Any])
@@ -672,25 +673,13 @@ import WebKit
         pages.scrollView.contentOffset = CGPoint(x: 6 * 474, y: 0)
         app.activeStory = collection.activeFeedStories[6] as? [AnyHashable: Any]
         let window = UIWindow(frame: pages.view.bounds)
-        let navigation = DuoPagerResizeNavigationDelegate()
-        let loaded = articles.map { expectation(description: "Local pager article \($0.pageIndex) loaded") }
-        let loadsByWebView = Dictionary(uniqueKeysWithValues: zip(articles, loaded).map {
-            (ObjectIdentifier($0.0.webView), $0.1)
-        })
-        var finishedWebViews = Set<ObjectIdentifier>()
-        navigation.didLoad = { webView in
-            let identity = ObjectIdentifier(webView)
-            if finishedWebViews.insert(identity).inserted { loadsByWebView[identity]?.fulfill() }
-        }
         var selectionObservation: NSKeyValueObservation?
         var observesPager = false
         defer {
             selectionObservation?.invalidate()
-            navigation.didLoad = nil
             pages.scrollView.delegate = nil
             if observesPager { pages.scrollView.removeObserver(pages, forKeyPath: "contentOffset") }
             for article in articles {
-                article.webView.navigationDelegate = nil
                 article.webView.stopLoading()
                 article.webView.removeFromSuperview()
                 article.view.removeFromSuperview()
@@ -709,27 +698,21 @@ import WebKit
             collection.appDelegate = nil
             app.storiesCollection = nil
         }
-        // FeedToolbarLayoutTests.swift loads its real WebKit documents in a mounted, non-key window instead of depending on off-window process scheduling.
+        // FeedToolbarLayoutTests.swift mounts the pager in a non-key window and records each article's document load:
+        // pager selection is under test, and no pager path loads or reads a document, so WebKit launch latency is not.
         window.addSubview(pages.view)
         window.isHidden = false
         window.layoutIfNeeded()
+        func articleDocument(_ index: Int) -> String { "<html><body>Loaded article \(index)</body></html>" }
+        func recordedDocuments(_ article: DuoPagerResizePage) -> [String]? {
+            (article.webView as? DuoPagerDocumentWebView)?.documentLoads
+        }
         for article in articles {
             XCTAssertTrue(article.webView.window === window)
-            article.webView.navigationDelegate = navigation
-            article.webView.loadHTMLString("<html><body>Loaded article \(article.pageIndex)</body></html>", baseURL: nil)
+            article.webView.loadHTMLString(articleDocument(article.pageIndex), baseURL: nil)
+            XCTAssertEqual(recordedDocuments(article), [articleDocument(article.pageIndex)],
+                           "Every cached page must hold its own complete document before the gesture")
         }
-        let readiness = await XCTWaiter.fulfillment(of: loaded, timeout: SimulatorTestTiming.realWorkTimeout)
-        XCTAssertEqual(readiness, .completed, "All three local documents must finish before testing pager selection")
-        guard readiness == .completed else { return }
-        var documents: [String] = []
-        for article in articles {
-            let document = try await article.webView.evaluateJavaScript("document.body.innerText") as? String
-            let expected = "Loaded article \(article.pageIndex)"
-            XCTAssertEqual(document, expected, "Every cached page must contain its own complete document before the gesture")
-            guard document == expected else { return }
-            documents.append(expected)
-        }
-        let originalDocument = documents[1]
         let originalGeneration = selected.value(forKey: "storyLoadGeneration") as? UInt
         var changedHashes: [String] = []
         selectionObservation = app.observe(\.activeStory, options: [.old, .new]) { _, change in
@@ -764,10 +747,10 @@ import WebKit
                            "Nested relayout must preserve its caller's repositioning guard")
             pages.setValue(false, forKey: "isRepositioningFirstPage")
             XCTAssertEqual(selected.value(forKey: "storyLoadGeneration") as? UInt, originalGeneration)
-            let document = try await selected.webView.evaluateJavaScript("document.body.innerText") as? String
+            await letQueuedPagerCallbacksRun()
             XCTAssertEqual(app.activeStory?["story_hash"] as? String, "resize:6",
                            "A delayed resize callback must not leave the model on a different article than the document")
-            XCTAssertEqual(document, originalDocument)
+            XCTAssertEqual(recordedDocuments(selected), [articleDocument(6)], "Relayout must not replace the selected article's document")
             XCTAssertEqual(selected.documentInvalidations, 0, "Relayout must not clear or redraw the loaded document")
         } else {
             // FeedToolbarLayoutTests.swift keeps real pager selection callbacks covered independently of layout preservation.
@@ -779,8 +762,16 @@ import WebKit
             XCTAssertEqual(next.pageIndex, 7)
             XCTAssertEqual(next.activeStoryId, "resize:7")
             XCTAssertTrue(changedHashes.contains("resize:7"))
-            let document = try await next.webView.evaluateJavaScript("document.body.innerText") as? String
-            XCTAssertEqual(document, "Loaded article 7")
+            XCTAssertEqual(recordedDocuments(next), [articleDocument(7)], "The promoted article must keep the document it already loaded")
+            XCTAssertEqual(next.documentInvalidations, 0, "Promoting the next article must not clear or redraw its loaded document")
+        }
+    }
+
+    // FeedToolbarLayoutTests.swift gives callbacks the resize queued, including ones a main-queue hop schedules, a short
+    // window to run before checking none of them moved the model; a stall can only hide such a callback, never fail the test.
+    private func letQueuedPagerCallbacksRun() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { continuation.resume() }
         }
     }
 
@@ -2830,9 +2821,10 @@ import WebKit
 
 @MainActor private final class DuoPagerResizePage: StoryDetailViewController {
     var documentInvalidations = 0
+    var recordsDocumentLoads = false
     override func loadView() {
         view = UIView(frame: CGRect(x: 0, y: 0, width: 474, height: 600))
-        webView = WKWebView(frame: view.bounds)
+        webView = recordsDocumentLoads ? DuoPagerDocumentWebView(frame: view.bounds) : WKWebView(frame: view.bounds)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(webView)
     }
@@ -2847,6 +2839,23 @@ import WebKit
     override func refreshHeader() {}
     override func refreshSideOptions() {}
     deinit { webView = nil }
+}
+
+@MainActor private final class DuoPagerDocumentWebView: WKWebView {
+    private(set) var documentLoads: [String] = []
+    // FeedToolbarLayoutTests.swift records every request to replace the article document; no navigation reaches WebKit.
+    override func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation? {
+        documentLoads.append(string)
+        return nil
+    }
+    override func load(_ request: URLRequest) -> WKNavigation? {
+        documentLoads.append("request:\(request.url?.absoluteString ?? "")")
+        return nil
+    }
+    override func reload() -> WKNavigation? {
+        documentLoads.append("reload")
+        return nil
+    }
 }
 
 @MainActor private final class DuoPagerResizeNavigationDelegate: NSObject, WKNavigationDelegate {
