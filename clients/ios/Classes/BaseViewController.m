@@ -208,7 +208,42 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
             [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
         }
         [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(saveStoryFromKeyboard:) discoverabilityTitle:@"Save/Unsave Story" wantPriority:YES];
+
+        // BaseViewController.m mirrors the reader's story shortcuts so the Mac story list doesn't beep at J or V (forum #13881).
+        [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
+        [self addKeyCommandWithInput:@"k" modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
+        [self addReaderShortcutWithInput:@"n" modifierFlags:0 readerAction:@selector(doNextUnreadStory:) discoverabilityTitle:@"Next Unread Story"];
+        [self addReaderShortcutWithInput:@"u" modifierFlags:0 readerAction:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+        [self addReaderShortcutWithInput:@"m" modifierFlags:0 readerAction:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+        [self addReaderShortcutWithInput:@"o" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+        [self addReaderShortcutWithInput:@"v" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+        [self addReaderShortcutWithInput:@"t" modifierFlags:0 readerAction:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+        [self addReaderShortcutWithInput:@"\r" modifierFlags:UIKeyModifierShift readerAction:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
+        [self addReaderShortcutWithInput:@" " modifierFlags:0 readerAction:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
+        [self addReaderShortcutWithInput:@" " modifierFlags:UIKeyModifierShift readerAction:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
+        [self addReaderShortcutWithInput:@"c" modifierFlags:0 readerAction:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
+        [self addReaderShortcutWithInput:@"s" modifierFlags:UIKeyModifierShift readerAction:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     }
+}
+
+- (void)addReaderShortcutWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags readerAction:(SEL)readerAction discoverabilityTitle:(NSString *)discoverabilityTitle {
+    // BaseViewController.m carries the reader's selector in the command so performReaderShortcut: can forward it to the story pane.
+    UIKeyCommand *keyCommand = [UIKeyCommand commandWithTitle:@""
+                                                        image:nil
+                                                       action:@selector(performReaderShortcut:)
+                                                        input:input
+                                                modifierFlags:modifierFlags
+                                                 propertyList:NSStringFromSelector(readerAction)];
+    keyCommand.discoverabilityTitle = discoverabilityTitle;
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
+    [self addKeyCommand:keyCommand];
+}
+
+- (SEL)readerActionForShortcut:(id)sender {
+    if (![sender isKindOfClass:UIKeyCommand.class]) return NULL;
+    id propertyList = [(UIKeyCommand *)sender propertyList];
+    if (![propertyList isKindOfClass:NSString.class]) return NULL;
+    return NSSelectorFromString(propertyList);
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -335,6 +370,19 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         return self.isStoryShown || (self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0);
     }
     
+    if (action == @selector(performReaderShortcut:)) {
+        // BaseViewController.m enables a mirrored shortcut only when the open reader would accept it from its own pane.
+        StoryPagesViewController *reader = appDelegate.storyPagesViewController;
+        SEL readerAction = [self readerActionForShortcut:sender];
+        if (!readerAction || ![self readerKeyboardContextAvailable]) return NO;
+        BOOL storyOpen = self.isStoryShown && NBReaderViewIsVisible(reader.viewIfLoaded, self.viewIfLoaded.window);
+        // BaseViewController.m lets N open the first unread story from the list, the way J and the arrows open the first story.
+        BOOL opensFirstUnread = readerAction == @selector(doNextUnreadStory:) &&
+            self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0;
+        if (!storyOpen && !opensFirstUnread) return NO;
+        return [reader respondsToSelector:readerAction] && [reader canPerformAction:readerAction withSender:sender];
+    }
+
     if (action == @selector(chooseLayout:) || action == @selector(findInFeedDetail:)) {
         return self.isFeedShown;
     } else if (action == @selector(chooseTitle:) || action == @selector(choosePreview:)) {
@@ -812,6 +860,12 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
 - (IBAction)saveStoryFromKeyboard:(id)sender {
     [self.appDelegate.storyPagesViewController toggleStorySaved:sender];
+}
+
+- (IBAction)performReaderShortcut:(id)sender {
+    SEL readerAction = [self readerActionForShortcut:sender];
+    if (!readerAction) return;
+    [UIApplication.sharedApplication sendAction:readerAction to:self.appDelegate.storyPagesViewController from:sender forEvent:nil];
 }
 
 - (IBAction)previousStory:(id)sender {
