@@ -374,8 +374,12 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         // BaseViewController.m enables a mirrored shortcut only when the open reader would accept it from its own pane.
         StoryPagesViewController *reader = appDelegate.storyPagesViewController;
         SEL readerAction = [self readerActionForShortcut:sender];
-        if (!readerAction || ![self readerKeyboardContextAvailable] || !self.isStoryShown ||
-            !NBReaderViewIsVisible(reader.viewIfLoaded, self.viewIfLoaded.window)) return NO;
+        if (!readerAction || ![self readerKeyboardContextAvailable]) return NO;
+        BOOL storyOpen = self.isStoryShown && NBReaderViewIsVisible(reader.viewIfLoaded, self.viewIfLoaded.window);
+        // BaseViewController.m lets N open the first unread story from the list, the way J and the arrows open the first story.
+        BOOL opensFirstUnread = readerAction == @selector(doNextUnreadStory:) &&
+            self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0;
+        if (!storyOpen && !opensFirstUnread) return NO;
         return [reader respondsToSelector:readerAction] && [reader canPerformAction:readerAction withSender:sender];
     }
 
