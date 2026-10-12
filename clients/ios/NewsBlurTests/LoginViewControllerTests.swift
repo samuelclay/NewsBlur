@@ -3022,7 +3022,7 @@ final class StoryPagesViewControllerTests: XCTestCase {
         let outgoingLoaded = expectation(description: "Outgoing article loaded")
         navigation.finished = { _ in outgoingLoaded.fulfill() }
         web.loadHTMLString(Self.viewportFixtureHTML, baseURL: nil)
-        await fulfillment(of: [outgoingLoaded], timeout: 5)
+        await fulfillment(of: [outgoingLoaded], timeout: SimulatorTestTiming.realWorkTimeout)
 
         let incomingPaused = expectation(description: "New document waits before committing")
         let incomingLoaded = expectation(description: "New article loaded at the final native width")
@@ -3034,7 +3034,7 @@ final class StoryPagesViewControllerTests: XCTestCase {
         // LoginViewControllerTests.swift holds navigation so the safe-area resize updates the outgoing document first.
         page.setValue(Self.viewportFixtureHTML, forKey: "fullStoryHTML")
         page.perform(Selector(("loadStory")))
-        await fulfillment(of: [incomingPaused], timeout: 5)
+        await fulfillment(of: [incomingPaused], timeout: SimulatorTestTiming.realWorkTimeout)
         page.view.frame.size.width = 382
         web.frame = page.view.bounds
         web.layoutIfNeeded()
@@ -3043,7 +3043,7 @@ final class StoryPagesViewControllerTests: XCTestCase {
         XCTAssertTrue(outgoingViewport?.contains("width=382,") == true)
 
         navigation.resume()
-        await fulfillment(of: [incomingLoaded], timeout: 5)
+        await fulfillment(of: [incomingLoaded], timeout: SimulatorTestTiming.realWorkTimeout)
         let layout = try await web.callAsyncJavaScript("""
             await new Promise(requestAnimationFrame);
             await new Promise(requestAnimationFrame);
@@ -3223,7 +3223,7 @@ final class StoryPagesViewControllerTests: XCTestCase {
             <body id="story_pane" class="NB-ipad-wide NB-medium NB-river"><div class="NB-header"><div class="NB-header-inner">
             <div class="NB-story-title">Fullscreen article title</div></div></div><div style="height:2000px"></div></body></html>
             """, baseURL: cssURL.deletingLastPathComponent())
-        await fulfillment(of: [loaded], timeout: 5)
+        await fulfillment(of: [loaded], timeout: SimulatorTestTiming.realWorkTimeout)
         navigation.finished = nil
         defer {
             web.stopLoading()
@@ -3762,7 +3762,11 @@ final class StoryPagesViewControllerTests: XCTestCase {
 @MainActor private final class DuoViewportLayoutPage: StoryDetailViewController {
     override func loadView() {
         view = UIView(frame: CGRect(x: 0, y: 0, width: 466, height: 678))
-        webView = WKWebView(frame: view.bounds)
+        // LoginViewControllerTests.swift models the phone reader, whose web views get WebKit's mobile content mode.
+        // An iPad simulator defaults to desktop-class content, which keeps the first viewport width after a rewrite.
+        let configuration = WKWebViewConfiguration()
+        configuration.defaultWebpagePreferences.preferredContentMode = .mobile
+        webView = WKWebView(frame: view.bounds, configuration: configuration)
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         view.addSubview(webView)
     }
