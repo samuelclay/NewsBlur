@@ -32,12 +32,15 @@ def TaskFeeds():
 
     now_timestamp = int(now.strftime("%s"))
     queued_feeds = r.zrangebyscore("scheduled_updates", 0, now_timestamp)
-    r.zremrangebyscore("scheduled_updates", 0, now_timestamp)
     if not queued_feeds:
         logging.debug(" ---> ~SN~FB~BMNo feeds to queue! Exiting...")
         return
 
+    # Queue the due feeds before taking them off the schedule, and take off only the feeds read
+    # here: if Redis drops in between, a feed is left both scheduled and queued, which is
+    # harmless, instead of in neither, which loses it (apps/rss_feeds/tasks.py).
     r.sadd("queued_feeds", *queued_feeds)
+    r.zrem("scheduled_updates", *queued_feeds)
     logging.debug(
         " ---> ~SN~FBQueuing ~SB%s~SN stale feeds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)"
         % (len(queued_feeds), r.zcard("tasked_feeds"), r.scard("queued_feeds"), r.zcard("scheduled_updates"))

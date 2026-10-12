@@ -5483,6 +5483,62 @@ class Test_ArchiveWalkRunsOncePerFeed(TestCase):
         self.assertEqual(len(walks), 2)
 
 
+class Test_TaskFeedsNeverStrandsFeeds(TestCase):
+    """A feed must not leave the queue of feeds waiting for a fetch until its fetch task is
+    published. Publishing gives up after about a second of broker connection errors, and the
+    broker shares its Redis with these keys, so nothing can undo the bookkeeping afterwards.
+    A feed left counted as tasked with no fetch behind it waits for TaskBrokenFeeds, which
+    runs every 6 hours, and enough of them stop TaskFeeds from tasking anything
+    (apps/rss_feeds/models.py task_feeds, apps/rss_feeds/tasks.py TaskFeeds)."""
+
+    # Feed ids nothing else uses, since these keys are shared with the running dev stacks.
+    feed_ids = ["990000101", "990000102", "990000103"]
+
+    def setUp(self):
+        self.r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        self.addCleanup(self.r.srem, "queued_feeds", *self.feed_ids)
+        self.addCleanup(self.r.zrem, "tasked_feeds", *self.feed_ids)
+
+    def test_feeds_whose_fetch_was_not_published_stay_queued(self):
+        self.r.sadd("queued_feeds", *self.feed_ids)
+
+        with patch(
+            "apps.rss_feeds.tasks.UpdateFeeds.apply_async",
+            side_effect=[None, redis.exceptions.ConnectionError("broker dropped")],
+        ):
+            with self.assertRaises(redis.exceptions.ConnectionError):
+                Feed.task_feeds(self.feed_ids, verbose=False)
+
+        # The two feeds whose fetches never went out stay queued for the next TaskFeeds run. The
+        # first went out and is tasked; it may stay queued too and be fetched twice, which is
+        # harmless, where a feed fetched never is not.
+        self.assertTrue(self.r.sismember("queued_feeds", "990000102"))
+        self.assertTrue(self.r.sismember("queued_feeds", "990000103"))
+        self.assertIsNotNone(self.r.zscore("tasked_feeds", "990000101"))
+
+    @patch("apps.rss_feeds.models.Feed.task_feeds")
+    @patch("apps.rss_feeds.tasks.redis")
+    def test_due_feeds_stay_scheduled_when_queuing_them_fails(self, mock_redis, mock_task_feeds):
+        from apps.rss_feeds.tasks import TaskFeeds
+
+        r = mock_redis.Redis.return_value
+        r.zcard.return_value = 0
+        r.zrangebyscore.return_value = ["990000201"]
+        r.sadd.side_effect = redis.exceptions.ConnectionError("redis dropped")
+
+        with self.assertRaises(redis.exceptions.ConnectionError):
+            TaskFeeds()
+
+        removed_from_schedule = [
+            name
+            for name, args, _ in r.method_calls
+            if name in ("zrem", "zremrangebyscore") and args and args[0] == "scheduled_updates"
+        ]
+        self.assertEqual(
+            removed_from_schedule, [], "a due feed must not leave the schedule before it is queued"
+        )
+
+
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):
     @patch("apps.rss_feeds.models.redis")
     @patch("apps.reader.models.redis")
