@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "すべてのパターンでは、デフォルトで大文字と小文字を区別しません";
 "All stories" = "すべての記事";
 "Alphabetical" = "アルファベット順";
+"Already have feeds?" = "すでにフィードをお持ちですか？";
 "Analyze" = "分析";
 "Android" = "Android";
 "App Badge" = "アプリアイコンのバッジ";
@@ -161,12 +162,14 @@
 "Brave" = "勇敢";
 "Brightness Override" = "明るさの上書き";
 "Brightness threshold" = "明るさのしきい値";
+"Bring your feeds and folders from another reader." = "別のリーダーからフィードとフォルダーを移行できます。";
 "Bullets" = "箇条書き";
 "Cancel" = "キャンセル";
 "Change Story List" = "ストーリー一覧を変更";
 "Choose Icon" = "アイコンを選択";
 "Choose Story List" = "記事リストを選択";
 "Choose a Topic" = "トピックを選択";
+"Choose feeds for your folder" = "フォルダーに追加するフィードを選択";
 "Choose how far back to mark read" = "どこまで遡って既読にするか選択";
 "Choose how often and when your briefing is generated" = "ブリーフィングの生成頻度と生成時刻を選択";
 "Choose one or more words from the title:" = "タイトルから単語を1つ以上選択してください：";
@@ -190,7 +193,9 @@
 "Configure" = "設定";
 "Confirm mark read" = "既読にすることを確認";
 "Connect AI agents with MCP server and CLI" = "MCPサーバーとCLIでAIエージェントを接続";
+"Connect an existing account" = "既存のアカウントに接続";
 "Connecting" = "接続中";
+"Continue" = "続行";
 "Control how much is included and how it is written" = "含める量と文章の書き方を調整";
 "Copied" = "コピーしました";
 "Copyright" = "著作権";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "画像全体を読み込めませんでした。ブラウザーで開いてみてください。";
 "Counting is difficult..." = "数えるのは難しいですね…";
 "Create a feed from any web page" = "どのウェブページからでもフィードを作成";
+"Create a new account instead" = "代わりに新しいアカウントを作成";
 "Custom Domain" = "カスタムドメイン";
 "Custom RSS feeds for saved stories" = "保存した記事用のカスタムRSSフィード";
 "Custom Search Query" = "カスタム検索クエリ";
@@ -216,9 +222,11 @@
 "Delete Account" = "アカウントを削除";
 "Delete Folder…" = "フォルダーを削除…";
 "Delete Site…" = "サイトを削除…";
+"Delete account" = "アカウントを削除";
 "Delete offline stories" = "オフライン記事を削除";
 "Delete saved search" = "保存した検索を削除";
 "Deleting saved search..." = "保存した検索を削除しています…";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "アカウントを完全に削除すると、フィード、保存した記事、アカウントデータが削除されます。この操作は取り消せません。";
 "Deleting..." = "削除中...";
 "Discover" = "見つける";
 "Discover more to read" = "もっと読むものを見つける";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "カスタム検索クエリを入力...";
 "Enter a web page URL..." = "ウェブページのURLを入力...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "任意のウェブページのURLを入力すると、NewsBlurがAIでページ構造を分析して記事を見つけ、購読できる専用のRSSフィードを作成します。";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "既存のNewsBlurユーザー名またはメールアドレスと、NewsBlurパスワードを入力してください。";
 "Error" = "エラー";
 "Evening" = "夕方";
 "Every story from every site is archived and searchable forever" = "すべてのサイトの記事を永久にアーカイブし、検索できます";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "もちろん、プレミアムサブスクリプションのすべての機能";
 "Exact phrase" = "完全一致";
 "Experimental" = "実験的";
+"Explore interests" = "興味のある項目を探す";
 "Export Preferences" = "設定をエクスポート";
 "Export trained stories from folders as RSS feeds" = "フォルダー内の学習済み記事をRSSフィードとしてエクスポート";
 "Extra Large" = "特大";
@@ -278,12 +288,14 @@
 "Find in Sites" = "サイト内を検索";
 "Find in feed" = "フィード内を検索";
 "Find in sites" = "サイト内を検索";
+"Finding feeds for you to explore." = "探索できるフィードを検索中。";
 "Finding related sites..." = "関連サイトを検索中...";
 "Finding story..." = "記事を検索中...";
 "Firefox" = "Firefox";
 "Focus" = "フォーカス";
 "Focus Stories" = "注目記事";
 "Focus only" = "これだけに絞る";
+"Folder name" = "フォルダー名";
 "Folders" = "フォルダー";
 "Follow" = "フォロー";
 "Follow %@" = "%@をフォロー";
@@ -331,7 +343,9 @@
 "Image Preview" = "画像プレビュー";
 "Image actions" = "画像のアクション";
 "Import & Export" = "インポートとエクスポート";
+"Import OPML" = "OPMLをインポート";
 "Import Preferences" = "設定をインポート";
+"Import or upload sites" = "サイトをインポートまたはアップロード";
 "Imported %i site%@" = "%i件のサイトをインポートしました%@";
 "Importing sites..." = "サイトをインポート中…";
 "In-app Safari" = "アプリ内Safari";
@@ -355,6 +369,7 @@
 "Large" = "大";
 "Large Left" = "左大";
 "Large Right" = "右・大";
+"Last used" = "前回使用";
 "Lavender Iris" = "ラベンダーアイリス";
 "Layout" = "レイアウト";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlurを使う場合は空欄のままにしてください。セルフホスト版を使う場合は、そのURLを入力してください。次回アプリを開いたときに反映されます。";
@@ -367,6 +382,7 @@
 "List style" = "リストのスタイル";
 "Loading Google News topics..." = "Google ニュースのトピックを読み込み中...";
 "Loading image…" = "画像を読み込み中…";
+"Loading interests" = "興味のあるトピックを読み込み中";
 "Loading settings…" = "設定を読み込み中…";
 "Loading..." = "読み込み中...";
 "Loading…" = "読み込み中…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "ストーリーリストがありません";
 "No Widget Sites" = "ウィジェットサイトがありません";
 "No briefings yet" = "ブリーフィングはまだありません";
+"No feeds to show yet. Try another interest or search all sites." = "表示できるフィードがまだありません。別の興味のある項目を選ぶか、すべてのサイトを検索してください。";
+"No interests or sites found. Try another search." = "興味のある項目やサイトが見つかりません。別のキーワードで検索してください。";
 "No longer saved" = "保存されなくなりました";
 "No notifications yet." = "通知はまだありません。";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "表示できる記事がありません。表示できる記事がありません。表示できる記事がありません。表示できる記事がありません。";
@@ -509,6 +527,7 @@
 "Page up" = "ページを上へ";
 "Paste a story title from the page" = "ページから記事のタイトルを貼り付け";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "URLを貼り付けると、RSSがなくてもNewsBlurがページからフィードを作成します。";
+"Permanently delete account" = "アカウントを完全に削除";
 "Pick which model writes your Daily Briefing" = "デイリーブリーフィングの生成に使用するモデルを選択";
 "Place the story list controls above or below the stories" = "記事リストの操作ボタンを記事の上または下に配置";
 "Plum Berry" = "プラムベリー";
@@ -574,7 +593,9 @@
 "Reply to %@" = "%@に返信";
 "Resize sidebar" = "サイドバーのサイズを変更";
 "Restore" = "復元";
+"Retry" = "再試行";
 "Retry Google Reader" = "Google Readerを再試行";
+"Retry icons" = "アイコンを再試行";
 "River of News (reading by folder)" = "ニュースの流れ（フォルダー別に読む）";
 "Rows" = "行";
 "Ruby Red" = "ルビーレッド";
@@ -656,6 +677,7 @@
 "Show without icons" = "アイコンなしで表示";
 "Sidebar" = "サイドバー";
 "Sign Up" = "登録";
+"Sign in with Google" = "Googleでサインイン";
 "Single" = "シングル";
 "Single Column" = "1列表示";
 "Site" = "サイト";
@@ -669,12 +691,14 @@
 "Small" = "小";
 "Small Left" = "左・小";
 "Small Right" = "小（右）";
+"Some feed icons couldn’t load." = "一部のフィードアイコンを読み込めませんでした。";
 "Sources" = "ソース";
 "Spacing" = "間隔";
 "Standard" = "標準";
 "Start reading" = "読み始める";
 "Statistics" = "統計";
 "Statistics…" = "統計…";
+"Stay connected" = "つながりを保つ";
 "Stay on the feeds list" = "フィード一覧に戻る";
 "Stories" = "記事";
 "Stories can stay unread forever" = "記事を未読のままにできます";
@@ -765,6 +789,7 @@
 "Trending Sites" = "人気のサイト";
 "Try" = "試す";
 "Try again" = "もう一度試す";
+"Try search again" = "もう一度検索";
 "Trying Feed" = "フィードを試す";
 "Tuesday" = "火曜日";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "アーカイブにアップグレード";
 "Upgrade to Premium" = "プレミアムにアップグレード";
 "Upgrade to Premium Archive" = "Premium Archiveにアップグレード";
+"Use another sign-in method" = "別のサインイン方法を使う";
 "Use both" = "両方を使用";
 "Use system size" = "システムサイズを使用";
 "User info" = "ユーザー情報";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "プレミアムアーカイブの購読は有効です";
 "Your premium pro subscription includes everything above" = "プレミアムProの購読には、上記のすべてが含まれます";
 "Your premium pro subscription is active" = "プレミアムプロの購読が有効です";
+"Your reading list" = "読書リスト";
+"You’re all set up." = "設定が完了しました。";
 "all stories" = "すべての記事";
 "dislike" = "低評価";
 "iOS" = "iOS";
+"or" = "または";
 "premium subscribers" = "プレミアム購読者";
 "— Top Level —" = "— 最上位 —";
 "‹ Feeds" = "‹ フィード";

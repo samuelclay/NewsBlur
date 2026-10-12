@@ -278,7 +278,7 @@ msgid_plural "%(count)s stories"
 msgstr[0] "%(count)s कहानियाँ"
 msgstr[1] "%(count)s कहानियाँ"
 
-#: media/js/newsblur/reader/reader_account.js:651
+#: media/js/newsblur/reader/reader_account.js:658
 #, python-format
 msgid "%(value_1)s %(value_2)s will be deleted"
 msgstr "%(value_1)s %(value_2)s हटा दिए जाएंगे"
@@ -313,7 +313,7 @@ msgstr "%(value_1)s उपलब्ध"
 msgid "%(value_1)s bytes"
 msgstr "%(value_1)s बाइट"
 
-#: media/js/newsblur/views/story_detail_view.js:763
+#: media/js/newsblur/views/story_detail_view.js:764
 #, python-format
 msgid "%(value_1)s curated %(value_2)s"
 msgstr "%(value_1)s द्वारा संकलित %(value_2)s"
@@ -400,7 +400,7 @@ msgstr "%(value_1)s साइटें"
 msgid "%(value_1)s stories"
 msgstr "%(value_1)s कहानियाँ"
 
-#: media/js/newsblur/views/story_detail_view.js:727
+#: media/js/newsblur/views/story_detail_view.js:728
 #, python-format
 msgid "%(value_1)s story changes"
 msgstr "%(value_1)s स्टोरी में बदलाव"
@@ -410,7 +410,7 @@ msgstr "%(value_1)s स्टोरी में बदलाव"
 msgid "%(value_1)s to send"
 msgstr "भेजने के लिए %(value_1)s"
 
-#: media/js/newsblur/reader/reader_account.js:545
+#: media/js/newsblur/reader/reader_account.js:552
 #, python-format
 msgid "%(value_1)s will be deleted"
 msgstr "%(value_1)s मिटा दिया जाएगा"
@@ -830,11 +830,11 @@ msgstr "(GMT-10:00) हवाई-अल्यूशियन"
 msgid "(GMT-11:00) Midway Island, Samoa"
 msgstr "(GMT-11:00) मिडवे द्वीप, समोआ"
 
-#: media/js/newsblur/reader/reader_account.js:971
+#: media/js/newsblur/reader/reader_account.js:1064
 msgid "(upcoming)"
 msgstr "(आगामी)"
 
-#: media/js/newsblur/views/story_detail_view.js:694
+#: media/js/newsblur/views/story_detail_view.js:695
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
@@ -978,7 +978,7 @@ msgstr "साझा किए गए लेखों का blurblog"
 msgid "A folder of feeds read as one stream"
 msgstr "एक फ़ोल्डर की फ़ीडों को एक स्ट्रीम की तरह पढ़ें"
 
-#: media/js/newsblur/reader/reader_account.js:195
+#: media/js/newsblur/reader/reader_account.js:202
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "%(value_1)s की ओर से एक उपहार आपके खाते में लागू कर दिया गया है।"
@@ -995,7 +995,7 @@ msgstr "एक सुपर नापसंद बाकी सब पर भा
 msgid "A story diff with additions and deletions"
 msgstr "जोड़ और हटाव दिखाने वाला स्टोरी अंतर"
 
-#: media/js/newsblur/views/story_detail_view.js:1313
+#: media/js/newsblur/views/story_detail_view.js:1314
 msgid "AI Filter"
 msgstr "AI फ़िल्टर"
 
@@ -1024,7 +1024,7 @@ msgstr "सभी श्रेणियाँ (%(value_1)s)"
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "बिल्कुल। ट्रेनर खोलें और उसे रीसेट करने के लिए कोई भी थम्स अप या थम्स डाउन हटा दें।"
 
-#: media/js/newsblur/reader/reader_account.js:60
+#: media/js/newsblur/reader/reader_account.js:61
 msgid "Account"
 msgstr "खाता"
 
@@ -1216,7 +1216,7 @@ msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "इस डोमेन से %(value_1)s मौजूदा आर्काइव भी हटाएँ"
 msgstr[1] "इस डोमेन से %(value_1)s मौजूदा आर्काइव भी हटाएँ"
 
-#: media/js/newsblur/views/story_detail_view.js:637
+#: media/js/newsblur/views/story_detail_view.js:638
 #, python-format
 msgid "Also published by %(value_1)s site"
 msgid_plural "Also published by %(value_1)s sites"
@@ -1355,7 +1355,7 @@ msgstr "लेखों के बारे में AI से सवाल प
 msgid "Ask AI with a choice of models"
 msgstr "अपनी पसंद के मॉडल से AI से पूछें"
 
-#: media/js/newsblur/views/story_detail_view.js:2482
+#: media/js/newsblur/views/story_detail_view.js:2483
 msgid "Ask a question..."
 msgstr "कोई सवाल पूछें..."
 
@@ -1383,7 +1383,7 @@ msgstr "ऑडियो"
 msgid "Author"
 msgstr "लेखक"
 
-#: media/js/newsblur/reader/reader_account.js:145
+#: media/js/newsblur/reader/reader_account.js:152
 msgid "Author Regex"
 msgstr "लेखक रेगेक्स"
 
@@ -1629,7 +1629,7 @@ msgstr "नाम बदलना रद्द करें"
 msgid "Cancel share"
 msgstr "शेयर रद्द करें"
 
-#: media/js/newsblur/reader/reader_account.js:821
+#: media/js/newsblur/reader/reader_account.js:914
 msgid "Cancel subscription renewal"
 msgstr "सदस्यता नवीनीकरण रद्द करें"
 
@@ -1641,7 +1641,7 @@ msgstr "अनफ़ॉलो रद्द करें"
 msgid "Canceled Request"
 msgstr "अनुरोध रद्द किया गया"
 
-#: media/js/newsblur/reader/reader_account.js:471
+#: media/js/newsblur/reader/reader_account.js:478
 msgid "Cancelling..."
 msgstr "रद्द किया जा रहा है..."
 
@@ -1691,7 +1691,7 @@ msgstr "बिलिंग विवरण बदलें"
 msgid "Change folders"
 msgstr "फ़ोल्डर बदलें"
 
-#: media/js/newsblur/reader/reader_account.js:101
+#: media/js/newsblur/reader/reader_account.js:108
 msgid "Change password"
 msgstr "पासवर्ड बदलें"
 
@@ -1699,7 +1699,7 @@ msgstr "पासवर्ड बदलें"
 msgid "Change your blurblog settings above"
 msgstr "ऊपर अपनी ब्लरब्लॉग सेटिंग बदलें"
 
-#: media/js/newsblur/reader/reader_account.js:231
+#: media/js/newsblur/reader/reader_account.js:238
 msgid "Change your credit card"
 msgstr "अपना क्रेडिट कार्ड बदलें"
 
@@ -1960,7 +1960,7 @@ msgstr ""
 msgid "Control which websites are archived. Blocked sites will not be saved by the browser extension."
 msgstr "चुनें कि किन वेबसाइटों को संग्रहित किया जाए। अवरुद्ध साइटें ब्राउज़र एक्सटेंशन द्वारा सहेजी नहीं जाएँगी।"
 
-#: media/js/newsblur/views/story_detail_view.js:2072
+#: media/js/newsblur/views/story_detail_view.js:2073
 msgid "Copied"
 msgstr "कॉपी किया गया"
 
@@ -1984,7 +1984,7 @@ msgstr "कॉपी करें"
 msgid "Counting is difficult"
 msgstr "गिनना मुश्किल है"
 
-#: media/js/newsblur/reader/reader_account.js:539
+#: media/js/newsblur/reader/reader_account.js:546
 msgid "Counting..."
 msgstr "गिनती हो रही है..."
 
@@ -2028,7 +2028,7 @@ msgstr "कर्सर"
 msgid "Custom Add Site URL"
 msgstr "साइट जोड़ने का कस्टम URL"
 
-#: media/js/newsblur/reader/reader_account.js:332
+#: media/js/newsblur/reader/reader_account.js:339
 msgid "Custom CSS"
 msgstr "कस्टम CSS"
 
@@ -2036,7 +2036,7 @@ msgstr "कस्टम CSS"
 msgid "Custom CSS for your Blurblog"
 msgstr "अपने Blurblog के लिए कस्टम CSS"
 
-#: media/js/newsblur/reader/reader_account.js:56
+#: media/js/newsblur/reader/reader_account.js:57
 msgid "Custom CSS/JavaScript"
 msgstr "कस्टम CSS/JavaScript"
 
@@ -2044,7 +2044,7 @@ msgstr "कस्टम CSS/JavaScript"
 msgid "Custom Date Range"
 msgstr "कस्टम तारीख सीमा"
 
-#: media/js/newsblur/reader/reader_account.js:338
+#: media/js/newsblur/reader/reader_account.js:345
 msgid "Custom JavaScript"
 msgstr "कस्टम JavaScript"
 
@@ -2170,23 +2170,23 @@ msgstr "शेयर हटाएँ"
 msgid "Delete Tag"
 msgstr "टैग हटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:169
+#: media/js/newsblur/reader/reader_account.js:176
 msgid "Delete all of my sites"
 msgstr "मेरी सभी साइटें हटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:178
+#: media/js/newsblur/reader/reader_account.js:185
 msgid "Delete my account"
 msgstr "मेरा खाता हटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:161
+#: media/js/newsblur/reader/reader_account.js:168
 msgid "Delete my intelligence training classifiers"
 msgstr "मेरे इंटेलिजेंस ट्रेनिंग क्लासिफ़ायर हटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:118
+#: media/js/newsblur/reader/reader_account.js:125
 msgid "Delete my saved stories"
 msgstr "मेरे सहेजे गए लेख हटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:128
+#: media/js/newsblur/reader/reader_account.js:135
 msgid "Delete my shared stories"
 msgstr "मेरी साझा की गई स्टोरी हटाएँ"
 
@@ -2435,15 +2435,15 @@ msgstr "प्रोफ़ाइल संपादित करें"
 msgid "Email Newsletters"
 msgstr "ईमेल न्यूज़लेटर"
 
-#: media/js/newsblur/reader/reader_account.js:84
+#: media/js/newsblur/reader/reader_account.js:91
 msgid "Email address"
 msgstr "ईमेल पता"
 
-#: media/js/newsblur/reader/reader_account.js:235
+#: media/js/newsblur/reader/reader_account.js:242
 msgid "Email me 3 days before my subscription renews"
 msgstr "मेरी सदस्यता नवीनीकृत होने से 3 दिन पहले मुझे ईमेल करें"
 
-#: media/js/newsblur/reader/reader_account.js:315
+#: media/js/newsblur/reader/reader_account.js:322
 msgid "Email me replies, re-shares, new followers, and account notices"
 msgstr "जवाबों, दोबारा साझा किए जाने, नए फ़ॉलोअर और खाते से जुड़ी सूचनाओं के ईमेल भेजें"
 
@@ -2533,23 +2533,23 @@ msgstr "ऊपर टेक्स्ट दर्ज करें"
 msgid "Enter text to match..."
 msgstr "मिलान करने के लिए टेक्स्ट दर्ज करें..."
 
-#: media/js/newsblur/reader/reader_account.js:164
+#: media/js/newsblur/reader/reader_account.js:171
 msgid "Erase your intelligence training classifiers"
 msgstr "अपने इंटेलिजेंस प्रशिक्षण वर्गीकरण मिटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:121
+#: media/js/newsblur/reader/reader_account.js:128
 msgid "Erase your saved stories"
 msgstr "अपनी सहेजी गई खबरें मिटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:131
+#: media/js/newsblur/reader/reader_account.js:138
 msgid "Erase your shared stories"
 msgstr "अपनी साझा की गई कहानियाँ मिटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:172
+#: media/js/newsblur/reader/reader_account.js:179
 msgid "Erase yourself"
 msgstr "अपना खाता मिटाएँ"
 
-#: media/js/newsblur/reader/reader_account.js:181
+#: media/js/newsblur/reader/reader_account.js:188
 msgid "Erase yourself permanently"
 msgstr "अपना खाता हमेशा के लिए मिटाएँ"
 
@@ -2609,7 +2609,7 @@ msgstr "NewsBlur क्या-क्या कर सकता है और इ
 msgid "Everything by This Publisher"
 msgstr "इस प्रकाशक की सभी सामग्री"
 
-#: media/js/newsblur/reader/reader_account.js:497
+#: media/js/newsblur/reader/reader_account.js:504
 msgid "Everything has been deleted."
 msgstr "सब कुछ हटा दिया गया है।"
 
@@ -3035,7 +3035,7 @@ msgstr "आवृत्ति"
 msgid "Frequently Asked Questions"
 msgstr "अक्सर पूछे जाने वाले प्रश्न"
 
-#: media/js/newsblur/reader/reader_account.js:173
+#: media/js/newsblur/reader/reader_account.js:180
 msgid "Friendly note: You will be emailed a backup of your sites"
 msgstr "सूचना: आपको अपनी साइटों का बैकअप ईमेल किया जाएगा"
 
@@ -3502,7 +3502,7 @@ msgstr "इंटेलिजेंस प्रशिक्षण"
 msgid "Interactions"
 msgstr "इंटरैक्शन"
 
-#: media/js/newsblur/reader/reader_account.js:986
+#: media/js/newsblur/reader/reader_account.js:1079
 msgid "Invoice"
 msgstr "चालान"
 
@@ -3783,7 +3783,7 @@ msgstr "प्रशिक्षण प्रबंधित करें"
 msgid "Manage billing and limits"
 msgstr "बिलिंग और सीमाएँ प्रबंधित करें"
 
-#: media/js/newsblur/reader/reader_account.js:269
+#: media/js/newsblur/reader/reader_account.js:276
 msgid "Manage billing on Stripe"
 msgstr "Stripe पर बिलिंग प्रबंधित करें"
 
@@ -3968,7 +3968,7 @@ msgstr "माइक्रोफ़ोन ब्लॉक है - इसे च
 msgid "Misc"
 msgstr "विविध"
 
-#: media/js/newsblur/reader/reader_account.js:273
+#: media/js/newsblur/reader/reader_account.js:280
 msgid "Monthly spending limit"
 msgstr "मासिक खर्च सीमा"
 
@@ -4087,7 +4087,7 @@ msgstr "प्राकृतिक भाषा छवि वर्गीका
 msgid "Natural Language Text Classifier"
 msgstr "प्राकृतिक भाषा पाठ वर्गीकारक"
 
-#: media/js/newsblur/reader/reader_account.js:292
+#: media/js/newsblur/reader/reader_account.js:299
 msgid "Natural language classifier billing"
 msgstr "प्राकृतिक भाषा वर्गीकरण बिलिंग"
 
@@ -4095,7 +4095,7 @@ msgstr "प्राकृतिक भाषा वर्गीकरण बि
 msgid "Natural language classifiers are paused until next billing cycle. "
 msgstr "प्राकृतिक भाषा वर्गीकरण अगले बिलिंग चक्र तक रुके हुए हैं।"
 
-#: media/js/newsblur/reader/reader_account.js:264
+#: media/js/newsblur/reader/reader_account.js:271
 msgid "Natural language classifiers are using your instance's API keys."
 msgstr "प्राकृतिक भाषा क्लासिफ़ायर आपके इंस्टेंस की API कुंजियों का उपयोग कर रहे हैं।"
 
@@ -4127,7 +4127,7 @@ msgstr "नेस्टेड"
 msgid "Never"
 msgstr "कभी नहीं"
 
-#: media/js/newsblur/reader/reader_account.js:321
+#: media/js/newsblur/reader/reader_account.js:328
 msgid "Never ever send me an email"
 msgstr "मुझे कभी भी ईमेल न भेजें"
 
@@ -4135,7 +4135,7 @@ msgstr "मुझे कभी भी ईमेल न भेजें"
 msgid "Never expire"
 msgstr "कभी समाप्त न हों"
 
-#: media/js/newsblur/reader/reader_account.js:815
+#: media/js/newsblur/reader/reader_account.js:908
 msgid "Never gonna expire. Congrats!"
 msgstr "अब कभी समाप्त नहीं होगा। बधाई!"
 
@@ -4163,7 +4163,7 @@ msgstr "नया फ़ोल्डर"
 msgid "New folder name..."
 msgstr "नए फ़ोल्डर का नाम..."
 
-#: media/js/newsblur/reader/reader_account.js:96
+#: media/js/newsblur/reader/reader_account.js:103
 msgid "New password"
 msgstr "नया पासवर्ड"
 
@@ -4297,7 +4297,7 @@ msgstr "कोई छवि नहीं"
 msgid "No items added yet."
 msgstr "अभी तक कोई आइटम नहीं जोड़ा गया है।"
 
-#: media/js/newsblur/reader/reader_account.js:279
+#: media/js/newsblur/reader/reader_account.js:286
 msgid "No limit"
 msgstr "कोई सीमा नहीं"
 
@@ -4366,7 +4366,7 @@ msgstr "कोई साइट उपलब्ध नहीं है"
 msgid "No stories"
 msgstr "कोई स्टोरी नहीं"
 
-#: media/js/newsblur/reader/reader_account.js:543
+#: media/js/newsblur/reader/reader_account.js:550
 msgid "No stories to delete"
 msgstr "हटाने के लिए कोई कहानी नहीं"
 
@@ -4374,11 +4374,11 @@ msgstr "हटाने के लिए कोई कहानी नहीं"
 msgid "No stories to read"
 msgstr "पढ़ने के लिए कोई कहानी नहीं"
 
-#: media/js/newsblur/reader/reader_account.js:962
+#: media/js/newsblur/reader/reader_account.js:1055
 msgid "No usage billing invoices yet."
 msgstr "अभी तक उपयोग बिलिंग का कोई इनवॉइस नहीं है।"
 
-#: media/js/newsblur/reader/reader_account.js:896
+#: media/js/newsblur/reader/reader_account.js:989
 msgid "No usage billing set up."
 msgstr "उपयोग बिलिंग सेट अप नहीं है।"
 
@@ -4490,11 +4490,11 @@ msgstr "ऑब्जेक्ट"
 msgid "Off"
 msgstr "बंद"
 
-#: media/js/newsblur/reader/reader_account.js:92
+#: media/js/newsblur/reader/reader_account.js:99
 msgid "Old password"
 msgstr "पुराना पासवर्ड"
 
-#: media/js/newsblur/reader/reader_account.js:398
+#: media/js/newsblur/reader/reader_account.js:405
 msgid "Older than: "
 msgstr "इससे पुराना: "
 
@@ -4700,7 +4700,7 @@ msgstr "विकल्प 3:"
 msgid "Option 4:"
 msgstr "विकल्प 4:"
 
-#: media/js/newsblur/reader/reader_account.js:287
+#: media/js/newsblur/reader/reader_account.js:294
 msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
 msgstr "वैकल्पिक। सीमा पूरी होने पर क्लासिफ़ायर रुक जाते हैं और अगले बिलिंग चक्र में फिर शुरू होते हैं।"
 
@@ -4774,7 +4774,7 @@ msgstr "किसी भी वेबसाइट का URL पेस्ट क
 msgid "Pattern: %(value_1)s"
 msgstr "पैटर्न: %(value_1)s"
 
-#: media/js/newsblur/reader/reader_account.js:249
+#: media/js/newsblur/reader/reader_account.js:256
 msgid "Payment history"
 msgstr "भुगतान इतिहास"
 
@@ -4866,19 +4866,19 @@ msgstr "पुर्तगाली"
 msgid "Position & Greedy"
 msgstr "स्थिति और लालच"
 
-#: media/js/newsblur/reader/reader_account.js:494
+#: media/js/newsblur/reader/reader_account.js:501
 msgid "Positive you want to delete everything?"
 msgstr "क्या आप वाकई सब कुछ हटाना चाहते हैं?"
 
-#: media/js/newsblur/reader/reader_account.js:702
+#: media/js/newsblur/reader/reader_account.js:709
 msgid "Positive you want to delete your intelligence training classifiers?"
 msgstr "क्या आप वाकई अपने इंटेलिजेंस ट्रेनिंग क्लासिफ़ायर हटाना चाहते हैं?"
 
-#: media/js/newsblur/reader/reader_account.js:558
+#: media/js/newsblur/reader/reader_account.js:565
 msgid "Positive you want to delete your saved stories?"
 msgstr "क्या आप वाकई अपनी सहेजी गई कहानियाँ हटाना चाहते हैं?"
 
-#: media/js/newsblur/reader/reader_account.js:583
+#: media/js/newsblur/reader/reader_account.js:590
 msgid "Positive you want to delete your shared stories?"
 msgstr "क्या आप वाकई अपनी साझा की गई कहानियाँ हटाना चाहते हैं?"
 
@@ -4902,7 +4902,7 @@ msgstr "प्राथमिकताएँ"
 msgid "Premium"
 msgstr "प्रीमियम"
 
-#: media/js/newsblur/views/story_detail_view.js:698
+#: media/js/newsblur/views/story_detail_view.js:699
 msgid "Premium Archive"
 msgstr "प्रीमियम संग्रह"
 
@@ -4914,7 +4914,7 @@ msgstr "प्रीमियम प्रो"
 msgid "Premium Subscription"
 msgstr "प्रीमियम सदस्यता"
 
-#: media/js/newsblur/reader/reader_account.js:239
+#: media/js/newsblur/reader/reader_account.js:246
 msgid "Premium details"
 msgstr "प्रीमियम का विवरण"
 
@@ -4922,7 +4922,7 @@ msgstr "प्रीमियम का विवरण"
 msgid "Premium fonts require a "
 msgstr "प्रीमियम फ़ॉन्ट के लिए "
 
-#: media/js/newsblur/reader/reader_account.js:255
+#: media/js/newsblur/reader/reader_account.js:262
 msgid "Premium renewal"
 msgstr "प्रीमियम नवीनीकरण"
 
@@ -4930,7 +4930,7 @@ msgstr "प्रीमियम नवीनीकरण"
 msgid "Premium renewal: "
 msgstr "प्रीमियम नवीनीकरण: "
 
-#: media/js/newsblur/reader/reader_account.js:224
+#: media/js/newsblur/reader/reader_account.js:231
 msgid "Premium status"
 msgstr "प्रीमियम स्थिति"
 
@@ -5046,7 +5046,7 @@ msgstr "प्रश्न"
 msgid "Quick search for a site"
 msgstr "साइट के लिए त्वरित खोज"
 
-#: media/js/newsblur/views/story_detail_view.js:2503
+#: media/js/newsblur/views/story_detail_view.js:2504
 msgid "Quota exceeded"
 msgstr "कोटा पार हो गया"
 
@@ -5170,11 +5170,11 @@ msgstr "इस साइट की अनुशंसा करें"
 msgid "Recommended"
 msgstr "अनुशंसित"
 
-#: media/js/newsblur/views/story_detail_view.js:2495
+#: media/js/newsblur/views/story_detail_view.js:2496
 msgid "Record voice question"
 msgstr "आवाज़ में सवाल रिकॉर्ड करें"
 
-#: media/js/newsblur/views/story_detail_view.js:2467
+#: media/js/newsblur/views/story_detail_view.js:2468
 msgid "Recording..."
 msgstr "रिकॉर्ड हो रहा है..."
 
@@ -5312,7 +5312,7 @@ msgstr "रीसेट किया जा रहा है..."
 msgid "Restart your %(value_1)s subscription"
 msgstr "अपनी %(value_1)s सदस्यता फिर से शुरू करें"
 
-#: media/js/newsblur/reader/reader_account.js:823
+#: media/js/newsblur/reader/reader_account.js:916
 msgid "Restart your subscription"
 msgstr "अपनी सदस्यता फिर से शुरू करें"
 
@@ -5376,7 +5376,7 @@ msgstr "S"
 msgid "Safari"
 msgstr "Safari"
 
-#: media/js/newsblur/views/story_detail_view.js:1085
+#: media/js/newsblur/views/story_detail_view.js:1086
 msgid "Save"
 msgstr "सहेजें"
 
@@ -5450,7 +5450,7 @@ msgstr "खोजे जा सकने वाले टैग के साथ
 msgid "Save/Unsave story"
 msgstr "कहानी सहेजें/सहेजना रद्द करें"
 
-#: media/js/newsblur/views/story_detail_view.js:1079
+#: media/js/newsblur/views/story_detail_view.js:1080
 msgid "Saved"
 msgstr "सहेजा गया"
 
@@ -5647,7 +5647,7 @@ msgstr "पढ़ने के लिए कोई कहानी चुने�
 msgid "Select any story and click \"Ask AI\""
 msgstr "कोई भी खबर चुनें और \"Ask AI\" पर क्लिक करें"
 
-#: media/js/newsblur/reader/reader_account.js:648
+#: media/js/newsblur/reader/reader_account.js:655
 msgid "Select classifiers to remove"
 msgstr "हटाने के लिए वर्गीकारक चुनें"
 
@@ -5695,7 +5695,7 @@ msgstr "न्यूज़लेटर्स सेट अप करें"
 msgid "Set up notifications"
 msgstr "सूचनाएँ सेट अप करें"
 
-#: media/js/newsblur/reader/reader_account.js:265
+#: media/js/newsblur/reader/reader_account.js:272
 msgid "Set up usage-based billing to use natural language content and image filters."
 msgstr "प्राकृतिक भाषा की सामग्री और छवि फ़िल्टर इस्तेमाल करने के लिए उपयोग-आधारित बिलिंग सेट अप करें।"
 
@@ -6027,7 +6027,7 @@ msgstr "स्पैनिश"
 msgid "Special Folders"
 msgstr "विशेष फ़ोल्डर"
 
-#: media/js/newsblur/reader/reader_account.js:928
+#: media/js/newsblur/reader/reader_account.js:1021
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "खर्च की सीमा पूरी हो गई। अगले चक्र तक क्लासिफ़ायर रोक दिए गए हैं।"
 
@@ -6097,7 +6097,7 @@ msgstr "चरण "
 msgid "Stop any time you like."
 msgstr "जब चाहें, रद्द करें।"
 
-#: media/js/newsblur/views/story_detail_view.js:2468
+#: media/js/newsblur/views/story_detail_view.js:2469
 msgid "Stop recording"
 msgstr "रिकॉर्डिंग रोकें"
 
@@ -6442,7 +6442,7 @@ msgstr "टेक्स्ट"
 msgid "Text Phrases"
 msgstr "पाठ के वाक्यांश"
 
-#: media/js/newsblur/reader/reader_account.js:148
+#: media/js/newsblur/reader/reader_account.js:155
 msgid "Text Regex"
 msgstr "टेक्स्ट रेगेक्स"
 
@@ -6454,7 +6454,7 @@ msgstr "टेक्स्ट दृश्य"
 msgid "Text view extracts the story"
 msgstr "टेक्स्ट दृश्य कहानी का सार निकालता है"
 
-#: media/js/newsblur/reader/reader_account.js:213
+#: media/js/newsblur/reader/reader_account.js:220
 msgid "Thank you! You have a "
 msgstr "धन्यवाद! आपके पास "
 
@@ -6506,7 +6506,7 @@ msgstr "कस्टम इंटीग्रेशन के लिए पू�
 msgid "The full shortcut list"
 msgstr "शॉर्टकट की पूरी सूची"
 
-#: media/js/newsblur/reader/reader_account.js:196
+#: media/js/newsblur/reader/reader_account.js:203
 msgid "The gift has been applied to your account."
 msgstr "उपहार आपके खाते में लागू कर दिया गया है।"
 
@@ -6558,19 +6558,19 @@ msgstr ""
 "ईमेल भेजने में बैकएंड पर समस्या आई। इसके लिए खेद है! समस्या दर्ज कर ली गई है और जल्द ही ठीक कर दी जाएगी। "
 "अभी आपको यह ईमेल शायद खुद भेजना होगा।"
 
-#: media/js/newsblur/reader/reader_account.js:717
+#: media/js/newsblur/reader/reader_account.js:724
 msgid "There was a problem deleting your classifiers."
 msgstr "आपके वर्गीकारक हटाने में समस्या हुई।"
 
-#: media/js/newsblur/reader/reader_account.js:572
+#: media/js/newsblur/reader/reader_account.js:579
 msgid "There was a problem deleting your saved stories."
 msgstr "आपकी सहेजी गई कहानियाँ हटाने में समस्या हुई।"
 
-#: media/js/newsblur/reader/reader_account.js:595
+#: media/js/newsblur/reader/reader_account.js:602
 msgid "There was a problem deleting your shared stories."
 msgstr "आपकी साझा की गई कहानियाँ हटाने में समस्या हुई।"
 
-#: media/js/newsblur/reader/reader_account.js:499
+#: media/js/newsblur/reader/reader_account.js:506
 msgid "There was a problem deleting your sites."
 msgstr "आपकी साइटें हटाने में समस्या आई।"
 
@@ -6598,7 +6598,7 @@ msgstr "लॉग आउट करने में त्रुटि हुई,
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "कोई सीमा नहीं है। जितनी चाहें उतनी खबरें सहेजें—वे हमेशा के लिए रखी जाएँगी।"
 
-#: media/js/newsblur/views/story_detail_view.js:643
+#: media/js/newsblur/views/story_detail_view.js:644
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "ये समूह इसलिए मिले क्योंकि अन्य सब्सक्राइबर इन फ़ीड की सदस्यता लेते हैं।"
 
@@ -6732,7 +6732,7 @@ msgstr "शीर्षक"
 msgid "Title Phrases"
 msgstr "शीर्षक के वाक्यांश"
 
-#: media/js/newsblur/reader/reader_account.js:143
+#: media/js/newsblur/reader/reader_account.js:150
 msgid "Title Regex"
 msgstr "शीर्षक रेगेक्स"
 
@@ -6802,7 +6802,7 @@ msgstr "शीर्ष डोमेन"
 msgid "Track Changes"
 msgstr "बदलावों पर नज़र रखें"
 
-#: media/js/newsblur/views/story_detail_view.js:1327
+#: media/js/newsblur/views/story_detail_view.js:1328
 msgid "Train"
 msgstr "प्रशिक्षित करें"
 
@@ -6868,11 +6868,11 @@ msgstr "न्यूज़लेटर्स को किसी भी फ़�
 msgid "Training:"
 msgstr "प्रशिक्षण:"
 
-#: media/js/newsblur/views/story_detail_view.js:2474
+#: media/js/newsblur/views/story_detail_view.js:2475
 msgid "Transcribing audio"
 msgstr "ऑडियो का लिप्यंतरण किया जा रहा है"
 
-#: media/js/newsblur/views/story_detail_view.js:2473
+#: media/js/newsblur/views/story_detail_view.js:2474
 msgid "Transcribing..."
 msgstr "लिप्यंतरण हो रहा है..."
 
@@ -6944,7 +6944,7 @@ msgstr "कीवर्ड, वाक्यांश या उनके सं�
 msgid "URL"
 msgstr "URL"
 
-#: media/js/newsblur/reader/reader_account.js:151
+#: media/js/newsblur/reader/reader_account.js:158
 msgid "URL Regex"
 msgstr "URL रेगेक्स"
 
@@ -7008,7 +7008,7 @@ msgstr "अपठित स्टोरीज़ की समय-सीमा �
 msgid "Unread+Focus:"
 msgstr "अपठित+फ़ोकस:"
 
-#: media/js/newsblur/reader/reader_account.js:936
+#: media/js/newsblur/reader/reader_account.js:1029
 msgid "Upcoming charge: "
 msgstr "आगामी शुल्क: "
 
@@ -7066,15 +7066,15 @@ msgstr "प्रीमियम आर्काइव में अपग्र
 msgid "Upgrade to Premium Archive for classifier notifications"
 msgstr "क्लासिफ़ायर सूचनाओं के लिए प्रीमियम आर्काइव में अपग्रेड करें"
 
-#: media/js/newsblur/views/story_detail_view.js:646
+#: media/js/newsblur/views/story_detail_view.js:647
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr "अपने सभी फ़ीड में डुप्लिकेट खोजने के लिए प्रीमियम आर्काइव में अपग्रेड करें, ताकि आप कोई भी क्लस्टर न चूकें।"
 
-#: media/js/newsblur/reader/reader_account.js:220
+#: media/js/newsblur/reader/reader_account.js:227
 msgid "Upgrade to a Premium Archive account"
 msgstr "प्रीमियम आर्काइव खाते में अपग्रेड करें"
 
-#: media/js/newsblur/reader/reader_account.js:210
+#: media/js/newsblur/reader/reader_account.js:217
 msgid "Upgrade to a Premium account"
 msgstr "प्रीमियम खाते में अपग्रेड करें"
 
@@ -7106,11 +7106,11 @@ msgstr "अपलोड विफल। कृपया अपना कने�
 msgid "Uploaded!"
 msgstr "अपलोड हो गया!"
 
-#: media/js/newsblur/reader/reader_account.js:302
+#: media/js/newsblur/reader/reader_account.js:309
 msgid "Usage billing history"
 msgstr "उपयोग बिलिंग इतिहास"
 
-#: media/js/newsblur/reader/reader_account.js:262
+#: media/js/newsblur/reader/reader_account.js:269
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "प्राकृतिक भाषा वर्गीकरणकर्ताओं के लिए उपयोग-आधारित बिलिंग सक्षम है।"
 
@@ -7201,7 +7201,7 @@ msgstr "सेटिंग देखें"
 msgid "Visual"
 msgstr "दृश्य"
 
-#: media/js/newsblur/reader/reader_account.js:182
+#: media/js/newsblur/reader/reader_account.js:189
 msgid "Warning: This is actually permanent"
 msgstr "चेतावनी: यह कार्रवाई वास्तव में स्थायी है"
 
@@ -7477,7 +7477,7 @@ msgstr "आप इस प्लान का परीक्षण कर रह
 msgid "You are unsubscribed from all NewsBlur emails"
 msgstr "आपने NewsBlur के सभी ईमेल से सदस्यता रद्द कर दी है"
 
-#: media/js/newsblur/reader/reader_account.js:308
+#: media/js/newsblur/reader/reader_account.js:315
 msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
 msgstr ""
 "आपने NewsBlur के सभी ईमेल की सदस्यता रद्द कर दी है। दोबारा सदस्यता लेने के लिए नीचे ईमेल प्राप्त करने का "
@@ -7505,7 +7505,7 @@ msgstr ""
 "आप हर फ़ीड के लिए मुफ़्त में ट्रेन कर सकते हैं, या Premium Archive में हर फ़ोल्डर के लिए और सभी फ़ीड पर "
 "ट्रेन कर सकते हैं।"
 
-#: media/js/newsblur/reader/reader_account.js:204
+#: media/js/newsblur/reader/reader_account.js:211
 msgid "You have a "
 msgstr "आपके पास एक "
 
@@ -7546,7 +7546,7 @@ msgstr "आपको कई टैग और लेखक दिखाई दे
 msgid "You're ready to go! Hope you enjoy NewsBlur."
 msgstr "आप तैयार हैं! उम्मीद है आपको NewsBlur पसंद आएगा।"
 
-#: media/js/newsblur/reader/reader_account.js:191
+#: media/js/newsblur/reader/reader_account.js:198
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "आपको %(value_1)s में से %(value_2)s उपहार में मिले हैं!"
@@ -7620,11 +7620,11 @@ msgstr "आपका इनबॉक्स साफ़-सुथरा रह�
 msgid "Your name"
 msgstr "आपका नाम"
 
-#: media/js/newsblur/reader/reader_account.js:829
+#: media/js/newsblur/reader/reader_account.js:922
 msgid "Your premium account is paid until:"
 msgstr "आपका प्रीमियम खाता इस तारीख तक भुगतान किया गया है:"
 
-#: media/js/newsblur/reader/reader_account.js:830
+#: media/js/newsblur/reader/reader_account.js:923
 msgid "Your premium account will downgrade on:"
 msgstr "आपका प्रीमियम खाता इस तारीख को डाउनग्रेड हो जाएगा:"
 
@@ -7798,7 +7798,7 @@ msgstr "esc"
 msgid "f"
 msgstr "f"
 
-#: media/js/newsblur/reader/reader_account.js:205
+#: media/js/newsblur/reader/reader_account.js:212
 msgid "free account"
 msgstr "मुफ़्त खाता"
 
@@ -7886,7 +7886,7 @@ msgstr "प्रीमियम"
 msgid "premium account"
 msgstr "प्रीमियम खाता"
 
-#: media/js/newsblur/reader/reader_account.js:215
+#: media/js/newsblur/reader/reader_account.js:222
 msgid "premium archive account"
 msgstr "प्रीमियम संग्रह खाता"
 
@@ -7898,7 +7898,7 @@ msgstr "प्रीमियम संग्रह सुविधा"
 msgid "premium feature"
 msgstr "प्रीमियम सुविधा"
 
-#: media/js/newsblur/reader/reader_account.js:214
+#: media/js/newsblur/reader/reader_account.js:221
 msgid "premium pro account"
 msgstr "प्रीमियम प्रो खाता"
 
@@ -7954,7 +7954,7 @@ msgstr "पूरी साइट की प्राथमिकता"
 msgid "space"
 msgstr "स्पेस"
 
-#: media/js/newsblur/reader/reader_account.js:993
+#: media/js/newsblur/reader/reader_account.js:1086
 msgid "stripe"
 msgstr "stripe"
 

@@ -19,7 +19,10 @@ import com.newsblur.util.LanguageSettings
 
 /** Uses the active NewsBlurTheme, including light, dark and black. */
 @Composable
-fun LanguagePicker(onSelected: (String) -> Unit) {
+fun LanguagePicker(
+    contentColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface,
+    onSelected: (String) -> Unit,
+) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     val automatic = stringResource(R.string.language_automatic)
@@ -27,7 +30,7 @@ fun LanguagePicker(onSelected: (String) -> Unit) {
     Box {
         TextButton(
             onClick = { expanded = true },
-            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+            colors = ButtonDefaults.textButtonColors(contentColor = contentColor),
         ) {
             Text(stringResource(R.string.language_current, LanguageSettings.names[current] ?: automatic))
         }

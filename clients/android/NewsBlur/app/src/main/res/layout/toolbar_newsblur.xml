@@ -68,6 +68,21 @@
                 android:layout_marginEnd="4dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/toolbar_fullscreen_button"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/toolbar_fullscreen_button"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/actionBarItemBackground"
+                android:contentDescription="@string/reader_enter_fullscreen"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_reader_fullscreen"
+                android:visibility="gone"
+                app:tint="?android:attr/textColorSecondary"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/toolbar_settings_button"
                 app:layout_constraintTop_toTopOf="parent" />
 

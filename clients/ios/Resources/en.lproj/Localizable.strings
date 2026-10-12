@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "All patterns are case-insensitive by default";
 "All stories" = "All stories";
 "Alphabetical" = "Alphabetical";
+"Already have feeds?" = "Already have feeds?";
 "Analyze" = "Analyze";
 "Android" = "Android";
 "App Badge" = "App Badge";
@@ -161,12 +162,14 @@
 "Brave" = "Brave";
 "Brightness Override" = "Brightness Override";
 "Brightness threshold" = "Brightness threshold";
+"Bring your feeds and folders from another reader." = "Bring your feeds and folders from another reader.";
 "Bullets" = "Bullets";
 "Cancel" = "Cancel";
 "Change Story List" = "Change Story List";
 "Choose Icon" = "Choose Icon";
 "Choose Story List" = "Choose Story List";
 "Choose a Topic" = "Choose a Topic";
+"Choose feeds for your folder" = "Choose feeds for your folder";
 "Choose how far back to mark read" = "Choose how far back to mark read";
 "Choose how often and when your briefing is generated" = "Choose how often and when your briefing is generated";
 "Choose one or more words from the title:" = "Choose one or more words from the title:";
@@ -190,7 +193,9 @@
 "Configure" = "Configure";
 "Confirm mark read" = "Confirm mark read";
 "Connect AI agents with MCP server and CLI" = "Connect AI agents with MCP server and CLI";
+"Connect an existing account" = "Connect an existing account";
 "Connecting" = "Connecting";
+"Continue" = "Continue";
 "Control how much is included and how it is written" = "Control how much is included and how it is written";
 "Copied" = "Copied";
 "Copyright" = "Copyright";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "Couldn’t load the full image. You can try opening it in your browser.";
 "Counting is difficult..." = "Counting is difficult...";
 "Create a feed from any web page" = "Create a feed from any web page";
+"Create a new account instead" = "Create a new account instead";
 "Custom Domain" = "Custom Domain";
 "Custom RSS feeds for saved stories" = "Custom RSS feeds for saved stories";
 "Custom Search Query" = "Custom Search Query";
@@ -216,9 +222,11 @@
 "Delete Account" = "Delete Account";
 "Delete Folder…" = "Delete Folder…";
 "Delete Site…" = "Delete Site…";
+"Delete account" = "Delete account";
 "Delete offline stories" = "Delete offline stories";
 "Delete saved search" = "Delete saved search";
 "Deleting saved search..." = "Deleting saved search...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone.";
 "Deleting..." = "Deleting...";
 "Discover" = "Discover";
 "Discover more to read" = "Discover more to read";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Enter a custom search query...";
 "Enter a web page URL..." = "Enter a web page URL...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Enter your existing NewsBlur username or email and NewsBlur password.";
 "Error" = "Error";
 "Evening" = "Evening";
 "Every story from every site is archived and searchable forever" = "Every story from every site is archived and searchable forever";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Everything in the premium subscription, of course";
 "Exact phrase" = "Exact phrase";
 "Experimental" = "Experimental";
+"Explore interests" = "Explore interests";
 "Export Preferences" = "Export Preferences";
 "Export trained stories from folders as RSS feeds" = "Export trained stories from folders as RSS feeds";
 "Extra Large" = "Extra Large";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Find in Sites";
 "Find in feed" = "Find in feed";
 "Find in sites" = "Find in sites";
+"Finding feeds for you to explore." = "Finding feeds for you to explore.";
 "Finding related sites..." = "Finding related sites...";
 "Finding story..." = "Finding story...";
 "Firefox" = "Firefox";
 "Focus" = "Focus";
 "Focus Stories" = "Focus Stories";
 "Focus only" = "Focus only";
+"Folder name" = "Folder name";
 "Folders" = "Folders";
 "Follow" = "Follow";
 "Follow %@" = "Follow %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "Image Preview";
 "Image actions" = "Image actions";
 "Import & Export" = "Import & Export";
+"Import OPML" = "Import OPML";
 "Import Preferences" = "Import Preferences";
+"Import or upload sites" = "Import or upload sites";
 "Imported %i site%@" = "Imported %i site%@";
 "Importing sites..." = "Importing sites...";
 "In-app Safari" = "In-app Safari";
@@ -355,6 +369,7 @@
 "Large" = "Large";
 "Large Left" = "Large Left";
 "Large Right" = "Large Right";
+"Last used" = "Last used";
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Layout";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened.";
@@ -367,6 +382,7 @@
 "List style" = "List style";
 "Loading Google News topics..." = "Loading Google News topics...";
 "Loading image…" = "Loading image…";
+"Loading interests" = "Loading interests";
 "Loading settings…" = "Loading settings…";
 "Loading..." = "Loading...";
 "Loading…" = "Loading…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "No Story Lists";
 "No Widget Sites" = "No Widget Sites";
 "No briefings yet" = "No briefings yet";
+"No feeds to show yet. Try another interest or search all sites." = "No feeds to show yet. Try another interest or search all sites.";
+"No interests or sites found. Try another search." = "No interests or sites found. Try another search.";
 "No longer saved" = "No longer saved";
 "No notifications yet." = "No notifications yet.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "No stories to display. No stories to display. No stories to display. No stories to display.";
@@ -509,6 +527,7 @@
 "Page up" = "Page up";
 "Paste a story title from the page" = "Paste a story title from the page";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Paste any URL and NewsBlur creates a feed from the page, even without RSS.";
+"Permanently delete account" = "Permanently delete account";
 "Pick which model writes your Daily Briefing" = "Pick which model writes your Daily Briefing";
 "Place the story list controls above or below the stories" = "Place the story list controls above or below the stories";
 "Plum Berry" = "Plum Berry";
@@ -574,7 +593,9 @@
 "Reply to %@" = "Reply to %@";
 "Resize sidebar" = "Resize sidebar";
 "Restore" = "Restore";
+"Retry" = "Retry";
 "Retry Google Reader" = "Retry Google Reader";
+"Retry icons" = "Retry icons";
 "River of News (reading by folder)" = "River of News (reading by folder)";
 "Rows" = "Rows";
 "Ruby Red" = "Ruby Red";
@@ -656,6 +677,7 @@
 "Show without icons" = "Show without icons";
 "Sidebar" = "Sidebar";
 "Sign Up" = "Sign Up";
+"Sign in with Google" = "Sign in with Google";
 "Single" = "Single";
 "Single Column" = "Single Column";
 "Site" = "Site";
@@ -669,12 +691,14 @@
 "Small" = "Small";
 "Small Left" = "Small Left";
 "Small Right" = "Small Right";
+"Some feed icons couldn’t load." = "Some feed icons couldn’t load.";
 "Sources" = "Sources";
 "Spacing" = "Spacing";
 "Standard" = "Standard";
 "Start reading" = "Start reading";
 "Statistics" = "Statistics";
 "Statistics…" = "Statistics…";
+"Stay connected" = "Stay connected";
 "Stay on the feeds list" = "Stay on the feeds list";
 "Stories" = "Stories";
 "Stories can stay unread forever" = "Stories can stay unread forever";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Trending Sites";
 "Try" = "Try";
 "Try again" = "Try again";
+"Try search again" = "Try search again";
 "Trying Feed" = "Trying Feed";
 "Tuesday" = "Tuesday";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Upgrade to Archive";
 "Upgrade to Premium" = "Upgrade to Premium";
 "Upgrade to Premium Archive" = "Upgrade to Premium Archive";
+"Use another sign-in method" = "Use another sign-in method";
 "Use both" = "Use both";
 "Use system size" = "Use system size";
 "User info" = "User info";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Your premium archive subscription is active";
 "Your premium pro subscription includes everything above" = "Your premium pro subscription includes everything above";
 "Your premium pro subscription is active" = "Your premium pro subscription is active";
+"Your reading list" = "Your reading list";
+"You’re all set up." = "You’re all set up.";
 "all stories" = "all stories";
 "dislike" = "dislike";
 "iOS" = "iOS";
+"or" = "or";
 "premium subscribers" = "premium subscribers";
 "— Top Level —" = "— Top Level —";
 "‹ Feeds" = "‹ Feeds";

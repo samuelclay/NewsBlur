@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "รูปแบบทั้งหมดไม่แยกตัวพิมพ์ใหญ่และตัวพิมพ์เล็กโดยค่าเริ่มต้น";
 "All stories" = "เรื่องราวทั้งหมด";
 "Alphabetical" = "ตามตัวอักษร";
+"Already have feeds?" = "มีฟีดอยู่แล้วใช่ไหม";
 "Analyze" = "วิเคราะห์";
 "Android" = "Android";
 "App Badge" = "ป้ายแอป";
@@ -161,12 +162,14 @@
 "Brave" = "กล้าหาญ";
 "Brightness Override" = "ปรับความสว่าง";
 "Brightness threshold" = "เกณฑ์ความสว่าง";
+"Bring your feeds and folders from another reader." = "นำเข้าฟีดและโฟลเดอร์จากโปรแกรมอ่านอื่น";
 "Bullets" = "หัวข้อย่อย";
 "Cancel" = "ยกเลิก";
 "Change Story List" = "เปลี่ยนรายการเรื่องราว";
 "Choose Icon" = "เลือกไอคอน";
 "Choose Story List" = "เลือกรายการเรื่องราว";
 "Choose a Topic" = "เลือกหัวข้อ";
+"Choose feeds for your folder" = "เลือกฟีดสำหรับโฟลเดอร์ของคุณ";
 "Choose how far back to mark read" = "เลือกระยะเวลาย้อนหลังที่จะทำเครื่องหมายว่าอ่านแล้ว";
 "Choose how often and when your briefing is generated" = "เลือกความถี่และเวลาที่จะสร้างสรุปข่าว";
 "Choose one or more words from the title:" = "เลือกคำหนึ่งคำหรือหลายคำจากชื่อเรื่อง:";
@@ -190,7 +193,9 @@
 "Configure" = "กำหนดค่า";
 "Confirm mark read" = "ยืนยันการทำเครื่องหมายว่าอ่านแล้ว";
 "Connect AI agents with MCP server and CLI" = "เชื่อมต่อเอเจนต์ AI ด้วย MCP server และ CLI";
+"Connect an existing account" = "เชื่อมต่อบัญชีที่มีอยู่";
 "Connecting" = "กำลังเชื่อมต่อ";
+"Continue" = "ดำเนินการต่อ";
 "Control how much is included and how it is written" = "ควบคุมปริมาณเนื้อหาที่รวมและวิธีเขียน";
 "Copied" = "คัดลอกแล้ว";
 "Copyright" = "ลิขสิทธิ์";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "โหลดรูปภาพฉบับเต็มไม่สำเร็จ คุณลองเปิดในเบราว์เซอร์ได้";
 "Counting is difficult..." = "การนับเป็นเรื่องยาก...";
 "Create a feed from any web page" = "สร้างฟีดจากหน้าเว็บใดก็ได้";
+"Create a new account instead" = "สร้างบัญชีใหม่แทน";
 "Custom Domain" = "โดเมนที่กำหนดเอง";
 "Custom RSS feeds for saved stories" = "ฟีด RSS แบบกำหนดเองสำหรับเรื่องราวที่บันทึกไว้";
 "Custom Search Query" = "คำค้นหาแบบกำหนดเอง";
@@ -216,9 +222,11 @@
 "Delete Account" = "ลบบัญชี";
 "Delete Folder…" = "ลบโฟลเดอร์…";
 "Delete Site…" = "ลบเว็บไซต์…";
+"Delete account" = "ลบบัญชี";
 "Delete offline stories" = "ลบเรื่องราวออฟไลน์";
 "Delete saved search" = "ลบการค้นหาที่บันทึกไว้";
 "Deleting saved search..." = "กำลังลบการค้นหาที่บันทึกไว้...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "การลบบัญชีของคุณอย่างถาวรจะลบฟีด เรื่องราวที่บันทึกไว้ และข้อมูลบัญชีทั้งหมด การดำเนินการนี้ไม่สามารถยกเลิกได้";
 "Deleting..." = "กำลังลบ...";
 "Discover" = "ค้นพบ";
 "Discover more to read" = "ค้นพบเรื่องใหม่น่าอ่าน";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "ป้อนคำค้นหาที่กำหนดเอง...";
 "Enter a web page URL..." = "ป้อน URL ของหน้าเว็บ...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "ป้อน URL ของหน้าเว็บใดก็ได้ แล้ว NewsBlur จะใช้ AI วิเคราะห์โครงสร้างของหน้า ค้นหาเรื่องราว และสร้างฟีด RSS แบบกำหนดเองที่คุณสมัครรับได้";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "ป้อนชื่อผู้ใช้หรืออีเมล NewsBlur ที่มีอยู่ และรหัสผ่าน NewsBlur";
 "Error" = "ข้อผิดพลาด";
 "Evening" = "ช่วงเย็น";
 "Every story from every site is archived and searchable forever" = "บทความจากทุกเว็บไซต์จะถูกเก็บถาวรและค้นหาได้ตลอดไป";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "แน่นอนว่าได้ทุกอย่างในแพ็กเกจพรีเมียม";
 "Exact phrase" = "วลีที่ตรงกันทุกประการ";
 "Experimental" = "ทดลอง";
+"Explore interests" = "สำรวจความสนใจ";
 "Export Preferences" = "ส่งออกการตั้งค่า";
 "Export trained stories from folders as RSS feeds" = "ส่งออกเรื่องที่ฝึกจากโฟลเดอร์เป็นฟีด RSS";
 "Extra Large" = "ใหญ่มาก";
@@ -278,12 +288,14 @@
 "Find in Sites" = "ค้นหาในเว็บไซต์";
 "Find in feed" = "ค้นหาในฟีด";
 "Find in sites" = "ค้นหาในเว็บไซต์";
+"Finding feeds for you to explore." = "กำลังค้นหาฟีดให้คุณสำรวจ";
 "Finding related sites..." = "กำลังค้นหาเว็บไซต์ที่เกี่ยวข้อง...";
 "Finding story..." = "กำลังค้นหาเรื่องราว...";
 "Firefox" = "Firefox";
 "Focus" = "โฟกัส";
 "Focus Stories" = "โฟกัสเรื่องราว";
 "Focus only" = "โฟกัสเท่านั้น";
+"Folder name" = "ชื่อโฟลเดอร์";
 "Folders" = "โฟลเดอร์";
 "Follow" = "ติดตาม";
 "Follow %@" = "ติดตาม %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "ตัวอย่างรูปภาพ";
 "Image actions" = "การดำเนินการกับรูปภาพ";
 "Import & Export" = "นำเข้าและส่งออก";
+"Import OPML" = "นำเข้า OPML";
 "Import Preferences" = "นำเข้าการตั้งค่า";
+"Import or upload sites" = "นำเข้าหรืออัปโหลดเว็บไซต์";
 "Imported %i site%@" = "นำเข้าแล้ว %i เว็บไซต์%@";
 "Importing sites..." = "กำลังนำเข้าเว็บไซต์...";
 "In-app Safari" = "Safari ในแอป";
@@ -355,6 +369,7 @@
 "Large" = "ใหญ่";
 "Large Left" = "ใหญ่ ซ้าย";
 "Large Right" = "ขนาดใหญ่ด้านขวา";
+"Last used" = "ใช้ล่าสุด";
 "Lavender Iris" = "ไอริสลาเวนเดอร์";
 "Layout" = "เค้าโครง";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "เว้นว่างไว้เพื่อใช้ NewsBlur หรือป้อน URL ของการติดตั้งที่โฮสต์เอง การเปลี่ยนแปลงจะมีผลเมื่อเปิดแอปครั้งถัดไป";
@@ -367,6 +382,7 @@
 "List style" = "รูปแบบรายการ";
 "Loading Google News topics..." = "กำลังโหลดหัวข้อ Google News...";
 "Loading image…" = "กำลังโหลดรูปภาพ…";
+"Loading interests" = "กำลังโหลดความสนใจ";
 "Loading settings…" = "กำลังโหลดการตั้งค่า…";
 "Loading..." = "กำลังโหลด...";
 "Loading…" = "กำลังโหลด…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "ไม่มีรายการข่าว";
 "No Widget Sites" = "ไม่มีเว็บไซต์วิดเจ็ต";
 "No briefings yet" = "ยังไม่มีสรุปข่าว";
+"No feeds to show yet. Try another interest or search all sites." = "ยังไม่มีฟีดให้แสดง ลองเลือกความสนใจอื่นหรือค้นหาจากทุกเว็บไซต์";
+"No interests or sites found. Try another search." = "ไม่พบความสนใจหรือเว็บไซต์ ลองค้นหาอย่างอื่น";
 "No longer saved" = "ไม่ได้บันทึกไว้อีกต่อไป";
 "No notifications yet." = "ยังไม่มีการแจ้งเตือน";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "ไม่มีเรื่องให้แสดง ไม่มีเรื่องให้แสดง ไม่มีเรื่องให้แสดง ไม่มีเรื่องให้แสดง";
@@ -509,6 +527,7 @@
 "Page up" = "เลื่อนขึ้นหนึ่งหน้า";
 "Paste a story title from the page" = "วางชื่อเรื่องจากหน้าเว็บ";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "วาง URL ใดก็ได้ แล้ว NewsBlur จะสร้างฟีดจากหน้าเว็บนั้น แม้ไม่มี RSS";
+"Permanently delete account" = "ลบบัญชีอย่างถาวร";
 "Pick which model writes your Daily Briefing" = "เลือกรุ่นที่จะเขียนสรุปประจำวันของคุณ";
 "Place the story list controls above or below the stories" = "วางตัวควบคุมรายการเรื่องไว้เหนือหรือใต้เรื่องต่างๆ";
 "Plum Berry" = "พลัมเบอร์รี";
@@ -574,7 +593,9 @@
 "Reply to %@" = "ตอบกลับ %@";
 "Resize sidebar" = "ปรับขนาดแถบด้านข้าง";
 "Restore" = "กู้คืน";
+"Retry" = "ลองอีกครั้ง";
 "Retry Google Reader" = "ลอง Google Reader อีกครั้ง";
+"Retry icons" = "ลองโหลดไอคอนอีกครั้ง";
 "River of News (reading by folder)" = "สายน้ำข่าว (อ่านตามโฟลเดอร์)";
 "Rows" = "แถว";
 "Ruby Red" = "แดงทับทิม";
@@ -656,6 +677,7 @@
 "Show without icons" = "แสดงโดยไม่มีไอคอน";
 "Sidebar" = "แถบด้านข้าง";
 "Sign Up" = "สมัครสมาชิก";
+"Sign in with Google" = "ลงชื่อเข้าใช้ด้วย Google";
 "Single" = "เดี่ยว";
 "Single Column" = "คอลัมน์เดียว";
 "Site" = "ไซต์";
@@ -669,12 +691,14 @@
 "Small" = "เล็ก";
 "Small Left" = "เล็ก ซ้าย";
 "Small Right" = "ขวาขนาดเล็ก";
+"Some feed icons couldn’t load." = "โหลดไอคอนฟีดบางรายการไม่สำเร็จ";
 "Sources" = "แหล่งที่มา";
 "Spacing" = "ระยะห่าง";
 "Standard" = "มาตรฐาน";
 "Start reading" = "เริ่มอ่าน";
 "Statistics" = "สถิติ";
 "Statistics…" = "สถิติ…";
+"Stay connected" = "เชื่อมต่ออยู่เสมอ";
 "Stay on the feeds list" = "อยู่ในรายการฟีดต่อไป";
 "Stories" = "บทความ";
 "Stories can stay unread forever" = "เรื่องราวจะยังไม่อ่านตลอดไปก็ได้";
@@ -765,6 +789,7 @@
 "Trending Sites" = "เว็บไซต์ที่กำลังเป็นกระแส";
 "Try" = "ลอง";
 "Try again" = "ลองอีกครั้ง";
+"Try search again" = "ลองค้นหาอีกครั้ง";
 "Trying Feed" = "กำลังลองฟีด";
 "Tuesday" = "วันอังคาร";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "อัปเกรดเป็น Archive";
 "Upgrade to Premium" = "อัปเกรดเป็น Premium";
 "Upgrade to Premium Archive" = "อัปเกรดเป็น Premium Archive";
+"Use another sign-in method" = "ใช้วิธีลงชื่อเข้าใช้อื่น";
 "Use both" = "ใช้ทั้งสองแบบ";
 "Use system size" = "ใช้ขนาดตามระบบ";
 "User info" = "ข้อมูลผู้ใช้";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "การสมัครสมาชิกคลังข้อมูลพรีเมียมของคุณใช้งานอยู่";
 "Your premium pro subscription includes everything above" = "การสมัครสมาชิก Premium Pro ของคุณมีทุกอย่างตามรายการข้างต้น";
 "Your premium pro subscription is active" = "การสมัครสมาชิก Premium Pro ของคุณใช้งานอยู่";
+"Your reading list" = "รายการอ่านของคุณ";
+"You’re all set up." = "ตั้งค่าทุกอย่างเรียบร้อยแล้ว";
 "all stories" = "เรื่องราวทั้งหมด";
 "dislike" = "ไม่ชอบ";
 "iOS" = "iOS";
+"or" = "หรือ";
 "premium subscribers" = "สมาชิกพรีเมียม";
 "— Top Level —" = "— ระดับบนสุด —";
 "‹ Feeds" = "‹ ฟีด";

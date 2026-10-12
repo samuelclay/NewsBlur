@@ -35,7 +35,7 @@ msgstr "100 $/an (Pro : sources illimitées)"
 msgid "$144/year (Pro+) / $18/month (Enterprise)"
 msgstr "144 $/an (Pro+) / 18 $/mois (Enterprise)"
 
-#: templates/base.html:302
+#: templates/base.html:309
 msgid "$29/mo"
 msgstr "29 $/mois"
 
@@ -67,7 +67,7 @@ msgstr "36 $/an (1 024 sites)"
 msgid "$36/year (Premium), $99/year (Archive)"
 msgstr "36 $/an (Premium), 99 $/an (Archive)"
 
-#: templates/base.html:294
+#: templates/base.html:301
 msgid "$36/yr"
 msgstr "36 $/an"
 
@@ -87,7 +87,7 @@ msgstr "96 $/an (accès complet)"
 msgid "$99/year"
 msgstr "99 $/an"
 
-#: templates/base.html:298
+#: templates/base.html:305
 msgid "$99/yr"
 msgstr "99 $/an"
 
@@ -107,7 +107,7 @@ msgstr ", ainsi que"
 msgid ", founder,"
 msgstr ", fondateur,"
 
-#: templates/reader/welcome.xhtml:1670
+#: templates/reader/welcome.xhtml:1678
 msgid ", or just read the code. No lock-in, ever."
 msgstr ", ou consultez simplement le code. Aucune dépendance, jamais."
 
@@ -173,7 +173,7 @@ msgstr ""
 "1 024 sites, recherche en texte intégral, flux d’actualités, étiquettes d’articles enregistrés et affichage"
 " texte"
 
-#: templates/base.html:295
+#: templates/base.html:302
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1 024 sites, recherche, vue texte, flux d’actualités"
 
@@ -217,7 +217,7 @@ msgstr "4-oh-4, introuvable"
 msgid "404 - NewsBlur can't find that page"
 msgstr "404 - NewsBlur ne trouve pas cette page"
 
-#: templates/base.html:303
+#: templates/base.html:310
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "Récupération toutes les 5 min, entraînement regex, 10 000 sites"
 
@@ -253,7 +253,7 @@ msgstr "@samuelclay"
 msgid "A Note about OAuth"
 msgstr "À propos d’OAuth"
 
-#: templates/reader/welcome.xhtml:1647
+#: templates/reader/welcome.xhtml:1655
 msgid "A big NewsBlur user myself. I love the feed to email feature which lets me have both a push and pull model."
 msgstr ""
 "Je suis moi-même un grand utilisateur de NewsBlur. J’adore la fonction d’envoi des flux par e-mail, qui me "
@@ -271,7 +271,7 @@ msgstr ""
 "Un remplacement FPGA économique et fidèle à l'horloge du processeur vidéo de la borne d'arcade Nintendo, "
 "sur un circuit imprimé à 2 couches."
 
-#: templates/reader/welcome.xhtml:394
+#: templates/reader/welcome.xhtml:402
 msgid "A creative feed for any website, even without RSS"
 msgstr "Un flux créatif pour tous les sites, même sans RSS"
 
@@ -283,13 +283,13 @@ msgstr ""
 "Comparatif détaillé des fonctionnalités de NewsBlur, FreshRSS, Miniflux et Tiny Tiny RSS. Tous sont open "
 "source, mais un seul propose un service entièrement hébergé en plus de l’auto-hébergement."
 
-#: templates/reader/welcome.xhtml:1363
+#: templates/reader/welcome.xhtml:1371
 msgid "A great app. The fact that I can self-host if I need to makes paying for the premium subscription worth it."
 msgstr ""
 "Une excellente application. Le fait que je puisse l’héberger moi-même si nécessaire rend l’abonnement "
 "Premium tout à fait intéressant."
 
-#: templates/reader/welcome.xhtml:148
+#: templates/reader/welcome.xhtml:156
 msgid "A new sound of an old instrument"
 msgstr "Un nouvel air pour un vieil instrument"
 
@@ -297,7 +297,7 @@ msgstr "Un nouvel air pour un vieil instrument"
 msgid "A new sound of an old instrument."
 msgstr "Un nouveau son pour un vieil instrument."
 
-#: templates/reader/welcome.xhtml:71
+#: templates/reader/welcome.xhtml:77
 msgid "A personal news reader bringing people together to talk about the world"
 msgstr "Un lecteur d’actualités personnel qui rassemble les gens pour parler du monde"
 
@@ -305,11 +305,11 @@ msgstr "Un lecteur d’actualités personnel qui rassemble les gens pour parler 
 msgid "A personal news reader that brings people together to talk about the world."
 msgstr "Un lecteur d’actualités personnel qui rassemble les gens pour parler du monde."
 
-#: templates/reader/welcome.xhtml:595
+#: templates/reader/welcome.xhtml:603
 msgid "A refreshingly simple old-school RSS reader."
 msgstr "Un lecteur RSS à l’ancienne, d’une simplicité rafraîchissante."
 
-#: templates/reader/welcome.xhtml:695
+#: templates/reader/welcome.xhtml:703
 msgid ""
 "A small indie developer who has written a brilliant piece of code, building a sustainable business rather "
 "than one focused on hyperscaling."
@@ -317,11 +317,11 @@ msgstr ""
 "Un petit développeur indépendant qui a écrit un code brillant et bâtit une entreprise durable plutôt que de"
 " chercher une croissance démesurée."
 
-#: templates/reader/welcome.xhtml:302
+#: templates/reader/welcome.xhtml:310
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "Un résumé de vos articles les plus importants, personnalisable et envoyé chaque jour"
 
-#: templates/reader/welcome.xhtml:1343
+#: templates/reader/welcome.xhtml:1351
 msgid "A wonderful reader. It handles newsletters so you can subscribe and read them just like any other RSS feed."
 msgstr ""
 "Un lecteur formidable. Il gère les newsletters, que vous pouvez ainsi suivre et lire comme n’importe quel "
@@ -459,7 +459,7 @@ msgstr "Actif depuis 2009"
 msgid "Adafruit"
 msgstr "Adafruit"
 
-#: templates/reader/welcome.xhtml:1119
+#: templates/reader/welcome.xhtml:1127
 msgid "Adam Feldman"
 msgstr "Adam Feldman"
 
@@ -500,7 +500,7 @@ msgstr "Agents Over Bubbles"
 msgid "Aissen"
 msgstr "Aissen"
 
-#: templates/reader/welcome.xhtml:995
+#: templates/reader/welcome.xhtml:1003
 msgid "Alex Kharlamov"
 msgstr "Alex Kharlamov"
 
@@ -512,7 +512,7 @@ msgstr "L’algorithme décide pour vous"
 msgid "All"
 msgstr "Tous"
 
-#: templates/base.html:209
+#: templates/base.html:216
 msgid "All Features"
 msgstr "Toutes les fonctionnalités"
 
@@ -520,7 +520,7 @@ msgstr "Toutes les fonctionnalités"
 msgid "All Feeds Fetched Every 5 Min"
 msgstr "Tous les flux récupérés toutes les 5 min"
 
-#: templates/base.html:289
+#: templates/base.html:296
 msgid "All Plans"
 msgstr "Tous les forfaits"
 
@@ -603,6 +603,10 @@ msgstr "Encore un petit effort !"
 msgid "Almost done. Enter your new password below."
 msgstr "Presque terminé. Saisissez votre nouveau mot de passe ci-dessous."
 
+#: templates/accounts/social_continue.html:30
+msgid "Already have a NewsBlur account?"
+msgstr "Vous avez déjà un compte NewsBlur ?"
+
 #: templates/static/_compare_links.xhtml:37
 msgid "Alternatives"
 msgstr "Alternatives"
@@ -663,7 +667,7 @@ msgstr ""
 msgid "An RSS reader built for the long haul"
 msgstr "Un lecteur RSS conçu pour durer"
 
-#: templates/reader/welcome.xhtml:1049
+#: templates/reader/welcome.xhtml:1057
 msgid "An excellent product that lets me feel like I’m on top of my news feed, rather than the other way around."
 msgstr "Un excellent produit qui me permet de maîtriser mon fil d’actualités, plutôt que l’inverse."
 
@@ -671,7 +675,7 @@ msgstr "Un excellent produit qui me permet de maîtriser mon fil d’actualités
 msgid "Analyzing page"
 msgstr "Analyse de la page"
 
-#: templates/reader/welcome.xhtml:1025
+#: templates/reader/welcome.xhtml:1033
 msgid "Andrew Montalenti"
 msgstr "Andrew Montalenti"
 
@@ -699,7 +703,7 @@ msgstr "De véritables applications Android, pas de simples wrappers"
 msgid "Android support"
 msgstr "Assistance Android"
 
-#: templates/reader/welcome.xhtml:1393
+#: templates/reader/welcome.xhtml:1401
 msgid "Ankit Solanki"
 msgstr "Ankit Solanki"
 
@@ -785,7 +789,7 @@ msgstr "Appliquer l’entraînement à tout un dossier"
 msgid "Apply training globally"
 msgstr "Appliquer l’entraînement partout"
 
-#: templates/reader/welcome.xhtml:701
+#: templates/reader/welcome.xhtml:709
 msgid "Appmus"
 msgstr "Appmus"
 
@@ -813,7 +817,7 @@ msgstr "29 avril 2020 : Conditions d’utilisation de YouTube."
 msgid "Archive"
 msgstr "Archive"
 
-#: templates/reader/welcome.xhtml:1537
+#: templates/reader/welcome.xhtml:1545
 msgid "Archive is a game changer for me. Instant upgrade."
 msgstr "L’archive a tout changé pour moi. Une amélioration immédiate."
 
@@ -853,7 +857,7 @@ msgstr "Voulez-vous vraiment"
 msgid "Are you sure to delete the application"
 msgstr "Voulez-vous vraiment supprimer l’application ?"
 
-#: templates/reader/welcome.xhtml:1139
+#: templates/reader/welcome.xhtml:1147
 msgid "Arkadiy Tetelman"
 msgstr "Arkadiy Tetelman"
 
@@ -897,7 +901,7 @@ msgstr ""
 "Posez n’importe quelle question sur un article à Claude, GPT, Gemini ou Grok. Obtenez des résumés, des "
 "points clés ou échangez avec eux."
 
-#: templates/reader/welcome.xhtml:295
+#: templates/reader/welcome.xhtml:303
 msgid "Ask questions about any story and get answers powered by AI"
 msgstr "Posez des questions sur n’importe quel article et obtenez des réponses grâce à l’IA"
 
@@ -968,7 +972,7 @@ msgstr "25 août 2010"
 msgid "Aug 26, 2010"
 msgstr "26 août 2010"
 
-#: templates/reader/welcome.xhtml:601
+#: templates/reader/welcome.xhtml:609
 msgid "Austin Frakt"
 msgstr "Austin Frakt"
 
@@ -976,7 +980,7 @@ msgstr "Austin Frakt"
 msgid "Authentication uses OAuth 2.0"
 msgstr "L’authentification utilise OAuth 2.0"
 
-#: templates/reader/welcome.xhtml:1180
+#: templates/reader/welcome.xhtml:1188
 msgid "Author"
 msgstr "Auteur"
 
@@ -1008,13 +1012,21 @@ msgstr "Temps de chargement moyen"
 msgid "Avinash"
 msgstr "Avinash"
 
-#: templates/reader/welcome.xhtml:845
+#: templates/reader/welcome.xhtml:853
 msgid "BSAG"
 msgstr "BSAG"
 
 #: templates/profile/gift_redeem.html:25
 msgid "Back to NewsBlur"
 msgstr "Retour à NewsBlur"
+
+#: templates/accounts/social_continue.html:42
+msgid "Back to account"
+msgstr "Retour au compte"
+
+#: templates/accounts/social_continue.html:44
+msgid "Back to login"
+msgstr "Retour à la connexion"
 
 #: templates/static/about.xhtml:171
 msgid "Backbone.js"
@@ -1032,7 +1044,7 @@ msgstr "Basique"
 msgid "Basic filters"
 msgstr "Filtres de base"
 
-#: templates/reader/welcome.xhtml:745
+#: templates/reader/welcome.xhtml:753
 msgid ""
 "Been using and paying for NewsBlur for years. Absolutely love it. Cross-platform with an excellent Android "
 "app."
@@ -1044,7 +1056,7 @@ msgstr ""
 msgid "Belhor"
 msgstr "Belhor"
 
-#: templates/reader/welcome.xhtml:1085
+#: templates/reader/welcome.xhtml:1093
 msgid "Ben Sherman"
 msgstr "Ben Sherman"
 
@@ -1056,11 +1068,11 @@ msgstr ""
 "Ben Thompson estime que les agents d’IA transforment fondamentalement la demande en puissance de calcul et "
 "ne croit plus que nous soyons dans une bulle."
 
-#: templates/reader/welcome.xhtml:581
+#: templates/reader/welcome.xhtml:589
 msgid "Ben Werdmuller"
 msgstr "Ben Werdmuller"
 
-#: templates/reader/welcome.xhtml:1533
+#: templates/reader/welcome.xhtml:1541
 msgid "Bernhard Bock"
 msgstr "Bernhard Bock"
 
@@ -1072,7 +1084,7 @@ msgstr "Les meilleurs lecteurs RSS open source"
 msgid "Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux"
 msgstr "Les meilleurs lecteurs RSS open source — NewsBlur, FreshRSS, Miniflux"
 
-#: templates/reader/welcome.xhtml:725
+#: templates/reader/welcome.xhtml:733
 msgid "Best RSS client, period."
 msgstr "Le meilleur client RSS, tout simplement."
 
@@ -1115,7 +1127,7 @@ msgstr "BlogALiving.com"
 msgid "Bloggea2.com"
 msgstr "Bloggea2.com"
 
-#: templates/reader/welcome.xhtml:986
+#: templates/reader/welcome.xhtml:994
 msgid "Blogger"
 msgstr "Blogger"
 
@@ -1127,7 +1139,7 @@ msgstr "Blogging OT"
 msgid "Blurblog"
 msgstr "Blurblog"
 
-#: templates/reader/welcome.xhtml:340
+#: templates/reader/welcome.xhtml:348
 msgid "Blurblog Privacy"
 msgstr "Confidentialité du Blurblog"
 
@@ -1147,7 +1159,7 @@ msgstr "Bolindir.net"
 msgid "Bookmarklet to easily add sites"
 msgstr "Bookmarklet pour ajouter facilement des sites"
 
-#: templates/reader/welcome.xhtml:1573
+#: templates/reader/welcome.xhtml:1581
 msgid "Boris Mann"
 msgstr "Boris Mann"
 
@@ -1205,7 +1217,7 @@ msgstr ""
 msgid "Browse saved stories by tag in the sidebar"
 msgstr "Parcourir les articles enregistrés par étiquette dans la barre latérale"
 
-#: templates/reader/welcome.xhtml:1453
+#: templates/reader/welcome.xhtml:1461
 msgid "Bryan Quigley"
 msgstr "Bryan Quigley"
 
@@ -1217,7 +1229,7 @@ msgstr "Créé"
 msgid "Built before Google Reader died, built to last after it"
 msgstr "Créé avant la disparition de Google Reader, conçu pour lui survivre"
 
-#: templates/reader/welcome.xhtml:169
+#: templates/reader/welcome.xhtml:177
 msgid "Built for iOS"
 msgstr "Conçu pour iOS"
 
@@ -1249,7 +1261,7 @@ msgstr ""
 "Gemini ou Grok. Les flux Web vous permettent de suivre n’importe quel site, même sans RSS. Vous pouvez "
 "aussi transférer les newsletters par e-mail directement dans votre file de lecture."
 
-#: templates/reader/welcome.xhtml:846
+#: templates/reader/welcome.xhtml:854
 msgid "But She’s A Girl"
 msgstr "Mais c’est une fille"
 
@@ -1319,7 +1331,7 @@ msgstr ""
 "L’accès à l’interface en ligne de commande nécessite un abonnement Premium Archive (99 $/an) ou Premium Pro"
 " (29 $/mois)."
 
-#: templates/reader/welcome.xhtml:1026
+#: templates/reader/welcome.xhtml:1034
 msgid "CTO, Parse.ly"
 msgstr "Directeur technique, Parse.ly"
 
@@ -1335,7 +1347,7 @@ msgstr "Puis-je marquer automatiquement les doublons comme lus ?"
 msgid "Can I downgrade from Pro?"
 msgstr "Puis-je passer à une offre inférieure à Pro ?"
 
-#: templates/reader/welcome.xhtml:1665
+#: templates/reader/welcome.xhtml:1673
 msgid "Can I import feeds from another reader?"
 msgstr "Puis-je importer des flux depuis un autre lecteur ?"
 
@@ -1403,11 +1415,11 @@ msgstr "Peut ajouter n’importe quelle URL"
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/reader/welcome.xhtml:1593
+#: templates/reader/welcome.xhtml:1601
 msgid "Carl Lumma"
 msgstr "Carl Lumma"
 
-#: templates/reader/welcome.xhtml:1129
+#: templates/reader/welcome.xhtml:1137
 msgid "Carol H Tucker"
 msgstr "Carol H Tucker"
 
@@ -1451,7 +1463,7 @@ msgstr "Modifications apportées à cette politique"
 msgid "Cheapest Paid Plan"
 msgstr "Offre payante la moins chère"
 
-#: templates/reader/welcome.xhtml:1199
+#: templates/reader/welcome.xhtml:1207
 msgid "Chester"
 msgstr "Chester"
 
@@ -1475,6 +1487,10 @@ msgstr "Choisir quand les articles sont marqués comme lus"
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Choisissez votre modèle d’IA préféré : Claude, GPT, Gemini ou Grok"
 
+#: templates/accounts/social_continue.html:11
+msgid "Choose your username"
+msgstr "Choisissez votre nom d’utilisateur"
+
 #: templates/static/press.xhtml:288
 msgid "Chris"
 msgstr "Chris"
@@ -1487,7 +1503,7 @@ msgstr "Christina Farr"
 msgid "Christophe Logiste"
 msgstr "Christophe Logiste"
 
-#: templates/reader/welcome.xhtml:1056
+#: templates/reader/welcome.xhtml:1064
 msgid "Civic Tech"
 msgstr "Technologie civique"
 
@@ -1567,11 +1583,11 @@ msgstr "Interface en ligne de commande"
 msgid "Comments from friends"
 msgstr "Commentaires des amis"
 
-#: templates/reader/welcome.xhtml:1658
+#: templates/reader/welcome.xhtml:1666
 msgid "Common Questions"
 msgstr "Questions fréquentes"
 
-#: templates/base.html:308
+#: templates/base.html:315
 msgid "Common questions about plans and billing"
 msgstr "Questions fréquentes sur les offres et la facturation"
 
@@ -1583,7 +1599,7 @@ msgstr "Communauté"
 msgid "Community Feedback"
 msgstr "Commentaires de la communauté"
 
-#: templates/reader/welcome.xhtml:1702
+#: templates/reader/welcome.xhtml:1710
 msgid "Compare"
 msgstr "Comparer"
 
@@ -1595,11 +1611,11 @@ msgstr "Comparer NewsBlur"
 msgid "Compare all plans"
 msgstr "Comparer toutes les offres"
 
-#: templates/base.html:290
+#: templates/base.html:297
 msgid "Compare every tier side by side"
 msgstr "Comparez toutes les offres côte à côte"
 
-#: templates/reader/welcome.xhtml:537
+#: templates/reader/welcome.xhtml:545
 msgid "Compare plans and FAQ"
 msgstr "Comparer les offres et consulter la FAQ"
 
@@ -1622,6 +1638,11 @@ msgstr "Complet"
 #: apps/profile/forms.py:51
 msgid "Confirm your password"
 msgstr "Confirmez votre mot de passe"
+
+#: templates/accounts/social_continue.html:27
+#, python-format
+msgid "Connect %(provider_name)s"
+msgstr "Connecter %(provider_name)s"
 
 #: templates/static/features.xhtml:466
 msgid ""
@@ -1661,9 +1682,17 @@ msgstr ""
 " des workflows personnalisés lorsque des articles correspondent à vos filtres d’entraînement. L’API "
 "complète de NewsBlur est également disponible pour des intégrations personnalisées."
 
+#: templates/accounts/social_continue.html:31
+msgid "Connect an existing account"
+msgstr "Connecter un compte existant"
+
 #: templates/static/feature_mcp_cli.xhtml:221
 msgid "Connect in one command"
 msgstr "Se connecter en une seule commande"
+
+#: templates/accounts/social_continue.html:11
+msgid "Connect your account"
+msgstr "Connectez votre compte"
 
 #: templates/static/press.xhtml:28
 msgid "Contact"
@@ -1713,7 +1742,7 @@ msgstr "Continuer vers NewsBlur"
 msgid "Control the Original View"
 msgstr "Contrôler la vue originale"
 
-#: templates/reader/welcome.xhtml:561
+#: templates/reader/welcome.xhtml:569
 msgid "Cory Doctorow"
 msgstr "Cory Doctorow"
 
@@ -1725,7 +1754,7 @@ msgstr "Impossible de déterminer l’URL du flux RSS."
 msgid "Could not find feeds for user."
 msgstr "Impossible de trouver les flux de cet utilisateur."
 
-#: apps/reader/views.py:5257
+#: apps/reader/views.py:5295
 msgid "Could not find story to save."
 msgstr "Impossible de trouver l’article à enregistrer."
 
@@ -1737,19 +1766,23 @@ msgstr "Impossible de trouver l'article d'origine ni aucune copie."
 msgid "Could not parse YouTube results."
 msgstr "Impossible d’analyser les résultats YouTube."
 
-#: apps/reader/views.py:5264
+#: apps/reader/views.py:5302
 msgid "Could not save story, not found"
 msgstr "Impossible d'enregistrer l'article : introuvable"
 
-#: apps/reader/views.py:5441
+#: apps/reader/views.py:5479
 msgid "Could not unsave story, not found"
 msgstr "Impossible de retirer l’article des éléments enregistrés : introuvable"
+
+#: templates/accounts/social_continue.html:34
+msgid "Create a new account instead"
+msgstr "Créer plutôt un nouveau compte"
 
 #: templates/social/social_page.xhtml:169
 msgid "Create account"
 msgstr "Créer un compte"
 
-#: templates/accounts/signup.html:31
+#: templates/accounts/signup.html:32
 msgid "Create an Account"
 msgstr "Créer un compte"
 
@@ -1856,7 +1889,7 @@ msgstr "Briefing quotidien avec résumés des articles"
 msgid "Daily briefing with your top stories and keywords"
 msgstr "Récapitulatif quotidien avec vos principaux articles et mots-clés"
 
-#: templates/reader/welcome.xhtml:1045
+#: templates/reader/welcome.xhtml:1053
 msgid "Daniel Buckmaster"
 msgstr "Daniel Buckmaster"
 
@@ -1868,7 +1901,7 @@ msgstr "Sombre"
 msgid "Dark Mode"
 msgstr "Mode sombre"
 
-#: templates/reader/welcome.xhtml:996
+#: templates/reader/welcome.xhtml:1004
 msgid "Data Scientist"
 msgstr "Scientifique des données"
 
@@ -1892,15 +1925,15 @@ msgstr "Datamation"
 msgid "David Smith"
 msgstr "David Smith"
 
-#: apps/reader/views.py:3815
+#: apps/reader/views.py:3819
 msgid "Days must be a positive integer."
 msgstr "Le nombre de jours doit être un entier positif."
 
-#: apps/reader/views.py:6163
+#: apps/reader/views.py:6201
 msgid "Days must be between 0 and 365"
 msgstr "Le nombre de jours doit être compris entre 0 et 365"
 
-#: apps/reader/views.py:3812
+#: apps/reader/views.py:3816
 msgid "Days parameter must be an integer."
 msgstr "Le paramètre « days » doit être un entier."
 
@@ -1908,7 +1941,7 @@ msgstr "Le paramètre « days » doit être un entier."
 msgid "Deb's spring salad refresh, inspired by a Paris trip where the magnolias were blooming."
 msgstr "La salade printanière revisitée de Deb, inspirée d’un voyage à Paris où les magnolias étaient en fleurs."
 
-#: templates/reader/welcome.xhtml:1613
+#: templates/reader/welcome.xhtml:1621
 msgid "Debra Mastaler"
 msgstr "Debra Mastaler"
 
@@ -1952,15 +1985,15 @@ msgstr "Supprimer"
 msgid "Description"
 msgstr "Description"
 
-#: templates/reader/welcome.xhtml:1634
+#: templates/reader/welcome.xhtml:1642
 msgid "Developer"
 msgstr "Développeur"
 
-#: templates/reader/welcome.xhtml:1513
+#: templates/reader/welcome.xhtml:1521
 msgid "Diarmaid McManus"
 msgstr "Diarmaid McManus"
 
-#: templates/reader/welcome.xhtml:1463
+#: templates/reader/welcome.xhtml:1471
 msgid "Diego Elio Pettenò"
 msgstr "Diego Elio Pettenò"
 
@@ -1968,7 +2001,7 @@ msgstr "Diego Elio Pettenò"
 msgid "Different tools for different needs"
 msgstr "Des outils adaptés à différents besoins"
 
-#: templates/reader/welcome.xhtml:1209
+#: templates/reader/welcome.xhtml:1217
 msgid "Digitalink"
 msgstr "Digitalink"
 
@@ -2016,7 +2049,7 @@ msgstr "Django"
 msgid "Do I get a unique email address?"
 msgstr "Est-ce que j’obtiens une adresse e-mail unique ?"
 
-#: templates/reader/welcome.xhtml:1681
+#: templates/reader/welcome.xhtml:1689
 msgid "Do I need RSS feeds to follow a site?"
 msgstr "Ai-je besoin de flux RSS pour suivre un site ?"
 
@@ -2060,7 +2093,7 @@ msgstr "Archive comprend-il tout ce qui est inclus dans Premium ?"
 msgid "Does Ask AI work with audio and video?"
 msgstr "Ask AI fonctionne-t-il avec l’audio et la vidéo ?"
 
-#: templates/reader/welcome.xhtml:1677
+#: templates/reader/welcome.xhtml:1685
 msgid "Does NewsBlur work with other apps?"
 msgstr "NewsBlur est-il compatible avec d’autres applications ?"
 
@@ -2108,7 +2141,7 @@ msgstr "Dans votre fil d’actualité, les doublons se replient sous la version 
 msgid "Each newsletter sender becomes its own feed"
 msgstr "Chaque expéditeur de newsletter devient son propre flux"
 
-#: apps/reader/views.py:5763
+#: apps/reader/views.py:5801
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "Chaque river doit contenir river_id, river_side et river_order"
 
@@ -2126,7 +2159,7 @@ msgstr "Chaque étiquette dispose de son propre flux RSS, à partager ou à int�
 msgid "Easily import from Google Reader"
 msgstr "Importez facilement vos données depuis Google Reader"
 
-#: templates/reader/welcome.xhtml:242
+#: templates/reader/welcome.xhtml:250
 msgid "Easy on the eyes and built into the web, iOS, and Android"
 msgstr "Agréable à regarder et intégré au Web, à iOS et à Android"
 
@@ -2134,11 +2167,11 @@ msgstr "Agréable à regarder et intégré au Web, à iOS et à Android"
 msgid "Easy reading"
 msgstr "Lecture facile"
 
-#: templates/reader/welcome.xhtml:635
+#: templates/reader/welcome.xhtml:643
 msgid "Easy to use, dependable, fast, and gets the job done."
 msgstr "Facile à utiliser, fiable, rapide et efficace."
 
-#: templates/reader/welcome.xhtml:1076
+#: templates/reader/welcome.xhtml:1084
 msgid "Economist"
 msgstr "The Economist"
 
@@ -2158,7 +2191,7 @@ msgstr ""
 "L’URL consultée ne pointe vers aucun élément, ou aucun site, article ou donnée ne correspond à ces "
 "paramètres."
 
-#: templates/reader/welcome.xhtml:1503
+#: templates/reader/welcome.xhtml:1511
 msgid "Eize Basa"
 msgstr "Eize Basa"
 
@@ -2170,7 +2203,7 @@ msgstr "Elasticsearch"
 msgid "Elasticsearch-powered"
 msgstr "Propulsé par Elasticsearch"
 
-#: apps/reader/forms.py:111
+#: apps/reader/forms.py:112
 msgid "Email"
 msgstr "E-mail"
 
@@ -2182,7 +2215,7 @@ msgstr "Infolettres par e-mail"
 msgid "Email Newsletters - NewsBlur"
 msgstr "Newsletters par e-mail - NewsBlur"
 
-#: apps/reader/forms.py:109
+#: apps/reader/forms.py:110
 msgid "Email address"
 msgstr "Adresse e-mail"
 
@@ -2198,7 +2231,7 @@ msgstr "L’e-mail devrait être envoyé dans les prochaines minutes."
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
 msgstr "Activez le briefing quotidien pour obtenir un résumé de vos articles principaux généré par l’IA"
 
-#: templates/reader/welcome.xhtml:1644
+#: templates/reader/welcome.xhtml:1652
 msgid "Engineer"
 msgstr "Ingénieur"
 
@@ -2222,11 +2255,11 @@ msgstr "Erez Zukerman"
 msgid "Errors, Inaccuracies and Omissions"
 msgstr "Erreurs, inexactitudes et omissions"
 
-#: templates/reader/welcome.xhtml:387
+#: templates/reader/welcome.xhtml:395
 msgid "Even sites that don't publish RSS feeds can be followed"
 msgstr "Vous pouvez suivre même les sites qui ne publient pas de flux RSS"
 
-#: templates/reader/welcome.xhtml:1133
+#: templates/reader/welcome.xhtml:1141
 msgid "Ever since Google Reader was discontinued, I have paid for NewsBlur and it is worth every penny."
 msgstr "Depuis l’arrêt de Google Reader, je paie pour NewsBlur et chaque centime en vaut la peine."
 
@@ -2234,7 +2267,7 @@ msgstr "Depuis l’arrêt de Google Reader, je paie pour NewsBlur et chaque cent
 msgid "Every command supports"
 msgstr "Chaque commande prend en charge"
 
-#: templates/reader/welcome.xhtml:183
+#: templates/reader/welcome.xhtml:191
 msgid "Every feature from the web, built natively for Android. Free on the Play Store."
 msgstr "Toutes les fonctionnalités du Web, conçues nativement pour Android. Gratuit sur le Play Store."
 
@@ -2256,13 +2289,13 @@ msgstr ""
 "Chaque flux de votre compte est vérifié au moins toutes les 15 minutes, et la plupart le sont toutes les 5 "
 "minutes. Cette fréquence est indépendante de la fréquence de publication du flux."
 
-#: templates/reader/welcome.xhtml:157
+#: templates/reader/welcome.xhtml:165
 msgid "Every layout, every theme, every keyboard shortcut. Train your feeds to surface what matters."
 msgstr ""
 "Chaque mise en page, chaque thème, chaque raccourci clavier. Apprenez à vos flux à mettre en avant ce qui "
 "compte."
 
-#: templates/reader/welcome.xhtml:1662
+#: templates/reader/welcome.xhtml:1670
 msgid ""
 "Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your "
 "feeds and training on the free tier."
@@ -2290,7 +2323,7 @@ msgstr ""
 "Chaque site peut avoir sa propre mise en page. Choisissez entre les vues Partagée, Liste, Grille et "
 "Magazine. Définissez une mise en page différente pour chaque flux selon son contenu."
 
-#: templates/reader/welcome.xhtml:235
+#: templates/reader/welcome.xhtml:243
 msgid "Every site has its own story layout, so you can mix and match"
 msgstr "Chaque site a sa propre mise en page pour les articles : combinez-les à votre guise"
 
@@ -2470,11 +2503,11 @@ msgstr "FAQ - Foire aux questions sur NewsBlur"
 msgid "FPGA Replacement for Nintendo Arcade PPU"
 msgstr "Remplacement FPGA du PPU d’arcade Nintendo"
 
-#: apps/reader/views.py:5534
+#: apps/reader/views.py:5572
 msgid "Failed to delete tag."
 msgstr "Échec de la suppression du tag."
 
-#: apps/reader/views.py:5515
+#: apps/reader/views.py:5553
 msgid "Failed to rename tag."
 msgstr "Impossible de renommer le tag."
 
@@ -2502,7 +2535,7 @@ msgstr "Fonctionnalités"
 msgid "Features Feedly doesn't have"
 msgstr "Fonctionnalités absentes de Feedly"
 
-#: templates/reader/welcome.xhtml:1313
+#: templates/reader/welcome.xhtml:1321
 msgid "Features like this make me feel that I definitely get my money’s worth with this service."
 msgstr ""
 "Des fonctionnalités comme celle-ci me donnent vraiment le sentiment d’en avoir pour mon argent avec ce "
@@ -2516,7 +2549,7 @@ msgstr "Des fonctionnalités qui justifient l’encombrement"
 msgid "Feb 7, 2011"
 msgstr "7 févr. 2011"
 
-#: templates/reader/welcome.xhtml:1403
+#: templates/reader/welcome.xhtml:1411
 msgid "Federico Viticci"
 msgstr "Federico Viticci"
 
@@ -2524,15 +2557,15 @@ msgstr "Federico Viticci"
 msgid "Feed"
 msgstr "Flux"
 
-#: apps/reader/views.py:4597
+#: apps/reader/views.py:4635
 msgid "Feed ID and photo required"
 msgstr "L’identifiant du flux et la photo sont obligatoires"
 
-#: apps/reader/views.py:6082
+#: apps/reader/views.py:6120
 msgid "Feed ID required"
 msgstr "L’identifiant du flux est requis"
 
-#: templates/reader/welcome.xhtml:529
+#: templates/reader/welcome.xhtml:537
 msgid "Feed Lyric, NewsBlur's hungry hound"
 msgstr "Feed Lyric, le chien affamé de NewsBlur"
 
@@ -2548,7 +2581,7 @@ msgstr "Métadonnées et statistiques du flux"
 msgid "Feed not found"
 msgstr "Flux introuvable"
 
-#: apps/reader/views.py:6097
+#: apps/reader/views.py:6135
 msgid "Feed not found in subscriptions"
 msgstr "Flux introuvable dans les abonnements"
 
@@ -2572,7 +2605,7 @@ msgstr "Le type de flux est requis"
 msgid "Feed view"
 msgstr "Vue du flux"
 
-#: templates/reader/welcome.xhtml:945
+#: templates/reader/welcome.xhtml:953
 msgid "FeedSpot"
 msgstr "FeedSpot"
 
@@ -2617,7 +2650,7 @@ msgstr "Flux complétés pour constituer une archive intégrale"
 msgid "Feeds fetched"
 msgstr "Flux récupérés"
 
-#: templates/reader/welcome.xhtml:1203
+#: templates/reader/welcome.xhtml:1211
 msgid "Feels like the best of the old and new webs."
 msgstr "On a l’impression de profiter du meilleur de l’ancien et du nouveau Web."
 
@@ -2702,11 +2735,11 @@ msgstr "Se concentrer"
 msgid "Focus/hide with color indicators"
 msgstr "Mettre en évidence/masquer avec des indicateurs de couleur"
 
-#: apps/reader/views.py:4513
+#: apps/reader/views.py:4551
 msgid "Folder title and photo required"
 msgstr "Le titre du dossier et la photo sont requis"
 
-#: apps/reader/views.py:6147
+#: apps/reader/views.py:6185
 msgid "Folder title required"
 msgstr "Le titre du dossier est requis"
 
@@ -2812,7 +2845,7 @@ msgstr ""
 "Pour les professionnels qui ont besoin d’être informés en temps réel, NewsBlur Pro récupère tous les flux "
 "de votre compte toutes les 5 à 15 minutes. Pas seulement les flux prioritaires"
 
-#: templates/reader/welcome.xhtml:116
+#: templates/reader/welcome.xhtml:123
 msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
 
@@ -2844,7 +2877,7 @@ msgstr "Quatre fois la limite Premium. Suivez toutes les sources dont vous avez 
 msgid "Francesco Di Lorenzo"
 msgstr "Francesco Di Lorenzo"
 
-#: templates/reader/welcome.xhtml:1105
+#: templates/reader/welcome.xhtml:1113
 msgid "Francis Gulotta"
 msgstr "Francis Gulotta"
 
@@ -2864,7 +2897,7 @@ msgstr "Offre gratuite"
 msgid "Free account"
 msgstr "Compte gratuit"
 
-#: apps/reader/views.py:5149
+#: apps/reader/views.py:5187
 msgid "Free accounts are limited to 64 active sites."
 msgstr "Les comptes gratuits sont limités à 64 sites actifs."
 
@@ -2924,11 +2957,11 @@ msgstr "Fukuaki"
 msgid "Full"
 msgstr "Complet"
 
-#: templates/reader/welcome.xhtml:280
+#: templates/reader/welcome.xhtml:288
 msgid "Full Text Search"
 msgstr "Recherche en texte intégral"
 
-#: templates/base.html:299
+#: templates/base.html:306
 msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
 msgstr "Archives complètes, Ask AI, résumé quotidien, 4 096 sites"
 
@@ -2952,7 +2985,7 @@ msgstr "Recherche en texte intégral - NewsBlur"
 msgid "Full-Text Training"
 msgstr "Entraînement au texte intégral"
 
-#: templates/reader/welcome.xhtml:195
+#: templates/reader/welcome.xhtml:203
 msgid "Full-featured news reader"
 msgstr "Lecteur d’actualités complet"
 
@@ -2996,7 +3029,7 @@ msgstr "Entièrement open source (MIT)"
 msgid "Fully open source on GitHub"
 msgstr "Entièrement open source sur GitHub"
 
-#: templates/reader/welcome.xhtml:1670
+#: templates/reader/welcome.xhtml:1678
 msgid "Fully open source under the MIT license. Run your own instance with Docker, contribute on"
 msgstr "Entièrement open source sous licence MIT. Exécutez votre propre instance avec Docker, contribuez sur"
 
@@ -3012,7 +3045,7 @@ msgstr "Nouvelles améliorations de l'interface et corrections de mémoire, avec
 msgid "GPL-3.0"
 msgstr "GPL-3.0"
 
-#: templates/reader/welcome.xhtml:641
+#: templates/reader/welcome.xhtml:649
 msgid "Gabe Weatherhead"
 msgstr "Gabe Weatherhead"
 
@@ -3028,7 +3061,7 @@ msgstr "Conditions générales"
 msgid "General support"
 msgstr "Assistance générale"
 
-#: templates/reader/welcome.xhtml:1464
+#: templates/reader/welcome.xhtml:1472
 msgid "Gentoo Developer"
 msgstr "Développeur Gentoo"
 
@@ -3048,7 +3081,7 @@ msgstr "Passer à Premium Pro"
 msgid "Get Started Free"
 msgstr "Commencer gratuitement"
 
-#: templates/reader/welcome.xhtml:316
+#: templates/reader/welcome.xhtml:324
 msgid "Get alerted the moment a feed publishes, on web, iOS, or Android"
 msgstr "Soyez averti dès qu’un flux publie, sur le Web, iOS ou Android"
 
@@ -3182,7 +3215,7 @@ msgstr ""
 msgid "Go to Account Settings to find your unique NewsBlur email address"
 msgstr "Accédez aux paramètres du compte pour trouver votre adresse e-mail NewsBlur unique"
 
-#: templates/reader/welcome.xhtml:979
+#: templates/reader/welcome.xhtml:987
 msgid ""
 "Going through my 222 RSS subscriptions in NewsBlur every morning. Chronological, full control over what you"
 " see."
@@ -3214,7 +3247,7 @@ msgstr "Règles de confidentialité de Google"
 msgid "Google Reader API, Fever API"
 msgstr "API Google Reader, API Fever"
 
-#: templates/base.html:275
+#: templates/base.html:282
 msgid "Google Reader Alt"
 msgstr "Alternative à Google Reader"
 
@@ -3256,7 +3289,7 @@ msgstr "Gestion élégante des iFrames"
 msgid "Gratuito"
 msgstr "Gratuito"
 
-#: templates/reader/welcome.xhtml:711
+#: templates/reader/welcome.xhtml:719
 msgid "Greg Gilbert"
 msgstr "Greg Gilbert"
 
@@ -3264,7 +3297,7 @@ msgstr "Greg Gilbert"
 msgid "Grid"
 msgstr "Grille"
 
-#: templates/reader/welcome.xhtml:234
+#: templates/reader/welcome.xhtml:242
 msgid "Grid, List, Split, Magazine"
 msgstr "Grille, Liste, Partagé, Magazine"
 
@@ -3276,7 +3309,7 @@ msgstr "Regrouper les articles en double de vos flux"
 msgid "Hackaday"
 msgstr "Hackaday"
 
-#: templates/reader/welcome.xhtml:1229
+#: templates/reader/welcome.xhtml:1237
 msgid "Hacker News"
 msgstr "Hacker News"
 
@@ -3284,7 +3317,7 @@ msgstr "Hacker News"
 msgid "Hacking The System In A Moral Panic"
 msgstr "Pirater le système en pleine panique morale"
 
-#: templates/reader/welcome.xhtml:1109
+#: templates/reader/welcome.xhtml:1117
 msgid ""
 "Half the appeal was it wasn’t a fully funded tech startup and was open source. Works great, small but nice "
 "community."
@@ -3296,13 +3329,13 @@ msgstr ""
 msgid "Half the price, more features"
 msgstr "Deux fois moins cher, plus de fonctionnalités"
 
-#: templates/reader/welcome.xhtml:909
+#: templates/reader/welcome.xhtml:917
 msgid "Hands down the best $36 I spend every year. I subscribe to 1916 feeds. It’s my platonic ideal of software."
 msgstr ""
 "De loin les 36 $ les mieux dépensés chaque année. Je suis abonné à 1916 flux. C’est mon idéal platonique du"
 " logiciel."
 
-#: templates/reader/welcome.xhtml:896
+#: templates/reader/welcome.xhtml:904
 msgid "Harvard Law Professor"
 msgstr "Professeur de droit à Harvard"
 
@@ -3314,7 +3347,7 @@ msgstr "Vous avez une idée de commande ou de workflow ? Publiez-la sur le"
 msgid "Have an idea for a new tool or workflow? Post it on the"
 msgstr "Vous avez une idée de nouvel outil ou de nouveau flux de travail ? Publiez-la sur le"
 
-#: templates/reader/welcome.xhtml:602
+#: templates/reader/welcome.xhtml:610
 msgid "Health Economist, NY Times"
 msgstr "Économiste de la santé, NY Times"
 
@@ -3322,7 +3355,7 @@ msgstr "Économiste de la santé, NY Times"
 msgid "Hide"
 msgstr "Masquer"
 
-#: templates/reader/welcome.xhtml:274
+#: templates/reader/welcome.xhtml:282
 msgid "Hide the stories you don't like and highlight the stories you do"
 msgstr "Masquez les articles qui ne vous plaisent pas et mettez en évidence ceux que vous aimez"
 
@@ -3330,7 +3363,7 @@ msgstr "Masquez les articles qui ne vous plaisent pas et mettez en évidence ceu
 msgid "Higher (full-stack: 2+ GB RAM)"
 msgstr "Supérieur (pile complète : 2 Go de RAM ou plus)"
 
-#: templates/reader/welcome.xhtml:949
+#: templates/reader/welcome.xhtml:957
 msgid ""
 "Highlight any phrase in article full text, mark it liked or disliked to train the intelligence to show you "
 "more of what you want."
@@ -3350,15 +3383,15 @@ msgstr "Encore un tout petit instant..."
 msgid "Hold tight while your account is being upgraded..."
 msgstr "Veuillez patienter pendant la mise à niveau de votre compte…"
 
-#: templates/reader/welcome.xhtml:1253
+#: templates/reader/welcome.xhtml:1261
 msgid "Holy crap the search feature is good."
 msgstr "Bon sang, la fonction de recherche est vraiment excellente."
 
-#: templates/base.html:202
+#: templates/base.html:209
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/reader/welcome.xhtml:380
+#: templates/reader/welcome.xhtml:388
 msgid "Hook NewsBlur up to nearly every service on the web"
 msgstr "Connectez NewsBlur à presque tous les services du Web"
 
@@ -3366,11 +3399,11 @@ msgstr "Connectez NewsBlur à presque tous les services du Web"
 msgid "Hosted Service"
 msgstr "Service hébergé"
 
-#: templates/reader/welcome.xhtml:1685
+#: templates/reader/welcome.xhtml:1693
 msgid "How does NewsBlur compare to Feedly?"
 msgstr "Comment NewsBlur se compare-t-il à Feedly ?"
 
-#: templates/reader/welcome.xhtml:1690
+#: templates/reader/welcome.xhtml:1698
 msgid "How does NewsBlur compare to Inoreader?"
 msgstr "En quoi NewsBlur se compare-t-il à Inoreader ?"
 
@@ -3382,7 +3415,7 @@ msgstr "Comment fonctionne l’authentification ?"
 msgid "How does clustering detect duplicate stories?"
 msgstr "Comment le regroupement détecte-t-il les articles en double ?"
 
-#: templates/reader/welcome.xhtml:1557
+#: templates/reader/welcome.xhtml:1565
 msgid "How fabulous the functionality of the NewsBlur newsletter feature."
 msgstr "La fonctionnalité de newsletter de NewsBlur est vraiment formidable."
 
@@ -3410,41 +3443,41 @@ msgstr "Combien d’articles puis-je enregistrer ?"
 msgid "How often are Web Feeds checked?"
 msgstr "À quelle fréquence les flux Web sont-ils vérifiés ?"
 
-#: templates/reader/welcome.xhtml:875
+#: templates/reader/welcome.xhtml:883
 msgid "How-To Geek"
 msgstr "How-To Geek"
 
-#: templates/reader/welcome.xhtml:1477
+#: templates/reader/welcome.xhtml:1485
 msgid "I also found NewsBlur the best Google Reader successor out there."
 msgstr "J’ai aussi trouvé que NewsBlur était le meilleur successeur de Google Reader."
 
-#: templates/reader/welcome.xhtml:1293
+#: templates/reader/welcome.xhtml:1301
 msgid "I can’t praise you enough for the fast and responsive search."
 msgstr "Je ne vous remercierai jamais assez pour la rapidité et la réactivité de la recherche."
 
-#: templates/reader/welcome.xhtml:1467
+#: templates/reader/welcome.xhtml:1475
 msgid "I cared enough about feed readers to pay for NewsBlur. Finding NewsBlur was a saviour."
 msgstr ""
 "Les lecteurs de flux comptaient suffisamment pour moi pour que je paie NewsBlur. Découvrir NewsBlur a été "
 "une véritable aubaine."
 
-#: templates/reader/welcome.xhtml:1457
+#: templates/reader/welcome.xhtml:1465
 msgid "I decided to try NewsBlur and haven’t looked back. The premium account is very reasonable."
 msgstr "J’ai décidé d’essayer NewsBlur et je ne l’ai pas regretté. L’abonnement Premium est très abordable."
 
-#: templates/reader/welcome.xhtml:1099
+#: templates/reader/welcome.xhtml:1107
 msgid "I deleted a folder of feeds so NewsBlur sent me an OPML backup just in case. I am smitten."
 msgstr "J’ai supprimé un dossier de flux et NewsBlur m’a envoyé une sauvegarde OPML, au cas où. Je suis conquise."
 
-#: templates/reader/welcome.xhtml:1617
+#: templates/reader/welcome.xhtml:1625
 msgid "I don’t know how anyone combs content without a good reader."
 msgstr "Je ne sais pas comment on peut parcourir du contenu sans un bon lecteur."
 
-#: templates/reader/welcome.xhtml:1547
+#: templates/reader/welcome.xhtml:1555
 msgid "I give a million props to NewsBlur’s customer service. It’s always top notch."
 msgstr "Je ne taris pas d’éloges sur le service client de NewsBlur. Il est toujours irréprochable."
 
-#: templates/reader/welcome.xhtml:1153
+#: templates/reader/welcome.xhtml:1161
 msgid ""
 "I have been a happy subscriber to NewsBlur for almost nine years and it continues to get better. Highly "
 "recommend."
@@ -3452,13 +3485,13 @@ msgstr ""
 "Je suis un abonné satisfait de NewsBlur depuis presque neuf ans, et le service ne cesse de s’améliorer. Je "
 "le recommande vivement."
 
-#: templates/reader/welcome.xhtml:565
+#: templates/reader/welcome.xhtml:573
 msgid "I have nothing but praise for NewsBlur. The $36 I send them every year is a very good investment."
 msgstr ""
 "Je n’ai que des éloges à faire à NewsBlur. Les 36 $ que je leur verse chaque année sont un très bon "
 "investissement."
 
-#: templates/reader/welcome.xhtml:1517
+#: templates/reader/welcome.xhtml:1525
 msgid ""
 "I learned NewsBlur had been hacked and data wiped through an RSS feed on NewsBlur, since they had restored "
 "access before I noticed."
@@ -3466,15 +3499,15 @@ msgstr ""
 "J’ai appris que NewsBlur avait été piraté et que les données avaient été effacées grâce à un flux RSS sur "
 "NewsBlur, car l’accès avait été rétabli avant que je ne m’en aperçoive."
 
-#: templates/reader/welcome.xhtml:1273
+#: templates/reader/welcome.xhtml:1281
 msgid "I love NewsBlur — it’s the only website I pay to use."
 msgstr "J’adore NewsBlur — c’est le seul site web pour lequel je paie."
 
-#: templates/reader/welcome.xhtml:1607
+#: templates/reader/welcome.xhtml:1615
 msgid "I love NewsBlur. Thanks for making such a great product."
 msgstr "J’adore NewsBlur. Merci d’avoir créé un si bon produit."
 
-#: templates/reader/welcome.xhtml:1143
+#: templates/reader/welcome.xhtml:1151
 msgid ""
 "I love everything about this NewsBlur data breach postmortem. Clear, specific, detailed timeline. Just "
 "excellent."
@@ -3482,13 +3515,13 @@ msgstr ""
 "J’aime tout dans cette analyse de la fuite de données de NewsBlur. Une chronologie claire, précise et "
 "détaillée. Excellent, tout simplement."
 
-#: templates/reader/welcome.xhtml:775
+#: templates/reader/welcome.xhtml:783
 msgid "I moved to NewsBlur when Google Reader was shut down. Excellent styling, features, and no issues."
 msgstr ""
 "Je suis passé à NewsBlur à la fermeture de Google Reader. Excellente présentation, fonctionnalités et aucun"
 " problème."
 
-#: templates/reader/welcome.xhtml:889
+#: templates/reader/welcome.xhtml:897
 msgid ""
 "I recently started using NewsBlur that automatically sorts my RSS feeds into ‘updates infrequently’ and "
 "‘everything’ and it’s a lifesaver."
@@ -3496,27 +3529,27 @@ msgstr ""
 "J’ai récemment commencé à utiliser NewsBlur, qui trie automatiquement mes flux RSS entre « mises à jour peu"
 " fréquentes » et « tout le reste ». C’est une vraie bouée de sauvetage."
 
-#: templates/reader/welcome.xhtml:899
+#: templates/reader/welcome.xhtml:907
 msgid "I still use NewsBlur and find RSS feeds to be a great way to see what others are writing while dodging slop."
 msgstr ""
 "J’utilise toujours NewsBlur et je trouve que les flux RSS sont un excellent moyen de découvrir ce que les "
 "autres écrivent tout en évitant les contenus sans intérêt."
 
-#: templates/reader/welcome.xhtml:1039
+#: templates/reader/welcome.xhtml:1047
 msgid "I switched to NewsBlur and am happy to be supporting a product that isn’t from Google."
 msgstr "Je suis passé à NewsBlur et je suis heureux de soutenir un produit qui ne vient pas de Google."
 
-#: templates/reader/welcome.xhtml:1637
+#: templates/reader/welcome.xhtml:1645
 msgid "I use NewsBlur for RSS, YouTube subscriptions, and email newsletters. Filtering is incredible."
 msgstr ""
 "J’utilise NewsBlur pour les flux RSS, les abonnements YouTube et les newsletters par e-mail. Le filtrage "
 "est incroyable."
 
-#: templates/reader/welcome.xhtml:1223
+#: templates/reader/welcome.xhtml:1231
 msgid "I use it multiple times a day, and I’m not sure what I’d do without it."
 msgstr "Je l’utilise plusieurs fois par jour et je ne sais pas ce que je ferais sans."
 
-#: templates/reader/welcome.xhtml:1089
+#: templates/reader/welcome.xhtml:1097
 msgid ""
 "I was cleaning up my feeds and got an email with a backup automatically, in case I made a mistake. What "
 "amazing user experience."
@@ -3524,7 +3557,7 @@ msgstr ""
 "Je faisais le tri dans mes flux et j’ai reçu un e-mail contenant une sauvegarde automatique, au cas où je "
 "ferais une erreur. Quelle expérience utilisateur formidable."
 
-#: templates/reader/welcome.xhtml:1283
+#: templates/reader/welcome.xhtml:1291
 msgid "I was so impressed I went premium without hesitation — by far the best reader out there!"
 msgstr ""
 "J’ai été tellement impressionné que je suis passé à Premium sans hésiter — de loin le meilleur lecteur qui "
@@ -3546,7 +3579,7 @@ msgstr "Intégration IFTTT avec les recettes blurblog de NewsBlur"
 msgid "IT-runde"
 msgstr "IT-runde"
 
-#: templates/reader/welcome.xhtml:1333
+#: templates/reader/welcome.xhtml:1341
 msgid "IT’S AWESOME."
 msgstr "C’EST GÉNIAL."
 
@@ -3836,7 +3869,7 @@ msgstr "Intelligence"
 msgid "Intelligence / Filtering"
 msgstr "Intelligence / Filtrage"
 
-#: templates/reader/welcome.xhtml:1383
+#: templates/reader/welcome.xhtml:1391
 msgid "Intelligence Trainer and the various options for Site Settings are very useful."
 msgstr "L’entraîneur d’intelligence et les différentes options des paramètres du site sont très utiles."
 
@@ -3890,7 +3923,7 @@ msgstr "Introduction à l’API"
 msgid "Invalid JSON"
 msgstr "JSON invalide"
 
-#: apps/reader/views.py:5753
+#: apps/reader/views.py:5791
 msgid "Invalid JSON data"
 msgstr "Données JSON invalides"
 
@@ -3898,11 +3931,11 @@ msgstr "Données JSON invalides"
 msgid "Invalid URL"
 msgstr "URL invalide"
 
-#: apps/reader/views.py:4673
+#: apps/reader/views.py:4711
 msgid "Invalid URL."
 msgstr "URL invalide."
 
-#: apps/profile/views.py:1397
+#: apps/profile/views.py:1398
 msgid "Invalid amount"
 msgstr "Montant invalide"
 
@@ -3914,31 +3947,31 @@ msgstr "classifier_type invalide"
 msgid "Invalid conversation history format"
 msgstr "Format de l’historique de conversation invalide"
 
-#: apps/reader/views.py:6168
+#: apps/reader/views.py:6206
 msgid "Invalid days value"
 msgstr "Valeur du nombre de jours invalide"
 
-#: apps/reader/views.py:6091
+#: apps/reader/views.py:6129
 msgid "Invalid feed ID"
 msgstr "ID de flux invalide"
 
-#: apps/reader/views.py:5132
+#: apps/reader/views.py:5170
 msgid "Invalid feed_id"
 msgstr "feed_id invalide"
 
-#: apps/reader/views.py:3836
+#: apps/reader/views.py:3840
 msgid "Invalid feed_id."
 msgstr "feed_id invalide."
 
-#: apps/profile/views.py:1962
+#: apps/profile/views.py:1963
 msgid "Invalid gift tier."
 msgstr "Niveau de cadeau invalide."
 
-#: apps/reader/views.py:4627
+#: apps/reader/views.py:4665
 msgid "Invalid image file"
 msgstr "Fichier image invalide"
 
-#: apps/reader/views.py:5143
+#: apps/reader/views.py:5181
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days non valide"
 
@@ -3962,7 +3995,7 @@ msgstr "Facture"
 msgid "Invoice Date"
 msgstr "Date de facturation"
 
-#: templates/reader/welcome.xhtml:1669
+#: templates/reader/welcome.xhtml:1677
 msgid "Is NewsBlur open source?"
 msgstr "NewsBlur est-il open source ?"
 
@@ -3970,7 +4003,7 @@ msgstr "NewsBlur est-il open source ?"
 msgid "Is my data safe?"
 msgstr "Mes données sont-elles protégées ?"
 
-#: templates/reader/welcome.xhtml:1661
+#: templates/reader/welcome.xhtml:1669
 msgid "Is there a free trial?"
 msgstr "Y a-t-il une période d’essai gratuite ?"
 
@@ -3994,21 +4027,21 @@ msgstr "La formation est-elle disponible avec l’offre gratuite ?"
 msgid "Isopixel"
 msgstr "Isopixel"
 
-#: templates/reader/welcome.xhtml:765
+#: templates/reader/welcome.xhtml:773
 msgid "It felt like the most natural successor to Google Reader."
 msgstr "Cela m’a semblé être le successeur le plus naturel de Google Reader."
 
-#: templates/reader/welcome.xhtml:1397
+#: templates/reader/welcome.xhtml:1405
 msgid "It’s an indispensable tool — it’s better than Google Reader at its best! Highly recommended."
 msgstr ""
 "C’est un outil indispensable — il est meilleur que Google Reader ne l’a jamais été ! Je le recommande "
 "vivement."
 
-#: templates/reader/welcome.xhtml:755
+#: templates/reader/welcome.xhtml:763
 msgid "It’s literally the only service I’ve been genuinely delighted to spend money on."
 msgstr "C’est littéralement le seul service pour lequel j’ai vraiment été ravi de dépenser de l’argent."
 
-#: templates/reader/welcome.xhtml:939
+#: templates/reader/welcome.xhtml:947
 msgid ""
 "It’s open source and you can self host, but for the price of the subscription it’s just not worth the "
 "hassle."
@@ -4016,17 +4049,17 @@ msgstr ""
 "Le code est open source et vous pouvez l’héberger vous-même, mais pour le prix de l’abonnement, les "
 "complications n’en valent tout simplement pas la peine."
 
-#: templates/reader/welcome.xhtml:1163
+#: templates/reader/welcome.xhtml:1171
 msgid "I’d recommend NewsBlur for RSS. It’s really quite good."
 msgstr "Je recommande NewsBlur pour les flux RSS. C’est vraiment très bien."
 
-#: templates/reader/welcome.xhtml:1427
+#: templates/reader/welcome.xhtml:1435
 msgid "I’m wasting less time scrolling past stuff I don’t care about and more time reading things I enjoy."
 msgstr ""
 "Je perds moins de temps à faire défiler des choses qui ne m’intéressent pas et je passe plus de temps à "
 "lire ce qui me plaît."
 
-#: templates/reader/welcome.xhtml:1417
+#: templates/reader/welcome.xhtml:1425
 msgid ""
 "I’ve been a paying NewsBlur user since Google Reader was dropped, and stuff like this makes me happy when "
 "my yearly subscription comes due."
@@ -4034,27 +4067,27 @@ msgstr ""
 "J’utilise NewsBlur avec un abonnement payant depuis l’abandon de Google Reader, et ce genre de choses me "
 "réjouit lorsque mon abonnement annuel arrive à échéance."
 
-#: templates/reader/welcome.xhtml:825
+#: templates/reader/welcome.xhtml:833
 msgid "I’ve been paying for the hosted version of NewsBlur for 12 years and am very happy with it!"
 msgstr "Je paie la version hébergée de NewsBlur depuis 12 ans et j’en suis très satisfait !"
 
-#: templates/reader/welcome.xhtml:1627
+#: templates/reader/welcome.xhtml:1635
 msgid "I’ve been saying this for 15 years. Kudos to NewsBlur keeping the RSS flame alive."
 msgstr "Je le répète depuis 15 ans. Bravo à NewsBlur de faire vivre le RSS."
 
-#: templates/reader/welcome.xhtml:715
+#: templates/reader/welcome.xhtml:723
 msgid "I’ve been using NewsBlur for over two years, and I can’t imagine life without it."
 msgstr "J’utilise NewsBlur depuis plus de deux ans et je ne peux pas imaginer m’en passer."
 
-#: templates/reader/welcome.xhtml:1193
+#: templates/reader/welcome.xhtml:1201
 msgid "I’ve been using NewsBlur since Google Reader shut down and this kind of attention to detail shows through."
 msgstr "J’utilise NewsBlur depuis la fermeture de Google Reader, et ce souci du détail se remarque."
 
-#: templates/reader/welcome.xhtml:1079
+#: templates/reader/welcome.xhtml:1087
 msgid "I’ve now switched to NewsBlur which is slicker and has some ability to be trained."
 msgstr "Je suis maintenant passé à NewsBlur, plus fluide et qui permet d’entraîner le fil."
 
-#: templates/reader/welcome.xhtml:1019
+#: templates/reader/welcome.xhtml:1027
 msgid ""
 "I’ve used NewsBlur since 2013 when Google Reader was ‘spring cleaned’. I jumped at the chance to pay the "
 "creator more."
@@ -4062,11 +4095,11 @@ msgstr ""
 "J’utilise NewsBlur depuis 2013, quand Google Reader a fait son « grand ménage de printemps ». Je me suis "
 "empressé de saisir l’occasion de rémunérer davantage son créateur."
 
-#: templates/reader/welcome.xhtml:1169
+#: templates/reader/welcome.xhtml:1177
 msgid "James Broadhead"
 msgstr "James Broadhead"
 
-#: templates/reader/welcome.xhtml:1493
+#: templates/reader/welcome.xhtml:1501
 msgid "James Pain"
 msgstr "James Pain"
 
@@ -4090,7 +4123,7 @@ msgstr "25 janv. 2010"
 msgid "Jan 30, 2011"
 msgstr "30 janv. 2011"
 
-#: templates/reader/welcome.xhtml:1623
+#: templates/reader/welcome.xhtml:1631
 msgid "Jason Gunn"
 msgstr "Jason Gunn"
 
@@ -4098,23 +4131,23 @@ msgstr "Jason Gunn"
 msgid "Jeff Cormier"
 msgstr "Jeff Cormier"
 
-#: templates/reader/welcome.xhtml:975
+#: templates/reader/welcome.xhtml:983
 msgid "Jens Bonk-Wiltfang"
 msgstr "Jens Bonk-Wiltfang"
 
-#: templates/reader/welcome.xhtml:1413
+#: templates/reader/welcome.xhtml:1421
 msgid "Jimmie P Rodgers"
 msgstr "Jimmie P Rodgers"
 
-#: templates/reader/welcome.xhtml:1075
+#: templates/reader/welcome.xhtml:1083
 msgid "John Kiff"
 msgstr "John Kiff"
 
-#: templates/reader/welcome.xhtml:1603
+#: templates/reader/welcome.xhtml:1611
 msgid "Jonah Bishop"
 msgstr "Jonah Bishop"
 
-#: templates/reader/welcome.xhtml:895
+#: templates/reader/welcome.xhtml:903
 msgid "Jonathan Zittrain"
 msgstr "Jonathan Zittrain"
 
@@ -4122,7 +4155,7 @@ msgstr "Jonathan Zittrain"
 msgid "Jorge Autor"
 msgstr "Jorge Autor"
 
-#: templates/reader/welcome.xhtml:562
+#: templates/reader/welcome.xhtml:570
 msgid "Journalist"
 msgstr "Journaliste"
 
@@ -4134,21 +4167,21 @@ msgstr "Juan Carlos Cano Aguilera"
 msgid "Juan Diego Polo"
 msgstr "Juan Diego Polo"
 
-#: templates/reader/welcome.xhtml:885
+#: templates/reader/welcome.xhtml:893
 msgid "Julia Evans"
 msgstr "Julia Evans"
 
-#: templates/reader/welcome.xhtml:1587
+#: templates/reader/welcome.xhtml:1595
 msgid "Just upgraded to NewsBlur premium. Very happy with it. Recommended."
 msgstr "Je viens de passer à NewsBlur Premium. J’en suis très satisfait. Je le recommande."
 
-#: templates/reader/welcome.xhtml:1323
+#: templates/reader/welcome.xhtml:1331
 msgid "Just wanted to thank you for all the little things and big things added over the years."
 msgstr ""
 "Je voulais simplement vous remercier pour toutes les petites et grandes améliorations ajoutées au fil des "
 "ans."
 
-#: templates/reader/welcome.xhtml:196
+#: templates/reader/welcome.xhtml:204
 msgid "Keep the signal, lose the noise."
 msgstr "Gardez l’essentiel, éliminez le superflu."
 
@@ -4156,7 +4189,7 @@ msgstr "Gardez l’essentiel, éliminez le superflu."
 msgid "Keep up-to-date"
 msgstr "Restez à jour"
 
-#: templates/reader/welcome.xhtml:1179
+#: templates/reader/welcome.xhtml:1187
 msgid "Kevin Smokler"
 msgstr "Kevin Smokler"
 
@@ -4180,7 +4213,7 @@ msgstr "Mots-clés"
 msgid "KillerStartups"
 msgstr "KillerStartups"
 
-#: templates/reader/welcome.xhtml:544
+#: templates/reader/welcome.xhtml:552
 msgid "Kind words people say about NewsBlur"
 msgstr "Les gentillesses que l’on dit sur NewsBlur"
 
@@ -4188,11 +4221,11 @@ msgstr "Les gentillesses que l’on dit sur NewsBlur"
 msgid "Konkurrenz für den Google Reader"
 msgstr "Un concurrent pour Google Reader"
 
-#: templates/reader/welcome.xhtml:905
+#: templates/reader/welcome.xhtml:913
 msgid "Koranteng"
 msgstr "Koranteng"
 
-#: templates/reader/welcome.xhtml:1149
+#: templates/reader/welcome.xhtml:1157
 msgid "Kyle Niemeyer"
 msgstr "Kyle Niemeyer"
 
@@ -4224,6 +4257,10 @@ msgstr "Dernière mise à jour"
 msgid "Last fetch"
 msgstr "Dernière récupération"
 
+#: templates/accounts/social_buttons.html:21
+msgid "Last used"
+msgstr "Dernière utilisation"
+
 #: templates/reader/getting_started.xhtml:48
 msgid "Launch Intel"
 msgstr "Lancer Intel"
@@ -4232,7 +4269,7 @@ msgstr "Lancer Intel"
 msgid "Learn more"
 msgstr "En savoir plus"
 
-#: templates/reader/welcome.xhtml:585
+#: templates/reader/welcome.xhtml:593
 msgid ""
 "Less interruptive, less antagonizing, and less annoying as an interface, with no upsells or user engagement"
 " hacks."
@@ -4252,11 +4289,11 @@ msgstr "Lifehacker"
 msgid "Light"
 msgstr "Clair"
 
-#: apps/profile/views.py:1403
+#: apps/profile/views.py:1404
 msgid "Limit cannot exceed $10,000"
 msgstr "La limite ne peut pas dépasser 10 000 $"
 
-#: apps/profile/views.py:1400
+#: apps/profile/views.py:1401
 msgid "Limit must be a positive amount"
 msgstr "La limite doit être une valeur positive"
 
@@ -4268,7 +4305,7 @@ msgstr "Limité"
 msgid "Limited (own apps only)"
 msgstr "Limité (applications personnelles uniquement)"
 
-#: templates/reader/welcome.xhtml:1443
+#: templates/reader/welcome.xhtml:1451
 msgid "Linux Magazine"
 msgstr "Linux Magazine"
 
@@ -4292,11 +4329,11 @@ msgstr "Charger les articles des flux, des dossiers ou de tous"
 msgid "Loading"
 msgstr "Chargement"
 
-#: templates/reader/welcome.xhtml:1339
+#: templates/reader/welcome.xhtml:1347
 msgid "Lobsters"
 msgstr "Lobsters"
 
-#: templates/reader/welcome.xhtml:92
+#: templates/reader/welcome.xhtml:98
 msgid "Log In"
 msgstr "Se connecter"
 
@@ -4316,7 +4353,7 @@ msgstr "Connexion"
 msgid "Login to a different account"
 msgstr "Se connecter à un autre compte"
 
-#: templates/accounts/signup.html:74
+#: templates/accounts/signup.html:76
 msgid "Login to your account"
 msgstr "Connectez-vous à votre compte"
 
@@ -4378,7 +4415,7 @@ msgstr "Lucida Grande"
 msgid "Lyric"
 msgstr "Paroles"
 
-#: templates/reader/welcome.xhtml:721
+#: templates/reader/welcome.xhtml:729
 msgid "Lénya"
 msgstr "Lénya"
 
@@ -4420,11 +4457,11 @@ msgstr "Licence MIT, transparence totale"
 msgid "MOin"
 msgstr "MOin"
 
-#: templates/reader/welcome.xhtml:1404
+#: templates/reader/welcome.xhtml:1412
 msgid "MacStories"
 msgstr "MacStories"
 
-#: templates/reader/welcome.xhtml:642
+#: templates/reader/welcome.xhtml:650
 msgid "Macdrifter"
 msgstr "Macdrifter"
 
@@ -4436,7 +4473,7 @@ msgstr "Magazine"
 msgid "Magazine view layout showing story cards with thumbnails"
 msgstr "Mise en page magazine affichant des cartes d’articles avec des vignettes"
 
-#: templates/reader/welcome.xhtml:1543
+#: templates/reader/welcome.xhtml:1551
 msgid "MaggiBot"
 msgstr "MaggiBot"
 
@@ -4463,7 +4500,7 @@ msgstr ""
 msgid "MakeUseOf"
 msgstr "MakeUseOf"
 
-#: templates/reader/welcome.xhtml:1414
+#: templates/reader/welcome.xhtml:1422
 msgid "Maker"
 msgstr "Fabricant"
 
@@ -4518,7 +4555,7 @@ msgstr "6 mars 2012"
 msgid "Mar 8, 2011"
 msgstr "8 mars 2011"
 
-#: templates/reader/welcome.xhtml:1523
+#: templates/reader/welcome.xhtml:1531
 msgid "Mario"
 msgstr "Mario"
 
@@ -4542,11 +4579,11 @@ msgstr ""
 msgid "Martin Weigert"
 msgstr "Martin Weigert"
 
-#: templates/reader/welcome.xhtml:1159
+#: templates/reader/welcome.xhtml:1167
 msgid "Mary Jo Foley"
 msgstr "Mary Jo Foley"
 
-#: templates/reader/welcome.xhtml:1781
+#: templates/reader/welcome.xhtml:1789
 msgid "Mastodon"
 msgstr "Mastodon"
 
@@ -4558,7 +4595,7 @@ msgstr "Matt Hartley"
 msgid "Matthew Guay"
 msgstr "Matthew Guay"
 
-#: templates/reader/welcome.xhtml:1015
+#: templates/reader/welcome.xhtml:1023
 msgid "Matthew Riley"
 msgstr "Matthew Riley"
 
@@ -4566,7 +4603,7 @@ msgstr "Matthew Riley"
 msgid "May 2, 2012"
 msgstr "2 mai 2012"
 
-#: templates/reader/welcome.xhtml:1035
+#: templates/reader/welcome.xhtml:1043
 msgid "Michael Rawdon"
 msgstr "Michael Rawdon"
 
@@ -4594,7 +4631,7 @@ msgstr "Minimal (binaire Go : 128 Mo)"
 msgid "Missing XPath expressions for story extraction"
 msgstr "Expressions XPath manquantes pour l’extraction des articles"
 
-#: apps/reader/views.py:3465
+#: apps/reader/views.py:3469
 msgid "Missing `story_hash` list parameter."
 msgstr "Paramètre de liste `story_hash` manquant."
 
@@ -4606,7 +4643,7 @@ msgstr "apns_token manquant."
 msgid "Missing feed_id"
 msgstr "feed_id manquant"
 
-#: apps/reader/views.py:4161
+#: apps/reader/views.py:4199
 msgid "Missing feed_id or feed_title"
 msgstr "feed_id ou feed_title manquant"
 
@@ -4690,7 +4727,7 @@ msgstr "Moondog"
 msgid "More"
 msgstr "Plus"
 
-#: templates/base.html:249
+#: templates/base.html:256
 msgid "More Features"
 msgstr "Plus de fonctionnalités"
 
@@ -4745,7 +4782,7 @@ msgstr "Mis en sourdine !"
 msgid "Nancy Lupis"
 msgstr "Nancy Lupis"
 
-#: templates/reader/welcome.xhtml:1583
+#: templates/reader/welcome.xhtml:1591
 msgid "Nathan Taylor"
 msgstr "Nathan Taylor"
 
@@ -4795,7 +4832,7 @@ msgstr ""
 msgid "Native iOS"
 msgstr "iOS natif"
 
-#: templates/reader/welcome.xhtml:182
+#: templates/reader/welcome.xhtml:190
 msgid "Native on Android"
 msgstr "Application native sur Android"
 
@@ -4803,7 +4840,7 @@ msgstr "Application native sur Android"
 msgid "Natural language text and image classifiers"
 msgstr "Classificateurs de texte et d’images en langage naturel"
 
-#: templates/reader/welcome.xhtml:256
+#: templates/reader/welcome.xhtml:264
 msgid "Navigate everything without touching the mouse"
 msgstr "Naviguez partout sans toucher à la souris"
 
@@ -4819,7 +4856,7 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Parcourez votre archive à l’aide de filtres de date. Retrouvez des articles de n’importe quelle période."
 
-#: templates/reader/welcome.xhtml:855
+#: templates/reader/welcome.xhtml:863
 msgid "Neil Patel"
 msgstr "Neil Patel"
 
@@ -4885,7 +4922,7 @@ msgstr ""
 "Les nouveaux abonnements importent automatiquement tout l’historique du flux, pour que vous disposiez de "
 "tout dès le premier jour."
 
-#: apps/reader/views.py:5505
+#: apps/reader/views.py:5543
 msgid "New tag name is required."
 msgstr "Le nouveau nom de tag est requis."
 
@@ -4895,7 +4932,7 @@ msgstr ""
 "Découverte de l’actualité : l’alternative open source à Google Reader est arrivée, et elle s’appelle "
 "NewsBlur"
 
-#: templates/reader/welcome.xhtml:1783
+#: templates/reader/welcome.xhtml:1791
 msgid "NewsBlur"
 msgstr "NewsBlur"
 
@@ -4915,7 +4952,7 @@ msgstr "Tableau de bord NewsBlur"
 msgid "NewsBlur Features - Intelligence Training, AI, Search"
 msgstr "Fonctionnalités de NewsBlur - Entraînement de l’intelligence, IA, recherche"
 
-#: templates/reader/welcome.xhtml:1483
+#: templates/reader/welcome.xhtml:1491
 msgid "NewsBlur Forum"
 msgstr "Forum NewsBlur"
 
@@ -4964,7 +5001,7 @@ msgstr "Tarifs de NewsBlur - Des offres pour tous les lecteurs"
 msgid "NewsBlur Review on AppAppeal"
 msgstr "Avis sur NewsBlur sur AppAppeal"
 
-#: templates/reader/welcome.xhtml:685
+#: templates/reader/welcome.xhtml:693
 msgid ""
 "NewsBlur allows users to customize the font size, line spacing, story layout, and typefaces. Very fast to "
 "navigate around the UI."
@@ -4972,7 +5009,7 @@ msgstr ""
 "NewsBlur permet aux utilisateurs de personnaliser la taille de la police, l’interligne, la mise en page des"
 " articles et les polices. L’interface est très rapide à parcourir."
 
-#: templates/reader/welcome.xhtml:815
+#: templates/reader/welcome.xhtml:823
 msgid "NewsBlur also lets you subscribe to YouTube channels, which is a much nicer experience than notifications."
 msgstr ""
 "NewsBlur vous permet aussi de vous abonner à des chaînes YouTube : c’est bien plus agréable que de recevoir"
@@ -5036,7 +5073,7 @@ msgstr ""
 "directement depuis les serveurs tiers de ces sites. Ceux-ci ont leurs propres politiques de confidentialité"
 " indépendantes ; nous ne sommes pas responsables de leur contenu ni de leurs activités."
 
-#: templates/reader/welcome.xhtml:785
+#: templates/reader/welcome.xhtml:793
 msgid ""
 "NewsBlur emerges as by far the best, and better designed in a lot of ways both large and small. It "
 "dominates all the Google Reader alternatives."
@@ -5069,7 +5106,7 @@ msgstr ""
 "NewsBlur vous offre davantage de contrôle sur votre lecture, coûte moins cher et est entièrement open "
 "source. Le changement prend moins d’une minute."
 
-#: templates/reader/welcome.xhtml:1691
+#: templates/reader/welcome.xhtml:1699
 msgid ""
 "NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully "
 "open source codebase you can self-host."
@@ -5078,7 +5115,7 @@ msgstr ""
 " d’IA intégrées, le regroupement d’articles et un code entièrement open source que vous pouvez héberger "
 "vous-même."
 
-#: templates/reader/welcome.xhtml:835
+#: templates/reader/welcome.xhtml:843
 msgid "NewsBlur had the poweruser features I wanted. Much better experience than I had with Feedly and Inoreader."
 msgstr ""
 "NewsBlur proposait les fonctionnalités avancées que je recherchais. Une bien meilleure expérience qu’avec "
@@ -5097,7 +5134,7 @@ msgstr ""
 "du Web. Malgré tout, NewsBlur est resté indépendant et open source, avec un seul objectif : vous offrir la "
 "meilleure façon de lire l’actualité."
 
-#: templates/reader/welcome.xhtml:1507
+#: templates/reader/welcome.xhtml:1515
 msgid "NewsBlur has filled the Google Reader-sized hole in my heart."
 msgstr "NewsBlur a comblé le vide laissé par Google Reader dans mon cœur."
 
@@ -5128,7 +5165,7 @@ msgstr ""
 "mobile, NewsBlur offre une expérience nettement meilleure grâce à des applications natives conçues "
 "spécifiquement pour chaque plateforme."
 
-#: templates/reader/welcome.xhtml:1567
+#: templates/reader/welcome.xhtml:1575
 msgid ""
 "NewsBlur has newsletters, affordable subscription, nice layout, save to Pocket, just generally has a nice "
 "attitude."
@@ -5157,11 +5194,11 @@ msgstr ""
 " web sans flux RSS grâce aux flux web. Ces fonctionnalités sont intégrées aussi bien au service hébergé "
 "qu'à la version auto-hébergée."
 
-#: templates/reader/welcome.xhtml:1263
+#: templates/reader/welcome.xhtml:1271
 msgid "NewsBlur is a game-changer. Sleek interface, incredibly intuitive features."
 msgstr "NewsBlur change la donne. Une interface élégante et des fonctionnalités incroyablement intuitives."
 
-#: templates/reader/welcome.xhtml:1173
+#: templates/reader/welcome.xhtml:1181
 msgid ""
 "NewsBlur is a home of free speech, allowing users in countries with censored news outlets to bypass "
 "restrictions and get access to the world at large."
@@ -5181,11 +5218,11 @@ msgstr "NewsBlur est un lecteur RSS élégant et impressionnant, mais non docume
 msgid "NewsBlur is a slick, new RSS reader that intelligently makes sense out of your feeds."
 msgstr "NewsBlur est un lecteur RSS élégant et moderne qui comprend intelligemment vos flux."
 
-#: templates/reader/welcome.xhtml:1597
+#: templates/reader/welcome.xhtml:1605
 msgid "NewsBlur is awesome and I’m very grateful to you for creating and running it!"
 msgstr "NewsBlur est génial et je vous suis très reconnaissant de l’avoir créé et de le faire vivre !"
 
-#: templates/reader/welcome.xhtml:859
+#: templates/reader/welcome.xhtml:867
 msgid ""
 "NewsBlur is deceptively sophisticated. After selecting your preferences, it becomes a super helpful tool "
 "for accessing only the content you find most valuable."
@@ -5197,11 +5234,11 @@ msgstr ""
 msgid "NewsBlur is down"
 msgstr "NewsBlur est indisponible"
 
-#: templates/reader/welcome.xhtml:575
+#: templates/reader/welcome.xhtml:583
 msgid "NewsBlur is everything Google Reader should have been."
 msgstr "NewsBlur, c’est tout ce que Google Reader aurait dû être."
 
-#: templates/reader/welcome.xhtml:414
+#: templates/reader/welcome.xhtml:422
 msgid ""
 "NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a "
 "growing service and unlock a few restrictions."
@@ -5274,11 +5311,11 @@ msgstr ""
 msgid "NewsBlur is in"
 msgstr "NewsBlur est à"
 
-#: templates/reader/welcome.xhtml:655
+#: templates/reader/welcome.xhtml:663
 msgid "NewsBlur is indie web software at its best."
 msgstr "NewsBlur, le meilleur des logiciels web indépendants."
 
-#: templates/reader/welcome.xhtml:625
+#: templates/reader/welcome.xhtml:633
 msgid "NewsBlur is my favorite tool for reading feeds. The Intelligence Trainer is a killer feature."
 msgstr ""
 "NewsBlur est mon outil préféré pour lire des flux. Son entraîneur d’intelligence est une fonctionnalité "
@@ -5324,11 +5361,11 @@ msgstr ""
 msgid "NewsBlur is upgrading..."
 msgstr "Mise à niveau de NewsBlur..."
 
-#: templates/reader/welcome.xhtml:989
+#: templates/reader/welcome.xhtml:997
 msgid "NewsBlur is your best replacement for the old Google Reader. Take it from an RSS addict."
 msgstr "NewsBlur est le meilleur remplaçant de l’ancien Google Reader. C’est un accro du RSS qui vous le dit."
 
-#: templates/reader/welcome.xhtml:919
+#: templates/reader/welcome.xhtml:927
 msgid "NewsBlur keeps giving me reasons to be a very happy subscriber."
 msgstr "NewsBlur ne cesse de me donner des raisons d’être un abonné très satisfait."
 
@@ -5387,7 +5424,7 @@ msgstr ""
 "héberger votre propre instance, contribuer au développement ou examiner le code. Readwise Reader est un "
 "service à code source fermé."
 
-#: templates/reader/welcome.xhtml:1447
+#: templates/reader/welcome.xhtml:1455
 msgid ""
 "NewsBlur offers a fresh take on managing multiple RSS feeds and features clever tools for sifting through "
 "hundreds of articles."
@@ -5395,7 +5432,7 @@ msgstr ""
 "NewsBlur propose une nouvelle façon de gérer plusieurs flux RSS et des outils astucieux pour parcourir des "
 "centaines d’articles."
 
-#: templates/reader/welcome.xhtml:1686
+#: templates/reader/welcome.xhtml:1694
 msgid ""
 "NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open "
 "source. No ads, no tracking, no algorithmic feeds."
@@ -5412,6 +5449,10 @@ msgstr "NewsBlur sur iOS, avec une interface native et toutes les fonctionnalit�
 msgid "NewsBlur online RSS reader that Displays the Actual Web Site"
 msgstr "Lecteur RSS en ligne NewsBlur qui affiche le véritable site Web"
 
+#: templates/accounts/social_continue.html:23
+msgid "NewsBlur password"
+msgstr "Mot de passe NewsBlur"
+
 #: templates/static/compare_inoreader.xhtml:150
 msgid ""
 "NewsBlur stands out with AI features that Inoreader doesn't offer. Ask AI lets you query any story using "
@@ -5427,6 +5468,10 @@ msgstr "Forum d’assistance NewsBlur"
 #: templates/static/api.xhtml:37
 msgid "NewsBlur supports OAuth but to have an OAuth enabled client you must"
 msgstr "NewsBlur prend en charge OAuth, mais pour disposer d’un client compatible OAuth, vous devez"
+
+#: templates/accounts/social_continue.html:18
+msgid "NewsBlur username"
+msgstr "Nom d’utilisateur NewsBlur"
 
 #: templates/static/alt_self_hosted.xhtml:166
 msgid ""
@@ -5504,7 +5549,7 @@ msgstr ""
 "classificateurs intelligents, afin de vous concentrer sur les articles qui comptent et de masquer les "
 "autres."
 
-#: templates/reader/welcome.xhtml:645
+#: templates/reader/welcome.xhtml:653
 msgid "NewsBlur was the fastest feed reader tested."
 msgstr "NewsBlur était le lecteur de flux le plus rapide testé."
 
@@ -5527,11 +5572,11 @@ msgstr ""
 msgid "NewsBlur – An Impressive Online Feed Reader App"
 msgstr "NewsBlur – Une remarquable application de lecture de flux en ligne"
 
-#: templates/reader/welcome.xhtml:6
+#: templates/reader/welcome.xhtml:7
 msgid "NewsBlur — Personal News Reader with Intelligence Training"
 msgstr "NewsBlur — Lecteur d’actualités personnel avec entraînement intelligent"
 
-#: templates/reader/welcome.xhtml:1059
+#: templates/reader/welcome.xhtml:1067
 msgid "NewsBlur! Most value of a yearly payment of anything I buy."
 msgstr "NewsBlur ! Le meilleur rapport qualité-prix parmi tous mes abonnements annuels."
 
@@ -5693,7 +5738,7 @@ msgstr "NewsBlur : un remplacement de Google Reader ?"
 msgid "NewsBlur: una excelente alternativa a Google Reader"
 msgstr "NewsBlur : une excellente alternative à Google Reader"
 
-#: templates/reader/welcome.xhtml:1407
+#: templates/reader/welcome.xhtml:1415
 msgid "NewsBlur’s Focus view is a great way to catch up on important items only."
 msgstr "La vue Focus de NewsBlur est idéale pour rattraper uniquement les articles importants."
 
@@ -5708,7 +5753,7 @@ msgstr ""
 "et de définir les priorités de son développement. Des rapports de plantage sont également recueillis pour "
 "contribuer à l’amélioration de l’application."
 
-#: templates/reader/welcome.xhtml:1437
+#: templates/reader/welcome.xhtml:1445
 msgid ""
 "NewsBlur’s most interesting feature is its sophisticated AI filtering, which can automatically highlight or"
 " hide stories based on certain criteria."
@@ -5732,7 +5777,7 @@ msgstr "Prochain article non lu"
 msgid "Next Update"
 msgstr "Prochaine mise à jour"
 
-#: templates/reader/welcome.xhtml:549
+#: templates/reader/welcome.xhtml:557
 msgid "Next page"
 msgstr "Page suivante"
 
@@ -5740,7 +5785,7 @@ msgstr "Page suivante"
 msgid "Next unread"
 msgstr "Suivant non lu"
 
-#: apps/reader/views.py:4669
+#: apps/reader/views.py:4707
 msgid "No URL provided."
 msgstr "Aucune URL fournie."
 
@@ -5760,7 +5805,7 @@ msgstr "Aucun classificateur à enregistrer"
 msgid "No credit card required"
 msgstr "Aucune carte bancaire requise"
 
-#: apps/reader/views.py:4689
+#: apps/reader/views.py:4727
 msgid "No feed found for this URL."
 msgstr "Aucun flux trouvé pour cette URL."
 
@@ -5768,7 +5813,7 @@ msgstr "Aucun flux trouvé pour cette URL."
 msgid "No feed found matching that XML or website address."
 msgstr "Aucun flux ne correspond à cette adresse XML ou à ce site web."
 
-#: apps/reader/views.py:3858
+#: apps/reader/views.py:3862
 msgid "No feeds found."
 msgstr "Aucun flux trouvé."
 
@@ -5808,7 +5853,7 @@ msgstr "Aucune archive sans catégorie trouvée"
 msgid "No user has that email address."
 msgstr "Aucun utilisateur ne possède cette adresse e-mail."
 
-#: templates/reader/welcome.xhtml:1682
+#: templates/reader/welcome.xhtml:1690
 msgid "No."
 msgstr "N°"
 
@@ -5824,7 +5869,7 @@ msgstr "Ce n'est pas un flux Web"
 msgid "Note:"
 msgstr "Remarque :"
 
-#: apps/reader/views.py:3620
+#: apps/reader/views.py:3624
 msgid "Nothing was marked as read"
 msgstr "Aucun élément n’a été marqué comme lu"
 
@@ -5884,7 +5929,7 @@ msgstr "4 nov. 2010"
 msgid "November 28, 2017: First published."
 msgstr "28 novembre 2017 : première publication."
 
-#: templates/reader/welcome.xhtml:1577
+#: templates/reader/welcome.xhtml:1585
 msgid "Nuked subscriptions. Automatically got email with backup OPML just in case."
 msgstr "Abonnements supprimés. Un e-mail contenant une sauvegarde OPML a été envoyé automatiquement, au cas où."
 
@@ -5940,13 +5985,13 @@ msgstr ""
 "Lors de la première utilisation, une fenêtre de navigateur s’ouvre pour vous permettre de vous connecter et"
 " d’autoriser l’accès."
 
-#: templates/reader/welcome.xhtml:675
+#: templates/reader/welcome.xhtml:683
 msgid "One of our best RSS readers because it lets you read the full text of content on its web reader."
 msgstr ""
 "L’un de nos meilleurs lecteurs RSS, car il vous permet de lire le contenu intégral des articles dans son "
 "lecteur Web."
 
-#: templates/reader/welcome.xhtml:1353
+#: templates/reader/welcome.xhtml:1361
 msgid "One of the best news apps. You can create your own feed and it saves lots of time."
 msgstr ""
 "L’une des meilleures applications d’actualités. Vous pouvez créer votre propre flux et gagner beaucoup de "
@@ -5977,7 +6022,7 @@ msgstr "Open source"
 msgid "Open Source Alternatives to Google"
 msgstr "Alternatives open source à Google"
 
-#: templates/reader/welcome.xhtml:1730
+#: templates/reader/welcome.xhtml:1738
 msgid "Open Source RSS"
 msgstr "RSS open source"
 
@@ -6033,11 +6078,11 @@ msgstr "Facultatif"
 msgid "Optional Tools"
 msgstr "Outils facultatifs"
 
-#: templates/reader/welcome.xhtml:1189
+#: templates/reader/welcome.xhtml:1197
 msgid "Orde Saunders"
 msgstr "Orde Saunders"
 
-#: templates/reader/welcome.xhtml:326
+#: templates/reader/welcome.xhtml:334
 msgid "Organize"
 msgstr "Organiser"
 
@@ -6053,7 +6098,7 @@ msgstr "Organiser les sources"
 msgid "Original"
 msgstr "Original"
 
-#: templates/reader/welcome.xhtml:220
+#: templates/reader/welcome.xhtml:228
 msgid "Original Site"
 msgstr "Site d’origine"
 
@@ -6065,11 +6110,11 @@ msgstr "Vue du site d’origine"
 msgid "Original site view rendering a website inline within NewsBlur"
 msgstr "Affichage du site d’origine, qui intègre une page Web dans NewsBlur"
 
-#: apps/reader/views.py:5502
+#: apps/reader/views.py:5540
 msgid "Original tag name is required."
 msgstr "Le nom du tag d’origine est requis."
 
-#: templates/reader/welcome.xhtml:929
+#: templates/reader/welcome.xhtml:937
 msgid "Other readers pale in comparison to NewsBlur."
 msgstr "Les autres lecteurs ne font pas le poids face à NewsBlur."
 
@@ -6089,7 +6134,7 @@ msgstr "OvershareKit mis à jour pour iOS 8"
 msgid "Own API, Fever plugin"
 msgstr "API propre, plugin Fever"
 
-#: templates/reader/welcome.xhtml:572
+#: templates/reader/welcome.xhtml:580
 msgid "PCWorld"
 msgstr "PCWorld"
 
@@ -6117,11 +6162,11 @@ msgstr "Panah"
 msgid "Parameter"
 msgstr "Paramètre"
 
-#: apps/reader/forms.py:120
+#: apps/reader/forms.py:121
 msgid "Password"
 msgstr "Mot de passe"
 
-#: apps/reader/forms.py:117
+#: apps/reader/forms.py:118
 msgid "Password (optional)"
 msgstr "Mot de passe (facultatif)"
 
@@ -6165,7 +6210,7 @@ msgstr "Permanent avec l’offre Archive"
 msgid "Personal Information"
 msgstr "Informations personnelles"
 
-#: templates/reader/welcome.xhtml:1423
+#: templates/reader/welcome.xhtml:1431
 msgid "Phil Windley"
 msgstr "Phil Windley"
 
@@ -6177,7 +6222,7 @@ msgstr "Forfait"
 msgid "Plans for every reader"
 msgstr "Des offres pour tous les lecteurs"
 
-#: templates/accounts/signup.html:50
+#: templates/accounts/signup.html:52
 msgid "Please create an account to continue."
 msgstr "Veuillez créer un compte pour continuer."
 
@@ -6189,7 +6234,7 @@ msgstr "Veuillez saisir une requête de recherche par mot-clé."
 msgid "Please enter in an email address."
 msgstr "Veuillez saisir une adresse e-mail."
 
-#: templates/accounts/login.html:40
+#: templates/accounts/login.html:42
 msgid "Please login to continue."
 msgstr "Veuillez vous connecter pour continuer."
 
@@ -6242,7 +6287,7 @@ msgstr "Lecture de podcasts"
 msgid "Point your client at the streamable HTTP endpoint:"
 msgstr "Configurez votre client pour utiliser le point de terminaison HTTP en flux continu :"
 
-#: templates/reader/welcome.xhtml:1120
+#: templates/reader/welcome.xhtml:1128
 msgid "Political Analyst"
 msgstr "Analyste politique"
 
@@ -6254,7 +6299,7 @@ msgstr "PollabDotNet"
 msgid "Popular"
 msgstr "Populaire"
 
-#: templates/reader/welcome.xhtml:865
+#: templates/reader/welcome.xhtml:873
 msgid "Popular Science"
 msgstr "Popular Science"
 
@@ -6354,7 +6399,7 @@ msgstr ""
 msgid "Premium only"
 msgstr "Réservé aux abonnés Premium"
 
-#: templates/reader/welcome.xhtml:530
+#: templates/reader/welcome.xhtml:538
 msgid ""
 "Premium subscribers help feed Lyric home cooked meals of green beans, sweet potatoes, carrots, and brown "
 "rice."
@@ -6386,7 +6431,7 @@ msgstr "Appuyez sur l’icône de recherche ou utilisez le raccourci clavier"
 msgid "Previous"
 msgstr "Précédent"
 
-#: templates/reader/welcome.xhtml:546
+#: templates/reader/welcome.xhtml:554
 msgid "Previous page"
 msgstr "Page précédente"
 
@@ -6410,7 +6455,7 @@ msgstr "Imprimer"
 msgid "Print Invoice"
 msgstr "Imprimer la facture"
 
-#: templates/reader/welcome.xhtml:705
+#: templates/reader/welcome.xhtml:713
 msgid "Prioritizes control, customization, and a respectful approach to online content."
 msgstr "Privilégie la maîtrise, la personnalisation et une approche respectueuse des contenus en ligne."
 
@@ -6487,7 +6532,7 @@ msgstr ""
 "Une veille de l’actualité de niveau professionnel. Chaque flux est récupéré toutes les 5 à 15 minutes, avec"
 " entraînement par expressions régulières et 10 000 sites."
 
-#: templates/reader/welcome.xhtml:1150
+#: templates/reader/welcome.xhtml:1158
 msgid "Professor, OSU"
 msgstr "Professeur, OSU"
 
@@ -6525,7 +6570,7 @@ msgstr "Blurblog public avec commentaires"
 msgid "Public blurblog, comments, sharing"
 msgstr "Blurblog public, commentaires, partage"
 
-#: templates/reader/welcome.xhtml:1444
+#: templates/reader/welcome.xhtml:1452
 msgid "Publication"
 msgstr "Publication"
 
@@ -6545,15 +6590,15 @@ msgstr "Saisissez votre adresse e-mail"
 msgid "Query is required"
 msgstr "La requête est obligatoire"
 
-#: templates/reader/welcome.xhtml:281
+#: templates/reader/welcome.xhtml:289
 msgid "Quickly find stories across all of your subscriptions"
 msgstr "Trouvez rapidement des articles parmi tous vos abonnements"
 
-#: templates/reader/welcome.xhtml:149
+#: templates/reader/welcome.xhtml:157
 msgid "RSS and web feeds, synced on every platform you use."
 msgstr "Flux RSS et Web, synchronisés sur toutes les plateformes que vous utilisez."
 
-#: templates/reader/welcome.xhtml:999
+#: templates/reader/welcome.xhtml:1007
 msgid ""
 "RSS is like a longer form social media minus the vitriol. I switched to NewsBlur and still use it, it’s "
 "fantastic."
@@ -6577,7 +6622,7 @@ msgstr "RSS/Atom uniquement"
 msgid "RSSリーダーの新顔 『 newsblur 』"
 msgstr "Le nouveau lecteur RSS « newsblur »"
 
-#: templates/reader/welcome.xhtml:1095
+#: templates/reader/welcome.xhtml:1103
 msgid "Randall Leeds"
 msgstr "Randall Leeds"
 
@@ -6593,7 +6638,7 @@ msgstr "Nouvelle analyse de la page"
 msgid "Read Stories"
 msgstr "Articles lus"
 
-#: templates/reader/welcome.xhtml:206
+#: templates/reader/welcome.xhtml:214
 msgid "Read Your Way"
 msgstr "Lisez à votre façon"
 
@@ -6611,7 +6656,7 @@ msgstr ""
 "Lisez tous les flux d’un dossier dans un seul fil déroulant. Inutile d’ouvrir chaque flux individuellement."
 " Grâce à votre entraînement, votre rivière fait remonter les meilleurs articles."
 
-#: templates/reader/welcome.xhtml:249
+#: templates/reader/welcome.xhtml:257
 msgid "Read all your feeds by folder in one scrollable stream"
 msgstr "Lire tous vos flux par dossier dans un seul fil défilant"
 
@@ -6641,7 +6686,7 @@ msgstr ""
 "la mise en page et les éléments interactifs de la page d’origine sans ouvrir de nouvel onglet. Choisissez "
 "pour chaque flux entre les vues Flux, Texte et Originale."
 
-#: templates/reader/welcome.xhtml:227
+#: templates/reader/welcome.xhtml:235
 msgid "Read the Full Story"
 msgstr "Lire l’article complet"
 
@@ -6649,7 +6694,7 @@ msgstr "Lire l’article complet"
 msgid "Read the community"
 msgstr "Lire la communauté"
 
-#: templates/reader/welcome.xhtml:221
+#: templates/reader/welcome.xhtml:229
 msgid "Read the content in context, the way it was meant to be seen"
 msgstr "Lisez le contenu dans son contexte, comme il a été conçu pour être vu"
 
@@ -6661,7 +6706,7 @@ msgstr "Lire sur le site d’origine"
 msgid "Read the whole story"
 msgstr "Lire l'article en entier"
 
-#: templates/reader/welcome.xhtml:1747
+#: templates/reader/welcome.xhtml:1755
 msgid "Read without the noise"
 msgstr "Lire sans être dérangé"
 
@@ -6669,7 +6714,7 @@ msgstr "Lire sans être dérangé"
 msgid "Read your email newsletters in your news reader, not your inbox."
 msgstr "Lisez vos newsletters par e-mail dans votre lecteur de flux, et non dans votre boîte de réception."
 
-#: templates/reader/welcome.xhtml:355
+#: templates/reader/welcome.xhtml:363
 msgid "Read your email newsletters where they belong, in a news reader"
 msgstr "Lisez vos newsletters par e-mail là où elles ont leur place : dans un lecteur de nouvelles"
 
@@ -6708,7 +6753,7 @@ msgstr "Lecture par dossier"
 msgid "Reading history with search"
 msgstr "Historique de lecture avec recherche"
 
-#: templates/reader/welcome.xhtml:334
+#: templates/reader/welcome.xhtml:342
 msgid "Reading news is better with friends. Share stories on your public blurblog"
 msgstr "Lire l’actualité est encore mieux entre amis. Partagez des articles sur votre blurblog public"
 
@@ -6744,7 +6789,7 @@ msgstr "Récupération des flux en temps réel"
 msgid "Real-Time Updates"
 msgstr "Mises à jour en temps réel"
 
-#: templates/reader/welcome.xhtml:213
+#: templates/reader/welcome.xhtml:221
 msgid "Real-time RSS"
 msgstr "RSS en temps réel"
 
@@ -6752,7 +6797,7 @@ msgstr "RSS en temps réel"
 msgid "Real-time RSS updates"
 msgstr "Mises à jour RSS en temps réel"
 
-#: templates/reader/welcome.xhtml:1740
+#: templates/reader/welcome.xhtml:1748
 msgid "Real-time Stats"
 msgstr "Statistiques en temps réel"
 
@@ -6764,7 +6809,7 @@ msgstr "Raison de passer à une offre supérieure"
 msgid "Recommended Site"
 msgstr "Site recommandé"
 
-#: templates/reader/welcome.xhtml:1269
+#: templates/reader/welcome.xhtml:1277
 msgid "Reddit"
 msgstr "Reddit"
 
@@ -6804,7 +6849,7 @@ msgstr "Reeder, ReadKit, etc."
 msgid "Refer"
 msgstr "Parrainer"
 
-#: templates/accounts/signup.html:33
+#: templates/accounts/signup.html:34
 msgid "Referred by"
 msgstr "Recommandé par"
 
@@ -6820,7 +6865,7 @@ msgstr "Activer/désactiver le mode regex pour les classificateurs intelligents"
 msgid "Register a new application"
 msgstr "Enregistrer une nouvelle application"
 
-#: templates/reader/welcome.xhtml:288
+#: templates/reader/welcome.xhtml:296
 msgid "Regularly used searches are conveniently given their own feeds"
 msgstr "Les recherches régulières disposent automatiquement de leurs propres flux"
 
@@ -6844,7 +6889,7 @@ msgstr "Les réponses aux commentaires ne peuvent pas être vides."
 msgid "Required"
 msgstr "Obligatoire"
 
-#: templates/reader/welcome.xhtml:1624
+#: templates/reader/welcome.xhtml:1632
 msgid "Researcher"
 msgstr "Chercheur"
 
@@ -6888,7 +6933,7 @@ msgstr "Retour"
 msgid "Return to NewsBlur"
 msgstr "Retourner à NewsBlur"
 
-#: templates/reader/welcome.xhtml:1360
+#: templates/reader/welcome.xhtml:1368
 msgid "Review"
 msgstr "Avis"
 
@@ -6916,7 +6961,7 @@ msgstr "Le flux d’actualités affiche les articles de plusieurs flux dans un s
 msgid "Robin Good"
 msgstr "Robin Good"
 
-#: templates/reader/welcome.xhtml:665
+#: templates/reader/welcome.xhtml:673
 msgid "Rock solid and worth far more than the paltry annual fee I pay for it."
 msgstr "D'une fiabilité à toute épreuve et vaut bien plus que le modeste abonnement annuel que je paie."
 
@@ -6961,7 +7006,7 @@ msgstr "Des échantillons de l'astéroïde Ryugu contiennent tous les éléments
 msgid "S"
 msgstr "S"
 
-#: templates/reader/welcome.xhtml:1614
+#: templates/reader/welcome.xhtml:1622
 msgid "SEO Expert"
 msgstr "Expert SEO"
 
@@ -6981,7 +7026,7 @@ msgstr ""
 "Samuel voulait une meilleure façon de lire l’actualité. Il a donc créé la première version de NewsBlur "
 "presque entièrement dans le métro, sur la ligne A à New York."
 
-#: templates/reader/welcome.xhtml:1643
+#: templates/reader/welcome.xhtml:1651
 msgid "Sandip Bhattacharya"
 msgstr "Sandip Bhattacharya"
 
@@ -7034,7 +7079,7 @@ msgstr ""
 "Enregistrez des articles pour les lire plus tard et organisez-les avec des tags personnalisés. Votre "
 "bibliothèque personnelle d’articles, consultable et partageable."
 
-#: templates/reader/welcome.xhtml:348
+#: templates/reader/welcome.xhtml:356
 msgid "Save stories with custom tags for fast references"
 msgstr "Enregistrez des articles avec des tags personnalisés pour les retrouver rapidement"
 
@@ -7058,7 +7103,7 @@ msgstr "Enregistrez et partagez des articles, et marquez-les comme lus."
 msgid "Saved"
 msgstr "Enregistré"
 
-#: templates/reader/welcome.xhtml:287
+#: templates/reader/welcome.xhtml:295
 msgid "Saved Searches"
 msgstr "Recherches enregistrées"
 
@@ -7082,7 +7127,7 @@ msgstr "Étiquetage des articles enregistrés : ajoutez et supprimez des étique
 msgid "Saved story tags"
 msgstr "Étiquettes des articles enregistrés"
 
-#: templates/reader/welcome.xhtml:1123
+#: templates/reader/welcome.xhtml:1131
 msgid ""
 "Saves so much time by aggregating RSS feeds from everything I like to pay attention to! It’s been reliably "
 "awesome for years."
@@ -7108,7 +7153,7 @@ msgstr "Captures d’écran"
 msgid "Scripting and automation"
 msgstr "Scripts et automatisation"
 
-#: templates/reader/welcome.xhtml:631
+#: templates/reader/welcome.xhtml:639
 msgid "Search Engine Land"
 msgstr "Search Engine Land"
 
@@ -7206,7 +7251,7 @@ msgstr "Rechercher dans votre archive de lecture"
 msgid "Search your entire archive with full-text search"
 msgstr "Recherchez dans toute votre archive grâce à la recherche en texte intégral"
 
-#: templates/reader/welcome.xhtml:1140
+#: templates/reader/welcome.xhtml:1148
 msgid "Security Engineer"
 msgstr "Ingénieur sécurité"
 
@@ -7246,7 +7291,7 @@ msgstr "Voir le regroupement des articles"
 msgid "See Web Feeds"
 msgstr "Voir les flux Web"
 
-#: templates/reader/welcome.xhtml:406
+#: templates/reader/welcome.xhtml:414
 msgid "See all 30+ features"
 msgstr "Découvrez plus de 30 fonctionnalités"
 
@@ -7254,7 +7299,7 @@ msgstr "Découvrez plus de 30 fonctionnalités"
 msgid "See all features"
 msgstr "Voir toutes les fonctionnalités"
 
-#: templates/reader/welcome.xhtml:1697
+#: templates/reader/welcome.xhtml:1705
 msgid "See all frequently asked questions"
 msgstr "Voir toutes les questions fréquentes"
 
@@ -7273,7 +7318,7 @@ msgstr ""
 "à quel rythme un flux est actif et quand il a publié pour la dernière fois. Pratique pour décider quels "
 "flux conserver et lesquels supprimer."
 
-#: templates/reader/welcome.xhtml:309
+#: templates/reader/welcome.xhtml:317
 msgid "See how a story evolved since it was first published"
 msgstr "Voir l’évolution d’un article depuis sa première publication"
 
@@ -7307,7 +7352,7 @@ msgstr "Voir le serveur MCP"
 msgid "See the NewsBlur CLI"
 msgstr "Découvrez la CLI NewsBlur"
 
-#: templates/reader/welcome.xhtml:1692
+#: templates/reader/welcome.xhtml:1700
 msgid "See the full comparison"
 msgstr "Voir la comparaison complète"
 
@@ -7319,7 +7364,7 @@ msgstr "Auto-hébergé"
 msgid "Self-Hosted Option"
 msgstr "Option auto-hébergée"
 
-#: templates/reader/welcome.xhtml:1732
+#: templates/reader/welcome.xhtml:1740
 msgid "Self-Hosted RSS"
 msgstr "RSS auto-hébergé"
 
@@ -7365,7 +7410,7 @@ msgstr "5 sept. 2012"
 msgid "Sept 6, 2012"
 msgstr "6 sept. 2012"
 
-#: apps/reader/forms.py:154
+#: apps/reader/forms.py:155
 msgid "Seriously, fuck off spammer."
 msgstr "Sérieusement, allez vous faire foutre, spammeur."
 
@@ -7397,11 +7442,11 @@ msgstr "Configurer NewsBlur."
 msgid "Severability"
 msgstr "Divisibilité"
 
-#: templates/reader/welcome.xhtml:326
+#: templates/reader/welcome.xhtml:334
 msgid "Share"
 msgstr "Partager"
 
-#: templates/reader/welcome.xhtml:341
+#: templates/reader/welcome.xhtml:349
 msgid "Share stories with the world or only with your friends"
 msgstr "Partagez des articles avec le monde entier ou uniquement avec vos amis"
 
@@ -7449,7 +7494,7 @@ msgstr "Article partagé introuvable."
 msgid "Show sidebar"
 msgstr "Afficher la barre latérale"
 
-#: templates/reader/welcome.xhtml:93
+#: templates/reader/welcome.xhtml:99
 msgid "Sign Up"
 msgstr "S’inscrire"
 
@@ -7461,7 +7506,19 @@ msgstr "Se connecter"
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "Connectez-vous pour synchroniser instantanément vos flux, votre entraînement et vos articles enregistrés"
 
-#: templates/reader/welcome.xhtml:1764
+#: templates/accounts/social_continue.html:11
+msgid "Sign in to NewsBlur"
+msgstr "Se connecter à NewsBlur"
+
+#: templates/accounts/social_buttons.html:13
+msgid "Sign in with Apple"
+msgstr "Se connecter avec Apple"
+
+#: templates/accounts/social_buttons.html:20
+msgid "Sign in with Google"
+msgstr "Se connecter avec Google"
+
+#: templates/reader/welcome.xhtml:1772
 msgid "Sign up or Log in"
 msgstr "S’inscrire ou se connecter"
 
@@ -7509,7 +7566,7 @@ msgstr "Les sites sont actualisés jusqu’à 5 fois plus souvent"
 msgid "Skimbu.it"
 msgstr "Skimbu.it"
 
-#: templates/reader/welcome.xhtml:681
+#: templates/reader/welcome.xhtml:689
 msgid "Slant"
 msgstr "Biais"
 
@@ -7529,7 +7586,7 @@ msgstr "Fonctionnalités sociales"
 msgid "Softhoy"
 msgstr "Softhoy"
 
-#: templates/reader/welcome.xhtml:1036
+#: templates/reader/welcome.xhtml:1044
 msgid "Software Engineer"
 msgstr "Ingénieur logiciel"
 
@@ -7541,11 +7598,11 @@ msgstr "Solid Blogger"
 msgid "Solo maintainer"
 msgstr "Maintenu par une seule personne"
 
-#: apps/reader/forms.py:139
+#: apps/reader/forms.py:140
 msgid "Someone is already using that email address."
 msgstr "Cette adresse e-mail est déjà utilisée."
 
-#: apps/reader/forms.py:188
+#: apps/reader/forms.py:189
 msgid "Someone is already using that username."
 msgstr "Ce nom d’utilisateur est déjà utilisé."
 
@@ -7553,7 +7610,7 @@ msgstr "Ce nom d’utilisateur est déjà utilisé."
 msgid "Something went wrong..."
 msgstr "Une erreur s’est produite…"
 
-#: apps/reader/forms.py:160
+#: apps/reader/forms.py:161
 msgid "Sorry, that email is invalid."
 msgstr "Désolé, cette adresse e-mail est invalide."
 
@@ -7593,7 +7650,7 @@ msgstr "Statistiques"
 msgid "Statistics and History"
 msgstr "Statistiques et historique"
 
-#: templates/reader/welcome.xhtml:266
+#: templates/reader/welcome.xhtml:274
 msgid "Stay Smart"
 msgstr "Restez informé"
 
@@ -7605,7 +7662,7 @@ msgstr "Restez à l’écoute..."
 msgid "StileGames"
 msgstr "StileGames"
 
-#: templates/reader/welcome.xhtml:869
+#: templates/reader/welcome.xhtml:877
 msgid ""
 "Still got plenty to offer — from story tagging and filtering to a comprehensive search tool, and wide "
 "support for third-party integrations."
@@ -7635,7 +7692,7 @@ msgstr ""
 "Les articles peuvent désormais être recherchés avec Spotlight s'ils ont été enregistrés pour une lecture "
 "hors ligne."
 
-#: templates/reader/welcome.xhtml:214
+#: templates/reader/welcome.xhtml:222
 msgid "Stories are pushed directly to you, so you can read news as it comes in"
 msgstr "Les articles vous sont envoyés directement : vous pouvez ainsi lire les actualités dès leur publication."
 
@@ -7717,7 +7774,7 @@ msgstr "Regroupement des articles"
 msgid "Story Clustering - NewsBlur"
 msgstr "Regroupement des articles - NewsBlur"
 
-#: templates/reader/welcome.xhtml:347
+#: templates/reader/welcome.xhtml:355
 msgid "Story Tagging"
 msgstr "Étiquetage des articles"
 
@@ -7803,7 +7860,7 @@ msgstr "Abonné"
 msgid "Subscribed to web feed"
 msgstr "Abonné au flux Web"
 
-#: templates/reader/welcome.xhtml:1594
+#: templates/reader/welcome.xhtml:1602
 msgid "Subscriber"
 msgstr "Abonné"
 
@@ -7815,15 +7872,15 @@ msgstr "Sous-total"
 msgid "Support"
 msgstr "Assistance"
 
-#: templates/reader/welcome.xhtml:373
+#: templates/reader/welcome.xhtml:381
 msgid "Supports Reeder, ReadKit, Unread, and loads more"
 msgstr "Compatible avec Reeder, ReadKit et Unread, et bien d’autres"
 
-#: templates/reader/welcome.xhtml:1553
+#: templates/reader/welcome.xhtml:1561
 msgid "Susan Dennis"
 msgstr "Susan Dennis"
 
-#: templates/reader/welcome.xhtml:170
+#: templates/reader/welcome.xhtml:178
 msgid "Swipe through stories, train with a tap, read offline. A native app that feels right at home."
 msgstr ""
 "Parcourez les articles d’un geste, entraînez le fil d’un toucher et lisez hors ligne. Une appli native "
@@ -7841,11 +7898,11 @@ msgstr "Passer à cette carte bancaire"
 msgid "Sébastien Pennec"
 msgstr "Sébastien Pennec"
 
-#: apps/reader/views.py:5527
+#: apps/reader/views.py:5565
 msgid "Tag name is required."
 msgstr "Le nom du tag est obligatoire."
 
-#: apps/reader/views.py:5508
+#: apps/reader/views.py:5546
 msgid "Tag name must be 128 characters or less."
 msgstr "Le nom du tag ne doit pas dépasser 128 caractères."
 
@@ -7873,11 +7930,11 @@ msgstr "Reprenez le contrôle de votre actualité"
 msgid "Team boards (paid)"
 msgstr "Tableaux d’équipe (payants)"
 
-#: templates/reader/welcome.xhtml:1574
+#: templates/reader/welcome.xhtml:1582
 msgid "Tech Entrepreneur"
 msgstr "Entrepreneur dans la tech"
 
-#: templates/reader/welcome.xhtml:1160
+#: templates/reader/welcome.xhtml:1168
 msgid "Tech Journalist"
 msgstr "Journaliste tech"
 
@@ -7889,7 +7946,7 @@ msgstr "TechRavings"
 msgid "Techline Info"
 msgstr "Techline Info"
 
-#: templates/reader/welcome.xhtml:1424
+#: templates/reader/welcome.xhtml:1432
 msgid "Technologist, BYU Professor"
 msgstr "Technologue, professeur à BYU"
 
@@ -7933,7 +7990,7 @@ msgstr "Vue texte qui extrait le contenu intégral d’un article d’un site we
 msgid "Text view extracts the story"
 msgstr "La vue texte extrait l’article"
 
-#: templates/reader/welcome.xhtml:1243
+#: templates/reader/welcome.xhtml:1251
 msgid "Thank you for not disimproving NewsBlur."
 msgstr "Merci de ne pas avoir rendu NewsBlur moins bon."
 
@@ -7961,7 +8018,7 @@ msgstr "Merci de l’intérêt que vous portez à NewsBlur. NewsBlur est dévelo
 msgid "Thanks!"
 msgstr "Merci !"
 
-#: apps/reader/views.py:3758
+#: apps/reader/views.py:3762
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Cet article a été supprimé du flux ; inutile de le marquer comme non lu."
 
@@ -7973,7 +8030,7 @@ msgstr ""
 "Ce modèle d'article correspond exactement aux éléments actuellement affichés sur la page ; il ne trouverait"
 " donc jamais de nouveaux articles. Veuillez analyser à nouveau la page."
 
-#: apps/reader/forms.py:81
+#: apps/reader/forms.py:82
 msgid "That username is not registered. Please try again."
 msgstr "Ce nom d’utilisateur n’est pas enregistré. Veuillez réessayer."
 
@@ -7985,7 +8042,7 @@ msgstr "Le blog"
 msgid "The CLI is a standalone terminal tool you run directly. The"
 msgstr "La CLI est un outil de terminal autonome que vous exécutez directement. Le"
 
-#: templates/reader/welcome.xhtml:1009
+#: templates/reader/welcome.xhtml:1017
 msgid "The Global Shared Stories feed is a total black-hole of joyfulness."
 msgstr "Le flux des articles partagés à l’échelle mondiale est un véritable trou noir de joie."
 
@@ -8052,7 +8109,7 @@ msgstr ""
 "Reader répond à vos attentes. Si vous voulez un lecteur qui a suivi l’évolution du Web, NewsBlur est le "
 "choix le plus complet."
 
-#: templates/reader/welcome.xhtml:615
+#: templates/reader/welcome.xhtml:623
 msgid "The Open Source Feed Reader with Brains."
 msgstr "Le lecteur de flux open source qui a du flair."
 
@@ -8064,11 +8121,11 @@ msgstr ""
 "La vue Texte reste désormais sélectionnée selon la dernière vue utilisée. Ce réglage s’applique à chaque "
 "flux, mais tient aussi compte des flux individuels lorsque vous lisez un dossier."
 
-#: templates/reader/welcome.xhtml:1373
+#: templates/reader/welcome.xhtml:1381
 msgid "The app seems to be much improved. It makes the site lightning fast."
 msgstr "L’application semble avoir été considérablement améliorée. Le site est incroyablement rapide."
 
-#: templates/reader/welcome.xhtml:735
+#: templates/reader/welcome.xhtml:743
 msgid "The best feed reading experience of my life."
 msgstr "La meilleure expérience de lecture de flux de ma vie."
 
@@ -8076,7 +8133,7 @@ msgstr "La meilleure expérience de lecture de flux de ma vie."
 msgid "The best of both worlds: hosted and self-hosted"
 msgstr "Le meilleur des deux mondes : hébergé et auto-hébergé"
 
-#: templates/reader/welcome.xhtml:879
+#: templates/reader/welcome.xhtml:887
 msgid "The best way to get started with RSS is probably to set up a cloud-based RSS reader like NewsBlur."
 msgstr ""
 "Pour commencer avec RSS, le mieux est probablement de configurer un lecteur RSS dans le cloud comme "
@@ -8109,7 +8166,7 @@ msgstr ""
 "dispose d’aucun système de filtrage ou d’entraînement : gérer un grand nombre de flux demande donc "
 "davantage de travail manuel."
 
-#: templates/reader/welcome.xhtml:849
+#: templates/reader/welcome.xhtml:857
 msgid ""
 "The crowning feature of NewsBlur is the ability to train it with your preferences. The iOS client works "
 "extremely well and is cleanly-designed."
@@ -8133,7 +8190,7 @@ msgstr ""
 "Le fait de ne pas exercer ou de ne pas faire valoir un droit ou une disposition des présentes conditions "
 "d’utilisation ne constitue pas une renonciation à ce droit ou à cette disposition."
 
-#: templates/reader/welcome.xhtml:156
+#: templates/reader/welcome.xhtml:164
 msgid "The full experience,"
 msgstr "L’expérience complète,"
 
@@ -8149,7 +8206,7 @@ msgstr ""
 msgid "The highest limit available. Monitor everything."
 msgstr "La limite la plus élevée disponible. Tout surveiller."
 
-#: templates/reader/welcome.xhtml:959
+#: templates/reader/welcome.xhtml:967
 msgid ""
 "The intelligence trainer genuinely improves over time, learning subtle preferences that keyword filters "
 "would miss entirely."
@@ -8157,7 +8214,7 @@ msgstr ""
 "L’entraînement de l’intelligence s’améliore réellement au fil du temps et apprend des préférences subtiles "
 "que les filtres par mots-clés ne repéreraient pas."
 
-#: templates/reader/welcome.xhtml:805
+#: templates/reader/welcome.xhtml:813
 msgid "The interface is simple and hasn’t largely changed, which to me is a win. It helps with muscle memory."
 msgstr ""
 "L’interface est simple et n’a pas beaucoup changé, ce qui est une bonne chose à mes yeux. Cela aide à "
@@ -8181,7 +8238,7 @@ msgstr ""
 "Les obligations et responsabilités des parties nées avant la date de résiliation restent en vigueur après "
 "la résiliation du présent accord, à toutes fins."
 
-#: templates/reader/welcome.xhtml:1233
+#: templates/reader/welcome.xhtml:1241
 msgid "The only non-Google reader with good keyboard support."
 msgstr "Le seul lecteur autre que Google offrant une bonne prise en charge du clavier."
 
@@ -8189,7 +8246,7 @@ msgstr "Le seul lecteur autre que Google offrant une bonne prise en charge du cl
 msgid "The only open source RSS reader you don't have to host yourself"
 msgstr "Le seul lecteur RSS open source que vous n’avez pas à héberger vous-même"
 
-#: templates/reader/welcome.xhtml:228
+#: templates/reader/welcome.xhtml:236
 msgid "The original story from truncated RSS feeds is seamlessly expanded"
 msgstr "L’article original des flux RSS tronqués est développé de manière transparente"
 
@@ -8201,7 +8258,7 @@ msgstr "Identique aux flux classiques. Les utilisateurs Premium et Pro bénéfic
 msgid "The shared comment cannot be found."
 msgstr "Le commentaire partagé est introuvable."
 
-#: templates/reader/welcome.xhtml:795
+#: templates/reader/welcome.xhtml:803
 msgid "The site is so much faster than it has been. Thanks for running a great product!"
 msgstr "Le site est tellement plus rapide qu’avant. Merci de proposer un excellent produit !"
 
@@ -8213,7 +8270,7 @@ msgstr "L’article"
 msgid "The team"
 msgstr "L’équipe"
 
-#: templates/reader/welcome.xhtml:605
+#: templates/reader/welcome.xhtml:613
 msgid ""
 "The web version is better than Google Reader. NewsBlur can pull in full content of partial feeds more "
 "reliably than other methods. I’ve never seen it fail."
@@ -8221,7 +8278,7 @@ msgstr ""
 "La version Web est meilleure que Google Reader. NewsBlur récupère le contenu intégral des flux partiels de "
 "façon plus fiable que les autres méthodes. Je ne l’ai jamais vu échouer."
 
-#: templates/reader/welcome.xhtml:1183
+#: templates/reader/welcome.xhtml:1191
 msgid "The world’s greatest RSS reader now handles email newsletters too!"
 msgstr "Le meilleur lecteur RSS au monde prend désormais aussi en charge les newsletters par e-mail !"
 
@@ -8279,7 +8336,7 @@ msgstr "Synchronisation avec les applications tierces"
 msgid "Third-Party Apps"
 msgstr "Applications tierces"
 
-#: templates/reader/welcome.xhtml:372
+#: templates/reader/welcome.xhtml:380
 msgid "Third-party Apps"
 msgstr "Applications tierces"
 
@@ -8315,7 +8372,7 @@ msgstr "Tiers uniquement"
 msgid "This email is already being used by another account. Try something different."
 msgstr "Cette adresse e-mail est déjà utilisée par un autre compte. Essayez-en une autre."
 
-#: apps/reader/views.py:6151
+#: apps/reader/views.py:6189
 msgid "This feature requires the Archive subscription"
 msgstr "Cette fonctionnalité nécessite l’abonnement Archive"
 
@@ -8323,7 +8380,7 @@ msgstr "Cette fonctionnalité nécessite l’abonnement Archive"
 msgid "This gift link expires in 90 days. If it's not redeemed, you'll be automatically refunded."
 msgstr "Ce lien cadeau expire dans 90 jours. S’il n’est pas utilisé, vous serez automatiquement remboursé."
 
-#: templates/reader/welcome.xhtml:1303
+#: templates/reader/welcome.xhtml:1311
 msgid ""
 "This has to be one of the best features — that I can discover new stuff and we can all comment on articles."
 " Excellent."
@@ -8343,7 +8400,7 @@ msgstr ""
 "Il s’agit d’une maintenance imprévue liée au déploiement défectueux d’une nouvelle fonctionnalité. Je "
 "m’efforce de rétablir la situation."
 
-#: templates/reader/welcome.xhtml:1487
+#: templates/reader/welcome.xhtml:1495
 msgid "This is marvelous, thank you so much."
 msgstr "C'est merveilleux, merci beaucoup."
 
@@ -8391,7 +8448,7 @@ msgstr ""
 "informations, tous les outils et tous les services qu’il propose, sous réserve de votre acceptation de "
 "l’ensemble des conditions, politiques et avis énoncés ici."
 
-#: templates/reader/welcome.xhtml:1005
+#: templates/reader/welcome.xhtml:1013
 msgid "Thomas Ingham"
 msgstr "Thomas Ingham"
 
@@ -8441,11 +8498,11 @@ msgstr ""
 "Pour utiliser OAuth lors de l’authentification des requêtes, veillez à inclure l’en-tête HTTP Bearer dans "
 "chaque requête, comme pour toute autre API OAuth. Utilisez le"
 
-#: templates/base.html:322
+#: templates/base.html:329
 msgid "Toggle dark mode"
 msgstr "Activer/désactiver le mode sombre"
 
-#: templates/base.html:317
+#: templates/base.html:324
 msgid "Toggle theme"
 msgstr "Changer de thème"
 
@@ -8559,7 +8616,7 @@ msgstr "Dialogue d’entraînement avec pouces vers le haut/bas"
 msgid "Trial Premium Subscription"
 msgstr "Abonnement d’essai Premium"
 
-#: templates/reader/welcome.xhtml:771
+#: templates/reader/welcome.xhtml:779
 msgid "Trustpilot"
 msgstr "Trustpilot"
 
@@ -8579,7 +8636,7 @@ msgstr "Essayer Premium gratuitement"
 msgid "Try it free"
 msgstr "Essayer gratuitement"
 
-#: templates/reader/welcome.xhtml:1756
+#: templates/reader/welcome.xhtml:1764
 msgid "Try out NewsBlur"
 msgstr "Découvrir NewsBlur"
 
@@ -8681,7 +8738,7 @@ msgstr "Passer à Premium"
 msgid "Upgrade to premium archive"
 msgstr "Passer à l’archive Premium"
 
-#: apps/profile/views.py:1383
+#: apps/profile/views.py:1384
 msgid "Usage billing not enabled"
 msgstr "Facturation à l’usage non activée"
 
@@ -8712,7 +8769,7 @@ msgstr "Utiliser des modèles d’invite"
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Utilisez des widgets pour voir d’un coup d’œil le nombre d’articles non lus et les articles eux-mêmes"
 
-#: templates/reader/welcome.xhtml:1527
+#: templates/reader/welcome.xhtml:1535
 msgid ""
 "Used to just filter all email newsletters to trash. Now I forward them all to my NewsBlur account and "
 "actually read them."
@@ -8732,15 +8789,15 @@ msgstr "Utilisateur introuvable."
 msgid "User-Controlled Filtering"
 msgstr "Filtrage contrôlé par l’utilisateur"
 
-#: apps/reader/forms.py:101
+#: apps/reader/forms.py:102
 msgid "Username"
 msgstr "Nom d’utilisateur"
 
-#: apps/reader/forms.py:21
+#: apps/reader/forms.py:22
 msgid "Username or Email"
 msgstr "Nom d’utilisateur ou e-mail"
 
-#: apps/reader/forms.py:24
+#: apps/reader/forms.py:25
 msgid "Username or email"
 msgstr "Nom d’utilisateur ou adresse e-mail"
 
@@ -8752,7 +8809,7 @@ msgstr "Nom d’utilisateur ou e-mail…"
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: templates/reader/welcome.xhtml:955
+#: templates/reader/welcome.xhtml:963
 msgid "VPN Tier Lists"
 msgstr "Classements des VPN"
 
@@ -8798,7 +8855,7 @@ msgstr "Entraînement visuel (pouces levés/baissés)"
 msgid "Visual training vs. rule-based filtering"
 msgstr "Apprentissage visuel vs filtrage basé sur des règles"
 
-#: templates/reader/welcome.xhtml:591
+#: templates/reader/welcome.xhtml:599
 msgid "WIRED"
 msgstr "WIRED"
 
@@ -8828,7 +8885,7 @@ msgstr ""
 "Le projet de loi HB2320 de l’État de Washington obligerait les imprimantes 3D à appeler leur fabricant et à"
 " refuser d’imprimer des armes à feu connues. Pourquoi cela est techniquement irréalisable."
 
-#: templates/reader/welcome.xhtml:1069
+#: templates/reader/welcome.xhtml:1077
 msgid "Way better than Google Reader ever was."
 msgstr "Bien meilleur que Google Reader ne l’a jamais été."
 
@@ -8910,7 +8967,7 @@ msgstr ""
 "Nous ne garantissons pas que les résultats obtenus grâce à l’utilisation du service seront exacts ou "
 "fiables."
 
-#: templates/reader/welcome.xhtml:969
+#: templates/reader/welcome.xhtml:977
 msgid ""
 "We got to explain RSS to a college student and it was fun to show what you can do with this ‘old’ tech. "
 "Thanks NewsBlur! I rely on you."
@@ -9097,7 +9154,7 @@ msgstr ""
 "Nous sommes ravis de préciser que cette API est entièrement open source, y compris l’implémentation des "
 "points de terminaison. Vous trouverez le code source de"
 
-#: templates/reader/welcome.xhtml:155
+#: templates/reader/welcome.xhtml:163
 msgid "Web"
 msgstr "Web"
 
@@ -9146,7 +9203,7 @@ msgstr "Web uniquement"
 msgid "Web page monitoring (Pro)"
 msgstr "Surveillance de pages Web (Pro)"
 
-#: templates/reader/welcome.xhtml:671
+#: templates/reader/welcome.xhtml:679
 msgid "WebFX"
 msgstr "WebFX"
 
@@ -9166,7 +9223,7 @@ msgstr "Que peut faire un agent IA avec mon NewsBlur ?"
 msgid "What does 5-15 minute fetching mean?"
 msgstr "Que signifie une récupération toutes les 5 à 15 minutes ?"
 
-#: templates/reader/welcome.xhtml:1673
+#: templates/reader/welcome.xhtml:1681
 msgid "What happens if I cancel?"
 msgstr "Que se passe-t-il si j’annule ?"
 
@@ -9328,7 +9385,7 @@ msgstr "Whitney"
 msgid "Whitson Gordon"
 msgstr "Whitson Gordon"
 
-#: apps/reader/forms.py:79
+#: apps/reader/forms.py:80
 msgid "Whoopsy-daisy, wrong password. Try again."
 msgstr "Oups, mauvais mot de passe. Réessayez."
 
@@ -9344,7 +9401,7 @@ msgstr "Articles les plus lus"
 msgid "Widely-read, long reads, good reads"
 msgstr "Très lus, longs formats, belles lectures"
 
-#: templates/reader/welcome.xhtml:1055
+#: templates/reader/welcome.xhtml:1063
 msgid "Will Slack"
 msgstr "Sera Slack"
 
@@ -9352,7 +9409,7 @@ msgstr "Sera Slack"
 msgid "Windsurf"
 msgstr "Windsurf"
 
-#: templates/reader/welcome.xhtml:365
+#: templates/reader/welcome.xhtml:373
 msgid "Works Everywhere"
 msgstr "Fonctionne partout"
 
@@ -9379,11 +9436,11 @@ msgstr ""
 "Rédigez des expressions régulières qui correspondent aux titres, au corps du texte et aux URL. Un filtrage "
 "précis et puissant pour les professionnels."
 
-#: templates/reader/welcome.xhtml:1584
+#: templates/reader/welcome.xhtml:1592
 msgid "Writer"
 msgstr "Auteur"
 
-#: templates/reader/welcome.xhtml:1780
+#: templates/reader/welcome.xhtml:1788
 msgid "X/Twitter"
 msgstr "X/Twitter"
 
@@ -9395,7 +9452,7 @@ msgstr "XL"
 msgid "XS"
 msgstr "XS"
 
-#: templates/reader/welcome.xhtml:1213
+#: templates/reader/welcome.xhtml:1221
 msgid "Years later and you are still making NewsBlur even more fancy. Love it."
 msgstr "Des années plus tard, vous rendez toujours NewsBlur encore plus élégant. J’adore."
 
@@ -9497,7 +9554,7 @@ msgstr ""
 "Oui. Chaque tag génère son propre flux RSS : vous pouvez vous y abonner depuis un autre lecteur, partager "
 "le lien ou l’envoyer vers IFTTT ou Zapier."
 
-#: templates/reader/welcome.xhtml:1678
+#: templates/reader/welcome.xhtml:1686
 msgid ""
 "Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, "
 "and training sync across every app."
@@ -9531,7 +9588,7 @@ msgstr ""
 "Oui. Les articles sont mis en cache localement et l’app iOS utilise l’actualisation en arrière-plan pour "
 "rester à jour même lorsque vous ne l’utilisez pas."
 
-#: templates/reader/welcome.xhtml:1666
+#: templates/reader/welcome.xhtml:1674
 msgid ""
 "Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with "
 "Google Reader exports, Feedly, Inoreader, and more."
@@ -9636,7 +9693,7 @@ msgstr "Vous êtes en tête de la file ! Encore quelques minutes"
 msgid "You are not required to use OAuth, in which case you will need to pass the"
 msgstr "Vous n'êtes pas obligé d'utiliser OAuth ; dans ce cas, vous devrez transmettre le"
 
-#: apps/reader/views.py:5137
+#: apps/reader/views.py:5175
 msgid "You are not subscribed to this feed"
 msgstr "Vous n'êtes pas abonné à ce flux"
 
@@ -9644,7 +9701,7 @@ msgstr "Vous n'êtes pas abonné à ce flux"
 msgid "You can review the most current version of the Terms of Service at any time at this page."
 msgstr "Vous pouvez consulter à tout moment la version la plus récente des Conditions d’utilisation sur cette page."
 
-#: templates/reader/welcome.xhtml:1029
+#: templates/reader/welcome.xhtml:1037
 msgid ""
 "You can still get the original Google Reader experience, living on as a hosted and open source project, in "
 "NewsBlur."
@@ -9758,11 +9815,11 @@ msgstr "Vous recevrez bientôt un e-mail avec la sauvegarde de votre abonnement 
 msgid "You're in control, not an algorithm"
 msgstr "C’est vous qui décidez, pas un algorithme"
 
-#: templates/accounts/signup.html:35
+#: templates/accounts/signup.html:36
 msgid "You've been gifted a premium subscription! Sign up to claim it."
 msgstr "Vous avez reçu un abonnement premium en cadeau ! Inscrivez-vous pour en bénéficier."
 
-#: templates/reader/welcome.xhtml:386
+#: templates/reader/welcome.xhtml:394
 msgid "YouTube"
 msgstr "YouTube"
 
@@ -9806,7 +9863,7 @@ msgstr ""
 msgid "Your account"
 msgstr "Votre compte"
 
-#: templates/reader/welcome.xhtml:1674
+#: templates/reader/welcome.xhtml:1682
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "
 "data is deleted. Upgrade again anytime and everything is restored."
@@ -9890,13 +9947,13 @@ msgstr "Votre période d’essai Premium"
 msgid "Your submission of personal information through the store is governed by our"
 msgstr "La transmission de vos informations personnelles par l’intermédiaire de la boutique est régie par notre"
 
-#: templates/reader/welcome.xhtml:1497
+#: templates/reader/welcome.xhtml:1505
 msgid "You’ve fixed every issue I’ve had and you’re very responsive. Thanks and keep up the good work."
 msgstr ""
 "Vous avez résolu tous les problèmes que j’ai rencontrés et vous êtes très réactifs. Merci, et continuez "
 "comme ça."
 
-#: templates/reader/welcome.xhtml:1633
+#: templates/reader/welcome.xhtml:1641
 msgid "Yura Yurchuk"
 msgstr "Yura Yurchuk"
 
@@ -9956,7 +10013,7 @@ msgstr "diffusion"
 msgid "broken Bonjour/mDNS firmware"
 msgstr "micrologiciel Bonjour/mDNS défectueux"
 
-#: templates/reader/welcome.xhtml:1454
+#: templates/reader/welcome.xhtml:1462
 msgid "bryanquigley.com"
 msgstr "bryanquigley.com"
 
@@ -9968,7 +10025,7 @@ msgstr "par Ben Thompson avec des tags"
 msgid "can"
 msgstr "peut"
 
-#: templates/reader/welcome.xhtml:965
+#: templates/reader/welcome.xhtml:973
 msgid "carla"
 msgstr "carla"
 
@@ -9996,11 +10053,11 @@ msgstr "custom_css"
 msgid "custom_js"
 msgstr "custom_js"
 
-#: templates/reader/welcome.xhtml:985
+#: templates/reader/welcome.xhtml:993
 msgid "dangerousmeta"
 msgstr "dangerousmeta"
 
-#: apps/reader/views.py:5756
+#: apps/reader/views.py:5794
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers doit être une liste"
 
@@ -10050,7 +10107,7 @@ msgstr ""
 msgid "favorited your comments on"
 msgstr "a ajouté un favori à vos commentaires sur"
 
-#: apps/reader/views.py:5127
+#: apps/reader/views.py:5165
 msgid "feed_id is required"
 msgstr "feed_id est requis"
 
@@ -10080,7 +10137,7 @@ msgstr ""
 msgid "from"
 msgstr "de"
 
-#: templates/reader/welcome.xhtml:169
+#: templates/reader/welcome.xhtml:177
 msgid "from the ground up"
 msgstr "à partir de zéro"
 
@@ -10088,7 +10145,7 @@ msgstr "à partir de zéro"
 msgid "furbo.org"
 msgstr "furbo.org"
 
-#: templates/reader/welcome.xhtml:1563
+#: templates/reader/welcome.xhtml:1571
 msgid "g. blekkenhorst"
 msgstr "g. blekkenhorst"
 
@@ -10157,11 +10214,11 @@ msgstr "App Store iOS"
 msgid "iOS and Android"
 msgstr "iOS et Android"
 
-#: templates/reader/welcome.xhtml:168
+#: templates/reader/welcome.xhtml:176
 msgid "iPad"
 msgstr "iPad"
 
-#: templates/reader/welcome.xhtml:168
+#: templates/reader/welcome.xhtml:176
 msgid "iPhone"
 msgstr "iPhone"
 
@@ -10205,7 +10262,7 @@ msgstr ""
 msgid "is a personal news reader."
 msgstr "est un lecteur de flux d’actualités personnel."
 
-#: templates/reader/welcome.xhtml:1784
+#: templates/reader/welcome.xhtml:1792
 msgid "is built in San Francisco and Western Massachusetts by"
 msgstr "est développé à San Francisco et dans l’ouest du Massachusetts par"
 
@@ -10243,7 +10300,7 @@ msgstr ""
 msgid "last update"
 msgstr "dernière mise à jour"
 
-#: templates/reader/welcome.xhtml:1682
+#: templates/reader/welcome.xhtml:1690
 msgid ""
 "let you follow any website, even without RSS. NewsBlur monitors the page for changes and delivers new "
 "content to you automatically."
@@ -10279,7 +10336,7 @@ msgstr "mode maintenance"
 msgid "may have more information."
 msgstr "peut contenir davantage d’informations."
 
-#: templates/reader/welcome.xhtml:856
+#: templates/reader/welcome.xhtml:864
 msgid "neilpatel.com"
 msgstr "neilpatel.com"
 
@@ -10306,6 +10363,10 @@ msgid ""
 msgstr ""
 "ouvre votre navigateur pour l’autorisation OAuth, selon le même processus que celui utilisé par les "
 "applications tierces. Votre jeton est stocké localement à"
+
+#: templates/accounts/social_buttons.html:25
+msgid "or"
+msgstr "ou"
 
 #: templates/static/features.xhtml:478
 msgid "output. Works with self-hosted instances too."
@@ -10335,15 +10396,15 @@ msgstr "a répondu à votre"
 msgid "reply"
 msgstr "répondre"
 
-#: templates/reader/welcome.xhtml:156
+#: templates/reader/welcome.xhtml:164
 msgid "right in your browser"
 msgstr "directement dans votre navigateur"
 
-#: apps/reader/views.py:5771
+#: apps/reader/views.py:5809
 msgid "river_order must be an integer"
 msgstr "river_order doit être un entier"
 
-#: apps/reader/views.py:5769
+#: apps/reader/views.py:5807
 msgid "river_order must be non-negative"
 msgstr "river_order doit être positif ou nul"
 
@@ -10413,7 +10474,7 @@ msgstr "sous"
 msgid "up"
 msgstr "en haut"
 
-#: templates/reader/welcome.xhtml:966
+#: templates/reader/welcome.xhtml:974
 msgid "urban_mermaid"
 msgstr "urban_mermaid"
 
@@ -10421,27 +10482,27 @@ msgstr "urban_mermaid"
 msgid "username"
 msgstr "nom d’utilisateur"
 
-#: templates/reader/welcome.xhtml:1723
+#: templates/reader/welcome.xhtml:1731
 msgid "vs"
 msgstr "contre"
 
-#: templates/base.html:269
+#: templates/base.html:276
 msgid "vs Feedbin"
 msgstr "par rapport à Feedbin"
 
-#: templates/base.html:265
+#: templates/base.html:272
 msgid "vs Feedly"
 msgstr "par rapport à Feedly"
 
-#: templates/base.html:266
+#: templates/base.html:273
 msgid "vs Inoreader"
 msgstr "vs Inoreader"
 
-#: templates/base.html:268
+#: templates/base.html:275
 msgid "vs Old Reader"
 msgstr "par rapport à Old Reader"
 
-#: templates/base.html:267
+#: templates/base.html:274
 msgid "vs Readwise"
 msgstr "contre Readwise"
 
@@ -10459,7 +10520,7 @@ msgstr ""
 msgid "web, iOS, Android, and all backend services"
 msgstr "web, iOS, Android et tous les services backend"
 
-#: templates/accounts/signup.html:33
+#: templates/accounts/signup.html:34
 msgid "welcome to NewsBlur!"
 msgstr "bienvenue sur NewsBlur !"
 

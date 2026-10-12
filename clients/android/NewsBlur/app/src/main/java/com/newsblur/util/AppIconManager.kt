@@ -278,7 +278,8 @@ object AppIconManager {
     ): ComponentName =
         ComponentName(
             context.packageName,
-            InitActivity::class.java.packageName.removeSuffix(".activity") + flavor.aliasSuffix + mode.componentSuffix,
+            // AppIconManager.kt must resolve aliases on Android 8 through 11, before Class.getPackageName exists.
+            InitActivity::class.java.name.substringBeforeLast(".activity.") + flavor.aliasSuffix + mode.componentSuffix,
         )
 
     private fun flavor(

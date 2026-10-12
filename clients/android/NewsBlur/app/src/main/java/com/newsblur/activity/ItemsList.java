@@ -1527,6 +1527,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         itemSetFragment.prepareReturnToStory(storyHash);
     }
 
+    public void followReadingStory(@Nullable String storyHash) {
+        if (storyHash == null || storyHash.equals(preparedReturnStoryHash) || itemSetFragment == null) return;
+        preparedReturnStoryHash = storyHash;
+        itemSetFragment.followReadingStory(storyHash);
+    }
+
     private void handleReadingActivityResult(ActivityResult result) {
 
         if (result.getData() != null) {

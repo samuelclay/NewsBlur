@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "डिफ़ॉल्ट रूप से सभी पैटर्न में बड़े-छोटे अक्षरों का भेद नहीं होता";
 "All stories" = "सभी कहानियाँ";
 "Alphabetical" = "वर्णमाला के क्रम में";
+"Already have feeds?" = "क्या आपके पास पहले से फ़ीड हैं?";
 "Analyze" = "विश्लेषण करें";
 "Android" = "Android";
 "App Badge" = "ऐप बैज";
@@ -161,12 +162,14 @@
 "Brave" = "बहादुर";
 "Brightness Override" = "चमक ओवरराइड";
 "Brightness threshold" = "चमक सीमा";
+"Bring your feeds and folders from another reader." = "अपने फ़ीड और फ़ोल्डर किसी दूसरे रीडर से लाएँ।";
 "Bullets" = "बुलेट";
 "Cancel" = "रद्द करें";
 "Change Story List" = "स्टोरी सूची बदलें";
 "Choose Icon" = "आइकन चुनें";
 "Choose Story List" = "स्टोरी सूची चुनें";
 "Choose a Topic" = "कोई विषय चुनें";
+"Choose feeds for your folder" = "अपने फ़ोल्डर के लिए फ़ीड चुनें";
 "Choose how far back to mark read" = "चुनें कि कितनी पुरानी स्टोरीज़ को पढ़ा हुआ चिह्नित करना है";
 "Choose how often and when your briefing is generated" = "चुनें कि आपकी ब्रीफ़िंग कितनी बार और कब तैयार की जाए";
 "Choose one or more words from the title:" = "शीर्षक से एक या अधिक शब्द चुनें:";
@@ -190,7 +193,9 @@
 "Configure" = "कॉन्फ़िगर करें";
 "Confirm mark read" = "पढ़ा हुआ चिह्नित करने की पुष्टि करें";
 "Connect AI agents with MCP server and CLI" = "AI एजेंट को MCP सर्वर और CLI से जोड़ें";
+"Connect an existing account" = "मौजूदा खाते से कनेक्ट करें";
 "Connecting" = "कनेक्ट हो रहा है";
+"Continue" = "जारी रखें";
 "Control how much is included and how it is written" = "नियंत्रित करें कि कितना शामिल हो और उसे कैसे लिखा जाए";
 "Copied" = "कॉपी किया गया";
 "Copyright" = "कॉपीराइट";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "पूरी इमेज लोड नहीं हो सकी। आप इसे अपने ब्राउज़र में खोलने की कोशिश कर सकते हैं।";
 "Counting is difficult..." = "गिनती करना मुश्किल है...";
 "Create a feed from any web page" = "किसी भी वेब पेज से फ़ीड बनाएँ";
+"Create a new account instead" = "इसके बजाय नया खाता बनाएँ";
 "Custom Domain" = "कस्टम डोमेन";
 "Custom RSS feeds for saved stories" = "सहेजी गई कहानियों के लिए कस्टम RSS फ़ीड";
 "Custom Search Query" = "कस्टम खोज क्वेरी";
@@ -216,9 +222,11 @@
 "Delete Account" = "खाता हटाएँ";
 "Delete Folder…" = "फ़ोल्डर हटाएँ…";
 "Delete Site…" = "साइट हटाएँ…";
+"Delete account" = "खाता हटाएँ";
 "Delete offline stories" = "ऑफ़लाइन कहानियाँ हटाएँ";
 "Delete saved search" = "सहेजी गई खोज मिटाएँ";
 "Deleting saved search..." = "सहेजी गई खोज मिटाई जा रही है...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "खाता हटाने से आपके फ़ीड, सहेजी गई खबरें और खाते का डेटा हमेशा के लिए मिट जाएगा। इसे वापस नहीं किया जा सकता।";
 "Deleting..." = "हटाया जा रहा है...";
 "Discover" = "खोजें";
 "Discover more to read" = "पढ़ने के लिए और खोजें";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "कस्टम खोज क्वेरी दर्ज करें...";
 "Enter a web page URL..." = "वेब पेज का URL दर्ज करें...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "किसी भी वेब पेज का URL डालें। NewsBlur AI से पेज की संरचना का विश्लेषण करेगा, स्टोरीज़ ढूँढेगा और एक कस्टम RSS फ़ीड बनाएगा, जिसकी आप सदस्यता ले सकते हैं।";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "अपना मौजूदा NewsBlur उपयोगकर्ता नाम या ईमेल और NewsBlur पासवर्ड दर्ज करें।";
 "Error" = "त्रुटि";
 "Evening" = "शाम";
 "Every story from every site is archived and searchable forever" = "हर साइट की हर कहानी हमेशा के लिए संग्रहित और खोजने योग्य रहती है";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "बेशक, प्रीमियम सदस्यता की सभी सुविधाएँ";
 "Exact phrase" = "सटीक वाक्यांश";
 "Experimental" = "प्रायोगिक";
+"Explore interests" = "रुचियाँ देखें";
 "Export Preferences" = "प्राथमिकताएँ एक्सपोर्ट करें";
 "Export trained stories from folders as RSS feeds" = "फ़ोल्डरों से प्रशिक्षित कहानियों को RSS फ़ीड के रूप में निर्यात करें";
 "Extra Large" = "अतिरिक्त बड़ा";
@@ -278,12 +288,14 @@
 "Find in Sites" = "साइटों में खोजें";
 "Find in feed" = "फ़ीड में खोजें";
 "Find in sites" = "साइटों में खोजें";
+"Finding feeds for you to explore." = "आपके लिए खोजने हेतु फ़ीड ढूँढ़ रहे हैं।";
 "Finding related sites..." = "संबंधित साइटें खोजी जा रही हैं...";
 "Finding story..." = "कहानी ढूँढ़ रहा है...";
 "Firefox" = "Firefox";
 "Focus" = "फ़ोकस";
 "Focus Stories" = "कहानियों पर ध्यान दें";
 "Focus only" = "केवल फ़ोकस करें";
+"Folder name" = "फ़ोल्डर का नाम";
 "Folders" = "फ़ोल्डर";
 "Follow" = "फ़ॉलो करें";
 "Follow %@" = "%@ को फ़ॉलो करें";
@@ -331,7 +343,9 @@
 "Image Preview" = "इमेज पूर्वावलोकन";
 "Image actions" = "छवि कार्रवाइयाँ";
 "Import & Export" = "आयात और निर्यात";
+"Import OPML" = "OPML आयात करें";
 "Import Preferences" = "प्राथमिकताएँ आयात करें";
+"Import or upload sites" = "साइटें आयात करें या अपलोड करें";
 "Imported %i site%@" = "%i साइट%@ आयात की गई";
 "Importing sites..." = "साइटें इंपोर्ट हो रही हैं...";
 "In-app Safari" = "ऐप के भीतर Safari";
@@ -355,6 +369,7 @@
 "Large" = "बड़ा";
 "Large Left" = "बड़ा बायाँ";
 "Large Right" = "बड़ा दायाँ";
+"Last used" = "आख़िरी बार इस्तेमाल किया गया";
 "Lavender Iris" = "लैवेंडर आइरिस";
 "Layout" = "लेआउट";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur इस्तेमाल करने के लिए खाली छोड़ें, या अपने स्वयं-होस्ट किए गए इंस्टॉलेशन का URL दर्ज करें। यह ऐप अगली बार खुलने पर लागू होगा।";
@@ -367,6 +382,7 @@
 "List style" = "सूची शैली";
 "Loading Google News topics..." = "Google News के विषय लोड हो रहे हैं...";
 "Loading image…" = "छवि लोड हो रही है…";
+"Loading interests" = "रुचियाँ लोड हो रही हैं";
 "Loading settings…" = "सेटिंग लोड हो रही हैं…";
 "Loading..." = "लोड हो रहा है...";
 "Loading…" = "लोड हो रहा है…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "कोई स्टोरी सूची नहीं";
 "No Widget Sites" = "कोई विजेट साइट नहीं";
 "No briefings yet" = "अभी कोई ब्रीफिंग नहीं";
+"No feeds to show yet. Try another interest or search all sites." = "अभी दिखाने के लिए कोई फ़ीड नहीं है। कोई दूसरी रुचि आज़माएँ या सभी साइटों में खोजें।";
+"No interests or sites found. Try another search." = "कोई रुचि या साइट नहीं मिली। कोई और खोज आज़माएँ।";
 "No longer saved" = "अब सहेजा नहीं गया";
 "No notifications yet." = "अभी तक कोई सूचना नहीं।";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "दिखाने के लिए कोई लेख नहीं। दिखाने के लिए कोई लेख नहीं। दिखाने के लिए कोई लेख नहीं। दिखाने के लिए कोई लेख नहीं।";
@@ -509,6 +527,7 @@
 "Page up" = "पृष्ठ ऊपर";
 "Paste a story title from the page" = "पेज से कहानी का शीर्षक पेस्ट करें";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "कोई भी URL पेस्ट करें और NewsBlur उस पेज से फ़ीड बना देगा, भले ही उसमें RSS न हो।";
+"Permanently delete account" = "खाता हमेशा के लिए हटाएँ";
 "Pick which model writes your Daily Briefing" = "चुनें कि आपकी दैनिक ब्रीफिंग कौन-सा मॉडल लिखे";
 "Place the story list controls above or below the stories" = "कहानी सूची के नियंत्रण कहानियों के ऊपर या नीचे रखें";
 "Plum Berry" = "प्लम बेरी";
@@ -574,7 +593,9 @@
 "Reply to %@" = "%@ को जवाब दें";
 "Resize sidebar" = "साइडबार का आकार बदलें";
 "Restore" = "पुनर्स्थापित करें";
+"Retry" = "फिर से कोशिश करें";
 "Retry Google Reader" = "Google Reader को फिर से आज़माएँ";
+"Retry icons" = "आइकन फिर से आज़माएँ";
 "River of News (reading by folder)" = "समाचार धारा (फ़ोल्डर के अनुसार पढ़ना)";
 "Rows" = "पंक्तियाँ";
 "Ruby Red" = "रूबी रेड";
@@ -656,6 +677,7 @@
 "Show without icons" = "बिना आइकन के दिखाएँ";
 "Sidebar" = "साइडबार";
 "Sign Up" = "साइन अप करें";
+"Sign in with Google" = "Google से साइन इन करें";
 "Single" = "एकल";
 "Single Column" = "एकल कॉलम";
 "Site" = "साइट";
@@ -669,12 +691,14 @@
 "Small" = "छोटा";
 "Small Left" = "छोटा बायाँ";
 "Small Right" = "छोटा दायाँ";
+"Some feed icons couldn’t load." = "कुछ फ़ीड आइकन लोड नहीं हो सके।";
 "Sources" = "स्रोत";
 "Spacing" = "अंतराल";
 "Standard" = "मानक";
 "Start reading" = "पढ़ना शुरू करें";
 "Statistics" = "आँकड़े";
 "Statistics…" = "आँकड़े…";
+"Stay connected" = "जुड़े रहें";
 "Stay on the feeds list" = "फ़ीड सूची पर बने रहें";
 "Stories" = "लेख";
 "Stories can stay unread forever" = "कहानियाँ हमेशा अपठित रह सकती हैं";
@@ -765,6 +789,7 @@
 "Trending Sites" = "ट्रेंडिंग साइटें";
 "Try" = "आज़माएँ";
 "Try again" = "फिर कोशिश करें";
+"Try search again" = "फिर से खोजें";
 "Trying Feed" = "फ़ीड आज़मा रहे हैं";
 "Tuesday" = "मंगलवार";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "आर्काइव पर अपग्रेड करें";
 "Upgrade to Premium" = "प्रीमियम में अपग्रेड करें";
 "Upgrade to Premium Archive" = "Premium Archive में अपग्रेड करें";
+"Use another sign-in method" = "साइन इन करने का कोई दूसरा तरीका इस्तेमाल करें";
 "Use both" = "दोनों का उपयोग करें";
 "Use system size" = "सिस्टम का आकार इस्तेमाल करें";
 "User info" = "उपयोगकर्ता जानकारी";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "आपकी प्रीमियम आर्काइव सदस्यता सक्रिय है";
 "Your premium pro subscription includes everything above" = "आपकी प्रीमियम प्रो सदस्यता में ऊपर दी गई सभी सुविधाएँ शामिल हैं";
 "Your premium pro subscription is active" = "आपका प्रीमियम प्रो सब्सक्रिप्शन सक्रिय है";
+"Your reading list" = "आपकी पठन सूची";
+"You’re all set up." = "आपका सेटअप पूरा हो गया है।";
 "all stories" = "सभी लेख";
 "dislike" = "नापसंद";
 "iOS" = "iOS";
+"or" = "या";
 "premium subscribers" = "प्रीमियम ग्राहक";
 "— Top Level —" = "— शीर्ष स्तर —";
 "‹ Feeds" = "‹ फ़ीड";

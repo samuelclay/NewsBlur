@@ -20,10 +20,12 @@ class ReaderArticleFooterVisibilityTest {
         val divider = mockk<View>(relaxed = true)
         val buttons = mockk<LinearLayout>(relaxed = true)
         val comments = mockk<RelativeLayout>(relaxed = true)
+        val footer = mockk<LinearLayout>(relaxed = true)
         FragmentReadingitemBinding::class.java.getField("readingStoryClusterContainer").apply { isAccessible = true }.set(binding, cluster)
         FragmentReadingitemBinding::class.java.getField("readingStoryClusterDivider").apply { isAccessible = true }.set(binding, divider)
         ReadingItemActionsBinding::class.java.getField("actionsContainer").apply { isAccessible = true }.set(actions, buttons)
         ReadingItemActionsBinding::class.java.getField("commentsContainer").apply { isAccessible = true }.set(actions, comments)
+        ReadingItemActionsBinding::class.java.getField("readerTraversalFooter").apply { isAccessible = true }.set(actions, footer)
         every { cluster.visibility } returns View.VISIBLE
         every { divider.visibility } returns View.VISIBLE
         setField(fragment, "binding", binding)
@@ -39,6 +41,7 @@ class ReaderArticleFooterVisibilityTest {
         verify { cluster.visibility = View.INVISIBLE }
         verify { actions.actionsContainer.visibility = View.GONE }
         verify { actions.commentsContainer.visibility = View.INVISIBLE }
+        verify { footer.visibility = View.INVISIBLE }
     }
 
     private fun setField(fragment: ReadingItemFragment, name: String, value: Any) {

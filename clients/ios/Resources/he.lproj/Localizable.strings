@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "כל התבניות אינן תלויות ברישיות כברירת מחדל";
 "All stories" = "כל הכתבות";
 "Alphabetical" = "לפי סדר אלפביתי";
+"Already have feeds?" = "כבר יש לך פידים?";
 "Analyze" = "ניתוח";
 "Android" = "Android";
 "App Badge" = "תג אפליקציה";
@@ -161,12 +162,14 @@
 "Brave" = "אמיץ";
 "Brightness Override" = "עקיפת הגדרות הבהירות";
 "Brightness threshold" = "סף בהירות";
+"Bring your feeds and folders from another reader." = "ייבאו את העדכונים והתיקיות שלכם מקורא אחר.";
 "Bullets" = "תבליטים";
 "Cancel" = "ביטול";
 "Change Story List" = "שינוי רשימת הכתבות";
 "Choose Icon" = "בחירת סמל";
 "Choose Story List" = "בחירת רשימת כתבות";
 "Choose a Topic" = "בחירת נושא";
+"Choose feeds for your folder" = "בחירת פידים לתיקייה";
 "Choose how far back to mark read" = "בחירת הטווח לסימון כנקרא";
 "Choose how often and when your briefing is generated" = "בחירת תדירות ושעת יצירת התדריך";
 "Choose one or more words from the title:" = "בחר/י מילה אחת או יותר מתוך הכותרת:";
@@ -190,7 +193,9 @@
 "Configure" = "הגדרה";
 "Confirm mark read" = "אישור סימון כנקרא";
 "Connect AI agents with MCP server and CLI" = "חיבור סוכני AI לשרת MCP ולממשק שורת הפקודה";
+"Connect an existing account" = "חיבור חשבון קיים";
 "Connecting" = "מתחבר";
+"Continue" = "המשך";
 "Control how much is included and how it is written" = "שליטה בכמות התוכן שנכללת ובאופן כתיבתו";
 "Copied" = "הועתק";
 "Copyright" = "זכויות יוצרים";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "לא ניתן לטעון את התמונה המלאה. אפשר לנסות לפתוח אותה בדפדפן.";
 "Counting is difficult..." = "קשה לספור...";
 "Create a feed from any web page" = "יצירת פיד מכל דף אינטרנט";
+"Create a new account instead" = "במקום זאת, יצירת חשבון חדש";
 "Custom Domain" = "דומיין מותאם אישית";
 "Custom RSS feeds for saved stories" = "הזנות RSS מותאמות אישית לכתבות שמורות";
 "Custom Search Query" = "שאילתת חיפוש מותאמת אישית";
@@ -216,9 +222,11 @@
 "Delete Account" = "מחיקת החשבון";
 "Delete Folder…" = "מחיקת תיקייה…";
 "Delete Site…" = "מחיקת האתר…";
+"Delete account" = "מחיקת החשבון";
 "Delete offline stories" = "מחיקת כתבות לא מקוונות";
 "Delete saved search" = "מחיקת חיפוש שמור";
 "Deleting saved search..." = "מוחק חיפוש שמור...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "מחיקת החשבון לצמיתות תסיר את הפידים, הכתבות השמורות ונתוני החשבון שלך. אי אפשר לבטל את הפעולה.";
 "Deleting..." = "מוחק...";
 "Discover" = "גילוי";
 "Discover more to read" = "גלו עוד דברים לקריאה";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "הזינו שאילתת חיפוש מותאמת אישית...";
 "Enter a web page URL..." = "הזינו כתובת URL של דף אינטרנט...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "הזינו כתובת URL של כל דף אינטרנט, ו-NewsBlur תשתמש בבינה מלאכותית כדי לנתח את מבנה הדף, למצוא כתבות וליצור פיד RSS מותאם אישית שאפשר להירשם אליו.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "הזינו את שם המשתמש או כתובת האימייל הקיימים שלכם NewsBlur ואת הסיסמה NewsBlur.";
 "Error" = "שגיאה";
 "Evening" = "ערב";
 "Every story from every site is archived and searchable forever" = "כל סיפור מכל אתר נשמר בארכיון וניתן לחיפוש לעד";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "כמובן, כל מה שכלול במינוי הפרימיום";
 "Exact phrase" = "ביטוי מדויק";
 "Experimental" = "ניסיוני";
+"Explore interests" = "גילוי תחומי עניין";
 "Export Preferences" = "ייצוא העדפות";
 "Export trained stories from folders as RSS feeds" = "ייצוא כתבות שעברו אימון מתיקיות כפידים של RSS";
 "Extra Large" = "גדול במיוחד";
@@ -278,12 +288,14 @@
 "Find in Sites" = "חיפוש באתרים";
 "Find in feed" = "חיפוש בפיד";
 "Find in sites" = "חיפוש באתרים";
+"Finding feeds for you to explore." = "מחפש עדכונים שתוכלו לגלות.";
 "Finding related sites..." = "מחפש אתרים קשורים...";
 "Finding story..." = "מאתר כתבה...";
 "Firefox" = "Firefox";
 "Focus" = "מיקוד";
 "Focus Stories" = "התמקדות בסיפורים";
 "Focus only" = "מיקוד בלבד";
+"Folder name" = "שם התיקייה";
 "Folders" = "תיקיות";
 "Follow" = "עקוב";
 "Follow %@" = "לעקוב אחרי %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "תצוגה מקדימה של תמונה";
 "Image actions" = "פעולות תמונה";
 "Import & Export" = "ייבוא וייצוא";
+"Import OPML" = "ייבוא OPML";
 "Import Preferences" = "ייבוא העדפות";
+"Import or upload sites" = "ייבוא או העלאת אתרים";
 "Imported %i site%@" = "יובאו %i אתרים%@";
 "Importing sites..." = "מייבא אתרים...";
 "In-app Safari" = "Safari בתוך האפליקציה";
@@ -355,6 +369,7 @@
 "Large" = "גדול";
 "Large Left" = "גדול משמאל";
 "Large Right" = "גדול, ימינה";
+"Last used" = "בשימוש לאחרונה";
 "Lavender Iris" = "איריס לבנדר";
 "Layout" = "פריסה";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "השאירו ריק כדי להשתמש ב-NewsBlur, או הזינו את כתובת ה-URL של התקנה באירוח עצמי. השינוי ייכנס לתוקף בפעם הבאה שתפתחו את האפליקציה.";
@@ -367,6 +382,7 @@
 "List style" = "סגנון רשימה";
 "Loading Google News topics..." = "טוען נושאים מ-Google News...";
 "Loading image…" = "טוען תמונה…";
+"Loading interests" = "תחומי עניין נטענים";
 "Loading settings…" = "ההגדרות נטענות…";
 "Loading..." = "טוען...";
 "Loading…" = "בטעינה…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "אין רשימות כתבות";
 "No Widget Sites" = "אין אתרים לווידג׳ט";
 "No briefings yet" = "אין עדיין תדריכים";
+"No feeds to show yet. Try another interest or search all sites." = "אין עדיין עדכונים להצגה. נסו תחום עניין אחר או חפשו בכל האתרים.";
+"No interests or sites found. Try another search." = "לא נמצאו תחומי עניין או אתרים. נסו חיפוש אחר.";
 "No longer saved" = "לא נשמר עוד";
 "No notifications yet." = "עדיין אין התראות.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "אין כתבות להצגה. אין כתבות להצגה. אין כתבות להצגה. אין כתבות להצגה.";
@@ -509,6 +527,7 @@
 "Page up" = "עמוד למעלה";
 "Paste a story title from the page" = "הדביקו כותרת של כתבה מהעמוד";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "הדביקו כתובת URL כלשהי ו-NewsBlur ייצור פיד מהדף, גם ללא RSS.";
+"Permanently delete account" = "מחיקת החשבון לצמיתות";
 "Pick which model writes your Daily Briefing" = "בחרו איזה מודל יכתוב את התדריך היומי שלכם";
 "Place the story list controls above or below the stories" = "הצג את הפקדים של רשימת הכתבות מעל הכתבות או מתחתיהן";
 "Plum Berry" = "שזיף ופירות יער";
@@ -574,7 +593,9 @@
 "Reply to %@" = "תגובה אל %@";
 "Resize sidebar" = "שינוי גודל סרגל הצד";
 "Restore" = "שחזור";
+"Retry" = "ניסיון חוזר";
 "Retry Google Reader" = "ניסיון חוזר עם Google Reader";
+"Retry icons" = "ניסיון חוזר לטעון סמלים";
 "River of News (reading by folder)" = "זרם החדשות (קריאה לפי תיקייה)";
 "Rows" = "שורות";
 "Ruby Red" = "אדום אודם";
@@ -656,6 +677,7 @@
 "Show without icons" = "הצג ללא סמלים";
 "Sidebar" = "סרגל צד";
 "Sign Up" = "הרשמה";
+"Sign in with Google" = "כניסה באמצעות Google";
 "Single" = "יחיד";
 "Single Column" = "עמודה אחת";
 "Site" = "אתר";
@@ -669,12 +691,14 @@
 "Small" = "קטן";
 "Small Left" = "שמאל קטן";
 "Small Right" = "ימני קטן";
+"Some feed icons couldn’t load." = "חלק מסמלי הפידים לא נטענו.";
 "Sources" = "מקורות";
 "Spacing" = "מרווחים";
 "Standard" = "רגיל";
 "Start reading" = "התחל לקרוא";
 "Statistics" = "סטטיסטיקה";
 "Statistics…" = "סטטיסטיקה…";
+"Stay connected" = "הישארו מחוברים";
 "Stay on the feeds list" = "להישאר ברשימת ההזנות";
 "Stories" = "כתבות";
 "Stories can stay unread forever" = "אפשר להשאיר כתבות שלא נקראו ללא הגבלת זמן";
@@ -765,6 +789,7 @@
 "Trending Sites" = "אתרים במגמת עלייה";
 "Try" = "לנסות";
 "Try again" = "לנסות שוב";
+"Try search again" = "נסו לחפש שוב";
 "Trying Feed" = "מנסה את הפיד";
 "Tuesday" = "יום שלישי";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "שדרוג לארכיון";
 "Upgrade to Premium" = "שדרוג ל-Premium";
 "Upgrade to Premium Archive" = "שדרגו ל-Premium Archive";
+"Use another sign-in method" = "שימוש בשיטת התחברות אחרת";
 "Use both" = "להשתמש בשניהם";
 "Use system size" = "שימוש בגודל המערכת";
 "User info" = "פרטי משתמש";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "מינוי ארכיון הפרימיום שלך פעיל";
 "Your premium pro subscription includes everything above" = "מנוי הפרימיום Pro שלך כולל את כל מה שמופיע למעלה";
 "Your premium pro subscription is active" = "מינוי Premium Pro שלך פעיל";
+"Your reading list" = "רשימת הקריאה שלך";
+"You’re all set up." = "הכול מוכן.";
 "all stories" = "כל הכתבות";
 "dislike" = "לא אוהב";
 "iOS" = "iOS";
+"or" = "או";
 "premium subscribers" = "מנויי פרימיום";
 "— Top Level —" = "— רמה עליונה —";
 "‹ Feeds" = "‹ פידים";

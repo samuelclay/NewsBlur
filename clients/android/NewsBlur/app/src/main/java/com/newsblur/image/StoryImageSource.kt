@@ -21,7 +21,14 @@ data class StoryImageSource(
     val showActions: Boolean = false,
     // The link a linked photo points to, offered as Open Link beside those actions.
     val linkUrl: String? = null,
+    // ReadingItemFragment.kt preserves this when replacing a remote photo with its offline copy.
+    val originalUrl: String? = null,
 ) {
+    val browserUrl: String?
+        get() = (if (cachedFileName(url) != null) originalUrl else url)?.takeIf {
+            isWebLink(it) && !URI(it).host.equals("appassets.androidplatform.net", ignoreCase = true)
+        }
+
     companion object {
         const val READER_ORIGIN = "https://appassets.androidplatform.net"
 
@@ -54,6 +61,7 @@ data class StoryImageSource(
                             ?.ifBlank { null },
                     showActions = body["showActions"]?.takeUnless { it.isJsonNull }?.asBoolean == true,
                     linkUrl = body["link"]?.takeUnless { it.isJsonNull }?.asString?.takeIf(::isWebLink),
+                    originalUrl = body["browserSrc"]?.takeUnless { it.isJsonNull }?.asString,
                 ).takeIf { source ->
                     source.token.matches(Regex("[0-9]{1,12}")) &&
                         isAllowedUrl(source.url) &&

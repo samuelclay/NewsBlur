@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "جميع الأنماط غير حساسة لحالة الأحرف افتراضيًا";
 "All stories" = "كل القصص";
 "Alphabetical" = "أبجديًا";
+"Already have feeds?" = "لديك خلاصات بالفعل؟";
 "Analyze" = "تحليل";
 "Android" = "أندرويد";
 "App Badge" = "شارة التطبيق";
@@ -161,12 +162,14 @@
 "Brave" = "جريء";
 "Brightness Override" = "تجاوز السطوع";
 "Brightness threshold" = "حد السطوع";
+"Bring your feeds and folders from another reader." = "استورد خلاصاتك ومجلداتك من قارئ آخر.";
 "Bullets" = "تعداد نقطي";
 "Cancel" = "إلغاء";
 "Change Story List" = "تغيير قائمة القصص";
 "Choose Icon" = "اختيار أيقونة";
 "Choose Story List" = "اختر قائمة القصص";
 "Choose a Topic" = "اختر موضوعًا";
+"Choose feeds for your folder" = "اختر الخلاصات لمجلدك";
 "Choose how far back to mark read" = "اختر المدة التي تريد تحديد القصص الأقدم منها كمقروءة";
 "Choose how often and when your briefing is generated" = "اختر عدد مرات إنشاء موجزك وموعد إنشائه";
 "Choose one or more words from the title:" = "اختر كلمة واحدة أو أكثر من العنوان:";
@@ -190,7 +193,9 @@
 "Configure" = "تهيئة";
 "Confirm mark read" = "تأكيد وضع علامة «مقروء»";
 "Connect AI agents with MCP server and CLI" = "اربط وكلاء الذكاء الاصطناعي بخادم MCP وواجهة سطر الأوامر";
+"Connect an existing account" = "ربط حساب موجود";
 "Connecting" = "جارٍ الاتصال";
+"Continue" = "متابعة";
 "Control how much is included and how it is written" = "تحكّم في مقدار المحتوى وكيفية كتابته";
 "Copied" = "تم النسخ";
 "Copyright" = "حقوق النشر";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "تعذّر تحميل الصورة كاملة. يمكنك محاولة فتحها في المتصفح.";
 "Counting is difficult..." = "العدّ صعب...";
 "Create a feed from any web page" = "أنشئ خلاصة من أي صفحة ويب";
+"Create a new account instead" = "إنشاء حساب جديد بدلاً من ذلك";
 "Custom Domain" = "نطاق مخصص";
 "Custom RSS feeds for saved stories" = "خلاصات RSS مخصصة للقصص المحفوظة";
 "Custom Search Query" = "استعلام بحث مخصص";
@@ -216,9 +222,11 @@
 "Delete Account" = "حذف الحساب";
 "Delete Folder…" = "حذف المجلد…";
 "Delete Site…" = "حذف الموقع…";
+"Delete account" = "حذف الحساب";
 "Delete offline stories" = "حذف القصص المتاحة بلا اتصال";
 "Delete saved search" = "حذف البحث المحفوظ";
 "Deleting saved search..." = "جارٍ حذف البحث المحفوظ...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "يؤدي حذف حسابك نهائيًا إلى إزالة خلاصاتك والقصص المحفوظة وبيانات الحساب. لا يمكن التراجع عن ذلك.";
 "Deleting..." = "جارٍ الحذف...";
 "Discover" = "استكشف";
 "Discover more to read" = "اكتشف المزيد لتقرأه";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "أدخل استعلام بحث مخصصًا...";
 "Enter a web page URL..." = "أدخل عنوان URL لصفحة ويب...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "أدخل عنوان URL لأي صفحة ويب، وسيستخدم NewsBlur الذكاء الاصطناعي لتحليل بنية الصفحة والعثور على القصص وإنشاء خلاصة RSS مخصصة يمكنك الاشتراك فيها.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "أدخل اسم المستخدم أو البريد الإلكتروني الحالي NewsBlur وكلمة المرور NewsBlur.";
 "Error" = "خطأ";
 "Evening" = "المساء";
 "Every story from every site is archived and searchable forever" = "تُؤرشف كل المقالات من جميع المواقع وتظل قابلة للبحث إلى الأبد";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "كل ما يتضمنه الاشتراك المميز، بالطبع";
 "Exact phrase" = "عبارة مطابقة تمامًا";
 "Experimental" = "تجريبي";
+"Explore interests" = "استكشف الاهتمامات";
 "Export Preferences" = "تصدير التفضيلات";
 "Export trained stories from folders as RSS feeds" = "تصدير المقالات المدرّبة من المجلدات كخلاصات RSS";
 "Extra Large" = "كبير جدًا";
@@ -278,12 +288,14 @@
 "Find in Sites" = "البحث في المواقع";
 "Find in feed" = "البحث في الموجز";
 "Find in sites" = "البحث في المواقع";
+"Finding feeds for you to explore." = "جارٍ العثور على خلاصات لتستكشفها.";
 "Finding related sites..." = "جارٍ العثور على مواقع ذات صلة...";
 "Finding story..." = "جارٍ البحث عن القصة...";
 "Firefox" = "Firefox";
 "Focus" = "تركيز";
 "Focus Stories" = "القصص المركّزة";
 "Focus only" = "التركيز فقط";
+"Folder name" = "اسم المجلد";
 "Folders" = "المجلدات";
 "Follow" = "متابعة";
 "Follow %@" = "تابع %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "معاينة الصورة";
 "Image actions" = "إجراءات الصور";
 "Import & Export" = "استيراد وتصدير";
+"Import OPML" = "استيراد OPML";
 "Import Preferences" = "استيراد التفضيلات";
+"Import or upload sites" = "استيراد المواقع أو تحميلها";
 "Imported %i site%@" = "تم استيراد %i موقع%@";
 "Importing sites..." = "جارٍ استيراد المواقع...";
 "In-app Safari" = "Safari داخل التطبيق";
@@ -355,6 +369,7 @@
 "Large" = "كبير";
 "Large Left" = "كبير إلى اليسار";
 "Large Right" = "يمين كبير";
+"Last used" = "آخر استخدام";
 "Lavender Iris" = "السوسن الخزامي";
 "Layout" = "التخطيط";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "اتركه فارغًا لاستخدام NewsBlur، أو أدخل عنوان URL لتثبيتك المستضاف ذاتيًا. يسري التغيير عند فتح التطبيق في المرة القادمة.";
@@ -367,6 +382,7 @@
 "List style" = "نمط القائمة";
 "Loading Google News topics..." = "جارٍ تحميل مواضيع Google News...";
 "Loading image…" = "جارٍ تحميل الصورة…";
+"Loading interests" = "جارٍ تحميل الاهتمامات";
 "Loading settings…" = "جارٍ تحميل الإعدادات…";
 "Loading..." = "جارٍ التحميل...";
 "Loading…" = "جارٍ التحميل…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "لا توجد قوائم قصص";
 "No Widget Sites" = "لا توجد مواقع للأدوات المصغّرة";
 "No briefings yet" = "لا توجد ملخصات موجزة بعد";
+"No feeds to show yet. Try another interest or search all sites." = "لا توجد خلاصات لعرضها بعد. جرّب اهتمامًا آخر أو ابحث في جميع المواقع.";
+"No interests or sites found. Try another search." = "لم يُعثر على اهتمامات أو مواقع. جرّب بحثًا آخر.";
 "No longer saved" = "لم يعد محفوظًا";
 "No notifications yet." = "لا توجد إشعارات بعد.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "لا توجد قصص لعرضها. لا توجد قصص لعرضها. لا توجد قصص لعرضها. لا توجد قصص لعرضها.";
@@ -509,6 +527,7 @@
 "Page up" = "الانتقال صفحةً إلى الأعلى";
 "Paste a story title from the page" = "الصق عنوان قصة من الصفحة";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة، حتى إن لم تتضمن RSS.";
+"Permanently delete account" = "حذف الحساب نهائيًا";
 "Pick which model writes your Daily Briefing" = "اختر النموذج الذي يكتب موجزك اليومي";
 "Place the story list controls above or below the stories" = "ضع عناصر التحكم بقائمة القصص أعلى القصص أو أسفلها";
 "Plum Berry" = "توت برقوقي";
@@ -574,7 +593,9 @@
 "Reply to %@" = "الرد على %@";
 "Resize sidebar" = "تغيير حجم الشريط الجانبي";
 "Restore" = "استعادة";
+"Retry" = "إعادة المحاولة";
 "Retry Google Reader" = "إعادة محاولة Google Reader";
+"Retry icons" = "إعادة محاولة تحميل الأيقونات";
 "River of News (reading by folder)" = "نهر الأخبار (القراءة حسب المجلد)";
 "Rows" = "صفوف";
 "Ruby Red" = "Ruby Red";
@@ -656,6 +677,7 @@
 "Show without icons" = "عرض بلا أيقونات";
 "Sidebar" = "الشريط الجانبي";
 "Sign Up" = "إنشاء حساب";
+"Sign in with Google" = "تسجيل الدخول باستخدام Google";
 "Single" = "مفرد";
 "Single Column" = "عمود واحد";
 "Site" = "الموقع";
@@ -669,12 +691,14 @@
 "Small" = "صغير";
 "Small Left" = "يسار صغير";
 "Small Right" = "صغير يمين";
+"Some feed icons couldn’t load." = "تعذّر تحميل بعض أيقونات الخلاصات.";
 "Sources" = "المصادر";
 "Spacing" = "التباعد";
 "Standard" = "قياسي";
 "Start reading" = "ابدأ القراءة";
 "Statistics" = "الإحصاءات";
 "Statistics…" = "الإحصاءات…";
+"Stay connected" = "ابقَ على اتصال";
 "Stay on the feeds list" = "البقاء في قائمة الخلاصات";
 "Stories" = "المقالات";
 "Stories can stay unread forever" = "يمكن أن تظل القصص غير مقروءة إلى الأبد";
@@ -765,6 +789,7 @@
 "Trending Sites" = "المواقع الرائجة";
 "Try" = "جرّب";
 "Try again" = "أعِد المحاولة";
+"Try search again" = "جرّب البحث مجددًا";
 "Trying Feed" = "جارٍ تجربة الخلاصة";
 "Tuesday" = "الثلاثاء";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "الترقية إلى الأرشيف";
 "Upgrade to Premium" = "الترقية إلى Premium";
 "Upgrade to Premium Archive" = "الترقية إلى الأرشيف المميز";
+"Use another sign-in method" = "استخدم طريقة أخرى لتسجيل الدخول";
 "Use both" = "استخدم كليهما";
 "Use system size" = "استخدام حجم النظام";
 "User info" = "معلومات المستخدم";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "اشتراكك المميز في الأرشيف نشط";
 "Your premium pro subscription includes everything above" = "يمنحك اشتراكك المميز Pro كل ما سبق";
 "Your premium pro subscription is active" = "اشتراكك في Premium Pro نشط";
+"Your reading list" = "قائمة القراءة";
+"You’re all set up." = "تم إعداد كل شيء.";
 "all stories" = "كل القصص";
 "dislike" = "لا يعجبني";
 "iOS" = "iOS";
+"or" = "أو";
 "premium subscribers" = "مشتركو Premium";
 "— Top Level —" = "— المستوى الأعلى —";
 "‹ Feeds" = "‹ الموجزات";

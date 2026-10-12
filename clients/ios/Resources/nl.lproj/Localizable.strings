@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "Alle patronen zijn standaard niet hoofdlettergevoelig";
 "All stories" = "Alle artikelen";
 "Alphabetical" = "Alfabetisch";
+"Already have feeds?" = "Heb je al feeds?";
 "Analyze" = "Analyseren";
 "Android" = "Android";
 "App Badge" = "Appbadge";
@@ -161,12 +162,14 @@
 "Brave" = "Dapper";
 "Brightness Override" = "Helderheid overschrijven";
 "Brightness threshold" = "Helderheidsdrempel";
+"Bring your feeds and folders from another reader." = "Neem je feeds en mappen mee uit een andere reader.";
 "Bullets" = "Opsommingstekens";
 "Cancel" = "Annuleren";
 "Change Story List" = "Artikellijst wijzigen";
 "Choose Icon" = "Pictogram kiezen";
 "Choose Story List" = "Verhaallijst kiezen";
 "Choose a Topic" = "Kies een onderwerp";
+"Choose feeds for your folder" = "Kies feeds voor je map";
 "Choose how far back to mark read" = "Kies hoe ver terug artikelen als gelezen worden gemarkeerd";
 "Choose how often and when your briefing is generated" = "Kies hoe vaak en wanneer je briefing wordt gegenereerd";
 "Choose one or more words from the title:" = "Kies een of meer woorden uit de titel:";
@@ -190,7 +193,9 @@
 "Configure" = "Configureren";
 "Confirm mark read" = "Gelezen markeren bevestigen";
 "Connect AI agents with MCP server and CLI" = "Verbind AI-agents met de MCP-server en CLI";
+"Connect an existing account" = "Een bestaand account koppelen";
 "Connecting" = "Verbinden";
+"Continue" = "Doorgaan";
 "Control how much is included and how it is written" = "Bepaal hoeveel er wordt opgenomen en hoe het wordt geschreven";
 "Copied" = "Gekopieerd";
 "Copyright" = "Auteursrecht";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "De volledige afbeelding kon niet worden geladen. Je kunt proberen deze in je browser te openen.";
 "Counting is difficult..." = "Tellen is lastig...";
 "Create a feed from any web page" = "Maak een feed van elke webpagina";
+"Create a new account instead" = "In plaats daarvan een nieuw account aanmaken";
 "Custom Domain" = "Aangepast domein";
 "Custom RSS feeds for saved stories" = "Aangepaste RSS-feeds voor opgeslagen artikelen";
 "Custom Search Query" = "Aangepaste zoekopdracht";
@@ -216,9 +222,11 @@
 "Delete Account" = "Account verwijderen";
 "Delete Folder…" = "Map verwijderen…";
 "Delete Site…" = "Site verwijderen…";
+"Delete account" = "Account verwijderen";
 "Delete offline stories" = "Offlineartikelen verwijderen";
 "Delete saved search" = "Opgeslagen zoekopdracht verwijderen";
 "Deleting saved search..." = "Opgeslagen zoekopdracht verwijderen...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Als je je account verwijdert, worden je feeds, opgeslagen artikelen en accountgegevens definitief verwijderd. Dit kan niet ongedaan worden gemaakt.";
 "Deleting..." = "Bezig met verwijderen...";
 "Discover" = "Ontdekken";
 "Discover more to read" = "Ontdek meer om te lezen";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Voer een aangepaste zoekopdracht in...";
 "Enter a web page URL..." = "Voer de URL van een webpagina in...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Voer de URL van een webpagina in. NewsBlur gebruikt AI om de paginastructuur te analyseren, artikelen te vinden en een aangepaste RSS-feed te maken waarop je je kunt abonneren.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Voer je bestaande gebruikersnaam of e-mailadres van NewsBlur en je wachtwoord van NewsBlur in.";
 "Error" = "Fout";
 "Evening" = "Avond";
 "Every story from every site is archived and searchable forever" = "Elk artikel van elke site wordt voor altijd gearchiveerd en is doorzoekbaar";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Natuurlijk alles uit het Premium-abonnement";
 "Exact phrase" = "Exacte woordgroep";
 "Experimental" = "Experimenteel";
+"Explore interests" = "Interesses ontdekken";
 "Export Preferences" = "Voorkeuren exporteren";
 "Export trained stories from folders as RSS feeds" = "Getrainde verhalen uit mappen exporteren als RSS-feeds";
 "Extra Large" = "Extra groot";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Zoeken in sites";
 "Find in feed" = "Zoeken in feed";
 "Find in sites" = "Zoeken in sites";
+"Finding feeds for you to explore." = "Feeds zoeken om te ontdekken.";
 "Finding related sites..." = "Verwante sites zoeken...";
 "Finding story..." = "Artikel zoeken...";
 "Firefox" = "Firefox";
 "Focus" = "Focus";
 "Focus Stories" = "Focusverhalen";
 "Focus only" = "Alleen focussen";
+"Folder name" = "Mapnaam";
 "Folders" = "Mappen";
 "Follow" = "Volgen";
 "Follow %@" = "Volg %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "Voorbeeld van afbeelding";
 "Image actions" = "Afbeeldingsacties";
 "Import & Export" = "Importeren en exporteren";
+"Import OPML" = "OPML importeren";
 "Import Preferences" = "Voorkeuren importeren";
+"Import or upload sites" = "Sites importeren of uploaden";
 "Imported %i site%@" = "%i-site%@ geïmporteerd";
 "Importing sites..." = "Sites importeren...";
 "In-app Safari" = "Safari in de app";
@@ -355,6 +369,7 @@
 "Large" = "Groot";
 "Large Left" = "Groot links";
 "Large Right" = "Groot rechts";
+"Last used" = "Laatst gebruikt";
 "Lavender Iris" = "Lavendeliris";
 "Layout" = "Lay-out";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Laat leeg om NewsBlur te gebruiken, of voer de URL van je zelf gehoste installatie in. Wordt van kracht wanneer de app de volgende keer wordt geopend.";
@@ -367,6 +382,7 @@
 "List style" = "Lijststijl";
 "Loading Google News topics..." = "Google News-onderwerpen laden...";
 "Loading image…" = "Afbeelding laden…";
+"Loading interests" = "Interesses laden";
 "Loading settings…" = "Instellingen laden…";
 "Loading..." = "Laden...";
 "Loading…" = "Laden…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "Geen verhalenlijsten";
 "No Widget Sites" = "Geen widgetsites";
 "No briefings yet" = "Nog geen briefings";
+"No feeds to show yet. Try another interest or search all sites." = "Er zijn nog geen feeds om weer te geven. Probeer een andere interesse of zoek op alle sites.";
+"No interests or sites found. Try another search." = "Geen interesses of sites gevonden. Probeer een andere zoekopdracht.";
 "No longer saved" = "Niet langer opgeslagen";
 "No notifications yet." = "Nog geen meldingen.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Geen artikelen om weer te geven. Geen artikelen om weer te geven. Geen artikelen om weer te geven. Geen artikelen om weer te geven.";
@@ -509,6 +527,7 @@
 "Page up" = "Pagina omhoog";
 "Paste a story title from the page" = "Plak een artikeltitel van de pagina";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Plak een URL en NewsBlur maakt een feed van de pagina, zelfs zonder RSS.";
+"Permanently delete account" = "Account definitief verwijderen";
 "Pick which model writes your Daily Briefing" = "Kies welk model je dagelijkse briefing schrijft";
 "Place the story list controls above or below the stories" = "Plaats de bedieningselementen voor de artikellijst boven of onder de artikelen";
 "Plum Berry" = "Pruimenbes";
@@ -574,7 +593,9 @@
 "Reply to %@" = "Reageren op %@";
 "Resize sidebar" = "Zijbalkformaat wijzigen";
 "Restore" = "Herstellen";
+"Retry" = "Opnieuw proberen";
 "Retry Google Reader" = "Google Reader opnieuw proberen";
+"Retry icons" = "Pictogrammen opnieuw proberen";
 "River of News (reading by folder)" = "Nieuwsstroom (lezen per map)";
 "Rows" = "Rijen";
 "Ruby Red" = "Robijnrood";
@@ -656,6 +677,7 @@
 "Show without icons" = "Weergeven zonder pictogrammen";
 "Sidebar" = "Zijbalk";
 "Sign Up" = "Registreren";
+"Sign in with Google" = "Inloggen met Google";
 "Single" = "Enkel";
 "Single Column" = "Enkele kolom";
 "Site" = "Site";
@@ -669,12 +691,14 @@
 "Small" = "Klein";
 "Small Left" = "Klein links";
 "Small Right" = "Klein rechts";
+"Some feed icons couldn’t load." = "Sommige feedpictogrammen konden niet worden geladen.";
 "Sources" = "Bronnen";
 "Spacing" = "Tussenruimte";
 "Standard" = "Standaard";
 "Start reading" = "Begin met lezen";
 "Statistics" = "Statistieken";
 "Statistics…" = "Statistieken…";
+"Stay connected" = "Blijf verbonden";
 "Stay on the feeds list" = "Op de feedlijst blijven";
 "Stories" = "Artikelen";
 "Stories can stay unread forever" = "Verhalen kunnen voor altijd ongelezen blijven";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Trending websites";
 "Try" = "Probeer";
 "Try again" = "Probeer het opnieuw";
+"Try search again" = "Zoek opnieuw";
 "Trying Feed" = "Feed wordt geprobeerd";
 "Tuesday" = "dinsdag";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Upgraden naar Archief";
 "Upgrade to Premium" = "Upgraden naar Premium";
 "Upgrade to Premium Archive" = "Upgraden naar Premium Archive";
+"Use another sign-in method" = "Een andere inlogmethode gebruiken";
 "Use both" = "Beide gebruiken";
 "Use system size" = "Systeemgrootte gebruiken";
 "User info" = "Gebruikersgegevens";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Je Premium-archiefabonnement is actief";
 "Your premium pro subscription includes everything above" = "Je premium pro-abonnement bevat alles hierboven";
 "Your premium pro subscription is active" = "Je Premium Pro-abonnement is actief";
+"Your reading list" = "Je leeslijst";
+"You’re all set up." = "Je bent helemaal klaar.";
 "all stories" = "alle artikelen";
 "dislike" = "niet leuk vinden";
 "iOS" = "iOS";
+"or" = "of";
 "premium subscribers" = "premiumabonnees";
 "— Top Level —" = "— Bovenste niveau —";
 "‹ Feeds" = "‹ Feeds";

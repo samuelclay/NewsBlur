@@ -18,6 +18,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView.HitTestResult
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -60,7 +61,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.AppConstants.READING_BASE_URL
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.DefaultFeedView
-import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
+import com.newsblur.util.EdgeToEdgeUtil.applyReaderFooterInsetTo
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileCache
@@ -126,6 +127,7 @@ class ReadingItemFragment :
     lateinit var imageViewerClient: okhttp3.OkHttpClient
 
     private var storyImageViewer: com.newsblur.image.StoryImageViewer? = null
+    private var clearBottomInsetListener: Runnable? = null
 
     // When a photo started opening on StoryImageViewerHost.kt, which holds off a second tap until the host shows it.
     private var storyImageHostLaunchedAt = 0L
@@ -352,6 +354,8 @@ class ReadingItemFragment :
     }
 
     override fun onDestroyView() {
+        clearBottomInsetListener?.run()
+        clearBottomInsetListener = null
         // A photo host that never started must not keep this fragment, its WebView, or the preview alive.
         storyImageHostToken?.let(StoryImageViewerHost::cancelPending)
         storyImageHostToken = null
@@ -452,7 +456,7 @@ class ReadingItemFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
+        clearBottomInsetListener = view.applyReaderFooterInsetTo(readingItemActionsBinding.readerTraversalFooter)
         view.doOnPreDraw {
             story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
         }
@@ -1452,6 +1456,7 @@ class ReadingItemFragment :
             if (section.visibility != View.GONE) section.visibility = footerVisibility
         }
         readingItemActionsBinding.commentsContainer.visibility = footerVisibility
+        readingItemActionsBinding.readerTraversalFooter.visibility = footerVisibility
         enableProgress(shouldShowLoadingProgress())
     }
 
@@ -1605,15 +1610,18 @@ class ReadingItemFragment :
     }
 
     private fun swapInOfflineImages(htmlString: String): String {
-        var html = htmlString
-        val imageTagMatcher = imgSniff.matcher(html)
+        val html = StringBuilder(htmlString.length)
+        var copiedUntil = 0
+        val imageTagMatcher = imgSniff.matcher(htmlString)
         while (imageTagMatcher.find()) {
             val url = imageTagMatcher.group(2) ?: continue
-            val sourceAttribute = imageTagMatcher.group(1) ?: continue
             val localPath = storyImageCache.getWebViewImageCache(url) ?: continue
-            html = html.replace(sourceAttribute + "\"" + url + "\"", "src=\"$localPath\"")
+            // ReadingItemFragment.kt replaces only original source spans, never attributes added for an earlier copy of the same image.
+            html.append(htmlString, copiedUntil, imageTagMatcher.start(1))
+            html.append("src=\"$localPath\" data-nb-original-src=\"$url\"")
+            copiedUntil = imageTagMatcher.end(2) + 1
         }
-        return html
+        return html.append(htmlString, copiedUntil, htmlString.length).toString()
     }
 
     /** We have pushed our desired content into the WebView.  */
@@ -1960,6 +1968,13 @@ class ReadingItemFragment :
         newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
     }
 
+    fun traversalControlsSlot(): FrameLayout? =
+        if (view != null && hasCompletedInitialStoryRender && articleReveal.isVisible) {
+            readingItemActionsBinding.readerTraversalSlot
+        } else {
+            null
+        }
+
     private val updateStoryReadTitleState = {
         story?.let {
             val (typeFace, iconVisibility) =
@@ -2114,6 +2129,7 @@ class ReadingItemFragment :
             origin,
             storyImageCache,
             imageViewerClient,
+            prefsRepo = prefsRepo,
             returnRect = { finish ->
                 if (readingWebview !== webview || view == null || source.generation != webview.documentGeneration) {
                     finish(null)

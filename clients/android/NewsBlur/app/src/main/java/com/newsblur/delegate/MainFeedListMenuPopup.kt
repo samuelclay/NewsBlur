@@ -1,7 +1,6 @@
 package com.newsblur.delegate
 
 import android.content.Intent
-import com.newsblur.activity.ContactActivity
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.newsblur.R
+import com.newsblur.activity.ContactActivity
 import com.newsblur.activity.ImportExportActivity
 import com.newsblur.activity.Main
 import com.newsblur.activity.MuteConfig
@@ -28,8 +28,8 @@ import com.newsblur.fragment.LogoutDialogFragment
 import com.newsblur.fragment.NewslettersFragment
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.PopupMenuTextScaler
+import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.widget.WidgetUtils
@@ -148,11 +148,11 @@ class MainFeedListMenuPopup(
                 )
                 add(
                     MainMenuRow(
-                        title = activity.getString(R.string.import_export),
+                        title = "Import and feed bundles",
                         iconRes = R.drawable.nb_menu_import_export,
                     ) {
                         popupWindow.dismiss()
-                        activity.startActivity(Intent(activity, ImportExportActivity::class.java))
+                        activity.startActivity(Intent(activity, com.newsblur.activity.OnboardingActivity::class.java))
                     },
                 )
                 add(
@@ -164,6 +164,20 @@ class MainFeedListMenuPopup(
                         NewslettersFragment().show(
                             activity.supportFragmentManager,
                             NewslettersFragment::class.java.name,
+                        )
+                    },
+                )
+                add(
+                    MainMenuRow(title = "Export feeds", iconRes = R.drawable.nb_menu_import_export) {
+                        popupWindow.dismiss()
+                        activity.startActivity(Intent(activity, ImportExportActivity::class.java))
+                    },
+                )
+                add(
+                    MainMenuRow(title = "Delete account", iconRes = R.drawable.nb_menu_preferences) {
+                        popupWindow.dismiss()
+                        activity.startActivity(
+                            Intent(activity, com.newsblur.activity.LoginActivity::class.java).putExtra("manage_account", true),
                         )
                     },
                 )
@@ -243,20 +257,24 @@ class MainFeedListMenuPopup(
         popupWindow: PopupWindow,
         anchor: View,
     ) {
-        binding.groupTextSize.addView(ListMenuSegments.fontSize(activity) { id ->
-            val size = ListMenuSegments.fontSizes.getValue(id)
-            fragment.setListTextSize(size)
-            PopupMenuTextScaler.apply(binding.root, size.size)
-            updatePopupLayout(anchor, binding, popupWindow, size.size, isShowing = true)
-        })
-        binding.groupTheme.addView(ListMenuSegments.theme(activity) { id ->
-            val theme = ListMenuSegments.themes.getValue(id)
-            if (theme != prefsRepo.getSelectedTheme()) {
-                popupWindow.dismiss()
-                prefsRepo.setSelectedTheme(theme)
-                UIUtils.restartActivity(activity)
-            }
-        })
+        binding.groupTextSize.addView(
+            ListMenuSegments.fontSize(activity) { id ->
+                val size = ListMenuSegments.fontSizes.getValue(id)
+                fragment.setListTextSize(size)
+                PopupMenuTextScaler.apply(binding.root, size.size)
+                updatePopupLayout(anchor, binding, popupWindow, size.size, isShowing = true)
+            },
+        )
+        binding.groupTheme.addView(
+            ListMenuSegments.theme(activity) { id ->
+                val theme = ListMenuSegments.themes.getValue(id)
+                if (theme != prefsRepo.getSelectedTheme()) {
+                    popupWindow.dismiss()
+                    prefsRepo.setSelectedTheme(theme)
+                    UIUtils.restartActivity(activity)
+                }
+            },
+        )
         when (prefsRepo.getSpacingStyle()) {
             SpacingStyle.COMFORTABLE -> binding.groupSpacing.check(binding.btnSpacingComfortable.id)
             SpacingStyle.COMPACT -> binding.groupSpacing.check(binding.btnSpacingCompact.id)
@@ -269,7 +287,6 @@ class MainFeedListMenuPopup(
                 binding.btnSpacingCompact.id -> fragment.setSpacingStyle(SpacingStyle.COMPACT)
             }
         }
-
     }
 
     private fun getSubscriptionTitle(): String =
@@ -290,14 +307,14 @@ class MainFeedListMenuPopup(
 
         val dialog =
             MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.menu_feedback)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> UIUtils.handleUri(activity, prefsRepo, Uri.parse("https://forum.newsblur.com"))
-                    1 -> UIUtils.handleUri(activity, prefsRepo, Uri.parse(prefsRepo.createFeedbackLink(activity)))
-                    2 -> prefsRepo.sendLogEmail(activity)
-                }
-            }.show()
+                .setTitle(R.string.menu_feedback)
+                .setItems(options) { _, which ->
+                    when (which) {
+                        0 -> UIUtils.handleUri(activity, prefsRepo, Uri.parse("https://forum.newsblur.com"))
+                        1 -> UIUtils.handleUri(activity, prefsRepo, Uri.parse(prefsRepo.createFeedbackLink(activity)))
+                        2 -> prefsRepo.sendLogEmail(activity)
+                    }
+                }.show()
         dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, prefsRepo.getListTextSize()) }
     }
 
@@ -330,19 +347,21 @@ class MainFeedListMenuPopup(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         )
-        com.newsblur.util.AnchoredPopover.show(anchor, popupWindow, binding.root.measuredWidth, binding.root.measuredHeight, isShowing)
+        com.newsblur.util.AnchoredPopover
+            .show(anchor, popupWindow, binding.root.measuredWidth, binding.root.measuredHeight, isShowing)
     }
 
     private fun makeDivider(color: Int): View =
         View(activity).apply {
             layoutParams =
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    UIUtils.dp2px(activity, 1),
-                ).apply {
-                    marginStart = UIUtils.dp2px(activity, 44)
-                    marginEnd = UIUtils.dp2px(activity, 14)
-                }
+                LinearLayout
+                    .LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        UIUtils.dp2px(activity, 1),
+                    ).apply {
+                        marginStart = UIUtils.dp2px(activity, 44)
+                        marginEnd = UIUtils.dp2px(activity, 14)
+                    }
             setBackgroundColor(color)
         }
 
@@ -385,8 +404,7 @@ class MainFeedListMenuPopup(
                 )
         }
 
-    private fun resolvedTheme(): ThemeValue =
-        prefsRepo.getResolvedTheme(activity)
+    private fun resolvedTheme(): ThemeValue = prefsRepo.getResolvedTheme(activity)
 }
 
 private data class MainMenuRow(

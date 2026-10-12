@@ -25,11 +25,12 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 290
-        versionName = "15.0.5"
+        versionCode = 291
+        versionName = "15.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
+        manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android"
     }
 
     buildTypes {
@@ -42,6 +43,7 @@ android {
             applicationIdSuffix = ".alpha"
             matchingFallbacks += listOf("debug")
             manifestPlaceholders["defaultLauncherEnabled"] = "false"
+            manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android-alpha"
         }
         maybeCreate("benchmark")
         getByName("benchmark") {
@@ -87,6 +89,7 @@ ktlint {
 }
 
 dependencies {
+    implementation("com.google.mlkit:language-id:17.0.6")
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.swiperefreshlayout)

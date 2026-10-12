@@ -1,6 +1,124 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-03T12:32:09-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-11T14:18:48-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"><![CDATA[<p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
+</subtitle><entry><title type="html">A new first-time experience on iOS and Android: find your first feeds</title><link href="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/" rel="alternate" type="text/html" title="A new first-time experience on iOS and Android: find your first feeds" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/"><![CDATA[<p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
+
+<p>I’ve rebuilt the first-time experience on iOS and Android around exploring interests, previewing feeds, and choosing what goes into your reader. You can put together a few folders of things you care about, or bring your existing collection from another app with an OPML import.</p>
+
+<h3 id="explore-your-interests-on-ios">Explore your interests on iOS</h3>
+
+<p>After creating your account, the iPhone and iPad apps open a setup screen with <strong>Explore interests</strong>. Browse categories such as science, books, cooking, and technology, or search for a topic. <strong>A little of everything</strong> gives you a starting point if you’d rather sample a mix.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-interests.png" alt="The iOS first-time setup screen with OPML import and interest-based feed bundles" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>Each category opens a bundle of feeds. You can see what the sites actually publish through recent story previews, rather than choosing from names alone. Deselect feeds you don’t want, give the folder a name, and add the ones you like.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-bundle.png" alt="The Science bundle on iOS showing a folder name, feed details, and recent story previews" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>You can keep exploring and add another bundle before heading into the reader. The idea is to make those first subscriptions your own, with enough context to decide whether a feed belongs in your daily reading.</p>
+
+<h3 id="build-your-first-folders-on-android">Build your first folders on Android</h3>
+
+<p>Android gets the same interest-based setup. Browse or search the catalog, open a bundle, and look through its feeds before subscribing. The import option is right at the top if you’re coming from another reader.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-interests.png" alt="Android&#39;s first-time setup with OPML import and a catalog of interest bundles" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>Feed cards show recent stories, how often a site publishes, and when it last updated. Choose the feeds you want and name the folder they’ll go into. A science folder, a cooking folder, and a handful of personal blogs can give you plenty to read without having to assemble every subscription one at a time.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-bundle.png" alt="The Science bundle on Android with a folder name, feed details, and story previews" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>The final setup step shows what you’ve added. Tap <strong>Start reading</strong> to head into your reader with your folders ready.</p>
+
+<h3 id="bring-your-feeds-or-come-back-for-more">Bring your feeds, or come back for more</h3>
+
+<p>On both platforms, <strong>Import OPML</strong> brings your feeds and folders from another reader. Export an OPML file from your old app, save it somewhere your phone can access, and select it during setup.</p>
+
+<p>You don’t need a new account to use the bundles. Existing readers can open <strong>Import or upload sites</strong> from the iOS menu or <strong>Import and feed bundles</strong> from the Android menu. It’s a way to explore a new interest whenever you want to add something to your reading.</p>
+
+<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.]]></summary></entry><entry><title type="html">Sign in with Apple or Google on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/" rel="alternate" type="text/html" title="Sign in with Apple or Google on the web, iOS, and Android" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/"><![CDATA[<p>NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.</p>
+
+<h3 id="apple-and-google-sign-in-on-the-web">Apple and Google sign-in on the web</h3>
+
+<p>The welcome page, login page, and signup page now have Apple and Google buttons above the usual username and password fields. Choose either provider to sign in or create a NewsBlur account. For a new account, you’ll choose a NewsBlur username so you still have your own name when sharing stories and commenting.</p>
+
+<p><img src="/assets/apple-google-web-signin.png" alt="NewsBlur's welcome page with Sign in with Apple and Sign in with Google above the password form" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>If you already have a NewsBlur account, you can connect it instead of starting over. Choose <strong>Connect an existing account</strong> and enter your NewsBlur username and password. If you try to create an account with a username that’s already taken, NewsBlur brings you to that connection step and explains what to do.</p>
+
+<p>You only need to confirm your NewsBlur password when making that connection. Afterward, the Apple or Google button takes you back to the same feeds, saved stories, and subscription.</p>
+
+<h3 id="different-email-addresses-one-newsblur-account">Different email addresses, one NewsBlur account</h3>
+
+<p>Your Apple email doesn’t have to match your Google email, and neither has to match your NewsBlur email. You can connect a personal Apple account and a work Google account to the same NewsBlur username. Connecting them leaves your NewsBlur email address unchanged.</p>
+
+<p>Open <strong>Manage &gt; Account</strong> on the web and look under your email address. The new <strong>Connected accounts</strong> section lists each connected Apple or Google account and its email. Use <strong>Connect Apple</strong> or <strong>Connect Google</strong> to add another, or the little × beside a connection to remove it.</p>
+
+<p><img src="/assets/apple-google-connected-accounts.png" alt="NewsBlur Account settings listing connected Apple and Google email addresses, connection buttons, and disconnect controls" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>An Apple or Google account can belong to one NewsBlur account at a time. To move it, disconnect it from the old account first. NewsBlur also makes sure you keep a way to sign in before removing your last connection.</p>
+
+<h3 id="sign-in-on-ios">Sign in on iOS</h3>
+
+<p>The iPhone and iPad apps get the same Apple and Google sign-in choices. You can also create an account with an email, username, and password right on the welcome screen.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-signin.png" alt="NewsBlur on iPhone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="sign-in-on-android">Sign in on Android</h3>
+
+<p>Android gets both provider buttons as well, including Sign in with Apple. The account connection works across platforms: connect a provider on the web and use it to sign into that same NewsBlur account on your phone.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>For new readers, both mobile apps also have a <a href="/2026/10/11/new-first-time-experience-ios-android/">new first-time experience</a> that helps you choose your first feeds and get reading.</p>
+
+<p>Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"><![CDATA[<p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
 
 <h3 id="faster-story-lists">Faster story lists</h3>
 
@@ -448,234 +566,4 @@ A new sound of an old instrument.
 
 <p><img src="/assets/quote-shared-comment.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
 
-<p>The quote feature works anywhere text selection is available: the story detail view, highlighted text, and search results. It’s available now on the web. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[When you share a story on NewsBlur, sometimes the whole article isn’t the point. You want to call out a specific paragraph, a key finding, a sentence that made you think. Until now, you’d have to manually copy-paste text into the comment box and add your own formatting. Now you can select any text in a story, click Quote, and it drops into the share dialog as a styled blockquote, ready for you to add your own commentary underneath.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/quote-selection-popover.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/quote-selection-popover.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Natural language text and image classifiers: Train your feeds with plain English</title><link href="https://blog.newsblur.com/2026/04/02/natural-language-text-and-image-classifiers/" rel="alternate" type="text/html" title="Natural language text and image classifiers: Train your feeds with plain English" /><published>2026-04-02T00:00:00-04:00</published><updated>2026-04-02T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/04/02/natural-language-text-and-image-classifiers</id><content type="html" xml:base="https://blog.newsblur.com/2026/04/02/natural-language-text-and-image-classifiers/"><![CDATA[<p>The Intelligence Trainer has always worked with exact matches. You type a keyword, a tag, an author name, and NewsBlur filters on that literal string. Regex mode added flexibility, but you still need to know exactly what to type. If you want to hide clickbait, you’d have to enumerate every clickbait pattern you can think of. If you want to focus on stories about local government accountability, good luck expressing that as a regex.</p>
-
-<p>Natural language classifiers let you describe what you want in plain English. Instead of matching keywords, NewsBlur sends your description and each story to an AI model that understands what you mean. Write “stories about practical cooking techniques, not restaurant reviews” and it just works. Write “product launch announcements” and it finds them regardless of how each site phrases it. And with image classifiers, you can filter on what’s actually shown in a story’s photos, not just what’s written in the text.</p>
-
-<h3 id="text-classifiers">Text classifiers</h3>
-
-<p>Open the Intelligence Trainer on any feed and you’ll see a new section: <strong>Natural Language Text Classifier</strong>. Type a description of what you want to focus on or hide, and press Enter. Not sure if your prompt will catch the right stories? Click <strong>Test on this story</strong> to see how the classifier would score it before you save, so you can refine your wording.</p>
-
-<p><img src="/assets/nl-text-classifier-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Your prompt is saved as a classifier pill, just like title and author classifiers. Toggle it between focus (green) and hidden (red) to control whether matching stories are promoted or suppressed. You can add multiple prompts per feed, and each one works independently.</p>
-
-<p>When you save a new prompt, NewsBlur immediately classifies your recent stories against it. Within a few seconds, you’ll see stories re-sort as the classifications come in. From then on, every new story is classified as it arrives.</p>
-
-<p>The classifier sends each story’s title and content to the AI model along with your description. The model decides whether the story matches, doesn’t match, or is clearly the opposite of what you described. That three-way classification means a “focus” prompt can also actively hide stories that are the antithesis of your interest.</p>
-
-<p>When a text classifier matches, you’ll see a colored pill in the story header showing which prompt matched.</p>
-
-<p><img src="/assets/nl-classifier-story-pills-text.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="image-classifiers">Image classifiers</h3>
-
-<p>Image classifiers work the same way, but they look at the photos in each story instead of the text. Describe what you want to see (or hide) visually, and the AI model examines each image to decide if it matches.</p>
-
-<p><img src="/assets/nl-image-classifier-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Some examples:</p>
-
-<ul>
-  <li><strong>“Charts and data visualizations”</strong> — Focus on stories with graphs, tables, or infographics</li>
-  <li><strong>“Screenshots of user interfaces”</strong> — Find product announcements that include actual UI screenshots</li>
-  <li><strong>“Nature and landscape photography”</strong> — Surface photography posts in mixed-content feeds</li>
-  <li><strong>“Memes”</strong> — Hide (or focus on) image macros and memes</li>
-</ul>
-
-<p>The image classifier is strict about what counts as a match. It only triggers when the subject is literally visible as the main focus of the image, not when something is vaguely related or appears in a logo or watermark. “Food photos” matches a photo of a plate of pasta, not a restaurant storefront.</p>
-
-<p>Image classifier matches also show as pills in the story header, just like text classifiers.</p>
-
-<p><img src="/assets/nl-classifier-story-pills-image.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="combining-with-classifier-notifications">Combining with classifier notifications</h3>
-
-<p>Natural language classifiers become even more powerful when paired with <a href="/2026/03/27/super-dislikes-and-classifier-notifications/">per-classifier notifications</a>. Set up a text classifier like “breaking news about AI regulation” on a high-volume news feed, then attach a notification to that classifier pill. You’ll get a push notification or email only when a story matches your natural language description, not every time the feed publishes.</p>
-
-<p>This turns NewsBlur into a semantic alert system. Instead of monitoring keywords, you’re monitoring concepts. A classifier for “security vulnerabilities in open source libraries” will catch stories whether they say “CVE,” “zero-day,” “supply chain attack,” or any other phrasing. Add a notification and you have a monitoring pipeline that understands what you care about.</p>
-
-<h3 id="scoping">Scoping</h3>
-
-<p>Like all classifiers in NewsBlur, natural language classifiers support three scope levels:</p>
-
-<ul>
-  <li><strong>Per site</strong> — Applies only to the feed you’re training (default)</li>
-  <li><strong>Per folder</strong> — Applies to every feed in the folder</li>
-  <li><strong>Global</strong> — Applies to every feed you subscribe to</li>
-</ul>
-
-<p>A global text classifier like “sponsored content” can hide promotional stories across your entire feed list with a single prompt.</p>
-
-<h3 id="usage-based-billing">Usage-based billing</h3>
-
-<p>Natural language classifiers use AI models to evaluate every story, which means there’s a real cost per classification. Rather than bundling this into a fixed subscription tier, NewsBlur uses usage-based billing so you only pay for what you use.</p>
-
-<p>Text classifications cost roughly a tenth of a cent per story. Image classifications cost more because they process image data, roughly half a cent per story. The actual cost depends on story length and image count, but for a typical feed publishing 30 stories a month with one text classifier, you’d pay about 5 cents a month.</p>
-
-<p>You can set a monthly spending limit to cap your costs. If you hit the limit, classification pauses until the next billing cycle. Your existing cached results still show, but new stories won’t be classified until the limit resets.</p>
-
-<p><img src="/assets/nl-classifier-billing.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Natural language text and image classifiers are available now on the web for Premium subscribers with usage-based billing enabled. Enable it from <strong>Manage &gt; Account</strong> to get started.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[The Intelligence Trainer has always worked with exact matches. You type a keyword, a tag, an author name, and NewsBlur filters on that literal string. Regex mode added flexibility, but you still need to know exactly what to type. If you want to hide clickbait, you’d have to enumerate every clickbait pattern you can think of. If you want to focus on stories about local government accountability, good luck expressing that as a regex.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/nl-text-classifier-input.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/nl-text-classifier-input.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">The NewsBlur CLI Tool, AI Skill, and MCP Server</title><link href="https://blog.newsblur.com/2026/04/01/mcp-server-and-cli/" rel="alternate" type="text/html" title="The NewsBlur CLI Tool, AI Skill, and MCP Server" /><published>2026-04-01T00:00:00-04:00</published><updated>2026-04-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/04/01/mcp-server-and-cli</id><content type="html" xml:base="https://blog.newsblur.com/2026/04/01/mcp-server-and-cli/"><![CDATA[<p>NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping three new ways to interact with your NewsBlur: a command-line tool that puts your entire NewsBlur in your terminal, an AI skill that teaches your agent every CLI command without eating your context window, and an MCP server that connects any MCP-compatible agent directly to your account.</p>
-
-<h3 id="quickstart">Quickstart</h3>
-
-<p><strong>CLI tool</strong> — install and log in:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv pip <span class="nb">install </span>newsblur-cli
-newsblur auth login
-</code></pre></div></div>
-
-<p><strong>AI skill</strong> — install into Claude Code, Cursor, Windsurf, or any Skills-compatible tool:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx skills add samuelclay/newsblur-cli-skill
-</code></pre></div></div>
-
-<p><strong>MCP server</strong> — connect from Claude Code, Claude Desktop, Codex, or any MCP client:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
-</code></pre></div></div>
-
-<p>All three require a <a href="https://newsblur.com/?next=premium">Premium Archive</a> or Premium Pro subscription. On first use, a browser window opens for OAuth authorization. Your token is stored locally and you can revoke access at any time.</p>
-
-<hr />
-
-<h3 id="cli-tool">CLI tool</h3>
-
-<p>Everything you do in NewsBlur, from your terminal. Full documentation is on the <a href="https://newsblur.com/features/cli">CLI feature page</a>.</p>
-
-<p><strong>Read stories</strong> from feeds, folders, or everything at once:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur stories list                          <span class="c"># unread stories</span>
-newsblur stories list <span class="nt">--folder</span> Tech <span class="nt">--limit</span> 5  <span class="c"># filter by folder</span>
-newsblur stories search <span class="s2">"machine learning"</span>     <span class="c"># full-text search</span>
-newsblur stories saved <span class="nt">--tag</span> research          <span class="c"># saved stories by tag</span>
-newsblur stories infrequent                    <span class="c"># rarely-publishing feeds</span>
-newsblur stories original 123:abc456           <span class="c"># fetch full article text</span>
-</code></pre></div></div>
-
-<p><strong>Get your daily briefing</strong> with AI-curated summaries:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur briefing                              <span class="c"># today's briefing</span>
-newsblur briefing <span class="nt">--limit</span> 1                    <span class="c"># just the latest</span>
-newsblur briefing <span class="nt">--json</span>                       <span class="c"># structured output</span>
-</code></pre></div></div>
-
-<p><strong>Manage feeds and folders:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur feeds list                            <span class="c"># all subscriptions</span>
-newsblur feeds folders                         <span class="c"># folder tree with counts</span>
-newsblur feeds add https://example.com         <span class="c"># subscribe</span>
-newsblur feeds add https://blog.com <span class="nt">-f</span> Tech    <span class="c"># subscribe into a folder</span>
-newsblur feeds remove 42                       <span class="c"># unsubscribe</span>
-newsblur feeds organize move_feed <span class="nt">--feed-id</span> 42 <span class="nt">--from</span> News <span class="nt">--to</span> Tech
-</code></pre></div></div>
-
-<p><strong>Take actions on stories:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur save 123:abc <span class="nt">--tag</span> ai <span class="nt">--tag</span> research  <span class="c"># save with tags</span>
-newsblur unsave 123:abc                        <span class="c"># remove from saved</span>
-newsblur <span class="nb">read</span> <span class="nt">--feed</span> 42                        <span class="c"># mark feed as read</span>
-newsblur share 123:abc <span class="nt">--comment</span> <span class="s2">"Worth reading"</span>
-</code></pre></div></div>
-
-<p><strong>Train your intelligence classifiers:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur train show <span class="nt">--feed</span> 42                  <span class="c"># view current training</span>
-newsblur train like <span class="nt">--feed</span> 42 <span class="nt">--author</span> <span class="s2">"Name"</span>  <span class="c"># train a like</span>
-newsblur train dislike <span class="nt">--feed</span> 42 <span class="nt">--tag</span> sponsor <span class="c"># train a dislike</span>
-</code></pre></div></div>
-
-<p><strong>Discover new feeds:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur discover search <span class="s2">"machine learning"</span>    <span class="c"># search by topic</span>
-newsblur discover similar <span class="nt">--feed</span> 42            <span class="c"># find similar feeds</span>
-newsblur discover trending                     <span class="c"># trending feeds</span>
-</code></pre></div></div>
-
-<p>Every command supports <code class="language-plaintext highlighter-rouge">--json</code> for structured output you can pipe to jq or use in scripts, and <code class="language-plaintext highlighter-rouge">--raw</code> for unformatted text. There’s also a global <code class="language-plaintext highlighter-rouge">--server</code> flag for self-hosted NewsBlur instances:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur <span class="nt">--server</span> https://my-newsblur.example.com auth login
-newsblur briefing <span class="nt">--json</span> | jq <span class="s1">'.items[0].section_summaries'</span>
-</code></pre></div></div>
-
-<p><img src="/assets/mcp-cli.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="ai-skill">AI skill</h3>
-
-<p>The CLI is great on its own, but it’s even better when your AI agent knows every command. The NewsBlur CLI skill teaches your agent the full command reference: every subcommand, every flag, every output format. Install it with one command and your agent can read feeds, search stories, train classifiers, and manage subscriptions on your behalf.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx skills add samuelclay/newsblur-cli-skill
-</code></pre></div></div>
-
-<p>The <code class="language-plaintext highlighter-rouge">npx skills add</code> command works with any tool that supports the Skills standard: Claude Code, Cursor, Windsurf, and dozens more.</p>
-
-<p><img src="/assets/mcp-skill-top.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;" />
-<img src="/assets/mcp-skill-output.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto 24px;display: block;" /></p>
-
-<p>The skill has a major advantage over the MCP server for agents that support it: context efficiency. The MCP server returns raw JSON that lands in your agent’s context window. Ask for your saved ESP32 stories and you’ll burn through nearly 40,000 tokens on a single response. The skill runs the CLI instead, which returns clean, formatted text. Same query, same results, about a third of the tokens. In testing, the MCP server used 39,553 tokens for a saved stories query. The same query through the skill used 11,735.</p>
-
-<p>If your tool supports skills, use the skill. If it only supports MCP, use the MCP server. If you just want to script your NewsBlur from the terminal, use the CLI directly.</p>
-
-<h3 id="mcp-server">MCP server</h3>
-
-<p>MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible agent can read your feeds, manage your stories, train your classifiers, and organize your subscriptions.</p>
-
-<p><img src="/assets/mcp-stories-query.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;" />
-<img src="/assets/mcp-stories-output.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto 24px;display: block;" /></p>
-
-<p>The server exposes 22 tools that cover everything you do in NewsBlur:</p>
-
-<p><strong>Reading</strong> — List feeds and folders with unread counts. Load stories from any feed, folder, or all subscriptions at once. Filter by unread, focus, or starred. Search across your entire archive with full-text search. Pull the original article text from the source. Get your AI daily briefing. Browse stories from your rarely-publishing infrequent feeds.</p>
-
-<p><strong>Actions</strong> — Mark stories as read by hash, by feed, or by folder. Save stories with tags, notes, and highlights. Subscribe and unsubscribe. Move feeds between folders. Rename feeds and folders. Share stories to your Blurblog.</p>
-
-<p><strong>Intelligence</strong> — View your trained classifiers across all feeds. Train new likes and dislikes by author, tag, title, or text content. The full range of training levels is available, including the new super dislike that overrides all other positive scores.</p>
-
-<p><strong>Discovery</strong> — Search for new feeds by topic. Find feeds similar to ones you already follow. Browse trending feeds.</p>
-
-<p>For Claude Code:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
-</code></pre></div></div>
-
-<p>For Claude Desktop, add this to your <code class="language-plaintext highlighter-rouge">claude_desktop_config.json</code>:</p>
-
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"newsblur"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://newsblur.com/mcp/"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<p>Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/features/mcp">MCP Server feature page</a>.</p>
-
-<h3 id="readonly-mode">Readonly mode</h3>
-
-<p>Giving an AI agent access to your NewsBlur is powerful, but maybe you want to start with guardrails. The CLI has a readonly mode that blocks all write operations: no saving, no sharing, no training, no subscribing, no marking as read. Your agent can read your feeds and search your stories, but it cannot change anything.</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur auth <span class="nb">readonly</span> <span class="nt">--on</span>
-</code></pre></div></div>
-
-<p>With readonly on, any write command returns an error instead of executing. The agent sees your data but cannot touch it.</p>
-
-<p>The important part is what happens when you turn it off. Disabling readonly mode logs you out and requires you to re-authenticate in the browser:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur auth <span class="nb">readonly</span> <span class="nt">--off</span>
-<span class="c"># "You have been logged out and must re-authenticate."</span>
-newsblur auth login
-</code></pre></div></div>
-
-<p>This is deliberate. An AI agent cannot silently toggle readonly off and start making changes. Only a human sitting at a browser can re-authorize write access. If you hand the CLI to an agent and want to be sure it stays read-only, it will.</p>
-
-<h3 id="availability">Availability</h3>
-
-<p>The CLI, AI skill, and MCP server are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. See the <a href="https://newsblur.com/features/mcp">MCP Server</a> and <a href="https://newsblur.com/features/cli">CLI Tool</a> feature pages for full documentation.</p>
-
-<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping three new ways to interact with your NewsBlur: a command-line tool that puts your entire NewsBlur in your terminal, an AI skill that teaches your agent every CLI command without eating your context window, and an MCP server that connects any MCP-compatible agent directly to your account.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/mcp-cli.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/mcp-cli.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>The quote feature works anywhere text selection is available: the story detail view, highlighted text, and search results. It’s available now on the web. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[When you share a story on NewsBlur, sometimes the whole article isn’t the point. You want to call out a specific paragraph, a key finding, a sentence that made you think. Until now, you’d have to manually copy-paste text into the comment box and add your own formatting. Now you can select any text in a story, click Quote, and it drops into the share dialog as a styled blockquote, ready for you to add your own commentary underneath.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/quote-selection-popover.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/quote-selection-popover.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

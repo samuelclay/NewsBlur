@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "По умолчанию все шаблоны не учитывают регистр";
 "All stories" = "Все статьи";
 "Alphabetical" = "По алфавиту";
+"Already have feeds?" = "У вас уже есть ленты?";
 "Analyze" = "Анализировать";
 "Android" = "Android";
 "App Badge" = "Значок приложения";
@@ -161,12 +162,14 @@
 "Brave" = "Храбрый";
 "Brightness Override" = "Коррекция яркости";
 "Brightness threshold" = "Порог яркости";
+"Bring your feeds and folders from another reader." = "Перенесите ленты и папки из другого ридера.";
 "Bullets" = "Маркеры";
 "Cancel" = "Отмена";
 "Change Story List" = "Изменить список историй";
 "Choose Icon" = "Выбрать значок";
 "Choose Story List" = "Выбрать список статей";
 "Choose a Topic" = "Выберите тему";
+"Choose feeds for your folder" = "Выберите ленты для папки";
 "Choose how far back to mark read" = "Выберите, за какой период помечать записи как прочитанные";
 "Choose how often and when your briefing is generated" = "Выберите, как часто и когда формировать сводку";
 "Choose one or more words from the title:" = "Выберите одно или несколько слов из заголовка:";
@@ -190,7 +193,9 @@
 "Configure" = "Настроить";
 "Confirm mark read" = "Подтверждать отметку о прочтении";
 "Connect AI agents with MCP server and CLI" = "Подключайте ИИ-агентов через MCP-сервер и CLI";
+"Connect an existing account" = "Подключить существующий аккаунт";
 "Connecting" = "Подключение";
+"Continue" = "Продолжить";
 "Control how much is included and how it is written" = "Настройте объём включаемого материала и стиль его изложения";
 "Copied" = "Скопировано";
 "Copyright" = "Авторские права";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "Не удалось загрузить изображение полностью. Попробуйте открыть его в браузере.";
 "Counting is difficult..." = "Считать непросто...";
 "Create a feed from any web page" = "Создать ленту из любой веб-страницы";
+"Create a new account instead" = "Вместо этого создать новый аккаунт";
 "Custom Domain" = "Собственный домен";
 "Custom RSS feeds for saved stories" = "Пользовательские RSS-ленты для сохранённых публикаций";
 "Custom Search Query" = "Пользовательский поисковый запрос";
@@ -216,9 +222,11 @@
 "Delete Account" = "Удалить аккаунт";
 "Delete Folder…" = "Удалить папку…";
 "Delete Site…" = "Удалить сайт…";
+"Delete account" = "Удалить аккаунт";
 "Delete offline stories" = "Удалить статьи, доступные офлайн";
 "Delete saved search" = "Удалить сохранённый поиск";
 "Deleting saved search..." = "Удаление сохранённого поиска...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "При удалении аккаунта навсегда будут удалены ваши ленты, сохранённые статьи и данные аккаунта. Это действие нельзя отменить.";
 "Deleting..." = "Удаление...";
 "Discover" = "Обзор";
 "Discover more to read" = "Найдите, что ещё почитать";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Введите собственный поисковый запрос...";
 "Enter a web page URL..." = "Введите URL веб-страницы...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Укажите URL любой веб-страницы, и NewsBlur с помощью ИИ проанализирует её структуру, найдёт статьи и создаст персональную RSS-ленту, на которую можно подписаться.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Введите существующие имя пользователя или адрес электронной почты NewsBlur и пароль NewsBlur.";
 "Error" = "Ошибка";
 "Evening" = "Вечер";
 "Every story from every site is archived and searchable forever" = "Все статьи со всех сайтов архивируются и доступны для поиска навсегда";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Разумеется, всё, что входит в премиум-подписку";
 "Exact phrase" = "Точная фраза";
 "Experimental" = "Экспериментальная функция";
+"Explore interests" = "Интересы";
 "Export Preferences" = "Экспорт настроек";
 "Export trained stories from folders as RSS feeds" = "Экспортируйте обученные статьи из папок в виде RSS-лент";
 "Extra Large" = "Очень крупный";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Найти на сайтах";
 "Find in feed" = "Найти в ленте";
 "Find in sites" = "Поиск по сайтам";
+"Finding feeds for you to explore." = "Ищем ленты, которые могут вас заинтересовать.";
 "Finding related sites..." = "Поиск похожих сайтов...";
 "Finding story..." = "Поиск записи...";
 "Firefox" = "Firefox";
 "Focus" = "Фокус";
 "Focus Stories" = "Избранные статьи";
 "Focus only" = "Только фокус";
+"Folder name" = "Название папки";
 "Folders" = "Папки";
 "Follow" = "Подписаться";
 "Follow %@" = "Подписаться на %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "Предпросмотр изображения";
 "Image actions" = "Действия с изображениями";
 "Import & Export" = "Импорт и экспорт";
+"Import OPML" = "Импортировать OPML";
 "Import Preferences" = "Импортировать настройки";
+"Import or upload sites" = "Импортировать или загрузить сайты";
 "Imported %i site%@" = "Импортирован сайт%i%@";
 "Importing sites..." = "Импорт сайтов...";
 "In-app Safari" = "Safari внутри приложения";
@@ -355,6 +369,7 @@
 "Large" = "Крупный";
 "Large Left" = "Большой слева";
 "Large Right" = "Большой справа";
+"Last used" = "Последнее использование";
 "Lavender Iris" = "Лавандовый ирис";
 "Layout" = "Макет";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Оставьте поле пустым, чтобы использовать NewsBlur, или введите URL своего собственного сервера. Изменение вступит в силу при следующем запуске приложения.";
@@ -367,6 +382,7 @@
 "List style" = "Стиль списка";
 "Loading Google News topics..." = "Загрузка тем Google News...";
 "Loading image…" = "Загрузка изображения…";
+"Loading interests" = "Загрузка интересов";
 "Loading settings…" = "Загрузка настроек…";
 "Loading..." = "Загрузка...";
 "Loading…" = "Загрузка…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "Нет списков историй";
 "No Widget Sites" = "Нет сайтов с виджетами";
 "No briefings yet" = "Пока нет сводок";
+"No feeds to show yet. Try another interest or search all sites." = "Пока нет лент для отображения. Выберите другой интерес или выполните поиск по всем сайтам.";
+"No interests or sites found. Try another search." = "Интересы или сайты не найдены. Попробуйте другой запрос.";
 "No longer saved" = "Больше не сохранено";
 "No notifications yet." = "Уведомлений пока нет.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Нет статей для отображения. Нет статей для отображения. Нет статей для отображения. Нет статей для отображения.";
@@ -509,6 +527,7 @@
 "Page up" = "На страницу вверх";
 "Paste a story title from the page" = "Вставьте заголовок статьи со страницы";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Вставьте любой URL, и NewsBlur создаст ленту из этой страницы, даже если на ней нет RSS.";
+"Permanently delete account" = "Удалить аккаунт навсегда";
 "Pick which model writes your Daily Briefing" = "Выберите модель для создания ежедневной сводки";
 "Place the story list controls above or below the stories" = "Разместить панель управления списком статей над статьями или под ними";
 "Plum Berry" = "Плам Берри";
@@ -574,7 +593,9 @@
 "Reply to %@" = "Ответить %@";
 "Resize sidebar" = "Изменить размер боковой панели";
 "Restore" = "Восстановить";
+"Retry" = "Повторить";
 "Retry Google Reader" = "Повторить попытку подключения к Google Reader";
+"Retry icons" = "Повторить загрузку значков";
 "River of News (reading by folder)" = "Лента новостей (чтение по папкам)";
 "Rows" = "Строки";
 "Ruby Red" = "Рубиново-красный";
@@ -656,6 +677,7 @@
 "Show without icons" = "Показывать без значков";
 "Sidebar" = "Боковая панель";
 "Sign Up" = "Зарегистрироваться";
+"Sign in with Google" = "Войти через Google";
 "Single" = "Один";
 "Single Column" = "Одна колонка";
 "Site" = "Сайт";
@@ -669,12 +691,14 @@
 "Small" = "Маленький";
 "Small Left" = "Маленькая слева";
 "Small Right" = "Маленький справа";
+"Some feed icons couldn’t load." = "Не удалось загрузить некоторые значки лент.";
 "Sources" = "Источники";
 "Spacing" = "Интервалы";
 "Standard" = "Стандартный";
 "Start reading" = "Начать чтение";
 "Statistics" = "Статистика";
 "Statistics…" = "Статистика…";
+"Stay connected" = "Оставайтесь на связи";
 "Stay on the feeds list" = "Остаться в списке лент";
 "Stories" = "Публикации";
 "Stories can stay unread forever" = "Статьи могут оставаться непрочитанными сколько угодно";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Популярные сайты";
 "Try" = "Попробовать";
 "Try again" = "Попробовать ещё раз";
+"Try search again" = "Повторить поиск";
 "Trying Feed" = "Пробная лента";
 "Tuesday" = "Вторник";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Перейти на Archive";
 "Upgrade to Premium" = "Перейти на Premium";
 "Upgrade to Premium Archive" = "Перейти на Premium Archive";
+"Use another sign-in method" = "Использовать другой способ входа";
 "Use both" = "Использовать оба варианта";
 "Use system size" = "Использовать системный размер";
 "User info" = "Информация о пользователе";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Ваша премиум-подписка на архив активна";
 "Your premium pro subscription includes everything above" = "Ваша премиум-подписка Pro включает всё перечисленное выше";
 "Your premium pro subscription is active" = "Ваша премиум-подписка Pro активна";
+"Your reading list" = "Ваш список для чтения";
+"You’re all set up." = "Всё готово.";
 "all stories" = "все статьи";
 "dislike" = "не нравится";
 "iOS" = "iOS";
+"or" = "или";
 "premium subscribers" = "подписчики Premium";
 "— Top Level —" = "— Верхний уровень —";
 "‹ Feeds" = "‹ Ленты";

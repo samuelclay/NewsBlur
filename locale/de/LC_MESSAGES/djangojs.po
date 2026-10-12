@@ -280,7 +280,7 @@ msgid_plural "%(count)s stories"
 msgstr[0] "%(count)s Story"
 msgstr[1] "%(count)s Stories"
 
-#: media/js/newsblur/reader/reader_account.js:651
+#: media/js/newsblur/reader/reader_account.js:658
 #, python-format
 msgid "%(value_1)s %(value_2)s will be deleted"
 msgstr "%(value_1)s %(value_2)s werden gelöscht"
@@ -315,7 +315,7 @@ msgstr "%(value_1)s verfügbar"
 msgid "%(value_1)s bytes"
 msgstr "%(value_1)s Byte"
 
-#: media/js/newsblur/views/story_detail_view.js:763
+#: media/js/newsblur/views/story_detail_view.js:764
 #, python-format
 msgid "%(value_1)s curated %(value_2)s"
 msgstr "%(value_1)s kuratierte %(value_2)s"
@@ -402,7 +402,7 @@ msgstr "%(value_1)s Websites"
 msgid "%(value_1)s stories"
 msgstr "%(value_1)s Stories"
 
-#: media/js/newsblur/views/story_detail_view.js:727
+#: media/js/newsblur/views/story_detail_view.js:728
 #, python-format
 msgid "%(value_1)s story changes"
 msgstr "%(value_1)s Story-Änderungen"
@@ -412,7 +412,7 @@ msgstr "%(value_1)s Story-Änderungen"
 msgid "%(value_1)s to send"
 msgstr "%(value_1)s zum Senden"
 
-#: media/js/newsblur/reader/reader_account.js:545
+#: media/js/newsblur/reader/reader_account.js:552
 #, python-format
 msgid "%(value_1)s will be deleted"
 msgstr "%(value_1)s wird gelöscht"
@@ -832,11 +832,11 @@ msgstr "(GMT-10:00) Hawaii-Aleuten"
 msgid "(GMT-11:00) Midway Island, Samoa"
 msgstr "(GMT-11:00) Midwayinseln, Samoa"
 
-#: media/js/newsblur/reader/reader_account.js:971
+#: media/js/newsblur/reader/reader_account.js:1064
 msgid "(upcoming)"
 msgstr "(demnächst)"
 
-#: media/js/newsblur/views/story_detail_view.js:694
+#: media/js/newsblur/views/story_detail_view.js:695
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
@@ -980,7 +980,7 @@ msgstr "Ein Blurblog mit geteilten Stories"
 msgid "A folder of feeds read as one stream"
 msgstr "Ein Ordner mit Feeds, die gemeinsam als ein Stream gelesen werden"
 
-#: media/js/newsblur/reader/reader_account.js:195
+#: media/js/newsblur/reader/reader_account.js:202
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "Ein Geschenk von %(value_1)s wurde deinem Konto gutgeschrieben."
@@ -997,7 +997,7 @@ msgstr "Ein einziges starkes Dislike setzt alles andere außer Kraft"
 msgid "A story diff with additions and deletions"
 msgstr "Ein Story-Diff mit Ergänzungen und Löschungen"
 
-#: media/js/newsblur/views/story_detail_view.js:1313
+#: media/js/newsblur/views/story_detail_view.js:1314
 msgid "AI Filter"
 msgstr "KI-Filter"
 
@@ -1028,7 +1028,7 @@ msgstr ""
 "Auf jeden Fall. Öffne den Trainer und entferne beliebige positive oder negative Bewertungen, um ihn "
 "zurückzusetzen."
 
-#: media/js/newsblur/reader/reader_account.js:60
+#: media/js/newsblur/reader/reader_account.js:61
 msgid "Account"
 msgstr "Konto"
 
@@ -1222,7 +1222,7 @@ msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "Auch %(value_1)s vorhandenes Archiv dieser Domain löschen"
 msgstr[1] "Auch %(value_1)s vorhandene Archive dieser Domain löschen"
 
-#: media/js/newsblur/views/story_detail_view.js:637
+#: media/js/newsblur/views/story_detail_view.js:638
 #, python-format
 msgid "Also published by %(value_1)s site"
 msgid_plural "Also published by %(value_1)s sites"
@@ -1361,7 +1361,7 @@ msgstr "Stelle Fragen zu Artikeln an die KI"
 msgid "Ask AI with a choice of models"
 msgstr "KI fragen – mit verschiedenen Modellen zur Auswahl"
 
-#: media/js/newsblur/views/story_detail_view.js:2482
+#: media/js/newsblur/views/story_detail_view.js:2483
 msgid "Ask a question..."
 msgstr "Stelle eine Frage …"
 
@@ -1389,7 +1389,7 @@ msgstr "Audio"
 msgid "Author"
 msgstr "Autor"
 
-#: media/js/newsblur/reader/reader_account.js:145
+#: media/js/newsblur/reader/reader_account.js:152
 msgid "Author Regex"
 msgstr "Autor-RegEx"
 
@@ -1637,7 +1637,7 @@ msgstr "Umbenennen abbrechen"
 msgid "Cancel share"
 msgstr "Freigabe abbrechen"
 
-#: media/js/newsblur/reader/reader_account.js:821
+#: media/js/newsblur/reader/reader_account.js:914
 msgid "Cancel subscription renewal"
 msgstr "Verlängerung des Abonnements kündigen"
 
@@ -1649,7 +1649,7 @@ msgstr "Entfolgen abbrechen"
 msgid "Canceled Request"
 msgstr "Anfrage abgebrochen"
 
-#: media/js/newsblur/reader/reader_account.js:471
+#: media/js/newsblur/reader/reader_account.js:478
 msgid "Cancelling..."
 msgstr "Wird abgebrochen …"
 
@@ -1699,7 +1699,7 @@ msgstr "Abrechnungsdetails ändern"
 msgid "Change folders"
 msgstr "Ordner wechseln"
 
-#: media/js/newsblur/reader/reader_account.js:101
+#: media/js/newsblur/reader/reader_account.js:108
 msgid "Change password"
 msgstr "Passwort ändern"
 
@@ -1707,7 +1707,7 @@ msgstr "Passwort ändern"
 msgid "Change your blurblog settings above"
 msgstr "Ändere oben deine Blurblog-Einstellungen"
 
-#: media/js/newsblur/reader/reader_account.js:231
+#: media/js/newsblur/reader/reader_account.js:238
 msgid "Change your credit card"
 msgstr "Kreditkarte ändern"
 
@@ -1970,7 +1970,7 @@ msgstr ""
 "Legen Sie fest, welche Websites archiviert werden. Blockierte Websites werden nicht von der "
 "Browsererweiterung gespeichert."
 
-#: media/js/newsblur/views/story_detail_view.js:2072
+#: media/js/newsblur/views/story_detail_view.js:2073
 msgid "Copied"
 msgstr "Kopiert"
 
@@ -1994,7 +1994,7 @@ msgstr "Kopieren"
 msgid "Counting is difficult"
 msgstr "Zählen ist schwierig"
 
-#: media/js/newsblur/reader/reader_account.js:539
+#: media/js/newsblur/reader/reader_account.js:546
 msgid "Counting..."
 msgstr "Wird gezählt..."
 
@@ -2038,7 +2038,7 @@ msgstr "Cursor"
 msgid "Custom Add Site URL"
 msgstr "Benutzerdefinierte URL zum Hinzufügen einer Website"
 
-#: media/js/newsblur/reader/reader_account.js:332
+#: media/js/newsblur/reader/reader_account.js:339
 msgid "Custom CSS"
 msgstr "Benutzerdefiniertes CSS"
 
@@ -2046,7 +2046,7 @@ msgstr "Benutzerdefiniertes CSS"
 msgid "Custom CSS for your Blurblog"
 msgstr "Benutzerdefiniertes CSS für deinen Blurblog"
 
-#: media/js/newsblur/reader/reader_account.js:56
+#: media/js/newsblur/reader/reader_account.js:57
 msgid "Custom CSS/JavaScript"
 msgstr "Benutzerdefiniertes CSS/JavaScript"
 
@@ -2054,7 +2054,7 @@ msgstr "Benutzerdefiniertes CSS/JavaScript"
 msgid "Custom Date Range"
 msgstr "Benutzerdefinierter Zeitraum"
 
-#: media/js/newsblur/reader/reader_account.js:338
+#: media/js/newsblur/reader/reader_account.js:345
 msgid "Custom JavaScript"
 msgstr "Benutzerdefiniertes JavaScript"
 
@@ -2180,23 +2180,23 @@ msgstr "Freigabe löschen"
 msgid "Delete Tag"
 msgstr "Tag löschen"
 
-#: media/js/newsblur/reader/reader_account.js:169
+#: media/js/newsblur/reader/reader_account.js:176
 msgid "Delete all of my sites"
 msgstr "Alle meine Websites löschen"
 
-#: media/js/newsblur/reader/reader_account.js:178
+#: media/js/newsblur/reader/reader_account.js:185
 msgid "Delete my account"
 msgstr "Mein Konto löschen"
 
-#: media/js/newsblur/reader/reader_account.js:161
+#: media/js/newsblur/reader/reader_account.js:168
 msgid "Delete my intelligence training classifiers"
 msgstr "Meine Intelligenz-Trainingsklassifikatoren löschen"
 
-#: media/js/newsblur/reader/reader_account.js:118
+#: media/js/newsblur/reader/reader_account.js:125
 msgid "Delete my saved stories"
 msgstr "Meine gespeicherten Artikel löschen"
 
-#: media/js/newsblur/reader/reader_account.js:128
+#: media/js/newsblur/reader/reader_account.js:135
 msgid "Delete my shared stories"
 msgstr "Meine geteilten Artikel löschen"
 
@@ -2445,15 +2445,15 @@ msgstr "Profil bearbeiten"
 msgid "Email Newsletters"
 msgstr "E-Mail-Newsletter"
 
-#: media/js/newsblur/reader/reader_account.js:84
+#: media/js/newsblur/reader/reader_account.js:91
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: media/js/newsblur/reader/reader_account.js:235
+#: media/js/newsblur/reader/reader_account.js:242
 msgid "Email me 3 days before my subscription renews"
 msgstr "Mich 3 Tage vor der Verlängerung meines Abonnements per E-Mail benachrichtigen"
 
-#: media/js/newsblur/reader/reader_account.js:315
+#: media/js/newsblur/reader/reader_account.js:322
 msgid "Email me replies, re-shares, new followers, and account notices"
 msgstr "Mich über Antworten, erneute Freigaben, neue Follower und Kontohinweise per E-Mail benachrichtigen"
 
@@ -2543,23 +2543,23 @@ msgstr "Gib oben Text ein"
 msgid "Enter text to match..."
 msgstr "Text zum Abgleichen eingeben …"
 
-#: media/js/newsblur/reader/reader_account.js:164
+#: media/js/newsblur/reader/reader_account.js:171
 msgid "Erase your intelligence training classifiers"
 msgstr "Deine Trainingsklassifizierer löschen"
 
-#: media/js/newsblur/reader/reader_account.js:121
+#: media/js/newsblur/reader/reader_account.js:128
 msgid "Erase your saved stories"
 msgstr "Deine gespeicherten Stories löschen"
 
-#: media/js/newsblur/reader/reader_account.js:131
+#: media/js/newsblur/reader/reader_account.js:138
 msgid "Erase your shared stories"
 msgstr "Geteilte Artikel löschen"
 
-#: media/js/newsblur/reader/reader_account.js:172
+#: media/js/newsblur/reader/reader_account.js:179
 msgid "Erase yourself"
 msgstr "Dich selbst löschen"
 
-#: media/js/newsblur/reader/reader_account.js:181
+#: media/js/newsblur/reader/reader_account.js:188
 msgid "Erase yourself permanently"
 msgstr "Dein Konto dauerhaft löschen"
 
@@ -2621,7 +2621,7 @@ msgstr "Alles, was NewsBlur kann, und wie du es ausprobieren kannst"
 msgid "Everything by This Publisher"
 msgstr "Alles von diesem Herausgeber"
 
-#: media/js/newsblur/reader/reader_account.js:497
+#: media/js/newsblur/reader/reader_account.js:504
 msgid "Everything has been deleted."
 msgstr "Alles wurde gelöscht."
 
@@ -3050,7 +3050,7 @@ msgstr "Häufigkeit"
 msgid "Frequently Asked Questions"
 msgstr "Häufig gestellte Fragen"
 
-#: media/js/newsblur/reader/reader_account.js:173
+#: media/js/newsblur/reader/reader_account.js:180
 msgid "Friendly note: You will be emailed a backup of your sites"
 msgstr "Kurzer Hinweis: Du erhältst eine Sicherungskopie deiner Websites per E-Mail."
 
@@ -3519,7 +3519,7 @@ msgstr "Training der intelligenten Funktionen"
 msgid "Interactions"
 msgstr "Interaktionen"
 
-#: media/js/newsblur/reader/reader_account.js:986
+#: media/js/newsblur/reader/reader_account.js:1079
 msgid "Invoice"
 msgstr "Rechnung"
 
@@ -3800,7 +3800,7 @@ msgstr "Training verwalten"
 msgid "Manage billing and limits"
 msgstr "Abrechnung und Limits verwalten"
 
-#: media/js/newsblur/reader/reader_account.js:269
+#: media/js/newsblur/reader/reader_account.js:276
 msgid "Manage billing on Stripe"
 msgstr "Abrechnung bei Stripe verwalten"
 
@@ -3985,7 +3985,7 @@ msgstr "Mikrofon blockiert – klicke auf das Schlosssymbol in der Adressleiste 
 msgid "Misc"
 msgstr "Sonstiges"
 
-#: media/js/newsblur/reader/reader_account.js:273
+#: media/js/newsblur/reader/reader_account.js:280
 msgid "Monthly spending limit"
 msgstr "Monatliches Ausgabenlimit"
 
@@ -4104,7 +4104,7 @@ msgstr "Bildklassifikator für natürliche Sprache"
 msgid "Natural Language Text Classifier"
 msgstr "Klassifikator für natürliche Sprache"
 
-#: media/js/newsblur/reader/reader_account.js:292
+#: media/js/newsblur/reader/reader_account.js:299
 msgid "Natural language classifier billing"
 msgstr "Abrechnung für den Klassifikator für natürliche Sprache"
 
@@ -4112,7 +4112,7 @@ msgstr "Abrechnung für den Klassifikator für natürliche Sprache"
 msgid "Natural language classifiers are paused until next billing cycle. "
 msgstr "Klassifizierer in natürlicher Sprache sind bis zum nächsten Abrechnungszeitraum pausiert. "
 
-#: media/js/newsblur/reader/reader_account.js:264
+#: media/js/newsblur/reader/reader_account.js:271
 msgid "Natural language classifiers are using your instance's API keys."
 msgstr "Klassifikatoren für natürliche Sprache verwenden die API-Schlüssel deiner Instanz."
 
@@ -4144,7 +4144,7 @@ msgstr "Verschachtelt"
 msgid "Never"
 msgstr "Nie"
 
-#: media/js/newsblur/reader/reader_account.js:321
+#: media/js/newsblur/reader/reader_account.js:328
 msgid "Never ever send me an email"
 msgstr "Schickt mir niemals eine E-Mail"
 
@@ -4152,7 +4152,7 @@ msgstr "Schickt mir niemals eine E-Mail"
 msgid "Never expire"
 msgstr "Läuft nie ab"
 
-#: media/js/newsblur/reader/reader_account.js:815
+#: media/js/newsblur/reader/reader_account.js:908
 msgid "Never gonna expire. Congrats!"
 msgstr "Läuft nie ab. Glückwunsch!"
 
@@ -4180,7 +4180,7 @@ msgstr "Neuer Ordner"
 msgid "New folder name..."
 msgstr "Neuer Ordnername..."
 
-#: media/js/newsblur/reader/reader_account.js:96
+#: media/js/newsblur/reader/reader_account.js:103
 msgid "New password"
 msgstr "Neues Passwort"
 
@@ -4316,7 +4316,7 @@ msgstr "Kein Bild"
 msgid "No items added yet."
 msgstr "Noch keine Elemente hinzugefügt."
 
-#: media/js/newsblur/reader/reader_account.js:279
+#: media/js/newsblur/reader/reader_account.js:286
 msgid "No limit"
 msgstr "Unbegrenzt"
 
@@ -4385,7 +4385,7 @@ msgstr "Keine Websites verfügbar"
 msgid "No stories"
 msgstr "Keine Artikel"
 
-#: media/js/newsblur/reader/reader_account.js:543
+#: media/js/newsblur/reader/reader_account.js:550
 msgid "No stories to delete"
 msgstr "Keine Artikel zum Löschen"
 
@@ -4393,11 +4393,11 @@ msgstr "Keine Artikel zum Löschen"
 msgid "No stories to read"
 msgstr "Keine Artikel zum Lesen"
 
-#: media/js/newsblur/reader/reader_account.js:962
+#: media/js/newsblur/reader/reader_account.js:1055
 msgid "No usage billing invoices yet."
 msgstr "Noch keine Nutzungsabrechnungen vorhanden."
 
-#: media/js/newsblur/reader/reader_account.js:896
+#: media/js/newsblur/reader/reader_account.js:989
 msgid "No usage billing set up."
 msgstr "Keine nutzungsabhängige Abrechnung eingerichtet."
 
@@ -4509,11 +4509,11 @@ msgstr "Objekte"
 msgid "Off"
 msgstr "Aus"
 
-#: media/js/newsblur/reader/reader_account.js:92
+#: media/js/newsblur/reader/reader_account.js:99
 msgid "Old password"
 msgstr "Altes Passwort"
 
-#: media/js/newsblur/reader/reader_account.js:398
+#: media/js/newsblur/reader/reader_account.js:405
 msgid "Older than: "
 msgstr "Älter als: "
 
@@ -4719,7 +4719,7 @@ msgstr "Option 3:"
 msgid "Option 4:"
 msgstr "Option 4:"
 
-#: media/js/newsblur/reader/reader_account.js:287
+#: media/js/newsblur/reader/reader_account.js:294
 msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
 msgstr ""
 "Optional. Klassifikatoren werden pausiert, wenn das Limit erreicht ist, und im nächsten Abrechnungszeitraum"
@@ -4795,7 +4795,7 @@ msgstr "URL einer beliebigen Website einfügen..."
 msgid "Pattern: %(value_1)s"
 msgstr "Muster: %(value_1)s"
 
-#: media/js/newsblur/reader/reader_account.js:249
+#: media/js/newsblur/reader/reader_account.js:256
 msgid "Payment history"
 msgstr "Zahlungsverlauf"
 
@@ -4887,19 +4887,19 @@ msgstr "Portugiesisch"
 msgid "Position & Greedy"
 msgstr "Position & Gierig"
 
-#: media/js/newsblur/reader/reader_account.js:494
+#: media/js/newsblur/reader/reader_account.js:501
 msgid "Positive you want to delete everything?"
 msgstr "Bist du sicher, dass du alles löschen möchtest?"
 
-#: media/js/newsblur/reader/reader_account.js:702
+#: media/js/newsblur/reader/reader_account.js:709
 msgid "Positive you want to delete your intelligence training classifiers?"
 msgstr "Bist du sicher, dass du deine Intelligence-Trainingsklassifizierungen löschen möchtest?"
 
-#: media/js/newsblur/reader/reader_account.js:558
+#: media/js/newsblur/reader/reader_account.js:565
 msgid "Positive you want to delete your saved stories?"
 msgstr "Möchtest du deine gespeicherten Artikel wirklich löschen?"
 
-#: media/js/newsblur/reader/reader_account.js:583
+#: media/js/newsblur/reader/reader_account.js:590
 msgid "Positive you want to delete your shared stories?"
 msgstr "Möchtest du deine geteilten Artikel wirklich löschen?"
 
@@ -4925,7 +4925,7 @@ msgstr "Einstellungen"
 msgid "Premium"
 msgstr "Premium"
 
-#: media/js/newsblur/views/story_detail_view.js:698
+#: media/js/newsblur/views/story_detail_view.js:699
 msgid "Premium Archive"
 msgstr "Premium-Archiv"
 
@@ -4937,7 +4937,7 @@ msgstr "Premium Pro"
 msgid "Premium Subscription"
 msgstr "Premium-Abonnement"
 
-#: media/js/newsblur/reader/reader_account.js:239
+#: media/js/newsblur/reader/reader_account.js:246
 msgid "Premium details"
 msgstr "Premium-Details"
 
@@ -4945,7 +4945,7 @@ msgstr "Premium-Details"
 msgid "Premium fonts require a "
 msgstr "Premium-Schriftarten erfordern ein "
 
-#: media/js/newsblur/reader/reader_account.js:255
+#: media/js/newsblur/reader/reader_account.js:262
 msgid "Premium renewal"
 msgstr "Premium-Verlängerung"
 
@@ -4953,7 +4953,7 @@ msgstr "Premium-Verlängerung"
 msgid "Premium renewal: "
 msgstr "Premium-Verlängerung: "
 
-#: media/js/newsblur/reader/reader_account.js:224
+#: media/js/newsblur/reader/reader_account.js:231
 msgid "Premium status"
 msgstr "Premium-Status"
 
@@ -5069,7 +5069,7 @@ msgstr "Fragen"
 msgid "Quick search for a site"
 msgstr "Website schnell suchen"
 
-#: media/js/newsblur/views/story_detail_view.js:2503
+#: media/js/newsblur/views/story_detail_view.js:2504
 msgid "Quota exceeded"
 msgstr "Kontingent überschritten"
 
@@ -5193,11 +5193,11 @@ msgstr "Diese Website empfehlen"
 msgid "Recommended"
 msgstr "Empfohlen"
 
-#: media/js/newsblur/views/story_detail_view.js:2495
+#: media/js/newsblur/views/story_detail_view.js:2496
 msgid "Record voice question"
 msgstr "Sprachfrage aufnehmen"
 
-#: media/js/newsblur/views/story_detail_view.js:2467
+#: media/js/newsblur/views/story_detail_view.js:2468
 msgid "Recording..."
 msgstr "Aufnahme läuft..."
 
@@ -5335,7 +5335,7 @@ msgstr "Wird zurückgesetzt…"
 msgid "Restart your %(value_1)s subscription"
 msgstr "Erneuere dein %(value_1)s-Abonnement"
 
-#: media/js/newsblur/reader/reader_account.js:823
+#: media/js/newsblur/reader/reader_account.js:916
 msgid "Restart your subscription"
 msgstr "Abonnement erneuern"
 
@@ -5399,7 +5399,7 @@ msgstr "S"
 msgid "Safari"
 msgstr "Safari"
 
-#: media/js/newsblur/views/story_detail_view.js:1085
+#: media/js/newsblur/views/story_detail_view.js:1086
 msgid "Save"
 msgstr "Speichern"
 
@@ -5473,7 +5473,7 @@ msgstr "Stories mit durchsuchbaren Tags speichern"
 msgid "Save/Unsave story"
 msgstr "Story speichern/nicht mehr speichern"
 
-#: media/js/newsblur/views/story_detail_view.js:1079
+#: media/js/newsblur/views/story_detail_view.js:1080
 msgid "Saved"
 msgstr "Gespeichert"
 
@@ -5670,7 +5670,7 @@ msgstr "Wähle einen Artikel zum Lesen aus"
 msgid "Select any story and click \"Ask AI\""
 msgstr "Wähle eine beliebige Story aus und klicke auf „KI fragen“"
 
-#: media/js/newsblur/reader/reader_account.js:648
+#: media/js/newsblur/reader/reader_account.js:655
 msgid "Select classifiers to remove"
 msgstr "Klassifizierer zum Entfernen auswählen"
 
@@ -5718,7 +5718,7 @@ msgstr "Newsletter einrichten"
 msgid "Set up notifications"
 msgstr "Benachrichtigungen einrichten"
 
-#: media/js/newsblur/reader/reader_account.js:265
+#: media/js/newsblur/reader/reader_account.js:272
 msgid "Set up usage-based billing to use natural language content and image filters."
 msgstr ""
 "Richte eine nutzungsbasierte Abrechnung ein, um Filter für Inhalte und Bilder in natürlicher Sprache zu "
@@ -6052,7 +6052,7 @@ msgstr "Spanisch"
 msgid "Special Folders"
 msgstr "Spezialordner"
 
-#: media/js/newsblur/reader/reader_account.js:928
+#: media/js/newsblur/reader/reader_account.js:1021
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "Ausgabenlimit erreicht. Klassifizierer bis zum nächsten Abrechnungszeitraum pausiert."
 
@@ -6124,7 +6124,7 @@ msgstr "Schritt "
 msgid "Stop any time you like."
 msgstr "Jederzeit kündbar."
 
-#: media/js/newsblur/views/story_detail_view.js:2468
+#: media/js/newsblur/views/story_detail_view.js:2469
 msgid "Stop recording"
 msgstr "Aufnahme beenden"
 
@@ -6469,7 +6469,7 @@ msgstr "Text"
 msgid "Text Phrases"
 msgstr "Textpassagen"
 
-#: media/js/newsblur/reader/reader_account.js:148
+#: media/js/newsblur/reader/reader_account.js:155
 msgid "Text Regex"
 msgstr "Text-Regulärer Ausdruck"
 
@@ -6481,7 +6481,7 @@ msgstr "Textansicht"
 msgid "Text view extracts the story"
 msgstr "Die Textansicht extrahiert den Artikel"
 
-#: media/js/newsblur/reader/reader_account.js:213
+#: media/js/newsblur/reader/reader_account.js:220
 msgid "Thank you! You have a "
 msgstr "Vielen Dank! Du hast ein "
 
@@ -6534,7 +6534,7 @@ msgstr "Die vollständige NewsBlur-API ist offen und für individuelle Integrati
 msgid "The full shortcut list"
 msgstr "Die vollständige Tastenkürzel-Liste"
 
-#: media/js/newsblur/reader/reader_account.js:196
+#: media/js/newsblur/reader/reader_account.js:203
 msgid "The gift has been applied to your account."
 msgstr "Das Geschenk wurde deinem Konto gutgeschrieben."
 
@@ -6588,19 +6588,19 @@ msgstr ""
 "Beim Backend ist ein Fehler beim Senden deiner E-Mail aufgetreten. Entschuldigung! Der Fehler wurde "
 "vermerkt und wird bald behoben. Du solltest die E-Mail jetzt wahrscheinlich manuell senden."
 
-#: media/js/newsblur/reader/reader_account.js:717
+#: media/js/newsblur/reader/reader_account.js:724
 msgid "There was a problem deleting your classifiers."
 msgstr "Beim Löschen deiner Klassifizierer ist ein Problem aufgetreten."
 
-#: media/js/newsblur/reader/reader_account.js:572
+#: media/js/newsblur/reader/reader_account.js:579
 msgid "There was a problem deleting your saved stories."
 msgstr "Beim Löschen deiner gespeicherten Artikel ist ein Problem aufgetreten."
 
-#: media/js/newsblur/reader/reader_account.js:595
+#: media/js/newsblur/reader/reader_account.js:602
 msgid "There was a problem deleting your shared stories."
 msgstr "Beim Löschen deiner geteilten Artikel ist ein Problem aufgetreten."
 
-#: media/js/newsblur/reader/reader_account.js:499
+#: media/js/newsblur/reader/reader_account.js:506
 msgid "There was a problem deleting your sites."
 msgstr "Beim Löschen deiner Websites ist ein Problem aufgetreten."
 
@@ -6628,7 +6628,7 @@ msgstr "Beim Abmelden ist ein Fehler aufgetreten. Mist."
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Es gibt keine Begrenzung. Speichere so viele Stories, wie du möchtest – sie bleiben für immer erhalten."
 
-#: media/js/newsblur/views/story_detail_view.js:643
+#: media/js/newsblur/views/story_detail_view.js:644
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "Diese Cluster wurden gefunden, weil andere Abonnenten diese Feeds teilen."
 
@@ -6770,7 +6770,7 @@ msgstr "Titel"
 msgid "Title Phrases"
 msgstr "Titelformulierungen"
 
-#: media/js/newsblur/reader/reader_account.js:143
+#: media/js/newsblur/reader/reader_account.js:150
 msgid "Title Regex"
 msgstr "Regex für Titel"
 
@@ -6842,7 +6842,7 @@ msgstr "Top-Domains"
 msgid "Track Changes"
 msgstr "Änderungen verfolgen"
 
-#: media/js/newsblur/views/story_detail_view.js:1327
+#: media/js/newsblur/views/story_detail_view.js:1328
 msgid "Train"
 msgstr "Trainieren"
 
@@ -6908,11 +6908,11 @@ msgstr "Trainiere, tagge, durchsuche und organisiere Newsletter wie jeden andere
 msgid "Training:"
 msgstr "Training:"
 
-#: media/js/newsblur/views/story_detail_view.js:2474
+#: media/js/newsblur/views/story_detail_view.js:2475
 msgid "Transcribing audio"
 msgstr "Audio wird transkribiert"
 
-#: media/js/newsblur/views/story_detail_view.js:2473
+#: media/js/newsblur/views/story_detail_view.js:2474
 msgid "Transcribing..."
 msgstr "Wird transkribiert …"
 
@@ -6985,7 +6985,7 @@ msgstr "Stichwörter, Wortgruppen oder Kombinationen eingeben"
 msgid "URL"
 msgstr "URL"
 
-#: media/js/newsblur/reader/reader_account.js:151
+#: media/js/newsblur/reader/reader_account.js:158
 msgid "URL Regex"
 msgstr "URL-RegEx"
 
@@ -7049,7 +7049,7 @@ msgstr "Ungelesene Stories laufen nie ab – lies sie in deinem eigenen Tempo."
 msgid "Unread+Focus:"
 msgstr "Ungelesen+Fokus:"
 
-#: media/js/newsblur/reader/reader_account.js:936
+#: media/js/newsblur/reader/reader_account.js:1029
 msgid "Upcoming charge: "
 msgstr "Anstehende Abbuchung: "
 
@@ -7107,15 +7107,15 @@ msgstr "Auf Premium-Archiv upgraden"
 msgid "Upgrade to Premium Archive for classifier notifications"
 msgstr "Upgrade auf Premium-Archiv für Benachrichtigungen zu Klassifizierungen"
 
-#: media/js/newsblur/views/story_detail_view.js:646
+#: media/js/newsblur/views/story_detail_view.js:647
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr "Wechsle zu Premium Archive, um alle deine Feeds auf Duplikate zu prüfen und keine Gruppe zu verpassen."
 
-#: media/js/newsblur/reader/reader_account.js:220
+#: media/js/newsblur/reader/reader_account.js:227
 msgid "Upgrade to a Premium Archive account"
 msgstr "Auf ein Premium-Archive-Konto upgraden"
 
-#: media/js/newsblur/reader/reader_account.js:210
+#: media/js/newsblur/reader/reader_account.js:217
 msgid "Upgrade to a Premium account"
 msgstr "Auf ein Premium-Konto upgraden"
 
@@ -7147,11 +7147,11 @@ msgstr "Upload fehlgeschlagen. Bitte überprüfe deine Verbindung und versuche e
 msgid "Uploaded!"
 msgstr "Hochgeladen!"
 
-#: media/js/newsblur/reader/reader_account.js:302
+#: media/js/newsblur/reader/reader_account.js:309
 msgid "Usage billing history"
 msgstr "Abrechnungshistorie"
 
-#: media/js/newsblur/reader/reader_account.js:262
+#: media/js/newsblur/reader/reader_account.js:269
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "Für Klassifikatoren natürlicher Sprache ist die nutzungsabhängige Abrechnung aktiviert."
 
@@ -7244,7 +7244,7 @@ msgstr "Einstellungen anzeigen"
 msgid "Visual"
 msgstr "Visuell"
 
-#: media/js/newsblur/reader/reader_account.js:182
+#: media/js/newsblur/reader/reader_account.js:189
 msgid "Warning: This is actually permanent"
 msgstr "Warnung: Das ist tatsächlich dauerhaft"
 
@@ -7526,7 +7526,7 @@ msgstr "Du testest diesen Tarif"
 msgid "You are unsubscribed from all NewsBlur emails"
 msgstr "Du hast dich von allen NewsBlur-E-Mails abgemeldet"
 
-#: media/js/newsblur/reader/reader_account.js:308
+#: media/js/newsblur/reader/reader_account.js:315
 msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
 msgstr ""
 "Du hast dich von allen NewsBlur-E-Mails abgemeldet. Wähle unten aus, welche E-Mails du erhalten möchtest, "
@@ -7552,7 +7552,7 @@ msgstr "Du kannst dies für jede Website einzeln überschreiben."
 msgid "You can train per-feed for free, or per-folder and globally on Premium Archive."
 msgstr "Du kannst kostenlos pro Feed trainieren oder mit Premium Archive pro Ordner und global."
 
-#: media/js/newsblur/reader/reader_account.js:204
+#: media/js/newsblur/reader/reader_account.js:211
 msgid "You have a "
 msgstr "Du hast ein "
 
@@ -7593,7 +7593,7 @@ msgstr "Du siehst eine Reihe von Tags und Autoren."
 msgid "You're ready to go! Hope you enjoy NewsBlur."
 msgstr "Du kannst loslegen! Viel Spaß mit NewsBlur."
 
-#: media/js/newsblur/reader/reader_account.js:191
+#: media/js/newsblur/reader/reader_account.js:198
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "Du hast %(value_1)s von %(value_2)s geschenkt bekommen!"
@@ -7669,11 +7669,11 @@ msgstr "Dein Posteingang bleibt übersichtlich"
 msgid "Your name"
 msgstr "Dein Name"
 
-#: media/js/newsblur/reader/reader_account.js:829
+#: media/js/newsblur/reader/reader_account.js:922
 msgid "Your premium account is paid until:"
 msgstr "Ihr Premium-Konto ist bezahlt bis:"
 
-#: media/js/newsblur/reader/reader_account.js:830
+#: media/js/newsblur/reader/reader_account.js:923
 msgid "Your premium account will downgrade on:"
 msgstr "Ihr Premium-Konto wird am folgenden Datum herabgestuft:"
 
@@ -7847,7 +7847,7 @@ msgstr "Esc"
 msgid "f"
 msgstr "f"
 
-#: media/js/newsblur/reader/reader_account.js:205
+#: media/js/newsblur/reader/reader_account.js:212
 msgid "free account"
 msgstr "kostenloses Konto"
 
@@ -7935,7 +7935,7 @@ msgstr "Premium"
 msgid "premium account"
 msgstr "Premium-Konto"
 
-#: media/js/newsblur/reader/reader_account.js:215
+#: media/js/newsblur/reader/reader_account.js:222
 msgid "premium archive account"
 msgstr "Premium-Archivkonto"
 
@@ -7947,7 +7947,7 @@ msgstr "Premium-Archivfunktion"
 msgid "premium feature"
 msgstr "Premium-Funktion"
 
-#: media/js/newsblur/reader/reader_account.js:214
+#: media/js/newsblur/reader/reader_account.js:221
 msgid "premium pro account"
 msgstr "Premium-Pro-Konto"
 
@@ -8003,7 +8003,7 @@ msgstr "globale Einstellung"
 msgid "space"
 msgstr "Leertaste"
 
-#: media/js/newsblur/reader/reader_account.js:993
+#: media/js/newsblur/reader/reader_account.js:1086
 msgid "stripe"
 msgstr "Stripe"
 

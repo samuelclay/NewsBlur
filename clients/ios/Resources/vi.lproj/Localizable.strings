@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "Theo mặc định, mọi mẫu đều không phân biệt chữ hoa chữ thường";
 "All stories" = "Tất cả bài viết";
 "Alphabetical" = "Theo thứ tự bảng chữ cái";
+"Already have feeds?" = "Bạn đã có nguồn tin?";
 "Analyze" = "Phân tích";
 "Android" = "Android";
 "App Badge" = "Huy hiệu ứng dụng";
@@ -161,12 +162,14 @@
 "Brave" = "Dũng cảm";
 "Brightness Override" = "Điều chỉnh độ sáng";
 "Brightness threshold" = "Ngưỡng độ sáng";
+"Bring your feeds and folders from another reader." = "Nhập nguồn cấp dữ liệu và thư mục từ một trình đọc khác.";
 "Bullets" = "Dấu đầu dòng";
 "Cancel" = "Hủy";
 "Change Story List" = "Thay đổi danh sách bài viết";
 "Choose Icon" = "Chọn biểu tượng";
 "Choose Story List" = "Chọn danh sách tin";
 "Choose a Topic" = "Chọn chủ đề";
+"Choose feeds for your folder" = "Chọn các nguồn tin cho thư mục";
 "Choose how far back to mark read" = "Chọn khoảng thời gian cần đánh dấu là đã đọc";
 "Choose how often and when your briefing is generated" = "Chọn tần suất và thời điểm tạo bản tin";
 "Choose one or more words from the title:" = "Chọn một hoặc nhiều từ trong tiêu đề:";
@@ -190,7 +193,9 @@
 "Configure" = "Cấu hình";
 "Confirm mark read" = "Xác nhận đánh dấu đã đọc";
 "Connect AI agents with MCP server and CLI" = "Kết nối tác nhân AI với máy chủ MCP và CLI";
+"Connect an existing account" = "Kết nối tài khoản hiện có";
 "Connecting" = "Đang kết nối";
+"Continue" = "Tiếp tục";
 "Control how much is included and how it is written" = "Kiểm soát nội dung được đưa vào và cách trình bày";
 "Copied" = "Đã sao chép";
 "Copyright" = "Bản quyền";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "Không thể tải toàn bộ hình ảnh. Bạn có thể thử mở hình ảnh trong trình duyệt.";
 "Counting is difficult..." = "Đếm cũng khó lắm...";
 "Create a feed from any web page" = "Tạo nguồn cấp dữ liệu từ bất kỳ trang web nào";
+"Create a new account instead" = "Thay vào đó, tạo tài khoản mới";
 "Custom Domain" = "Tên miền tùy chỉnh";
 "Custom RSS feeds for saved stories" = "Nguồn cấp RSS tùy chỉnh cho bài viết đã lưu";
 "Custom Search Query" = "Truy vấn tìm kiếm tùy chỉnh";
@@ -216,9 +222,11 @@
 "Delete Account" = "Xóa tài khoản";
 "Delete Folder…" = "Xóa thư mục…";
 "Delete Site…" = "Xóa trang web…";
+"Delete account" = "Xóa tài khoản";
 "Delete offline stories" = "Xóa tin ngoại tuyến";
 "Delete saved search" = "Xóa tìm kiếm đã lưu";
 "Deleting saved search..." = "Đang xóa tìm kiếm đã lưu...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Xóa tài khoản vĩnh viễn sẽ xóa các nguồn tin, tin đã lưu và dữ liệu tài khoản của bạn. Bạn không thể hoàn tác thao tác này.";
 "Deleting..." = "Đang xóa...";
 "Discover" = "Khám phá";
 "Discover more to read" = "Khám phá thêm nội dung để đọc";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Nhập truy vấn tìm kiếm tùy chỉnh...";
 "Enter a web page URL..." = "Nhập URL trang web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Nhập URL của bất kỳ trang web nào, NewsBlur sẽ dùng AI phân tích cấu trúc trang, tìm bài viết và tạo một nguồn cấp RSS tùy chỉnh để bạn đăng ký.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Nhập NewsBlur tên người dùng hoặc email hiện có và NewsBlur mật khẩu của bạn.";
 "Error" = "Lỗi";
 "Evening" = "Buổi tối";
 "Every story from every site is archived and searchable forever" = "Mọi bài viết từ mọi trang web đều được lưu trữ và có thể tìm kiếm mãi mãi";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Tất nhiên là có tất cả tính năng trong gói đăng ký Premium";
 "Exact phrase" = "Cụm từ chính xác";
 "Experimental" = "Thử nghiệm";
+"Explore interests" = "Khám phá chủ đề quan tâm";
 "Export Preferences" = "Xuất tùy chọn";
 "Export trained stories from folders as RSS feeds" = "Xuất bài viết đã huấn luyện từ các thư mục thành nguồn cấp RSS";
 "Extra Large" = "Cực lớn";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Tìm trong các trang web";
 "Find in feed" = "Tìm trong nguồn cấp";
 "Find in sites" = "Tìm trong các trang web";
+"Finding feeds for you to explore." = "Đang tìm nguồn cấp dữ liệu để bạn khám phá.";
 "Finding related sites..." = "Đang tìm các trang web liên quan...";
 "Finding story..." = "Đang tìm bài viết...";
 "Firefox" = "Firefox";
 "Focus" = "Tập trung";
 "Focus Stories" = "Tin tập trung";
 "Focus only" = "Chỉ tập trung";
+"Folder name" = "Tên thư mục";
 "Folders" = "Thư mục";
 "Follow" = "Theo dõi";
 "Follow %@" = "Theo dõi %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "Xem trước hình ảnh";
 "Image actions" = "Thao tác với hình ảnh";
 "Import & Export" = "Nhập & Xuất";
+"Import OPML" = "Nhập OPML";
 "Import Preferences" = "Nhập tùy chọn";
+"Import or upload sites" = "Nhập hoặc tải lên trang web";
 "Imported %i site%@" = "Đã nhập %i trang web%@";
 "Importing sites..." = "Đang nhập các trang...";
 "In-app Safari" = "Safari trong ứng dụng";
@@ -355,6 +369,7 @@
 "Large" = "Lớn";
 "Large Left" = "Lớn bên trái";
 "Large Right" = "Phải lớn";
+"Last used" = "Dùng gần đây nhất";
 "Lavender Iris" = "Diên vĩ oải hương";
 "Layout" = "Bố cục";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Để trống để dùng NewsBlur hoặc nhập URL của bản cài đặt tự lưu trữ. Thay đổi có hiệu lực vào lần mở ứng dụng tiếp theo.";
@@ -367,6 +382,7 @@
 "List style" = "Kiểu danh sách";
 "Loading Google News topics..." = "Đang tải các chủ đề Google News...";
 "Loading image…" = "Đang tải hình ảnh…";
+"Loading interests" = "Đang tải sở thích";
 "Loading settings…" = "Đang tải cài đặt…";
 "Loading..." = "Đang tải...";
 "Loading…" = "Đang tải…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "Không có danh sách bài viết";
 "No Widget Sites" = "Không có trang web tiện ích";
 "No briefings yet" = "Chưa có bản tin tóm tắt";
+"No feeds to show yet. Try another interest or search all sites." = "Chưa có nguồn cấp dữ liệu nào để hiển thị. Hãy thử chủ đề quan tâm khác hoặc tìm kiếm trên tất cả trang web.";
+"No interests or sites found. Try another search." = "Không tìm thấy chủ đề quan tâm hoặc trang web nào. Hãy thử tìm kiếm khác.";
 "No longer saved" = "Không còn được lưu";
 "No notifications yet." = "Chưa có thông báo nào.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Không có bài viết nào để hiển thị. Không có bài viết nào để hiển thị. Không có bài viết nào để hiển thị. Không có bài viết nào để hiển thị.";
@@ -509,6 +527,7 @@
 "Page up" = "Lên một trang";
 "Paste a story title from the page" = "Dán tiêu đề bài viết trên trang";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Dán bất kỳ URL nào, NewsBlur sẽ tạo nguồn cấp dữ liệu từ trang đó, ngay cả khi không có RSS.";
+"Permanently delete account" = "Xóa tài khoản vĩnh viễn";
 "Pick which model writes your Daily Briefing" = "Chọn mô hình viết Bản tin hằng ngày của bạn";
 "Place the story list controls above or below the stories" = "Đặt các nút điều khiển danh sách bài viết ở phía trên hoặc phía dưới các bài viết";
 "Plum Berry" = "Mận mọng";
@@ -574,7 +593,9 @@
 "Reply to %@" = "Trả lời %@";
 "Resize sidebar" = "Đổi kích thước thanh bên";
 "Restore" = "Khôi phục";
+"Retry" = "Thử lại";
 "Retry Google Reader" = "Thử lại Google Reader";
+"Retry icons" = "Thử tải lại biểu tượng";
 "River of News (reading by folder)" = "Dòng tin (đọc theo thư mục)";
 "Rows" = "Hàng";
 "Ruby Red" = "Đỏ ruby";
@@ -656,6 +677,7 @@
 "Show without icons" = "Hiển thị không có biểu tượng";
 "Sidebar" = "Thanh bên";
 "Sign Up" = "Đăng ký";
+"Sign in with Google" = "Đăng nhập bằng Google";
 "Single" = "Đơn";
 "Single Column" = "Một cột";
 "Site" = "Trang web";
@@ -669,12 +691,14 @@
 "Small" = "Nhỏ";
 "Small Left" = "Trái nhỏ";
 "Small Right" = "Nhỏ, bên phải";
+"Some feed icons couldn’t load." = "Không thể tải một số biểu tượng nguồn tin.";
 "Sources" = "Nguồn";
 "Spacing" = "Khoảng cách";
 "Standard" = "Tiêu chuẩn";
 "Start reading" = "Bắt đầu đọc";
 "Statistics" = "Thống kê";
 "Statistics…" = "Thống kê…";
+"Stay connected" = "Luôn kết nối";
 "Stay on the feeds list" = "Ở lại danh sách nguồn tin";
 "Stories" = "Bài viết";
 "Stories can stay unread forever" = "Tin có thể luôn ở trạng thái chưa đọc";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Trang web thịnh hành";
 "Try" = "Thử";
 "Try again" = "Thử lại";
+"Try search again" = "Thử tìm kiếm lại";
 "Trying Feed" = "Đang thử nguồn cấp dữ liệu";
 "Tuesday" = "Thứ Ba";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Nâng cấp lên Gói lưu trữ";
 "Upgrade to Premium" = "Nâng cấp lên Premium";
 "Upgrade to Premium Archive" = "Nâng cấp lên Premium Archive";
+"Use another sign-in method" = "Dùng phương thức đăng nhập khác";
 "Use both" = "Dùng cả hai";
 "Use system size" = "Dùng kích thước hệ thống";
 "User info" = "Thông tin người dùng";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Gói đăng ký lưu trữ cao cấp của bạn đang hoạt động";
 "Your premium pro subscription includes everything above" = "Gói đăng ký Premium Pro của bạn bao gồm tất cả những tính năng trên";
 "Your premium pro subscription is active" = "Gói đăng ký premium pro của bạn đang hoạt động";
+"Your reading list" = "Danh sách đọc của bạn";
+"You’re all set up." = "Bạn đã thiết lập xong.";
 "all stories" = "tất cả bài viết";
 "dislike" = "không thích";
 "iOS" = "iOS";
+"or" = "hoặc";
 "premium subscribers" = "người đăng ký Premium";
 "— Top Level —" = "— Cấp cao nhất —";
 "‹ Feeds" = "‹ Nguồn tin";
