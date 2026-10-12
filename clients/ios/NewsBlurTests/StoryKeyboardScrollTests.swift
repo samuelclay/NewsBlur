@@ -114,6 +114,41 @@ import UIKit
         for command in commands { XCTAssertFalse(pane.canPerformAction(try XCTUnwrap(command.action), withSender: command)) }
     }
 
+    func test_storyListNextUnreadOpensTheFirstUnreadBeforeAStoryIsOpen() throws {
+        let pane = KeyboardPaneProbe()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.storyLocationsCount = 3
+        pane.appDelegate = app
+        pane.feedVisible = true
+        pane.loadViewIfNeeded()
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = pane
+        pane.addChild(pages)
+        pane.view.addSubview(pages.view)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil; previousWindow?.makeKey() }
+        XCTAssertTrue(pane.becomeFirstResponder())
+
+        let opensFromTheList: Set<String> = ["j", "k", "n"]
+        for (input, flags) in Self.mirroredStoryShortcuts {
+            let command = try XCTUnwrap(pane.keyCommands?.first { $0.input == input && $0.modifierFlags == flags })
+            let action = try XCTUnwrap(command.action)
+            let expected = flags.isEmpty && opensFromTheList.contains(input)
+            XCTAssertEqual(pane.canPerformAction(action, withSender: command), expected, "\(input) with no story open")
+        }
+        let next = try XCTUnwrap(pane.keyCommands?.first { $0.input == "n" && $0.modifierFlags.isEmpty })
+        XCTAssertTrue(UIApplication.shared.sendAction(try XCTUnwrap(next.action), to: nil, from: next, for: nil))
+        XCTAssertEqual(pages.nextUnreadCount, 1)
+
+        app.storiesCollection.storyLocationsCount = 0
+        XCTAssertFalse(pane.canPerformAction(try XCTUnwrap(next.action), withSender: next))
+    }
+
     private static let mirroredStoryShortcuts: [(String, UIKeyModifierFlags)] = [
         ("j", []), ("k", []), ("n", []), ("u", []), ("m", []), ("o", []), ("v", []), ("t", []), ("\r", .shift),
         (" ", []), (" ", .shift), ("c", []), ("s", .shift),
