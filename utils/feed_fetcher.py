@@ -2373,7 +2373,7 @@ class FeedFetcherWorker:
             return
 
         # Back on the archive queue with the archive time limits, the same as the backfill
-        # (apps/reader/models.py fetch_archive_feeds_for_user). On the default queue it ran on
+        # (apps/reader/models.py dispatch_archive_backfill). On the default queue it ran on
         # the work servers under the 360 second global limit, which a long walk never finishes in.
         FetchArchiveFeedsChunk.apply_async(
             args=[[feed.pk]],
