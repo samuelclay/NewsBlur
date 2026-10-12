@@ -1202,6 +1202,13 @@ class UserSubscription(models.Model):
         )
 
         stagger_delay = 10  # seconds between each feed's archive fetch start
+        if len(feed_id_chunks) > 1:
+            # Big subscription lists start closer together so the last feed still starts inside
+            # the window, which stays under the broker's visibility timeout
+            # (newsblur_web/settings.py MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW).
+            stagger_delay = min(
+                stagger_delay, settings.MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW / (len(feed_id_chunks) - 1)
+            )
         search_chunks = [
             FetchArchiveFeedsChunk.s(feed_ids=feed_id_chunk, user_id=user_id)
             .set(queue="search_indexer")

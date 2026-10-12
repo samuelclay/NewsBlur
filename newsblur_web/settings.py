@@ -128,6 +128,10 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5 MB
 PROMETHEUS_EXPORT_MIGRATIONS = False
 MAX_SECONDS_COMPLETE_ARCHIVE_FETCH = 60 * 60 * 1  # 1 hour
 MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED = 60 * 15  # 15 minutes
+# newsblur_web/settings.py: The last feed of an archive backfill starts at most this long after
+# the first. It must stay under the broker visibility_timeout below, or the waiting countdown
+# tasks are handed out a second time (apps/reader/models.py fetch_archive_feeds_for_user).
+MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW = 60 * 60 * 10  # 10 hours
 MAX_EMAILS_SENT_PER_DAY_PER_USER = 20  # Most are story notifications
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut
@@ -1045,11 +1049,19 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_BEAT_SCHEDULER = "newsblur_web.celery_beat:DedupPersistentScheduler"
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
-BROKER_TRANSPORT_OPTIONS = {
+# newsblur_web/settings.py: The celery app reads settings with the CELERY_ prefix
+# (newsblur_web/celeryapp.py), so these were ignored while they were named BROKER_TRANSPORT_OPTIONS.
+# visibility_timeout is how long a task can sit unacknowledged in a worker before the Redis
+# broker gives it to another worker. Countdown tasks wait unacknowledged until they run, so it
+# has to outlast MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW plus a feed's walk. At the 1 hour
+# default every feed of a 3,910 feed archive backfill was walked once per hour it had waited.
+# Graceful worker restarts hand unacknowledged tasks back right away; only a hard crash waits it out.
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
     "interval_step": 0.2,
     "interval_max": 0.5,
+    "visibility_timeout": 60 * 60 * 12,  # 12 hours
 }
 
 SESSION_REDIS = {
