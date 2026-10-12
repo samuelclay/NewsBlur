@@ -263,8 +263,8 @@ import XCTest
         fixture.cache.markForeground()
         let held = expectation(description: "old session journal write held")
         let gate = DispatchSemaphore(value: 0)
-        fixture.cache.queue.async { held.fulfill(); _ = gate.wait(timeout: .now() + 5) }
-        await fulfillment(of: [held], timeout: 2)
+        fixture.cache.queue.async { held.fulfill(); _ = gate.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout) }
+        await fulfillment(of: [held], timeout: SimulatorTestTiming.realWorkTimeout)
         defer { gate.signal() }
         fixture.cache.record(story: ["story_hash": "cache-story", "read_status": 0], fields: ["read_status"], account: "owner", host: fixture.request.host)
         let relaunched = StoryFirstPageCache(directory: fixture.directory)
@@ -284,7 +284,7 @@ import XCTest
         fixture.cache.flush { finished.fulfill() }
         fixture.cache.record(story: ["story_hash": "cache-story", "read_status": 1], fields: ["read_status"],
                              account: "owner", host: fixture.request.host)
-        await fulfillment(of: [finished], timeout: 2)
+        await fulfillment(of: [finished], timeout: SimulatorTestTiming.realWorkTimeout)
         let relaunched = StoryFirstPageCache(directory: fixture.directory)
         let snapshot = try await requireSnapshot(relaunched, request: fixture.request)
         let story = (relaunched.response(for: snapshot, provisional: true)?["stories"] as? [[String: Any]])?.first
@@ -324,8 +324,10 @@ import XCTest
         await flush(fixture.cache)
         let held = expectation(description: "marker queue held")
         let gate = DispatchSemaphore(value: 0)
-        fixture.cache.markerQueue.async { held.fulfill(); _ = gate.wait(timeout: .now() + 2) }
-        await fulfillment(of: [held], timeout: 2)
+        // StoryFirstPageCacheTests.swift also releases the held worker if the test throws before its own signal.
+        defer { gate.signal() }
+        fixture.cache.markerQueue.async { held.fulfill(); _ = gate.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout) }
+        await fulfillment(of: [held], timeout: SimulatorTestTiming.realWorkTimeout)
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) { gate.signal() }
         let began = CACurrentMediaTime()
         fixture.cache.markForeground()
@@ -340,8 +342,9 @@ import XCTest
         _ = try await requireSnapshot(fixture.cache, request: fixture.request)
         let held = expectation(description: "snapshot queue held")
         let gate = DispatchSemaphore(value: 0)
-        fixture.cache.queue.async { held.fulfill(); _ = gate.wait(timeout: .now() + 2) }
-        await fulfillment(of: [held], timeout: 2)
+        defer { gate.signal() }
+        fixture.cache.queue.async { held.fulfill(); _ = gate.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout) }
+        await fulfillment(of: [held], timeout: SimulatorTestTiming.realWorkTimeout)
         let finished = expectation(description: "superseded background flush")
         fixture.cache.flush { finished.fulfill() }
         let began = CACurrentMediaTime()
@@ -350,7 +353,7 @@ import XCTest
         print("FIRST_PAGE_FOREGROUND_MARKER elapsed_ms=\(elapsed)")
         XCTAssertLessThan(elapsed, 100, "The small marker must not wait for the general snapshot/journal queue")
         gate.signal()
-        await fulfillment(of: [finished], timeout: 2)
+        await fulfillment(of: [finished], timeout: SimulatorTestTiming.realWorkTimeout)
         await assertMiss(StoryFirstPageCache(directory: fixture.directory), request: fixture.request)
     }
 

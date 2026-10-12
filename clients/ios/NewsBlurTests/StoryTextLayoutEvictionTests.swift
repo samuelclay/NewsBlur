@@ -51,7 +51,7 @@ import ObjectiveC.runtime
         defer { probe.restore() }
         let prefetcher = try XCTUnwrap(controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(table, prefetchRowsAt: [path])
-        wait(for: [prepared], timeout: 5)
+        wait(for: [prepared], timeout: SimulatorTestTiming.realWorkTimeout)
         queue.sync {}
 
         let started = CACurrentMediaTime()
@@ -87,7 +87,7 @@ import ObjectiveC.runtime
         }
         defer { probe.restore() }
         fixture.previewQueue.isSuspended = false
-        wait(for: [measured], timeout: 5)
+        wait(for: [measured], timeout: SimulatorTestTiming.realWorkTimeout)
         fixture.layoutQueue.sync {}
 
         XCTAssertEqual(fixture.controller.normalizationRecorder.counts.worker, 1)
@@ -109,7 +109,7 @@ import ObjectiveC.runtime
         defer { resume.signal() }
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
-        wait(for: [entered], timeout: 5)
+        wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
 
         var updated = try XCTUnwrap(fixture.controller.getStoryAtLocation(0))
         updated["story_content"] = "<p>Updated source 数学 العربية &amp; intact entities.</p>"
@@ -120,7 +120,7 @@ import ObjectiveC.runtime
         }
         defer { probe.restore() }
         resume.signal()
-        wait(for: [measured], timeout: 5)
+        wait(for: [measured], timeout: SimulatorTestTiming.realWorkTimeout)
         fixture.layoutQueue.sync {}
 
         let preview = try XCTUnwrap(fixture.previews.object(forKey: "eviction-0"))
@@ -146,7 +146,7 @@ import ObjectiveC.runtime
         defer { resume.signal() }
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(fixture.table, prefetchRowsAt: (0..<24).map { IndexPath(row: $0, section: 0) })
-        wait(for: [entered], timeout: 5)
+        wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
         fixture.controller.perform(NSSelectorFromString("clearStoryRenderCaches"))
         resume.signal()
         waitForPreviewCompletion(fixture)
@@ -188,11 +188,11 @@ import ObjectiveC.runtime
         }
 
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
-        wait(for: [rejected], timeout: 5)
+        wait(for: [rejected], timeout: SimulatorTestTiming.realWorkTimeout)
         // StoryTextLayoutEvictionTests.swift lets completion retry naturally; the injected cache never retains writes.
         let settled = expectation(description: "Rejected-write completion has settled")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { settled.fulfill() }
-        wait(for: [settled], timeout: 5)
+        wait(for: [settled], timeout: SimulatorTestTiming.realWorkTimeout)
         fixture.layoutQueue.sync {}
 
         XCTAssertEqual(fixture.controller.normalizationRecorder.counts.worker, 1,
@@ -225,7 +225,7 @@ import ObjectiveC.runtime
         }
 
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
-        wait(for: [entered], timeout: 5)
+        wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
         var updated = try XCTUnwrap(fixture.controller.getStoryAtLocation(0))
         updated["story_content"] = "<p>The replacement preview preserves 数学 العربية &amp; entities.</p>"
         let neighbor = try XCTUnwrap(fixture.controller.getStoryAtLocation(1))
@@ -235,7 +235,7 @@ import ObjectiveC.runtime
         waitForPreviewCompletion(fixture)
         let settled = expectation(description: "No unchanged rejected row is implicitly rescheduled")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { settled.fulfill() }
-        wait(for: [settled], timeout: 5)
+        wait(for: [settled], timeout: SimulatorTestTiming.realWorkTimeout)
         fixture.layoutQueue.sync {}
 
         XCTAssertEqual(recorder.counts.worker, 3, "Only the obsolete source, its replacement, and the new neighboring row are normalized.")
@@ -272,7 +272,7 @@ import ObjectiveC.runtime
         let completed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             fixture.controller.value(forKey: "storyPreviewPrefetchOperation") == nil
         }, object: nil)
-        wait(for: [completed], timeout: 5)
+        wait(for: [completed], timeout: SimulatorTestTiming.realWorkTimeout)
     }
 
     private func makeFixture(storyCount: Int, content: String? = nil) -> EvictionLayoutFixture {

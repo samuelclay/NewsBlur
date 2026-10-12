@@ -32,7 +32,7 @@ If genuinely blocked (a review check is stuck, CI is broken by something outside
 |---|---|
 | Repo | `samuelclay/NewsBlur`, default branch `main` |
 | PR template | none; use the body the caller supplies, else the generic default at the bottom |
-| CI on pull requests | `tests.yml` (Django Tests, job `test`), `ios-actions.yml` (iOS Tests), `android-actions.yml` (Android Tests) |
+| CI on pull requests | `tests.yml` (Django Tests, job `test`), `ios-actions.yml` (iOS Tests, only when the PR touches `clients/ios/` or that workflow), `android-actions.yml` (Android Tests) |
 | Review bots on pull requests | `claude-pr-review.yml` (Claude PR Review) and `codex-pr-review.yml` (Codex PR Review); both run on open, reopen, ready_for_review, and every synchronize. Each posts its top-level summary once, on the PR's first review; later pushes add inline threads only, or nothing when clean |
 | Commit subjects | Plain imperative sentence, no conventional prefix (`Fix`, `Add`, `Never ration ...`). Match `git log --oneline -10`. |
 | Commit trailers | The attribution lines from the current session's system reminder (`Co-Authored-By`, `Claude-Session`) |
