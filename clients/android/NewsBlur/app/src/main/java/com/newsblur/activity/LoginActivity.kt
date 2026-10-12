@@ -32,6 +32,10 @@ class LoginActivity : AppCompatActivity() {
     @SuppressLint("UseKtx")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // LoginActivity.kt uses explicit Compose palettes; Android must not recolor provider buttons.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            window.decorView.isForceDarkAllowed = false
+        }
         enableEdgeToEdge()
         val deleting = intent.getBooleanExtra("manage_account", false)
         val resolvedTheme = prefsRepo.getResolvedTheme(this)
