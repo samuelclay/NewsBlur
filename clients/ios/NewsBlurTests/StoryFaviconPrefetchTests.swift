@@ -104,12 +104,12 @@ import UIKit
         fixture.storage.diskCache.afterRead = { key, isMain in
             if key == "1" && !isMain {
                 readStarted.fulfill()
-                _ = release.wait(timeout: .now() + 5)
+                _ = release.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
             }
         }
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(fixture.table, prefetchRowsAt: [path])
-        wait(for: [readStarted], timeout: 1)
+        wait(for: [readStarted], timeout: SimulatorTestTiming.realWorkTimeout)
         let replacement = makeImage(size: CGSize(width: 96, height: 64), color: .green)
         fixture.app.saveFavicon(replacement, feedId: "1")
         release.signal()
@@ -190,12 +190,12 @@ import UIKit
         fixture.storage.diskCache.afterRead = { key, main in
             if key == "1" && !main {
                 readStarted.fulfill()
-                _ = release.wait(timeout: .now() + 5)
+                _ = release.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
             }
         }
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(fixture.table, prefetchRowsAt: [oldPath])
-        wait(for: [readStarted], timeout: 1)
+        wait(for: [readStarted], timeout: SimulatorTestTiming.realWorkTimeout)
         var stories = try XCTUnwrap(fixture.controller.storiesCollection.activeFeedStories as? [[String: Any]])
         for index in 0..<100 { stories[index]["story_feed_id"] = index + 1_000 }
         fixture.controller.storiesCollection.setStories(stories)
@@ -225,12 +225,12 @@ import UIKit
         fixture.storage.diskCache.afterRead = { key, main in
             if key == "1" && !main {
                 readStarted.fulfill()
-                _ = release.wait(timeout: .now() + 5)
+                _ = release.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
             }
         }
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
-        wait(for: [readStarted], timeout: 1)
+        wait(for: [readStarted], timeout: SimulatorTestTiming.realWorkTimeout)
 
         // StoryFaviconPrefetchTests.swift repeats UIKit's same nearby window while its first read is active.
         prefetcher.tableView(fixture.table, prefetchRowsAt: paths)
