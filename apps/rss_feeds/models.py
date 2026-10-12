@@ -93,6 +93,9 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
 # text blobs, so no one of them may exceed 2MB. A multi-megabyte story is broken scraped
 # content and not an article, so cutting it down is safe. apps/rss_feeds/models.py
 MAX_STORY_CONTENT_BYTES = 2 * 1024 * 1024
+# Feed.task_feeds marks and publishes feeds this many at a time, which caps how many feeds a
+# failed publish can leave counted as tasked without a fetch. apps/rss_feeds/models.py
+TASK_FEEDS_CHUNK_SIZE = 100
 
 
 def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
@@ -1024,16 +1027,21 @@ class Feed(models.Model):
         if isinstance(feeds, QuerySet):
             feeds = [f.pk for f in feeds]
 
-        r.srem("queued_feeds", *feeds)
-        now = datetime.datetime.now().strftime("%s")
-        p = r.pipeline()
-        for feed_id in feeds:
-            p.zadd("tasked_feeds", {feed_id: now})
-        p.execute()
-
-        # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
-        for feed_id in feeds:
-            UpdateFeeds.apply_async(args=(feed_id,), queue="update_feeds")
+        # A feed leaves queued_feeds only after its fetch task is published. Publishing gives up
+        # after about a second of broker connection errors (newsblur_web/settings.py
+        # CELERY_BROKER_TRANSPORT_OPTIONS), and the broker shares its Redis with these keys, so
+        # nothing could put an unpublished feed back. A feed taken off the queue without a fetch
+        # waited for TaskBrokenFeeds, every 6 hours, and enough of them stopped TaskFeeds tasking.
+        # Feeds are marked tasked before their fetches go out, so a fetch that finishes first
+        # can't have its tasked entry written back after it; chunks keep a failed publish to at
+        # most TASK_FEEDS_CHUNK_SIZE feeds counted as tasked, all still queued to be tasked again.
+        for start in range(0, len(feeds), TASK_FEEDS_CHUNK_SIZE):
+            chunk = feeds[start : start + TASK_FEEDS_CHUNK_SIZE]
+            now = datetime.datetime.now().strftime("%s")
+            r.zadd("tasked_feeds", {feed_id: now for feed_id in chunk})
+            for feed_id in chunk:
+                UpdateFeeds.apply_async(args=(feed_id,), queue="update_feeds")
+            r.srem("queued_feeds", *chunk)
 
     @classmethod
     def drain_task_feeds(cls):
@@ -1607,7 +1615,31 @@ class Feed(models.Model):
             )
             return before_story_count, before_story_count
 
-        self.update(archive_page=starting_page)
+        # One walk per feed at a time. Copies of the same walk that run together only fight over
+        # the feed's lock, wait on it, and queue the walk again (utils/feed_fetcher.py
+        # process_archive_page). The lock lasts as long as the backfill task's time limit, so a
+        # walk killed at that limit frees the feed for the next one.
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        walk_lock = r.lock(
+            "archive_walk:%s" % self.pk,
+            timeout=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            blocking=False,
+        )
+        if not walk_lock.acquire():
+            logging.debug(
+                "   ---> [%-30s] ~FBNot filling out archive stories, another walk of this feed is running"
+                % (self.log_title[:30])
+            )
+            return before_story_count, before_story_count
+
+        try:
+            self.update(archive_page=starting_page)
+        finally:
+            try:
+                walk_lock.release()
+            except LockError:
+                # The walk outlasted the lock, which has already expired.
+                pass
 
         after_story_count = MStory.objects(story_feed_id=self.pk).count()
         logging.debug(

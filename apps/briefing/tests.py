@@ -604,6 +604,98 @@ class Test_Summary(TestCase):
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()
 
+    def _xai_error(self, error_class, status_code):
+        import httpx
+
+        request = httpx.Request("POST", "https://api.x.ai/v1/chat/completions")
+        return error_class(
+            "Error code: %s" % status_code,
+            response=httpx.Response(status_code, request=request),
+            body={"code": "permission-denied", "error": "Your team has used all available credits"},
+        )
+
+    @patch("apps.briefing.summary.LLMCostTracker")
+    @patch("apps.ask_ai.providers.get_briefing_provider")
+    @patch(
+        "apps.ask_ai.providers.BRIEFING_MODELS",
+        {"xai": {"vendor": "xai"}, "haiku": {"vendor": "anthropic"}},
+    )
+    @patch("apps.ask_ai.providers.DEFAULT_BRIEFING_MODEL", "haiku")
+    def test_summary_falls_back_to_the_default_model_when_xai_refuses(self, mock_get_provider, mock_cost):
+        """xAI answers 403 once its account runs out of credits or hits its spending limit.
+        Users who picked Grok got no briefing at all (users 701600, 757195, and 761308 on
+        2026-10-11); they get one from the default model instead."""
+        import openai
+
+        from apps.briefing.summary import generate_briefing_summary
+
+        xai = MagicMock()
+        xai.is_configured.return_value = True
+        xai.generate.side_effect = self._xai_error(openai.PermissionDeniedError, 403)
+        default = MagicMock()
+        default.is_configured.return_value = True
+        default.generate.return_value = "<div>From the default model</div>"
+        default.get_last_usage.return_value = (10, 5)
+        mock_get_provider.side_effect = [(xai, "grok-4.1"), (default, "haiku-id")]
+
+        feed = Feed.objects.create(
+            feed_address="http://xai-refused.com/rss",
+            feed_link="http://xai-refused.com",
+            feed_title="xAI Refused Feed",
+        )
+        story = self._make_summary_story(feed, "Refused Story", "Content", "xai-refused-guid")
+        scored = [self._scored_from_story(story)]
+
+        try:
+            html, metadata = generate_briefing_summary(
+                self.id(), scored, datetime.datetime.utcnow(), model="xai"
+            )
+            self.assertEqual(html, "<div>From the default model</div>")
+            self.assertEqual(metadata["model_name"], "haiku")
+            # A refusal isn't retried against xAI; it goes straight to the default model.
+            self.assertEqual(xai.generate.call_count, 1)
+        finally:
+            MStory.objects(story_hash=story.story_hash).delete()
+            feed.delete()
+
+    @patch("apps.briefing.summary.LLMCostTracker")
+    @patch("apps.ask_ai.providers.get_briefing_provider")
+    @patch(
+        "apps.ask_ai.providers.BRIEFING_MODELS",
+        {"xai": {"vendor": "xai"}, "haiku": {"vendor": "anthropic"}},
+    )
+    @patch("apps.ask_ai.providers.DEFAULT_BRIEFING_MODEL", "haiku")
+    def test_summary_does_not_fall_back_when_xai_rejects_the_request(self, mock_get_provider, mock_cost):
+        """A bad request is a bug in the request, not xAI refusing the account, so it fails
+        as before rather than hiding behind another model."""
+        import openai
+
+        from apps.briefing.summary import generate_briefing_summary
+
+        xai = MagicMock()
+        xai.is_configured.return_value = True
+        xai.generate.side_effect = self._xai_error(openai.BadRequestError, 400)
+        mock_get_provider.side_effect = [(xai, "grok-4.1")]
+
+        feed = Feed.objects.create(
+            feed_address="http://xai-badrequest.com/rss",
+            feed_link="http://xai-badrequest.com",
+            feed_title="xAI Bad Request Feed",
+        )
+        story = self._make_summary_story(feed, "Bad Request Story", "Content", "xai-badrequest-guid")
+        scored = [self._scored_from_story(story)]
+
+        try:
+            html, metadata = generate_briefing_summary(
+                self.id(), scored, datetime.datetime.utcnow(), model="xai"
+            )
+            self.assertIsNone(html)
+            self.assertIsNone(metadata)
+            self.assertEqual(mock_get_provider.call_count, 1)
+        finally:
+            MStory.objects(story_hash=story.story_hash).delete()
+            feed.delete()
+
     @patch("apps.ask_ai.providers.get_briefing_provider")
     def test_summary_all_unconfigured_returns_none(self, mock_get_provider):
         from apps.briefing.summary import generate_briefing_summary
@@ -861,7 +953,10 @@ class Test_BriefingIcons(BriefingTestCase):
         self.assertNotIn("NB-briefing-story-thumbnail", result)
 
     def test_widely_covered_topic_gets_thumbnail_but_sources_do_not(self):
-        from apps.briefing.summary import embed_briefing_icons, inject_widely_covered_clusters
+        from apps.briefing.summary import (
+            embed_briefing_icons,
+            inject_widely_covered_clusters,
+        )
 
         lead, source_a, source_b = self.stories[0], self.stories[3], self.stories[4]
         for story in (lead, source_a, source_b):

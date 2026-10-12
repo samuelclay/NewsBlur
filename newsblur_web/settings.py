@@ -1045,7 +1045,18 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_BEAT_SCHEDULER = "newsblur_web.celery_beat:DedupPersistentScheduler"
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
-BROKER_TRANSPORT_OPTIONS = {
+# newsblur_web/settings.py: The celery app reads settings with the CELERY_ prefix
+# (newsblur_web/celeryapp.py), so these were ignored while they were named BROKER_TRANSPORT_OPTIONS.
+# max_retries and interval_* apply for the first time, on purpose: publishing a task gives up after
+# about a second of broker connection errors instead of retrying forever, so a request fails rather
+# than hangs (payment providers retry a webhook that fails).
+# visibility_timeout stays at kombu's 1 hour default. A task waits unacknowledged in a worker until
+# it finishes, countdown tasks included, and the broker hands it to another worker once that passes.
+# A worker that is killed instead of restarted (a forced container stop, autoheal, an OOM kill)
+# hands nothing back, so its tasks come back only after the timeout; raising it would hold every
+# queue's tasks that long. Keep countdowns well under an hour instead: the archive backfill queues
+# one batch of walks at a time for that reason (apps/reader/models.py dispatch_archive_backfill).
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
     "interval_step": 0.2,

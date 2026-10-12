@@ -4,6 +4,7 @@ import threading
 import time
 from unittest.mock import MagicMock, call, patch
 
+import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -371,111 +372,405 @@ class Test_DeleteStarredTag(TestCase):
         self.assertEqual(len(story2.user_tags), 0)
 
 
-class Test_ArchiveFetchStaggering(TestCase):
-    """Tests for staggered archive feed fetching (apps/reader/models.py fetch_archive_feeds_for_user)."""
+class Test_ArchiveBackfillDispatch(TestCase):
+    """An archive backfill starts one feed's walk every 10 seconds, which takes hours for a
+    big subscription list. Queuing every walk up front left countdown tasks waiting in a
+    worker for hours, past the broker's visibility timeout, so the broker handed them out
+    again every hour (on 2026-10-10 each feed of a 3,910 feed backfill was walked up to 44
+    times). A dispatcher now queues one batch at a time, so no task waits long
+    (apps/reader/models.py dispatch_archive_backfill)."""
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username="staggertest", password="password", email="stagger@test.com"
+            username="dispatchtest", password="password", email="dispatch@test.com"
         )
         self.feeds = []
         for i in range(5):
             feed = Feed.objects.create(
-                feed_address=f"http://example.com/feed{i}.xml",
-                feed_link=f"http://example.com/{i}",
-                feed_title=f"Test Feed {i}",
+                feed_address=f"http://example.com/dispatch{i}.xml",
+                feed_link=f"http://example.com/dispatch{i}",
+                feed_title=f"Dispatch Feed {i}",
             )
             self.feeds.append(feed)
             UserSubscription.objects.create(user=self.user, feed=feed, active=True)
+        self.r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        self.feeds_key = UserSubscription.archive_backfill_feeds_key(self.user.pk)
+        self.state_key = UserSubscription.archive_backfill_state_key(self.user.pk)
+        self.claim_key = UserSubscription.archive_backfill_claim_key(self.user.pk)
+        for key in (
+            self.feeds_key,
+            self.state_key,
+            self.claim_key,
+            UserSubscription.archive_backfill_pending_key(self.user.pk, 1.0),
+        ):
+            self.r.delete(key)
+            self.addCleanup(self.r.delete, key)
 
     def tearDown(self):
         for feed in self.feeds:
             MStory.objects(story_feed_id=feed.pk).delete()
 
-    @patch("apps.reader.models.celery")
-    @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
-    @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
-    def test_archive_fetch_chunks_have_staggered_countdown(
-        self, mock_chunk_task, mock_finish_task, mock_celery
-    ):
-        """Each FetchArchiveFeedsChunk in the chord should have an increasing countdown delay."""
-        # mock_chunk_task.s() needs to return something chainable
-        mock_signature = MagicMock()
-        mock_signature.set.return_value = mock_signature
-        mock_chunk_task.s.return_value = mock_signature
+    def _store_feeds(self):
+        UserSubscription.store_archive_backfill(self.user.pk, [feed.pk for feed in self.feeds])
 
-        mock_callback = MagicMock()
-        mock_callback.set.return_value = mock_callback
-        mock_finish_task.s.return_value = mock_callback
+    def _dispatch(self):
+        UserSubscription.dispatch_archive_backfill(self.user.pk, start_time=1.0, starting_story_count=0)
 
+    def _remaining(self):
+        return [int(feed_id) for feed_id in self.r.lrange(self.feeds_key, 0, -1)]
+
+    @patch("apps.profile.tasks.DispatchArchiveBackfill.apply_async")
+    def test_a_backfill_stores_the_users_feeds_and_queues_the_dispatcher(self, mock_dispatch):
         UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
 
-        # Verify chunk tasks were created (one per feed since chunk size is 1)
-        self.assertEqual(mock_chunk_task.s.call_count, len(self.feeds))
+        self.assertEqual(self._remaining(), [feed.pk for feed in self.feeds])
+        self.assertTrue(self.r.exists(self.state_key))
+        mock_dispatch.assert_called_once()
+        self.assertEqual(mock_dispatch.call_args[1]["queue"], "search_indexer")
 
-        # Verify each chunk's .set() calls include an increasing countdown
-        countdowns = []
-        for s_call in mock_chunk_task.s.return_value.set.call_args_list:
-            # The second .set() call has countdown, time_limit, soft_time_limit
-            args, kwargs = s_call
-            if "countdown" in kwargs:
-                countdowns.append(kwargs["countdown"])
+    @patch("apps.reader.models.ARCHIVE_BACKFILL_BATCH_SIZE", 2)
+    @patch("apps.profile.tasks.FinishFetchArchiveFeeds.apply_async")
+    @patch("apps.profile.tasks.DispatchArchiveBackfill.apply_async")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async")
+    def test_each_dispatch_queues_one_batch_ten_seconds_apart(self, mock_chunk, mock_dispatch, mock_finish):
+        self._store_feeds()
 
-        # Should have staggered countdowns: 0, 10, 20, 30, 40
-        self.assertEqual(len(countdowns), len(self.feeds))
-        for i, countdown in enumerate(countdowns):
-            self.assertEqual(
-                countdown,
-                i * 10,
-                f"Feed chunk {i} should have countdown={i * 10}, got {countdown}",
+        self._dispatch()
+
+        self.assertEqual([c[1]["countdown"] for c in mock_chunk.call_args_list], [0, 10])
+        self.assertEqual(
+            [c[1]["kwargs"]["feed_ids"] for c in mock_chunk.call_args_list],
+            [[self.feeds[0].pk], [self.feeds[1].pk]],
+        )
+        # The next dispatch starts where this batch's spacing ends.
+        self.assertEqual(mock_dispatch.call_args[1]["countdown"], 20)
+        self.assertEqual(self._remaining(), [feed.pk for feed in self.feeds[2:]])
+        mock_finish.assert_not_called()
+
+        self._dispatch()
+        self._dispatch()
+
+        self.assertEqual(mock_chunk.call_count, len(self.feeds))
+        self.assertEqual(mock_dispatch.call_count, 2)
+        self.assertEqual(UserSubscription.archive_backfill_walks_pending(self.user.pk, 1.0), len(self.feeds))
+        # After the last batch, the finish is queued for when the last walk has had its time limit.
+        mock_finish.assert_called_once()
+        finish_kwargs = mock_finish.call_args[1]
+        self.assertEqual(finish_kwargs["countdown"], settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED)
+        self.assertEqual(finish_kwargs["time_limit"], settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH)
+        self.assertEqual(finish_kwargs["kwargs"]["user_id"], self.user.pk)
+
+    @patch("apps.profile.tasks.DispatchArchiveBackfill.apply_async")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async")
+    def test_a_dispatch_that_fails_partway_keeps_the_unqueued_feeds(self, mock_chunk, mock_dispatch):
+        """Publishing gives up after about a second of broker errors. Feeds whose walks were
+        not queued stay in the list for the dispatcher's retry, and only queued walks count
+        as pending."""
+        from kombu.exceptions import OperationalError
+
+        self._store_feeds()
+        mock_chunk.side_effect = [None, OperationalError("broker dropped")]
+
+        with self.assertRaises(OperationalError):
+            self._dispatch()
+
+        self.assertEqual(self._remaining(), [feed.pk for feed in self.feeds[1:]])
+        self.assertEqual(UserSubscription.archive_backfill_walks_pending(self.user.pk, 1.0), 1)
+
+    @patch("apps.reader.models.ARCHIVE_BACKFILL_BATCH_SIZE", 2)
+    @patch("apps.profile.tasks.FinishFetchArchiveFeeds.apply_async")
+    @patch("apps.profile.tasks.DispatchArchiveBackfill.apply_async")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async")
+    def test_a_second_dispatch_running_at_the_same_time_skips_no_feeds(
+        self, mock_chunk, mock_dispatch, mock_finish
+    ):
+        """Celery can deliver a task twice. A second copy of a dispatch that reads the same
+        batch before the first takes it off the list must not take off the next batch,
+        whose walks nobody queued."""
+        self._store_feeds()
+        nested = []
+
+        def duplicate_delivery(*args, **kwargs):
+            if not nested:
+                nested.append(True)
+                self._dispatch()
+
+        mock_chunk.side_effect = duplicate_delivery
+
+        self._dispatch()
+
+        self.assertEqual(
+            [c[1]["kwargs"]["feed_ids"] for c in mock_chunk.call_args_list],
+            [[self.feeds[0].pk], [self.feeds[1].pk]],
+        )
+        self.assertEqual(self._remaining(), [feed.pk for feed in self.feeds[2:]])
+
+    @patch("apps.profile.tasks.FinishFetchArchiveFeeds.apply_async")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async")
+    def test_a_dispatch_without_backfill_state_queues_nothing(self, mock_chunk, mock_finish):
+        """A dispatch that finds no state for the backfill must not report it finished: the
+        state is gone because the backfill was abandoned, not because its feeds ran out."""
+        self.r.rpush(self.feeds_key, *[feed.pk for feed in self.feeds])
+
+        self._dispatch()
+
+        mock_chunk.assert_not_called()
+        mock_finish.assert_not_called()
+
+    def test_no_backfill_task_waits_past_the_broker_visibility_timeout(self):
+        """Countdown tasks wait unacknowledged in a worker until they run, and a worker that
+        is killed rather than stopped hands nothing back: the broker gives its tasks out
+        again only once the visibility timeout passes. Every backfill task has to start and
+        finish inside that timeout, and the timeout must stay at an hour so a killed worker's
+        tasks are never stuck for longer."""
+        from apps.profile.tasks import FinishFetchArchiveFeeds
+        from apps.reader.models import (
+            ARCHIVE_BACKFILL_BATCH_SIZE,
+            ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS,
+            ARCHIVE_BACKFILL_STAGGER_SECONDS,
+        )
+        from newsblur_web.celeryapp import app
+
+        visibility_timeout = app.conf.broker_transport_options.get("visibility_timeout", 60 * 60)
+        self.assertLessEqual(visibility_timeout, 60 * 60)
+
+        last_walk_countdown = (ARCHIVE_BACKFILL_BATCH_SIZE - 1) * ARCHIVE_BACKFILL_STAGGER_SECONDS
+        next_dispatch_countdown = ARCHIVE_BACKFILL_BATCH_SIZE * ARCHIVE_BACKFILL_STAGGER_SECONDS
+        finish_countdown = last_walk_countdown + settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED
+        # A walk waits for its countdown and then runs up to its time limit before it is acknowledged.
+        self.assertLess(
+            last_walk_countdown + settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED, visibility_timeout
+        )
+        self.assertLess(next_dispatch_countdown, visibility_timeout)
+        self.assertLess(finish_countdown, visibility_timeout)
+        self.assertLess(ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS, visibility_timeout)
+        # The finish's Redis sync can run for most of an hour on a big subscription list, so it
+        # is acknowledged when it starts rather than when it ends.
+        self.assertFalse(FinishFetchArchiveFeeds.acks_late)
+
+
+class Test_ArchiveBackfillFinish(TestCase):
+    """The finish sends the archive email and syncs the user's feeds to Redis, so it waits
+    until every walk the dispatcher queued has ended, however late the walks started
+    (apps/reader/models.py archive_backfill_ready_to_finish)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="finishtest", password="password", email="finish@test.com"
+        )
+        self.feed = Feed.objects.create(
+            feed_address="http://example.com/finish.xml",
+            feed_link="http://example.com/finish",
+            feed_title="Finish Feed",
+        )
+        self.r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        self.start_time = 1234.5
+        self.earlier_start_time = 1000.25
+        # Another of the backfill's walks, still going.
+        self.other_feed_id = 990000301
+        for key in (
+            UserSubscription.archive_backfill_feeds_key(self.user.pk),
+            UserSubscription.archive_backfill_state_key(self.user.pk),
+            UserSubscription.archive_backfill_finished_key(self.user.pk, self.start_time),
+            UserSubscription.archive_backfill_pending_key(self.user.pk, self.start_time),
+            UserSubscription.archive_backfill_pending_key(self.user.pk, self.earlier_start_time),
+            UserSubscription.archive_backfill_claim_key(self.user.pk),
+        ):
+            self.r.delete(key)
+            self.addCleanup(self.r.delete, key)
+        UserSubscription.store_archive_backfill(self.user.pk, [])
+        self.finish_work = patch.object(
+            UserSubscription, "finish_fetch_archive_feeds", return_value=(10, 5)
+        ).start()
+        self.email = patch("apps.profile.models.Profile.send_new_premium_archive_email").start()
+        self.requeue = patch("apps.profile.tasks.FinishFetchArchiveFeeds.apply_async").start()
+        self.addCleanup(patch.stopall)
+
+    def _finish(self, rechecks=0):
+        from apps.profile.tasks import FinishFetchArchiveFeeds
+
+        FinishFetchArchiveFeeds(
+            None, user_id=self.user.pk, start_time=self.start_time, starting_story_count=0, rechecks=rechecks
+        )
+
+    def test_the_finish_waits_while_walks_are_pending(self):
+        from apps.reader.models import ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS
+
+        UserSubscription.track_archive_backfill_walks(
+            self.user.pk, self.start_time, [self.feed.pk, self.other_feed_id]
+        )
+
+        self._finish()
+
+        self.finish_work.assert_not_called()
+        self.email.assert_not_called()
+        self.requeue.assert_called_once()
+        self.assertEqual(self.requeue.call_args[1]["countdown"], ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS)
+        self.assertEqual(self.requeue.call_args[1]["kwargs"]["rechecks"], 1)
+
+    def test_the_finish_runs_once_when_the_walks_have_ended(self):
+        self._finish()
+        self._finish()
+
+        self.finish_work.assert_called_once()
+        self.email.assert_called_once_with(10, 5)
+        self.requeue.assert_not_called()
+
+    def test_the_finish_stops_waiting_after_its_last_recheck(self):
+        """A walk killed at its hard time limit never lowers the count, so the finish runs
+        anyway once it has waited its full allowance."""
+        from apps.reader.models import ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS
+
+        UserSubscription.track_archive_backfill_walks(self.user.pk, self.start_time, [self.feed.pk])
+
+        self._finish(rechecks=ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS)
+
+        self.finish_work.assert_called_once()
+        self.requeue.assert_not_called()
+
+    def test_a_walk_lowers_the_pending_count_even_when_it_fails(self):
+        UserSubscription.track_archive_backfill_walks(self.user.pk, self.start_time, [self.feed.pk])
+
+        with patch.object(Feed, "fill_out_archive_stories", side_effect=RuntimeError("fetch blew up")):
+            with self.assertRaises(RuntimeError):
+                UserSubscription.fetch_archive_feeds_chunk(
+                    [self.feed.pk], user_id=self.user.pk, backfill_id=self.start_time
+                )
+
+        self.assertEqual(UserSubscription.archive_backfill_walks_pending(self.user.pk, self.start_time), 0)
+
+    def test_a_walk_delivered_twice_ends_only_itself(self):
+        """Celery can deliver a finished walk again when its acknowledgement is lost. The
+        second delivery must not count as another walk ending, or the finish would run while
+        a different walk is still going."""
+        UserSubscription.track_archive_backfill_walks(
+            self.user.pk, self.start_time, [self.feed.pk, self.other_feed_id]
+        )
+
+        with patch.object(Feed, "fill_out_archive_stories"):
+            UserSubscription.fetch_archive_feeds_chunk(
+                [self.feed.pk], user_id=self.user.pk, backfill_id=self.start_time
+            )
+            UserSubscription.fetch_archive_feeds_chunk(
+                [self.feed.pk], user_id=self.user.pk, backfill_id=self.start_time
             )
 
-    @patch("apps.reader.models.celery")
-    @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
-    @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
-    def test_archive_fetch_creates_chord_with_callback(self, mock_chunk_task, mock_finish_task, mock_celery):
-        """The archive fetch should create a Celery chord with a FinishFetchArchiveFeeds callback."""
-        mock_signature = MagicMock()
-        mock_signature.set.return_value = mock_signature
-        mock_chunk_task.s.return_value = mock_signature
+        self.assertEqual(UserSubscription.archive_backfill_walks_pending(self.user.pk, self.start_time), 1)
 
-        mock_callback = MagicMock()
-        mock_callback.set.return_value = mock_callback
-        mock_finish_task.s.return_value = mock_callback
+    def test_a_late_walk_from_an_earlier_backfill_leaves_the_current_one_waiting(self):
+        """A walk from an earlier backfill of the same feed can end after a new backfill has
+        queued its own walk of that feed. It must not count as the new walk ending."""
+        UserSubscription.track_archive_backfill_walks(self.user.pk, self.earlier_start_time, [self.feed.pk])
+        UserSubscription.track_archive_backfill_walks(self.user.pk, self.start_time, [self.feed.pk])
 
-        UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+        with patch.object(Feed, "fill_out_archive_stories"):
+            UserSubscription.fetch_archive_feeds_chunk(
+                [self.feed.pk], user_id=self.user.pk, backfill_id=self.earlier_start_time
+            )
 
-        # Verify chord was called
-        mock_celery.chord.assert_called_once()
-        # Verify callback was applied
-        mock_celery.chord.return_value.assert_called_once()
+        self.assertEqual(UserSubscription.archive_backfill_walks_pending(self.user.pk, self.start_time), 1)
 
-    @patch("apps.reader.models.celery")
-    @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
-    @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
-    def test_archive_finish_callback_has_sufficient_time_limit(
-        self, mock_chunk_task, mock_finish_task, mock_celery
-    ):
-        """The FinishFetchArchiveFeeds callback should have a time_limit matching
-        MAX_SECONDS_COMPLETE_ARCHIVE_FETCH so post-fetch sync_redis doesn't get killed."""
-        mock_signature = MagicMock()
-        mock_signature.set.return_value = mock_signature
-        mock_chunk_task.s.return_value = mock_signature
+    def test_a_finish_that_cannot_queue_its_recheck_runs_now(self):
+        """The finish is acknowledged when it starts, so if it can't queue its next check
+        nothing else would ever sync the user's feeds or send the email."""
+        from kombu.exceptions import OperationalError
 
-        mock_callback = MagicMock()
-        mock_callback.set.return_value = mock_callback
-        mock_finish_task.s.return_value = mock_callback
+        UserSubscription.track_archive_backfill_walks(self.user.pk, self.start_time, [self.feed.pk])
+        self.requeue.side_effect = OperationalError("broker unreachable")
 
-        UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+        self._finish()
 
-        # Verify the callback's .set() includes a time_limit
-        mock_callback.set.assert_called_once()
-        set_kwargs = mock_callback.set.call_args[1]
-        self.assertEqual(
-            set_kwargs.get("time_limit"),
-            settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
-            "FinishFetchArchiveFeeds callback should have time_limit=MAX_SECONDS_COMPLETE_ARCHIVE_FETCH",
+        self.finish_work.assert_called_once()
+        self.email.assert_called_once_with(10, 5)
+
+    def test_the_finish_frees_the_users_claim(self):
+        """A user who downgrades and upgrades again after the backfill finished gets a new one."""
+        self.r.set(UserSubscription.archive_backfill_claim_key(self.user.pk), 1)
+
+        self._finish()
+
+        self.assertFalse(self.r.exists(UserSubscription.archive_backfill_claim_key(self.user.pk)))
+
+    def test_a_dispatcher_out_of_retries_frees_the_users_claim(self):
+        """A backfill whose dispatcher gives up is abandoned, so a later upgrade event can start
+        a new one instead of being skipped for the life of the claim."""
+        from apps.profile.tasks import DispatchArchiveBackfill
+
+        self.r.set(UserSubscription.archive_backfill_claim_key(self.user.pk), 1)
+        kwargs = dict(user_id=self.user.pk, start_time=self.start_time, starting_story_count=0)
+
+        DispatchArchiveBackfill.on_failure(RuntimeError("broker down"), "task-id", (), kwargs, None)
+
+        self.assertFalse(self.r.exists(UserSubscription.archive_backfill_claim_key(self.user.pk)))
+        self.assertFalse(self.r.exists(UserSubscription.archive_backfill_state_key(self.user.pk)))
+
+
+class Test_ArchiveBackfillScheduling(TestCase):
+    """Concurrent payment webhooks for one archive upgrade must start one backfill of the
+    user's feeds, not one per webhook (apps/reader/models.py schedule_fetch_archive_feeds_for_user)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="backfillonce", password="password", email="backfillonce@test.com"
         )
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        for key in (
+            UserSubscription.archive_backfill_claim_key(self.user.pk),
+            UserSubscription.archive_backfill_feeds_key(self.user.pk),
+            UserSubscription.archive_backfill_state_key(self.user.pk),
+        ):
+            r.delete(key)
+            self.addCleanup(r.delete, key)
+
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_archive_backfill_is_scheduled_once_while_one_is_running(self, mock_apply):
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 1)
+
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_a_backfill_that_could_not_be_queued_can_be_scheduled_again(self, mock_apply):
+        """A user who paid for Archive must not wait out the claim because the broker was
+        briefly unreachable when the first upgrade event tried to queue their backfill."""
+        from kombu.exceptions import OperationalError
+
+        mock_apply.side_effect = [OperationalError("broker unreachable"), None]
+
+        with self.assertRaises(OperationalError):
+            UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 2)
+
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_a_backfill_that_fails_before_queuing_its_feeds_can_be_scheduled_again(self, mock_apply):
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        with patch.object(
+            UserSubscription, "build_archive_backfill", side_effect=RuntimeError("mongo unreachable")
+        ):
+            with self.assertRaises(RuntimeError):
+                UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 2)
+
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_a_backfill_whose_dispatcher_could_not_be_queued_can_be_scheduled_again(self, mock_apply):
+        """No feed walk is queued until the dispatcher runs, so a failure queuing it frees
+        the claim without risking walking any feed twice."""
+        from kombu.exceptions import OperationalError
+
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        with patch(
+            "apps.profile.tasks.DispatchArchiveBackfill.apply_async",
+            side_effect=OperationalError("broker unreachable"),
+        ):
+            with self.assertRaises(OperationalError):
+                UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 2)
 
 
 class Test_FinishArchiveFeedsSyncRedis(TestCase):
