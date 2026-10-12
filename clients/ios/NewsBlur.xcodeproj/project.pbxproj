@@ -1171,7 +1171,6 @@
 		D74E3909427F4B3AAF85A028 /* StoryFirstPageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */; };
 		D74E3909427F4B3AAF85A030 /* StoryFirstPageCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */; };
 		D74E3909427F4B3AAF85A032 /* StoryTextLayoutPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */; };
-		B9C3274C5FBDDF198263D2DF /* NewsBlurTestsObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7CF2DBAD2E0D38F2982877C /* NewsBlurTestsObserver.swift */; };
 		E538880EAF9F00ED4667EC71 /* SimulatorTestTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5720EF61DD447AB2E099451A /* SimulatorTestTiming.swift */; };
 		D74E3909427F4B3AAF85A034 /* StoryTextLayoutCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */; };
 		D74E3909427F4B3AAF85A035 /* StoryTextLayoutCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */; };
@@ -2226,7 +2225,6 @@
 		D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFirstPageCache.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFirstPageCacheTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutPerformanceTests.swift; sourceTree = "<group>"; };
-		B7CF2DBAD2E0D38F2982877C /* NewsBlurTestsObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsBlurTestsObserver.swift; sourceTree = "<group>"; };
 		5720EF61DD447AB2E099451A /* SimulatorTestTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTestTiming.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutCache.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutCacheTests.swift; sourceTree = "<group>"; };
@@ -3945,7 +3943,6 @@
 				C1A3E5F7092B4D6F8192A002 /* StoryFaviconPrefetchTests.swift */,
 				D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */,
 				D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */,
-				B7CF2DBAD2E0D38F2982877C /* NewsBlurTestsObserver.swift */,
 				5720EF61DD447AB2E099451A /* SimulatorTestTiming.swift */,
 				D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */,
 				D74E3909427F4B3AAF85A040 /* StoryTextLayoutEvictionTests.swift */,
@@ -6285,7 +6282,6 @@
 				D74E3909427F4B3AAF85A025 /* StoryDetailLoadingTests.swift in Sources */,
 				C1A3E5F7092B4D6F8192A001 /* StoryFaviconPrefetchTests.swift in Sources */,
 				D74E3909427F4B3AAF85A032 /* StoryTextLayoutPerformanceTests.swift in Sources */,
-				B9C3274C5FBDDF198263D2DF /* NewsBlurTestsObserver.swift in Sources */,
 				E538880EAF9F00ED4667EC71 /* SimulatorTestTiming.swift in Sources */,
 				D74E3909427F4B3AAF85A037 /* StoryTextLayoutCacheTests.swift in Sources */,
 				D74E3909427F4B3AAF85A039 /* StoryTextLayoutEvictionTests.swift in Sources */,
@@ -7340,7 +7336,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSPrincipalClass = NewsBlurTestsObserver;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7368,7 +7363,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSPrincipalClass = NewsBlurTestsObserver;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
