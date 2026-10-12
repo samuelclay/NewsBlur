@@ -536,6 +536,34 @@ class Test_ArchiveBackfillScheduling(TestCase):
 
         self.assertEqual(mock_apply.call_count, 1)
 
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_a_backfill_that_could_not_be_queued_can_be_scheduled_again(self, mock_apply):
+        """A user who paid for Archive must not wait out the claim because the broker was
+        briefly unreachable when the first upgrade event tried to queue their backfill."""
+        from kombu.exceptions import OperationalError
+
+        mock_apply.side_effect = [OperationalError("broker unreachable"), None]
+
+        with self.assertRaises(OperationalError):
+            UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 2)
+
+    @patch("apps.profile.tasks.FetchArchiveFeedsForUser.apply_async")
+    def test_a_backfill_that_fails_before_queuing_its_feeds_can_be_scheduled_again(self, mock_apply):
+        from apps.profile.tasks import FetchArchiveFeedsForUser
+
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+        with patch.object(
+            UserSubscription, "fetch_archive_feeds_for_user", side_effect=RuntimeError("mongo unreachable")
+        ):
+            with self.assertRaises(RuntimeError):
+                FetchArchiveFeedsForUser(user_id=self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
+
+        self.assertEqual(mock_apply.call_count, 2)
+
 
 class Test_FinishArchiveFeedsSyncRedis(TestCase):
     """Tests for sync_redis calls in finish_fetch_archive_feeds (apps/reader/models.py)."""

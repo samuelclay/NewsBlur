@@ -1174,15 +1174,31 @@ class UserSubscription(models.Model):
         claim_seconds = (
             settings.MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW + settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH
         )
-        if not r.set("archive_fetch_scheduled:%s" % user_id, 1, nx=True, ex=claim_seconds):
+        if not r.set(cls.archive_backfill_claim_key(user_id), 1, nx=True, ex=claim_seconds):
             logging.debug(" ---> ~FCArchive backfill already scheduled for user %s, skipping" % user_id)
             return
 
-        FetchArchiveFeedsForUser.apply_async(
-            kwargs=dict(user_id=user_id),
-            queue="search_indexer",
-            time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
-        )
+        try:
+            FetchArchiveFeedsForUser.apply_async(
+                kwargs=dict(user_id=user_id),
+                queue="search_indexer",
+                time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
+            )
+        except Exception:
+            # Nothing was queued, so the next upgrade event for this user can start the backfill.
+            cls.release_archive_backfill_claim(user_id)
+            raise
+
+    @classmethod
+    def archive_backfill_claim_key(cls, user_id):
+        return "archive_fetch_scheduled:%s" % user_id
+
+    @classmethod
+    def release_archive_backfill_claim(cls, user_id):
+        """Let a new archive backfill start for this user, after one failed before it began
+        (apps/reader/models.py schedule_fetch_archive_feeds_for_user)."""
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        r.delete(cls.archive_backfill_claim_key(user_id))
 
     # Should be run as a background task
     @classmethod
