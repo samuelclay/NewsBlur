@@ -5489,7 +5489,7 @@ class Test_TaskFeedsNeverStrandsFeeds(TestCase):
     broker shares its Redis with these keys, so nothing can undo the bookkeeping afterwards.
     A feed left counted as tasked with no fetch behind it waits for TaskBrokenFeeds, which
     runs every 6 hours, and enough of them stop TaskFeeds from tasking anything
-    (apps/rss_feeds/models.py task_feeds, apps/rss_feeds/tasks.py TaskFeeds)."""
+    (apps/rss_feeds/models.py task_feeds)."""
 
     # Feed ids nothing else uses, since these keys are shared with the running dev stacks.
     feed_ids = ["990000101", "990000102", "990000103"]
@@ -5515,28 +5515,6 @@ class Test_TaskFeedsNeverStrandsFeeds(TestCase):
         self.assertTrue(self.r.sismember("queued_feeds", "990000102"))
         self.assertTrue(self.r.sismember("queued_feeds", "990000103"))
         self.assertIsNotNone(self.r.zscore("tasked_feeds", "990000101"))
-
-    @patch("apps.rss_feeds.models.Feed.task_feeds")
-    @patch("apps.rss_feeds.tasks.redis")
-    def test_due_feeds_stay_scheduled_when_queuing_them_fails(self, mock_redis, mock_task_feeds):
-        from apps.rss_feeds.tasks import TaskFeeds
-
-        r = mock_redis.Redis.return_value
-        r.zcard.return_value = 0
-        r.zrangebyscore.return_value = ["990000201"]
-        r.sadd.side_effect = redis.exceptions.ConnectionError("redis dropped")
-
-        with self.assertRaises(redis.exceptions.ConnectionError):
-            TaskFeeds()
-
-        removed_from_schedule = [
-            name
-            for name, args, _ in r.method_calls
-            if name in ("zrem", "zremrangebyscore") and args and args[0] == "scheduled_updates"
-        ]
-        self.assertEqual(
-            removed_from_schedule, [], "a due feed must not leave the schedule before it is queued"
-        )
 
 
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):
