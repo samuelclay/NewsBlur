@@ -1563,7 +1563,7 @@ class ProcessFeed:
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
             if not getattr(settings, "TEST_DEBUG", False):
-                self.feed.trim_feed(published_count=len(self.feed_entries))
+                self.feed.trim_feed(new_story_hashes=ret_values.get("new_story_hashes", []))
                 self.feed.expire_redis()
             if MStatistics.get("raw_feed", None) == self.feed.pk:
                 self.feed.save_raw_feed(self.raw_feed, fetch_date)

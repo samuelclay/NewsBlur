@@ -2390,7 +2390,7 @@ class Feed(models.Model):
     def story_cutoff(self):
         return self.number_of_stories_to_store()
 
-    def number_of_stories_to_store(self, pre_archive=False, published_count=0):
+    def number_of_stories_to_store(self, pre_archive=False, new_story_count=0):
         if self.archive_subscribers and self.archive_subscribers > 0 and not pre_archive:
             return 10000
 
@@ -2434,9 +2434,10 @@ class Feed(models.Model):
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
         if not pre_archive and read_stories_last_month == 0:
             original_cutoff = cutoff
-            # apps/rss_feeds/models.py keeps the batch the feed is publishing right now, so a feed that
+            # apps/rss_feeds/models.py still keeps every story the latest fetch added, so a feed that
             # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives.
-            cutoff = min(cutoff, max(10, published_count))
+            # Feeds that add a few stories at a time stay at 10.
+            cutoff = min(cutoff, max(10, new_story_count))
             try:
                 logging.debug(
                     "   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)"
@@ -2460,11 +2461,14 @@ class Feed(models.Model):
 
         return int(cutoff)
 
-    def trim_feed(self, verbose=False, cutoff=None, published_count=0):
+    def trim_feed(self, verbose=False, cutoff=None, new_story_hashes=None):
+        new_story_hashes = new_story_hashes or []
         if not cutoff:
-            cutoff = self.number_of_stories_to_store(published_count=published_count)
+            cutoff = self.number_of_stories_to_store(new_story_count=len(new_story_hashes))
 
-        stories_removed = MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
+        stories_removed = MStory.trim_feed(
+            feed=self, cutoff=cutoff, verbose=verbose, keep_story_hashes=new_story_hashes
+        )
 
         if not self.fs_size_bytes:
             self.count_fs_size_bytes()
@@ -4242,7 +4246,7 @@ class MStory(mongo.Document):
             pass
 
     @classmethod
-    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
+    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True, keep_story_hashes=None):
         extra_stories_count = 0
         cutoff = int(cutoff)
         if not feed_id and not feed:
@@ -4253,23 +4257,30 @@ class MStory(mongo.Document):
         if not feed:
             feed = feed_id
 
-        stories = cls.objects(story_feed_id=feed_id).only("story_date").order_by("-story_date")
+        stories = cls.objects(story_feed_id=feed_id).only("story_date", "story_hash").order_by("-story_date")
 
         if stories.count() > cutoff:
             logging.debug(
                 "   ---> [%-30s] ~FMFound %s stories. Trimming to ~SB%s~SN..."
                 % (str(feed)[:30], stories.count(), cutoff)
             )
-            try:
-                story_trim_date = stories[cutoff].story_date
-                if story_trim_date == stories[0].story_date:
-                    # Handle case where every story is the same time
-                    story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
-            except IndexError as e:
-                logging.debug(" ***> [%-30s] ~BRError trimming feed: %s" % (str(feed)[:30], e))
-                return extra_stories_count
+            if keep_story_hashes:
+                # apps/rss_feeds/models.py ranks the stories the fetch just added ahead of older stored ones,
+                # so an issue whose articles are dated before the previous issue survives the cutoff (forum #13884).
+                keep_story_hashes = set(keep_story_hashes)
+                ranked = sorted(stories, key=lambda story: story.story_hash not in keep_story_hashes)
+                extra_stories = cls.objects(id__in=[story.id for story in ranked[cutoff:]])
+            else:
+                try:
+                    story_trim_date = stories[cutoff].story_date
+                    if story_trim_date == stories[0].story_date:
+                        # Handle case where every story is the same time
+                        story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
+                except IndexError as e:
+                    logging.debug(" ***> [%-30s] ~BRError trimming feed: %s" % (str(feed)[:30], e))
+                    return extra_stories_count
 
-            extra_stories = cls.objects(story_feed_id=feed_id, story_date__lte=story_trim_date)
+                extra_stories = cls.objects(story_feed_id=feed_id, story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
             shared_story_count = 0
             for story in extra_stories:
