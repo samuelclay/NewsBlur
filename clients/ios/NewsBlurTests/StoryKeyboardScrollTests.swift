@@ -38,6 +38,87 @@ import UIKit
         XCTAssertEqual(pages.savedCount, 1)
     }
 
+    func test_everyStoryShortcutResolvesWhenTheStoryListOwnsKeyboardFocus() throws {
+        // Forum #13881: on the Mac, J and V beeped after clicking a story title because only the reader pane registered them.
+        let pane = KeyboardPaneProbe()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        let page = KeyboardScrollPageProbe()
+        page.pageIndex = 0
+        pages.currentPage = page
+        app.reader = pages
+        pane.appDelegate = app
+        pane.loadViewIfNeeded()
+        pane.storyVisible = true
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = pane
+        pane.addChild(pages)
+        pane.view.addSubview(pages.view)
+        pages.didMove(toParent: pane)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil; previousWindow?.makeKey() }
+        XCTAssertTrue(pane.becomeFirstResponder())
+
+        for (input, flags) in Self.mirroredStoryShortcuts {
+            let command = try XCTUnwrap(pane.keyCommands?.first { $0.input == input && $0.modifierFlags == flags },
+                                       "A focused story list must expose the visible reader's \(input) shortcut")
+            let action = try XCTUnwrap(command.action)
+            XCTAssertTrue(command.wantsPriorityOverSystemBehavior)
+            XCTAssertTrue(pane.canPerformAction(action, withSender: command), "\(input) should be enabled")
+            XCTAssertTrue(UIApplication.shared.sendAction(action, to: nil, from: command, for: nil))
+        }
+        XCTAssertEqual(pages.nextCount, 1)
+        XCTAssertEqual(pages.previousCount, 1)
+        XCTAssertEqual(pages.nextUnreadCount, 1)
+        XCTAssertEqual(pages.unreadToggleCount, 2)
+        XCTAssertEqual(pages.originalCount, 2)
+        XCTAssertEqual(pages.trainerCount, 1)
+        XCTAssertEqual(pages.textViewCount, 1)
+        XCTAssertEqual(page.pageDownCount, 1)
+        XCTAssertEqual(page.pageUpCount, 1)
+        XCTAssertEqual(page.commentCount, 1)
+        XCTAssertEqual(page.shareCount, 1)
+    }
+
+    func test_mirroredStoryShortcutsLeaveSearchTypingAndHiddenReadersAlone() throws {
+        let pane = KeyboardPaneProbe()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        pane.appDelegate = app
+        pane.storyVisible = true
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = pane
+        pane.addChild(pages)
+        pane.view.addSubview(pages.view)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil; previousWindow?.makeKey() }
+        let commands = Self.mirroredStoryShortcuts.compactMap { input, flags in
+            pane.keyCommands?.first { $0.input == input && $0.modifierFlags == flags }
+        }
+        XCTAssertEqual(commands.count, Self.mirroredStoryShortcuts.count)
+        let search = UISearchTextField(frame: CGRect(x: 0, y: 0, width: 300, height: 44))
+        pane.view.addSubview(search)
+        XCTAssertTrue(search.becomeFirstResponder())
+        for command in commands { XCTAssertFalse(pane.canPerformAction(try XCTUnwrap(command.action), withSender: command)) }
+        search.resignFirstResponder()
+        for command in commands { XCTAssertTrue(pane.canPerformAction(try XCTUnwrap(command.action), withSender: command)) }
+        pages.view.isHidden = true
+        for command in commands { XCTAssertFalse(pane.canPerformAction(try XCTUnwrap(command.action), withSender: command)) }
+        pages.view.isHidden = false
+        pane.storyVisible = false
+        for command in commands { XCTAssertFalse(pane.canPerformAction(try XCTUnwrap(command.action), withSender: command)) }
+    }
+
+    private static let mirroredStoryShortcuts: [(String, UIKeyModifierFlags)] = [
+        ("j", []), ("k", []), ("n", []), ("u", []), ("m", []), ("o", []), ("v", []), ("t", []), ("\r", .shift),
+        (" ", []), (" ", .shift), ("c", []), ("s", .shift),
+    ]
+
     func test_storyPaneArrowsCanSelectTheFirstArticleBeforeOneIsOpen() throws {
         let pane = KeyboardPaneProbe()
         let app = KeyboardRoutingApp()
@@ -221,6 +302,11 @@ import UIKit
     var nextCount = 0
     var previousCount = 0
     var savedCount = 0
+    var nextUnreadCount = 0
+    var unreadToggleCount = 0
+    var originalCount = 0
+    var trainerCount = 0
+    var textViewCount = 0
     override func loadView() { view = UIView(frame: CGRect(x: 400, y: 0, width: 400, height: 600)) }
     override func viewDidLoad() {}
     override func viewWillAppear(_ animated: Bool) {}
@@ -230,11 +316,18 @@ import UIKit
     override func changeToNextPage(_ sender: Any!) { nextCount += 1 }
     override func changeToPreviousPage(_ sender: Any!) { previousCount += 1 }
     override func toggleStorySaved(_ sender: Any!) { savedCount += 1 }
+    override func doNextUnreadStory(_ sender: Any!) { nextUnreadCount += 1 }
+    override func toggleStoryUnread(_ sender: Any!) { unreadToggleCount += 1 }
+    override func showOriginalSubview(_ sender: Any!) { originalCount += 1 }
+    override func openStoryTrainerFromKeyboard(_ sender: Any!) { trainerCount += 1 }
+    override func toggleTextView(_ sender: Any!) { textViewCount += 1 }
 }
 
 @MainActor private final class KeyboardScrollPageProbe: StoryDetailViewController {
     var pageDownCount = 0
     var pageUpCount = 0
+    var commentCount = 0
+    var shareCount = 0
     var lastSender: AnyObject?
 
     override func scrollPageDown(_ sender: Any!) {
@@ -246,4 +339,7 @@ import UIKit
         pageUpCount += 1
         lastSender = sender as AnyObject?
     }
+
+    override func scrolltoComment() { commentCount += 1 }
+    override func openShareDialog() { shareCount += 1 }
 }
