@@ -345,7 +345,7 @@ import WebKit
             <div class="NB-share-wrapper"><div class="NB-share-inner-wrapper" style="height:40px">Train Share Save Ask AI</div></div>
             <div id="NB-comments-wrapper"></div></body></html>
             """, baseURL: Bundle.main.resourceURL)
-        await fulfillment(of: [loaded], timeout: 15)
+        await fulfillment(of: [loaded], timeout: SimulatorTestTiming.realWorkTimeout)
         func geometry() async throws -> [String: NSNumber] {
             let value = try await web.evaluateJavaScript("""
                 (() => { const footer = document.querySelector('.NB-share-wrapper');
@@ -718,7 +718,7 @@ import WebKit
             article.webView.navigationDelegate = navigation
             article.webView.loadHTMLString("<html><body>Loaded article \(article.pageIndex)</body></html>", baseURL: nil)
         }
-        let readiness = await XCTWaiter.fulfillment(of: loaded, timeout: 10)
+        let readiness = await XCTWaiter.fulfillment(of: loaded, timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertEqual(readiness, .completed, "All three local documents must finish before testing pager selection")
         guard readiness == .completed else { return }
         var documents: [String] = []

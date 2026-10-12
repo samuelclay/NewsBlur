@@ -305,7 +305,7 @@ import XCTest
             window.rootViewController = nil
             previousKeyWindow?.makeKey()
         }
-        await fulfillment(of: [initialAppearance], timeout: 5)
+        await fulfillment(of: [initialAppearance], timeout: SimulatorTestTiming.realWorkTimeout)
         initialDestination.appeared = nil
         feeds.repeatAnimationOnAppearance = repeatingAnimation
 
@@ -315,7 +315,9 @@ import XCTest
             routed.fulfill()
         }
         app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
-        await fulfillment(of: [routed], timeout: 2)
+        // NotificationNavigationTests.swift waits for the real pop transition, which a stalled CI main thread can stretch
+        // past a few seconds; the repeating animation never finishes, so waiting on it would still miss any finite budget.
+        await fulfillment(of: [routed], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertTrue(navigation.topViewController === feeds)
         XCTAssertEqual(app.openedFeed, "42")
         XCTAssertEqual(app.openedHash, "42:older-story")
