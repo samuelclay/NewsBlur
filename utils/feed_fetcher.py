@@ -1348,6 +1348,8 @@ class ProcessFeed:
         self.raw_feed = raw_feed
         self.feed_entries = []
         self.archive_seen_story_hashes = set()
+        # The hashes of the stories in this response, which an unread feed's trim keeps (utils/feed_fetcher.py)
+        self.fetched_story_hashes = []
         self.cache_control_max_age = None
         # Set when the lease on the feed's merge lock ran out partway through the batch.
         self.lease_lost = False
@@ -1563,7 +1565,7 @@ class ProcessFeed:
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
             if not getattr(settings, "TEST_DEBUG", False):
-                self.feed.trim_feed()
+                self.feed.trim_feed(fetched_story_hashes=self.fetched_story_hashes)
                 self.feed.expire_redis()
             if MStatistics.get("raw_feed", None) == self.feed.pk:
                 self.feed.save_raw_feed(self.raw_feed, fetch_date)
@@ -1697,6 +1699,7 @@ class ProcessFeed:
             story_hashes.append(story.get("story_hash"))
 
         original_story_hash_count = len(story_hashes)
+        self.fetched_story_hashes = list(story_hashes)
         story_hashes_in_unread_cutoff = self.feed.story_hashes_in_unread_cutoff[:original_story_hash_count]
         story_hashes.extend(story_hashes_in_unread_cutoff)
         story_hashes = list(set(story_hashes))
