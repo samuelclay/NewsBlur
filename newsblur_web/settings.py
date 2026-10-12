@@ -1055,7 +1055,11 @@ CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
 # broker gives it to another worker. Countdown tasks wait unacknowledged until they run, so it
 # has to outlast MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW plus a feed's walk. At the 1 hour
 # default every feed of a 3,910 feed archive backfill was walked once per hour it had waited.
-# Graceful worker restarts hand unacknowledged tasks back right away; only a hard crash waits it out.
+# Graceful worker restarts hand unacknowledged tasks back right away; only a hard crash waits it out,
+# and that applies to every queue, which was chosen on purpose over a separate broker for archive work.
+# max_retries and interval_* apply for the first time too, also on purpose: publishing a task gives up
+# after about a second of broker connection errors instead of retrying forever, so a request fails
+# rather than hangs (payment providers retry a webhook that fails).
 CELERY_BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
