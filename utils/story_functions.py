@@ -231,6 +231,7 @@ EMBEDDABLE_IFRAME_DOMAINS = [
     "w.soundcloud.com",
     "open.spotify.com",
     "bandcamp.com",
+    "facebook.com",
 ]
 
 
