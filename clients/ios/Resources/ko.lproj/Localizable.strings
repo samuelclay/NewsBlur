@@ -798,6 +798,7 @@
 "Two Rows" = "두 줄";
 "Two finger double tap" = "두 손가락으로 두 번 탭";
 "Two-finger swipe to switch" = "두 손가락으로 쓸어넘겨 전환";
+"Type %@ to permanently delete %@." = "%@을 영구적으로 삭제하려면 %@을 입력하세요.";
 "Unable to Subscribe" = "구독할 수 없음";
 "Unable to load Daily Briefing" = "데일리 브리핑을 불러올 수 없습니다";
 "Unable to load Daily Briefing." = "Daily Briefing을 불러올 수 없습니다.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "또는";
 "premium subscribers" = "프리미엄 구독자";
+"your account" = "내 계정";
 "— Top Level —" = "— 최상위 —";
 "‹ Feeds" = "‹ 피드";

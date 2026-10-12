@@ -945,7 +945,7 @@
     <string name="onboarding_apple_account_settings">Настройки учётной записи Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Удаление аккаунта навсегда удалит ваши ленты, сохранённые статьи и данные аккаунта. Это действие нельзя отменить.</string>
     <string name="onboarding_confirm_your_password">Подтвердите пароль</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Введите Delete, чтобы навсегда удалить аккаунт.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Введите %1$s, чтобы навсегда удалить аккаунт.</string>
     <string name="onboarding_delete">Удалить</string>
     <string name="onboarding_permanently_delete_account">Удалить аккаунт навсегда</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Персональная программа для чтения новостей, которая объединяет\nлюдей, чтобы обсуждать происходящее в мире.</string>

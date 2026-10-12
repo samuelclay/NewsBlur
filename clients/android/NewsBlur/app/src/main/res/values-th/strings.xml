@@ -930,7 +930,7 @@
     <string name="onboarding_apple_account_settings">การตั้งค่าบัญชี Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">การลบบัญชีจะลบฟีด เรื่องราวที่บันทึกไว้ และข้อมูลบัญชีของคุณอย่างถาวร และไม่สามารถยกเลิกได้</string>
     <string name="onboarding_confirm_your_password">ยืนยันรหัสผ่านของคุณ</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">พิมพ์ Delete เพื่อลบบัญชีของคุณอย่างถาวร</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">พิมพ์ %1$s เพื่อลบบัญชีของคุณอย่างถาวร</string>
     <string name="onboarding_delete">ลบ</string>
     <string name="onboarding_permanently_delete_account">ลบบัญชีอย่างถาวร</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">โปรแกรมอ่านข่าวส่วนตัวที่พา\nผู้คนมาพูดคุยเกี่ยวกับโลก</string>

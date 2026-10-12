@@ -935,7 +935,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="onboarding_apple_account_settings">Apple Hesabı ayarları</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Hesabınızı silmek; akışlarınızı, kaydedilmiş haberlerinizi ve hesap verilerinizi kalıcı olarak siler. Bu işlem geri alınamaz.</string>
     <string name="onboarding_confirm_your_password">Parolanızı doğrulayın</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Hesabınızı kalıcı olarak silmek için Delete yazın.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Hesabınızı kalıcı olarak silmek için %1$s yazın.</string>
     <string name="onboarding_delete">Sil</string>
     <string name="onboarding_permanently_delete_account">Hesabı kalıcı olarak sil</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Dünyayı konuşmak için\ninsanları bir araya getiren kişisel bir haber okuyucu.</string>

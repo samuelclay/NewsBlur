@@ -798,6 +798,7 @@
 "Two Rows" = "2行";
 "Two finger double tap" = "2本指でダブルタップ";
 "Two-finger swipe to switch" = "2本指でスワイプして切り替え";
+"Type %@ to permanently delete %@." = "%@ を入力して、%@を完全に削除してください。";
 "Unable to Subscribe" = "購読できません";
 "Unable to load Daily Briefing" = "デイリーブリーフィングを読み込めません";
 "Unable to load Daily Briefing." = "デイリーブリーフィングを読み込めません。";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "または";
 "premium subscribers" = "プレミアム購読者";
+"your account" = "あなたのアカウント";
 "— Top Level —" = "— 最上位 —";
 "‹ Feeds" = "‹ フィード";

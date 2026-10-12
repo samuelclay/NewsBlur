@@ -798,6 +798,7 @@
 "Two Rows" = "Два ряда";
 "Two finger double tap" = "Двойное касание двумя пальцами";
 "Two-finger swipe to switch" = "Проведите двумя пальцами, чтобы переключить";
+"Type %@ to permanently delete %@." = "Введите %@, чтобы навсегда удалить %@.";
 "Unable to Subscribe" = "Не удалось подписаться";
 "Unable to load Daily Briefing" = "Не удалось загрузить ежедневную сводку";
 "Unable to load Daily Briefing." = "Не удалось загрузить ежедневную сводку.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "или";
 "premium subscribers" = "подписчики Premium";
+"your account" = "ваш аккаунт";
 "— Top Level —" = "— Верхний уровень —";
 "‹ Feeds" = "‹ Ленты";

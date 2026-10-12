@@ -945,7 +945,7 @@
     <string name="onboarding_apple_account_settings">Налаштування облікового запису Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Якщо видалити обліковий запис, ваші стрічки, збережені статті та дані облікового запису буде видалено назавжди. Цю дію не можна скасувати.</string>
     <string name="onboarding_confirm_your_password">Підтвердьте пароль</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Введіть «Delete», щоб назавжди видалити обліковий запис.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Введіть %1$s, щоб назавжди видалити обліковий запис.</string>
     <string name="onboarding_delete">Видалити</string>
     <string name="onboarding_permanently_delete_account">Назавжди видалити обліковий запис</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Персональна програма для читання новин, що об’єднує\nлюдей для обговорення подій у світі.</string>

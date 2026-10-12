@@ -935,7 +935,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="onboarding_apple_account_settings">Einstellungen des Apple Accounts</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Wenn du dein Konto löschst, werden deine Feeds, gespeicherten Artikel und Kontodaten dauerhaft entfernt. Dieser Vorgang kann nicht rückgängig gemacht werden.</string>
     <string name="onboarding_confirm_your_password">Passwort bestätigen</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Gib „Delete“ ein, um dein Konto dauerhaft zu löschen.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Gib %1$s ein, um dein Konto endgültig zu löschen.</string>
     <string name="onboarding_delete">Löschen</string>
     <string name="onboarding_permanently_delete_account">Konto dauerhaft löschen</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Ein persönlicher Newsreader, der\nMenschen zusammenbringt, um über die Welt zu sprechen.</string>

@@ -935,7 +935,7 @@ om over de wereld te praten.</string>
     <string name="onboarding_apple_account_settings">Instellingen van je Apple Account</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Als je je account verwijdert, worden je feeds, opgeslagen artikelen en accountgegevens definitief verwijderd. Dit kan niet ongedaan worden gemaakt.</string>
     <string name="onboarding_confirm_your_password">Bevestig je wachtwoord</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Typ Delete om je account definitief te verwijderen.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Typ %1$s om je account permanent te verwijderen.</string>
     <string name="onboarding_delete">Verwijderen</string>
     <string name="onboarding_permanently_delete_account">Account definitief verwijderen</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Een persoonlijke nieuwslezer die\nmensen samenbrengt om over de wereld te praten.</string>

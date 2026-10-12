@@ -930,7 +930,7 @@
     <string name="onboarding_apple_account_settings">Apple 帳戶設定</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">刪除帳戶會永久移除你的訂閱來源、已儲存文章和帳戶資料，且無法復原。</string>
     <string name="onboarding_confirm_your_password">確認密碼</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">輸入 Delete 以永久刪除你的帳戶。</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">輸入 %1$s 以永久刪除你的帳戶。</string>
     <string name="onboarding_delete">刪除</string>
     <string name="onboarding_permanently_delete_account">永久刪除帳戶</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">一款個人新聞閱讀器，讓\n人們齊聚一堂，暢談世界。</string>

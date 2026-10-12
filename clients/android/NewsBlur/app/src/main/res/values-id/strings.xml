@@ -930,7 +930,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="onboarding_apple_account_settings">Pengaturan Akun Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Menghapus akun akan menghapus feed, cerita tersimpan, dan data akun Anda secara permanen. Tindakan ini tidak dapat dibatalkan.</string>
     <string name="onboarding_confirm_your_password">Konfirmasi kata sandi Anda</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Ketik Hapus untuk menghapus akun Anda secara permanen.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Ketik %1$s untuk menghapus akun Anda secara permanen.</string>
     <string name="onboarding_delete">Hapus</string>
     <string name="onboarding_permanently_delete_account">Hapus akun secara permanen</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Pembaca berita pribadi yang mempertemukan\norang untuk membicarakan dunia.</string>

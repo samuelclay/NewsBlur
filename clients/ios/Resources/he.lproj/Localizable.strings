@@ -798,6 +798,7 @@
 "Two Rows" = "שתי שורות";
 "Two finger double tap" = "הקשה כפולה בשתי אצבעות";
 "Two-finger swipe to switch" = "החלקה בשתי אצבעות למעבר";
+"Type %@ to permanently delete %@." = "הקלידו %@ כדי למחוק את %@ לצמיתות.";
 "Unable to Subscribe" = "לא ניתן להירשם";
 "Unable to load Daily Briefing" = "לא ניתן לטעון את התדריך היומי";
 "Unable to load Daily Briefing." = "לא ניתן לטעון את התדריך היומי.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "או";
 "premium subscribers" = "מנויי פרימיום";
+"your account" = "החשבון שלך";
 "— Top Level —" = "— רמה עליונה —";
 "‹ Feeds" = "‹ פידים";

@@ -798,6 +798,7 @@
 "Two Rows" = "Dua Baris";
 "Two finger double tap" = "Ketuk dua kali dengan dua jari";
 "Two-finger swipe to switch" = "Geser dengan dua jari untuk beralih";
+"Type %@ to permanently delete %@." = "Ketik %@ untuk menghapus %@ secara permanen.";
 "Unable to Subscribe" = "Tidak Dapat Berlangganan";
 "Unable to load Daily Briefing" = "Tidak dapat memuat Ringkasan Harian";
 "Unable to load Daily Briefing." = "Tidak dapat memuat Ringkasan Harian.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "atau";
 "premium subscribers" = "pelanggan premium";
+"your account" = "akun Anda";
 "— Top Level —" = "— Tingkat Teratas —";
 "‹ Feeds" = "‹ Feed";

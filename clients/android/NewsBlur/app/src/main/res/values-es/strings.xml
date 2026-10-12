@@ -940,7 +940,7 @@ personas para hablar sobre el mundo.</string>
     <string name="onboarding_apple_account_settings">Ajustes de la cuenta de Apple</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Al eliminar tu cuenta, se borrarán permanentemente tus canales, historias guardadas y datos de la cuenta. Esta acción no se puede deshacer.</string>
     <string name="onboarding_confirm_your_password">Confirma tu contraseña</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">Escribe Delete para eliminar tu cuenta de forma permanente.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Escribe %1$s para eliminar tu cuenta de forma permanente.</string>
     <string name="onboarding_delete">Eliminar</string>
     <string name="onboarding_permanently_delete_account">Eliminar cuenta permanentemente</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Un lector de noticias personal que reúne\na personas para hablar del mundo.</string>

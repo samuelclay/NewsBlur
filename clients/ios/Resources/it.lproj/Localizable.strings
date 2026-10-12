@@ -798,6 +798,7 @@
 "Two Rows" = "Due righe";
 "Two finger double tap" = "Doppio tocco con due dita";
 "Two-finger swipe to switch" = "Scorri con due dita per cambiare";
+"Type %@ to permanently delete %@." = "Digita %@ per eliminare definitivamente %@.";
 "Unable to Subscribe" = "Impossibile iscriversi";
 "Unable to load Daily Briefing" = "Impossibile caricare il riepilogo giornaliero";
 "Unable to load Daily Briefing." = "Impossibile caricare il briefing quotidiano.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "o";
 "premium subscribers" = "abbonati Premium";
+"your account" = "il tuo account";
 "— Top Level —" = "— Livello superiore —";
 "‹ Feeds" = "‹ Feed";

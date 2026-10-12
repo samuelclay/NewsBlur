@@ -798,6 +798,7 @@
 "Two Rows" = "Hai hàng";
 "Two finger double tap" = "Chạm đúp bằng hai ngón tay";
 "Two-finger swipe to switch" = "Vuốt bằng hai ngón tay để chuyển đổi";
+"Type %@ to permanently delete %@." = "Nhập %@ để xóa vĩnh viễn %@.";
 "Unable to Subscribe" = "Không thể đăng ký";
 "Unable to load Daily Briefing" = "Không thể tải Bản tin hằng ngày";
 "Unable to load Daily Briefing." = "Không thể tải Điểm tin hằng ngày.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "hoặc";
 "premium subscribers" = "người đăng ký Premium";
+"your account" = "tài khoản của bạn";
 "— Top Level —" = "— Cấp cao nhất —";
 "‹ Feeds" = "‹ Nguồn tin";

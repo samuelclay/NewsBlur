@@ -798,6 +798,7 @@
 "Two Rows" = "Twee rijen";
 "Two finger double tap" = "Dubbeltikken met twee vingers";
 "Two-finger swipe to switch" = "Veeg met twee vingers om te wisselen";
+"Type %@ to permanently delete %@." = "Typ %@ om %@ permanent te verwijderen.";
 "Unable to Subscribe" = "Abonneren niet mogelijk";
 "Unable to load Daily Briefing" = "Dagelijkse briefing kan niet worden geladen";
 "Unable to load Daily Briefing." = "Daily Briefing kan niet worden geladen.";
@@ -869,5 +870,6 @@
 "iOS" = "iOS";
 "or" = "of";
 "premium subscribers" = "premiumabonnees";
+"your account" = "je account";
 "— Top Level —" = "— Bovenste niveau —";
 "‹ Feeds" = "‹ Feeds";

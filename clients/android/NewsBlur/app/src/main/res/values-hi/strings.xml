@@ -935,7 +935,7 @@
     <string name="onboarding_apple_account_settings">Apple Account सेटिंग</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">खाता हटाने से आपके फ़ीड, सहेजी गई स्टोरीज़ और खाते का डेटा हमेशा के लिए मिट जाएगा। इसे वापस नहीं किया जा सकता।</string>
     <string name="onboarding_confirm_your_password">अपने पासवर्ड की पुष्टि करें</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">अपना खाता हमेशा के लिए हटाने के लिए Delete लिखें।</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">अपना खाता स्थायी रूप से हटाने के लिए %1$s टाइप करें।</string>
     <string name="onboarding_delete">हटाएँ</string>
     <string name="onboarding_permanently_delete_account">खाता हमेशा के लिए हटाएँ</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">एक निजी समाचार रीडर, जो\nलोगों को दुनिया के बारे में बातचीत करने के लिए जोड़ता है।</string>
