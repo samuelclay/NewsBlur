@@ -1,9 +1,9 @@
 <resources>
     <string name="reader_enter_fullscreen">Read full screen</string>
     <string name="story_list_enter_fullscreen">Show story titles full screen</string>
-    <string name="story_list_exit_fullscreen">Show story titles beside the reader</string>
+    <string name="story_list_exit_fullscreen">Show tablet columns</string>
     <string name="feed_list_enter_fullscreen">Show feeds full screen</string>
-    <string name="feed_list_exit_fullscreen">Show feeds in a drawer</string>
+    <string name="feed_list_exit_fullscreen">Show feeds beside story titles</string>
     <string name="reader_exit_fullscreen">Show story list</string>
     <string name="try_feed_instafetching">Insta-fetching stories…</string>
     <string name="try_feed_fetch_failed">Unable to fetch stories. Tap to try again.</string>
@@ -1071,4 +1071,6 @@ people together to talk about the world.</string>
     <string name="parent_folder">Parent folder</string>
     <string name="folder_added">Folder added</string>
     <string name="new_folder_parent">In: %1$s</string>
+    <string name="resize_feed_list">Resize feed list</string>
+    <string name="resize_story_list">Resize story titles</string>
 </resources>
