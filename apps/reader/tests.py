@@ -397,7 +397,12 @@ class Test_ArchiveBackfillDispatch(TestCase):
         self.feeds_key = UserSubscription.archive_backfill_feeds_key(self.user.pk)
         self.state_key = UserSubscription.archive_backfill_state_key(self.user.pk)
         self.claim_key = UserSubscription.archive_backfill_claim_key(self.user.pk)
-        for key in (self.feeds_key, self.state_key, self.claim_key):
+        for key in (
+            self.feeds_key,
+            self.state_key,
+            self.claim_key,
+            UserSubscription.archive_backfill_pending_key(self.user.pk),
+        ):
             self.r.delete(key)
             self.addCleanup(self.r.delete, key)
 
@@ -560,10 +565,14 @@ class Test_ArchiveBackfillFinish(TestCase):
         )
         self.r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         self.start_time = 1234.5
+        # Another of the backfill's walks, still going.
+        self.other_feed_id = 990000301
         for key in (
             UserSubscription.archive_backfill_feeds_key(self.user.pk),
             UserSubscription.archive_backfill_state_key(self.user.pk),
             UserSubscription.archive_backfill_finished_key(self.user.pk, self.start_time),
+            UserSubscription.archive_backfill_pending_key(self.user.pk),
+            UserSubscription.archive_backfill_claim_key(self.user.pk),
         ):
             self.r.delete(key)
             self.addCleanup(self.r.delete, key)
@@ -585,7 +594,7 @@ class Test_ArchiveBackfillFinish(TestCase):
     def test_the_finish_waits_while_walks_are_pending(self):
         from apps.reader.models import ARCHIVE_BACKFILL_FINISH_RECHECK_SECONDS
 
-        UserSubscription.count_archive_backfill_walks(self.user.pk, 2)
+        UserSubscription.track_archive_backfill_walks(self.user.pk, [self.feed.pk, self.other_feed_id])
 
         self._finish()
 
@@ -608,7 +617,7 @@ class Test_ArchiveBackfillFinish(TestCase):
         anyway once it has waited its full allowance."""
         from apps.reader.models import ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS
 
-        UserSubscription.count_archive_backfill_walks(self.user.pk, 1)
+        UserSubscription.track_archive_backfill_walks(self.user.pk, [self.feed.pk])
 
         self._finish(rechecks=ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS)
 
@@ -616,13 +625,59 @@ class Test_ArchiveBackfillFinish(TestCase):
         self.requeue.assert_not_called()
 
     def test_a_walk_lowers_the_pending_count_even_when_it_fails(self):
-        UserSubscription.count_archive_backfill_walks(self.user.pk, 1)
+        UserSubscription.track_archive_backfill_walks(self.user.pk, [self.feed.pk])
 
         with patch.object(Feed, "fill_out_archive_stories", side_effect=RuntimeError("fetch blew up")):
             with self.assertRaises(RuntimeError):
                 UserSubscription.fetch_archive_feeds_chunk([self.feed.pk], user_id=self.user.pk)
 
         self.assertEqual(UserSubscription.archive_backfill_walks_pending(self.user.pk), 0)
+
+    def test_a_walk_delivered_twice_ends_only_itself(self):
+        """Celery can deliver a finished walk again when its acknowledgement is lost. The
+        second delivery must not count as another walk ending, or the finish would run while
+        a different walk is still going."""
+        UserSubscription.track_archive_backfill_walks(self.user.pk, [self.feed.pk, self.other_feed_id])
+
+        with patch.object(Feed, "fill_out_archive_stories"):
+            UserSubscription.fetch_archive_feeds_chunk([self.feed.pk], user_id=self.user.pk)
+            UserSubscription.fetch_archive_feeds_chunk([self.feed.pk], user_id=self.user.pk)
+
+        self.assertEqual(UserSubscription.archive_backfill_walks_pending(self.user.pk), 1)
+
+    def test_a_finish_that_cannot_queue_its_recheck_runs_now(self):
+        """The finish is acknowledged when it starts, so if it can't queue its next check
+        nothing else would ever sync the user's feeds or send the email."""
+        from kombu.exceptions import OperationalError
+
+        UserSubscription.track_archive_backfill_walks(self.user.pk, [self.feed.pk])
+        self.requeue.side_effect = OperationalError("broker unreachable")
+
+        self._finish()
+
+        self.finish_work.assert_called_once()
+        self.email.assert_called_once_with(10, 5)
+
+    def test_the_finish_frees_the_users_claim(self):
+        """A user who downgrades and upgrades again after the backfill finished gets a new one."""
+        self.r.set(UserSubscription.archive_backfill_claim_key(self.user.pk), 1)
+
+        self._finish()
+
+        self.assertFalse(self.r.exists(UserSubscription.archive_backfill_claim_key(self.user.pk)))
+
+    def test_a_dispatcher_out_of_retries_frees_the_users_claim(self):
+        """A backfill whose dispatcher gives up is abandoned, so a later upgrade event can start
+        a new one instead of being skipped for the life of the claim."""
+        from apps.profile.tasks import DispatchArchiveBackfill
+
+        self.r.set(UserSubscription.archive_backfill_claim_key(self.user.pk), 1)
+        kwargs = dict(user_id=self.user.pk, start_time=self.start_time, starting_story_count=0)
+
+        DispatchArchiveBackfill.on_failure(RuntimeError("broker down"), "task-id", (), kwargs, None)
+
+        self.assertFalse(self.r.exists(UserSubscription.archive_backfill_claim_key(self.user.pk)))
+        self.assertFalse(self.r.exists(UserSubscription.archive_backfill_state_key(self.user.pk)))
 
 
 class Test_ArchiveBackfillScheduling(TestCase):
@@ -638,6 +693,7 @@ class Test_ArchiveBackfillScheduling(TestCase):
             UserSubscription.archive_backfill_claim_key(self.user.pk),
             UserSubscription.archive_backfill_feeds_key(self.user.pk),
             UserSubscription.archive_backfill_state_key(self.user.pk),
+            UserSubscription.archive_backfill_pending_key(self.user.pk),
         ):
             r.delete(key)
             self.addCleanup(r.delete, key)
