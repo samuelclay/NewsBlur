@@ -8583,29 +8583,36 @@ class Test_TrimKeepsTheFetchedBatch(TestCase):
     FRONT_MATTER = 7
     ARTICLES = 43
 
-    def _issue_xml(self):
-        items = []
-        for number in range(self.FRONT_MATTER):
-            items.append(
-                "<item><title>Front matter %s</title><link>https://ieee.example.com/document/f%s</link>"
-                "<guid>https://ieee.example.com/document/f%s</guid><description>null</description>"
-                "<pubDate>Thu, 10 Sep 2026 05:07:%02d GMT</pubDate></item>" % (number, number, number, number)
-            )
-        first_article = datetime.datetime(2026, 7, 20, 13, 16)
-        for number in range(self.ARTICLES):
-            published = first_article + datetime.timedelta(days=number)
-            items.append(
-                "<item><title>Article %s</title><link>https://ieee.example.com/document/a%s</link>"
-                "<guid>https://ieee.example.com/document/a%s</guid>"
-                "<description>Abstract of article %s in this issue.</description>"
-                "<pubDate>%s</pubDate></item>"
-                % (number, number, number, number, published.strftime("%a, %d %b %Y %H:%M:%S GMT"))
-            )
+    def _item(self, guid, title, published, description):
+        return (
+            "<item><title>%s</title><link>https://ieee.example.com/document/%s</link>"
+            "<guid>https://ieee.example.com/document/%s</guid><description>%s</description>"
+            "<pubDate>%s</pubDate></item>"
+            % (title, guid, guid, description, published.strftime("%a, %d %b %Y %H:%M:%S GMT"))
+        )
+
+    def _feed_xml(self, items):
         return (
             '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>'
             "<title>IEEE Transactions - new TOC</title><link>https://ieee.example.com</link>%s"
             "</channel></rss>" % "".join(items)
         )
+
+    def _issue_xml(self, issue, front_matter_date, first_article_date):
+        """One issue: front matter dated newest, then one article a day from first_article_date."""
+        items = []
+        for number in range(self.FRONT_MATTER):
+            published = front_matter_date + datetime.timedelta(seconds=number)
+            items.append(
+                self._item(
+                    "%s-f%s" % (issue, number), "%s front matter %s" % (issue, number), published, "null"
+                )
+            )
+        for number in range(self.ARTICLES):
+            published = first_article_date + datetime.timedelta(days=number)
+            title = "%s article %s" % (issue, number)
+            items.append(self._item("%s-a%s" % (issue, number), title, published, "Abstract of %s." % title))
+        return self._feed_xml(items)
 
     def _feed(self):
         feed = Feed.objects.create(
@@ -8624,6 +8631,20 @@ class Test_TrimKeepsTheFetchedBatch(TestCase):
         self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
         return Feed.objects.get(pk=feed.pk)
 
+    def _fetch(self, feed, xml):
+        import feedparser
+
+        from utils.feed_fetcher import FEED_OK, ProcessFeed
+
+        pfeed = ProcessFeed(feed.pk, feedparser.parse(xml), dict(self.options))
+        pfeed.refresh_feed()
+        ret_feed, ret_values = pfeed.process()
+        self.assertEqual(ret_feed, FEED_OK)
+        return ret_values
+
+    def _titles(self, feed, prefix):
+        return MStory.objects(story_feed_id=feed.pk, story_title__startswith=prefix).count()
+
     @override_settings(TEST_DEBUG=False)
     @patch("apps.rss_feeds.models.Feed.save_feed_history")
     @patch("apps.rss_feeds.models.Feed.update_all_statistics")
@@ -8631,36 +8652,84 @@ class Test_TrimKeepsTheFetchedBatch(TestCase):
     def test_a_fetched_issue_survives_the_trim_on_a_feed_nobody_has_read_lately(
         self, mock_redis, mock_statistics, mock_history
     ):
-        import feedparser
-
-        from utils.feed_fetcher import FEED_OK, ProcessFeed
-
         feed = self._feed()
         # No reads recorded in any recent week (the fR:<feed>:<week> counters are empty).
         mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
         self.assertEqual(feed.number_of_stories_to_store(), 10)
 
-        pfeed = ProcessFeed(feed.pk, feedparser.parse(self._issue_xml()), dict(self.options))
-        pfeed.refresh_feed()
-        ret_feed, ret_values = pfeed.process()
+        september = self._issue_xml(
+            "September", datetime.datetime(2026, 9, 10, 5, 7), datetime.datetime(2026, 7, 20)
+        )
+        ret_values = self._fetch(feed, september)
 
-        self.assertEqual(ret_feed, FEED_OK)
         self.assertEqual(ret_values["new"], self.FRONT_MATTER + self.ARTICLES)
-        stored = MStory.objects(story_feed_id=feed.pk)
-        self.assertEqual(stored.count(), self.FRONT_MATTER + self.ARTICLES)
-        self.assertEqual(MStory.objects(story_feed_id=feed.pk, story_title__startswith="Article").count(), 43)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), self.FRONT_MATTER + self.ARTICLES)
+        self.assertEqual(self._titles(feed, "September article"), self.ARTICLES)
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_the_next_issue_survives_even_when_its_articles_are_dated_before_the_last_issue(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """The October issue's articles went online in August, before September's front matter.
+        Ranked by date alone, September's leftovers would push them past the cutoff."""
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        self._fetch(
+            feed,
+            self._issue_xml(
+                "September", datetime.datetime(2026, 9, 10, 5, 7), datetime.datetime(2026, 7, 20)
+            ),
+        )
+
+        october = self._issue_xml(
+            "October", datetime.datetime(2026, 10, 10, 5, 7), datetime.datetime(2026, 8, 1)
+        )
+        ret_values = self._fetch(feed, october)
+
+        self.assertEqual(ret_values["new"], self.FRONT_MATTER + self.ARTICLES)
+        self.assertEqual(self._titles(feed, "October article"), self.ARTICLES)
+        self.assertEqual(self._titles(feed, "October front matter"), self.FRONT_MATTER)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), self.FRONT_MATTER + self.ARTICLES)
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_an_unread_feed_that_adds_one_story_still_trims_to_ten(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        for number in range(20):
+            MStory(
+                story_feed_id=feed.pk,
+                story_guid="https://ieee.example.com/document/old-%s" % number,
+                story_title="Old story %s" % number,
+                story_permalink="https://ieee.example.com/document/old-%s" % number,
+                story_date=datetime.datetime(2026, 9, 1) + datetime.timedelta(hours=number),
+            ).save()
+
+        newest = self._item("fresh", "Fresh story", datetime.datetime(2026, 10, 1), "A single new story.")
+        ret_values = self._fetch(feed, self._feed_xml([newest]))
+
+        self.assertEqual(ret_values["new"], 1)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 10)
+        self.assertEqual(self._titles(feed, "Fresh story"), 1)
 
     @patch("apps.rss_feeds.models.redis")
-    def test_the_unread_cap_grows_to_the_published_batch_but_not_past_the_normal_cutoff(self, mock_redis):
+    def test_the_unread_cap_grows_to_the_new_stories_but_not_past_the_normal_cutoff(self, mock_redis):
         feed = self._feed()
         mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
 
         self.assertEqual(feed.number_of_stories_to_store(), 10)
-        self.assertEqual(feed.number_of_stories_to_store(published_count=4), 10)
-        self.assertEqual(feed.number_of_stories_to_store(published_count=50), 50)
+        self.assertEqual(feed.number_of_stories_to_store(new_story_count=4), 10)
+        self.assertEqual(feed.number_of_stories_to_store(new_story_count=50), 50)
         # One active Premium subscriber stores up to 200 when the feed is read, and no more here.
-        self.assertEqual(feed.number_of_stories_to_store(published_count=500), 200)
+        self.assertEqual(feed.number_of_stories_to_store(new_story_count=500), 200)
 
         # A feed with recent reads already keeps its normal cutoff.
         mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
-        self.assertEqual(feed.number_of_stories_to_store(published_count=50), 200)
+        self.assertEqual(feed.number_of_stories_to_store(new_story_count=50), 200)
