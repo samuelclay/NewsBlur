@@ -101,6 +101,8 @@ import UIKit
         let path = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 997))
         let readStarted = expectation(description: "The old icon is read by native prefetch")
         let release = DispatchSemaphore(value: 0)
+        // StoryFaviconPrefetchTests.swift also releases the held worker if the test throws before its own signal.
+        defer { release.signal() }
         fixture.storage.diskCache.afterRead = { key, isMain in
             if key == "1" && !isMain {
                 readStarted.fulfill()
@@ -187,6 +189,7 @@ import UIKit
         let oldPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 997))
         let readStarted = expectation(description: "Original nearby icon entered its worker")
         let release = DispatchSemaphore(value: 0)
+        defer { release.signal() }
         fixture.storage.diskCache.afterRead = { key, main in
             if key == "1" && !main {
                 readStarted.fulfill()
@@ -222,6 +225,7 @@ import UIKit
         let paths = (0..<24).map { IndexPath(row: $0, section: 0) }
         let readStarted = expectation(description: "The first of24 nearby feeds entered its worker")
         let release = DispatchSemaphore(value: 0)
+        defer { release.signal() }
         fixture.storage.diskCache.afterRead = { key, main in
             if key == "1" && !main {
                 readStarted.fulfill()

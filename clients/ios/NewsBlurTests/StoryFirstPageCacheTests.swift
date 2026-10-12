@@ -324,6 +324,8 @@ import XCTest
         await flush(fixture.cache)
         let held = expectation(description: "marker queue held")
         let gate = DispatchSemaphore(value: 0)
+        // StoryFirstPageCacheTests.swift also releases the held worker if the test throws before its own signal.
+        defer { gate.signal() }
         fixture.cache.markerQueue.async { held.fulfill(); _ = gate.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout) }
         await fulfillment(of: [held], timeout: SimulatorTestTiming.realWorkTimeout)
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) { gate.signal() }
@@ -340,6 +342,7 @@ import XCTest
         _ = try await requireSnapshot(fixture.cache, request: fixture.request)
         let held = expectation(description: "snapshot queue held")
         let gate = DispatchSemaphore(value: 0)
+        defer { gate.signal() }
         fixture.cache.queue.async { held.fulfill(); _ = gate.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout) }
         await fulfillment(of: [held], timeout: SimulatorTestTiming.realWorkTimeout)
         let finished = expectation(description: "superseded background flush")
