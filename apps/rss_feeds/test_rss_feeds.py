@@ -5321,9 +5321,15 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
             args=[[feed.pk]],
             kwargs={"user_id": None},
             queue="search_indexer",
-            countdown=feed_fetcher.FETCH_LOCK_DEFERRAL_SECONDS,
+            countdown=feed_fetcher.ARCHIVE_WALK_REQUEUE_DELAY_SECONDS,
             time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
             soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
+        )
+        # The walk that queued the retry goes on to the other page styles and holds the feed's
+        # walk lock until it ends, at most the lock's lifetime. A retry arriving before then
+        # would find the lock taken and exit without fetching the missing pages.
+        self.assertGreater(
+            feed_fetcher.ARCHIVE_WALK_REQUEUE_DELAY_SECONDS, settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED
         )
 
     def _clear_requeue_count(self, feed):
@@ -5348,6 +5354,27 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
                 worker.reschedule_archive_walk(feed)
 
         self.assertEqual(requeued.call_count, feed_fetcher.ARCHIVE_WALK_MAX_REQUEUES)
+
+    def test_an_archive_requeue_count_always_expires(self):
+        """A count left without an expiry, say by a worker that died between counting and
+        setting the window, would stop the feed's archive requeues for good once it passed
+        the cap. Counting a requeue gives the count its window back."""
+        from utils import feed_fetcher
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        feed = self._feed("https://rss.example.com/lineup/archive-expiring.xml")
+        self._clear_requeue_count(feed)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        key = "archive_walk_requeues:%s" % feed.pk
+        r.set(key, 1)
+        self.assertEqual(r.ttl(key), -1)
+
+        with patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async") as requeued:
+            FeedFetcherWorker(dict(self.options, archive_page=2)).reschedule_archive_walk(feed)
+
+        requeued.assert_called_once()
+        self.assertGreater(r.ttl(key), 0)
+        self.assertLessEqual(r.ttl(key), feed_fetcher.ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS)
 
     @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
     @patch("apps.rss_feeds.models.MStory.remove_from_redis")
