@@ -5284,6 +5284,7 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         from utils.feed_fetcher import FeedFetcherWorker, ProcessFeed
 
         feed = self._feed("https://rss.example.com/lineup/archive.xml")
+        self._clear_requeue_count(feed)
         options = dict(self.options, archive_page=2)
         worker = FeedFetcherWorker(options)
         pfeed = ProcessFeed(feed.pk, self._parsed('"archive"'), options)
@@ -5313,10 +5314,40 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
             self.assertFalse(worker.process_archive_page(pfeed, feed))
         self.assertEqual(always_locked.call_count, feed_fetcher.ARCHIVE_PAGE_LOCK_ATTEMPTS)
         # The walk stops here, and the import is queued again so the missing pages are
-        # fetched once the lock is free.
+        # fetched once the lock is free. It goes back to the archive queue with the archive
+        # time limits: on the default queue it ran on the work servers under the 360 second
+        # global limit, which a long walk never finishes inside.
         requeued.assert_called_once_with(
-            args=[[feed.pk]], kwargs={"user_id": None}, countdown=feed_fetcher.FETCH_LOCK_DEFERRAL_SECONDS
+            args=[[feed.pk]],
+            kwargs={"user_id": None},
+            queue="search_indexer",
+            countdown=feed_fetcher.FETCH_LOCK_DEFERRAL_SECONDS,
+            time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
         )
+
+    def _clear_requeue_count(self, feed):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        key = "archive_walk_requeues:%s" % feed.pk
+        r.delete(key)
+        self.addCleanup(r.delete, key)
+
+    def test_a_locked_archive_walk_is_queued_again_only_a_few_times(self):
+        """A feed whose lock stays taken would otherwise queue its archive walk again every
+        five minutes forever. On 2026-10-11 one feed's walk kept itself queued all night,
+        76 copies deep, hitting the time limit on every run."""
+        from utils import feed_fetcher
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        feed = self._feed("https://rss.example.com/lineup/archive-capped.xml")
+        self._clear_requeue_count(feed)
+        worker = FeedFetcherWorker(dict(self.options, archive_page=2))
+
+        with patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async") as requeued:
+            for _ in range(feed_fetcher.ARCHIVE_WALK_MAX_REQUEUES + 2):
+                worker.reschedule_archive_walk(feed)
+
+        self.assertEqual(requeued.call_count, feed_fetcher.ARCHIVE_WALK_MAX_REQUEUES)
 
     @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
     @patch("apps.rss_feeds.models.MStory.remove_from_redis")
@@ -5390,6 +5421,39 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         pfeed.refresh_feed()
 
         self.assertIsNone(pfeed.feed)
+
+
+class Test_ArchiveWalkRunsOncePerFeed(TestCase):
+    """Every copy of a feed's archive walk that ran at once fought over the feed's lock,
+    held a worker for a minute and a half waiting on it, then queued the walk again
+    (apps/rss_feeds/models.py fill_out_archive_stories)."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/archive-once.xml",
+            feed_link="https://www.example.com/archive-once",
+            feed_title="Example | Archive once",
+            archive_subscribers=1,
+        )
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        self.addCleanup(r.delete, "archive_walk:%s" % self.feed.pk)
+
+    def test_a_second_walk_of_a_feed_being_walked_exits_without_walking(self):
+        walks = []
+
+        def walk(**kwargs):
+            walks.append(kwargs)
+            if len(walks) == 1:
+                # A duplicate delivery of the same backfill starts while this walk runs.
+                Feed.objects.get(pk=self.feed.pk).fill_out_archive_stories()
+
+        with patch.object(Feed, "update", side_effect=walk):
+            self.feed.fill_out_archive_stories()
+            self.assertEqual(len(walks), 1, "the duplicate must not walk the feed again")
+
+            # Once the walk is done the feed can be walked again.
+            self.feed.fill_out_archive_stories()
+        self.assertEqual(len(walks), 2)
 
 
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):
