@@ -10,6 +10,8 @@ final class Test_StoryThumbnailCache: XCTestCase {
         let nextTraits = UITraitCollection(traitsFrom: [UITraitCollection(displayScale: 3), UITraitCollection(displayGamut: .P3)])
         let entered = expectation(description: "First display preparation is active")
         let resume = DispatchSemaphore(value: 0)
+        // StoryThumbnailCacheTests.swift also releases the held worker if the test throws before its own signal.
+        defer { resume.signal() }
         var seen = [(CGFloat, UIDisplayGamut)]()
         var canceled = [Bool]()
         let prefetcher = StoryThumbnailPrefetcher(worker: queue) { _, operation in
@@ -107,6 +109,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
             let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(prepared.cgImage), scale: prepared.scale, orientation: prepared.imageOrientation)
             let entered = expectation(description: "Display preparation started: \(invalidation)")
             let resume = DispatchSemaphore(value: 0)
+            defer { resume.signal() }
             source.preparation = {
                 entered.fulfill()
                 _ = resume.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
@@ -380,6 +383,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
             let entered = expectation(description: "Both title controllers have an active disk read")
             entered.expectedFulfillmentCount = 2
             let resume = DispatchSemaphore(value: 0)
+            defer { resume.signal() }
             cache.diskCache.onRead = { hash, isMain in
                 if !isMain && (hash == "left-0" || hash == "right-0") {
                     entered.fulfill()
@@ -461,6 +465,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
         let queue = DispatchQueue(label: "test.thumbnail-prefetch.direction")
         let entered = expectation(description: "Old direction is reading its first image")
         let resume = DispatchSemaphore(value: 0)
+        defer { resume.signal() }
         var published = [String]()
         let prefetcher = StoryThumbnailPrefetcher(worker: queue) { hash, operation in
             if hash == "old" {
@@ -483,6 +488,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
         cache.diskCache.setObject(makeImage(), forKey: "story")
         let entered = expectation(description: "Disk prefetch is waiting outside the publication lock")
         let resume = DispatchSemaphore(value: 0)
+        defer { resume.signal() }
         cache.diskCache.onRead = { _, isMain in
             if !isMain {
                 entered.fulfill()
