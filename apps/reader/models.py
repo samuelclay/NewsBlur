@@ -1212,8 +1212,10 @@ class UserSubscription(models.Model):
         return "archive_backfill_state:%s" % user_id
 
     @classmethod
-    def archive_backfill_pending_key(cls, user_id):
-        return "archive_backfill_pending:%s" % user_id
+    def archive_backfill_pending_key(cls, user_id, backfill_id):
+        # Scoped to one backfill run, identified by its start time, so a late walk from an
+        # earlier backfill of the same feeds can't end a walk of the current one.
+        return "archive_backfill_pending:%s:%r" % (user_id, backfill_id)
 
     @classmethod
     def archive_backfill_dispatch_lock_key(cls, user_id):
@@ -1239,7 +1241,7 @@ class UserSubscription(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         feeds_key = cls.archive_backfill_feeds_key(user_id)
         p = r.pipeline()
-        p.delete(feeds_key, cls.archive_backfill_pending_key(user_id))
+        p.delete(feeds_key)
         if feed_ids:
             p.rpush(feeds_key, *feed_ids)
             p.expire(feeds_key, ARCHIVE_BACKFILL_STATE_SECONDS)
@@ -1247,28 +1249,28 @@ class UserSubscription(models.Model):
         p.execute()
 
     @classmethod
-    def track_archive_backfill_walks(cls, user_id, feed_ids):
+    def track_archive_backfill_walks(cls, user_id, backfill_id, feed_ids):
         """Note walks of a backfill as queued and not yet ended. Walks are tracked by feed, so a
         walk delivered twice ends once (apps/reader/models.py end_archive_backfill_walks)."""
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-        pending_key = cls.archive_backfill_pending_key(user_id)
+        pending_key = cls.archive_backfill_pending_key(user_id, backfill_id)
         p = r.pipeline()
         p.sadd(pending_key, *feed_ids)
         p.expire(pending_key, ARCHIVE_BACKFILL_STATE_SECONDS)
         p.execute()
 
     @classmethod
-    def end_archive_backfill_walks(cls, user_id, feed_ids):
+    def end_archive_backfill_walks(cls, user_id, backfill_id, feed_ids):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-        r.srem(cls.archive_backfill_pending_key(user_id), *feed_ids)
+        r.srem(cls.archive_backfill_pending_key(user_id, backfill_id), *feed_ids)
 
     @classmethod
-    def archive_backfill_walks_pending(cls, user_id):
+    def archive_backfill_walks_pending(cls, user_id, backfill_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-        return r.scard(cls.archive_backfill_pending_key(user_id))
+        return r.scard(cls.archive_backfill_pending_key(user_id, backfill_id))
 
     @classmethod
-    def abandon_archive_backfill(cls, user_id):
+    def abandon_archive_backfill(cls, user_id, backfill_id):
         """Drop a backfill whose dispatcher gave up, so a later upgrade event can start a new one
         instead of being skipped while the claim lasts (apps/profile/tasks.py DispatchArchiveBackfill)."""
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
@@ -1276,7 +1278,7 @@ class UserSubscription(models.Model):
             cls.archive_backfill_claim_key(user_id),
             cls.archive_backfill_feeds_key(user_id),
             cls.archive_backfill_state_key(user_id),
-            cls.archive_backfill_pending_key(user_id),
+            cls.archive_backfill_pending_key(user_id, backfill_id),
         )
 
     # Should be run as a background task
@@ -1374,7 +1376,7 @@ class UserSubscription(models.Model):
                 cls.archive_backfill_claim_key(user_id),
                 feeds_key,
                 state_key,
-                cls.archive_backfill_pending_key(user_id),
+                cls.archive_backfill_pending_key(user_id, start_time),
             ):
                 r.expire(key, ARCHIVE_BACKFILL_STATE_SECONDS)
 
@@ -1382,17 +1384,17 @@ class UserSubscription(models.Model):
             for i, feed_id in enumerate(batch):
                 # Tracked before it is queued, so a walk that ends at once is already there to end;
                 # a failed publish takes it back off.
-                cls.track_archive_backfill_walks(user_id, [feed_id])
+                cls.track_archive_backfill_walks(user_id, start_time, [feed_id])
                 try:
                     FetchArchiveFeedsChunk.apply_async(
-                        kwargs=dict(feed_ids=[feed_id], user_id=user_id),
+                        kwargs=dict(feed_ids=[feed_id], user_id=user_id, backfill_id=start_time),
                         queue="search_indexer",
                         countdown=i * ARCHIVE_BACKFILL_STAGGER_SECONDS,
                         time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
                         soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
                     )
                 except Exception:
-                    cls.end_archive_backfill_walks(user_id, [feed_id])
+                    cls.end_archive_backfill_walks(user_id, start_time, [feed_id])
                     raise
                 r.lrem(feeds_key, 1, feed_id)
 
@@ -1436,7 +1438,7 @@ class UserSubscription(models.Model):
         (apps/profile/tasks.py FinishFetchArchiveFeeds)."""
         from apps.profile.tasks import FinishFetchArchiveFeeds
 
-        pending_walks = cls.archive_backfill_walks_pending(user_id)
+        pending_walks = cls.archive_backfill_walks_pending(user_id, start_time)
         if pending_walks > 0 and rechecks < ARCHIVE_BACKFILL_FINISH_MAX_RECHECKS:
             logging.debug(
                 " ---> ~FCArchive backfill for user %s still has %s walks going, checking again in %s seconds"
@@ -1476,12 +1478,12 @@ class UserSubscription(models.Model):
             cls.archive_backfill_claim_key(user_id),
             cls.archive_backfill_feeds_key(user_id),
             cls.archive_backfill_state_key(user_id),
-            cls.archive_backfill_pending_key(user_id),
+            cls.archive_backfill_pending_key(user_id, start_time),
         )
         return True
 
     @classmethod
-    def fetch_archive_feeds_chunk(cls, feed_ids, user_id=None):
+    def fetch_archive_feeds_chunk(cls, feed_ids, user_id=None, backfill_id=None):
         from apps.rss_feeds.models import Feed
 
         try:
@@ -1502,9 +1504,9 @@ class UserSubscription(models.Model):
             if user_id:
                 r.publish(user.username, "fetch_archive:feeds:%s" % ",".join([str(f) for f in feed_ids]))
         finally:
-            if user_id:
+            if user_id and backfill_id is not None:
                 # The backfill's finish waits for this walk (archive_backfill_ready_to_finish).
-                cls.end_archive_backfill_walks(user_id, feed_ids)
+                cls.end_archive_backfill_walks(user_id, backfill_id, feed_ids)
 
     @classmethod
     def finish_fetch_archive_feeds(cls, user_id, start_time, starting_story_count):

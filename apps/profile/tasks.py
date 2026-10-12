@@ -36,9 +36,9 @@ def FetchArchiveFeedsForUser(user_id):
 
 
 @app.task()
-def FetchArchiveFeedsChunk(feed_ids, user_id=None):
+def FetchArchiveFeedsChunk(feed_ids, user_id=None, backfill_id=None):
     # logging.debug(" ---> Fetching archive stories: %s for %s" % (feed_ids, user_id))
-    UserSubscription.fetch_archive_feeds_chunk(feed_ids, user_id)
+    UserSubscription.fetch_archive_feeds_chunk(feed_ids, user_id, backfill_id)
 
 
 class ArchiveBackfillDispatchTask(app.Task):
@@ -47,7 +47,7 @@ class ArchiveBackfillDispatchTask(app.Task):
         # user's claim, so a later upgrade event can start a new backfill instead of being skipped.
         user_id = kwargs.get("user_id", args[0] if args else None)
         if user_id:
-            UserSubscription.abandon_archive_backfill(user_id)
+            UserSubscription.abandon_archive_backfill(user_id, kwargs.get("start_time"))
 
 
 # apps/profile/tasks.py: Queues the next batch of a user's archive backfill. A broker error partway
