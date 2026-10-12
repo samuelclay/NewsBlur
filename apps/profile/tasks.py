@@ -32,13 +32,7 @@ def FetchArchiveFeedsForUser(user_id):
     # user_profile = Profile.objects.get(user__pk=user_id)
     # logging.user(user_profile.user, f"~FCBeginning archive feed fetches for ~SB~FG{subs.count()} feeds~SN...")
 
-    try:
-        UserSubscription.fetch_archive_feeds_for_user(user_id)
-    except Exception:
-        # apps/profile/tasks.py: The backfill failed before its feeds were queued, so free the
-        # user's claim instead of blocking the next attempt until the claim expires.
-        UserSubscription.release_archive_backfill_claim(user_id)
-        raise
+    UserSubscription.fetch_archive_feeds_for_user(user_id)
 
 
 @app.task()
