@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, call, patch
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
@@ -475,6 +475,43 @@ class Test_ArchiveFetchStaggering(TestCase):
             set_kwargs.get("time_limit"),
             settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
             "FinishFetchArchiveFeeds callback should have time_limit=MAX_SECONDS_COMPLETE_ARCHIVE_FETCH",
+        )
+
+    @override_settings(MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW=20)
+    @patch("apps.reader.models.celery")
+    @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
+    def test_archive_fetch_stagger_fits_inside_the_window(
+        self, mock_chunk_task, mock_finish_task, mock_celery
+    ):
+        """A user with thousands of feeds would push the last countdown past the window at
+        10 seconds apart, so the spacing shrinks to keep every countdown inside it."""
+        mock_signature = MagicMock()
+        mock_signature.set.return_value = mock_signature
+        mock_chunk_task.s.return_value = mock_signature
+        mock_finish_task.s.return_value.set.return_value = MagicMock()
+
+        UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+
+        countdowns = [
+            kwargs["countdown"] for _, kwargs in mock_signature.set.call_args_list if "countdown" in kwargs
+        ]
+        self.assertEqual(countdowns, [0, 5, 10, 15, 20])
+
+    def test_archive_fetch_stagger_window_is_inside_the_broker_visibility_timeout(self):
+        """Countdown tasks wait unacknowledged in a worker until they run. The Redis broker
+        hands any task unacknowledged past its visibility timeout to another worker while
+        the first still holds it, so on 2026-10-10 every feed of a 3,910 feed backfill was
+        walked once per hour it had waited. The last countdown plus its run time has to
+        finish inside the timeout the workers actually use."""
+        from newsblur_web.celeryapp import app
+
+        visibility_timeout = app.conf.broker_transport_options.get("visibility_timeout")
+        self.assertIsNotNone(visibility_timeout, "the broker visibility timeout is not configured")
+        self.assertLess(
+            settings.MAX_SECONDS_ARCHIVE_FETCH_STAGGER_WINDOW
+            + settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            visibility_timeout,
         )
 
 
