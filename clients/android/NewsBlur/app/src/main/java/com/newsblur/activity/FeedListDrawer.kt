@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
@@ -14,7 +15,9 @@ import android.view.ViewGroup
 import android.view.animation.PathInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.drawToBitmap
 import com.newsblur.R
@@ -27,13 +30,14 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * The feed list as a slide-over on tablets. Main.java's whole screen (header, search, folders,
  * filters, sync status) moves into a panel on the left, over a dimmed scrim that covers both the
  * story list and the reader beneath it. StorySplitView.kt always expands this activity to the
- * whole window, so it sits above both panes. The panel is as wide as the story list pane, so it
- * hides that pane exactly.
+ * whole window, so it sits above both panes. The panel defaults to the story list pane's width,
+ * with an independent, saved fullscreen choice in its header.
  *
  * This is a new activity every time it opens, which takes a moment to reach the screen. So as it
  * closes it keeps a picture of its panel, and the next open slides that picture over the story
@@ -42,7 +46,8 @@ import kotlin.math.min
  *
  * Picking a feed switches the story list beneath to it in place (ItemsList.switchStoryList) and
  * slides the panel away to the left, uncovering the list as it fills in, the way the iPad's feeds
- * column slides off its story titles. Tapping the scrim, Back, or swiping the panel left closes it.
+ * column slides off its story titles. Tapping the scrim or swiping the panel left closes it.
+ * System Back leaves the task from this top-level feed list.
  * A swipe that starts on the story list opens it under the finger (beginOpenGesture).
  */
 @AndroidEntryPoint
@@ -50,6 +55,8 @@ class FeedListDrawer : Main() {
     private lateinit var scrim: View
     private lateinit var panel: FrameLayout
     private var panelWidth = 1
+    private var windowWidth = 1
+    private var resizeAnimator: ValueAnimator? = null
     private var pendingFinish: Runnable? = null
     private var closing = false
 
@@ -77,12 +84,7 @@ class FeedListDrawer : Main() {
         PendingTransitionUtils.overrideNoEnterTransition(this)
         wrapInPanel()
         activeDrawer = WeakReference(this)
-        onBackPressedDispatcher.addCallback(
-            this,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() = close()
-            },
-        )
+        registerBackNavigation()
         when {
             // A rotation recreates the panel already open, so it stays put instead of sliding in again.
             savedInstanceState != null -> setOpenFraction(1f)
@@ -141,7 +143,7 @@ class FeedListDrawer : Main() {
             removeSnapshot()
         }
         cancelSlide()
-        cancelSlide()
+        cancelResize()
         velocityTracker?.recycle()
         velocityTracker = null
         super.onDestroy()
@@ -174,6 +176,8 @@ class FeedListDrawer : Main() {
     /** Slides the panel away, then finishes. */
     fun close() {
         if (closing) return
+        cancelResize()
+        setPanelWidth(preferredPanelWidth())
         closing = true
         capturePanel()
         removePicture()
@@ -182,13 +186,30 @@ class FeedListDrawer : Main() {
         animateTo(open = false)
     }
 
+    private fun backFromFeeds() {
+        moveTaskToBack(true)
+    }
+
+    private fun registerBackNavigation() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() = backFromFeeds()
+            },
+        )
+    }
+
     // The picture the next open slides in before its own panel reaches the screen.
     private fun capturePanel() {
-        if (panel.width <= 0 || panel.height <= 0) return
+        if (panel.width <= 0 || panel.height <= 0 || panel.width != panelWidth) {
+            panelSnapshot = null
+            return
+        }
         val location = IntArray(2)
         panel.getLocationOnScreen(location)
         panelSnapshot = runCatching { panel.drawToBitmap() }.getOrNull()
         panelSnapshotTop = location[1]
+        panelSnapshotFullscreen = prefsRepo.isFeedListFullscreenEnabled()
     }
 
     // The tablet's root story list under this panel (ItemsList.java claims it on resume).
@@ -201,9 +222,8 @@ class FeedListDrawer : Main() {
         content.removeView(mainScreen)
         // As wide as the story list pane (StorySplitView.kt), so it covers the pane exactly and its
         // picture fits there (showSnapshot). A pane too narrow for a feed list gets a wider panel.
-        val windowWidth = resources.displayMetrics.widthPixels
-        val storyListPaneWidth = ceil(windowWidth * StorySplitView.STORY_LIST_SPLIT_RATIO).toInt()
-        panelWidth = min(max(UIUtils.dp2px(this, PANEL_MIN_WIDTH_DP), storyListPaneWidth), (windowWidth * PANEL_MAX_FRACTION).toInt())
+        windowWidth = resources.displayMetrics.widthPixels
+        panelWidth = preferredPanelWidth()
         scrim =
             View(this).apply {
                 setBackgroundColor(SCRIM_COLOR)
@@ -221,6 +241,85 @@ class FeedListDrawer : Main() {
         root.addView(scrim, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         root.addView(panel, FrameLayout.LayoutParams(panelWidth, ViewGroup.LayoutParams.MATCH_PARENT))
         setContentView(root)
+        root.addOnLayoutChangeListener { _, left, _, right, _, _, _, _, _ ->
+            val width = right - left
+            if (width > 0 && width != windowWidth) {
+                windowWidth = width
+                cancelResize()
+                setPanelWidth(preferredPanelWidth())
+            }
+        }
+        findViewById<AppCompatImageButton>(R.id.main_fullscreen_button).apply {
+            visibility = View.VISIBLE
+            setOnClickListener { toggleFullscreen() }
+        }
+        updateFullscreenButton()
+        fitHeaderToPanel()
+    }
+
+    private fun preferredPanelWidth(): Int {
+        if (prefsRepo.isFeedListFullscreenEnabled()) return windowWidth
+        val storyListPaneWidth = ceil(windowWidth * StorySplitView.STORY_LIST_SPLIT_RATIO).toInt()
+        return min(max(UIUtils.dp2px(this, PANEL_MIN_WIDTH_DP), storyListPaneWidth), (windowWidth * PANEL_MAX_FRACTION).toInt())
+    }
+
+    private fun updateFullscreenButton() {
+        val fullscreen = prefsRepo.isFeedListFullscreenEnabled()
+        findViewById<AppCompatImageButton>(R.id.main_fullscreen_button).apply {
+            setImageResource(if (fullscreen) R.drawable.ic_reader_fullscreen_exit else R.drawable.ic_reader_fullscreen)
+            contentDescription = getString(if (fullscreen) R.string.feed_list_exit_fullscreen else R.string.feed_list_enter_fullscreen)
+            tooltipText = contentDescription
+        }
+    }
+
+    private fun toggleFullscreen() {
+        if (closing) return
+        cancelSlide()
+        cancelResize()
+        removeSnapshot()
+        usesReaderPaneDim = false
+        setOpenFraction(1f)
+        prefsRepo.setFeedListFullscreenEnabled(!prefsRepo.isFeedListFullscreenEnabled())
+        updateFullscreenButton()
+        resizePanelOpen()
+    }
+
+    private fun resizePanelOpen() {
+        val startWidth = panelWidth
+        val targetWidth = preferredPanelWidth()
+        val startFraction = openFraction()
+        cancelSlide()
+        cancelResize()
+        resizeAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = SLIDE_DURATION_MS
+            interpolator = SLIDE_INTERPOLATOR
+            addUpdateListener {
+                val progress = it.animatedValue as Float
+                setPanelWidth((startWidth + (targetWidth - startWidth) * progress).roundToInt())
+                setOpenFraction(startFraction + (1f - startFraction) * progress)
+            }
+            start()
+        }
+    }
+
+    private fun setPanelWidth(width: Int) {
+        val fraction = openFraction()
+        panelWidth = width.coerceAtLeast(1)
+        panel.layoutParams = panel.layoutParams.apply { this.width = panelWidth }
+        setOpenFraction(fraction)
+        fitHeaderToPanel()
+    }
+
+    private fun fitHeaderToPanel() {
+        // activity_main.xml leaves room for the profile and fullscreen button at narrow widths.
+        findViewById<TextView>(R.id.main_sync_status_text).maxWidth =
+            min(UIUtils.dp2px(this, 140), (panelWidth - UIUtils.dp2px(this, 210)).coerceAtLeast(UIUtils.dp2px(this, 30)))
+    }
+
+    private fun cancelResize() {
+        resizeAnimator?.removeAllUpdateListeners()
+        resizeAnimator?.cancel()
+        resizeAnimator = null
     }
 
     // Main.java's screen has no background of its own, so the panel paints the theme's list background.
@@ -314,6 +413,7 @@ class FeedListDrawer : Main() {
                     abs(deltaX) > abs(deltaY) * CLOSE_GESTURE_DIRECTION_RATIO
                 ) {
                     isDraggingClosed = true
+                    cancelResize()
                     cancelSlide()
                     // The folder list stops tracking this touch once the panel takes it over.
                     val cancel = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
@@ -335,6 +435,8 @@ class FeedListDrawer : Main() {
                     val flungClosed = velocityX < -ViewConfiguration.get(this).scaledMinimumFlingVelocity * CLOSE_FLING_MULTIPLIER
                     if (event.actionMasked == MotionEvent.ACTION_UP && (openFraction() < CLOSE_THRESHOLD || flungClosed)) {
                         close()
+                    } else if (panelWidth != preferredPanelWidth()) {
+                        resizePanelOpen()
                     } else {
                         animateTo(open = true)
                     }
@@ -382,6 +484,7 @@ class FeedListDrawer : Main() {
         // story list's window that shows it while the next panel is on its way.
         private var panelSnapshot: Bitmap? = null
         private var panelSnapshotTop = 0
+        private var panelSnapshotFullscreen = false
         private var snapshotView = WeakReference<ImageView>(null)
 
         // The reader pane is its own window, which this panel's scrim can only cover once the panel
@@ -402,6 +505,8 @@ class FeedListDrawer : Main() {
          */
         private fun showSnapshot(from: Activity): Boolean {
             val snapshot = panelSnapshot ?: return false
+            val fullscreen = (from as? NbActivity)?.prefsRepo?.isFeedListFullscreenEnabled() ?: return false
+            if (panelSnapshotFullscreen != fullscreen) return false
             val decor = from.window.decorView as? ViewGroup ?: return false
             if (abs(snapshot.width - decor.width) > SNAPSHOT_FIT_SLOP_PX) return false
             removeSnapshot()

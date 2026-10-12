@@ -172,6 +172,7 @@ object StorySplitView {
                     params.areDefaultConstraintsSatisfied,
                     application.prefsRepo.get().isReaderFullscreenEnabled(),
                     params.defaultSplitAttributes,
+                    application.prefsRepo.get().isStoryListFullscreenEnabled(),
                 )
             }
             readerFullscreenSupported = true
@@ -187,8 +188,11 @@ object StorySplitView {
         constraintsSatisfied: Boolean,
         fullscreenRequested: Boolean,
         defaults: SplitAttributes,
+        storyListFullscreenRequested: Boolean = false,
     ): SplitAttributes =
-        if (!constraintsSatisfied || (tag == TAG_STORY_LIST_READER && fullscreenRequested)) {
+        if (!constraintsSatisfied || (tag == TAG_STORY_LIST_READER && fullscreenRequested) ||
+            (tag == TAG_EMPTY_READER && storyListFullscreenRequested)
+        ) {
             SplitAttributes
                 .Builder()
                 .setSplitType(SplitAttributes.SplitType.SPLIT_TYPE_EXPAND)
@@ -240,6 +244,28 @@ object StorySplitView {
     ): Boolean {
         if (!canToggleReaderFullscreen(activity)) return false
         (activity.applicationContext as NbApplication).prefsRepo.get().setReaderFullscreenEnabled(enabled)
+        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        return true
+    }
+
+    /** ItemsList.java can expand independently of the mode Reading.kt uses when a story opens. */
+    @JvmStatic
+    fun canToggleStoryListFullscreen(activity: Activity): Boolean =
+        readerFullscreenSupported && activity is ItemsList &&
+            (isInSplit(activity) || usesTabletNavigation(activity))
+
+    @JvmStatic
+    fun isStoryListFullscreen(activity: Activity): Boolean =
+        canToggleStoryListFullscreen(activity) && !isInSplit(activity) &&
+            (activity.applicationContext as NbApplication).prefsRepo.get().isStoryListFullscreenEnabled()
+
+    @JvmStatic
+    fun setStoryListFullscreen(activity: Activity, enabled: Boolean): Boolean {
+        if (!canToggleStoryListFullscreen(activity)) return false
+        (activity.applicationContext as NbApplication).prefsRepo.get().setStoryListFullscreenEnabled(enabled)
+        // StorySplitView.kt expands the empty split to dismiss its nonsticky placeholder. A
+        // selected article must close first: EXPAND would otherwise put it above the titles.
+        if (enabled) Reading.peekSplitReader(activity.taskId)?.finish()
         ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
         return true
     }

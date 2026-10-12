@@ -238,7 +238,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
-        StorySplitView.trackSplit(this);
+        StorySplitView.trackSplit(this, () -> {
+            updateStoryListFullscreenButton();
+            return kotlin.Unit.INSTANCE;
+        });
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
@@ -266,6 +269,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
         EdgeToEdgeUtil.applyView(this, binding);
+        findViewById(R.id.toolbar_fullscreen_button).setOnClickListener(v -> {
+            StorySplitView.setStoryListFullscreen(this, !StorySplitView.isStoryListFullscreen(this));
+            updateStoryListFullscreenButton();
+        });
         binding.getRoot().post(() -> getWindow().setBackgroundDrawableResource(android.R.color.transparent));
         View toolbarSettingsButton = findViewById(R.id.toolbar_settings_button);
         if (toolbarSettingsButton != null) {
@@ -409,6 +416,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     public void refreshStoryHeaderControls() {
         if (binding == null) return;
+        updateStoryListFullscreenButton();
 
         Menu menu = buildItemListMenuModel();
         boolean showDiscover = shouldShowDiscoverAction();
@@ -954,6 +962,16 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         showItemListPopup(anchor, ItemListMenuPopup.Content.ACTIONS);
     }
 
+    private void updateStoryListFullscreenButton() {
+        if (binding == null) return;
+        android.widget.ImageButton button = findViewById(R.id.toolbar_fullscreen_button);
+        boolean fullscreen = StorySplitView.isStoryListFullscreen(this);
+        button.setVisibility(StorySplitView.canToggleStoryListFullscreen(this) ? View.VISIBLE : View.GONE);
+        button.setImageResource(fullscreen ? R.drawable.ic_reader_fullscreen_exit : R.drawable.ic_reader_fullscreen);
+        button.setContentDescription(getString(fullscreen ? R.string.story_list_exit_fullscreen : R.string.story_list_enter_fullscreen));
+        androidx.appcompat.widget.TooltipCompat.setTooltipText(button, button.getContentDescription());
+    }
+
     private void updateToolbarSettingsButtonVisibility() {
         View settingsButton = findViewById(R.id.toolbar_settings_button);
         if (settingsButton == null) {
@@ -1331,8 +1349,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         // leaving the reading session, which switches to the pick, alone (Reading.park).
         Reading splitReader = Reading.peekSplitReader(getTaskId());
         if (splitReader != null && StorySplitView.isInSplit(this)) {
-            splitReader.fadeToPlaceholder(FeedListDrawer.SLIDE_DURATION_MS);
-            splitReader.park();
+            if (prefsRepo.isStoryListFullscreenEnabled()) {
+                splitReader.finish();
+            } else {
+                splitReader.fadeToPlaceholder(FeedListDrawer.SLIDE_DURATION_MS);
+                splitReader.park();
+            }
         }
         setIntent(next);
         switchedStoryList = true;
