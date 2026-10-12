@@ -794,6 +794,123 @@ class Test_BriefingIcons(BriefingTestCase):
         self.assertIn('class="NB-briefing-direct-link"', result)
         self.assertIn("NB-briefing-direct-link-icon", result)
 
+    def _set_story_image(self, story, image_url="https://example.com/photo.jpg"):
+        story.image_urls = [image_url]
+        story.save()
+        return image_url
+
+    def test_embed_briefing_icons_adds_thumbnail_for_story_with_image(self):
+        from django.conf import settings
+
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[0]
+        self._set_story_image(story)
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="top_stories">Top stories</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a> matters today.</p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title)
+
+        result = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+
+        # tests.py: Thumbnail links back to the story and floats right of the summary text
+        self.assertIn('class="NB-briefing-story-thumbnail"', result)
+        self.assertIn('data-thumbnail-story-hash="%s"' % story.story_hash, result)
+        self.assertIn('href="%s/briefing?story=%s"' % (settings.NEWSBLUR_URL, story.story_hash), result)
+        self.assertIn('align="right"', result)
+        self.assertIn("float:right", result)
+        self.assertIn("width:80px;height:80px", result)
+        self.assertIn("border-radius:", result)
+        # tests.py: Image is served as a 2x square crop through the imageproxy
+        self.assertIn("/160,sc,", result)
+        self.assertIn("https://example.com/photo.jpg", result)
+        # tests.py: Thumbnail sits inside the text cell so the table contains the float
+        text_cell = result.split("NB-briefing-inline-favicon", 1)[1]
+        self.assertIn("NB-briefing-story-thumbnail-image", text_cell)
+
+    def test_embed_briefing_icons_skips_thumbnail_without_image(self):
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[1]
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="top_stories">Top stories</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a> matters today.</p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title)
+
+        result = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+
+        self.assertNotIn("NB-briefing-story-thumbnail", result)
+
+    def test_embed_briefing_icons_skips_non_http_images(self):
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[1]
+        self._set_story_image(story, "data:image/png;base64,AAAA")
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title)
+
+        result = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+
+        self.assertNotIn("NB-briefing-story-thumbnail", result)
+
+    def test_widely_covered_topic_gets_thumbnail_but_sources_do_not(self):
+        from apps.briefing.summary import embed_briefing_icons, inject_widely_covered_clusters
+
+        lead, source_a, source_b = self.stories[0], self.stories[3], self.stories[4]
+        for story in (lead, source_a, source_b):
+            self._set_story_image(story, "https://example.com/%s.jpg" % story.story_hash.replace(":", "-"))
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="widely_covered">Widely covered</h3>'
+            '<p>Everyone is writing about <a class="NB-briefing-story-link" data-story-hash="%s">%s</a>.</p>'
+            "</div>"
+        ) % (lead.story_hash, lead.story_title)
+        scored = [{"story_hash": lead.story_hash, "category": "widely_covered"}]
+
+        with patch("apps.clustering.models.get_cluster_for_story", return_value="cluster-1"), patch(
+            "apps.clustering.models.get_cluster_members",
+            return_value=[lead.story_hash, source_a.story_hash, source_b.story_hash],
+        ):
+            injected, extras = inject_widely_covered_clusters(summary_html, scored, self.user.pk)
+        result = embed_briefing_icons(injected, scored + extras)
+
+        # tests.py: Topic paragraph shows the lead story's image
+        self.assertEqual(result.count('class="NB-briefing-story-thumbnail"'), 1)
+        self.assertIn('data-thumbnail-story-hash="%s"' % lead.story_hash, result)
+        self.assertNotIn('data-thumbnail-story-hash="%s"' % source_a.story_hash, result)
+        self.assertNotIn('data-thumbnail-story-hash="%s"' % source_b.story_hash, result)
+        # tests.py: Source lines keep their favicons and links
+        self.assertIn('data-story-hash="%s"' % source_a.story_hash, result)
+        self.assertIn('data-story-hash="%s"' % source_b.story_hash, result)
+
+    def test_exclusive_sections_strips_thumbnail_with_duplicate_link(self):
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[0]
+        self._set_story_image(story)
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="top_stories">Top stories</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+            '<h3 data-section="long_read">Long reads</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title, story.story_hash, story.story_title)
+
+        embedded = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+        sections = enforce_exclusive_sections(extract_section_summaries(embedded))
+
+        self.assertIn("NB-briefing-story-thumbnail", sections["top_stories"])
+        self.assertNotIn("NB-briefing-story-thumbnail", sections["long_read"])
+        self.assertIn(story.story_title, sections["long_read"])
+
 
 # ---------------------------------------------------------------------------
 # 2. Test_Scoring — apps/briefing/scoring.py

@@ -9,6 +9,7 @@ from django.utils.encoding import smart_str
 from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
+from utils.story_functions import create_imageproxy_signed_url
 
 # summary.py: A briefing is generated once a day per user, so a single dropped
 # connection or 5xx from the LLM costs that user the whole day's briefing. Retry
@@ -563,6 +564,35 @@ BRIEFING_SECTION_ICONS = {
     "custom_5": "prompt.svg",
 }
 
+# summary.py: Story thumbnails float to the right of each story's summary text, about
+# three lines of text tall. The imageproxy serves a 2x square crop so they stay sharp
+# on retina screens without sending full-size images to every inbox.
+BRIEFING_THUMBNAIL_SIZE = 80
+
+
+def _briefing_thumbnail_url(image_url):
+    """
+    Sign a square imageproxy crop for a briefing story thumbnail.
+
+    Returns None for images that can't be proxied (data: URIs, relative paths),
+    since email clients won't load them. apps/briefing/summary.py
+    """
+    if not image_url or not image_url.startswith(("http://", "https://")):
+        return None
+
+    # summary.py: Local dev serves the imageproxy from a relative path, but email
+    # clients need an absolute URL.
+    images_url = settings.IMAGES_URL
+    if images_url.startswith("/"):
+        images_url = settings.NEWSBLUR_URL + images_url
+
+    return create_imageproxy_signed_url(
+        images_url,
+        settings.IMAGES_SECRET_KEY,
+        image_url,
+        BRIEFING_THUMBNAIL_SIZE * 2,
+    )
+
 
 def embed_briefing_icons(summary_html, scored_stories):
     """
@@ -636,6 +666,15 @@ def embed_briefing_icons(summary_html, scored_stories):
         for story_hash, story in stories_by_hash.items()
         if story.story_permalink
     }
+
+    # Build story_hash -> thumbnail URL mapping from each story's lead image
+    thumbnail_map = {}
+    for story_hash, story in stories_by_hash.items():
+        if not story.image_urls:
+            continue
+        thumbnail_url = _briefing_thumbnail_url(story.image_urls[0])
+        if thumbnail_url:
+            thumbnail_map[story_hash] = thumbnail_url
 
     # --- Phase 2: Style wrapper div ---
 
@@ -754,6 +793,44 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 5b: Wrap favicon + text in table layout for email alignment ---
 
+    # summary.py: The thumbnail floats right inside the text cell. A table cell contains
+    # its floats, so a short one-line story still reserves the thumbnail's full height.
+    # align="right" is the float that Outlook understands, float:right is for everyone else.
+    thumbnail_img_style = (
+        "float:right;display:block;width:%(size)spx;height:%(size)spx;"
+        "max-width:%(size)spx;margin:4px 0 4px 14px;border:0;border-radius:8px;"
+        "object-fit:cover;" % {"size": BRIEFING_THUMBNAIL_SIZE}
+    )
+
+    def _story_thumbnail_html(story_hash):
+        thumbnail_url = thumbnail_map.get(story_hash)
+        if not thumbnail_url:
+            return ""
+        href = "%s/briefing?story=%s" % (settings.NEWSBLUR_URL, story_hash)
+        return (
+            '<a href="%s" class="NB-briefing-story-thumbnail" data-thumbnail-story-hash="%s" '
+            'style="text-decoration:none;border:0;">'
+            '<img src="%s" class="NB-briefing-story-thumbnail-image" align="right" '
+            'width="%s" height="%s" alt="" style="%s"></a>'
+        ) % (
+            href,
+            story_hash,
+            html_mod.escape(thumbnail_url, quote=True),
+            BRIEFING_THUMBNAIL_SIZE,
+            BRIEFING_THUMBNAIL_SIZE,
+            thumbnail_img_style,
+        )
+
+    def _row_thumbnail_html(row_tag, row_content):
+        # summary.py: Widely covered source lines stay compact, their topic paragraph
+        # above already shows the lead story's thumbnail.
+        if "NB-briefing-cluster-source" in row_tag:
+            return ""
+        story_hash_match = re.search(r'data-story-hash="([^"]+)"', row_content)
+        if not story_hash_match:
+            return ""
+        return _story_thumbnail_html(story_hash_match.group(1))
+
     def _tablify_li(match):
         li_tag = match.group(1)
         content = match.group(2)
@@ -766,12 +843,13 @@ def embed_briefing_icons(summary_html, scored_stories):
             return match.group(0)
         favicon_img = favicon_match.group(1)
         rest = favicon_match.group(2)
+        thumbnail = _row_thumbnail_html(li_tag, rest)
         return (
             '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
-            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s</td>'
-            "</tr></table></li>" % (li_tag, favicon_img, rest)
+            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s%s</td>'
+            "</tr></table></li>" % (li_tag, favicon_img, thumbnail, rest)
         )
 
     summary_html = re.sub(
@@ -786,25 +864,38 @@ def embed_briefing_icons(summary_html, scored_stories):
     def _tablify_p(match):
         p_tag = match.group(1)
         content = match.group(2)
+        # summary.py: Convert <p> to <div> because <table> cannot nest inside <p>.
+        # Browsers auto-close <p> before block elements, causing a blank <p> that
+        # offsets the favicon and breaks font inheritance.
+        div_tag = re.sub(r"^<p\b", "<div", p_tag)
         favicon_match = re.match(
             r"(\s*<img[^>]*NB-briefing-inline-favicon[^>]*>)\s*(.*)",
             content,
             re.DOTALL,
         )
         if not favicon_match:
-            return match.group(0)
+            # summary.py: Widely covered topic paragraphs have no favicon or story link
+            # (see inject_widely_covered_clusters), but still get the lead story's
+            # thumbnail. The single-cell table contains the float the same way.
+            topic_match = re.search(r'data-topic-story-hash="([^"]+)"', content)
+            thumbnail = _story_thumbnail_html(topic_match.group(1)) if topic_match else ""
+            if not thumbnail:
+                return match.group(0)
+            return (
+                '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
+                "<tr>"
+                '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s%s</td>'
+                "</tr></table></div>" % (div_tag, thumbnail, content)
+            )
         favicon_img = favicon_match.group(1)
         rest = favicon_match.group(2)
-        # summary.py: Convert <p> to <div> because <table> cannot nest inside <p>.
-        # Browsers auto-close <p> before block elements, causing a blank <p> that
-        # offsets the favicon and breaks font inheritance.
-        div_tag = re.sub(r"^<p\b", "<div", p_tag)
+        thumbnail = _row_thumbnail_html(p_tag, rest)
         return (
             '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
-            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s</td>'
-            "</tr></table></div>" % (div_tag, favicon_img, rest)
+            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s%s</td>'
+            "</tr></table></div>" % (div_tag, favicon_img, thumbnail, rest)
         )
 
     summary_html = re.sub(
@@ -1000,6 +1091,16 @@ def _strip_duplicate_story_links(html, hashes_to_strip):
             return match.group("title")
         return match.group(0)
 
+    # summary.py: Drop the duplicate story's thumbnail too, so the stripped row doesn't
+    # keep a clickable image for a story that now lives in another section.
+    def _remove_thumbnail(match):
+        if match.group("hash") in hashes_to_strip:
+            return ""
+        return match.group(0)
+
+    thumbnail_pattern = r'<a\s[^>]*data-thumbnail-story-hash="(?P<hash>[^"]+)"[^>]*>.*?</a>'
+    html = re.sub(thumbnail_pattern, _remove_thumbnail, html, flags=re.DOTALL)
+
     pattern = (
         r"(?:<img\s[^>]*NB-briefing-inline-favicon[^>]*>\s*)?"
         r'<a\s[^>]*data-story-hash="(?P<hash>[^"]+)"[^>]*>(?P<title>.*?)</a>'
@@ -1129,7 +1230,9 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
         story_hash = match.group(1)
         link_title = match.group(2)
         full_link = match.group(0)
-        bold_title = "<strong>%s</strong>" % link_title
+        # summary.py: Keep the lead story's hash on the topic headline so
+        # embed_briefing_icons() can show its thumbnail beside the topic paragraph.
+        bold_title = '<strong data-topic-story-hash="%s">%s</strong>' % (story_hash, link_title)
         members = story_cluster_map.get(story_hash)
 
         if not members:
@@ -1153,8 +1256,11 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
             if not m_story:
                 continue
             m_title = m_story.story_title or "Untitled"
+            # summary.py: NB-briefing-cluster-source keeps source lines compact by
+            # skipping their thumbnails in embed_briefing_icons().
             member_lines.append(
-                '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+                '<p class="NB-briefing-cluster-source">'
+                '<a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
                 % (m_hash, html_mod.escape(m_title))
             )
             if m_hash not in scored_hashes:

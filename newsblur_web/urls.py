@@ -8,6 +8,7 @@ from django.views.generic import RedirectView
 
 from apps.mcp import views as mcp_views
 from apps.profile import views as profile_views
+from apps.profile import web_social_auth
 from apps.profile.language import JAVASCRIPT_CATALOG_PATTERN, javascript_catalog
 from apps.reader import views as reader_views
 from apps.social import views as social_views
@@ -18,6 +19,15 @@ admin.autodiscover()
 
 urlpatterns = [
     url(JAVASCRIPT_CATALOG_PATTERN, javascript_catalog, name="javascript-catalog"),
+    url(r"^account/social/start/?$", web_social_auth.start, name="web-social-start"),
+    url(
+        r"^account/social/(?P<provider>apple|google)/callback/?$",
+        web_social_auth.callback,
+        name="web-social-callback",
+    ),
+    url(r"^account/social/finish/?$", web_social_auth.finish, name="web-social-finish"),
+    url(r"^account/social/continue/?$", web_social_auth.continue_signin, name="web-social-continue"),
+    url(r"^account/social/disconnect/?$", web_social_auth.disconnect, name="web-social-disconnect"),
     url(r"^$", reader_views.index, name="index"),
     url(r"^reader/", include("apps.reader.urls")),
     url(r"^ask-ai/", include("apps.ask_ai.urls")),

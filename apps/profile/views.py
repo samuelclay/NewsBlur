@@ -27,7 +27,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirec
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from paypal.standard.forms import PayPalPaymentsForm
 from paypal.standard.ipn.views import ipn as paypal_standard_ipn
@@ -186,6 +186,7 @@ def login(request):
 
 
 @csrf_exempt
+@ensure_csrf_cookie
 def signup(request):
     form = SignupForm(prefix="signup")
     recaptcha = request.POST.get("g-recaptcha-response", None)

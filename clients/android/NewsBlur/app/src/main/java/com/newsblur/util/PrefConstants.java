@@ -73,6 +73,7 @@ public class PrefConstants {
     public static final String STORIES_SHOW_PREVIEWS_STYLE = "pref_show_content_preview_style";
     public static final String STORIES_THUMBNAIL_STYLE = "pref_thumbnail_style";
     public static final String STORY_TOOLBAR_POSITION = "story_toolbar_position";
+    public static final String READER_FULLSCREEN = "reader_fullscreen";
     public static final String STORY_MARK_READ_BEHAVIOR = "pref_story_mark_read_behavior";
     public static final String STORY_CLUSTERING = "story_clustering";
     public static final String CLUSTER_MODE = "cluster_mode";
@@ -138,6 +139,7 @@ public class PrefConstants {
     public static final String ASK_AI_MODEL = "ask_ai_model";
 
     public static final String READING_FONT = "reading_font";
+    public static final String READER_CONTROLS_ALWAYS_VISIBLE = "reader_controls_always_visible";
     public static final String WIDGET_FEED_SET = "widget_feed_set";
     public static final String FEED_CHOOSER_LIST_ORDER = "feed_chooser_list_order";
     public static final String FEED_CHOOSER_FEED_ORDER = "feed_chooser_feed_order";

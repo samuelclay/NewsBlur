@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "所有模式預設皆不區分大小寫";
 "All stories" = "所有故事";
 "Alphabetical" = "按字母排序";
+"Already have feeds?" = "已經有資訊來源了嗎？";
 "Analyze" = "分析";
 "Android" = "Android";
 "App Badge" = "App 徽章";
@@ -161,12 +162,14 @@
 "Brave" = "Brave";
 "Brightness Override" = "亮度覆寫";
 "Brightness threshold" = "亮度閾值";
+"Bring your feeds and folders from another reader." = "從其他閱讀器匯入你的訂閱來源和資料夾。";
 "Bullets" = "項目符號";
 "Cancel" = "取消";
 "Change Story List" = "變更文章清單";
 "Choose Icon" = "選擇圖示";
 "Choose Story List" = "選擇文章列表";
 "Choose a Topic" = "選擇主題";
+"Choose feeds for your folder" = "為資料夾選擇資訊來源";
 "Choose how far back to mark read" = "選擇要將多久以前的文章標記為已讀";
 "Choose how often and when your briefing is generated" = "選擇摘要的產生頻率與時間";
 "Choose one or more words from the title:" = "從標題中選擇一個或多個字詞：";
@@ -190,7 +193,9 @@
 "Configure" = "設定";
 "Confirm mark read" = "確認標記為已讀";
 "Connect AI agents with MCP server and CLI" = "透過 MCP 伺服器和 CLI 連接 AI 代理";
+"Connect an existing account" = "連結現有帳戶";
 "Connecting" = "正在連線";
+"Continue" = "繼續";
 "Control how much is included and how it is written" = "控制包含的內容及其撰寫方式";
 "Copied" = "已複製";
 "Copyright" = "著作權";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "無法載入完整圖片。您可以試著在瀏覽器中開啟。";
 "Counting is difficult..." = "計數真不容易……";
 "Create a feed from any web page" = "從任何網頁建立摘要";
+"Create a new account instead" = "改為建立新帳戶";
 "Custom Domain" = "自訂網域";
 "Custom RSS feeds for saved stories" = "已儲存文章的自訂 RSS 摘要";
 "Custom Search Query" = "自訂搜尋查詢";
@@ -216,9 +222,11 @@
 "Delete Account" = "刪除帳戶";
 "Delete Folder…" = "刪除資料夾…";
 "Delete Site…" = "刪除網站…";
+"Delete account" = "刪除帳戶";
 "Delete offline stories" = "刪除離線文章";
 "Delete saved search" = "刪除已儲存的搜尋";
 "Deleting saved search..." = "正在刪除已儲存的搜尋…";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "永久刪除帳戶會移除你的資訊來源、已儲存的文章和帳戶資料。此操作無法復原。";
 "Deleting..." = "正在刪除…";
 "Discover" = "探索";
 "Discover more to read" = "探索更多閱讀內容";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "輸入自訂搜尋條件…";
 "Enter a web page URL..." = "輸入網頁網址…";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "輸入任何網頁網址，NewsBlur 就會使用 AI 分析頁面結構、尋找文章，並建立可供您訂閱的自訂 RSS 動態消息。";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "輸入你現有的 NewsBlur 使用者名稱或電子郵件，以及 NewsBlur 密碼。";
 "Error" = "錯誤";
 "Evening" = "晚上";
 "Every story from every site is archived and searchable forever" = "每個網站的每篇文章都會永久封存並可搜尋";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "當然，包含高級訂閱方案的所有功能";
 "Exact phrase" = "完全符合的詞組";
 "Experimental" = "實驗性";
+"Explore interests" = "探索興趣";
 "Export Preferences" = "匯出偏好設定";
 "Export trained stories from folders as RSS feeds" = "將資料夾中的訓練文章匯出為 RSS 摘要";
 "Extra Large" = "特大";
@@ -278,12 +288,14 @@
 "Find in Sites" = "在網站中尋找";
 "Find in feed" = "在訂閱來源中尋找";
 "Find in sites" = "在網站中尋找";
+"Finding feeds for you to explore." = "正在尋找適合你探索的訂閱來源。";
 "Finding related sites..." = "正在尋找相關網站...";
 "Finding story..." = "正在尋找文章…";
 "Firefox" = "Firefox";
 "Focus" = "焦點";
 "Focus Stories" = "焦點文章";
 "Focus only" = "僅聚焦";
+"Folder name" = "資料夾名稱";
 "Folders" = "資料夾";
 "Follow" = "追蹤";
 "Follow %@" = "追蹤 %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "圖片預覽";
 "Image actions" = "圖片操作";
 "Import & Export" = "匯入與匯出";
+"Import OPML" = "匯入 OPML";
 "Import Preferences" = "匯入偏好設定";
+"Import or upload sites" = "匯入或上傳網站";
 "Imported %i site%@" = "已匯入 %i 個網站%@";
 "Importing sites..." = "正在匯入網站...";
 "In-app Safari" = "App 內 Safari";
@@ -355,6 +369,7 @@
 "Large" = "大型";
 "Large Left" = "大型靠左";
 "Large Right" = "右側大型";
+"Last used" = "上次使用";
 "Lavender Iris" = "薰衣草鳶尾";
 "Layout" = "版面配置";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "留空以使用 NewsBlur，或輸入自架安裝版本的網址。下次開啟應用程式時生效。";
@@ -367,6 +382,7 @@
 "List style" = "清單樣式";
 "Loading Google News topics..." = "正在載入 Google 新聞主題…";
 "Loading image…" = "正在載入圖片…";
+"Loading interests" = "正在載入興趣";
 "Loading settings…" = "正在載入設定…";
 "Loading..." = "載入中…";
 "Loading…" = "載入中…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "沒有新聞列表";
 "No Widget Sites" = "沒有小工具網站";
 "No briefings yet" = "目前沒有簡報";
+"No feeds to show yet. Try another interest or search all sites." = "目前沒有可顯示的訂閱來源。請嘗試其他興趣，或搜尋所有網站。";
+"No interests or sites found. Try another search." = "找不到興趣或網站。請嘗試其他搜尋。";
 "No longer saved" = "不再儲存";
 "No notifications yet." = "目前沒有通知。";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "沒有可顯示的文章。沒有可顯示的文章。沒有可顯示的文章。沒有可顯示的文章。";
@@ -509,6 +527,7 @@
 "Page up" = "向上翻頁";
 "Paste a story title from the page" = "貼上頁面中的文章標題";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。";
+"Permanently delete account" = "永久刪除帳戶";
 "Pick which model writes your Daily Briefing" = "選擇用來撰寫每日簡報的模型";
 "Place the story list controls above or below the stories" = "將文章清單控制項放在文章上方或下方";
 "Plum Berry" = "李子莓";
@@ -574,7 +593,9 @@
 "Reply to %@" = "回覆 %@";
 "Resize sidebar" = "調整側邊欄大小";
 "Restore" = "還原";
+"Retry" = "重試";
 "Retry Google Reader" = "重試 Google Reader";
+"Retry icons" = "重試載入圖示";
 "River of News (reading by folder)" = "新聞河流（依資料夾閱讀）";
 "Rows" = "列";
 "Ruby Red" = "紅寶石紅";
@@ -656,6 +677,7 @@
 "Show without icons" = "不顯示圖示";
 "Sidebar" = "側邊欄";
 "Sign Up" = "註冊";
+"Sign in with Google" = "使用 Google 登入";
 "Single" = "單篇";
 "Single Column" = "單欄";
 "Site" = "網站";
@@ -669,12 +691,14 @@
 "Small" = "小";
 "Small Left" = "小型靠左";
 "Small Right" = "右側小型";
+"Some feed icons couldn’t load." = "部分資訊來源圖示無法載入。";
 "Sources" = "來源";
 "Spacing" = "間距";
 "Standard" = "標準";
 "Start reading" = "開始閱讀";
 "Statistics" = "統計資料";
 "Statistics…" = "統計資料…";
+"Stay connected" = "保持連線";
 "Stay on the feeds list" = "留在訂閱來源清單";
 "Stories" = "文章";
 "Stories can stay unread forever" = "文章可以永遠保持未讀";
@@ -765,6 +789,7 @@
 "Trending Sites" = "熱門網站";
 "Try" = "試用";
 "Try again" = "再試一次";
+"Try search again" = "再次嘗試搜尋";
 "Trying Feed" = "正在嘗試訂閱來源";
 "Tuesday" = "星期二";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "升級至 Archive";
 "Upgrade to Premium" = "升級至 Premium";
 "Upgrade to Premium Archive" = "升級至 Premium Archive";
+"Use another sign-in method" = "使用其他登入方式";
 "Use both" = "兩者皆用";
 "Use system size" = "使用系統大小";
 "User info" = "使用者資訊";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "您的進階版封存訂閱已啟用";
 "Your premium pro subscription includes everything above" = "您的 Premium Pro 訂閱包含上述所有功能";
 "Your premium pro subscription is active" = "你的 Premium Pro 訂閱已啟用";
+"Your reading list" = "你的閱讀清單";
+"You’re all set up." = "一切就緒。";
 "all stories" = "所有文章";
 "dislike" = "不喜歡";
 "iOS" = "iOS";
+"or" = "或";
 "premium subscribers" = "付費訂閱者";
 "— Top Level —" = "— 最上層 —";
 "‹ Feeds" = "‹ 動態消息";

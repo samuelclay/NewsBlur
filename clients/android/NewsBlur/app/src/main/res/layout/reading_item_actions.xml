@@ -75,8 +75,7 @@
     <RelativeLayout
         android:id="@+id/comments_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp" >
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/reading_friend_comment_header"
@@ -205,4 +204,23 @@
             android:orientation="vertical"/>
 
     </RelativeLayout>
+
+    <!-- reading_item_actions.xml reserves one real traversal row after all comments. -->
+    <LinearLayout
+        android:id="@+id/reader_traversal_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <FrameLayout
+            android:id="@+id/reader_traversal_slot"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:clipChildren="false"
+            android:clipToPadding="false" />
+    </LinearLayout>
 </merge>

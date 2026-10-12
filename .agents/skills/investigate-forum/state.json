@@ -1,5 +1,33 @@
 {
   "topics": {
+    "13869": {
+      "title": "NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites",
+      "url": "https://forum.newsblur.com/t/newsblur-15-for-android-faster-scrolling-a-tablet-layout-and-add-discover-sites/13869",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-10-07T03:27:08.145Z",
+      "last_posted_at": "2026-10-06T16:31:25.551Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2163",
+      "branch": "FTUX",
+      "worktree": ".worktree/ftux-combined",
+      "note": "gpjt requested full-width article reading on a Samsung Fold. Added a toolbar toggle that expands the current reader in place, retains reader controls, and persists until disabled across stories and app launches. Uses Activity Embedding extension 3 and keeps narrow-window constraints; exact Fold hardware remains unverified. Samsung SM-X200 runtime checks passed for expansion/restoration, portrait/landscape, Back and reopening, force-stop/relaunch persistence, article position, and light/dark/black/sepia themes. Reproduced the live title-list teleport during swipes, added failing tests, and made offscreen following smooth with cancellation on rapid selection changes; visible titles and phone-return positioning remain unchanged. Full Android unit suite passed 780 tests before the Back follow-up; 23 focused tests pass after fixing a runtime-confirmed blank Back transition for expanded opaque readers. Debug APK built and installed, and fixed Back verified on the tablet. The attached SM-S901U1 phone remains locked, so phone runtime verification is not claimed. Original tablet theme and rotation preferences restored. No release or forum post. Follow-up post 16 from Guybrush: restored Open Image in Browser in the long-press image viewer menu, distinct from Open Link. Offline image rewrites preserve original URLs safely for repeated images. Added Preferences > Reading > Always show reading controls, off by default, to pin bottom navigation while allowing the top toolbar to hide. Existing persistent fullscreen button covers quick layout switching; no draggable divider added. Actual JS bridge and duplicate-image regressions failed before fixes; all 810 Android unit tests plus Alpha and release R8 builds passed. Samsung SM-X200 runtime checks passed for external image opening, both additions in light/dark/black/sepia, preference persistence after force-stop/relaunch, Previous/Next navigation, and body/footer scrolling. Fullscreen video suppression is covered by focused tests. Current-head CI and review results are recorded in PR #2163. No production deployment, store release, or forum post.",
+      "reply": "You’re right, the new image viewer dropped Open Image in Browser. I’ve restored it to the long press menu. I also added Always show reading controls under Preferences, Reading, so Previous and Next stay visible while scrolling.\n\nThe fullscreen button beside the reader settings hides and restores the story list and remembers your choice. These changes are coming in the next Android release.",
+      "question": null
+    },
+    "13672": {
+      "title": "NewsBlur app on iOS orientation issue",
+      "url": "https://forum.newsblur.com/t/newsblur-app-on-ios-orientation-issue/13672",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-10-06T05:30:44.804Z",
+      "last_posted_at": "2026-10-05T15:43:22.493Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2163",
+      "branch": "FTUX",
+      "worktree": ".worktree/ftux-combined",
+      "note": "User selected the existing iPhone 17e. Rotation initially failed in both NewsBlur and Safari; restarting that same simulator without erasing data restored rotation. Strengthened the existing UI regression to enable normal animations, verify rendered article content after portrait-landscape-portrait, tap Back to stories and feeds, and reopen the article. The full journey and Safari control pass on iPhone 17e / iOS 26.5. Three focused layout-policy tests also pass. Existing FTUX width fix 5c7d9f869 is absent from reported release iOS_15.0.2 (20e917697, build 341). No additional production layout change was necessary or made. Pro Max / iOS 27.0 remains unverified; 17e results do not establish exact-device reproduction. Added a data-preserving restart action to run_ios.py. Removed temporary Safari diagnostic test. Restored original app preferences and login. Evidence: /tmp/newsblur-forum-13672-restarted-17e.xcresult and /tmp/newsblur-orientation-verified-attachments. Committing regression coverage on FTUX; not released or posted to forum.",
+      "reply": "The layout change intended to prevent the squeezed columns is not in 15.0.2 yet. I checked the current development build on an iPhone 17e: the article stays readable after rotating both ways, Back works, and the story reopens. I have not verified the exact Pro Max setup yet.",
+      "question": null
+    },
     "13799": {
       "title": "Subscription renewal through Apple not recognized",
       "url": "https://forum.newsblur.com/t/subscription-renewal-through-apple-not-recognized/13799",

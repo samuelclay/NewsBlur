@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "Tüm desenler varsayılan olarak büyük/küçük harfe duyarsızdır";
 "All stories" = "Tüm haberler";
 "Alphabetical" = "Alfabetik";
+"Already have feeds?" = "Zaten akışlarınız var mı?";
 "Analyze" = "Analiz et";
 "Android" = "Android";
 "App Badge" = "Uygulama rozeti";
@@ -161,12 +162,14 @@
 "Brave" = "Brave";
 "Brightness Override" = "Parlaklık Ayarı";
 "Brightness threshold" = "Parlaklık eşiği";
+"Bring your feeds and folders from another reader." = "Akışlarınızı ve klasörlerinizi başka bir okuyucudan aktarın.";
 "Bullets" = "Madde işaretleri";
 "Cancel" = "İptal";
 "Change Story List" = "Hikâye listesini değiştir";
 "Choose Icon" = "Simge seç";
 "Choose Story List" = "Haber Listesini Seç";
 "Choose a Topic" = "Bir Konu Seçin";
+"Choose feeds for your folder" = "Klasörünüz için akışları seçin";
 "Choose how far back to mark read" = "Ne kadar geriye dönük haberlerin okundu olarak işaretleneceğini seçin";
 "Choose how often and when your briefing is generated" = "Özetinizin ne sıklıkla ve ne zaman oluşturulacağını seçin";
 "Choose one or more words from the title:" = "Başlıktan bir veya daha fazla kelime seçin:";
@@ -190,7 +193,9 @@
 "Configure" = "Yapılandır";
 "Confirm mark read" = "Okundu olarak işaretlemeyi onayla";
 "Connect AI agents with MCP server and CLI" = "Yapay zekâ ajanlarını MCP sunucusu ve CLI ile bağlayın";
+"Connect an existing account" = "Mevcut bir hesabı bağla";
 "Connecting" = "Bağlanıyor";
+"Continue" = "Devam et";
 "Control how much is included and how it is written" = "Nelerin ne kadar dahil edileceğini ve nasıl yazılacağını kontrol edin";
 "Copied" = "Kopyalandı";
 "Copyright" = "Telif hakkı";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "Görselin tamamı yüklenemedi. Tarayıcınızda açmayı deneyebilirsiniz.";
 "Counting is difficult..." = "Saymak zor iş...";
 "Create a feed from any web page" = "Herhangi bir web sayfasından akış oluşturun";
+"Create a new account instead" = "Bunun yerine yeni bir hesap oluştur";
 "Custom Domain" = "Özel Alan Adı";
 "Custom RSS feeds for saved stories" = "Kaydedilen haberler için özel RSS akışları";
 "Custom Search Query" = "Özel arama sorgusu";
@@ -216,9 +222,11 @@
 "Delete Account" = "Hesabı sil";
 "Delete Folder…" = "Klasörü sil…";
 "Delete Site…" = "Siteyi Sil…";
+"Delete account" = "Hesabı sil";
 "Delete offline stories" = "Çevrimdışı haberleri sil";
 "Delete saved search" = "Kayıtlı aramayı sil";
 "Deleting saved search..." = "Kayıtlı arama siliniyor...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Hesabınızı silmek akışlarınızı, kaydedilmiş haberlerinizi ve hesap verilerinizi kalıcı olarak kaldırır. Bu işlem geri alınamaz.";
 "Deleting..." = "Siliniyor...";
 "Discover" = "Keşfet";
 "Discover more to read" = "Okuyacak daha fazla şey keşfedin";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Özel arama sorgusu girin...";
 "Enter a web page URL..." = "Bir web sayfası URL'si girin...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Herhangi bir web sayfasının URL'sini girin; NewsBlur sayfa yapısını yapay zekâyla analiz eder, haberleri bulur ve abone olabileceğiniz özel bir RSS akışı oluşturur.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Mevcut NewsBlur kullanıcı adınızı veya e-posta adresinizi ve NewsBlur parolanızı girin.";
 "Error" = "Hata";
 "Evening" = "Akşam";
 "Every story from every site is archived and searchable forever" = "Her sitenin her yazısı arşivlenir ve sonsuza kadar aranabilir";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Elbette premium aboneliğin sunduğu her şey";
 "Exact phrase" = "Tam ifade";
 "Experimental" = "Deneysel";
+"Explore interests" = "İlgi alanlarını keşfet";
 "Export Preferences" = "Tercihleri Dışa Aktar";
 "Export trained stories from folders as RSS feeds" = "Klasörlerdeki eğitilmiş haberleri RSS akışları olarak dışa aktar";
 "Extra Large" = "Ekstra büyük";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Sitelerde bul";
 "Find in feed" = "Akışta bul";
 "Find in sites" = "Sitelerde bul";
+"Finding feeds for you to explore." = "Keşfedebileceğiniz akışlar bulunuyor.";
 "Finding related sites..." = "İlgili siteler bulunuyor...";
 "Finding story..." = "Haber aranıyor...";
 "Firefox" = "Firefox";
 "Focus" = "Odak";
 "Focus Stories" = "Hikâyelere Odaklan";
 "Focus only" = "Yalnızca odaklan";
+"Folder name" = "Klasör adı";
 "Folders" = "Klasörler";
 "Follow" = "Takip et";
 "Follow %@" = "%@ kişisini takip et";
@@ -331,7 +343,9 @@
 "Image Preview" = "Görsel Önizlemesi";
 "Image actions" = "Görsel işlemleri";
 "Import & Export" = "İçe Aktar ve Dışa Aktar";
+"Import OPML" = "OPML'yi içe aktar";
 "Import Preferences" = "Tercihleri İçe Aktar";
+"Import or upload sites" = "Siteleri içe aktar veya yükle";
 "Imported %i site%@" = "%i site%@ içe aktarıldı";
 "Importing sites..." = "Siteler içe aktarılıyor...";
 "In-app Safari" = "Uygulama içi Safari";
@@ -355,6 +369,7 @@
 "Large" = "Büyük";
 "Large Left" = "Büyük Sol";
 "Large Right" = "Sağda Büyük";
+"Last used" = "Son kullanılan";
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Düzen";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur'ı kullanmak için boş bırakın veya kendi barındırdığınız kurulumun URL'sini girin. Değişiklik, uygulama bir sonraki açıldığında geçerli olur.";
@@ -367,6 +382,7 @@
 "List style" = "Liste stili";
 "Loading Google News topics..." = "Google News konuları yükleniyor...";
 "Loading image…" = "Görsel yükleniyor…";
+"Loading interests" = "İlgi alanları yükleniyor";
 "Loading settings…" = "Ayarlar yükleniyor…";
 "Loading..." = "Yükleniyor...";
 "Loading…" = "Yükleniyor…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "Haber listesi yok";
 "No Widget Sites" = "Widget sitesi yok";
 "No briefings yet" = "Henüz özet yok";
+"No feeds to show yet. Try another interest or search all sites." = "Henüz gösterilecek akış yok. Başka bir ilgi alanı deneyin veya tüm sitelerde arayın.";
+"No interests or sites found. Try another search." = "İlgi alanı veya site bulunamadı. Başka bir arama deneyin.";
 "No longer saved" = "Artık kaydedilmiyor";
 "No notifications yet." = "Henüz bildirim yok.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Gösterilecek haber yok. Gösterilecek haber yok. Gösterilecek haber yok. Gösterilecek haber yok.";
@@ -509,6 +527,7 @@
 "Page up" = "Sayfa yukarı";
 "Paste a story title from the page" = "Sayfadaki bir haberin başlığını yapıştırın";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Herhangi bir URL yapıştırın; NewsBlur, RSS olmasa bile sayfadan bir akış oluşturur.";
+"Permanently delete account" = "Hesabı kalıcı olarak sil";
 "Pick which model writes your Daily Briefing" = "Günlük Özetinizi hangi modelin yazacağını seçin";
 "Place the story list controls above or below the stories" = "Hikâye listesi denetimlerini hikâyelerin üstüne veya altına yerleştir";
 "Plum Berry" = "Erik Böğürtleni";
@@ -574,7 +593,9 @@
 "Reply to %@" = "%@ kullanıcısına yanıt ver";
 "Resize sidebar" = "Kenar çubuğunu yeniden boyutlandır";
 "Restore" = "Geri yükle";
+"Retry" = "Yeniden dene";
 "Retry Google Reader" = "Google Reader'ı Yeniden Dene";
+"Retry icons" = "Simgeleri yeniden dene";
 "River of News (reading by folder)" = "Haber Akışı (klasöre göre okuma)";
 "Rows" = "Satırlar";
 "Ruby Red" = "Ruby Red";
@@ -656,6 +677,7 @@
 "Show without icons" = "Simgeler olmadan göster";
 "Sidebar" = "Kenar çubuğu";
 "Sign Up" = "Kaydol";
+"Sign in with Google" = "Google ile giriş yap";
 "Single" = "Tekli";
 "Single Column" = "Tek Sütun";
 "Site" = "Site";
@@ -669,12 +691,14 @@
 "Small" = "Küçük";
 "Small Left" = "Küçük Sol";
 "Small Right" = "Küçük Sağ";
+"Some feed icons couldn’t load." = "Bazı akış simgeleri yüklenemedi.";
 "Sources" = "Kaynaklar";
 "Spacing" = "Boşluk";
 "Standard" = "Standart";
 "Start reading" = "Okumaya başla";
 "Statistics" = "İstatistikler";
 "Statistics…" = "İstatistikler…";
+"Stay connected" = "Bağlantıda kalın";
 "Stay on the feeds list" = "Akış listesinde kal";
 "Stories" = "Haberler";
 "Stories can stay unread forever" = "Haberler sonsuza kadar okunmamış kalabilir";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Trend Siteler";
 "Try" = "Dene";
 "Try again" = "Tekrar dene";
+"Try search again" = "Tekrar aramayı deneyin";
 "Trying Feed" = "Akış deneniyor";
 "Tuesday" = "Salı";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Arşiv'e yükselt";
 "Upgrade to Premium" = "Premium'a yükselt";
 "Upgrade to Premium Archive" = "Premium Arşiv'e yükselt";
+"Use another sign-in method" = "Başka bir giriş yöntemi kullan";
 "Use both" = "İkisini de kullan";
 "Use system size" = "Sistem boyutunu kullan";
 "User info" = "Kullanıcı bilgileri";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Premium arşiv aboneliğiniz etkin";
 "Your premium pro subscription includes everything above" = "Premium Pro aboneliğiniz yukarıdakilerin tümünü içerir";
 "Your premium pro subscription is active" = "Premium Pro aboneliğiniz etkin";
+"Your reading list" = "Okuma listeniz";
+"You’re all set up." = "Her şey hazır.";
 "all stories" = "tüm haberler";
 "dislike" = "beğenme";
 "iOS" = "iOS";
+"or" = "veya";
 "premium subscribers" = "premium aboneler";
 "— Top Level —" = "— En Üst Düzey —";
 "‹ Feeds" = "‹ Akışlar";

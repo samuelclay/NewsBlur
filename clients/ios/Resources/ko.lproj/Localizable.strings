@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "모든 패턴은 기본적으로 대소문자를 구분하지 않습니다";
 "All stories" = "모든 기사";
 "Alphabetical" = "알파벳순";
+"Already have feeds?" = "이미 피드가 있으신가요?";
 "Analyze" = "분석";
 "Android" = "Android";
 "App Badge" = "앱 배지";
@@ -161,12 +162,14 @@
 "Brave" = "Brave";
 "Brightness Override" = "밝기 재정의";
 "Brightness threshold" = "밝기 임계값";
+"Bring your feeds and folders from another reader." = "다른 리더에서 피드와 폴더를 가져오세요.";
 "Bullets" = "글머리 기호";
 "Cancel" = "취소";
 "Change Story List" = "스토리 목록 변경";
 "Choose Icon" = "아이콘 선택";
 "Choose Story List" = "게시물 목록 선택";
 "Choose a Topic" = "주제 선택";
+"Choose feeds for your folder" = "폴더에 피드를 선택하세요";
 "Choose how far back to mark read" = "읽음으로 표시할 기간 선택";
 "Choose how often and when your briefing is generated" = "브리핑 생성 빈도와 시간을 선택하세요";
 "Choose one or more words from the title:" = "제목에서 단어를 하나 이상 선택하세요:";
@@ -190,7 +193,9 @@
 "Configure" = "설정";
 "Confirm mark read" = "읽음으로 표시 확인";
 "Connect AI agents with MCP server and CLI" = "MCP 서버 및 CLI로 AI 에이전트 연결";
+"Connect an existing account" = "기존 계정 연결";
 "Connecting" = "연결 중";
+"Continue" = "계속";
 "Control how much is included and how it is written" = "포함할 내용의 양과 작성 방식을 조정하세요";
 "Copied" = "복사됨";
 "Copyright" = "저작권";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "전체 이미지를 불러올 수 없습니다. 브라우저에서 열어 보세요.";
 "Counting is difficult..." = "세는 건 어렵네요...";
 "Create a feed from any web page" = "웹페이지에서 피드 만들기";
+"Create a new account instead" = "대신 새 계정 만들기";
 "Custom Domain" = "사용자 지정 도메인";
 "Custom RSS feeds for saved stories" = "저장한 스토리용 맞춤 RSS 피드";
 "Custom Search Query" = "맞춤 검색어";
@@ -216,9 +222,11 @@
 "Delete Account" = "계정 삭제";
 "Delete Folder…" = "폴더 삭제…";
 "Delete Site…" = "사이트 삭제…";
+"Delete account" = "계정 삭제";
 "Delete offline stories" = "오프라인 글 삭제";
 "Delete saved search" = "저장된 검색 삭제";
 "Deleting saved search..." = "저장된 검색 삭제 중...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "계정을 영구적으로 삭제하면 피드, 저장한 스토리, 계정 데이터가 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.";
 "Deleting..." = "삭제 중...";
 "Discover" = "둘러보기";
 "Discover more to read" = "더 읽을거리 찾아보기";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "맞춤 검색어 입력...";
 "Enter a web page URL..." = "웹페이지 URL 입력...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "웹페이지 URL을 입력하면 NewsBlur가 AI로 페이지 구조를 분석하고 기사를 찾아 구독할 수 있는 맞춤 RSS 피드를 만들어 드립니다.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "기존 NewsBlur 사용자 이름 또는 이메일과 NewsBlur 비밀번호를 입력하세요.";
 "Error" = "오류";
 "Evening" = "저녁";
 "Every story from every site is archived and searchable forever" = "모든 사이트의 모든 글을 영구 보관하고 검색할 수 있습니다";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "물론 프리미엄 구독의 모든 기능 포함";
 "Exact phrase" = "정확한 문구";
 "Experimental" = "실험적";
+"Explore interests" = "관심사 둘러보기";
 "Export Preferences" = "환경설정 내보내기";
 "Export trained stories from folders as RSS feeds" = "폴더에서 학습된 스토리를 RSS 피드로 내보내기";
 "Extra Large" = "특대";
@@ -278,12 +288,14 @@
 "Find in Sites" = "사이트에서 찾기";
 "Find in feed" = "피드에서 찾기";
 "Find in sites" = "사이트에서 찾기";
+"Finding feeds for you to explore." = "둘러볼 피드를 찾는 중입니다.";
 "Finding related sites..." = "관련 사이트 찾는 중...";
 "Finding story..." = "글 찾는 중...";
 "Firefox" = "Firefox";
 "Focus" = "집중";
 "Focus Stories" = "집중할 기사";
 "Focus only" = "집중만";
+"Folder name" = "폴더 이름";
 "Folders" = "폴더";
 "Follow" = "팔로우";
 "Follow %@" = "%@ 팔로우";
@@ -331,7 +343,9 @@
 "Image Preview" = "이미지 미리보기";
 "Image actions" = "이미지 작업";
 "Import & Export" = "가져오기 및 내보내기";
+"Import OPML" = "OPML 가져오기";
 "Import Preferences" = "환경설정 가져오기";
+"Import or upload sites" = "사이트 가져오기 또는 업로드";
 "Imported %i site%@" = "사이트 %i개를 가져왔습니다%@";
 "Importing sites..." = "사이트 가져오는 중...";
 "In-app Safari" = "앱 내 Safari";
@@ -355,6 +369,7 @@
 "Large" = "크게";
 "Large Left" = "왼쪽 크게";
 "Large Right" = "오른쪽 크게";
+"Last used" = "최근 사용";
 "Lavender Iris" = "라벤더 아이리스";
 "Layout" = "레이아웃";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur를 사용하려면 비워 두거나, 직접 호스팅하는 설치의 URL을 입력하세요. 앱을 다음에 열 때 적용됩니다.";
@@ -367,6 +382,7 @@
 "List style" = "목록 스타일";
 "Loading Google News topics..." = "Google 뉴스 주제 불러오는 중...";
 "Loading image…" = "이미지 로드 중…";
+"Loading interests" = "관심사 불러오는 중";
 "Loading settings…" = "설정을 불러오는 중…";
 "Loading..." = "불러오는 중...";
 "Loading…" = "불러오는 중…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "스토리 목록 없음";
 "No Widget Sites" = "위젯 사이트 없음";
 "No briefings yet" = "아직 브리핑이 없습니다";
+"No feeds to show yet. Try another interest or search all sites." = "표시할 피드가 아직 없습니다. 다른 관심사를 선택하거나 모든 사이트를 검색해 보세요.";
+"No interests or sites found. Try another search." = "관심사나 사이트를 찾을 수 없습니다. 다른 검색어를 입력해 보세요.";
 "No longer saved" = "더 이상 저장되지 않음";
 "No notifications yet." = "아직 알림이 없습니다.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "표시할 스토리가 없습니다. 표시할 스토리가 없습니다. 표시할 스토리가 없습니다. 표시할 스토리가 없습니다.";
@@ -509,6 +527,7 @@
 "Page up" = "페이지 위로";
 "Paste a story title from the page" = "페이지에서 스토리 제목을 붙여넣으세요";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "URL을 붙여넣으면 RSS가 없어도 NewsBlur가 해당 페이지에서 피드를 만듭니다.";
+"Permanently delete account" = "계정 영구 삭제";
 "Pick which model writes your Daily Briefing" = "데일리 브리핑을 작성할 모델을 선택하세요";
 "Place the story list controls above or below the stories" = "스토리 목록 컨트롤을 스토리 위나 아래에 배치";
 "Plum Berry" = "자두 베리";
@@ -574,7 +593,9 @@
 "Reply to %@" = "%@에게 답글";
 "Resize sidebar" = "사이드바 크기 조정";
 "Restore" = "복원";
+"Retry" = "다시 시도";
 "Retry Google Reader" = "Google Reader 다시 시도";
+"Retry icons" = "아이콘 다시 시도";
 "River of News (reading by folder)" = "뉴스 스트림(폴더별로 읽기)";
 "Rows" = "행";
 "Ruby Red" = "루비 레드";
@@ -656,6 +677,7 @@
 "Show without icons" = "아이콘 없이 표시";
 "Sidebar" = "사이드바";
 "Sign Up" = "가입하기";
+"Sign in with Google" = "Google로 로그인";
 "Single" = "싱글";
 "Single Column" = "단일 열";
 "Site" = "사이트";
@@ -669,12 +691,14 @@
 "Small" = "작게";
 "Small Left" = "왼쪽 작게";
 "Small Right" = "작은 오른쪽";
+"Some feed icons couldn’t load." = "일부 피드 아이콘을 불러오지 못했습니다.";
 "Sources" = "출처";
 "Spacing" = "간격";
 "Standard" = "표준";
 "Start reading" = "읽기 시작";
 "Statistics" = "통계";
 "Statistics…" = "통계…";
+"Stay connected" = "계속 연결하기";
 "Stay on the feeds list" = "피드 목록에 머물기";
 "Stories" = "게시물";
 "Stories can stay unread forever" = "기사를 계속 읽지 않은 상태로 둘 수 있습니다";
@@ -765,6 +789,7 @@
 "Trending Sites" = "인기 사이트";
 "Try" = "사용해 보기";
 "Try again" = "다시 시도";
+"Try search again" = "다시 검색";
 "Trying Feed" = "피드 시험 중";
 "Tuesday" = "화요일";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "아카이브로 업그레이드";
 "Upgrade to Premium" = "프리미엄으로 업그레이드";
 "Upgrade to Premium Archive" = "Premium Archive로 업그레이드";
+"Use another sign-in method" = "다른 로그인 방법 사용";
 "Use both" = "둘 다 사용";
 "Use system size" = "시스템 크기 사용";
 "User info" = "사용자 정보";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "프리미엄 보관함 구독이 활성화되었습니다";
 "Your premium pro subscription includes everything above" = "프리미엄 프로 구독에는 위의 모든 기능이 포함됩니다";
 "Your premium pro subscription is active" = "프리미엄 프로 구독이 활성화되었습니다";
+"Your reading list" = "내 읽기 목록";
+"You’re all set up." = "설정이 완료되었습니다.";
 "all stories" = "모든 스토리";
 "dislike" = "싫어요";
 "iOS" = "iOS";
+"or" = "또는";
 "premium subscribers" = "프리미엄 구독자";
 "— Top Level —" = "— 최상위 —";
 "‹ Feeds" = "‹ 피드";

@@ -275,7 +275,7 @@ msgid "%(count)s story"
 msgid_plural "%(count)s stories"
 msgstr[0] "%(count)s bài viết"
 
-#: media/js/newsblur/reader/reader_account.js:651
+#: media/js/newsblur/reader/reader_account.js:658
 #, python-format
 msgid "%(value_1)s %(value_2)s will be deleted"
 msgstr "%(value_1)s %(value_2)s sẽ bị xóa"
@@ -310,7 +310,7 @@ msgstr "còn %(value_1)s"
 msgid "%(value_1)s bytes"
 msgstr "%(value_1)s byte"
 
-#: media/js/newsblur/views/story_detail_view.js:763
+#: media/js/newsblur/views/story_detail_view.js:764
 #, python-format
 msgid "%(value_1)s curated %(value_2)s"
 msgstr "%(value_1)s được tuyển chọn bởi %(value_2)s"
@@ -397,7 +397,7 @@ msgstr "%(value_1)s trang web"
 msgid "%(value_1)s stories"
 msgstr "%(value_1)s bài viết"
 
-#: media/js/newsblur/views/story_detail_view.js:727
+#: media/js/newsblur/views/story_detail_view.js:728
 #, python-format
 msgid "%(value_1)s story changes"
 msgstr "%(value_1)s thay đổi bài viết"
@@ -407,7 +407,7 @@ msgstr "%(value_1)s thay đổi bài viết"
 msgid "%(value_1)s to send"
 msgstr "%(value_1)s để gửi"
 
-#: media/js/newsblur/reader/reader_account.js:545
+#: media/js/newsblur/reader/reader_account.js:552
 #, python-format
 msgid "%(value_1)s will be deleted"
 msgstr "%(value_1)s sẽ bị xóa"
@@ -827,11 +827,11 @@ msgstr "(GMT-10:00) Hawaii-Aleutian"
 msgid "(GMT-11:00) Midway Island, Samoa"
 msgstr "(GMT-11:00) Đảo Midway, Samoa"
 
-#: media/js/newsblur/reader/reader_account.js:971
+#: media/js/newsblur/reader/reader_account.js:1064
 msgid "(upcoming)"
 msgstr "(sắp ra mắt)"
 
-#: media/js/newsblur/views/story_detail_view.js:694
+#: media/js/newsblur/views/story_detail_view.js:695
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
@@ -975,7 +975,7 @@ msgstr "Blurblog gồm các tin được chia sẻ"
 msgid "A folder of feeds read as one stream"
 msgstr "Một thư mục gồm các nguồn cấp dữ liệu được đọc như một luồng"
 
-#: media/js/newsblur/reader/reader_account.js:195
+#: media/js/newsblur/reader/reader_account.js:202
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "Quà tặng từ %(value_1)s đã được áp dụng cho tài khoản của bạn."
@@ -992,7 +992,7 @@ msgstr "Chỉ một lần siêu không thích cũng có thể ghi đè mọi th�
 msgid "A story diff with additions and deletions"
 msgstr "Bản so sánh bài viết hiển thị phần thêm và phần xóa"
 
-#: media/js/newsblur/views/story_detail_view.js:1313
+#: media/js/newsblur/views/story_detail_view.js:1314
 msgid "AI Filter"
 msgstr "Bộ lọc AI"
 
@@ -1021,7 +1021,7 @@ msgstr "TẤT CẢ DANH MỤC (%(value_1)s)"
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Chắc chắn rồi. Mở công cụ huấn luyện và gỡ mọi đánh giá thích hoặc không thích để đặt lại."
 
-#: media/js/newsblur/reader/reader_account.js:60
+#: media/js/newsblur/reader/reader_account.js:61
 msgid "Account"
 msgstr "Tài khoản"
 
@@ -1211,7 +1211,7 @@ msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "Đồng thời xóa %(value_1)s bản lưu trữ hiện có từ miền này"
 
-#: media/js/newsblur/views/story_detail_view.js:637
+#: media/js/newsblur/views/story_detail_view.js:638
 #, python-format
 msgid "Also published by %(value_1)s site"
 msgid_plural "Also published by %(value_1)s sites"
@@ -1349,7 +1349,7 @@ msgstr "Đặt câu hỏi cho AI về các bài viết"
 msgid "Ask AI with a choice of models"
 msgstr "Hỏi AI với nhiều mô hình để lựa chọn"
 
-#: media/js/newsblur/views/story_detail_view.js:2482
+#: media/js/newsblur/views/story_detail_view.js:2483
 msgid "Ask a question..."
 msgstr "Đặt câu hỏi..."
 
@@ -1375,7 +1375,7 @@ msgstr "Âm thanh"
 msgid "Author"
 msgstr "Tác giả"
 
-#: media/js/newsblur/reader/reader_account.js:145
+#: media/js/newsblur/reader/reader_account.js:152
 msgid "Author Regex"
 msgstr "Biểu thức chính quy cho tác giả"
 
@@ -1621,7 +1621,7 @@ msgstr "Hủy đổi tên"
 msgid "Cancel share"
 msgstr "Hủy chia sẻ"
 
-#: media/js/newsblur/reader/reader_account.js:821
+#: media/js/newsblur/reader/reader_account.js:914
 msgid "Cancel subscription renewal"
 msgstr "Hủy gia hạn đăng ký"
 
@@ -1633,7 +1633,7 @@ msgstr "Hủy bỏ theo dõi"
 msgid "Canceled Request"
 msgstr "Yêu cầu đã bị hủy"
 
-#: media/js/newsblur/reader/reader_account.js:471
+#: media/js/newsblur/reader/reader_account.js:478
 msgid "Cancelling..."
 msgstr "Đang hủy..."
 
@@ -1683,7 +1683,7 @@ msgstr "Thay đổi thông tin thanh toán"
 msgid "Change folders"
 msgstr "Thay đổi thư mục"
 
-#: media/js/newsblur/reader/reader_account.js:101
+#: media/js/newsblur/reader/reader_account.js:108
 msgid "Change password"
 msgstr "Đổi mật khẩu"
 
@@ -1691,7 +1691,7 @@ msgstr "Đổi mật khẩu"
 msgid "Change your blurblog settings above"
 msgstr "Thay đổi cài đặt blurblog ở trên"
 
-#: media/js/newsblur/reader/reader_account.js:231
+#: media/js/newsblur/reader/reader_account.js:238
 msgid "Change your credit card"
 msgstr "Thay đổi thẻ tín dụng"
 
@@ -1954,7 +1954,7 @@ msgstr ""
 msgid "Control which websites are archived. Blocked sites will not be saved by the browser extension."
 msgstr "Kiểm soát những trang web được lưu trữ. Các trang bị chặn sẽ không được tiện ích trình duyệt lưu lại."
 
-#: media/js/newsblur/views/story_detail_view.js:2072
+#: media/js/newsblur/views/story_detail_view.js:2073
 msgid "Copied"
 msgstr "Đã sao chép"
 
@@ -1978,7 +1978,7 @@ msgstr "Sao chép"
 msgid "Counting is difficult"
 msgstr "Đếm thật khó"
 
-#: media/js/newsblur/reader/reader_account.js:539
+#: media/js/newsblur/reader/reader_account.js:546
 msgid "Counting..."
 msgstr "Đang đếm..."
 
@@ -2022,7 +2022,7 @@ msgstr "Con trỏ"
 msgid "Custom Add Site URL"
 msgstr "URL trang web tùy chỉnh"
 
-#: media/js/newsblur/reader/reader_account.js:332
+#: media/js/newsblur/reader/reader_account.js:339
 msgid "Custom CSS"
 msgstr "CSS tùy chỉnh"
 
@@ -2030,7 +2030,7 @@ msgstr "CSS tùy chỉnh"
 msgid "Custom CSS for your Blurblog"
 msgstr "CSS tùy chỉnh cho Blurblog của bạn"
 
-#: media/js/newsblur/reader/reader_account.js:56
+#: media/js/newsblur/reader/reader_account.js:57
 msgid "Custom CSS/JavaScript"
 msgstr "CSS/JavaScript tùy chỉnh"
 
@@ -2038,7 +2038,7 @@ msgstr "CSS/JavaScript tùy chỉnh"
 msgid "Custom Date Range"
 msgstr "Khoảng ngày tùy chỉnh"
 
-#: media/js/newsblur/reader/reader_account.js:338
+#: media/js/newsblur/reader/reader_account.js:345
 msgid "Custom JavaScript"
 msgstr "JavaScript tùy chỉnh"
 
@@ -2164,23 +2164,23 @@ msgstr "Xóa lượt chia sẻ"
 msgid "Delete Tag"
 msgstr "Xóa thẻ"
 
-#: media/js/newsblur/reader/reader_account.js:169
+#: media/js/newsblur/reader/reader_account.js:176
 msgid "Delete all of my sites"
 msgstr "Xóa tất cả trang tin của tôi"
 
-#: media/js/newsblur/reader/reader_account.js:178
+#: media/js/newsblur/reader/reader_account.js:185
 msgid "Delete my account"
 msgstr "Xóa tài khoản của tôi"
 
-#: media/js/newsblur/reader/reader_account.js:161
+#: media/js/newsblur/reader/reader_account.js:168
 msgid "Delete my intelligence training classifiers"
 msgstr "Xóa các bộ phân loại đã huấn luyện cho tính năng thông minh của tôi"
 
-#: media/js/newsblur/reader/reader_account.js:118
+#: media/js/newsblur/reader/reader_account.js:125
 msgid "Delete my saved stories"
 msgstr "Xóa các bài viết đã lưu của tôi"
 
-#: media/js/newsblur/reader/reader_account.js:128
+#: media/js/newsblur/reader/reader_account.js:135
 msgid "Delete my shared stories"
 msgstr "Xóa các bài viết tôi đã chia sẻ"
 
@@ -2431,15 +2431,15 @@ msgstr "Chỉnh sửa hồ sơ"
 msgid "Email Newsletters"
 msgstr "Bản tin qua email"
 
-#: media/js/newsblur/reader/reader_account.js:84
+#: media/js/newsblur/reader/reader_account.js:91
 msgid "Email address"
 msgstr "Địa chỉ email"
 
-#: media/js/newsblur/reader/reader_account.js:235
+#: media/js/newsblur/reader/reader_account.js:242
 msgid "Email me 3 days before my subscription renews"
 msgstr "Gửi email cho tôi 3 ngày trước khi gói đăng ký được gia hạn"
 
-#: media/js/newsblur/reader/reader_account.js:315
+#: media/js/newsblur/reader/reader_account.js:322
 msgid "Email me replies, re-shares, new followers, and account notices"
 msgstr "Gửi email cho tôi khi có phản hồi, lượt chia sẻ lại, người theo dõi mới và thông báo tài khoản"
 
@@ -2527,23 +2527,23 @@ msgstr "Nhập văn bản ở trên"
 msgid "Enter text to match..."
 msgstr "Nhập văn bản để so khớp..."
 
-#: media/js/newsblur/reader/reader_account.js:164
+#: media/js/newsblur/reader/reader_account.js:171
 msgid "Erase your intelligence training classifiers"
 msgstr "Xóa các bộ phân loại đã huấn luyện bằng trí tuệ của bạn"
 
-#: media/js/newsblur/reader/reader_account.js:121
+#: media/js/newsblur/reader/reader_account.js:128
 msgid "Erase your saved stories"
 msgstr "Xóa các bài viết đã lưu"
 
-#: media/js/newsblur/reader/reader_account.js:131
+#: media/js/newsblur/reader/reader_account.js:138
 msgid "Erase your shared stories"
 msgstr "Xóa các bài viết bạn đã chia sẻ"
 
-#: media/js/newsblur/reader/reader_account.js:172
+#: media/js/newsblur/reader/reader_account.js:179
 msgid "Erase yourself"
 msgstr "Xóa dấu vết của bạn"
 
-#: media/js/newsblur/reader/reader_account.js:181
+#: media/js/newsblur/reader/reader_account.js:188
 msgid "Erase yourself permanently"
 msgstr "Xóa vĩnh viễn tài khoản của bạn"
 
@@ -2603,7 +2603,7 @@ msgstr "Mọi thứ NewsBlur có thể làm và cách dùng thử"
 msgid "Everything by This Publisher"
 msgstr "Tất cả bài viết từ nhà xuất bản này"
 
-#: media/js/newsblur/reader/reader_account.js:497
+#: media/js/newsblur/reader/reader_account.js:504
 msgid "Everything has been deleted."
 msgstr "Đã xóa mọi thứ."
 
@@ -3031,7 +3031,7 @@ msgstr "Tần suất"
 msgid "Frequently Asked Questions"
 msgstr "Câu hỏi thường gặp"
 
-#: media/js/newsblur/reader/reader_account.js:173
+#: media/js/newsblur/reader/reader_account.js:180
 msgid "Friendly note: You will be emailed a backup of your sites"
 msgstr "Lưu ý: Bản sao lưu các trang của bạn sẽ được gửi qua email"
 
@@ -3497,7 +3497,7 @@ msgstr "Huấn luyện trí tuệ"
 msgid "Interactions"
 msgstr "Tương tác"
 
-#: media/js/newsblur/reader/reader_account.js:986
+#: media/js/newsblur/reader/reader_account.js:1079
 msgid "Invoice"
 msgstr "Hóa đơn"
 
@@ -3778,7 +3778,7 @@ msgstr "Quản lý huấn luyện"
 msgid "Manage billing and limits"
 msgstr "Quản lý thanh toán và giới hạn"
 
-#: media/js/newsblur/reader/reader_account.js:269
+#: media/js/newsblur/reader/reader_account.js:276
 msgid "Manage billing on Stripe"
 msgstr "Quản lý thanh toán trên Stripe"
 
@@ -3961,7 +3961,7 @@ msgstr "Đã chặn micrô - nhấp vào biểu tượng ổ khóa trên thanh �
 msgid "Misc"
 msgstr "Khác"
 
-#: media/js/newsblur/reader/reader_account.js:273
+#: media/js/newsblur/reader/reader_account.js:280
 msgid "Monthly spending limit"
 msgstr "Giới hạn chi tiêu hàng tháng"
 
@@ -4080,7 +4080,7 @@ msgstr "Bộ phân loại hình ảnh bằng ngôn ngữ tự nhiên"
 msgid "Natural Language Text Classifier"
 msgstr "Bộ phân loại văn bản ngôn ngữ tự nhiên"
 
-#: media/js/newsblur/reader/reader_account.js:292
+#: media/js/newsblur/reader/reader_account.js:299
 msgid "Natural language classifier billing"
 msgstr "Thanh toán bộ phân loại ngôn ngữ tự nhiên"
 
@@ -4088,7 +4088,7 @@ msgstr "Thanh toán bộ phân loại ngôn ngữ tự nhiên"
 msgid "Natural language classifiers are paused until next billing cycle. "
 msgstr "Bộ phân loại ngôn ngữ tự nhiên đã tạm dừng cho đến chu kỳ thanh toán tiếp theo. "
 
-#: media/js/newsblur/reader/reader_account.js:264
+#: media/js/newsblur/reader/reader_account.js:271
 msgid "Natural language classifiers are using your instance's API keys."
 msgstr "Các bộ phân loại ngôn ngữ tự nhiên đang sử dụng khóa API của phiên bản bạn."
 
@@ -4120,7 +4120,7 @@ msgstr "Lồng nhau"
 msgid "Never"
 msgstr "Không bao giờ"
 
-#: media/js/newsblur/reader/reader_account.js:321
+#: media/js/newsblur/reader/reader_account.js:328
 msgid "Never ever send me an email"
 msgstr "Đừng bao giờ gửi email cho tôi"
 
@@ -4128,7 +4128,7 @@ msgstr "Đừng bao giờ gửi email cho tôi"
 msgid "Never expire"
 msgstr "Không bao giờ hết hạn"
 
-#: media/js/newsblur/reader/reader_account.js:815
+#: media/js/newsblur/reader/reader_account.js:908
 msgid "Never gonna expire. Congrats!"
 msgstr "Sẽ không bao giờ hết hạn. Chúc mừng!"
 
@@ -4156,7 +4156,7 @@ msgstr "Thư mục mới"
 msgid "New folder name..."
 msgstr "Tên thư mục mới..."
 
-#: media/js/newsblur/reader/reader_account.js:96
+#: media/js/newsblur/reader/reader_account.js:103
 msgid "New password"
 msgstr "Mật khẩu mới"
 
@@ -4292,7 +4292,7 @@ msgstr "Không có ảnh"
 msgid "No items added yet."
 msgstr "Chưa có mục nào được thêm."
 
-#: media/js/newsblur/reader/reader_account.js:279
+#: media/js/newsblur/reader/reader_account.js:286
 msgid "No limit"
 msgstr "Không giới hạn"
 
@@ -4361,7 +4361,7 @@ msgstr "Không có trang web nào"
 msgid "No stories"
 msgstr "Không có bài viết"
 
-#: media/js/newsblur/reader/reader_account.js:543
+#: media/js/newsblur/reader/reader_account.js:550
 msgid "No stories to delete"
 msgstr "Không có tin bài nào để xóa"
 
@@ -4369,11 +4369,11 @@ msgstr "Không có tin bài nào để xóa"
 msgid "No stories to read"
 msgstr "Không có bài viết nào để đọc"
 
-#: media/js/newsblur/reader/reader_account.js:962
+#: media/js/newsblur/reader/reader_account.js:1055
 msgid "No usage billing invoices yet."
 msgstr "Chưa có hóa đơn thanh toán theo mức sử dụng."
 
-#: media/js/newsblur/reader/reader_account.js:896
+#: media/js/newsblur/reader/reader_account.js:989
 msgid "No usage billing set up."
 msgstr "Chưa thiết lập tính phí theo mức sử dụng."
 
@@ -4485,11 +4485,11 @@ msgstr "Đối tượng"
 msgid "Off"
 msgstr "Tắt"
 
-#: media/js/newsblur/reader/reader_account.js:92
+#: media/js/newsblur/reader/reader_account.js:99
 msgid "Old password"
 msgstr "Mật khẩu cũ"
 
-#: media/js/newsblur/reader/reader_account.js:398
+#: media/js/newsblur/reader/reader_account.js:405
 msgid "Older than: "
 msgstr "Cũ hơn: "
 
@@ -4695,7 +4695,7 @@ msgstr "Tùy chọn 3:"
 msgid "Option 4:"
 msgstr "Tùy chọn 4:"
 
-#: media/js/newsblur/reader/reader_account.js:287
+#: media/js/newsblur/reader/reader_account.js:294
 msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
 msgstr "Không bắt buộc. Bộ phân loại sẽ tạm dừng khi đạt giới hạn và tiếp tục vào chu kỳ thanh toán tiếp theo."
 
@@ -4769,7 +4769,7 @@ msgstr "Dán URL của bất kỳ trang web nào..."
 msgid "Pattern: %(value_1)s"
 msgstr "Mẫu: %(value_1)s"
 
-#: media/js/newsblur/reader/reader_account.js:249
+#: media/js/newsblur/reader/reader_account.js:256
 msgid "Payment history"
 msgstr "Lịch sử thanh toán"
 
@@ -4861,19 +4861,19 @@ msgstr "Tiếng Bồ Đào Nha"
 msgid "Position & Greedy"
 msgstr "Vị trí & tham lam"
 
-#: media/js/newsblur/reader/reader_account.js:494
+#: media/js/newsblur/reader/reader_account.js:501
 msgid "Positive you want to delete everything?"
 msgstr "Bạn chắc chắn muốn xóa tất cả chứ?"
 
-#: media/js/newsblur/reader/reader_account.js:702
+#: media/js/newsblur/reader/reader_account.js:709
 msgid "Positive you want to delete your intelligence training classifiers?"
 msgstr "Bạn có chắc chắn muốn xóa các bộ phân loại huấn luyện trí tuệ không?"
 
-#: media/js/newsblur/reader/reader_account.js:558
+#: media/js/newsblur/reader/reader_account.js:565
 msgid "Positive you want to delete your saved stories?"
 msgstr "Bạn chắc chắn muốn xóa các bài đã lưu chứ?"
 
-#: media/js/newsblur/reader/reader_account.js:583
+#: media/js/newsblur/reader/reader_account.js:590
 msgid "Positive you want to delete your shared stories?"
 msgstr "Bạn chắc chắn muốn xóa các bài viết đã chia sẻ?"
 
@@ -4897,7 +4897,7 @@ msgstr "Tùy chọn"
 msgid "Premium"
 msgstr "Premium"
 
-#: media/js/newsblur/views/story_detail_view.js:698
+#: media/js/newsblur/views/story_detail_view.js:699
 msgid "Premium Archive"
 msgstr "Kho lưu trữ Premium"
 
@@ -4909,7 +4909,7 @@ msgstr "Premium Pro"
 msgid "Premium Subscription"
 msgstr "Gói đăng ký Premium"
 
-#: media/js/newsblur/reader/reader_account.js:239
+#: media/js/newsblur/reader/reader_account.js:246
 msgid "Premium details"
 msgstr "Thông tin gói Premium"
 
@@ -4917,7 +4917,7 @@ msgstr "Thông tin gói Premium"
 msgid "Premium fonts require a "
 msgstr "Phông chữ Premium yêu cầu một "
 
-#: media/js/newsblur/reader/reader_account.js:255
+#: media/js/newsblur/reader/reader_account.js:262
 msgid "Premium renewal"
 msgstr "Gia hạn Premium"
 
@@ -4925,7 +4925,7 @@ msgstr "Gia hạn Premium"
 msgid "Premium renewal: "
 msgstr "Gia hạn Premium: "
 
-#: media/js/newsblur/reader/reader_account.js:224
+#: media/js/newsblur/reader/reader_account.js:231
 msgid "Premium status"
 msgstr "Trạng thái Premium"
 
@@ -5041,7 +5041,7 @@ msgstr "Câu hỏi"
 msgid "Quick search for a site"
 msgstr "Tìm nhanh trang web"
 
-#: media/js/newsblur/views/story_detail_view.js:2503
+#: media/js/newsblur/views/story_detail_view.js:2504
 msgid "Quota exceeded"
 msgstr "Đã vượt quá hạn mức"
 
@@ -5165,11 +5165,11 @@ msgstr "Đề xuất trang web này"
 msgid "Recommended"
 msgstr "Được đề xuất"
 
-#: media/js/newsblur/views/story_detail_view.js:2495
+#: media/js/newsblur/views/story_detail_view.js:2496
 msgid "Record voice question"
 msgstr "Ghi âm câu hỏi"
 
-#: media/js/newsblur/views/story_detail_view.js:2467
+#: media/js/newsblur/views/story_detail_view.js:2468
 msgid "Recording..."
 msgstr "Đang ghi..."
 
@@ -5307,7 +5307,7 @@ msgstr "Đang đặt lại..."
 msgid "Restart your %(value_1)s subscription"
 msgstr "Khởi động lại gói đăng ký %(value_1)s của bạn"
 
-#: media/js/newsblur/reader/reader_account.js:823
+#: media/js/newsblur/reader/reader_account.js:916
 msgid "Restart your subscription"
 msgstr "Kích hoạt lại gói đăng ký"
 
@@ -5371,7 +5371,7 @@ msgstr "S"
 msgid "Safari"
 msgstr "Safari"
 
-#: media/js/newsblur/views/story_detail_view.js:1085
+#: media/js/newsblur/views/story_detail_view.js:1086
 msgid "Save"
 msgstr "Lưu"
 
@@ -5445,7 +5445,7 @@ msgstr "Lưu bài viết kèm thẻ có thể tìm kiếm"
 msgid "Save/Unsave story"
 msgstr "Lưu/Bỏ lưu tin"
 
-#: media/js/newsblur/views/story_detail_view.js:1079
+#: media/js/newsblur/views/story_detail_view.js:1080
 msgid "Saved"
 msgstr "Đã lưu"
 
@@ -5642,7 +5642,7 @@ msgstr "Chọn một bài viết để đọc"
 msgid "Select any story and click \"Ask AI\""
 msgstr "Chọn một bài viết bất kỳ rồi nhấp vào \"Hỏi AI\""
 
-#: media/js/newsblur/reader/reader_account.js:648
+#: media/js/newsblur/reader/reader_account.js:655
 msgid "Select classifiers to remove"
 msgstr "Chọn bộ phân loại cần xóa"
 
@@ -5690,7 +5690,7 @@ msgstr "Thiết lập bản tin"
 msgid "Set up notifications"
 msgstr "Thiết lập thông báo"
 
-#: media/js/newsblur/reader/reader_account.js:265
+#: media/js/newsblur/reader/reader_account.js:272
 msgid "Set up usage-based billing to use natural language content and image filters."
 msgstr "Thiết lập thanh toán theo mức sử dụng để dùng bộ lọc nội dung bằng ngôn ngữ tự nhiên và bộ lọc hình ảnh."
 
@@ -6022,7 +6022,7 @@ msgstr "Tiếng Tây Ban Nha"
 msgid "Special Folders"
 msgstr "Thư mục đặc biệt"
 
-#: media/js/newsblur/reader/reader_account.js:928
+#: media/js/newsblur/reader/reader_account.js:1021
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "Đã đạt giới hạn chi tiêu. Các bộ phân loại sẽ tạm dừng cho đến chu kỳ tiếp theo."
 
@@ -6094,7 +6094,7 @@ msgstr "Bước "
 msgid "Stop any time you like."
 msgstr "Bạn có thể dừng bất cứ lúc nào."
 
-#: media/js/newsblur/views/story_detail_view.js:2468
+#: media/js/newsblur/views/story_detail_view.js:2469
 msgid "Stop recording"
 msgstr "Dừng ghi"
 
@@ -6438,7 +6438,7 @@ msgstr "Văn bản"
 msgid "Text Phrases"
 msgstr "Cụm từ văn bản"
 
-#: media/js/newsblur/reader/reader_account.js:148
+#: media/js/newsblur/reader/reader_account.js:155
 msgid "Text Regex"
 msgstr "Biểu thức chính quy văn bản"
 
@@ -6450,7 +6450,7 @@ msgstr "Chế độ xem văn bản"
 msgid "Text view extracts the story"
 msgstr "Chế độ xem văn bản trích xuất nội dung bài viết"
 
-#: media/js/newsblur/reader/reader_account.js:213
+#: media/js/newsblur/reader/reader_account.js:220
 msgid "Thank you! You have a "
 msgstr "Cảm ơn bạn! Bạn đã có "
 
@@ -6502,7 +6502,7 @@ msgstr "Toàn bộ API NewsBlur được mở và có tài liệu hướng dẫn
 msgid "The full shortcut list"
 msgstr "Danh sách đầy đủ các phím tắt"
 
-#: media/js/newsblur/reader/reader_account.js:196
+#: media/js/newsblur/reader/reader_account.js:203
 msgid "The gift has been applied to your account."
 msgstr "Quà tặng đã được áp dụng cho tài khoản của bạn."
 
@@ -6554,19 +6554,19 @@ msgstr ""
 "Đã xảy ra sự cố ở hệ thống phía máy chủ khi gửi email cho bạn. Rất xin lỗi! Sự cố đã được ghi nhận và sẽ "
 "sớm được khắc phục. Có lẽ bạn nên tự gửi email ngay bây giờ."
 
-#: media/js/newsblur/reader/reader_account.js:717
+#: media/js/newsblur/reader/reader_account.js:724
 msgid "There was a problem deleting your classifiers."
 msgstr "Đã xảy ra sự cố khi xóa các bộ phân loại của bạn."
 
-#: media/js/newsblur/reader/reader_account.js:572
+#: media/js/newsblur/reader/reader_account.js:579
 msgid "There was a problem deleting your saved stories."
 msgstr "Đã xảy ra lỗi khi xóa các tin đã lưu của bạn."
 
-#: media/js/newsblur/reader/reader_account.js:595
+#: media/js/newsblur/reader/reader_account.js:602
 msgid "There was a problem deleting your shared stories."
 msgstr "Đã xảy ra sự cố khi xóa các bài viết bạn đã chia sẻ."
 
-#: media/js/newsblur/reader/reader_account.js:499
+#: media/js/newsblur/reader/reader_account.js:506
 msgid "There was a problem deleting your sites."
 msgstr "Đã xảy ra lỗi khi xóa các trang web của bạn."
 
@@ -6594,7 +6594,7 @@ msgstr "Đã xảy ra lỗi khi đăng xuất, ôi không."
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Không giới hạn. Lưu bao nhiêu bài viết tùy thích, chúng sẽ được giữ mãi mãi."
 
-#: media/js/newsblur/views/story_detail_view.js:643
+#: media/js/newsblur/views/story_detail_view.js:644
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "Các cụm này được tìm thấy vì những người đăng ký khác cũng theo dõi các nguồn cấp dữ liệu này."
 
@@ -6730,7 +6730,7 @@ msgstr "Tiêu đề"
 msgid "Title Phrases"
 msgstr "Cụm từ trong tiêu đề"
 
-#: media/js/newsblur/reader/reader_account.js:143
+#: media/js/newsblur/reader/reader_account.js:150
 msgid "Title Regex"
 msgstr "Biểu thức chính quy tiêu đề"
 
@@ -6800,7 +6800,7 @@ msgstr "Tên miền hàng đầu"
 msgid "Track Changes"
 msgstr "Theo dõi thay đổi"
 
-#: media/js/newsblur/views/story_detail_view.js:1327
+#: media/js/newsblur/views/story_detail_view.js:1328
 msgid "Train"
 msgstr "Huấn luyện"
 
@@ -6866,11 +6866,11 @@ msgstr "Huấn luyện, gắn thẻ, tìm kiếm và sắp xếp bản tin như 
 msgid "Training:"
 msgstr "Đang huấn luyện:"
 
-#: media/js/newsblur/views/story_detail_view.js:2474
+#: media/js/newsblur/views/story_detail_view.js:2475
 msgid "Transcribing audio"
 msgstr "Đang chép lời âm thanh"
 
-#: media/js/newsblur/views/story_detail_view.js:2473
+#: media/js/newsblur/views/story_detail_view.js:2474
 msgid "Transcribing..."
 msgstr "Đang chép lời..."
 
@@ -6942,7 +6942,7 @@ msgstr "Nhập từ khóa, cụm từ hoặc tổ hợp từ khóa"
 msgid "URL"
 msgstr "URL"
 
-#: media/js/newsblur/reader/reader_account.js:151
+#: media/js/newsblur/reader/reader_account.js:158
 msgid "URL Regex"
 msgstr "Biểu thức chính quy URL"
 
@@ -7006,7 +7006,7 @@ msgstr "Bài viết chưa đọc không bao giờ hết hạn, nên bạn có th
 msgid "Unread+Focus:"
 msgstr "Chưa đọc + Ưu tiên:"
 
-#: media/js/newsblur/reader/reader_account.js:936
+#: media/js/newsblur/reader/reader_account.js:1029
 msgid "Upcoming charge: "
 msgstr "Khoản phí sắp tới: "
 
@@ -7064,17 +7064,17 @@ msgstr "Nâng cấp lên Kho lưu trữ Premium"
 msgid "Upgrade to Premium Archive for classifier notifications"
 msgstr "Nâng cấp lên Kho lưu trữ Premium để nhận thông báo từ bộ phân loại"
 
-#: media/js/newsblur/views/story_detail_view.js:646
+#: media/js/newsblur/views/story_detail_view.js:647
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr ""
 "Nâng cấp lên Premium Archive để quét tất cả nguồn cấp dữ liệu và tìm bài viết trùng lặp, giúp bạn không bỏ "
 "lỡ nhóm bài nào."
 
-#: media/js/newsblur/reader/reader_account.js:220
+#: media/js/newsblur/reader/reader_account.js:227
 msgid "Upgrade to a Premium Archive account"
 msgstr "Nâng cấp lên tài khoản Premium Archive"
 
-#: media/js/newsblur/reader/reader_account.js:210
+#: media/js/newsblur/reader/reader_account.js:217
 msgid "Upgrade to a Premium account"
 msgstr "Nâng cấp lên tài khoản Premium"
 
@@ -7106,11 +7106,11 @@ msgstr "Tải lên không thành công. Vui lòng kiểm tra kết nối và th�
 msgid "Uploaded!"
 msgstr "Đã tải lên!"
 
-#: media/js/newsblur/reader/reader_account.js:302
+#: media/js/newsblur/reader/reader_account.js:309
 msgid "Usage billing history"
 msgstr "Lịch sử thanh toán theo mức sử dụng"
 
-#: media/js/newsblur/reader/reader_account.js:262
+#: media/js/newsblur/reader/reader_account.js:269
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "Tính phí theo mức sử dụng được bật cho các bộ phân loại ngôn ngữ tự nhiên."
 
@@ -7201,7 +7201,7 @@ msgstr "Xem cài đặt"
 msgid "Visual"
 msgstr "Trực quan"
 
-#: media/js/newsblur/reader/reader_account.js:182
+#: media/js/newsblur/reader/reader_account.js:189
 msgid "Warning: This is actually permanent"
 msgstr "Cảnh báo: Thao tác này thực sự không thể hoàn tác"
 
@@ -7483,7 +7483,7 @@ msgstr "Bạn đang dùng thử gói này"
 msgid "You are unsubscribed from all NewsBlur emails"
 msgstr "Bạn đã hủy đăng ký nhận tất cả email từ NewsBlur"
 
-#: media/js/newsblur/reader/reader_account.js:308
+#: media/js/newsblur/reader/reader_account.js:315
 msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
 msgstr "Bạn đã hủy đăng ký nhận tất cả email từ NewsBlur. Chọn các email muốn nhận bên dưới rồi lưu để đăng ký lại."
 
@@ -7509,7 +7509,7 @@ msgstr ""
 "Bạn có thể huấn luyện miễn phí theo từng nguồn cấp dữ liệu, hoặc theo từng thư mục và trên toàn hệ thống "
 "với Premium Archive."
 
-#: media/js/newsblur/reader/reader_account.js:204
+#: media/js/newsblur/reader/reader_account.js:211
 msgid "You have a "
 msgstr "Bạn có "
 
@@ -7550,7 +7550,7 @@ msgstr "Bạn sẽ thấy một loạt thẻ và tác giả."
 msgid "You're ready to go! Hope you enjoy NewsBlur."
 msgstr "Bạn đã sẵn sàng! Chúc bạn có trải nghiệm tuyệt vời với NewsBlur."
 
-#: media/js/newsblur/reader/reader_account.js:191
+#: media/js/newsblur/reader/reader_account.js:198
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "Bạn được tặng %(value_1)s trên tổng số %(value_2)s!"
@@ -7624,11 +7624,11 @@ msgstr "Hộp thư đến luôn gọn gàng"
 msgid "Your name"
 msgstr "Tên của bạn"
 
-#: media/js/newsblur/reader/reader_account.js:829
+#: media/js/newsblur/reader/reader_account.js:922
 msgid "Your premium account is paid until:"
 msgstr "Tài khoản Premium của bạn đã được thanh toán đến ngày:"
 
-#: media/js/newsblur/reader/reader_account.js:830
+#: media/js/newsblur/reader/reader_account.js:923
 msgid "Your premium account will downgrade on:"
 msgstr "Tài khoản Premium của bạn sẽ được hạ cấp vào:"
 
@@ -7802,7 +7802,7 @@ msgstr "esc"
 msgid "f"
 msgstr "f"
 
-#: media/js/newsblur/reader/reader_account.js:205
+#: media/js/newsblur/reader/reader_account.js:212
 msgid "free account"
 msgstr "tài khoản miễn phí"
 
@@ -7890,7 +7890,7 @@ msgstr "cao cấp"
 msgid "premium account"
 msgstr "tài khoản cao cấp"
 
-#: media/js/newsblur/reader/reader_account.js:215
+#: media/js/newsblur/reader/reader_account.js:222
 msgid "premium archive account"
 msgstr "tài khoản lưu trữ cao cấp"
 
@@ -7902,7 +7902,7 @@ msgstr "tính năng lưu trữ cao cấp"
 msgid "premium feature"
 msgstr "tính năng cao cấp"
 
-#: media/js/newsblur/reader/reader_account.js:214
+#: media/js/newsblur/reader/reader_account.js:221
 msgid "premium pro account"
 msgstr "tài khoản premium pro"
 
@@ -7958,7 +7958,7 @@ msgstr "tùy chọn áp dụng toàn trang"
 msgid "space"
 msgstr "dấu cách"
 
-#: media/js/newsblur/reader/reader_account.js:993
+#: media/js/newsblur/reader/reader_account.js:1086
 msgid "stripe"
 msgstr "stripe"
 

@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "За замовчуванням усі шаблони не чутливі до регістру";
 "All stories" = "Усі матеріали";
 "Alphabetical" = "За абеткою";
+"Already have feeds?" = "Уже маєте стрічки?";
 "Analyze" = "Аналізувати";
 "Android" = "Android";
 "App Badge" = "Значок програми";
@@ -161,12 +162,14 @@
 "Brave" = "Brave";
 "Brightness Override" = "Перевизначення яскравості";
 "Brightness threshold" = "Поріг яскравості";
+"Bring your feeds and folders from another reader." = "Перенесіть свої стрічки та папки з іншої програми для читання.";
 "Bullets" = "Маркери";
 "Cancel" = "Скасувати";
 "Change Story List" = "Змінити список історій";
 "Choose Icon" = "Вибрати значок";
 "Choose Story List" = "Вибрати список статей";
 "Choose a Topic" = "Виберіть тему";
+"Choose feeds for your folder" = "Виберіть стрічки для папки";
 "Choose how far back to mark read" = "Виберіть, за який період позначати публікації як прочитані";
 "Choose how often and when your briefing is generated" = "Виберіть, як часто й коли створювати ваш огляд новин";
 "Choose one or more words from the title:" = "Виберіть одне або кілька слів із заголовка:";
@@ -190,7 +193,9 @@
 "Configure" = "Налаштувати";
 "Confirm mark read" = "Підтверджувати позначення як прочитаного";
 "Connect AI agents with MCP server and CLI" = "Підключайте AI-агентів через MCP-сервер і CLI";
+"Connect an existing account" = "Під’єднати наявний обліковий запис";
 "Connecting" = "Підключення";
+"Continue" = "Продовжити";
 "Control how much is included and how it is written" = "Налаштуйте обсяг включеного вмісту та стиль його викладу";
 "Copied" = "Скопійовано";
 "Copyright" = "Авторське право";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "Не вдалося завантажити зображення повністю. Спробуйте відкрити його у браузері.";
 "Counting is difficult..." = "Рахувати складно...";
 "Create a feed from any web page" = "Створити стрічку з будь-якої вебсторінки";
+"Create a new account instead" = "Натомість створити новий обліковий запис";
 "Custom Domain" = "Власний домен";
 "Custom RSS feeds for saved stories" = "Власні RSS-стрічки для збережених статей";
 "Custom Search Query" = "Власний пошуковий запит";
@@ -216,9 +222,11 @@
 "Delete Account" = "Видалити обліковий запис";
 "Delete Folder…" = "Видалити папку…";
 "Delete Site…" = "Видалити сайт…";
+"Delete account" = "Видалити обліковий запис";
 "Delete offline stories" = "Видалити офлайн-дописи";
 "Delete saved search" = "Видалити збережений пошук";
 "Deleting saved search..." = "Видалення збереженого пошуку...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Після видалення облікового запису назавжди буде видалено ваші стрічки, збережені статті та дані облікового запису. Цю дію не можна скасувати.";
 "Deleting..." = "Видалення...";
 "Discover" = "Огляд";
 "Discover more to read" = "Знайдіть ще більше цікавого";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Введіть власний пошуковий запит...";
 "Enter a web page URL..." = "Введіть URL вебсторінки...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Введіть URL будь-якої вебсторінки, і NewsBlur за допомогою ШІ проаналізує її структуру, знайде статті та створить спеціальну RSS-стрічку, на яку можна підписатися.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Введіть своє наявне ім’я користувача або електронну пошту NewsBlur і пароль NewsBlur.";
 "Error" = "Помилка";
 "Evening" = "Вечір";
 "Every story from every site is archived and searchable forever" = "Усі статті з усіх сайтів архівуються та залишаються доступними для пошуку назавжди";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Звісно, усе, що входить до преміумпідписки";
 "Exact phrase" = "Точна фраза";
 "Experimental" = "Експериментальне";
+"Explore interests" = "Переглянути інтереси";
 "Export Preferences" = "Експортувати налаштування";
 "Export trained stories from folders as RSS feeds" = "Експортувати навчені історії з папок як RSS-стрічки";
 "Extra Large" = "Дуже великий";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Пошук на сайтах";
 "Find in feed" = "Знайти в стрічці";
 "Find in sites" = "Знайти на сайтах";
+"Finding feeds for you to explore." = "Пошук стрічок для вас.";
 "Finding related sites..." = "Пошук пов’язаних сайтів...";
 "Finding story..." = "Пошук статті...";
 "Firefox" = "Firefox";
 "Focus" = "Фокус";
 "Focus Stories" = "Вибрані статті";
 "Focus only" = "Лише фокус";
+"Folder name" = "Назва папки";
 "Folders" = "Теки";
 "Follow" = "Стежити";
 "Follow %@" = "Стежити за %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "Попередній перегляд зображення";
 "Image actions" = "Дії із зображеннями";
 "Import & Export" = "Імпорт і експорт";
+"Import OPML" = "Імпортувати OPML";
 "Import Preferences" = "Імпортувати налаштування";
+"Import or upload sites" = "Імпортувати або завантажити сайти";
 "Imported %i site%@" = "Імпортовано %i сайт%@";
 "Importing sites..." = "Імпорт сайтів...";
 "In-app Safari" = "Safari у застосунку";
@@ -355,6 +369,7 @@
 "Large" = "Великий";
 "Large Left" = "Великий ліворуч";
 "Large Right" = "Великий праворуч";
+"Last used" = "Використано востаннє";
 "Lavender Iris" = "Лавандовий ірис";
 "Layout" = "Макет";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Залиште поле порожнім, щоб використовувати NewsBlur, або введіть URL-адресу власного сервера. Зміни набудуть чинності під час наступного запуску застосунку.";
@@ -367,6 +382,7 @@
 "List style" = "Стиль списку";
 "Loading Google News topics..." = "Завантаження тем Google News...";
 "Loading image…" = "Завантаження зображення…";
+"Loading interests" = "Завантаження інтересів";
 "Loading settings…" = "Завантаження налаштувань…";
 "Loading..." = "Завантаження...";
 "Loading…" = "Завантаження…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "Немає списків новин";
 "No Widget Sites" = "Немає сайтів із віджетами";
 "No briefings yet" = "Брифінгів поки немає";
+"No feeds to show yet. Try another interest or search all sites." = "Стрічок поки немає. Спробуйте вибрати інший інтерес або пошукати на всіх сайтах.";
+"No interests or sites found. Try another search." = "Інтересів або сайтів не знайдено. Спробуйте інший пошуковий запит.";
 "No longer saved" = "Більше не збережено";
 "No notifications yet." = "Сповіщень поки немає.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Немає статей для показу. Немає статей для показу. Немає статей для показу. Немає статей для показу.";
@@ -509,6 +527,7 @@
 "Page up" = "Сторінка вгору";
 "Paste a story title from the page" = "Вставте заголовок статті зі сторінки";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Вставте будь-яку URL-адресу, і NewsBlur створить стрічку зі сторінки, навіть без RSS.";
+"Permanently delete account" = "Назавжди видалити обліковий запис";
 "Pick which model writes your Daily Briefing" = "Виберіть модель для створення щоденного огляду";
 "Place the story list controls above or below the stories" = "Розмістити елементи керування списком статей над статтями або під ними";
 "Plum Berry" = "Plum Berry";
@@ -574,7 +593,9 @@
 "Reply to %@" = "Відповісти %@";
 "Resize sidebar" = "Змінити розмір бічної панелі";
 "Restore" = "Відновити";
+"Retry" = "Повторити спробу";
 "Retry Google Reader" = "Повторити спробу з Google Reader";
+"Retry icons" = "Повторити завантаження значків";
 "River of News (reading by folder)" = "Стрічка новин (читання за папками)";
 "Rows" = "Рядки";
 "Ruby Red" = "Рубіново-червоний";
@@ -656,6 +677,7 @@
 "Show without icons" = "Показувати без значків";
 "Sidebar" = "Бічна панель";
 "Sign Up" = "Зареєструватися";
+"Sign in with Google" = "Увійти через Google";
 "Single" = "Одинарний";
 "Single Column" = "Одна колонка";
 "Site" = "Сайт";
@@ -669,12 +691,14 @@
 "Small" = "Малий";
 "Small Left" = "Маленький ліворуч";
 "Small Right" = "Маленький праворуч";
+"Some feed icons couldn’t load." = "Не вдалося завантажити деякі значки стрічок.";
 "Sources" = "Джерела";
 "Spacing" = "Інтервали";
 "Standard" = "Стандартний";
 "Start reading" = "Почати читання";
 "Statistics" = "Статистика";
 "Statistics…" = "Статистика…";
+"Stay connected" = "Залишайтеся на зв’язку";
 "Stay on the feeds list" = "Залишитися у списку стрічок";
 "Stories" = "Статті";
 "Stories can stay unread forever" = "Статті можуть залишатися непрочитаними безстроково";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Популярні сайти";
 "Try" = "Спробувати";
 "Try again" = "Спробувати ще раз";
+"Try search again" = "Спробувати пошук ще раз";
 "Trying Feed" = "Спроба відкрити стрічку";
 "Tuesday" = "вівторок";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Перейдіть на тариф «Архів»";
 "Upgrade to Premium" = "Перейдіть на Premium";
 "Upgrade to Premium Archive" = "Перейдіть на Premium Archive";
+"Use another sign-in method" = "Скористатися іншим способом входу";
 "Use both" = "Використовувати обидва";
 "Use system size" = "Системний розмір";
 "User info" = "Інформація про користувача";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Ваша преміумпідписка на архів активна";
 "Your premium pro subscription includes everything above" = "Професійна преміумпідписка включає все перелічене вище";
 "Your premium pro subscription is active" = "Ваша професійна преміум-підписка активна";
+"Your reading list" = "Ваш список для читання";
+"You’re all set up." = "Усе готово.";
 "all stories" = "усі статті";
 "dislike" = "не подобається";
 "iOS" = "iOS";
+"or" = "або";
 "premium subscribers" = "передплатники Premium";
 "— Top Level —" = "— Верхній рівень —";
 "‹ Feeds" = "‹ Стрічки";

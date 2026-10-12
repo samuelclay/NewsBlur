@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "Semua pola tidak peka huruf besar-kecil secara default";
 "All stories" = "Semua cerita";
 "Alphabetical" = "Urut alfabetis";
+"Already have feeds?" = "Sudah punya feed?";
 "Analyze" = "Analisis";
 "Android" = "Android";
 "App Badge" = "Lencana Aplikasi";
@@ -161,12 +162,14 @@
 "Brave" = "Brave";
 "Brightness Override" = "Penyesuaian Kecerahan";
 "Brightness threshold" = "Ambang kecerahan";
+"Bring your feeds and folders from another reader." = "Impor feed dan folder Anda dari pembaca lain.";
 "Bullets" = "Poin-poin";
 "Cancel" = "Batal";
 "Change Story List" = "Ubah Daftar Cerita";
 "Choose Icon" = "Pilih Ikon";
 "Choose Story List" = "Pilih Daftar Artikel";
 "Choose a Topic" = "Pilih Topik";
+"Choose feeds for your folder" = "Pilih feed untuk folder Anda";
 "Choose how far back to mark read" = "Pilih rentang waktu untuk menandai sebagai telah dibaca";
 "Choose how often and when your briefing is generated" = "Pilih seberapa sering dan kapan ringkasan Anda dibuat";
 "Choose one or more words from the title:" = "Pilih satu atau beberapa kata dari judul:";
@@ -190,7 +193,9 @@
 "Configure" = "Konfigurasikan";
 "Confirm mark read" = "Konfirmasi penandaan telah dibaca";
 "Connect AI agents with MCP server and CLI" = "Hubungkan agen AI dengan server MCP dan CLI";
+"Connect an existing account" = "Hubungkan akun yang sudah ada";
 "Connecting" = "Menghubungkan";
+"Continue" = "Lanjutkan";
 "Control how much is included and how it is written" = "Atur seberapa banyak yang disertakan dan cara penulisannya";
 "Copied" = "Disalin";
 "Copyright" = "Hak cipta";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "Gambar penuh tidak dapat dimuat. Anda dapat mencoba membukanya di browser.";
 "Counting is difficult..." = "Menghitung itu sulit...";
 "Create a feed from any web page" = "Buat umpan dari halaman web mana pun";
+"Create a new account instead" = "Buat akun baru saja";
 "Custom Domain" = "Domain Khusus";
 "Custom RSS feeds for saved stories" = "Feed RSS khusus untuk artikel tersimpan";
 "Custom Search Query" = "Kueri Pencarian Kustom";
@@ -216,9 +222,11 @@
 "Delete Account" = "Hapus Akun";
 "Delete Folder…" = "Hapus Folder…";
 "Delete Site…" = "Hapus Situs…";
+"Delete account" = "Hapus akun";
 "Delete offline stories" = "Hapus artikel offline";
 "Delete saved search" = "Hapus pencarian tersimpan";
 "Deleting saved search..." = "Menghapus pencarian tersimpan...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Menghapus akun secara permanen akan menghapus feed, cerita tersimpan, dan data akun Anda. Tindakan ini tidak dapat dibatalkan.";
 "Deleting..." = "Menghapus...";
 "Discover" = "Temukan";
 "Discover more to read" = "Temukan bacaan lainnya";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Masukkan kueri penelusuran khusus...";
 "Enter a web page URL..." = "Masukkan URL halaman web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Masukkan URL halaman web apa pun dan NewsBlur akan menggunakan AI untuk menganalisis struktur halaman, menemukan cerita, dan membuat feed RSS khusus yang dapat Anda langgani.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Masukkan nama pengguna atau email NewsBlur yang sudah ada dan kata sandi NewsBlur.";
 "Error" = "Kesalahan";
 "Evening" = "Sore";
 "Every story from every site is archived and searchable forever" = "Setiap artikel dari setiap situs diarsipkan dan dapat dicari selamanya";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Tentu saja, semua yang ada dalam langganan premium";
 "Exact phrase" = "Frasa persis";
 "Experimental" = "Eksperimental";
+"Explore interests" = "Jelajahi minat";
 "Export Preferences" = "Ekspor Preferensi";
 "Export trained stories from folders as RSS feeds" = "Ekspor artikel terlatih dari folder sebagai feed RSS";
 "Extra Large" = "Ekstra besar";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Cari di Situs";
 "Find in feed" = "Cari di umpan";
 "Find in sites" = "Cari di situs";
+"Finding feeds for you to explore." = "Mencari feed untuk Anda jelajahi.";
 "Finding related sites..." = "Mencari situs terkait...";
 "Finding story..." = "Mencari berita...";
 "Firefox" = "Firefox";
 "Focus" = "Fokus";
 "Focus Stories" = "Artikel Fokus";
 "Focus only" = "Fokus saja";
+"Folder name" = "Nama folder";
 "Folders" = "Folder";
 "Follow" = "Ikuti";
 "Follow %@" = "Ikuti %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "Pratinjau gambar";
 "Image actions" = "Tindakan gambar";
 "Import & Export" = "Impor & Ekspor";
+"Import OPML" = "Impor OPML";
 "Import Preferences" = "Impor Preferensi";
+"Import or upload sites" = "Impor atau unggah situs";
 "Imported %i site%@" = "Mengimpor %i situs%@";
 "Importing sites..." = "Mengimpor situs...";
 "In-app Safari" = "Safari dalam aplikasi";
@@ -355,6 +369,7 @@
 "Large" = "Besar";
 "Large Left" = "Besar Kiri";
 "Large Right" = "Besar Kanan";
+"Last used" = "Terakhir digunakan";
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Tata letak";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Kosongkan untuk menggunakan NewsBlur, atau masukkan URL instalasi yang Anda kelola sendiri. Perubahan berlaku saat aplikasi dibuka berikutnya.";
@@ -367,6 +382,7 @@
 "List style" = "Gaya daftar";
 "Loading Google News topics..." = "Memuat topik Google News...";
 "Loading image…" = "Memuat gambar…";
+"Loading interests" = "Memuat minat";
 "Loading settings…" = "Memuat pengaturan…";
 "Loading..." = "Memuat...";
 "Loading…" = "Memuat…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "Tidak Ada Daftar Cerita";
 "No Widget Sites" = "Tidak Ada Situs Widget";
 "No briefings yet" = "Belum ada ringkasan";
+"No feeds to show yet. Try another interest or search all sites." = "Belum ada feed untuk ditampilkan. Coba minat lain atau telusuri semua situs.";
+"No interests or sites found. Try another search." = "Minat atau situs tidak ditemukan. Coba penelusuran lain.";
 "No longer saved" = "Tidak lagi disimpan";
 "No notifications yet." = "Belum ada notifikasi.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Tidak ada berita untuk ditampilkan. Tidak ada berita untuk ditampilkan. Tidak ada berita untuk ditampilkan. Tidak ada berita untuk ditampilkan.";
@@ -509,6 +527,7 @@
 "Page up" = "Halaman ke atas";
 "Paste a story title from the page" = "Tempel judul artikel dari halaman";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Tempel URL apa pun dan NewsBlur akan membuat umpan dari halaman tersebut, bahkan tanpa RSS.";
+"Permanently delete account" = "Hapus akun secara permanen";
 "Pick which model writes your Daily Briefing" = "Pilih model yang menulis Ringkasan Harian Anda";
 "Place the story list controls above or below the stories" = "Letakkan kontrol daftar artikel di atas atau di bawah artikel";
 "Plum Berry" = "Plum Berry";
@@ -574,7 +593,9 @@
 "Reply to %@" = "Balas kepada %@";
 "Resize sidebar" = "Ubah ukuran bilah samping";
 "Restore" = "Pulihkan";
+"Retry" = "Coba lagi";
 "Retry Google Reader" = "Coba Lagi Google Reader";
+"Retry icons" = "Coba muat ulang ikon";
 "River of News (reading by folder)" = "Aliran Berita (membaca berdasarkan folder)";
 "Rows" = "Baris";
 "Ruby Red" = "Merah Delima";
@@ -656,6 +677,7 @@
 "Show without icons" = "Tampilkan tanpa ikon";
 "Sidebar" = "Bilah sisi";
 "Sign Up" = "Daftar";
+"Sign in with Google" = "Masuk dengan Google";
 "Single" = "Tunggal";
 "Single Column" = "Satu Kolom";
 "Site" = "Situs";
@@ -669,12 +691,14 @@
 "Small" = "Kecil";
 "Small Left" = "Kiri Kecil";
 "Small Right" = "Kanan Kecil";
+"Some feed icons couldn’t load." = "Beberapa ikon feed tidak dapat dimuat.";
 "Sources" = "Sumber";
 "Spacing" = "Jarak";
 "Standard" = "Standar";
 "Start reading" = "Mulai membaca";
 "Statistics" = "Statistik";
 "Statistics…" = "Statistik…";
+"Stay connected" = "Tetap terhubung";
 "Stay on the feeds list" = "Tetap di daftar feed";
 "Stories" = "Artikel";
 "Stories can stay unread forever" = "Cerita dapat tetap belum dibaca selamanya";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Situs yang Sedang Tren";
 "Try" = "Coba";
 "Try again" = "Coba lagi";
+"Try search again" = "Coba telusuri lagi";
 "Trying Feed" = "Mencoba Feed";
 "Tuesday" = "Selasa";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Tingkatkan ke Archive";
 "Upgrade to Premium" = "Tingkatkan ke Premium";
 "Upgrade to Premium Archive" = "Tingkatkan ke Premium Archive";
+"Use another sign-in method" = "Gunakan metode masuk lain";
 "Use both" = "Gunakan keduanya";
 "Use system size" = "Gunakan ukuran sistem";
 "User info" = "Info pengguna";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Langganan arsip premium Anda aktif";
 "Your premium pro subscription includes everything above" = "Langganan premium pro Anda mencakup semua fitur di atas";
 "Your premium pro subscription is active" = "Langganan premium pro Anda aktif";
+"Your reading list" = "Daftar bacaan Anda";
+"You’re all set up." = "Penyiapan selesai.";
 "all stories" = "semua artikel";
 "dislike" = "tidak suka";
 "iOS" = "iOS";
+"or" = "atau";
 "premium subscribers" = "pelanggan premium";
 "— Top Level —" = "— Tingkat Teratas —";
 "‹ Feeds" = "‹ Feed";

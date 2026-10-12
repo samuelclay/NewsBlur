@@ -132,6 +132,7 @@
 "All patterns are case-insensitive by default" = "Por padrão, todos os padrões não diferenciam maiúsculas de minúsculas";
 "All stories" = "Todas as notícias";
 "Alphabetical" = "Ordem alfabética";
+"Already have feeds?" = "Já tem feeds?";
 "Analyze" = "Analisar";
 "Android" = "Android";
 "App Badge" = "Selo do app";
@@ -161,12 +162,14 @@
 "Brave" = "Brave";
 "Brightness Override" = "Ajuste de brilho";
 "Brightness threshold" = "Limite de brilho";
+"Bring your feeds and folders from another reader." = "Importe seus feeds e pastas de outro leitor.";
 "Bullets" = "Marcadores";
 "Cancel" = "Cancelar";
 "Change Story List" = "Alterar lista de histórias";
 "Choose Icon" = "Escolher ícone";
 "Choose Story List" = "Escolher lista de matérias";
 "Choose a Topic" = "Escolha um tópico";
+"Choose feeds for your folder" = "Escolha feeds para sua pasta";
 "Choose how far back to mark read" = "Escolha até quando atrás marcar como lido";
 "Choose how often and when your briefing is generated" = "Escolha com que frequência e quando seu resumo será gerado";
 "Choose one or more words from the title:" = "Escolha uma ou mais palavras do título:";
@@ -190,7 +193,9 @@
 "Configure" = "Configurar";
 "Confirm mark read" = "Confirmar marcação como lida";
 "Connect AI agents with MCP server and CLI" = "Conecte agentes de IA ao servidor MCP e à CLI";
+"Connect an existing account" = "Conectar uma conta existente";
 "Connecting" = "Conectando";
+"Continue" = "Continuar";
 "Control how much is included and how it is written" = "Controle quanto será incluído e como será escrito";
 "Copied" = "Copiado";
 "Copyright" = "Direitos autorais";
@@ -199,6 +204,7 @@
 "Couldn’t load the full image. You can try opening it in your browser." = "Não foi possível carregar a imagem completa. Você pode tentar abri-la no navegador.";
 "Counting is difficult..." = "Contar é difícil...";
 "Create a feed from any web page" = "Criar um feed de qualquer página da web";
+"Create a new account instead" = "Criar uma nova conta";
 "Custom Domain" = "Domínio personalizado";
 "Custom RSS feeds for saved stories" = "Feeds RSS personalizados para matérias salvas";
 "Custom Search Query" = "Consulta de pesquisa personalizada";
@@ -216,9 +222,11 @@
 "Delete Account" = "Excluir conta";
 "Delete Folder…" = "Excluir pasta…";
 "Delete Site…" = "Excluir site…";
+"Delete account" = "Excluir conta";
 "Delete offline stories" = "Excluir matérias offline";
 "Delete saved search" = "Excluir pesquisa salva";
 "Deleting saved search..." = "Excluindo pesquisa salva...";
+"Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Excluir sua conta permanentemente remove seus feeds, histórias salvas e dados da conta. Essa ação não pode ser desfeita.";
 "Deleting..." = "Excluindo...";
 "Discover" = "Descobrir";
 "Discover more to read" = "Descubra mais para ler";
@@ -246,6 +254,7 @@
 "Enter a custom search query..." = "Insira uma consulta de busca personalizada...";
 "Enter a web page URL..." = "Digite o URL de uma página da web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Insira o URL de qualquer página da web e o NewsBlur usará IA para analisar sua estrutura, encontrar notícias e criar um feed RSS personalizado para você assinar.";
+"Enter your existing NewsBlur username or email and NewsBlur password." = "Digite seu nome de usuário ou e-mail existente NewsBlur e sua senha NewsBlur.";
 "Error" = "Erro";
 "Evening" = "Noite";
 "Every story from every site is archived and searchable forever" = "Todas as matérias de todos os sites são arquivadas e podem ser pesquisadas para sempre";
@@ -253,6 +262,7 @@
 "Everything in the premium subscription, of course" = "Tudo o que está incluído na assinatura Premium, é claro";
 "Exact phrase" = "Frase exata";
 "Experimental" = "Experimental";
+"Explore interests" = "Explorar interesses";
 "Export Preferences" = "Exportar preferências";
 "Export trained stories from folders as RSS feeds" = "Exporte notícias treinadas de pastas como feeds RSS";
 "Extra Large" = "Extra grande";
@@ -278,12 +288,14 @@
 "Find in Sites" = "Buscar nos sites";
 "Find in feed" = "Buscar no feed";
 "Find in sites" = "Pesquisar em sites";
+"Finding feeds for you to explore." = "Encontrando feeds para você explorar.";
 "Finding related sites..." = "Buscando sites relacionados...";
 "Finding story..." = "Localizando notícia...";
 "Firefox" = "Firefox";
 "Focus" = "Foco";
 "Focus Stories" = "Matérias em foco";
 "Focus only" = "Somente foco";
+"Folder name" = "Nome da pasta";
 "Folders" = "Pastas";
 "Follow" = "Seguir";
 "Follow %@" = "Seguir %@";
@@ -331,7 +343,9 @@
 "Image Preview" = "Prévia da imagem";
 "Image actions" = "Ações de imagem";
 "Import & Export" = "Importar e exportar";
+"Import OPML" = "Importar OPML";
 "Import Preferences" = "Importar preferências";
+"Import or upload sites" = "Importar ou carregar sites";
 "Imported %i site%@" = "%i site%@ importado";
 "Importing sites..." = "Importando sites...";
 "In-app Safari" = "Safari no app";
@@ -355,6 +369,7 @@
 "Large" = "Grande";
 "Large Left" = "Grande à esquerda";
 "Large Right" = "Grande à direita";
+"Last used" = "Usado por último";
 "Lavender Iris" = "Íris lavanda";
 "Layout" = "Layout";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Deixe em branco para usar o NewsBlur ou informe o URL da sua instalação auto-hospedada. A alteração será aplicada na próxima vez que o aplicativo for aberto.";
@@ -367,6 +382,7 @@
 "List style" = "Estilo da lista";
 "Loading Google News topics..." = "Carregando tópicos do Google News...";
 "Loading image…" = "Carregando imagem…";
+"Loading interests" = "Carregando interesses";
 "Loading settings…" = "Carregando configurações…";
 "Loading..." = "Carregando...";
 "Loading…" = "Carregando…";
@@ -464,6 +480,8 @@
 "No Story Lists" = "Nenhuma lista de notícias";
 "No Widget Sites" = "Nenhum site de widget";
 "No briefings yet" = "Ainda não há resumos";
+"No feeds to show yet. Try another interest or search all sites." = "Ainda não há feeds para exibir. Tente outro interesse ou pesquise em todos os sites.";
+"No interests or sites found. Try another search." = "Nenhum interesse ou site encontrado. Tente outra busca.";
 "No longer saved" = "Não está mais salvo";
 "No notifications yet." = "Ainda não há notificações.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Nenhuma matéria para exibir. Nenhuma matéria para exibir. Nenhuma matéria para exibir. Nenhuma matéria para exibir.";
@@ -509,6 +527,7 @@
 "Page up" = "Página acima";
 "Paste a story title from the page" = "Cole o título de uma matéria da página";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Cole qualquer URL e o NewsBlur criará um feed a partir da página, mesmo sem RSS.";
+"Permanently delete account" = "Excluir conta permanentemente";
 "Pick which model writes your Daily Briefing" = "Escolha qual modelo escreve seu resumo diário";
 "Place the story list controls above or below the stories" = "Posicione os controles da lista de histórias acima ou abaixo das histórias";
 "Plum Berry" = "Amora";
@@ -574,7 +593,9 @@
 "Reply to %@" = "Responder a %@";
 "Resize sidebar" = "Redimensionar barra lateral";
 "Restore" = "Restaurar";
+"Retry" = "Tentar novamente";
 "Retry Google Reader" = "Tentar novamente o Google Reader";
+"Retry icons" = "Tentar carregar os ícones novamente";
 "River of News (reading by folder)" = "Fluxo de notícias (leitura por pasta)";
 "Rows" = "Linhas";
 "Ruby Red" = "Vermelho rubi";
@@ -656,6 +677,7 @@
 "Show without icons" = "Mostrar sem ícones";
 "Sidebar" = "Barra lateral";
 "Sign Up" = "Criar conta";
+"Sign in with Google" = "Entrar com o Google";
 "Single" = "Único";
 "Single Column" = "Coluna única";
 "Site" = "Site";
@@ -669,12 +691,14 @@
 "Small" = "Pequeno";
 "Small Left" = "Pequeno à esquerda";
 "Small Right" = "Pequeno à direita";
+"Some feed icons couldn’t load." = "Não foi possível carregar alguns ícones de feeds.";
 "Sources" = "Fontes";
 "Spacing" = "Espaçamento";
 "Standard" = "Padrão";
 "Start reading" = "Começar a ler";
 "Statistics" = "Estatísticas";
 "Statistics…" = "Estatísticas…";
+"Stay connected" = "Mantenha-se conectado";
 "Stay on the feeds list" = "Permanecer na lista de feeds";
 "Stories" = "Matérias";
 "Stories can stay unread forever" = "As matérias podem permanecer não lidas para sempre";
@@ -765,6 +789,7 @@
 "Trending Sites" = "Sites em alta";
 "Try" = "Experimentar";
 "Try again" = "Tentar novamente";
+"Try search again" = "Tentar pesquisar novamente";
 "Trying Feed" = "Testando feed";
 "Tuesday" = "terça-feira";
 "Twitter" = "Twitter";
@@ -795,6 +820,7 @@
 "Upgrade to Archive" = "Fazer upgrade para o Archive";
 "Upgrade to Premium" = "Faça upgrade para o Premium";
 "Upgrade to Premium Archive" = "Faça upgrade para o Arquivo Premium";
+"Use another sign-in method" = "Usar outro método de login";
 "Use both" = "Usar ambos";
 "Use system size" = "Usar tamanho do sistema";
 "User info" = "Informações do usuário";
@@ -836,9 +862,12 @@
 "Your premium archive subscription is active" = "Sua assinatura do arquivo premium está ativa";
 "Your premium pro subscription includes everything above" = "Sua assinatura premium pro inclui tudo o que foi mencionado acima";
 "Your premium pro subscription is active" = "Sua assinatura premium pro está ativa";
+"Your reading list" = "Sua lista de leitura";
+"You’re all set up." = "Tudo pronto.";
 "all stories" = "todas as notícias";
 "dislike" = "não gostei";
 "iOS" = "iOS";
+"or" = "ou";
 "premium subscribers" = "assinantes premium";
 "— Top Level —" = "— Nível superior —";
 "‹ Feeds" = "‹ Feeds";
