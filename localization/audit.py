@@ -28,10 +28,32 @@ RULES = [
         r'android:(?:text|hint|contentDescription)="([^"@?][^"]*)"',
     ),
     ("media/js/newsblur", (".js",), r'\.(?:text|html)\(\s*[\'"]([A-Za-z][^\'"\n]*[a-z][.!?]?)[\'"]\s*\)'),
+    # audit.py reads text between tags in Underscore templates and concatenated HTML strings.
+    (
+        "media/js/newsblur",
+        (".js",),
+        r"(?<![%=])>\s*([A-Za-z][A-Za-z0-9'’ ,.!?&:/()-]*[A-Za-z.!?:)…])\s*<(?!%)",
+    ),
+    ("media/js/newsblur", (".js",), r'(?:title|placeholder|aria-label|alt)="([A-Z][a-z][^"<]*)"'),
+    ("media/js/newsblur", (".js",), r'\b(?:title|placeholder)\s*:\s*[\'"]([A-Z][a-z][^\'"]*)[\'"]'),
+    ("media/js/newsblur", (".js",), r'\.val\(\s*[\'"]([A-Z][a-z][^\'"]*)[\'"]\s*\)'),
+    (
+        "media/js/newsblur",
+        (".js",),
+        r'\.attr\(\s*[\'"](?:title|placeholder|aria-label)[\'"]\s*,\s*[\'"]([A-Z][a-z][^\'"]*)[\'"]',
+    ),
+    # English pluralization belongs in ngettext so each language applies its own plural rules.
+    ("media/js/newsblur", (".js",), r'Inflector\.pluralize\(\s*[\'"]\s*([a-z][a-z ]*)[\'"]'),
 ]
-# audit.py excludes literal examples of user data and ISO language-code input hints.
+# audit.py excludes literal examples of user data, ISO language-code input hints, brand names
+# and sentinel values that code compares against.
 EXAMPLES = {
     ("clients/ios/Classes/FollowGrid.m", "roy"),
+    ("clients/ios/Classes/LoginViewController.m", "NewsBlur"),
+    ("clients/ios/Classes/AuthorizeServicesViewController.m", "Google Reader"),
+    ("clients/ios/Classes/AuthorizeServicesViewController.m", "Facebook"),
+    ("clients/ios/Classes/AuthorizeServicesViewController.m", "Twitter"),
+    ("clients/ios/Classes/AddSiteViewController.m", "— Top Level —"),
     ("clients/ios/Classes/DiscoverSites/Tabs/GoogleNewsTabView.swift", "en"),
     ("clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml", "John Gruber"),
     ("clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml", "Apple"),
@@ -44,13 +66,20 @@ def findings():
             if path.suffix not in suffixes or "TestHarness" in path.name or "/values-" in str(path):
                 continue
             content = path.read_text()
+            # audit.py allows inline markup inside a translated message, e.g. gettext("Never <b>mark</b> read").
+            messages = [
+                range(*message.span(2))
+                for message in re.finditer(r"\bn?gettext\(\s*(['\"])((?:\\.|(?!\1).)*)\1", content)
+            ]
             for match in re.finditer(pattern, content):
+                if any(match.start(1) in message for message in messages):
+                    continue
                 number = content.count("\n", 0, match.start()) + 1
                 line = content.splitlines()[number - 1]
                 if line.lstrip().startswith(("//", "*", "<!--")):
                     continue
                 value = match[1]
-                if not re.search(r"[A-Za-z]{2}", value) or value.startswith(("\\u", "http", "@")):
+                if not re.search(r"[A-Za-z]{2}", value) or value.startswith(("\\u", "http", "@", "NB-")):
                     continue
                 # Interpolated messages need a complete-message conversion, not literal wrapping.
                 if "\\(" in value or "$" in value or "<" in value:

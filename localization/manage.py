@@ -6,8 +6,10 @@ Run inside the development container. See localization/README.md.
 
 import argparse
 import copy
+import datetime
 import hashlib
 import html
+import http.client
 import io
 import json
 import os
@@ -15,6 +17,7 @@ import plistlib
 import re
 import sys
 import threading
+import time
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -33,13 +36,16 @@ ROOT = Path(__file__).resolve().parent.parent
 LANGUAGES = json.loads((ROOT / "localization/languages.json").read_text())
 RESOURCES = ROOT / "clients/android/NewsBlur/app/src/main/res"
 IOS = ROOT / "clients/ios/Resources"
-MODEL = "gemini-2.5-flash-lite"
+MODEL = "gpt-6-luna"
+INPUT_PRICE, OUTPUT_PRICE = 0.10, 0.50  # manage.py pins GPT-6 Luna's USD prices per million tokens.
+GENERATED_DATE = datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc)
 PRINTF = re.compile(
-    r"%(?:\([\w]+\)|\d+\$)?[-+#0 ]*(?:\d+|\*)?(?:\.(?:\d+|\*))?(?:hh|ll|[hlLzjt])?[@diuoxXfFeEgGcsSpaA%]"
+    r"%(?:\([\w]+\)|\d+\$)?[-+#0]*(?:\d+|\*)?(?:\.(?:\d+|\*))?(?:hh|ll|[hlLzjt])?[@diuoxXfFeEgGcsSpaA%]"
 )
 TOKENS = re.compile(
-    r"NewsBlur|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|\\[nrt]|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
+    r"NewsBlur|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|&(?:[a-zA-Z]+|#\d+|#x[0-9a-fA-F]+);|\\[nrt]|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
 )
+PROTECTED = re.compile(PRINTF.pattern + "|" + TOKENS.pattern)
 APPLE_STRING = re.compile(r'"((?:\\.|[^"\\])*)"\s*=\s*"((?:\\.|[^"\\])*)"\s*;')
 EXTRACTION_KEYWORDS = {
     **DEFAULT_KEYWORDS,
@@ -67,8 +73,12 @@ def locale_name(code):
     return code.replace("-", "_")
 
 
-def android_qualifier(code):
-    return {"pt-BR": "pt-rBR", "zh-Hans": "b+zh+Hans", "zh-Hant": "b+zh+Hant"}.get(code, code)
+def android_qualifiers(code):
+    # manage.py also writes Hebrew and Indonesian under iw/in, the legacy codes Android resolves them through.
+    legacy = {"he": ["he", "iw"], "id": ["id", "in"]}
+    return legacy.get(code) or [
+        {"pt-BR": "pt-rBR", "zh-Hans": "b+zh+Hans", "zh-Hant": "b+zh+Hant"}.get(code, code)
+    ]
 
 
 def validate_language_registry():
@@ -88,10 +98,7 @@ def validate_language_registry():
 def android_nodes():
     for path in sorted((RESOURCES / "values").glob("*.xml")):
         for node in ET.parse(path).getroot():
-            name = node.get("name", "")
             if node.tag not in ("string", "string-array", "plurals") or node.get("translatable") == "false":
-                continue
-            if name.endswith("_values") or name in ("newsblur", "login_custom_server_hint"):
                 continue
             yield path, node
 
@@ -148,7 +155,7 @@ def common_entries():
     entries = []
     ios_strings = set()
     pattern = re.compile(
-        r'(?:NBLocalization\.(?:text|plural)\(\s*|\[NBLocalization (?:text|plural):@|NSLocalizedString\(@?)("(?:\\.|[^"\\])*")'
+        r'(?:NBLocalization\.(?:text|plural)\(\s*|\[NBLocalization (?:text|plural):@|NSLocalizedString\(@?|discoverabilityTitle:@)("(?:\\.|[^"\\])*")'
     )
     for path in sorted((ROOT / "clients/ios/Classes").rglob("*")):
         if path.suffix not in (".swift", ".m") or "TestHarness" in path.name:
@@ -173,6 +180,7 @@ def common_entries():
         ("templates", "*html", "python"),
         ("media/js/newsblur", "*.js", "javascript"),
         ("apps", "*.py", "python"),
+        ("utils", "*.py", "python"),
     ]:
         for path in sorted((ROOT / base).rglob(extension)):
             if "/tests/" in str(path) or path.name.startswith("test"):
@@ -184,6 +192,9 @@ def common_entries():
                     content = "\n".join(line.lstrip() for line in content.splitlines())
                 except SyntaxError as error:
                     raise ValueError(f"Cannot extract {path}: {error}") from error
+            if method == "javascript":
+                # Underscore templates call gettext inside string literals, which the JS lexer skips.
+                content += "\n" + "\n".join(re.findall(r"<%[-=]?(.*?)%>", content, re.S))
             for line, message, comments, context in extract(
                 method, io.BytesIO(content.encode()), keywords=EXTRACTION_KEYWORDS
             ):
@@ -222,6 +233,34 @@ def validate(source, translated):
         raise ValueError("Reordered unnumbered format arguments")
     if "\x00" in translated:
         raise ValueError("NUL in translation")
+    if translated.count('"') > source.count('"'):
+        # Django's trans output isn't escaped, so a new double quote would end an HTML attribute.
+        raise ValueError(f"Added double quote: {translated!r}")
+    if PRINTF.search(source) and "%" in PRINTF.sub("", translated):
+        raise ValueError(f"Stray % in a format string: {translated!r}")
+
+
+def is_valid(source, memory, key):
+    try:
+        validate(source, memory[key])
+    except (KeyError, ValueError):
+        return False
+    return True
+
+
+def gettext_catalog(code, **kwargs):
+    catalog = Catalog(locale=locale_name(code), **kwargs)
+    if code == "ar":
+        # manage.py orders Arabic plurals like CLDR, Django, Android and iOS (11-99 before 100-102);
+        # Babel's legacy rule swaps the last two forms.
+        catalog.mime_headers = [
+            (
+                "Plural-Forms",
+                "nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : "
+                "n%100>=11 ? 4 : 5);",
+            )
+        ]
+    return catalog
 
 
 def load_memory(code):
@@ -231,10 +270,10 @@ def load_memory(code):
 
 def units(entries, code):
     result = []
+    catalog = gettext_catalog(code)
     for item in entries:
         sources = item["source"]
         if isinstance(sources, list):
-            catalog = Catalog(locale=locale_name(code))
             for index in range(catalog.num_plurals):
                 # Include both English forms as context; gettext indexes are locale-specific.
                 result.append(
@@ -249,55 +288,62 @@ def units(entries, code):
     return result
 
 
+class BudgetExhausted(Exception):
+    pass
+
+
+class ProviderError(Exception):
+    pass
+
+
 class Translator:
-    def __init__(self, budget, provider="gemini"):
-        self.provider = provider
-        self.model = MODEL if provider == "gemini" else "gpt-6-luna"
-        self.output_price = 0.40 if provider == "gemini" else 0.50
+    def __init__(self, budget):
         self.lock = threading.Lock()
         self.budget = budget
         self.reserved = 0.0
         self.actual = 0.0
-        key_name = "GEMINI_API_KEY" if provider == "gemini" else "OPENAI_API_KEY"
-        self.key = os.environ.get(key_name)
-        if not self.key and os.environ.get(key_name + "_FILE"):
-            self.key = Path(os.environ[key_name + "_FILE"]).read_text().strip()
+        self.key = os.environ.get("OPENAI_API_KEY")
+        if not self.key and os.environ.get("OPENAI_API_KEY_FILE"):
+            self.key = Path(os.environ["OPENAI_API_KEY_FILE"]).read_text().strip()
         if not self.key:
             # A local run can use the existing credential without writing it to disk.
             sys.path.insert(0, str(ROOT))
             os.environ.setdefault("DJANGO_SETTINGS_MODULE", "newsblur_web.settings")
-            import importlib
+            try:
+                import importlib
 
-            self.key = getattr(
-                importlib.import_module("newsblur_web.settings"),
-                "GOOGLE_GEMINI_API_KEY" if provider == "gemini" else "OPENAI_API_KEY",
-                None,
-            )
+                self.key = getattr(importlib.import_module("newsblur_web.settings"), "OPENAI_API_KEY", None)
+            except ImportError:
+                self.key = None
         if not self.key:
-            raise ValueError(f"Set {key_name} or {key_name}_FILE for translation")
+            raise ValueError("Set OPENAI_API_KEY or OPENAI_API_KEY_FILE for translation")
 
-    def translate(self, code, batch):
+    def translate(self, code, batch, failures):
+        """Translate a batch, bisecting around any message the model can't translate validly."""
         try:
             return self.request(code, batch)
         except ValueError as error:
-            if "budget exhausted" in str(error) or "HTTP " in str(error) or len(batch) == 1:
-                raise
-            midpoint = len(batch) // 2
-            return {**self.translate(code, batch[:midpoint]), **self.translate(code, batch[midpoint:])}
+            if len(batch) == 1:
+                failures.append(f"{code} {batch[0][0]}: {error}")
+                return {}
+            middle = len(batch) // 2
+            return {
+                **self.translate(code, batch[:middle], failures),
+                **self.translate(code, batch[middle:], failures),
+            }
 
     def request(self, code, batch):
         protected_batch = []
         replacements = {}
         for key, source, context in batch:
             tokens = []
-            pattern = re.compile(PRINTF.pattern + "|" + TOKENS.pattern)
 
             def protect(match):
                 token = f"__NB_TOKEN_{len(tokens)}__"
                 tokens.append(match.group())
                 return token
 
-            protected_batch.append((key, pattern.sub(protect, source), context))
+            protected_batch.append((key, PROTECTED.sub(protect, source), context))
             replacements[key] = tokens
         prompt = (
             f"Translate NewsBlur news-reader interface strings from English into {LANGUAGES[code]} ({code}). "
@@ -312,91 +358,71 @@ class Translator:
         )
         max_output = 8192
         # UTF-8 bytes bound input tokens conservatively; reserve the entire output allowance,
-        # including unsuccessful requests. Prices are pinned to MODEL, not user-supplied models.
-        allowance = ((len(prompt.encode()) + 8192) * 0.10 + max_output * self.output_price) / 1_000_000
+        # including unsuccessful requests.
+        allowance = ((len(prompt.encode()) + 8192) * INPUT_PRICE + max_output * OUTPUT_PRICE) / 1_000_000
         with self.lock:
             if self.reserved + allowance > self.budget:
-                raise ValueError(
+                raise BudgetExhausted(
                     f"Translation budget exhausted (${self.budget:.2f}); completed batches are saved"
                 )
             self.reserved += allowance
         payload = {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {
-                "responseMimeType": "application/json",
-                "temperature": 0.1,
-                "maxOutputTokens": max_output,
-                "thinkingConfig": {"thinkingBudget": 0},
+            "model": MODEL,
+            "input": prompt,
+            "store": False,
+            "reasoning": {"effort": "none"},
+            "max_output_tokens": max_output,
+            "text": {
+                "format": {
+                    "type": "json_schema",
+                    "name": "translations",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {key: {"type": "string"} for key, _, _ in batch},
+                        "required": [key for key, _, _ in batch],
+                        "additionalProperties": False,
+                    },
+                }
             },
         }
         request = urllib.request.Request(
-            f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
+            "https://api.openai.com/v1/responses",
             data=json.dumps(payload).encode(),
-            headers={"Content-Type": "application/json", "x-goog-api-key": self.key},
+            headers={"Content-Type": "application/json", "Authorization": "Bearer " + self.key},
         )
-        if self.provider == "luna":
-            payload = {
-                "model": self.model,
-                "input": prompt,
-                "store": False,
-                "reasoning": {"effort": "none"},
-                "max_output_tokens": max_output,
-                "text": {
-                    "format": {
-                        "type": "json_schema",
-                        "name": "translations",
-                        "strict": True,
-                        "schema": {
-                            "type": "object",
-                            "properties": {key: {"type": "string"} for key, _, _ in batch},
-                            "required": [key for key, _, _ in batch],
-                            "additionalProperties": False,
-                        },
-                    }
-                },
-            }
-            request = urllib.request.Request(
-                "https://api.openai.com/v1/responses",
-                data=json.dumps(payload).encode(),
-                headers={"Content-Type": "application/json", "Authorization": "Bearer " + self.key},
-            )
-        try:
-            with urllib.request.urlopen(request, timeout=120) as response:
-                data = json.load(response)
-        except urllib.error.HTTPError as error:
-            detail = json.loads(error.read()).get("error", {}).get("message", "")
-            detail = detail.replace(self.key, "[redacted]")
-            raise ValueError(f"{self.provider} returned HTTP {error.code}: {detail}") from None
-        if self.provider == "gemini":
-            usage = data.get("usageMetadata", {})
-            cost = (
-                usage.get("promptTokenCount", 0) * 0.10
-                + (usage.get("candidatesTokenCount", 0) + usage.get("thoughtsTokenCount", 0))
-                * self.output_price
-            ) / 1_000_000
-            candidate = data["candidates"][0]
-            if candidate.get("finishReason") != "STOP":
-                raise ValueError(f"Incomplete Gemini response: {candidate.get('finishReason')}")
-            content = "".join(part.get("text", "") for part in candidate["content"]["parts"])
-        else:
-            usage = data.get("usage", {})
-            cost = (
-                usage.get("input_tokens", 0) * 0.10 + usage.get("output_tokens", 0) * self.output_price
-            ) / 1_000_000
-            if data.get("status") != "completed":
-                raise ValueError("Incomplete Luna response")
-            content = "".join(
-                part.get("text", "")
-                for output in data.get("output", [])
-                for part in output.get("content", [])
-                if part.get("type") == "output_text"
-            )
+        # manage.py retries rate limits, server errors and dropped connections with backoff.
+        for attempt in range(4):
+            try:
+                with urllib.request.urlopen(request, timeout=120) as response:
+                    data = json.load(response)
+                break
+            except urllib.error.HTTPError as error:
+                detail = error.read().decode("utf-8", "replace")[:300].replace(self.key, "[redacted]")
+                if error.code not in (429, 500, 502, 503, 504) or attempt == 3:
+                    raise ProviderError(f"OpenAI returned HTTP {error.code}: {detail}") from None
+            except (OSError, http.client.HTTPException, json.JSONDecodeError) as error:
+                if attempt == 3:
+                    raise ProviderError(f"OpenAI request failed: {error}") from None
+            time.sleep(2**attempt)
+        usage = data.get("usage", {})
+        cost = (
+            usage.get("input_tokens", 0) * INPUT_PRICE + usage.get("output_tokens", 0) * OUTPUT_PRICE
+        ) / 1_000_000
         with self.lock:
             self.actual += cost if usage else allowance
             self.reserved -= allowance - (cost if usage else allowance)
+        if data.get("status") != "completed":
+            raise ValueError("Incomplete Luna response")
+        content = "".join(
+            part.get("text", "")
+            for output in data.get("output", [])
+            for part in output.get("content", [])
+            if part.get("type") == "output_text"
+        )
         values = json.loads(content)
         if set(values) != {key for key, _, _ in batch}:
-            raise ValueError(f"{self.provider} returned missing or unexpected translation IDs")
+            raise ValueError("Luna returned missing or unexpected translation IDs")
         for key, source, _ in batch:
             value = values[key]
             for index, token in enumerate(replacements[key]):
@@ -409,8 +435,15 @@ class Translator:
         return values
 
 
-def translated(memory, item, index=None):
-    return memory[item["id"] if index is None else f'{item["id"]}:{index}']
+def translated(memory, item, index=None, code=None):
+    value = memory.get(item["id"] if index is None else f'{item["id"]}:{index}')
+    if value is None or code in ("ja", "th", "zh-Hans", "zh-Hant"):
+        return value
+    # manage.py keeps a fragment's edge spaces, which models often drop, so joined fragments don't run together.
+    source = item["source"][0] if isinstance(item["source"], list) else item["source"]
+    leading = source[: len(source) - len(source.lstrip())]
+    trailing = source[len(source.rstrip()) :]
+    return leading + value.strip() + trailing
 
 
 def compile_catalogs(code, entries, memory):
@@ -429,10 +462,17 @@ def compile_catalogs(code, entries, memory):
                 (quantity, ET.SubElement(node, "item", quantity=quantity))
                 for quantity in sorted(Locale.parse(locale_name(code)).plural_form.tags | {"other"})
             ]
+        complete = True
         for suffix, child in children:
             item = indexed.get(("android", f"{name}:{suffix}"))
-            if item:
-                text = translated(memory, item)
+            text = item and translated(memory, item, code=code)
+            if text is None:
+                complete = False
+            elif item:
+                if len(child) == 0 and re.search(r"<[a-zA-Z/]", child.text or ""):
+                    # CDATA markup stays text, since callers pass getString() through fromHtml().
+                    child.text = re.sub(r'(?<!\\)"', r'\\"', re.sub(r"(?<!\\)'", r"\\'", text))
+                    continue
                 parts = re.split(r"(<[a-zA-Z/][^>]*>)", text)
                 for index in range(0, len(parts), 2):
                     segment = re.sub(r"(?<!\\)'", r"\\'", parts[index])
@@ -441,30 +481,25 @@ def compile_catalogs(code, entries, memory):
                 parsed = ET.fromstring("<item>" + "".join(parts) + "</item>")
                 child.text = parsed.text
                 child[:] = list(parsed)
-        root.append(node)
+        # Missing strings and plurals fall back to values/; arrays keep their English items.
+        if complete or node.tag == "string-array":
+            root.append(node)
     ET.indent(root, space="    ")
-    destination = RESOURCES / f"values-{android_qualifier(code)}/strings.xml"
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(
-        '<?xml version="1.0" encoding="utf-8"?>\n' + ET.tostring(root, encoding="unicode") + "\n"
-    )
-    ios = [item for item in entries if item["platform"] == "ios"]
-    english = IOS / "en.lproj/Localizable.strings"
-    english.parent.mkdir(parents=True, exist_ok=True)
-    english.write_text(
-        "/* Generated from explicit NBLocalization calls by localization/manage.py. */\n"
-        + "".join(
-            f'{json.dumps(item["context"], ensure_ascii=False)} = {json.dumps(item["source"], ensure_ascii=False)};\n'
-            for item in sorted(ios, key=lambda item: item["context"])
+    for qualifier in android_qualifiers(code):
+        destination = RESOURCES / f"values-{qualifier}/strings.xml"
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(
+            '<?xml version="1.0" encoding="utf-8"?>\n' + ET.tostring(root, encoding="unicode") + "\n"
         )
-    )
+    ios = sorted((item for item in entries if item["platform"] == "ios"), key=lambda item: item["context"])
     destination = IOS / f"{code}.lproj/Localizable.strings"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(
         "/* Generated by localization/manage.py. */\n"
         + "".join(
-            f'{json.dumps(item["context"], ensure_ascii=False)} = {json.dumps(translated(memory, item), ensure_ascii=False)};\n'
-            for item in sorted(ios, key=lambda item: item["context"])
+            f'{json.dumps(item["context"], ensure_ascii=False)} = {json.dumps(value, ensure_ascii=False)};\n'
+            for item in ios
+            if (value := translated(memory, item, code=code)) is not None
         )
     )
     # Localizable.stringsdict retains Apple's plural metadata while replacing every grammatical form.
@@ -476,43 +511,82 @@ def compile_catalogs(code, entries, memory):
                 for quantity in list(forms):
                     if not quantity.startswith("NSString"):
                         del forms[quantity]
+    incomplete = set()
     for item in entries:
         if item["platform"] == "ios_plural":
-            plural_catalog[item["key"]][item["variable"]][item["quantity"]] = translated(memory, item)
+            value = translated(memory, item, code=code)
+            if value is None:
+                incomplete.add(item["key"])
+            else:
+                plural_catalog[item["key"]][item["variable"]][item["quantity"]] = value
+    for key in incomplete:
+        plural_catalog[key] = originals[key]
     (IOS / f"{code}.lproj/Localizable.stringsdict").write_bytes(plistlib.dumps(plural_catalog))
-    (IOS / "en.lproj/Localizable.stringsdict").write_bytes(plistlib.dumps(originals))
     for domain in ("django", "djangojs"):
-        catalog = Catalog(locale=locale_name(code), domain=domain, project="NewsBlur", charset="utf-8")
+        catalog = gettext_catalog(
+            code,
+            domain=domain,
+            project="NewsBlur",
+            charset="utf-8",
+            fuzzy=False,
+            creation_date=GENERATED_DATE,
+            revision_date=GENERATED_DATE,
+        )
         for item in entries:
             if item["platform"] != "web" or item["domain"] != domain:
                 continue
             source = item["source"]
-            value = (
-                translated(memory, item)
-                if isinstance(source, str)
-                else tuple(translated(memory, item, index) for index in range(catalog.num_plurals))
-            )
-            catalog.add(
-                tuple(source) if isinstance(source, list) else source,
-                value,
-                context=item["msgctxt"],
-                locations=[(item["path"], item["line"])],
-            )
-        catalog.creation_date = catalog.revision_date = __import__("datetime").datetime(
-            2026, 1, 1, tzinfo=__import__("datetime").timezone.utc
-        )
+            if isinstance(source, str):
+                value = translated(memory, item, code=code) or ""
+            else:
+                forms = [translated(memory, item, index, code) for index in range(catalog.num_plurals)]
+                value = tuple(form or "" for form in forms) if None not in forms else ("",) * len(forms)
+            catalog.add(tuple(source) if isinstance(source, list) else source, value, context=item["msgctxt"])
         destination = ROOT / f"locale/{locale_name(code)}/LC_MESSAGES/{domain}"
         destination.parent.mkdir(parents=True, exist_ok=True)
+        # manage.py omits source locations so unrelated code edits don't churn every catalog.
         with destination.with_suffix(".po").open("wb") as file:
-            write_po(file, catalog, sort_output=True, width=110)
+            write_po(file, catalog, sort_output=True, width=110, no_location=True)
         with destination.with_suffix(".mo").open("wb") as file:
             write_mo(file, catalog)
+
+
+def compile_english(entries):
+    ios = sorted((item for item in entries if item["platform"] == "ios"), key=lambda item: item["context"])
+    english = IOS / "en.lproj/Localizable.strings"
+    english.parent.mkdir(parents=True, exist_ok=True)
+    english.write_text(
+        "/* Generated from explicit NBLocalization calls by localization/manage.py. */\n"
+        + "".join(
+            f'{json.dumps(item["context"], ensure_ascii=False)} = {json.dumps(item["source"], ensure_ascii=False)};\n'
+            for item in ios
+        )
+    )
+    (IOS / "en.lproj/Localizable.stringsdict").write_bytes((IOS / "Localizable.stringsdict").read_bytes())
+
+
+def translate_language(translator, code, pending, memory, failures):
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        futures = [
+            pool.submit(translator.translate, code, pending[offset : offset + 40], failures)
+            for offset in range(0, len(pending), 40)
+        ]
+        completed = 0
+        for future in as_completed(futures):
+            try:
+                values = future.result()
+            except (BudgetExhausted, ProviderError) as error:
+                failures.append(f"{code}: {error}")
+                continue
+            memory.update(values)
+            dump(ROOT / f"localization/translations/{code}.json", memory)
+            completed += len(values)
+            print(f"  {completed}/{len(pending)}, API usage ${translator.actual:.3f}", flush=True)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("extract", "translate", "compile", "check"))
-    parser.add_argument("--provider", choices=("gemini", "luna"), default="luna")
     parser.add_argument(
         "--languages", help="Comma-separated language codes; defaults to all supported languages"
     )
@@ -529,51 +603,32 @@ def main():
     codes = args.languages.split(",") if args.languages else [code for code in LANGUAGES if code != "en"]
     if any(code not in LANGUAGES or code == "en" for code in codes):
         parser.error("Unsupported target language")
-    translator = Translator(args.budget, args.provider) if args.command == "translate" else None
+    translator = Translator(args.budget) if args.command == "translate" else None
     failures = []
     for code in codes:
         entries = source_entries(code)
         memory = load_memory(code)
-        pending = []
-        for key, source, context in units(entries, code):
-            if key in memory:
-                try:
-                    validate(source, memory[key])
-                except ValueError:
-                    if args.command != "translate":
-                        raise
-                    pending.append((key, source, context))
-            else:
-                pending.append((key, source, context))
+        language_units = units(entries, code)
+        pending = [unit for unit in language_units if not is_valid(unit[1], memory, unit[0])]
+        invalid = [key for key, _, _ in pending if key in memory]
         print(f"{code}: {len(entries)} messages, {len(pending)} untranslated", flush=True)
         if args.command == "extract":
             dump(ROOT / f"localization/sources/{code}.json", entries)
-        elif args.command == "translate":
-            with ThreadPoolExecutor(max_workers=16) as pool:
-                futures = {
-                    pool.submit(translator.translate, code, pending[offset : offset + 40]): offset
-                    for offset in range(0, len(pending), 40)
-                }
-                failures = []
-                completed = 0
-                for future in as_completed(futures):
-                    try:
-                        values = future.result()
-                        memory.update(values)
-                        dump(ROOT / f"localization/translations/{code}.json", memory)
-                        completed += len(values)
-                        print(f"  {completed}/{len(pending)}, API usage ${translator.actual:.3f}", flush=True)
-                    except (ValueError, KeyError, urllib.error.URLError) as error:
-                        failures.append(str(error))
-                if failures:
-                    raise ValueError("\n".join(failures[:10]))
-            compile_catalogs(code, entries, memory)
-        elif pending and not (args.command == "check" and args.allow_missing):
+            continue
+        if args.command == "translate":
+            translate_language(translator, code, pending, memory, failures)
+        if args.command in ("translate", "compile"):
+            # Invalid or missing translations compile as English fallback.
+            valid = {key: memory[key] for key, source, _ in language_units if is_valid(source, memory, key)}
+            compile_catalogs(code, entries, valid)
+        elif invalid:
+            failures.append(f"{code}: {len(invalid)} invalid translations, e.g. {invalid[0]}")
+        elif pending and not args.allow_missing:
             failures.append(f"{code}: {len(pending)} missing translations")
-        elif args.command == "compile":
-            compile_catalogs(code, entries, memory)
+    if args.command in ("translate", "compile"):
+        compile_english(source_entries())
     if failures:
-        raise ValueError("\n".join(failures))
+        raise ValueError("\n".join(failures[:20]))
 
 
 if __name__ == "__main__":

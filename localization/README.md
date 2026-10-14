@@ -10,7 +10,7 @@ NewsBlur ships its translations with the application. Reading stories never call
   Keep FormData field names, DOM attribute names, CSS selectors and stored preference keys literal. They are protocol identifiers, even when they resemble English words.
 - Django templates: load `i18n`, then use `trans` or `blocktrans` with named variables and `count`. Python: `gettext` or `gettext_lazy` from `django.utils.translation`.
 - iOS: `NBLocalization.text("Save story")` in Swift, `[NBLocalization text:@"Save story"]` in Objective-C. New Swift files must belong to both app targets. The source scanner extracts explicit calls; never pass user content to the helper.
-- Android: add strings or plurals in `res/values/strings.xml`, then use `stringResource`, `getString`, or `getQuantityString`. Stable preference values, URLs and identifiers must be `translatable="false"`. Arrays ending in `_values` are excluded.
+- Android: add strings or plurals in `res/values/strings.xml`, then use `stringResource`, `getString`, or `getQuantityString`. Stable preference values (including every `_values` array), URLs and identifiers must be `translatable="false"`.
 
 The extractor reads all three source formats and keeps a translation memory under `translations/`. Entries are keyed by platform, context and English source text. Editing English invalidates only that message; existing translations are reused. Plurals use the target language's grammatical categories. Generated files are standard Django gettext catalogs, iOS `.strings` and `.stringsdict`, and Android resource XML. iOS plural sources live in `clients/ios/Resources/Localizable.stringsdict`; format them with `NBLocalization.plural(_:count:)` so the account override controls both wording and plural rules.
 
@@ -19,7 +19,7 @@ Run Python commands inside the worktree container:
 ```sh
 docker exec -t newsblur_web_i18n /root/.local/bin/uv pip install --python /venv/bin/python -r localization/requirements.txt
 docker exec -t newsblur_web_i18n python localization/manage.py extract --languages es
-docker exec -t -e OPENAI_API_KEY_FILE=/path/in/container/key newsblur_web_i18n python localization/manage.py translate --provider luna --budget 5
+docker exec -t -e OPENAI_API_KEY_FILE=/path/in/container/key newsblur_web_i18n python localization/manage.py translate --budget 5
 docker exec -t newsblur_web_i18n python localization/manage.py check
 docker exec -t newsblur_web_i18n python localization/manage.py compile
 ```
@@ -41,8 +41,8 @@ The script reserves an upper bound before each API request and charges completed
 | Provider | Standard input | Standard output | Notes |
 | --- | --- | --- | --- |
 | [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) | $0.10 / million tokens | $0.50 / million tokens | Default; existing CI key; strict JSON schema |
-| [Gemini 2.5 Flash-Lite](https://ai.google.dev/gemini-api/docs/pricing) | $0.10 / million tokens | $0.40 / million tokens | Optional `--provider gemini`; `GEMINI_API_KEY` or `GEMINI_API_KEY_FILE` |
+| [Gemini 2.5 Flash-Lite](https://ai.google.dev/gemini-api/docs/pricing) | $0.10 / million tokens | $0.40 / million tokens | Not used; rejected or truncated early Spanish batches |
 | [Google Cloud Translation NMT](https://cloud.google.com/products/translate/pricing) | $20 / million source characters after allowance | Included | Different billing unit |
 | [Amazon Translate](https://aws.amazon.com/translate/pricing/) | $15 / million source characters | Included | Different billing unit |
 
-Both model providers offer batch discounts. The current script uses immediate requests so translations are available in the same development run. Gemini has a slightly lower token price; Luna completed the initial Spanish messages that Gemini rejected or truncated. No translation-quality ranking is implied by price.
+Luna offers batch discounts. The script uses immediate requests so translations are available in the same development run, and retries rate limits and dropped connections with backoff. A message that still fails validation is reported and keeps its English fallback; every other completed batch is saved and compiled.

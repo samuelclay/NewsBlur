@@ -2,8 +2,10 @@ import unittest
 from unittest.mock import patch
 
 from localization.manage import (
+    BudgetExhausted,
     Translator,
     entry,
+    gettext_catalog,
     ios_plural_entries,
     protected,
     source_entries,
@@ -35,9 +37,21 @@ class Test_Translation(unittest.TestCase):
     @patch.dict("os.environ", {"OPENAI_API_KEY": "local-test-key"})
     @patch("urllib.request.urlopen")
     def test_budget_is_enforced_before_sending_a_request(self, request):
-        with self.assertRaisesRegex(ValueError, "budget exhausted"):
-            Translator(0, "luna").translate("fr", [("title", "Read stories", "button")])
+        with self.assertRaises(BudgetExhausted):
+            Translator(0).translate("fr", [("title", "Read stories", "button")], [])
         request.assert_not_called()
+
+    def test_stray_percent_in_a_format_string_is_rejected(self):
+        with self.assertRaises(ValueError):
+            validate("Only 1.9%% of users", "Yalnızca %1,9%%'u")
+        validate("Save 50% off", "Économisez 50 % de")
+
+    def test_arabic_plurals_use_cldr_order(self):
+        catalog = gettext_catalog("ar")
+        import gettext
+
+        plural = gettext.c2py(catalog.plural_expr)
+        self.assertEqual([plural(n) for n in (0, 1, 2, 5, 11, 99, 100, 102)], [0, 1, 2, 3, 4, 4, 5, 5])
 
     def test_changed_source_invalidates_translation_key(self):
         self.assertNotEqual(entry("ios", "save", "Save")["id"], entry("ios", "save", "Save story")["id"])

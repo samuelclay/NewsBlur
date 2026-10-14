@@ -9,6 +9,7 @@ on:
       - 'clients/ios/**'
       - 'clients/android/**'
       - 'apps/**'
+      - 'utils/**'
       - '.github/workflows/localization.yml'
   push:
     branches: [main]
@@ -18,7 +19,9 @@ on:
       - 'clients/ios/Classes/**'
       - 'clients/ios/Resources/Localizable.stringsdict'
       - 'clients/android/NewsBlur/app/src/main/**'
+      - '!clients/android/NewsBlur/app/src/main/res/values-*/**'
       - 'apps/**'
+      - 'utils/**'
       - 'localization/languages.json'
   workflow_dispatch:
   schedule:
@@ -29,7 +32,7 @@ permissions:
 
 concurrency:
   group: localization-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   validate:
@@ -38,7 +41,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.9'
       - run: pip install -r localization/requirements.txt
       - run: python -m unittest localization.test_manage
       - uses: actions/setup-node@v5
@@ -51,6 +54,7 @@ jobs:
 
   translate:
     if: github.event_name != 'pull_request'
+    needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -60,13 +64,15 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.9'
       - run: pip install -r localization/requirements.txt
       - name: Translate only new or changed strings with Luna
+        # Partial progress still opens a PR; untranslated messages keep their English fallback.
+        continue-on-error: true
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python localization/manage.py translate --provider luna --budget 5
-      - run: python localization/manage.py check
+        run: python localization/manage.py translate --budget 5
+      - run: python localization/manage.py check --allow-missing
       - run: python localization/audit.py
       - name: Open translation update for review
         uses: peter-evans/create-pull-request@v7
