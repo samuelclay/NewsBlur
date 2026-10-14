@@ -1381,6 +1381,14 @@
             var dialog_param = _.contains(dialog_keywords, test_param) ? test_param
                              : _.contains(dialog_keywords, next_param) ? next_param
                              : null;
+            if (dialog_param == 'language') {
+                _.defer(_.bind(this.open_language_modal, this, {}));
+                return;
+            }
+            if (dialog_param == 'language_intro') {
+                _.defer(_.bind(this.open_intro_modal, this, { page_number: 0 }));
+                return;
+            }
             if (dialog_param == 'feedchooser') {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
                 return;
@@ -1395,6 +1403,15 @@
             }
             // Skip normal dialog logic for other test params (growth1, growth2, etc.)
             if (test_param) {
+                return;
+            }
+
+            // reader_language.js: The one-time language dialog comes before the dialogs below and resumes
+            // them once it closes. People who haven't set up feeds get it as the intro's first page instead.
+            if (NEWSBLUR.assets.preference('has_setup_feeds') && NEWSBLUR.ReaderLanguage.should_show_dialog()) {
+                _.defer(_.bind(this.open_language_modal, this, {
+                    on_close: _.bind(this.open_dialog_after_feeds_loaded, this, options)
+                }));
                 return;
             }
 
@@ -4529,6 +4546,10 @@
 
         open_intro_modal: function (options) {
             NEWSBLUR.intro = new NEWSBLUR.ReaderIntro(options);
+        },
+
+        open_language_modal: function (options) {
+            NEWSBLUR.language_modal = new NEWSBLUR.ReaderLanguage(options);
         },
 
         open_user_admin_modal: function (options) {
