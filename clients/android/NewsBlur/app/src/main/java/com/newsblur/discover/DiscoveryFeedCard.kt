@@ -39,6 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
@@ -53,8 +55,10 @@ import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.design.withContentDirection
 import com.newsblur.network.FolderPath
 import com.newsblur.util.AppConstants
+import com.newsblur.util.BidiText
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
+import java.text.NumberFormat
 
 // DiscoveryFeedCard.kt is shared by Add + Discover Sites and both Related Sites presentations.
 @Composable
@@ -127,8 +131,9 @@ internal fun DiscoveryFeedCard(
         if (feed.subscribers >
             0
         ) {
+            val subscriberCount = remember(feed.subscribers) { NumberFormat.getIntegerInstance().format(feed.subscribers) }
             Text(
-                "${java.text.NumberFormat.getIntegerInstance().format(feed.subscribers)} subscribers",
+                pluralStringResource(R.plurals.discover_subscribers, feed.subscribers, subscriberCount),
                 color = colors.textSecondary,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -143,7 +148,9 @@ internal fun DiscoveryFeedCard(
             }
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onPreview, enabled = enabled) { Text(if (added) "Open" else "Try", color = colors.siteLink) }
+            TextButton(onClick = onPreview, enabled = enabled) {
+                Text(stringResource(if (added) R.string.discover_open else R.string.discover_try), color = colors.siteLink)
+            }
             Spacer(Modifier.width(16.dp))
             if (added) {
                 Spacer(Modifier.weight(1f))
@@ -156,7 +163,7 @@ internal fun DiscoveryFeedCard(
                 enabled = enabled && !added,
                 colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
             ) {
-                Text(if (added) "Added" else "Add")
+                Text(stringResource(if (added) R.string.discover_added else R.string.discover_add))
             }
         }
     }
@@ -210,7 +217,8 @@ private fun DiscoveryStoryRow(
             )
             if (authors.isNotBlank() || date != null) {
                 Text(
-                    listOfNotNull(authors.takeIf(String::isNotBlank), date).joinToString(" · "),
+                    // DiscoveryFeedCard.kt isolates the author so the dot stays between it and the date in either direction.
+                    listOfNotNull(authors.takeIf(String::isNotBlank)?.let(BidiText::isolate), date).joinToString(" · "),
                     color = secondaryText,
                     style = MaterialTheme.typography.labelSmall.withContentDirection(),
                     maxLines = 1,
@@ -256,7 +264,9 @@ internal fun DiscoveryFolderPicker(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val displayName = if (state.folder == AppConstants.ROOT_FOLDER) "Top Level" else FolderPath.leaf(state.folder)
+    val topLevel = stringResource(R.string.discover_folder_top_level)
+    val addToFolder = stringResource(R.string.discover_add_to_folder)
+    val displayName = if (state.folder == AppConstants.ROOT_FOLDER) topLevel else FolderPath.leaf(state.folder)
     Box(modifier) {
         Row(
             Modifier
@@ -267,7 +277,7 @@ internal fun DiscoveryFolderPicker(
                 .border(1.dp, colors.border, RoundedCornerShape(8.dp))
                 .clickable(enabled = !state.busy, role = Role.Button) { expanded = true }
                 .semantics {
-                    contentDescription = "Add to folder"
+                    contentDescription = addToFolder
                     stateDescription = displayName
                 }
                 .padding(horizontal = 10.dp, vertical = 8.dp),
@@ -283,7 +293,7 @@ internal fun DiscoveryFolderPicker(
             modifier = Modifier.heightIn(max = 360.dp).widthIn(min = 180.dp, max = 340.dp),
             containerColor = colors.cardBackground,
         ) {
-            val folders = listOf(AppConstants.ROOT_FOLDER to "Top Level") + state.folders
+            val folders = listOf(AppConstants.ROOT_FOLDER to topLevel) + state.folders
                 .filter { it.flatName() != AppConstants.ROOT_FOLDER }
                 .map { it.flatName() to "${"    ".repeat(it.depth())}${it.name}" }
             folders.forEach { (path, title) ->

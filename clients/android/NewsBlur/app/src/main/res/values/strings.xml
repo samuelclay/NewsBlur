@@ -1232,7 +1232,7 @@ people together to talk about the world.</string>
         <item quantity="other">%1$d stories/month</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Stale · last story %1$s</string>
-    <string name="add_site_url_or_search">https:// or search</string>
+    <string name="add_site_url_or_search">%1$s or search</string>
     <string name="add_site_choose_folder">Choose folder</string>
     <string name="add_site_top_level">— Top Level —</string>
     <string name="add_site_adding_site">Adding site</string>
@@ -1323,5 +1323,32 @@ people together to talk about the world.</string>
     <plurals name="briefing_group_story_count">
         <item quantity="one">%d story</item>
         <item quantity="other">%d stories</item>
+    </plurals>
+    <string name="main_menu_import_feed_bundles">Import and feed bundles</string>
+    <string name="main_menu_export_feeds">Export feeds</string>
+    <string name="discover_open">Open</string>
+    <string name="discover_folder_top_level">Top Level</string>
+    <string name="discover_add_to_folder">Add to folder</string>
+    <string name="add_site_shortcut_trending">Trending</string>
+    <string name="add_site_freshness_stale">Stale %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="one">%dm ago</item>
+        <item quantity="other">%dm ago</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="one">%dh ago</item>
+        <item quantity="other">%dh ago</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="one">%dd ago</item>
+        <item quantity="other">%dd ago</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="one">%dw ago</item>
+        <item quantity="other">%dw ago</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="one">%dmo ago</item>
+        <item quantity="other">%dmo ago</item>
     </plurals>
 </resources>

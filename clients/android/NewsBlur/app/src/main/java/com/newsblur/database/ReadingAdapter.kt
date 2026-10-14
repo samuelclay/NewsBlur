@@ -15,11 +15,15 @@ import com.newsblur.fragment.LoadingFragment
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingItemFragment.Companion.newInstance
 import com.newsblur.service.NbSyncManager
+import com.newsblur.util.UIUtils
 
 /**
  * An adapter to display stories in a ViewPager. Loosely based upon FragmentStatePagerAdapter, but
  * with enhancements to correctly handle item insertion / removal and to pass invalidation down
  * to child fragments during updates.
+ *
+ * Every public position here is a story position. Only the PagerAdapter callbacks see ViewPager's
+ * pages, which ReadingPageOrder.kt mirrors in right-to-left layouts.
  */
 class ReadingAdapter(
     private val fm: FragmentManager,
@@ -32,6 +36,10 @@ class ReadingAdapter(
         object : LinkedHashMap<String, Fragment.SavedState?>(16, 0.75f, true) {
             override fun removeEldestEntry(eldest: Map.Entry<String, Fragment.SavedState?>): Boolean = size > maxSavedStates
         }
+
+    // ReadingAdapter.kt puts the next story on the left in Arabic and Hebrew, where the Next button points.
+    private val pageOrder = ReadingPageOrder(mirrored = UIUtils.towardEndSign(activity) < 0f)
+    private val pageSelections = ReadingPageSelections(pageOrder)
 
     private var curTransaction: FragmentTransaction? = null
     private var lastActiveFragment: Fragment? = null
@@ -69,6 +77,19 @@ class ReadingAdapter(
 
     override fun getCount(): Int = stories.size
 
+    fun storyPositionForPage(page: Int): Int = pageOrder.storyPositionFor(page, count)
+
+    fun pageForStoryPosition(position: Int): Int = pageOrder.pageFor(position, count)
+
+    /**
+     * The story position Reading.kt should select for a ViewPager page selection, or null when the
+     * pager only re-reported the current story under a shifted page (ReadingPageOrder.kt).
+     */
+    fun storySelectionForPage(page: Int): Int? {
+        val position = storyPositionForPage(page)
+        return if (pageSelections.select(position, getStory(position)?.storyHash)) position else null
+    }
+
     private fun createFragment(story: Story): ReadingItemFragment =
         newInstance(
             story,
@@ -90,8 +111,10 @@ class ReadingAdapter(
         container: ViewGroup,
         position: Int,
     ): Fragment {
-        val story = getStory(position)
-        val tag = story?.let { "reading:${it.storyHash}" } ?: "reading:loading:$position"
+        // ViewPager asks by page; ReadingPageOrder.kt turns that into the story position.
+        val storyPosition = storyPositionForPage(position)
+        val story = getStory(storyPosition)
+        val tag = story?.let { "reading:${it.storyHash}" } ?: "reading:loading:$storyPosition"
 
         var fragment = fm.findFragmentByTag(tag)
         if (fragment == null) {
@@ -171,7 +194,7 @@ class ReadingAdapter(
     override fun getItemPosition(`object`: Any): Int {
         if (`object` is ReadingItemFragment) {
             val pos = findHash(`object`.story!!.storyHash)
-            if (pos >= 0) return pos
+            if (pos >= 0) return pageForStoryPosition(pos)
         }
         return POSITION_NONE
     }

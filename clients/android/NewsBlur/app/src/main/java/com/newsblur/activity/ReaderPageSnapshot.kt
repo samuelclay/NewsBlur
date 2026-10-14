@@ -14,6 +14,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.viewpager.widget.ViewPager
 import com.newsblur.R
 import com.newsblur.databinding.ActivityReadingBinding
+import com.newsblur.util.UIUtils
 
 /** Reading.kt retains one window-rendered viewport, including WebView, while its bounded pager prepares a jump. */
 internal class ReaderPageSnapshot(
@@ -80,7 +81,8 @@ internal class ReaderPageSnapshot(
     }
 
     fun animate(direction: Int, completion: () -> Unit) {
-        val distance = direction * binding.content.width.toFloat()
+        // A later story slides in from the end edge, which is the left edge in right-to-left layouts.
+        val distance = direction * binding.content.width.toFloat() * UIUtils.towardEndSign(activity)
         pager.alpha = 1f
         pager.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
         if (distance == 0f) {

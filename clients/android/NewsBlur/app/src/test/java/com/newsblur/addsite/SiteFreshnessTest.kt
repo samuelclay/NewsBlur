@@ -14,10 +14,10 @@ class SiteFreshnessTest {
     @Test fun missingDatesStayHiddenAndRecentDatesMatchIosUnits() {
         assertNull(SiteFreshness.from(null))
         assertNull(SiteFreshness.from(0))
-        assertEquals("1h ago", SiteFreshness.from(1)?.text)
-        assertEquals("2d ago", SiteFreshness.from(172800)?.text)
-        assertEquals("2w ago", SiteFreshness.from(14 * 86400)?.text)
-        assertEquals("2mo ago", SiteFreshness.from(60 * 86400)?.text)
+        assertEquals(SiteFreshness.Recent(1, SiteFreshness.FreshnessUnit.HOURS), SiteFreshness.from(1))
+        assertEquals(SiteFreshness.Recent(2, SiteFreshness.FreshnessUnit.DAYS), SiteFreshness.from(172800))
+        assertEquals(SiteFreshness.Recent(2, SiteFreshness.FreshnessUnit.WEEKS), SiteFreshness.from(14 * 86400))
+        assertEquals(SiteFreshness.Recent(2, SiteFreshness.FreshnessUnit.MONTHS), SiteFreshness.from(60 * 86400))
         assertFalse(SiteFreshness.from(365 * 86400)!!.stale)
     }
 
@@ -25,7 +25,7 @@ class SiteFreshnessTest {
         val now = Instant.parse("2026-09-13T12:00:00Z")
         val then = Instant.parse("2014-06-15T12:00:00Z")
         val result = SiteFreshness.from(now.epochSecond - then.epochSecond, now, Locale.US)!!
-        assertEquals("Stale Jun 2014", result.text)
+        assertEquals(SiteFreshness.Stale("Jun 2014"), result)
         assertTrue(result.stale)
     }
 

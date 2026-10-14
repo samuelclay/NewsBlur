@@ -41,7 +41,7 @@ class ReaderClusterReadPresentationTest {
             every { UIUtils.dp2px(any(), any<Int>()) } answers { secondArg() }
             every { UIUtils.decodeColourValue(any(), any()) } answers { secondArg() }
             every { UIUtils.fromHtml(any()) } returns mockk<Spanned>()
-            every { StoryUtils.formatRelativeShortDate(any()) } returns "1m"
+            every { StoryUtils.formatRelativeShortDate(any(), any()) } returns "1m"
             every { StoryClusterBadgeViewBinder.bind(any(), any(), any(), any(), any()) } just Runs
 
             for (theme in listOf(ThemeValue.LIGHT, ThemeValue.DARK, ThemeValue.BLACK, ThemeValue.SEPIA)) {

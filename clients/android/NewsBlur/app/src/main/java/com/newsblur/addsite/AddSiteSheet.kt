@@ -78,6 +78,7 @@ import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.discover.DiscoveryTab
 import com.newsblur.domain.FeedResult
 import com.newsblur.util.AppConstants
+import com.newsblur.util.BidiText
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import java.text.NumberFormat
@@ -138,7 +139,8 @@ fun AddSiteSheet(
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     SiteInput(
                         value = state.query,
-                        placeholder = stringResource(R.string.add_site_url_or_search),
+                        // AddSiteSheet.kt isolates the URL scheme so "https://" reads left to right inside Arabic and Hebrew.
+                        placeholder = stringResource(R.string.add_site_url_or_search, BidiText.isolateLeftToRight("https://")),
                         icon = Icons.Rounded.Public,
                         enabled = enabled,
                         colors = colors,
@@ -359,7 +361,12 @@ private fun DiscoveryShortcut(
             }
             Icon(icon, null, Modifier.size(24.dp), colors.textPrimary)
         }
-        Text(shortcut.title, color = colors.textPrimary, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        Text(
+            shortcut.titleRes?.let { stringResource(it) } ?: shortcut.tab.title,
+            color = colors.textPrimary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
     }
 }
 
@@ -435,6 +442,14 @@ private fun SiteInput(
     }
 }
 
+// AddSiteSheet.kt words a result's age with plural resources so each language counts it natively.
+@Composable
+private fun freshnessText(freshness: SiteFreshness): String =
+    when (freshness) {
+        is SiteFreshness.Recent -> pluralStringResource(freshness.unit.plural, freshness.count, freshness.count)
+        is SiteFreshness.Stale -> stringResource(R.string.add_site_freshness_stale, freshness.month)
+    }
+
 @Composable
 private fun SiteResultRow(
     result: FeedResult,
@@ -444,7 +459,8 @@ private fun SiteResultRow(
     onClick: () -> Unit,
 ) {
     val subscriberCount = remember(result.numberOfSubscriber) { NumberFormat.getIntegerInstance().format(result.numberOfSubscriber) }
-    val freshness = remember(result.lastStorySecondsAgo) { SiteFreshness.from(result.lastStorySecondsAgo) }
+    val locale = LocalConfiguration.current.locales[0]
+    val freshness = remember(result.lastStorySecondsAgo, locale) { SiteFreshness.from(result.lastStorySecondsAgo, locale = locale) }
     Row(
         Modifier
             .fillMaxWidth()
@@ -490,7 +506,7 @@ private fun SiteResultRow(
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     val color = if (freshness.stale) colors.stale else colors.fresh
                     Box(Modifier.size(5.dp).clip(CircleShape).background(color))
-                    Text(freshness.text, color = color, fontSize = 11.sp, lineHeight = 14.sp)
+                    Text(freshnessText(freshness), color = color, fontSize = 11.sp, lineHeight = 14.sp)
                 }
             }
         }
