@@ -132,7 +132,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         _.invoke(this.stories, 'destroy');
         this.$el.empty();
         this.collection.page_fill_outs = 0;
-        this.collection.no_more_stories = false;
+        this.collection.no_more_stories = !!(NEWSBLUR.discovery_preview_active(this.collection) && NEWSBLUR.assets.discovery_cursor === null);
         this.clear_explainer();
     },
 
@@ -179,12 +179,15 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         } else if (unread_view_score >= 0 && counts['ng']) {
             hidden_stories = counts['ng'];
         }
-        if (NEWSBLUR.reader.flags.search) {
+        var is_discovery = NEWSBLUR.reader.active_feed === 'trending:discovery';
+        if (NEWSBLUR.reader.flags.search || is_discovery) {
             hidden_stories = false;
         }
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
-            'No stories to read',
+            is_discovery ? 'No new discoveries right now' : 'No stories to read',
             $.make('div', { className: 'NB-world' }),
+            (is_discovery && $.make('div', { className: 'NB-story-list-empty-subtitle' },
+                'Keep reading and check back for stories from new sites.')),
             (hidden_stories && $.make('div', { className: 'NB-story-list-empty-subtitle' }, [
                 'There ',
                 Inflector.pluralize('is', hidden_stories),
@@ -269,6 +272,15 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
     show_no_more_stories: function () {
         if (!this.collection.no_more_stories) return;
+        if (NEWSBLUR.discovery_preview_active(this.collection)) {
+            this.$('.NB-end-line').remove();
+            if (NEWSBLUR.assets.preference('feed_view_single_story')) {
+                var last_preview_story = this.collection.last();
+                if (last_preview_story && !last_preview_story.get('selected')) return;
+            }
+            this.$el.append(NEWSBLUR.discovery_preview_callout());
+            return;
+        }
 
         if (!NEWSBLUR.assets.stories.visible().length) {
             this.show_explainer_no_stories();
@@ -348,10 +360,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
+        if (this.collection === NEWSBLUR.assets.stories && NEWSBLUR.reader.active_feed === 'trending:discovery' && !this.collection.length) {
+            $endline = NEWSBLUR.discovery_loading();
+        }
         $feed_scroll.append($endline);
     },
 
     check_premium_river: function () {
+        if (this.collection === NEWSBLUR.assets.stories && NEWSBLUR.reader.active_feed === 'trending:discovery') return this.show_no_more_stories();
         if (!NEWSBLUR.Globals.is_premium &&
             NEWSBLUR.Globals.is_authenticated &&
             NEWSBLUR.reader.flags['river_view']) {

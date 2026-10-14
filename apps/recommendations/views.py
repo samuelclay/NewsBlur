@@ -5,13 +5,51 @@ import re
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
 
 from apps.reader.models import UserSubscription
-from apps.recommendations.models import RecommendedFeed
-from apps.rss_feeds.models import Feed, MFeedIcon
+from apps.recommendations.models import MRecommendationFeedback, RecommendedFeed
+from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import admin_only, ajax_login_required, get_user
+
+
+@ajax_login_required
+@require_POST
+@csrf_protect
+@json.json_view
+def save_story_feedback(request):
+    story_hash = request.POST.get("story_hash", "")
+    value = request.POST.get("value")
+    surface = request.POST.get("surface", "discovery")
+    if (
+        not MStory.RE_STORY_HASH.fullmatch(story_hash)
+        or value not in ("-1", "0", "1")
+        or surface not in ("good_reads", "discovery")
+    ):
+        return dict(code=-1, message="Invalid recommendation feedback.")
+
+    # recommendations/views.py: Readers can revise their own saved preference after story expiry.
+    existing = MRecommendationFeedback.objects(user_id=request.user.pk, story_hash=story_hash).modify(
+        new=True, set__value=int(value), set__updated_date=datetime.datetime.utcnow()
+    )
+    if existing:
+        return dict(code=1, story_hash=story_hash, value=existing.value)
+
+    story = MStory.objects(story_hash=story_hash).first()
+    if not story:
+        return dict(code=-1, message="This story is no longer available.")
+    feed = Feed.objects.filter(pk=story.story_feed_id).first()
+    if not feed or (
+        (feed.is_private_branch or feed.is_newsletter)
+        and not UserSubscription.objects.filter(user=request.user, feed=feed).exists()
+    ):
+        return dict(code=-1, message="This story is not available.")
+
+    value = MRecommendationFeedback.record(request.user.pk, story, int(value), surface)
+    return dict(code=1, story_hash=story.story_hash, value=value)
 
 
 def load_recommended_feed(request):

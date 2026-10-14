@@ -46,6 +46,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.options = _.extend({}, this.options, options);
         this.options.offset.left = -1 * $(this.options.anchor).width() - 31;
 
+        if (NEWSBLUR.reader.active_feed == "trending:discovery") {
+            this.options.show_order = false;
+            if (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) this.options.show_readfilter = false;
+        }
         if (NEWSBLUR.reader.active_feed == "read") {
             this.options['show_readfilter'] = false;
         }
@@ -383,6 +387,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             ])
         ]));
 
+        if (NEWSBLUR.reader.active_feed === 'trending:discovery') {
+            this.$('.NB-date-filter-title-row, .NB-date-filter-container').hide();
+        }
         return this;
     },
 

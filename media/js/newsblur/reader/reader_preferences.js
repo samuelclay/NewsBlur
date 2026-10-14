@@ -252,6 +252,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 ])
                             ]),
                             $.make('div', [
+                                $.make('input', { id: 'NB-preference-showdiscovery-1', type: 'checkbox', name: 'show_discovery', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showdiscovery-1' }, 'Show Discovery')
+                            ]),
+                            $.make('div', [
                                 $.make('input', { id: 'NB-preference-showgoodreads-1', type: 'checkbox', name: 'show_good_reads', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showgoodreads-1' }, [
                                     'Show Good Reads'
@@ -1235,6 +1239,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_discovery]', $modal).prop('checked', !!NEWSBLUR.Preferences.show_discovery);
         $('input[name=show_good_reads]', $modal).each(function () {
             if (NEWSBLUR.Preferences.show_good_reads) {
                 $(this).prop('checked', true);
@@ -1731,6 +1736,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
                 self.original_preferences['show_widely_read_stories'] != form['show_widely_read_stories'] ||
                 self.original_preferences['show_long_reads'] != form['show_long_reads'] ||
+                self.original_preferences['show_discovery'] != form['show_discovery'] ||
                 self.original_preferences['show_good_reads'] != form['show_good_reads'] ||
                 self.original_preferences['briefing_enabled'] != form['briefing_enabled']) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
