@@ -445,7 +445,7 @@ _.extend(NEWSBLUR.ReaderFeatures.prototype, {
             tier: gettext('Archive'),
             tier_class: 'archive',
             subtitle: gettext('Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool.'),
-            steps_title: 'What your agent can do',
+            steps_title: gettext('What your agent can do'),
             steps: [
                 gettext('Read your feeds: unread stories, folders, search, and saved stories by tag'),
                 gettext('Get an AI-curated daily briefing with top stories and long reads'),
@@ -472,7 +472,7 @@ _.extend(NEWSBLUR.ReaderFeatures.prototype, {
             tier: gettext('Archive'),
             tier_class: 'archive',
             subtitle: gettext('Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and train classifiers. Pipe to jq or script your workflows.'),
-            steps_title: 'Get started',
+            steps_title: gettext('Get started'),
             steps: [
                 gettext('Install with: uv pip install newsblur-cli'),
                 gettext('Run newsblur auth login to authorize via OAuth'),
@@ -600,7 +600,7 @@ _.extend(NEWSBLUR.ReaderFeatures.prototype, {
             ]),
             ($screenshots.length && $.make('div', { className: 'NB-features-shots NB-features-shots-' + $screenshots.length }, $screenshots)),
             ($steps.length && $.make('div', { className: 'NB-features-section' }, [
-                $.make('h4', { className: 'NB-features-section-title' }, feature.steps_title || 'How it works'),
+                $.make('h4', { className: 'NB-features-section-title' }, feature.steps_title || gettext('How it works')),
                 $.make('ol', { className: 'NB-features-steps' }, $steps)
             ])),
             $.make('div', { className: 'NB-features-section' }, [
@@ -615,7 +615,7 @@ _.extend(NEWSBLUR.ReaderFeatures.prototype, {
                 $.make('div', { className: 'NB-features-try-button NB-modal-submit-button NB-modal-submit-green' }, [
                     feature.try_label,
                     ' ',
-                    $.make('span', { className: 'NB-raquo' }, gettext('&raquo;'))
+                    $.make('span', { className: 'NB-raquo' }, '&raquo;')
                 ])
             ]))
         ]);

@@ -16,17 +16,17 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     },
 
     type_label_map: {
-        'tag': 'Tag',
-        'author': 'Author',
+        'tag': gettext('Tag'),
+        'author': gettext('Author'),
         'title': gettext('Title'),
         'url': 'URL',
-        'text': 'Text'
+        'text': gettext('Text')
     },
 
     type_icons: {
         'tag': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>',
         'author': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-        'title': gettext('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>'),
+        'title': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>',
         'url': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
         'text': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 6.1H3"/><path d="M21 12.1H3"/><path d="M15.1 18H3"/></svg>'
     },
@@ -139,9 +139,9 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     _make_scope_controls: function () {
         var scope = this.filter.scope || 'feed';
         var scope_labels = {
-            feed: 'Site',
-            folder: 'Folder',
-            global: 'All'
+            feed: gettext('Site'),
+            folder: gettext('Folder'),
+            global: gettext('All')
         };
         var $buttons = $.make('span', {
             className: 'NB-classifier-filter-segmented',
@@ -180,21 +180,21 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             {
                 key: 'like',
                 label: gettext('Like matching stories'),
-                short_label: 'Like',
+                short_label: gettext('Like'),
                 active: score > 0,
                 icon: '<span class="NB-classifier-filter-training-icon NB-training-icon-like" aria-hidden="true"></span>'
             },
             {
                 key: 'dislike',
                 label: gettext('Dislike matching stories'),
-                short_label: 'Dislike',
+                short_label: gettext('Dislike'),
                 active: score < 0 && score > -2,
                 icon: '<span class="NB-classifier-filter-training-icon NB-training-icon-dislike" aria-hidden="true"></span>'
             },
             {
                 key: 'super_dislike',
                 label: gettext('Hide matching stories'),
-                short_label: 'Hide',
+                short_label: gettext('Hide'),
                 active: score <= -2,
                 icon: '<span class="NB-classifier-filter-super-dislike-icon" aria-hidden="true">' +
                     '<span class="NB-classifier-filter-training-icon NB-training-icon-dislike NB-super-dislike-icon-back"></span>' +
@@ -252,10 +252,30 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         var channel_icons = NEWSBLUR.Views.ClassifierNotificationPopover &&
             NEWSBLUR.Views.ClassifierNotificationPopover.CHANNEL_ICONS || {};
         var channels = [
-            { key: 'email', short_label: 'Email' },
-            { key: 'web', short_label: 'Web' },
-            { key: 'ios', short_label: 'iOS' },
-            { key: 'android', short_label: 'Android' }
+            {
+                key: 'email',
+                short_label: gettext('Email'),
+                label: gettext('Email notifications'),
+                upgrade_label: gettext('Email notifications require Premium Archive')
+            },
+            {
+                key: 'web',
+                short_label: gettext('Web'),
+                label: gettext('Web notifications'),
+                upgrade_label: gettext('Web notifications require Premium Archive')
+            },
+            {
+                key: 'ios',
+                short_label: 'iOS',
+                label: gettext('iOS notifications'),
+                upgrade_label: gettext('iOS notifications require Premium Archive')
+            },
+            {
+                key: 'android',
+                short_label: 'Android',
+                label: gettext('Android notifications'),
+                upgrade_label: gettext('Android notifications require Premium Archive')
+            }
         ];
         var $buttons = $.make('span', {
             className: 'NB-classifier-filter-segmented NB-classifier-filter-notification-segmented' +
@@ -266,12 +286,12 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
         _.each(channels, function (channel) {
             var is_active = _.contains(state.notification_types, channel.key);
-            var label = channel.short_label + ' notifications';
+            var label = channel.label;
             var $button = $.make('button', {
                 type: 'button',
                 className: 'NB-classifier-filter-notification-button NB-notification-' + channel.key +
                     (is_active ? ' NB-active' : ''),
-                title: is_archive ? label : interpolate(gettext("%(value_1)s require Premium Archive"), {value_1: label}, true),
+                title: is_archive ? label : channel.upgrade_label,
                 'aria-label': label,
                 'aria-pressed': is_active ? 'true' : 'false',
                 'aria-disabled': !is_archive ? 'true' : 'false',

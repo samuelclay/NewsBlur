@@ -113,7 +113,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-grid-height' }, [
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xs', role: "button" }, [
-                        gettext('XS')
+                        'XS'
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-s', role: "button" }, [
                         gettext('Short')
@@ -125,18 +125,18 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         gettext('Tall')
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xl', role: "button" }, [
-                        gettext('XL')
+                        'XL'
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, gettext('Story Typography')),
                 $.make('ul', { className: 'segmented-control NB-options-story-font-size' }, [
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xs', role: "button" }, gettext('XS')),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-s', role: "button" }, gettext('S')),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-m NB-active', role: "button" }, gettext('M')),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-l', role: "button" }, gettext('L')),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xl', role: "button" }, gettext('XL'))
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xs', role: "button" }, 'XS'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-s', role: "button" }, 'S'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-m NB-active', role: "button" }, 'M'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-l', role: "button" }, 'L'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xl', role: "button" }, 'XL')
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-line-spacing' }, [
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xs', role: "button" }, $.make('div', { className: 'NB-icon' })),
@@ -146,29 +146,29 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xl', role: "button" }, $.make('div', { className: 'NB-icon' }))
                 ]),
                 $.make('ul', { className: 'segmented-control segmented-control-vertical NB-options-font-family' }, [
-                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active', role: "button" }, gettext('Helvetica')),
-                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif', role: "button" }, gettext('Palatino / Georgia')),
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active', role: "button" }, 'Helvetica'),
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif', role: "button" }, 'Palatino / Georgia'),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-gotham', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
-                        gettext('Gotham Narrow')
+                        'Gotham Narrow'
                     ]),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-sentinel', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
-                        gettext('Sentinel')
+                        'Sentinel'
                     ]),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-whitney', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
-                        gettext('Whitney')
+                        'Whitney'
                     ]),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-chronicle', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
-                        gettext('Chronicle')
+                        'Chronicle'
                     ])
                 ]),
-                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-explainer' }, [
-                    gettext('Premium fonts require a '),
-                    $.make('span', { className: 'NB-splash-link NB-premium-link' }, gettext('premium account'))
-                ]))
+                // story_options_popover.js: One translated sentence; the markers wrap the upgrade link.
+                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-explainer' }).html(interpolate(
+                    _.escape(gettext('Premium fonts require a %(link_start)spremium account%(link_end)s')),
+                    { link_start: '<span class="NB-splash-link NB-premium-link">', link_end: '</span>' }, true)))
             ])
         ]));
 

@@ -217,7 +217,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
                 .removeClass('NB-blue-button')
                 .addClass('NB-grey-button')
                 .addClass('NB-button-following');
-            this.$('.NB-stat-followers').html("<b>" + data.follow_profile.follower_count + "</b> " + Inflector.pluralize('follower', data.follow_profile.follower_count));
+            this.$('.NB-stat-followers').html(interpolate(ngettext("%(count)s follower", "%(count)s followers", data.follow_profile.follower_count), { count: "<b>" + data.follow_profile.follower_count + "</b>" }, true));
         }, this));
     },
 
@@ -229,7 +229,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
                 .removeClass('NB-grey-button')
                 .addClass('NB-button-follow')
                 .addClass('NB-blue-button');
-            this.$('.NB-stat-followers').html("<b>" + data.unfollow_profile.follower_count + "</b> " + Inflector.pluralize('follower', data.unfollow_profile.follower_count));
+            this.$('.NB-stat-followers').html(interpolate(ngettext("%(count)s follower", "%(count)s followers", data.unfollow_profile.follower_count), { count: "<b>" + data.unfollow_profile.follower_count + "</b>" }, true));
         }, this));
     }
 

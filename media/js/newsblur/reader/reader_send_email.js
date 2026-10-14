@@ -102,8 +102,8 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             ]),
             $.make('form', { className: 'NB-recommend-form' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: 'Send this story' }),
-                    $.make('span', { className: 'NB-modal-email-shortcut-hint' }, interpolate(gettext("%(value_1)s to send"), {value_1: is_mac ? '⌘↩' : 'Ctrl+↩'}, true)),
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: gettext('Send this story') }),
+                    $.make('span', { className: 'NB-modal-email-shortcut-hint' }, interpolate(gettext("%(shortcut)s to send"), {shortcut: is_mac ? '⌘↩' : 'Ctrl+↩'}, true)),
                     $.make('a', { href: '#', className: 'NB-modal-emailclient' }, gettext('Open in email client'))
                 ]),
                 $.make('div', { className: 'NB-error' })
@@ -133,7 +133,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         }
 
         $error.hide();
-        $save.addClass('NB-disabled').val('Sending…');
+        $save.addClass('NB-disabled').val(gettext('Sending…'));
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
         this.model.preference('full_name', from_name);
         this.model.preference('email', from_email);
@@ -156,11 +156,11 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         if (!data || data.code < 0) {
             $('.NB-error', this.$modal).html(data.message).fadeIn(500);
             $('.NB-modal-loading', this.$modal).removeClass('NB-active');
-            $save.removeClass('NB-disabled').val('Send this story');
+            $save.removeClass('NB-disabled').val(gettext('Send this story'));
             this.update_send_button();
         } else {
             $('.NB-modal-loading', this.$modal).removeClass('NB-active');
-            $save.val('✓ Sent').addClass('NB-modal-email-sent');
+            $save.val(gettext('✓ Sent')).addClass('NB-modal-email-sent');
             $.cookie('NB:email:to', $('input[name=to]', this.$modal).val());
             var emails = $('input[name=to]', this.$modal).val();
             emails = emails.replace(/[, ]+/g, ' ').split(' ');
@@ -183,7 +183,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         } else {
             $error.html(data.message).fadeIn(500);
         }
-        $save.removeClass('NB-disabled').val('Send this story');
+        $save.removeClass('NB-disabled').val(gettext('Send this story'));
         this.update_send_button();
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
 
@@ -200,9 +200,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             'mailto:',
             to,
             '?subject=',
-            from_name,
-            ' is sharing a story: ',
-            this.story.story_title,
+            interpolate(gettext("%(name)s is sharing a story: %(title)s"), {name: from_name, title: this.story.story_title}, true),
             '&body=',
             comments,
             '%0D%0A%0D%0A--%0D%0A%0D%0A',
@@ -212,7 +210,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             '%0D%0A%0D%0A',
             '--',
             '%0D%0A%0D%0A',
-            'Shared with NewsBlur.com'
+            gettext('Shared with NewsBlur.com')
         ].join('');
         window.open(url);
     },

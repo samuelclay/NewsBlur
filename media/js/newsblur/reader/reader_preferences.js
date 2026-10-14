@@ -73,9 +73,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('label', { className: 'NB-preference-label', 'for': 'NB-preference-language' }, gettext('Language')),
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('select', { id: 'NB-preference-language', name: 'language' },
-                                [$.make('option', { value: 'auto' }, gettext('Automatic (device language)'))].concat(
+                                [$.make('option', { value: 'auto', lang: NEWSBLUR.detected_language }, NEWSBLUR.language_auto_label)].concat(
                                     NEWSBLUR.languages.map(function (language) {
-                                        return $.make('option', { value: language[0] }, language[1]);
+                                        return $.make('option', { value: language[0], lang: language[0] }, language[1]);
                                     })
                                 ))
                         ])
@@ -790,14 +790,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                         className: 'NB-keyboard-shortcut-key',
                                         style: 'display: inline; float: none;margin: 0 4px'
                                     }, [
-                                        gettext('u')
+                                        'u'
                                     ]),
                                     gettext('or'),
                                     $.make('div', {
                                         className: 'NB-keyboard-shortcut-key',
                                         style: 'display: inline; float: none;margin: 0 4px'
                                     }, [
-                                        gettext('m')
+                                        'm'
                                     ])
                                 ])
                             ])
@@ -972,10 +972,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             gettext('Story side options')
                         ]),
                         $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai"], function (label) {
-                            var label_title = label.charAt(0).toUpperCase() + label.slice(1);
-                            if (label === "ask_ai") {
-                                label_title = "Ask AI";
-                            }
+                            var label_title = {
+                                email: gettext('Email'),
+                                save: gettext('Save'),
+                                train: gettext('Train'),
+                                share: gettext('Share'),
+                                related: gettext('Related'),
+                                ask_ai: gettext('Ask AI')
+                            }[label];
                             return $.make('div', { className: 'NB-preference-option NB-preference-story-sideoption', title: label_title }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-sideoption-' + label, name: 'show_sideoption_' + label }),
                                 $.make('label', { 'for': 'NB-preference-story-sideoption-' + label }, label_title)
@@ -1043,10 +1047,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                gettext('&#x2190;')
+                                '&#x2190;'
                             ]),
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                gettext('&#x2192;')
+                                '&#x2192;'
                             ])
                         ])
                     ]),
@@ -1081,10 +1085,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                gettext('&#x2193;')
+                                '&#x2193;'
                             ]),
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                gettext('&#x2191;')
+                                '&#x2191;'
                             ])
                         ])
                     ]),
@@ -1128,7 +1132,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                gettext('space')
+                                'space'
                             ])
                         ])
                     ])
@@ -1647,7 +1651,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     slide_read_story_delay_slider: function (e, ui) {
         var value = (ui && ui.value) ||
             (NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1);
-        $(".NB-tangle-seconds", this.$modal).text(value == 1 ? interpolate(gettext("%(value_1)s second."), {value_1: value}, true) : interpolate(gettext("%(value_1)s seconds."), {value_1: value}, true));
+        $(".NB-tangle-seconds", this.$modal).text(interpolate(ngettext("%(count)s second.", "%(count)s seconds.", value), {count: value}, true));
         if (NEWSBLUR.Preferences.read_story_delay > 0 || ui) {
             $("#NB-preference-readstorydelay-2", this.$modal).prop('checked', true).val(value);
             if (ui) {
@@ -1727,7 +1731,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('.NB-modal-submit-button', this.$modal).text(gettext('Saving...')).attr('disabled', true).addClass('NB-disabled');
 
         this.model.save_preferences(form, function (data) {
-            if (data && data.code < 0) return;
+            if (data && data.code < 0) {
+                // reader_preferences.js: Let the user retry instead of leaving the button stuck on Saving.
+                self.enable_save();
+                return;
+            }
             if (form.language !== NEWSBLUR.language_preference) { window.location.reload(); return; }
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
@@ -1812,7 +1820,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var $sublabel = $('.NB-clear-overrides-' + type, this.$modal);
         $sublabel.text(gettext('Resetting...')).removeClass('NB-splash-link');
         NEWSBLUR.assets.clear_view_settings(type, _.bind(function (data) {
-            $sublabel.text(interpolate(gettext("Cleared %(value_1)s."), {value_1: Inflector.pluralize('override', data.removed, true)}, true));
+            $sublabel.text(interpolate(ngettext("Cleared %(count)s override.", "Cleared %(count)s overrides.", data.removed), {count: data.removed}, true));
         }, this));
     },
 

@@ -201,15 +201,15 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var $delete = $(".NB-action-delete", this.$modal);
         var count = this.feedlist.folder_view.highlighted_count_unique_folders();
         // console.log(['change_selection', count]);
-        $title.text(count ? interpolate(gettext("%(value_1)s selected"), {value_1: count}, true) : gettext("Select"));
+        $title.text(count ? interpolate(ngettext("%(count)s selected", "%(count)s selected", count), {count: count}, true) : gettext("Select"));
         $error.text('');
 
         if (!count) {
             $delete.text(gettext('Delete')).addClass('NB-disabled');
             $move.text(gettext('Move')).addClass('NB-disabled');
         } else {
-            $delete.text(interpolate(gettext("Delete %(value_1)s"), {value_1: Inflector.pluralize('site', count, true)}, true)).removeClass('NB-disabled');
-            $move.text(interpolate(gettext("Move %(value_1)s"), {value_1: Inflector.pluralize('site', count, true)}, true)).removeClass('NB-disabled');
+            $delete.text(interpolate(ngettext("Delete %(count)s site", "Delete %(count)s sites", count), {count: Inflector.commas(count)}, true)).removeClass('NB-disabled');
+            $move.text(interpolate(ngettext("Move %(count)s site", "Move %(count)s sites", count), {count: Inflector.commas(count)}, true)).removeClass('NB-disabled');
         }
 
         NEWSBLUR.assets.feeds.off('change:highlighted')

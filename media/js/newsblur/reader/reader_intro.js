@@ -76,7 +76,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                 $.make('div', { className: 'NB-carousel' }, [
                                     $.make('div', { className: 'NB-carousel-inner NB-intro-imports' }, [
                                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-start' }, [
-                                            $.make('h3', gettext('OPML')),
+                                            $.make('h3', 'OPML'),
                                             $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
                                                 $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
                                                     gettext('Upload OPML File'),
@@ -124,7 +124,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
                             $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
                                 $.make('img', { src: "https://s3.amazonaws.com/static.newsblur.com/blog/Campeche%20Steps%20resized.jpeg", style: 'border-color: #505050;' }),
-                                $.make('span', gettext('@samuelclay'))
+                                $.make('span', '@samuelclay')
                             ]),
                             $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=samuelclay", width: 260, height: 20 })
                         ]),
@@ -132,7 +132,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
                             $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/logo_128.png', style: 'border-color: #505050;' }),
-                                $.make('span', gettext('@newsblur'))
+                                $.make('span', '@newsblur')
                             ]),
                             $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=newsblur", width: 260, height: 20 })
                         ])
@@ -167,7 +167,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
                     $.make('span', { className: 'NB-tutorial-next-page-text' }, gettext("Let's Get Started ")),
-                    $.make('span', { className: 'NB-raquo' }, gettext('&raquo;'))
+                    $.make('span', { className: 'NB-raquo' }, '&raquo;')
                 ])
             ])
         ]);
@@ -325,7 +325,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             _.each(['following', 'follower'], _.bind(function (follow) {
                 var $stat = $.make('div', { className: 'NB-intro-services-stats-count' }, [
                     $.make('div', { className: 'NB-intro-services-stats-count-number' }, this.profile.get(follow + '_count')),
-                    $.make('div', { className: 'NB-intro-services-stats-count-description' }, Inflector.pluralize(follow, this.profile.get(follow + '_count')))
+                    $.make('div', { className: 'NB-intro-services-stats-count-description' }, follow == 'following' ?
+                        gettext('following') :
+                        ngettext('follower', 'followers', this.profile.get(follow + '_count')))
                 ]);
                 $stats.append($stat);
             }, this));
@@ -384,7 +386,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         $(".NB-note", this.$modal).hide();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
-                $.make('span', { className: 'NB-raquo' }, gettext('&raquo; ')),
+                $.make('span', { className: 'NB-raquo' }, '&raquo; '),
                 data.error
             ]).css({ 'opacity': 0 });
             $('.NB-intro-services', this.$modal).append($error);
@@ -435,12 +437,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         }
         $('.NB-page', this.$modal).css({ 'display': 'none' });
         $('.NB-page-' + this.page_number, this.$modal).css({ 'display': 'block' });
-        $('.NB-modal-page-text', this.$modal).html($.make('div', [
-            gettext('Step '),
-            $.make('b', this.page_number),
-            gettext(' of '),
-            $.make('b', page_count)
-        ]));
+        $('.NB-modal-page-text', this.$modal).html($.make('div', interpolate(gettext("Step %(step)s of %(count)s"), {
+            step: '<b>' + this.page_number + '</b>',
+            count: '<b>' + page_count + '</b>'
+        }, true)));
         if (page_number > 1) {
             $('.NB-intro-spinning-logo', this.$modal).css({ 'top': 12, 'left': 12, 'width': 48, 'height': 48 });
             // $('.NB-modal-title', this.$modal).css({'paddingLeft': 42});
@@ -487,21 +487,14 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var starred_count = options.starred_count || NEWSBLUR.assets.starred_count;
 
         if (feed_count) {
-            $(".NB-page-2-started h4", this.$modal).text([
-                'You are subscribed to ',
-                (options.fake_count && 'at least '),
-                Inflector.pluralize(' site', feed_count, true),
-                '.'
-            ].join(""));
+            $(".NB-page-2-started h4", this.$modal).text(options.fake_count ?
+                interpolate(ngettext("You are subscribed to at least %(count)s site.", "You are subscribed to at least %(count)s sites.", feed_count), {count: Inflector.commas(feed_count)}, true) :
+                interpolate(ngettext("You are subscribed to %(count)s site.", "You are subscribed to %(count)s sites.", feed_count), {count: Inflector.commas(feed_count)}, true));
         }
 
         if (starred_count) {
             var $info = $(".NB-page-2-started .NB-intro-import-starred-message", this.$modal);
-            $info.text([
-                "And you have ",
-                Inflector.pluralize(' saved story', starred_count, true),
-                ". "
-            ].join("")).show();
+            $info.text(interpolate(ngettext("And you have %(count)s saved story.", "And you have %(count)s saved stories.", starred_count), {count: Inflector.commas(starred_count)}, true)).show();
         }
     },
 

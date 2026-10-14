@@ -118,11 +118,12 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
         // Timeless copy based on trigger
         var title, subtitle;
         if (trigger === 'feed_added') {
-            title = "Upgrade your reading";
-            subtitle = "You follow " + this.get_feed_count() + " sites. Premium makes all of them better.";
+            var feed_count = this.get_feed_count();
+            title = gettext("Upgrade your reading");
+            subtitle = interpolate(ngettext("You follow %(count)s site. Premium makes all of them better.", "You follow %(count)s sites. Premium makes all of them better.", feed_count), {count: feed_count}, true);
         } else {
-            title = "Get more from NewsBlur";
-            subtitle = "Faster updates. Full-text search. Read by folder.";
+            title = gettext("Get more from NewsBlur");
+            subtitle = gettext("Faster updates. Full-text search. Read by folder.");
         }
 
         var $prompt = $.make('div', { className: 'NB-growth-prompt NB-growth-prompt-milestone NB-growth-prompt-entering' }, [

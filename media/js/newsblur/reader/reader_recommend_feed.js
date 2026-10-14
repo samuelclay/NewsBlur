@@ -47,7 +47,7 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
                 }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", this.feed.get('num_subscribers')), {count: Inflector.commas(this.feed.get('num_subscribers'))}, true))
                 ])
             ]),
             $.make('div', { className: 'NB-modal-recommend-explanation' }, [
@@ -62,7 +62,7 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
             ]),
             $.make('form', { className: 'NB-recommend-form' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Recommend Site' }),
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: gettext('Recommend Site') }),
                     gettext(' or '),
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, gettext('cancel'))
                 ])
@@ -85,9 +85,9 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
         $('.NB-modal-recommend-tagline', this.$modal).val(data.tagline);
 
         if (data.previous_recommendation) {
-            $submit.addClass('NB-disabled').val('Previously Recommended on: ' + data.previous_recommendation);
+            $submit.addClass('NB-disabled').val(interpolate(gettext("Previously Recommended on: %(date)s"), {date: data.previous_recommendation}, true));
         } else {
-            $submit.removeClass('NB-disabled').val('Recommend Site');
+            $submit.removeClass('NB-disabled').val(gettext('Recommend Site'));
         }
     },
 
@@ -124,7 +124,7 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
 
     save: function () {
         var $submit = $('.NB-modal-submit-save', this.$modal);
-        $submit.addClass('NB-disabled').val('Saving...');
+        $submit.addClass('NB-disabled').val(gettext('Saving...'));
 
         this.model.save_recommended_site({
             feed_id: this.feed_id,

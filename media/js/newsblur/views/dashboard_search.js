@@ -49,7 +49,7 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
                 this.$results.html($.make('div', {
                     className: 'NB-friends-search-badges-empty NB-feed-badge'
                 }, [
-                    $.make('div', { className: 'NB-raquo' }, gettext('&raquo;')),
+                    $.make('div', { className: 'NB-raquo' }, '&raquo;'),
                     interpolate(gettext("Sorry, nothing matches \"%(value_1)s\"."), {value_1: query}, true)
                 ]));
             } else {
@@ -92,7 +92,7 @@ NEWSBLUR.Views.DashboardSearch = Backbone.View.extend({
                 this.$results.html($.make('div', {
                     className: 'NB-friends-search-badges-empty'
                 }, [
-                    $.make('div', { className: 'NB-raquo' }, gettext('&raquo;')),
+                    $.make('div', { className: 'NB-raquo' }, '&raquo;'),
                     interpolate(gettext("Sorry, nobody matches \"%(value_1)s\"."), {value_1: query}, true)
                 ]));
                 return;

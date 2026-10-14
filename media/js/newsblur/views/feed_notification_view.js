@@ -20,18 +20,18 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
                 <ul class="segmented-control NB-feed-notification-filter">\
                     <li class="NB-feed-notification-filter-unread <% if (!is_focus) { %>NB-active<% } %>" role="button">\
                         <div class="NB-unread-icon"></div>\
-                        Unread stories\
+                        <%- gettext("Unread stories") %>\
                     </li>\
                     <li class="NB-feed-notification-filter-focus  <% if (is_focus) { %>NB-active<% } %>" role="button">\
                         <div class="NB-focus-icon"></div>\
-                        Focus\
+                        <%- gettext("Focus") %>\
                     </li>\
                 </ul>\
                 <ul class="segmented-control NB-feed-notification-types">\
-                    <li class="NB-feed-notification-option NB-feed-notification-email NB-notification-channel-option <% if (is_email) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-email" aria-hidden="true"><%= channel_icons.email %></span><span class="NB-notification-channel-label">Email</span></li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-web NB-notification-channel-option <% if (is_web) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-web" aria-hidden="true"><%= channel_icons.web %></span><span class="NB-notification-channel-label">Web</span></li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-ios NB-notification-channel-option <% if (is_ios) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-ios" aria-hidden="true"><%= channel_icons.ios %></span><span class="NB-notification-channel-label">iOS</span></li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-android NB-notification-channel-option <% if (is_android) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-android" aria-hidden="true"><%= channel_icons.android %></span><span class="NB-notification-channel-label">Android</span></li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-email NB-notification-channel-option <% if (is_email) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-email" aria-hidden="true"><%= channel_icons.email %></span><span class="NB-notification-channel-label"><%- channel_labels.email %></span></li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-web NB-notification-channel-option <% if (is_web) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-web" aria-hidden="true"><%= channel_icons.web %></span><span class="NB-notification-channel-label"><%- channel_labels.web %></span></li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-ios NB-notification-channel-option <% if (is_ios) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-ios" aria-hidden="true"><%= channel_icons.ios %></span><span class="NB-notification-channel-label"><%- channel_labels.ios %></span></li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-android NB-notification-channel-option <% if (is_android) { %>NB-active<% } %>" role="button"><span class="NB-notification-channel-icon NB-notification-channel-android" aria-hidden="true"><%= channel_icons.android %></span><span class="NB-notification-channel-label"><%- channel_labels.android %></span></li>\
                 </ul>\
             </div>\
             <% if (!popover) { %>\
@@ -52,7 +52,14 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
             is_android: _.contains(feed.get('notification_types'), 'android'),
             is_web: _.contains(feed.get('notification_types'), 'web'),
             is_focus: feed.get('notification_filter') == 'focus',
-            channel_icons: channel_icons
+            channel_icons: channel_icons,
+            // iOS and Android are platform names, so only Email and Web are translated.
+            channel_labels: {
+                email: gettext("Email"),
+                web: gettext("Web"),
+                ios: "iOS",
+                android: "Android"
+            }
         }));
 
         this.$el.replaceWith($feed);
@@ -63,11 +70,12 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
 
     frequency: function (count) {
         if (count == 0) {
-            return "No stories published last month";
+            return gettext("No stories published last month");
         } else if (count < 30) {
-            return Inflector.pluralize("story", count, true) + " per month";
+            return interpolate(ngettext("%(count)s story per month", "%(count)s stories per month", count), { count: Inflector.commas(count) }, true);
         } else if (count >= 30) {
-            return Inflector.pluralize("story", Math.round(count / 30.0), true) + " per day";
+            var per_day = Math.round(count / 30.0);
+            return interpolate(ngettext("%(count)s story per day", "%(count)s stories per day", per_day), { count: Inflector.commas(per_day) }, true);
         }
     },
 
@@ -77,11 +85,11 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
 
         if (!freq) freq = 0;
         if (freq == 0) {
-            return Inflector.pluralize("story", Math.ceil(story_count), true);
+            return interpolate(ngettext("%(count)s story", "%(count)s stories", Math.ceil(story_count)), { count: Inflector.commas(Math.ceil(story_count)) }, true);
         } else if (freq < 24) {
-            return Inflector.pluralize("story", Math.ceil(story_count), true);
+            return interpolate(ngettext("%(count)s story", "%(count)s stories", Math.ceil(story_count)), { count: Inflector.commas(Math.ceil(story_count)) }, true);
         } else if (freq >= 24) {
-            return Inflector.pluralize("story", story_count, true);
+            return interpolate(ngettext("%(count)s story", "%(count)s stories", story_count), { count: Inflector.commas(story_count) }, true);
         }
     },
 

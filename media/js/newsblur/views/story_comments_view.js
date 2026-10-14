@@ -12,7 +12,9 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         var $el = this.$el;
         if (this.model.get('share_count')) {
             this.$el.html(this.template({
-                story: this.model
+                story: this.model,
+                comments_label: this.comments_label_html(),
+                share_label: this.share_label_html()
             }));
             this.render_teaser();
             this.render_comments_friends();
@@ -27,6 +29,26 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
 
     destroy: function () {
         this.remove();
+    },
+
+    // story_comments_view.js: Counts render bold inside complete translated sentences,
+    // so the translated text is escaped before the count markup is interpolated.
+    comments_label_html: function () {
+        var comment_count = this.model.get('comment_count');
+        var reply_count = this.model.get('reply_count');
+        var comments = interpolate(_.escape(ngettext('%(count)s comment', '%(count)s comments', comment_count)),
+            { count: '<b>' + _.escape(comment_count) + '</b>' }, true);
+        if (!reply_count) return comments;
+        var replies = interpolate(_.escape(ngettext('%(count)s reply', '%(count)s replies', reply_count)),
+            { count: _.escape(reply_count) }, true);
+        return interpolate(_.escape(gettext('%(comments)s and %(replies)s')),
+            { comments: comments, replies: replies }, true);
+    },
+
+    share_label_html: function () {
+        var share_count = this.model.get('share_count');
+        return interpolate(_.escape(ngettext('Shared by %(count)s person', 'Shared by %(count)s people', share_count)),
+            { count: '<b>' + _.escape(share_count) + '</b>' }, true);
     },
 
     render_teaser: function () {
@@ -73,7 +95,8 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         }, $.make('div', {
             className: 'NB-story-comments-public-header NB-module-header'
         }, [
-            Inflector.pluralize(' comment', this.model.get('comment_count_friends'), true)
+            interpolate(ngettext('%(count)s comment', '%(count)s comments', this.model.get('comment_count_friends')),
+                { count: Inflector.commas(this.model.get('comment_count_friends')) }, true)
         ]));
 
         this.$el.append($header);
@@ -101,7 +124,8 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         }, $.make('div', {
             className: 'NB-story-comments-public-header NB-module-header'
         }, [
-            Inflector.pluralize(' share', shares_without_comments.length, true)
+            interpolate(ngettext('%(count)s share', '%(count)s shares', shares_without_comments.length),
+                { count: Inflector.commas(shares_without_comments.length) }, true)
         ]));
 
         this.$el.append($header);
@@ -120,15 +144,15 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         if (!this.model.get('comment_count_public') || !this.model.get('comment_count')) return;
 
         if (NEWSBLUR.assets.preference('hide_public_comments')) {
+            var public_count = this.model.get('comment_count_public');
+            var $public_teaser_text = $.make('span');
+            $public_teaser_text.html(interpolate(
+                _.escape(ngettext('There is %(count)s public comment', 'There are %(count)s public comments', public_count)),
+                { count: '<b>' + _.escape(public_count) + '</b>' }, true));
             var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
                 $.make('div', { className: 'NB-story-comments-public-teaser NB-module-header' }, [
                     $.make('div', { className: 'NB-story-comments-expand-icon' }),
-                    gettext('There '),
-                    Inflector.pluralize('is', this.model.get('comment_count_public')),
-                    ' ',
-                    $.make('b', this.model.get('comment_count_public')),
-                    gettext(' public '),
-                    Inflector.pluralize('comment', this.model.get('comment_count_public'))
+                    $public_teaser_text
                 ])
             ]);
             this.$el.append($public_teaser);
@@ -137,7 +161,8 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
                 className: 'NB-story-comments-public-header-wrapper'
             }, $.make('div', {
                 className: 'NB-story-comments-public-header NB-module-header'
-            }, Inflector.pluralize(' public comment', this.model.get('comment_count_public'), true)));
+            }, interpolate(ngettext('%(count)s public comment', '%(count)s public comments', this.model.get('comment_count_public')),
+                { count: Inflector.commas(this.model.get('comment_count_public')) }, true)));
 
             this.$el.append($header);
 
@@ -157,13 +182,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             <div class="NB-story-comments-shares-teaser">\
                 <% if (story.get("comment_count")) { %>\
                     <div class="NB-story-comments-label">\
-                        <b><%= story.get("comment_count") %></b>\
-                        <%= Inflector.pluralize("comment", story.get("comment_count")) %>\
-                        <% if (story.get("reply_count")) { %>\
-                            and \
-                            <%= story.get("reply_count") %>\
-                            <%= Inflector.pluralize("reply", story.get("reply_count")) %>\
-                        <% } %>\
+                        <%= comments_label %>\
                     </div>\
                     <div class="NB-story-share-profiles NB-story-share-profiles-comments">\
                         <div class="NB-story-share-profiles-comments-friends"></div>\
@@ -172,9 +191,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
                 <% } %>\
                 <div class="NB-right">\
                     <div class="NB-story-share-label">\
-                        Shared by\
-                        <b><%= story.get("share_count") %></b>\
-                        <%= Inflector.pluralize("person", story.get("share_count")) %>\
+                        <%= share_label %>\
                     </div>\
                     <div class="NB-story-share-profiles NB-story-share-profiles-shares">\
                         <div class="NB-story-share-profiles-shares-friends"></div>\
@@ -203,7 +220,8 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
                 className: 'NB-story-comments-public-header-wrapper'
             }, $.make('div', {
                 className: 'NB-story-comments-public-header NB-module-header'
-            }, Inflector.pluralize(' public comment', public_comments.length, true))).prependTo($comments);
+            }, interpolate(ngettext('%(count)s public comment', '%(count)s public comments', public_comments.length),
+                { count: Inflector.commas(public_comments.length) }, true))).prependTo($comments);
 
             _.each(public_comments, _.bind(function (comment) {
                 var $comment = new NEWSBLUR.Views.StoryComment({

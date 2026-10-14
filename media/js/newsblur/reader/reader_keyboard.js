@@ -42,16 +42,16 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Switch views')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('&#x2190;')
+              '&#x2190;'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('&#x2192;')
+              '&#x2192;'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Quick search for a site')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('g')
+              'g'
             ])
           ])
         ]),
@@ -59,20 +59,20 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Dashboard')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('esc')
+              'esc'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('d')
+              'd'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Open Everything')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('e')
+              'e'
             ])
           ])
         ]),
@@ -80,17 +80,17 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Hide sites')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('u')
+              'u'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Full screen')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('f')
+              'f'
             ])
           ])
         ]),
@@ -115,7 +115,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Add site/folder')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('a')
+              'a'
             ])
           ])
         ])
@@ -128,28 +128,28 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Next site')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('&#x2193;')
+              '&#x2193;'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('j')
+              'j'
             ])
             // TODO: Mention "shift + n" here? It will be too wide.
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Prev. site')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('&#x2191;')
+              '&#x2191;'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('k')
+              'k'
             ])
             // TODO: Mention "shift + p" here? It will be too wide.
           ])
@@ -158,15 +158,15 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Open site/feed trainer')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('t')
+              't'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Open story trainer')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('t')
+              't'
             ])
           ])
         ]),
@@ -174,17 +174,17 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Mark all as read')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('a')
+              'a'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Oldest unread story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('m')
+              'm'
             ])
           ])
         ]),
@@ -192,7 +192,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Reload feed/folder')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('r')
+              'r'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
@@ -206,9 +206,9 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Toggle unread/all')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('L')
+              'L'
             ])
           ])
         ])
@@ -221,19 +221,19 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Next story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('&#x2193;')
+              '&#x2193;'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('j')
+              'j'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Previous story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('&#x2191;')
+              '&#x2191;'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('k')
+              'k'
             ])
           ])
         ]),
@@ -242,15 +242,15 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Open in Story view')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('enter')
+              'enter'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Open in Text view')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('enter')
+              'enter'
             ])
           ])
         ]),
@@ -258,15 +258,15 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Page down')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('space')
+              'space'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Page up')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('space')
+              'space'
             ])
           ])
         ]),
@@ -274,16 +274,16 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Next Unread Story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('n')
+              'n'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Toggle read/unread')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('u')
+              'u'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('m')
+              'm'
             ])
           ])
         ]),
@@ -291,17 +291,17 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Mark below stories read')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('b')
+              'b'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Mark above stories read')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('y')
+              'y'
             ])
           ])
         ]),
@@ -309,13 +309,13 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Save/Unsave story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('s')
+              's'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Email story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('e')
+              'e'
             ])
           ])
         ]),
@@ -323,18 +323,18 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Open in background tab')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('o')
+              'o'
             ]),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('v')
+              'v'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Open in new window')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('v')
+              'v'
             ])
           ])
         ]),
@@ -342,15 +342,15 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Expand story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('x')
+              'x'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Collapse story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('x')
+              'x'
             ])
           ])
         ]),
@@ -358,17 +358,17 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Share this story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('shift'),
+              'shift',
               $.make('span', '+'),
-              gettext('s')
+              's'
             ])
           ]),
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Save comments')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('ctrl'),
+              'ctrl',
               $.make('span', '+'),
-              gettext('enter')
+              'enter'
             ])
           ])
         ]),
@@ -376,7 +376,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Scroll to comments')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('c')
+              'c'
             ])
           ])
         ]),
@@ -384,7 +384,7 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
           $.make('div', { className: 'NB-keyboard-shortcut' }, [
             $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Ask AI about story')),
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-              gettext('i')
+              'i'
             ])
           ])
         ])

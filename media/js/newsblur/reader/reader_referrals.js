@@ -96,7 +96,7 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                         className: 'NB-referral-url-input',
                         type: 'text',
                         readonly: 'readonly',
-                        value: 'Loading...'
+                        value: gettext('Loading...')
                     }),
                     $.make('div', {
                         className: 'NB-referral-copy-button NB-modal-submit-button NB-modal-submit-green'
@@ -258,11 +258,11 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
         if (is_pro) {
             var months = Math.floor(total_days / 30);
             earned_text = months;
-            earned_label = 'Months Earned';
+            earned_label = gettext('Months Earned');
         } else {
             var years = Math.floor(total_days / 365);
             earned_text = years;
-            earned_label = 'Years Earned';
+            earned_label = gettext('Years Earned');
         }
         $('.NB-referral-stat-earned', this.$modal).text(earned_text);
         $('.NB-referral-stat-earned-label', this.$modal).text(earned_label);
@@ -285,17 +285,17 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                 var credit_text;
                 if (ref.credit_days >= 365) {
                     var y = Math.floor(ref.credit_days / 365);
-                    credit_text = y + ' year' + (y > 1 ? 's' : '');
+                    credit_text = interpolate(ngettext("%(count)s year", "%(count)s years", y), {count: y}, true);
                 } else if (ref.credit_days >= 30) {
                     var m = Math.floor(ref.credit_days / 30);
-                    credit_text = m + ' month' + (m > 1 ? 's' : '');
+                    credit_text = interpolate(ngettext("%(count)s month", "%(count)s months", m), {count: m}, true);
                 } else if (ref.credit_days > 0) {
-                    credit_text = ref.credit_days + ' days';
+                    credit_text = interpolate(ngettext("%(count)s day", "%(count)s days", ref.credit_days), {count: ref.credit_days}, true);
                 } else {
                     credit_text = '-';
                 }
                 var status_class = ref.status === 'converted' ? 'NB-referral-status-converted' : 'NB-referral-status-pending';
-                var status_label = ref.status === 'converted' ? 'subscribed' : 'pending';
+                var status_label = ref.status === 'converted' ? gettext('subscribed') : gettext('pending');
                 $('tbody', $table).append($.make('tr', [
                     $.make('td', ref.username),
                     $.make('td', ref.date || '-'),
@@ -327,12 +327,12 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                 $.make('tbody')
             ]);
             _.each(data.gifts_sent, function (gift) {
-                var status = gift.refunded ? 'Refunded' : (gift.redeemed ? 'Redeemed' : 'Pending');
+                var status = gift.refunded ? gettext('Refunded') : (gift.redeemed ? gettext('Redeemed') : gettext('Pending'));
                 var status_class = gift.redeemed ? 'NB-gift-status-redeemed' :
                     (gift.refunded ? 'NB-gift-status-refunded' : 'NB-gift-status-pending');
-                var tier_name = { premium: 'Premium', archive: 'Archive', pro: 'Pro' }[gift.gift_tier] || 'Premium';
+                var tier_name = { premium: gettext('Premium'), archive: gettext('Archive'), pro: gettext('Pro') }[gift.gift_tier] || gettext('Premium');
                 $('tbody', $table).append($.make('tr', [
-                    $.make('td', tier_name + (gift.is_staff_gift ? ' (staff)' : '')),
+                    $.make('td', gift.is_staff_gift ? interpolate(gettext("%(tier)s (staff)"), {tier: tier_name}, true) : tier_name),
                     $.make('td', gift.created_date || '-'),
                     $.make('td', [
                         $.make('span', { className: 'NB-gift-status ' + status_class }, status)
@@ -394,7 +394,7 @@ _.extend(NEWSBLUR.ReaderReferrals.prototype, {
                     window.location.href = data.stripe_url;
                 }
             } else {
-                $error.text(data.message || 'An error occurred.').show();
+                $error.text(data.message || gettext('An error occurred.')).show();
                 $button.show();
             }
         }, function (data) {

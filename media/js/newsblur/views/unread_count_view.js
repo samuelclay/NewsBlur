@@ -52,9 +52,9 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
         }
 
         this.$el.html(this.template({
-            ps: this.options.feed_chooser ? "On" : counts['ps'],
+            ps: this.options.feed_chooser ? gettext("On") : counts['ps'],
             nt: counts['nt'],
-            ng: this.options.feed_chooser ? "Off" : counts['ng'],
+            ng: this.options.feed_chooser ? gettext("Off") : counts['ng'],
             muted: muted,
             st: this.options.include_starred && counts['st'],
             unread_class: unread_class

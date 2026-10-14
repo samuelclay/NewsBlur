@@ -47,10 +47,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 <blockquote><%= quote %></blockquote>\
             </div>\
             <% } %>\
-            <div class="NB-sideoption-share-title">Comments:</div>\
+            <div class="NB-sideoption-share-title"><%- gettext("Comments:") %></div>\
             <textarea class="NB-sideoption-share-comments"><%= comments_without_quote %></textarea>\
-            <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">Share</div>\
-            <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button">Delete share</div>\
+            <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button"><%- gettext("Share") %></div>\
+            <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button"><%- gettext("Delete Share") %></div>\
         </div>\
     </div>\
     '),
@@ -363,7 +363,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $share_sideoption = this.$('.NB-feed-story-share .NB-sideoption-title');
         var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
-        var shared_text = this.model.get('shared') ? 'Shared' : 'Unshared';
+        var shared_text = this.model.get('shared') ? gettext('Shared') : gettext('Unshared');
 
         this.toggle_feed_story_share_dialog({ 'close': true });
         $share_button.removeClass('NB-saving').removeClass('NB-disabled').text(gettext('Share'));
@@ -387,7 +387,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         }
 
         if (this.model.get('shared') && $share_star) {
-            $share_star.attr({ 'title': shared_text + '!' });
+            $share_star.attr({ 'title': gettext('Shared!') });
             $share_star.tipsy({
                 gravity: 'sw',
                 fade: true,
@@ -417,10 +417,12 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $share_button = this.$('.NB-sideoption-share-save');
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $share_button_menu = $('.NB-menu-manage .NB-menu-manage-story-share-save');
-        var message = data && data.message || ("Sorry, this story could not be " + (shared ? "" : "un") + "shared. Probably Adblock.");
+        var message = data && data.message || (shared ?
+            gettext("Sorry, this story could not be shared. Probably Adblock.") :
+            gettext("Sorry, this story could not be unshared. Probably Adblock."));
 
         if (!NEWSBLUR.Globals.is_authenticated) {
-            message = "You need to be logged in to share a story.";
+            message = gettext("You need to be logged in to share a story.");
         }
         var $error = $.make('div', { className: 'NB-error' }, message);
 

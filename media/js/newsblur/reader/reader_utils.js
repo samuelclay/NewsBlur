@@ -197,9 +197,12 @@ NEWSBLUR.utils = {
         return _.string.include(feed_id, 'social:');
     },
 
-    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-    shortMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    monthNames: [gettext('January'), gettext('February'), gettext('March'), gettext('April'), gettext('May'), gettext('June'), gettext('July'), gettext('August'), gettext('September'), gettext('October'), gettext('November'), gettext('December')],
+    // reader_utils.js: The page language abbreviates month names, since gettext cannot tell a short "May" from the full name.
+    shortMonthNames: _.map(_.range(12), function (month) {
+        return new Date(2000, month, 1).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short' });
+    }),
+    dayNames: [gettext('Sunday'), gettext('Monday'), gettext('Tuesday'), gettext('Wednesday'), gettext('Thursday'), gettext('Friday'), gettext('Saturday')],
 
     format_date: function (date) {
         var dayOfWeek = date.getDay();
@@ -207,7 +210,12 @@ NEWSBLUR.utils = {
         var year = date.getUTCFullYear();
         var day = date.getDate();
 
-        return this.dayNames[dayOfWeek] + ", " + this.monthNames[month] + " " + day + ", " + year;
+        return interpolate(gettext("%(weekday)s, %(month)s %(day)s, %(year)s"), {
+            weekday: this.dayNames[dayOfWeek],
+            month: this.monthNames[month],
+            day: day,
+            year: year
+        }, true);
     },
 
     make_feed_chooser: function (options) {
@@ -352,7 +360,7 @@ NEWSBLUR.utils = {
             });
         }
         if (show_top_level) {
-            var $option = $.make('option', { value: 'river:' }, toplevel || "Top Level");
+            var $option = $.make('option', { value: 'river:' }, toplevel || gettext("Top Level"));
             $options.append($option);
             if (selected_folder_title == "river:") {
                 $option.attr('selected', true);
@@ -416,13 +424,21 @@ NEWSBLUR.utils = {
         var interval_end = update_interval_minutes * 1.25;
         var interval = '';
         if (interval_start < 60) {
-            interval = interval_start + ' to ' + interval_end + ' minutes';
+            interval = interpolate(ngettext("%(start)s to %(end)s minute", "%(start)s to %(end)s minutes", interval_end), {
+                start: interval_start,
+                end: interval_end
+            }, true);
         } else {
             var interval_start_hours = parseInt(interval_start / 60, 10);
             var interval_end_hours = parseInt(interval_end / 60, 10);
             var dec_start = interval_start % 60;
             var dec_end = interval_end % 60;
-            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
+            var start_hours = interval_start_hours + (dec_start >= 30 ? '.5' : '');
+            var end_hours = interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '');
+            interval = interpolate(ngettext("%(start)s to %(end)s hour", "%(start)s to %(end)s hours", parseFloat(end_hours)), {
+                start: start_hours,
+                end: end_hours
+            }, true);
         }
 
         return interval;
@@ -447,40 +463,58 @@ NEWSBLUR.utils = {
     },
 
     format_mute_days: function (days) {
-        if (days == 1) return '1 day';
-        if (days < 7) return days + ' days';
-        if (days == 7) return '1 week';
-        if (days == 10) return '10 days';
-        if (days == 14) return '2 weeks';
-        if (days == 21) return '3 weeks';
-        if (days == 30) return '1 month';
-        if (days == 60) return '2 months';
-        if (days == 90) return '3 months';
-        if (days == 180) return '6 months';
-        if (days == 270) return '9 months';
-        if (days == 365) return '1 year';
-        if (days < 30) return days + ' days';
-        if (days < 365) {
+        // reader_utils.js: Mute slider stops read as days, whole weeks, months, or a year.
+        if (days >= 365) {
+            return interpolate(ngettext("%(count)s year", "%(count)s years", 1), {count: 1}, true);
+        }
+        if (days >= 30) {
             var months = Math.round(days / 30);
             return interpolate(ngettext("%(count)s month", "%(count)s months", months), {count: months}, true);
         }
-        return '1 year';
+        if (days == 7 || days == 14 || days == 21) {
+            var weeks = days / 7;
+            return interpolate(ngettext("%(count)s week", "%(count)s weeks", weeks), {count: weeks}, true);
+        }
+        return interpolate(ngettext("%(count)s day", "%(count)s days", days), {count: days}, true);
     },
 
-    mute_time_remaining: function (expires_at_iso) {
+    // reader_utils.js: Label for the save button under every mute duration slider.
+    format_mute_button_label: function (days) {
+        return interpolate(gettext("Mute for %(duration)s"), {duration: this.format_mute_days(days)}, true);
+    },
+
+    // reader_utils.js: Localized time until a mute expires, or null once it has expired.
+    mute_duration_remaining: function (expires_at_iso) {
         var now = new Date();
         var expires = new Date(expires_at_iso);
         var diff_ms = expires - now;
-        if (diff_ms <= 0) return 'unmuting soon';
+        if (diff_ms <= 0) return null;
 
         var days = Math.floor(diff_ms / (1000 * 60 * 60 * 24));
         var hours = Math.floor(diff_ms / (1000 * 60 * 60));
 
-        if (days >= 365) return Math.round(days / 365) + (days >= 730 ? ' years' : ' year') + ' left';
-        if (days >= 30) return Math.round(days / 30) + (days >= 60 ? ' months' : ' month') + ' left';
-        if (days >= 7) return Math.round(days / 7) + (days >= 14 ? ' weeks' : ' week') + ' left';
-        if (days >= 1) return days + (days > 1 ? ' days' : ' day') + ' left';
-        return hours + (hours > 1 ? ' hours' : ' hour') + ' left';
+        if (days >= 365) {
+            var years = Math.round(days / 365);
+            return interpolate(ngettext("%(count)s year", "%(count)s years", years), {count: years}, true);
+        }
+        if (days >= 30) {
+            var months = Math.round(days / 30);
+            return interpolate(ngettext("%(count)s month", "%(count)s months", months), {count: months}, true);
+        }
+        if (days >= 7) {
+            var weeks = Math.round(days / 7);
+            return interpolate(ngettext("%(count)s week", "%(count)s weeks", weeks), {count: weeks}, true);
+        }
+        if (days >= 1) {
+            return interpolate(ngettext("%(count)s day", "%(count)s days", days), {count: days}, true);
+        }
+        return interpolate(ngettext("%(count)s hour", "%(count)s hours", hours), {count: hours}, true);
+    },
+
+    mute_time_remaining: function (expires_at_iso) {
+        var remaining = this.mute_duration_remaining(expires_at_iso);
+        if (!remaining) return gettext('unmuting soon');
+        return interpolate(gettext("%(time)s left"), {time: remaining}, true);
     }
 
 };

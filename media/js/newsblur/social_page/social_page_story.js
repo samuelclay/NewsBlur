@@ -191,10 +191,10 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var $share_button = this.$('.NB-sideoption-share-save');
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $share_button_menu = $('.NB-menu-manage .NB-menu-manage-story-share-save');
-        var message = data && data.message || ("Sorry, this story could not be " + (shared ? "" : "un") + "shared. Probably Adblock.");
+        var message = data && data.message || (shared ? gettext("Sorry, this story could not be shared. Probably Adblock.") : gettext("Sorry, this story could not be unshared. Probably Adblock."));
 
         if (!NEWSBLUR.Globals.is_authenticated) {
-            message = "You need to be logged in to share a story.";
+            message = gettext("You need to be logged in to share a story.");
         }
         var $error = $.make('div', { className: 'NB-error' }, message);
 
@@ -366,14 +366,13 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         facebook = facebook || (social_services.facebook && social_services.facebook.facebook_uid && NEWSBLUR.assets.preference('post_to_facebook'));
 
         if (twitter || facebook) {
-            var message = "Post to ";
+            var service = "Twitter & FB";
             if (twitter && !facebook) {
-                message += "Twitter";
+                service = "Twitter";
             } else if (!twitter && facebook) {
-                message += "Facebook";
-            } else {
-                message += "Twitter & FB";
+                service = "Facebook";
             }
+            var message = interpolate(gettext("Post to %(service)s"), { service: service }, true);
 
             $text.text(message);
         } else {

@@ -226,9 +226,9 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                     NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                 }
             }, this), _.bind(function (data) {
-                var message = data && data.message || "Sorry, this reply could not be posted. Probably Adblock.";
+                var message = data && data.message || gettext("Sorry, this reply could not be posted. Probably Adblock.");
                 if (!NEWSBLUR.Globals.is_authenticated) {
-                    message = "You need to be logged in to reply to a comment.";
+                    message = gettext("You need to be logged in to reply to a comment.");
                 }
                 var $error = $.make('div', { className: 'NB-error' }, message);
                 $submit.removeClass('NB-disabled').text(gettext('Post'));
@@ -265,7 +265,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                     NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                 }
             }, this), _.bind(function (data) {
-                var message = data && data.message || "Sorry, this reply could not be deleted.";
+                var message = data && data.message || gettext("Sorry, this reply could not be deleted.");
                 var $error = $.make('div', { className: 'NB-error' }, message);
                 $submit.removeClass('NB-disabled').text(gettext('Post'));
                 $delete_button.removeClass('NB-disabled').text(gettext('Delete'));

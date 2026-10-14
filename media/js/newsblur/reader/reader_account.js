@@ -81,8 +81,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                                 $.make('input', { id: 'NB-preference-email', type: 'text', name: 'email', value: NEWSBLUR.Globals.email })
                             ]),
                             $.make('div', { className: 'NB-account-connected-accounts', style: 'display: none;' }, [
-                                $.make('div', { className: 'NB-account-connected-heading' }, 'Connected accounts'),
-                                $.make('ul', { className: 'NB-account-connected-list', 'aria-label': 'Connected accounts' }),
+                                $.make('div', { className: 'NB-account-connected-heading' }, gettext('Connected accounts')),
+                                $.make('ul', { className: 'NB-account-connected-list', 'aria-label': gettext('Connected accounts') }),
                                 $.make('div', { className: 'NB-account-connected-message', role: 'status', 'aria-live': 'polite' }),
                                 $.make('div', { className: 'NB-account-connected-actions' })
                             ])
@@ -207,21 +207,19 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     $.make('div', { className: 'NB-preference NB-preference-premium' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             (!NEWSBLUR.Globals.is_premium && $.make('div', [
-                                $.make('div', { style: 'margin-bottom: 12px;' }, [
-                                    gettext('You have a '),
-                                    $.make('b', gettext('free account')),
-                                    '.'
-                                ]),
+                                $.make('div', { style: 'margin-bottom: 12px;' }, interpolate(gettext("You have a %(bold_start)sfree account%(bold_end)s."), {bold_start: '<b>', bold_end: '</b>'}, true)),
                                 $.make('a', {
                                     className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal'
                                 }, gettext('Upgrade to a Premium account'))
                             ])),
                             (NEWSBLUR.Globals.is_premium && $.make('div', [
-                                gettext('Thank you! You have a '),
-                                (NEWSBLUR.Globals.is_pro && $.make('b', gettext('premium pro account'))),
-                                (!NEWSBLUR.Globals.is_pro && NEWSBLUR.Globals.is_archive && $.make('b', gettext('premium archive account'))),
-                                (!NEWSBLUR.Globals.is_pro && !NEWSBLUR.Globals.is_archive && NEWSBLUR.Globals.is_premium && $.make('b', gettext('premium account'))),
-                                '.',
+                                // reader_account.js: Bold markers keep each account sentence whole for translators.
+                                interpolate(NEWSBLUR.Globals.is_pro ?
+                                    gettext("Thank you! You have a %(bold_start)spremium pro account%(bold_end)s.") :
+                                    (NEWSBLUR.Globals.is_archive ?
+                                        gettext("Thank you! You have a %(bold_start)spremium archive account%(bold_end)s.") :
+                                        gettext("Thank you! You have a %(bold_start)spremium account%(bold_end)s.")),
+                                    {bold_start: '<b>', bold_end: '</b>'}, true),
                                 (!NEWSBLUR.Globals.is_archive && $.make('a', {
                                     className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal NB-block'
                                 }, gettext('Upgrade to a Premium Archive account')))
@@ -349,7 +347,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled', value: 'Change what you like above...' })
+                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled', value: gettext('Change what you like above...') })
                 ])
             ]).bind('submit', function (e) {
                 e.preventDefault();
@@ -488,10 +486,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
         this.model.cancel_premium_subscription(_.bind(function (data) {
             NEWSBLUR.Globals.premium_renewal = false;
-            post_cancel("Your subscription will no longer automatically renew.");
+            post_cancel(gettext("Your subscription will no longer automatically renew."));
         }, this), _.bind(function (data) {
             NEWSBLUR.Globals.premium_renewal = false;
-            post_cancel(data.message || "You have no active subscriptions.");
+            post_cancel(data.message || gettext("You have no active subscriptions."));
         }, this));
     },
 
@@ -532,7 +530,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             if (data.count === 0) {
                 $count.text(gettext('No stories to delete'));
             } else {
-                $count.text(interpolate(gettext("%(value_1)s will be deleted"), {value_1: Inflector.pluralize('story', data.count, true)}, true));
+                $count.text(interpolate(ngettext("%(count)s story will be deleted", "%(count)s stories will be deleted", data.count), {count: Inflector.commas(data.count)}, true));
             }
         }, this), _.bind(function () {
             $count.text('');
@@ -549,7 +547,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             if (data.count === 0) {
                 $count.text(gettext('No stories to delete'));
             } else {
-                $count.text(interpolate(gettext("%(value_1)s will be deleted"), {value_1: Inflector.pluralize('story', data.count, true)}, true));
+                $count.text(interpolate(ngettext("%(count)s story will be deleted", "%(count)s stories will be deleted", data.count), {count: Inflector.commas(data.count)}, true));
             }
         }, this), _.bind(function () {
             $count.text('');
@@ -570,8 +568,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             NEWSBLUR.assets.delete_saved_stories(timestamp, _.bind(function (data) {
                 $loading.removeClass('NB-active');
                 NEWSBLUR.reader.update_starred_count();
-                $link.replaceWith($.make('div', Inflector.pluralize('story', data.stories_deleted, true) + ' ' + Inflector.pluralize('has', data.stories_deleted) +
-                    ' been deleted.'));
+                $link.replaceWith($.make('div', interpolate(ngettext("%(count)s story has been deleted.", "%(count)s stories have been deleted.", data.stories_deleted), {count: Inflector.commas(data.stories_deleted)}, true)));
                 $count.text('');
             }, this), _.bind(function () {
                 $loading.removeClass('NB-active');
@@ -594,8 +591,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
             NEWSBLUR.assets.delete_shared_stories(timestamp, _.bind(function (data) {
                 $loading.removeClass('NB-active');
-                $link.replaceWith($.make('div', Inflector.pluralize('story', data.stories_deleted, true) + ' ' + Inflector.pluralize('has', data.stories_deleted) +
-                    ' been deleted.'));
+                $link.replaceWith($.make('div', interpolate(ngettext("%(count)s story has been deleted.", "%(count)s stories have been deleted.", data.stories_deleted), {count: Inflector.commas(data.stories_deleted)}, true)));
                 $count.text('');
             }, this), _.bind(function () {
                 $loading.removeClass('NB-active');
@@ -655,7 +651,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             $count.text(gettext('Select classifiers to remove')).addClass('NB-empty').removeClass('NB-has-selection');
             $button.addClass('NB-disabled').attr('disabled', 'disabled');
         } else {
-            $count.text(interpolate(gettext("%(value_1)s %(value_2)s will be deleted"), {value_1: total, value_2: Inflector.pluralize('classifier', total)}, true)).removeClass('NB-empty').addClass('NB-has-selection');
+            $count.text(interpolate(ngettext("%(count)s classifier will be deleted", "%(count)s classifiers will be deleted", total), {count: total}, true)).removeClass('NB-empty').addClass('NB-has-selection');
             $button.removeClass('NB-disabled').removeAttr('disabled');
         }
     },
@@ -714,8 +710,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             NEWSBLUR.assets.delete_classifiers(categories, _.bind(function (data) {
                 $loading.removeClass('NB-active');
                 $link.replaceWith($.make('div',
-                    data.total_deleted + ' ' + Inflector.pluralize('classifier', data.total_deleted) +
-                    ' ' + Inflector.pluralize('has', data.total_deleted) + ' been deleted.'));
+                    interpolate(ngettext("%(count)s classifier has been deleted.", "%(count)s classifiers have been deleted.", data.total_deleted), {count: data.total_deleted}, true)));
                 $count.text('');
                 NEWSBLUR.assets.load_feeds();
             }, this), _.bind(function () {
@@ -769,7 +764,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         src: NEWSBLUR.Globals.MEDIA_URL + provider.icon,
                         alt: '', width: 20, height: 20
                     }),
-                    $.make('span').text('Connect ' + provider.name)
+                    $.make('span').text(interpolate(gettext("Connect %(provider)s"), {provider: provider.name}, true))
                 ]));
             });
             _.each(data.connected_accounts || [], function (account) {
@@ -787,13 +782,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         type: 'button', className: 'NB-account-disconnect-provider',
                         'data-identity-id': account.id,
                         'data-account-label': provider.name + ' (' + account.email + ')',
-                        'aria-label': 'Disconnect ' + provider.name + ' (' + account.email + ')',
-                        title: 'Disconnect ' + provider.name + ' (' + account.email + ')'
+                        'aria-label': interpolate(gettext("Disconnect %(provider)s (%(email)s)"), {provider: provider.name, email: account.email}, true),
+                        title: interpolate(gettext("Disconnect %(provider)s (%(email)s)"), {provider: provider.name, email: account.email}, true)
                     }).text('\u00d7')
                 ]));
             });
             if (!$list.children().length) {
-                $list.append($.make('li', { className: 'NB-account-connected-empty' }, 'No connected accounts'));
+                $list.append($.make('li', { className: 'NB-account-connected-empty' }, gettext('No connected accounts')));
             }
             $section.show();
             $(window).trigger('resize.simplemodal');
@@ -813,12 +808,12 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     disconnect_provider: function ($button) {
         var self = this;
         var label = $button.attr('data-account-label');
-        if (!window.confirm('Disconnect ' + label + '? You will no longer be able to use it to sign in to this NewsBlur account.')) return;
+        if (!window.confirm(interpolate(gettext("Disconnect %(account)s? You will no longer be able to use it to sign in to this NewsBlur account."), {account: label}, true))) return;
         var $message = $('.NB-account-connected-message', this.$modal).empty().removeClass('NB-error');
         $button.prop('disabled', true);
         var show_error = function (error) {
             var result = error && (error.responseJSON || error);
-            $message.addClass('NB-error').text(result && result.message || 'Could not disconnect this account. Please try again.');
+            $message.addClass('NB-error').text(result && result.message || gettext('Could not disconnect this account. Please try again.'));
             $button.prop('disabled', false);
             $(window).trigger('resize.simplemodal');
         };
@@ -827,7 +822,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             csrfmiddlewaretoken: $.cookie('csrftoken')
         }, function (data) {
             if (!data || data.code !== 1) return show_error(data);
-            $message.text(label + ' disconnected.');
+            $message.text(interpolate(gettext("%(account)s disconnected."), {account: label}, true));
             self.fetch_connected_accounts();
         }, show_error, { retry: false });
     },
@@ -864,7 +859,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         var self = this;
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
-        $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
+        $('input[type=submit]', this.$modal).val(gettext('Saving...')).attr('disabled', true).addClass('NB-disabled');
 
         NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
         this.model.preference('send_emails', form['send_emails']);
@@ -902,7 +897,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
     make_premium_expire: function () {
         return $.make('div', [
-            $.make('span', { className: 'NB-raquo' }, gettext('&raquo;')),
+            $.make('span', { className: 'NB-raquo' }, '&raquo;'),
             ' ',
             (NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)),
             (!NEWSBLUR.Globals.premium_expire && $.make('b', gettext("Never gonna expire. Congrats!")))
@@ -912,7 +907,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     make_premium_renewal: function () {
         return $.make('div', [
             (NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-modal-submit-button NB-modal-submit-red' }, gettext('Cancel subscription renewal'))),
-            (!NEWSBLUR.Globals.premium_renewal && "Your subscription is no longer active."),
+            (!NEWSBLUR.Globals.premium_renewal && gettext("Your subscription is no longer active.")),
             (!NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, gettext('Restart your subscription')))
         ]);
     },
@@ -924,7 +919,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         ]);
     },
 
+    // reader_account.js: Billing dates follow the interface language instead of English month names.
+    format_billing_date: function (date, options) {
+        return date.toLocaleDateString(document.documentElement.lang || undefined, options);
+    },
+
     fetch_payment_history: function () {
+        var self = this;
         this.model.fetch_payment_history(NEWSBLUR.Globals.user_id, _.bind(function (data) {
             var $history = $('.NB-account-payments', this.$modal).empty();
 
@@ -970,7 +971,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     }
 
                     $history.append($.make('li', { className: 'NB-account-payment ' + (payment.scheduled ? ' NB-scheduled' : '') + (payment.refunded ? ' NB-refunded' : '') }, [
-                        $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
+                        $.make('div', { className: 'NB-account-payment-date' }, self.format_billing_date(date, { year: 'numeric', month: 'long', day: '2-digit' })),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + payment.payment_amount),
                         $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider),
                         $invoice_link
@@ -983,6 +984,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     fetch_usage_billing_history: function () {
+        var self = this;
         if (!NEWSBLUR.Globals.can_use_ai_classifiers) {
             var $history = $('.NB-account-usage-payments', this.$modal).empty();
             $history.append($.make('li', { className: 'NB-account-payment' }, [
@@ -1001,7 +1003,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             var now = new Date();
             var cycle_start = data.cycle_start ? new Date(data.cycle_start + 'T00:00:00') : new Date(now.getFullYear(), now.getMonth(), 1);
             var cycle_end = data.cycle_end ? new Date(data.cycle_end + 'T00:00:00') : new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            var period_text = cycle_start.format("M j") + ' \u2013 ' + cycle_end.format("M j, Y");
+            var period_text = interpolate(gettext("%(start)s \u2013 %(end)s"), {
+                start: self.format_billing_date(cycle_start, { month: 'short', day: 'numeric' }),
+                end: self.format_billing_date(cycle_end, { month: 'short', day: 'numeric', year: 'numeric' })
+            }, true);
             var $period = $.make('div', { className: 'NB-usage-billing-spend-period' }, period_text);
 
             $spend_section.append($hero, $period);
@@ -1059,7 +1064,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     var upcoming = data.upcoming_invoice;
                     var upcoming_date = new Date(upcoming.date);
                     $history.append($.make('li', { className: 'NB-account-payment NB-scheduled' }, [
-                        $.make('div', { className: 'NB-account-payment-date' }, upcoming_date.format("F d, Y")),
+                        $.make('div', { className: 'NB-account-payment-date' }, self.format_billing_date(upcoming_date, { year: 'numeric', month: 'long', day: '2-digit' })),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + upcoming.amount.toFixed(2)),
                         $.make('div', { className: 'NB-account-payment-provider' }, gettext('(upcoming)')),
                         make_line_items(upcoming.line_items)
@@ -1081,9 +1086,9 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     }
 
                     $history.append($.make('li', { className: 'NB-account-payment' + (invoice.status === 'draft' ? ' NB-scheduled' : '') }, [
-                        $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
+                        $.make('div', { className: 'NB-account-payment-date' }, self.format_billing_date(date, { year: 'numeric', month: 'long', day: '2-digit' })),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + invoice.amount_paid.toFixed(2)),
-                        $.make('div', { className: 'NB-account-payment-provider' }, gettext('stripe')),
+                        $.make('div', { className: 'NB-account-payment-provider' }, 'stripe'),
                         $invoice_link,
                         make_line_items(invoice.line_items)
                     ]));
@@ -1188,12 +1193,12 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     enable_save: function () {
-        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save My Account');
+        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val(gettext('Save My Account'));
     },
 
     disable_save: function () {
         this.resize();
-        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
+        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val(gettext('Change what you like above...'));
     }
 
 });

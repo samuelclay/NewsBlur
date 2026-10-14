@@ -75,8 +75,8 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
 
             if (data.is_premium) {
                 $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
-                    (data.is_premium && !data.is_archive && "User is premium, expires: "),
-                    (data.is_premium && data.is_archive && "User is premium ARCHIVE, expires: "),
+                    (data.is_premium && !data.is_archive && gettext("User is premium, expires: ")),
+                    (data.is_premium && data.is_archive && gettext("User is premium ARCHIVE, expires: ")),
                     (data.premium_expire || $.make('b', gettext('NEVER')))
                 ]));
                 $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
@@ -92,7 +92,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             }
 
             $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-history", style: "float: left" }, gettext("Update History")));
-            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-opml", style: "float: left" }, gettext("OPML")));
+            $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-opml", style: "float: left" }, "OPML"));
 
             var training = data.statistics.training;
             $statistics.append($.make('dl', [
@@ -161,9 +161,9 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             NEWSBLUR.assets.refund_premium({
                 'user_id': self.user.get('user_id')
             }, function (data) {
-                $(".NB-admin-action-refund").replaceWith($.make('div', 'Refunded $' + data.refunded));
+                $(".NB-admin-action-refund").replaceWith($.make('div', interpolate(gettext("Refunded $%(amount)s"), {amount: data.refunded}, true)));
             }, function (data) {
-                $(".NB-admin-action-refund").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+                $(".NB-admin-action-refund").replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-refund-partial' }, function ($t, $p) {
@@ -173,9 +173,9 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 'user_id': self.user.get('user_id'),
                 'partial': true
             }, function (data) {
-                $(".NB-admin-action-refund").replaceWith($.make('div', 'Refunded $' + data.refunded));
+                $(".NB-admin-action-refund").replaceWith($.make('div', interpolate(gettext("Refunded $%(amount)s"), {amount: data.refunded}, true)));
             }, function (data) {
-                $(".NB-admin-action-refund").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+                $(".NB-admin-action-refund").replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-never-expire' }, function ($t, $p) {
@@ -186,7 +186,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             }, function (data) {
                 self.fetch_payment_history();
             }, function (data) {
-                $(".NB-admin-action-never-expire").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+                $(".NB-admin-action-never-expire").replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-1yr-expire' }, function ($t, $p) {
@@ -198,7 +198,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             }, function (data) {
                 self.fetch_payment_history();
             }, function (data) {
-                $(".NB-admin-action-never-expire").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+                $(".NB-admin-action-never-expire").replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-upgrade' }, function ($t, $p) {
@@ -208,7 +208,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $(".NB-admin-action-upgrade").replaceWith($.make('div', gettext('Upgraded!')));
                 self.fetch_payment_history();
             }, function (data) {
-                $(".NB-admin-action-upgrade").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+                $(".NB-admin-action-upgrade").replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-history' }, function ($t, $p) {
@@ -218,7 +218,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $(".NB-admin-action-history").replaceWith($.make('div', gettext('Updated!')));
                 self.fetch_payment_history();
             }, function (data) {
-                $(".NB-admin-action-history").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+                $(".NB-admin-action-history").replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-opml' }, function ($t, $p) {
