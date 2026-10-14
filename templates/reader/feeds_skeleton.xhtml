@@ -88,9 +88,9 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header NB-feeds-header-river-briefing-admin NB-empty" role="link">
                             <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/briefing.svg" />
                             <div class="NB-feeds-header-title">
-                                {% trans "Briefing Admin" %}
+                                Briefing Admin
                             </div>
-                            <span class="NB-staff-badge">{% trans "Staff Only" %}</span>
+                            <span class="NB-staff-badge">Staff Only</span>
                         </div>
                     </div>
 
@@ -134,7 +134,7 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         <div class="NB-feeds-header-title">
                             {% trans "Reading Archive" %}
                         </div>
-                        <span class="NB-staff-badge">{% trans "Staff Only" %}</span>
+                        <span class="NB-staff-badge">Staff Only</span>
                     </div>
                 </div>
 
@@ -317,27 +317,27 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
         <div id="story_taskbar" class="NB-taskbar-container content-south">
             <div class="NB-taskbar-flex">
                 <ul class="segmented-control NB-taskbar NB-taskbar-view">
-                    <li class="NB-taskbar-button task_view_page NB-tipsy" tipsy-title="{% trans 'Original' %}">
+                    <li class="NB-taskbar-button task_view_page NB-tipsy" tipsy-title="{% trans 'Original' context 'story view mode' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Original" %}</span>
+                        <span class="NB-task-title">{% trans "Original" context "story view mode" %}</span>
                         <span class="NB-task-original-return NB-task-title">
-                            {% trans "Return" %}
+                            {% trans "Return" context "leave the original site view" %}
                         </span>
                         <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
                     </li>
-                    <li class="NB-taskbar-button task_view_feed NB-active NB-tipsy" tipsy-title="{% trans 'Feed' %}">
+                    <li class="NB-taskbar-button task_view_feed NB-active NB-tipsy" tipsy-title="{% trans 'Feed' context 'story view mode' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Feed" %}</span>
+                        <span class="NB-task-title">{% trans "Feed" context "story view mode" %}</span>
                         <div class="NB-task-view-switch-arrow NB-task-view-to-feed-arrow"></div>
                     </li>
-                    <li class="NB-taskbar-button task_view_text NB-tipsy" tipsy-title="{% trans 'Text' %}">
+                    <li class="NB-taskbar-button task_view_text NB-tipsy" tipsy-title="{% trans 'Text' context 'story view mode' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Text" %}</span>
+                        <span class="NB-task-title">{% trans "Text" context "story view mode" %}</span>
                         <div class="NB-task-view-switch-arrow NB-task-view-to-text-arrow"></div>
                     </li>
-                    <li class="NB-taskbar-button task_view_story NB-tipsy" tipsy-title="{% trans 'Story' %}">
+                    <li class="NB-taskbar-button task_view_story NB-tipsy" tipsy-title="{% trans 'Story' context 'story view mode' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Story" %}</span>
+                        <span class="NB-task-title">{% trans "Story" context "story view mode" %}</span>
                         <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
                     </li>
                 </ul>
@@ -359,25 +359,25 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                 {% endif %}
 
                 <ul class="segmented-control NB-taskbar NB-taskbar-layout">
-                    <li class="NB-taskbar-button NB-task-layout-full NB-tipsy" tipsy-title="{% trans 'Full' %}">
+                    <li class="NB-taskbar-button NB-task-layout-full NB-tipsy" tipsy-title="{% trans 'Full' context 'story layout' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Full" %}</span>
+                        <span class="NB-task-title">{% trans "Full" context "story layout" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-split NB-active NB-tipsy" tipsy-title="{% trans 'Split' %}">
+                    <li class="NB-taskbar-button NB-task-layout-split NB-active NB-tipsy" tipsy-title="{% trans 'Split' context 'story layout' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Split" %}</span>
+                        <span class="NB-task-title">{% trans "Split" context "story layout" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-list NB-tipsy" tipsy-title="{% trans 'List' %}">
+                    <li class="NB-taskbar-button NB-task-layout-list NB-tipsy" tipsy-title="{% trans 'List' context 'story layout' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "List" %}</span>
+                        <span class="NB-task-title">{% trans "List" context "story layout" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-magazine NB-tipsy" tipsy-title="{% trans 'Magazine' %}">
+                    <li class="NB-taskbar-button NB-task-layout-magazine NB-tipsy" tipsy-title="{% trans 'Magazine' context 'story layout' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Magazine" %}</span>
+                        <span class="NB-task-title">{% trans "Magazine" context "story layout" %}</span>
                     </li>
-                    <li class="NB-taskbar-button NB-task-layout-grid NB-tipsy" tipsy-title="{% trans 'Grid' %}">
+                    <li class="NB-taskbar-button NB-task-layout-grid NB-tipsy" tipsy-title="{% trans 'Grid' context 'story layout' %}">
                         <div class="NB-task-image"></div>
-                        <span class="NB-task-title">{% trans "Grid" %}</span>
+                        <span class="NB-task-title">{% trans "Grid" context "story layout" %}</span>
                     </li>
                 </ul>
             </div>

@@ -12,7 +12,7 @@
                     <h2 class="NB-story-title">
                         <a href="{{ story.story_permalink }}" class="NB-story-title-link">{{ story.story_title|safe }}</a> 
                         {% if story.story_authors %}
-                            <span class="NB-story-author">by {{ story.story_authors }}</span>
+                            <span class="NB-story-author">{% blocktrans with authors=story.story_authors %}by {{ authors }}{% endblocktrans %}</span>
                         {% endif %}
 
                         <div class="NB-story-metadata">
@@ -20,7 +20,7 @@
                                 <a href="{{ story.blurblog_permalink }}">
                                     {{ story.shared_date|date:"l F j<\s\u\p>S</\s\u\p>, Y"|safe }}
                                     <span class="NB-story-date-break"></span>
-                                    <small>{% trans "at" %}</small>
+                                    <small>{% trans "at" context "between a date and a time" %}</small>
                                     {{ story.shared_date|date:"g:i A"|safe }}
                                 </a>
                             </span>

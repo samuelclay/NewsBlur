@@ -42,7 +42,7 @@
         <input type="submit" value="Redeem Code" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
         <input type="hidden" name="next" value="{{ next }}" />
         <p class="NB-static-form-alttext">
-            {% trans "Logged in as" %} <b>{{ user.username }}</b><br /><br />
+            {% blocktrans trimmed with username=user.username %}Logged in as <b>{{ username }}</b>{% endblocktrans %}<br /><br />
             <a href="{% url "logout" %}?next={% url "login" %}?next={% url "redeem-code" %}?code={{ code }}">{% trans "Login to a different account" %}</a></a>
 
     </form>

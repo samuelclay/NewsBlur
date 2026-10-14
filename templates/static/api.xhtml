@@ -6,7 +6,7 @@
 {% block bodyclass %}NB-static NB-static-api{% endblock %}
 
 {% block title %}{% trans "The NewsBlur API" %}{% endblock %}
-{% block nav_title %}{% trans "API" %}{% endblock %}
+{% block nav_title %}API{% endblock %}
 
 {% block content %}
 
@@ -20,29 +20,29 @@
   <div class="NB-api-section">
     <h2 class="NB-api-section-title">{% trans "Introduction to the API" %}</h2>
     <div class="NB-api-section-content">
-      <p><a href="/">NewsBlur</a> {% trans "is a personal news reader that brings people together to talk about the world. A new sound of an old instrument." %}</p>
+      <p>{% blocktrans trimmed %}<a href="/">NewsBlur</a> is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.{% endblocktrans %}</p>
       <p>{% trans "NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed statistics, and individual feed stories. No API key is required, but you are required to authenticate before using any of the API endpoints. Please be considerate, and don't hammer our servers." %}</p>
-      <p>{% trans "We're quite pleased to point out that this entire API is open-source, including the implementation of the endpoints. You can find the source of the" %}
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py">{% trans "/reader/ views source" %}</a>,
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py">{% trans "/social/ views source" %}</a>,
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py">{% trans "/rss_feeds/ views source" %}</a>{% trans ", as well as" %}
-      <a href="http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml">{% trans "the API definitions in YAML" %}</a>.</p>
-      <p>{% trans "We love pull requests. If you want to add an endpoint, modify output, or make something better," %} <a href="http://github.com/samuelclay/NewsBlur">{% trans "NewsBlur's repo on Github" %}</a> {% trans "is the place to make that happen." %}</p>
+      <p>{% blocktrans trimmed with reader_path="/reader/" social_path="/social/" feeds_path="/rss_feeds/" %}We're quite pleased to point out that this entire API is open-source, including the implementation of the endpoints. You can find the source of the
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py">{{ reader_path }} views source</a>,
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py">{{ social_path }} views source</a>,
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py">{{ feeds_path }} views source</a>, as well as
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml">the API definitions in YAML</a>.{% endblocktrans %}</p>
+      <p>{% blocktrans trimmed %}We love pull requests. If you want to add an endpoint, modify output, or make something better, <a href="http://github.com/samuelclay/NewsBlur">NewsBlur's repo on Github</a> is the place to make that happen.{% endblocktrans %}</p>
     </div>
   </div>
 
   <div class="NB-api-section">
     <h2 class="NB-api-section-title">{% trans "A Note about OAuth" %}</h2>
     <div class="NB-api-section-content">
-      <p>{% trans "NewsBlur supports OAuth but to have an OAuth enabled client you must" %}
-          <a href="mailto:samuel@newsblur.com">{% trans "email Samuel" %}</a> {% trans "to request a client ID and secret. You will need to provide your NewsBlur username, redirect URI (often just your client app's website), and app name." %}</p>
+      <p>{% blocktrans trimmed %}NewsBlur supports OAuth but to have an OAuth enabled client you must
+          <a href="mailto:samuel@newsblur.com">email Samuel</a> to request a client ID and secret. You will need to provide your NewsBlur username, redirect URI (often just your client app's website), and app name.{% endblocktrans %}</p>
 
-      <p>{% trans "To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with every request, just as you would on any other OAuth API. Use the" %} <code>/oauth/authorize</code>
-          {% trans "endpoint to begin the OAuth authentication procedure. Use the" %} <code>/oauth/token</code>
-          {% trans "endpoint to receive your authorized token, which you can pass in with every request." %}</p>
+      <p>{% blocktrans trimmed with authorize_path="/oauth/authorize" token_path="/oauth/token" %}To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with every request, just as you would on any other OAuth API. Use the <code>{{ authorize_path }}</code>
+          endpoint to begin the OAuth authentication procedure. Use the <code>{{ token_path }}</code>
+          endpoint to receive your authorized token, which you can pass in with every request.{% endblocktrans %}</p>
 
-      <p>{% trans "You are not required to use OAuth, in which case you will need to pass the" %} <code>newsblur_sessionid</code>
-          {% trans "cookie with every request. This cookie is set on" %} <a href="#/api/login">{% trans "login" %}</a>.</p>
+      <p>{% blocktrans trimmed with cookie_name="newsblur_sessionid" %}You are not required to use OAuth, in which case you will need to pass the <code>{{ cookie_name }}</code>
+          cookie with every request. This cookie is set on <a href="#/api/login">login</a>.{% endblocktrans %}</p>
     </div>
   </div>
 

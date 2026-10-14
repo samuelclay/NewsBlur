@@ -44,7 +44,7 @@
             <div class="NB-cli-step">
                 <h3>{% trans "Login" %}</h3>
                 <pre class="NB-feature-detail-code">newsblur auth login</pre>
-                <p class="NB-cli-step-note">{% trans "Opens your browser to authorize via OAuth. Token stored locally at" %} <code>~/.config/newsblur/</code>.</p>
+                <p class="NB-cli-step-note">{% blocktrans trimmed with path="~/.config/newsblur/" %}Opens your browser to authorize via OAuth. Token stored locally at <code>{{ path }}</code>.{% endblocktrans %}</p>
             </div>
         </div>
     </div>
@@ -53,7 +53,7 @@
         <h2>{% trans "AI skill" %}</h2>
         <p class="NB-feature-detail-subtitle">{% trans "Install the NewsBlur CLI skill to give your AI agent full knowledge of every command and flag. Works with Claude Code, Cursor, Windsurf, and any tool that supports the Skills standard." %}</p>
         <pre class="NB-feature-detail-code">npx skills add samuelclay/newsblur-cli-skill</pre>
-        <p class="NB-cli-step-note">{% trans "Source:" %} <a href="https://github.com/samuelclay/newsblur-cli-skill">{% trans "github.com/samuelclay/newsblur-cli-skill" %}</a></p>
+        <p class="NB-cli-step-note">{% trans "Source:" %} <a href="https://github.com/samuelclay/newsblur-cli-skill">github.com/samuelclay/newsblur-cli-skill</a></p>
     </div>
 
     <div class="NB-feature-detail-how NB-cli-commands-section">
@@ -113,7 +113,7 @@ newsblur discover trending                     # trending feeds</pre>
 
     <div class="NB-feature-detail-how NB-cli-commands-section">
         <h2>{% trans "Scripting and automation" %}</h2>
-        <p class="NB-feature-detail-subtitle">{% trans "Every command supports" %} <code>--json</code> {% trans "for structured output and" %} <code>--raw</code> {% trans "for unformatted text. Pipe to jq, use in shell scripts, or connect to self-hosted instances." %}</p>
+        <p class="NB-feature-detail-subtitle">{% blocktrans trimmed with json_flag="--json" raw_flag="--raw" %}Every command supports <code>{{ json_flag }}</code> for structured output and <code>{{ raw_flag }}</code> for unformatted text. Pipe to jq, use in shell scripts, or connect to self-hosted instances.{% endblocktrans %}</p>
         <pre class="NB-feature-detail-code"># Pipe to jq for structured processing
 newsblur stories list --json | jq '.items[].title'
 newsblur briefing --json | jq '.items[0].section_summaries'
@@ -129,7 +129,7 @@ newsblur stories list --folder Tech --json | \
     <div class="NB-feature-detail-faq">
         <div class="NB-feature-detail-faq-item">
             <h3 class="NB-feature-detail-faq-q">{% trans "How does authentication work?" %}</h3>
-            <p class="NB-feature-detail-faq-a">{% trans "Running" %} <code>newsblur auth login</code> {% trans "opens your browser for OAuth authorization, the same flow used by third-party apps. Your token is stored locally at" %} <code>~/.config/newsblur/</code> {% trans "and never sent anywhere except the NewsBlur API." %}</p>
+            <p class="NB-feature-detail-faq-a">{% blocktrans trimmed with command="newsblur auth login" path="~/.config/newsblur/" %}Running <code>{{ command }}</code> opens your browser for OAuth authorization, the same flow used by third-party apps. Your token is stored locally at <code>{{ path }}</code> and never sent anywhere except the NewsBlur API.{% endblocktrans %}</p>
         </div>
         <div class="NB-feature-detail-faq-item">
             <h3 class="NB-feature-detail-faq-q">{% trans "What plan do I need?" %}</h3>
@@ -137,15 +137,15 @@ newsblur stories list --folder Tech --json | \
         </div>
         <div class="NB-feature-detail-faq-item">
             <h3 class="NB-feature-detail-faq-q">{% trans "Can I use it with a self-hosted instance?" %}</h3>
-            <p class="NB-feature-detail-faq-a">{% trans "Yes. Pass" %} <code>--server https://your-instance.com</code> {% trans "to any command, or set the" %} <code>NEWSBLUR_SERVER</code> {% trans "environment variable." %}</p>
+            <p class="NB-feature-detail-faq-a">{% blocktrans trimmed with server_flag="--server https://your-instance.com" variable="NEWSBLUR_SERVER" %}Yes. Pass <code>{{ server_flag }}</code> to any command, or set the <code>{{ variable }}</code> environment variable.{% endblocktrans %}</p>
         </div>
         <div class="NB-feature-detail-faq-item">
             <h3 class="NB-feature-detail-faq-q">{% trans "What's the difference between CLI and MCP?" %}</h3>
-            <p class="NB-feature-detail-faq-a">{% trans "The CLI is a standalone terminal tool you run directly. The" %} <a href="{% url "feature-mcp" %}">{% trans "MCP server" %}</a> {% trans "lets AI agents like Claude and Codex connect to your NewsBlur on your behalf. Both use the same underlying API and have the same capabilities." %}</p>
+            <p class="NB-feature-detail-faq-a">{% url "feature-mcp" as mcp_url %}{% blocktrans trimmed %}The CLI is a standalone terminal tool you run directly. The <a href="{{ mcp_url }}">MCP server</a> lets AI agents like Claude and Codex connect to your NewsBlur on your behalf. Both use the same underlying API and have the same capabilities.{% endblocktrans %}</p>
         </div>
         <div class="NB-feature-detail-faq-item">
             <h3 class="NB-feature-detail-faq-q">{% trans "Want more CLI features?" %}</h3>
-            <p class="NB-feature-detail-faq-a">{% trans "Have an idea for a new command or workflow? Post it on the" %} <a href="https://forum.newsblur.com">{% trans "NewsBlur support forum" %}</a> {% trans "and we'll consider it for a future release." %}</p>
+            <p class="NB-feature-detail-faq-a">{% blocktrans trimmed %}Have an idea for a new command or workflow? Post it on the <a href="https://forum.newsblur.com">NewsBlur support forum</a> and we'll consider it for a future release.{% endblocktrans %}</p>
         </div>
     </div>
 

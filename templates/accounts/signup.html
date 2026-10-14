@@ -31,7 +31,7 @@
         </a>
         <h1 class="NB-static-card-title">{% trans "Create an Account" %}</h1>
         {% if referrer %}
-            <p class="NB-static-card-tagline" style="color: #507C30;">{% trans "Referred by" %} <b>{{ referrer }}</b> &mdash; {% trans "welcome to NewsBlur!" %}</p>
+            <p class="NB-static-card-tagline" style="color: #507C30;">{% blocktrans trimmed %}Referred by <b>{{ referrer }}</b> &mdash; welcome to NewsBlur!{% endblocktrans %}</p>
         {% elif gift_code %}
             <p class="NB-static-card-tagline" style="color: #507C30;">{% trans "You've been gifted a premium subscription! Sign up to claim it." %}</p>
         {% else %}

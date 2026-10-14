@@ -42594,15 +42594,20 @@ span.NB-briefing-inline-favicon {
     display: flex;
     align-items: center;
     flex: 0 0 auto;
-    margin: 0 0 0 12px;
+    margin: 0;
+    margin-inline-start: 12px;
     color: #60665b;
 }
-.NB-splash-bottom .NB-language-selector select {
+/* reader.css: base select shared by the footer and welcome.xhtml (static_pages.css) selectors. */
+.NB-language-selector select {
     appearance: auto;
     width: auto;
     max-width: 190px;
-    min-height: 30px;
     margin: 0;
+    cursor: pointer;
+}
+.NB-splash-bottom .NB-language-selector select {
+    min-height: 30px;
     padding: 4px 6px;
     border: 1px solid transparent;
     border-radius: 5px;
@@ -42610,7 +42615,6 @@ span.NB-briefing-inline-favicon {
     color: inherit;
     font: inherit;
     font-size: 12px;
-    cursor: pointer;
 }
 .NB-splash-bottom .NB-language-selector select:hover,
 .NB-splash-bottom .NB-language-selector select:focus-visible {

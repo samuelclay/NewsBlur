@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-compare NB-static-alt-open-source{% endblock %}
-{% block title %}{% trans "Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux" %} &amp; {% trans "More" %}{% endblock %}
+{% block title %}{% trans "Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux & More" %}{% endblock %}
 {% block nav_title %}{% trans "Open Source RSS Readers" %}{% endblock %}
 {% block head %}
     <meta name="description" content="Compare the best open source RSS readers: NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS. See features, hosting options, mobile apps, and licenses side by side.">
@@ -32,15 +32,15 @@
             <tr>
                 <th>{% trans "Feature" %}</th>
                 <th>NewsBlur</th>
-                <th>{% trans "FreshRSS" %}</th>
-                <th>{% trans "Miniflux" %}</th>
-                <th>{% trans "Tiny Tiny RSS" %}</th>
+                <th>FreshRSS</th>
+                <th>Miniflux</th>
+                <th>Tiny Tiny RSS</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>{% trans "Hosted Service" %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "newsblur.com" %}</td>
+                <td><span class="NB-compare-check">&#10003;</span> newsblur.com</td>
                 <td><span class="NB-compare-x">&#10007;</span> {% trans "Self-host only" %}</td>
                 <td><span class="NB-compare-x">&#10007;</span> {% trans "Self-host only" %}</td>
                 <td><span class="NB-compare-x">&#10007;</span> {% trans "Self-host only" %}</td>
@@ -54,7 +54,7 @@
             </tr>
             <tr>
                 <td>{% trans "Native Mobile Apps" %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "iOS" %} &amp; {% trans "Android" %}</td>
+                <td><span class="NB-compare-check">&#10003;</span> iOS &amp; Android</td>
                 <td><span class="NB-compare-x">&#10007;</span> {% trans "Third-party only" %}</td>
                 <td><span class="NB-compare-x">&#10007;</span> {% trans "Third-party only" %}</td>
                 <td><span class="NB-compare-x">&#10007;</span> {% trans "Third-party only" %}</td>
@@ -68,7 +68,7 @@
             </tr>
             <tr>
                 <td>{% trans "Ask AI (Query Stories)" %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "Claude, GPT, Gemini, Grok" %}</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
                 <td><span class="NB-compare-x">&#10007;</span></td>
                 <td><span class="NB-compare-x">&#10007;</span></td>
                 <td><span class="NB-compare-x">&#10007;</span></td>
@@ -104,8 +104,8 @@
             <tr>
                 <td>{% trans "Third-Party App Support" %}</td>
                 <td><span class="NB-compare-check">&#10003;</span> {% trans "Reeder, ReadKit, Unread, etc." %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "Google Reader API, Fever API" %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "Fever API, Google Reader API" %}</td>
+                <td><span class="NB-compare-check">&#10003;</span> Google Reader API, Fever API</td>
+                <td><span class="NB-compare-check">&#10003;</span> Fever API, Google Reader API</td>
                 <td><span class="NB-compare-check">&#10003;</span> {% trans "Own API, Fever plugin" %}</td>
             </tr>
             <tr>
@@ -117,10 +117,10 @@
             </tr>
             <tr>
                 <td>{% trans "License" %}</td>
-                <td>{% trans "MIT" %}</td>
-                <td>{% trans "AGPL-3.0" %}</td>
-                <td>{% trans "Apache 2.0" %}</td>
-                <td>{% trans "GPL-3.0" %}</td>
+                <td>MIT</td>
+                <td>AGPL-3.0</td>
+                <td>Apache 2.0</td>
+                <td>GPL-3.0</td>
             </tr>
         </tbody>
     </table>

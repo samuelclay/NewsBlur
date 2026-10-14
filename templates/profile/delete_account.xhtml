@@ -13,7 +13,7 @@
 <div class="NB-static-form-wrapper">
     <div class="NB-delete-form NB-static-form">
         
-        <h2>{% trans "Are you positive you want to" %}<br />{% trans "delete your account?" %}</h2>
+        <h2>{% blocktrans trimmed %}Are you positive you want to<br />delete your account?{% endblocktrans %}</h2>
 
         <form action="" method="POST">{% csrf_token %}
             <div class="NB-fields">

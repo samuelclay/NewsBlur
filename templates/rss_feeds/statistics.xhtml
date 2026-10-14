@@ -1,6 +1,6 @@
 {% load utils_tags %}
 <!DOCTYPE html>
-<html lang="{{ ui_language }}" dir="{% if ui_language_rtl %}rtl{% else %}ltr{% endif %}">
+<html lang="{{ ui_language }}" dir="{{ ui_language_dir }}">
 <head>
   {% include "includes/i18n_scripts.html" %}
   <title>{% block title %}NewsBlur{% endblock %}</title>

@@ -1,7 +1,7 @@
-{% load i18n %}
-<html>
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>Invoice {{ invoice_number }} - NewsBlur</title>
+    <title>{% blocktrans %}Invoice {{ invoice_number }} - NewsBlur{% endblocktrans %}</title>
     <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
 
     <style>
@@ -295,9 +295,9 @@
 <div class="invoice-header">
     <div class="company">
         <div class="company-logo">
-            <img src="/media/img/logo_newsblur.svg" alt="{% trans 'NewsBlur' %}">
+            <img src="/media/img/logo_newsblur.svg" alt="NewsBlur">
         </div>
-        <div class="company-name">{% trans "NewsBlur Inc." %}</div>
+        <div class="company-name">NewsBlur Inc.</div>
     </div>
     <div class="invoice-title">
         <h1>{% trans "Invoice" %}</h1>
@@ -329,7 +329,7 @@
         <tr>
             <td>
                 <div class="description">{% trans "NewsBlur Premium Subscription" %}</div>
-                <div class="description-sub">Coverage period: {{ coverage_start|date:"F j, Y" }} &ndash; {{ coverage_end|date:"F j, Y" }}</div>
+                <div class="description-sub">{% blocktrans with start=coverage_start|date:"F j, Y" end=coverage_end|date:"F j, Y" %}Coverage period: {{ start }} &ndash; {{ end }}{% endblocktrans %}</div>
             </td>
             <td class="amount">${{ payment.payment_amount }}.00</td>
         </tr>
@@ -362,7 +362,7 @@
 
 <div class="invoice-footer">
     <div class="thanks">{% trans "Thank you for supporting NewsBlur!" %}</div>
-    <div class="company-info">{% trans "NewsBlur Inc." %} &middot; {% trans "https://newsblur.com" %}</div>
+    <div class="company-info">NewsBlur Inc. &middot; https://newsblur.com</div>
 </div>
 
 <script>

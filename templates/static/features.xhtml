@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-features{% endblock %}
-{% block title %}{% trans "NewsBlur Features - Intelligence Training, AI, Search" %} & {% trans "More" %}{% endblock %}
+{% block title %}{% trans "NewsBlur Features - Intelligence Training, AI, Search & More" %}{% endblock %}
 {% block nav_title %}{% trans "Features" %}{% endblock %}
 {% block head %}
     <meta name="description" content="NewsBlur features: intelligence training, Ask AI, full-text search, regex classifiers, real-time feed fetching, dark mode, email newsletters, web feeds, and more. The most powerful RSS reader.">
@@ -24,7 +24,7 @@
 
     <div class="NB-static-features-hero">
         <h1 class="NB-static-features-title">{% trans "Every feature, at a glance" %}</h1>
-        <p class="NB-static-features-subtitle">{% trans "NewsBlur is the most feature-rich news reader. Here's everything it" %}&nbsp;{% trans "can" %}&nbsp;{% trans "do." %}</p>
+        <p class="NB-static-features-subtitle">{% blocktrans trimmed %}NewsBlur is the most feature-rich news reader. Here's everything it&nbsp;can&nbsp;do.{% endblocktrans %}</p>
     </div>
 
     <!-- 1. Intelligence Training -->
@@ -33,7 +33,7 @@
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
             <h2 class="NB-feature-section-name">{% trans "Intelligence Training" %}</h2>
             <p class="NB-feature-section-description">
-                {% trans "Train NewsBlur to show you what you want and hide what you don't. Thumbs up an author, tag, or title keyword to highlight matching stories in green. Thumbs down to fade them away. The more you train, the smarter your feeds become. No algorithm decides for you" %} &mdash; {% trans "you're in control." %}
+                {% blocktrans trimmed %}Train NewsBlur to show you what you want and hide what you don't. Thumbs up an author, tag, or title keyword to highlight matching stories in green. Thumbs down to fade them away. The more you train, the smarter your feeds become. No algorithm decides for you &mdash; you're in control.{% endblocktrans %}
             </p>
             <div class="NB-feature-section-links">
                 <a href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> {% trans "Read more on the NewsBlur Blog" %}</a>
@@ -81,7 +81,7 @@
     <!-- 4. Real-Time Feed Fetching -->
     <div class="NB-feature-section" id="speed">
         <div class="NB-feature-section-text">
-            <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %} &amp; {% trans "up" %}</div>
+            <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free & up" %}</div>
             <h2 class="NB-feature-section-name">{% trans "Real-Time Feed Fetching" %}</h2>
             <p class="NB-feature-section-description">
                 {% trans "Stories are pushed to you as they're published. Free users get real-time updates via PubSubHubbub. Premium users get feeds checked up to 5x more often. Pro users get every single feed in their account fetched every 5-15 minutes, making NewsBlur a monitoring-grade tool for professionals who need to be first to know." %}
@@ -99,7 +99,7 @@
             <div class="NB-feature-section-badge NB-feature-badge-archive">{% trans "Premium Archive" %}</div>
             <h2 class="NB-feature-section-name">{% trans "Web Feeds" %}</h2>
             <p class="NB-feature-section-description">
-                {% trans "Follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web page by monitoring it for changes. Follow Twitter profiles, Reddit threads, GitHub repos, product pages, job boards" %} &mdash; {% trans "if it's on the web, you can follow it." %}
+                {% blocktrans trimmed %}Follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web page by monitoring it for changes. Follow Twitter profiles, Reddit threads, GitHub repos, product pages, job boards &mdash; if it's on the web, you can follow it.{% endblocktrans %}
             </p>
             <div class="NB-feature-section-links">
                 <a href="https://blog.newsblur.com/2026/03/13/web-feeds/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> {% trans "Read more on the NewsBlur Blog" %}</a>
@@ -117,7 +117,7 @@
             <div class="NB-feature-section-badge NB-feature-badge-premium">{% trans "Premium" %}</div>
             <h2 class="NB-feature-section-name">{% trans "River of News" %}</h2>
             <p class="NB-feature-section-description">
-                {% trans "Read all feeds in a folder as one scrollable stream. No need to click into individual feeds" %} &mdash; {% trans "just open a folder and read everything in chronological order. Combined with training, your River of News surfaces the best stories from across all your subscriptions." %}
+                {% blocktrans trimmed %}Read all feeds in a folder as one scrollable stream. No need to click into individual feeds &mdash; just open a folder and read everything in chronological order. Combined with training, your River of News surfaces the best stories from across all your subscriptions.{% endblocktrans %}
             </p>
         </div>
         <div class="NB-feature-section-screenshot">
@@ -244,9 +244,9 @@
     <div class="NB-feature-section" id="blurblog">
         <div class="NB-feature-section-text">
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
-            <h2 class="NB-feature-section-name">{% trans "Shared Stories" %} &amp; {% trans "Blurblog" %}</h2>
+            <h2 class="NB-feature-section-name">{% trans "Shared Stories & Blurblog" %}</h2>
             <p class="NB-feature-section-description">
-                {% trans "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading and sharing. Every NewsBlur user gets their own blurblog" %} &mdash; {% trans "a public page of shared stories that anyone can follow via RSS or on the web. Premium users can make their blurblog private." %}
+                {% blocktrans trimmed %}Share stories with your own comments on your public blurblog. Follow friends to see what they're reading and sharing. Every NewsBlur user gets their own blurblog &mdash; a public page of shared stories that anyone can follow via RSS or on the web. Premium users can make their blurblog private.{% endblocktrans %}
             </p>
             <a href="https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> {% trans "Read more on the NewsBlur Blog" %}</a>
         </div>
@@ -259,7 +259,7 @@
     <div class="NB-feature-section" id="saved">
         <div class="NB-feature-section-text">
             <div class="NB-feature-section-badge NB-feature-badge-premium">{% trans "Premium" %}</div>
-            <h2 class="NB-feature-section-name">{% trans "Saved Stories" %} &amp; {% trans "Tags" %}</h2>
+            <h2 class="NB-feature-section-name">{% trans "Saved Stories & Tags" %}</h2>
             <p class="NB-feature-section-description">
                 {% trans "Save stories for later and organize them with custom tags. Tags are searchable, so you can quickly find saved stories by topic. Each tag gets its own RSS feed, so you can pipe your curated collections into other tools or share them." %}
             </p>
@@ -325,7 +325,7 @@
     <div class="NB-feature-section" id="themes">
         <div class="NB-feature-section-text">
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
-            <h2 class="NB-feature-section-name">{% trans "Themes" %} &amp; {% trans "Customization" %}</h2>
+            <h2 class="NB-feature-section-name">{% trans "Themes & Customization" %}</h2>
             <p class="NB-feature-section-description">
                 {% trans "Make NewsBlur yours. Choose from light, dark, and auto themes across web, iOS, and Android. Customize your reading experience with multiple font choices, five text sizes, adjustable line spacing, compact or comfortable density, and image preview styles. Every setting can be different per-feed, so each site looks exactly the way you want it." %}
             </p>
@@ -342,7 +342,7 @@
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
             <h2 class="NB-feature-section-name">{% trans "Keyboard Shortcuts" %}</h2>
             <p class="NB-feature-section-description">
-                {% trans "Navigate everything without touching the mouse. Open feeds, scroll through stories, mark as read, save, share, train, switch views" %} &mdash; {% trans "all from the keyboard. Press" %} <code>?</code> {% trans "to see the full list. Power readers can fly through hundreds of stories in minutes." %}
+                {% blocktrans trimmed %}Navigate everything without touching the mouse. Open feeds, scroll through stories, mark as read, save, share, train, switch views &mdash; all from the keyboard. Press <code>?</code> to see the full list. Power readers can fly through hundreds of stories in minutes.{% endblocktrans %}
             </p>
             <a href="https://blog.newsblur.com/2013/05/23/keyboard-shortcuts-manager/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> {% trans "Read more on the NewsBlur Blog" %}</a>
         </div>
@@ -357,7 +357,7 @@
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
             <h2 class="NB-feature-section-name">{% trans "Multiple Layouts" %}</h2>
             <p class="NB-feature-section-description">
-                {% trans "Every site can have its own layout. Choose from Split, List, Grid, and Magazine views. Set different layouts per-feed to match the content" %} &mdash; {% trans "grid for image-heavy sites, list for high-volume feeds, split for long-form reading. Customize column count, card height, and content density." %}
+                {% blocktrans trimmed %}Every site can have its own layout. Choose from Split, List, Grid, and Magazine views. Set different layouts per-feed to match the content &mdash; grid for image-heavy sites, list for high-volume feeds, split for long-form reading. Customize column count, card height, and content density.{% endblocktrans %}
             </p>
             <a href="https://blog.newsblur.com/2022/03/10/magazine-view/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> {% trans "Read more on the NewsBlur Blog" %}</a>
         </div>
@@ -370,7 +370,7 @@
     <div class="NB-feature-section" id="integrations">
         <div class="NB-feature-section-text">
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
-            <h2 class="NB-feature-section-name">{% trans "IFTTT" %} &amp; {% trans "Zapier" %}</h2>
+            <h2 class="NB-feature-section-name">{% trans "IFTTT & Zapier" %}</h2>
             <p class="NB-feature-section-description">
                 {% trans "Connect NewsBlur to hundreds of other services. Automatically save stories to Pocket, Instapaper, Evernote, or Notion. Post shared stories to Slack, Twitter, or email. Trigger custom workflows when stories match your training filters. The full NewsBlur API is also available for custom integrations." %}
             </p>
@@ -399,7 +399,7 @@
     <div class="NB-feature-section" id="native-apps">
         <div class="NB-feature-section-text">
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
-            <h2 class="NB-feature-section-name">{% trans "Native iOS" %} &amp; {% trans "Android Apps" %}</h2>
+            <h2 class="NB-feature-section-name">{% trans "Native iOS & Android Apps" %}</h2>
             <p class="NB-feature-section-description">
                 {% trans "First-class native apps built for each platform, not web wrappers. The iOS app supports offline reading, background refresh, widgets, and all the same training, search, and sharing features as the web. The Android app matches feature-for-feature. Both apps are open source and actively developed." %}
             </p>
@@ -447,7 +447,7 @@
     <div class="NB-feature-section" id="opml">
         <div class="NB-feature-section-text">
             <div class="NB-feature-section-badge NB-feature-badge-free">{% trans "Free" %}</div>
-            <h2 class="NB-feature-section-name">{% trans "OPML Import" %} &amp; {% trans "Export" %}</h2>
+            <h2 class="NB-feature-section-name">{% trans "OPML Import & Export" %}</h2>
             <p class="NB-feature-section-description">
                 {% trans "Bring your feeds from any reader or take them with you when you leave. OPML import brings over all your subscriptions and folder structure in seconds. Export anytime to get a complete backup. No lock-in, ever." %}
             </p>
@@ -475,7 +475,7 @@
             <div class="NB-feature-section-badge NB-feature-badge-archive">{% trans "Premium Archive" %}</div>
             <h2 class="NB-feature-section-name">{% trans "CLI Tool" %}</h2>
             <p class="NB-feature-section-description">
-                {% trans "Manage your NewsBlur from the terminal. Read feeds, search stories, manage subscriptions, and train classifiers. Pipe to jq, script your workflows, and automate with" %} <code>--json</code> {% trans "output. Works with self-hosted instances too." %}
+                {% blocktrans trimmed %}Manage your NewsBlur from the terminal. Read feeds, search stories, manage subscriptions, and train classifiers. Pipe to jq, script your workflows, and automate with <code>--json</code> output. Works with self-hosted instances too.{% endblocktrans %}
             </p>
             <a href="{% url "feature-cli" %}" class="NB-feature-section-cta">{% trans "Learn more" %}</a>
         </div>

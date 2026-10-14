@@ -21,7 +21,7 @@
                 <img src="{% if user_social_profile.photo_url %}{{ user_social_profile.photo_url }}{% else %}{{ MEDIA_URL }}/img/circular/circular_avatar.png{% endif %}">
             </a>
             <div class="NB-story-comment-input-form">
-                <textarea class="NB-story-comment-input" placeholder="Comment on this story..."></textarea>
+                <textarea class="NB-story-comment-input" placeholder="{% trans "Comment on this story..." %}"></textarea>
                 <div class="NB-story-comment-buttons">
                     <div class="NB-modal-submit-button NB-modal-submit-green NB-story-comment-save">{% trans "Share this story" %}</div>
                     <div class="NB-modal-submit-button NB-modal-submit-red NB-story-comment-delete NB-hidden">{% trans "Delete" %}</div>
@@ -38,7 +38,7 @@
             {% if story.comment_count_public %}
                 <div class="NB-story-comments-public-header-wrapper {% if story.shared_by_user and not story.friend_comments %}NB-public-top{% endif %}">
                     <div class="NB-story-comments-public-header">
-                        {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
+                        {% blocktrans count comments=story.comment_count_public trimmed %}{{ comments }} public comment{% plural %}{{ comments }} public comments{% endblocktrans %}
                     </div>
                 </div>
             {% endif %}

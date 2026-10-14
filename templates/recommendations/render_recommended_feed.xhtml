@@ -37,9 +37,9 @@
     <div class="NB-modal-submit">
       <div class="NB-recommended-subscribers">
           <div class="NB-recommended-statistics NB-javascript"></div>
-        <b>{{ recommended_feed.feed.num_subscribers|commify }}</b> subscriber{{ recommended_feed.feed.num_subscribers|pluralize }}
+        {% with subscribers=recommended_feed.feed.num_subscribers|commify %}{% blocktrans count counter=recommended_feed.feed.num_subscribers trimmed %}<b>{{ subscribers }}</b> subscriber{% plural %}<b>{{ subscribers }}</b> subscribers{% endblocktrans %}{% endwith %}
         <br />
-        <b>{{ recommended_feed.feed.average_stories_per_month }}</b> {{ recommended_feed.feed.average_stories_per_month|pluralize:"story,stories" }}  per month
+        {% blocktrans count stories=recommended_feed.feed.average_stories_per_month trimmed %}<b>{{ stories }}</b> story per month{% plural %}<b>{{ stories }}</b> stories per month{% endblocktrans %}
       </div>
       {% if usersub %}
         <div class="NB-recommended-added">{% trans "Subscribed" %}</div>
