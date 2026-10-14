@@ -135,6 +135,17 @@ window.Inflector = {
     },
 
     commas : function(number) {
+        // inflector.js groups digits like the interface language with Latin digits, matching the
+        // server's formats; English keeps the original output.
+        var language = document.documentElement.lang;
+        var text = String(number);
+        if (language && language.indexOf('en') !== 0 && window.Intl && /^-?\d+(\.\d+)?$/.test(text)) {
+            var decimals = (text.split('.')[1] || '').length;
+            return new Intl.NumberFormat(language + '-u-nu-latn', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(Number(text));
+        }
         var numberMatcher = /(\d+)(\d{3})/;
         number += '';
         var fragments = number.split('.');
