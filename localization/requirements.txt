@@ -1,2 +1,2 @@
 Babel==2.18.0
-Django==3.2.25
+Django==3.1.10
