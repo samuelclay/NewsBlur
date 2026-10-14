@@ -84,6 +84,9 @@ def findings():
                 # Interpolated messages need a complete-message conversion, not literal wrapping.
                 if "\\(" in value or "$" in value or "<" in value:
                     continue
+                # audit.py skips JS comparisons such as `date > midnight && date <` caught by the tag rule.
+                if "&&" in value or "||" in value:
+                    continue
                 if (str(path.relative_to(ROOT)), value) in EXAMPLES:
                     continue
                 yield str(path.relative_to(ROOT)), number, value

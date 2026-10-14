@@ -389,21 +389,27 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             return { $months: $months, $days: $days, $years: $years };
         };
 
+        // reader_account.js: "Older than: [month] [day] [year]" as one translated
+        // sentence, so each language can order the date selects its own way. The
+        // row is a flex container, so text goes in spans and the whitespace
+        // between selects is dropped (the CSS gap spaces them).
+        var make_older_than = function (selectors) {
+            return NEWSBLUR.utils.interpolate_nodes(gettext('Older than: %(month)s %(day)s %(year)s'), {
+                month: selectors.$months,
+                day: selectors.$days,
+                year: selectors.$years
+            }, function (text) {
+                return $.trim(text) ? $.make('span', text) : null;
+            });
+        };
+
         // Saved stories date selector
         var $saved_dates = $(".NB-preference-saved-stories-date", this.$modal);
-        var saved_selectors = make_date_selectors('saved');
-        $saved_dates.append($.make('span', gettext('Older than: ')));
-        $saved_dates.append(saved_selectors.$months);
-        $saved_dates.append(saved_selectors.$days);
-        $saved_dates.append(saved_selectors.$years);
+        $saved_dates.append(make_older_than(make_date_selectors('saved')));
 
         // Shared stories date selector
         var $shared_dates = $(".NB-preference-shared-stories-date", this.$modal);
-        var shared_selectors = make_date_selectors('shared');
-        $shared_dates.append($.make('span', gettext('Older than: ')));
-        $shared_dates.append(shared_selectors.$months);
-        $shared_dates.append(shared_selectors.$days);
-        $shared_dates.append(shared_selectors.$years);
+        $shared_dates.append(make_older_than(make_date_selectors('shared')));
 
         // Bind date change events to fetch counts
         $saved_dates.find('select').on('change', _.bind(this.fetch_saved_stories_count, this));

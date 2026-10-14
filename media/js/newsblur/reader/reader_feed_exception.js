@@ -434,11 +434,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         ])
                     ]),
                     (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-only' }, [
-                        $.make('div', { className: 'NB-premium-only-text' }, [
-                            gettext('RSS feeds for folders is a '),
-                            $.make('a', { href: '#', className: 'NB-premium-only-link NB-splash-link' }, gettext('premium feature')),
-                            '.'
-                        ])
+                        $.make('div', { className: 'NB-premium-only-text' },
+                            interpolate(_.escape(gettext('RSS feeds for folders is a %(link_start)spremium feature%(link_end)s.')), {
+                                link_start: '<a href="#" class="NB-premium-only-link NB-splash-link">',
+                                link_end: '</a>'
+                            }, true))
                     ]))
                 ])
             ])),
@@ -1906,17 +1906,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $button.hide();
             if (NEWSBLUR.Globals.is_premium) {
                 $notice.html('').append(
-                    $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
-                        $.make('span', { className: 'NB-archive-badge' }, gettext('Upgrade to Premium Archive')),
-                        gettext(' for up to 365 days')
-                    ])
+                    $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' },
+                        NEWSBLUR.utils.make_upgrade_days_notice($.make('span', { className: 'NB-archive-badge' }, gettext('Upgrade to Premium Archive')), 365))
                 ).show();
             } else {
                 $notice.html('').append(
-                    $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
-                        $.make('span', { className: 'NB-premium-badge' }, gettext('Upgrade to Premium')),
-                        interpolate(gettext(" for up to %(value_1)s days"), {value_1: NEWSBLUR.Globals.default_days_of_unread}, true)
-                    ])
+                    $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' },
+                        NEWSBLUR.utils.make_upgrade_days_notice($.make('span', { className: 'NB-premium-badge' }, gettext('Upgrade to Premium')), NEWSBLUR.Globals.default_days_of_unread))
                 ).show();
             }
         } else {

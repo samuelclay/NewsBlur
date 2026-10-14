@@ -61,11 +61,12 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
                 $.make('input', { className: 'NB-input NB-modal-recommend-twitter' })
             ]),
             $.make('form', { className: 'NB-recommend-form' }, [
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: gettext('Recommend Site') }),
-                    gettext(' or '),
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, gettext('cancel'))
-                ])
+                // reader_recommend_feed.js: "[Recommend Site] or cancel" as one
+                // translated sentence with both controls as placeholders.
+                $.make('div', { className: 'NB-modal-submit' }, NEWSBLUR.utils.interpolate_nodes(gettext('%(submit_button)s or %(cancel_link)s'), {
+                    submit_button: $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: gettext('Recommend Site') }),
+                    cancel_link: $.make('a', { href: '#', className: 'NB-modal-cancel' }, gettext('cancel'))
+                }))
             ])
         ]);
     },
