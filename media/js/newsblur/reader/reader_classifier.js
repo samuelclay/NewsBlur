@@ -46,21 +46,23 @@ NEWSBLUR.ClassifierConstants = {
         prompt: gettext('Describe what to focus or hide')
     },
 
-    // reader_classifier.js: Splits a translated message around %(name)s
-    // placeholders and inserts the matching DOM nodes, so links and styled
-    // words stay inside one complete translatable sentence. Text pieces become
-    // text nodes, or whatever wrap_text returns for them.
-    interpolate_nodes: function (message, nodes, wrap_text) {
-        var parts = [];
-        _.each(message.split(/(%\([a-z_]+\)s)/), function (part) {
-            var match = part.match(/^%\(([a-z_]+)\)s$/);
-            if (match && _.has(nodes, match[1])) {
-                parts.push(nodes[match[1]]);
-            } else if (part) {
-                parts.push(wrap_text ? wrap_text(part) : document.createTextNode(part));
-            }
+    // reader_classifier.js: Upgrade notice beside a trainer section header, such
+    // as "Regex requires Premium Pro", as one translated sentence with the tier
+    // name as the upgrade link (NEWSBLUR.utils.interpolate_nodes in
+    // reader_utils.js places it).
+    make_premium_notice: function (class_name, message, tier_name) {
+        var $tier_link = $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, tier_name);
+        return $.make('span', { className: class_name },
+            NEWSBLUR.utils.interpolate_nodes(message, { tier_link: $tier_link }));
+    },
+
+    // reader_classifier.js: One line of the intelligence slider legend in the
+    // trainer intro and outro, such as "[focus icon] are stories you like". The
+    // icon is the sentence's subject, so it is a placeholder in the message.
+    make_intelligence_bullet: function (icon_name, message) {
+        return NEWSBLUR.utils.interpolate_nodes(message, {
+            icon: $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/' + icon_name + '.svg' })
         });
-        return parts;
     },
 
     // reader_classifier.js: Banner shown under the AI filter sections when the
@@ -68,7 +70,7 @@ NEWSBLUR.ClassifierConstants = {
     make_ai_billing_banner: function () {
         var $billing_link = $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing'));
         return $.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' },
-            NEWSBLUR.ClassifierConstants.interpolate_nodes(
+            NEWSBLUR.utils.interpolate_nodes(
                 gettext("AI filters are saved but won't run until you %(billing_link)s."),
                 { billing_link: $billing_link },
                 function (text) { return $.make('b').text(text); }
@@ -81,7 +83,7 @@ NEWSBLUR.ClassifierConstants = {
         var message = subject === 'story' ?
             gettext("What do you %(like)s and %(dislike)s about this story?") :
             gettext("What do you %(like)s and %(dislike)s about this site?");
-        return NEWSBLUR.ClassifierConstants.interpolate_nodes(message, {
+        return NEWSBLUR.utils.interpolate_nodes(message, {
             like: $.make(tag_name, { className: like_class }, gettext('like')),
             dislike: $.make(tag_name, { className: dislike_class }, gettext('dislike'))
         });
@@ -491,16 +493,14 @@ var classifier_prototype = {
                     gettext(' Sites will be ordered by popularity. Click on what you like and don\'t like.')
                 ]),
                 $.make('li', [
-                    $.make('b', gettext('The intelligence slider filters stories.')),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-focus.svg' }),
-                    gettext(' are stories you like'),
+                    $.make('b', gettext('The intelligence slider filters stories.'))
+                ].concat(
+                    NEWSBLUR.ClassifierConstants.make_intelligence_bullet('indicator-focus', gettext('%(icon)s are stories you like')),
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-unread.svg' }),
-                    gettext(' are stories you have not yet rated'),
+                    NEWSBLUR.ClassifierConstants.make_intelligence_bullet('indicator-unread', gettext('%(icon)s are stories you have not yet rated')),
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-hidden.svg' }),
-                    gettext(' are stories you don\'t like')
-                ]),
+                    NEWSBLUR.ClassifierConstants.make_intelligence_bullet('indicator-hidden', gettext('%(icon)s are stories you don\'t like'))
+                )),
                 $.make('li', [
                     $.make('b', gettext('Stop any time you like.')),
                     gettext(' You can easily train individual stories as you read.')
@@ -552,24 +552,21 @@ var classifier_prototype = {
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135 }),
                     $.make('b', gettext('You can change your opinions.')),
                     ' '
-                ].concat(NEWSBLUR.ClassifierConstants.interpolate_nodes(
+                ].concat(NEWSBLUR.utils.interpolate_nodes(
                     gettext("You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."), {
                         like_icon: $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-up.svg', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
                         dislike_icon: $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-down.svg', style: 'vertical-align: top; padding: 0', width: 14, height: 20 })
                     }))),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
-                    $.make('b', gettext('As a reminder, use the intelligence slider to select a filter:')),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-hidden.svg' }),
-                    gettext(' are stories you don\'t like'),
+                    $.make('b', gettext('As a reminder, use the intelligence slider to select a filter:'))
+                ].concat(
+                    NEWSBLUR.ClassifierConstants.make_intelligence_bullet('indicator-hidden', gettext('%(icon)s are stories you don\'t like')),
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-unread.svg' }),
-                    gettext(' are stories you have not yet rated'),
+                    NEWSBLUR.ClassifierConstants.make_intelligence_bullet('indicator-unread', gettext('%(icon)s are stories you have not yet rated')),
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-focus.svg' }),
-                    gettext(' are stories you like')
-
-                ]),
+                    NEWSBLUR.ClassifierConstants.make_intelligence_bullet('indicator-focus', gettext('%(icon)s are stories you like'))
+                )),
                 $.make('li', [
                     $.make('b', gettext('You can also filter out stories you don\'t want to read.')),
                     gettext(' As great as finding good stuff is, you can just as easily ignore the stories you do not like.')
@@ -797,22 +794,14 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', gettext('Story Text')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
-                    (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-archive-notice' }, [
-                        gettext('Requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        gettext('Regex requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        gettext('Classifier scope requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        gettext('Notifications require '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ]))
+                    (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-archive-notice', gettext('Requires %(tier_link)s'), gettext('Premium Archive'))),
+                    (!NEWSBLUR.Globals.is_pro && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-pro-notice', gettext('Regex requires %(tier_link)s'), gettext('Premium Pro'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-scope-notice', gettext('Classifier scope requires %(tier_link)s'), gettext('Premium Archive'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-notif-notice', gettext('Notifications require %(tier_link)s'), gettext('Premium Archive')))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
@@ -855,18 +844,12 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', gettext('Story Title')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
-                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        gettext('Regex requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        gettext('Classifier scope requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        gettext('Notifications require '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ]))
+                    (!NEWSBLUR.Globals.is_pro && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-pro-notice', gettext('Regex requires %(tier_link)s'), gettext('Premium Pro'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-scope-notice', gettext('Classifier scope requires %(tier_link)s'), gettext('Premium Archive'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-notif-notice', gettext('Notifications require %(tier_link)s'), gettext('Premium Archive')))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
@@ -918,18 +901,12 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', gettext('Story URL')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
-                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        gettext('Regex requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        gettext('Classifier scope requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        gettext('Notifications require '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ]))
+                    (!NEWSBLUR.Globals.is_pro && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-pro-notice', gettext('Regex requires %(tier_link)s'), gettext('Premium Pro'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-scope-notice', gettext('Classifier scope requires %(tier_link)s'), gettext('Premium Archive'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-notif-notice', gettext('Notifications require %(tier_link)s'), gettext('Premium Archive')))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
@@ -1097,18 +1074,12 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', gettext('Story Authors')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
-                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
-                        gettext('Regex requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Pro'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        gettext('Classifier scope requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        gettext('Notifications require '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ]))
+                    (!NEWSBLUR.Globals.is_pro && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-pro-notice', gettext('Regex requires %(tier_link)s'), gettext('Premium Pro'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-scope-notice', gettext('Classifier scope requires %(tier_link)s'), gettext('Premium Archive'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-notif-notice', gettext('Notifications require %(tier_link)s'), gettext('Premium Archive')))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
@@ -1182,14 +1153,10 @@ var classifier_prototype = {
             $.make('h5', { className: 'NB-classifier-section-header' }, [
                 $.make('span', gettext('Story Categories &amp; Tags')),
                 $.make('span', { className: 'NB-classifier-header-notices' }, [
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
-                        gettext('Classifier scope requires '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ])),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-notif-notice' }, [
-                        gettext('Notifications require '),
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'))
-                    ]))
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-scope-notice', gettext('Classifier scope requires %(tier_link)s'), gettext('Premium Archive'))),
+                    (!NEWSBLUR.Globals.is_archive && NEWSBLUR.ClassifierConstants.make_premium_notice(
+                        'NB-classifier-notif-notice', gettext('Notifications require %(tier_link)s'), gettext('Premium Archive')))
                 ])
             ]),
             $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
@@ -4909,7 +4876,7 @@ var classifier_prototype = {
                 ])
             ]),
             // Archive banner for scope filter (hidden by default)
-            $.make('div', { className: 'NB-manage-scope-pro-banner' }, NEWSBLUR.ClassifierConstants.interpolate_nodes(
+            $.make('div', { className: 'NB-manage-scope-pro-banner' }, NEWSBLUR.utils.interpolate_nodes(
                 gettext('Scoped classifiers are only available to %(plan)s subscribers.'),
                 { plan: $.make('a', { href: '#', className: 'NB-manage-scope-pro-link' }, gettext('Premium Archive')) },
                 function (text) { return $.make('span').text(text); }

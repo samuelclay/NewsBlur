@@ -72,6 +72,32 @@ NEWSBLUR.utils = {
         });
     },
 
+    // reader_utils.js: Splits a translated message around %(name)s placeholders
+    // and inserts the matching DOM nodes, so links, badges, selects and styled
+    // words stay inside one complete translatable sentence that translators can
+    // reorder. A string or number in `nodes` is inserted as text. Text pieces
+    // become text nodes, or whatever wrap_text returns for them; wrap_text can
+    // return null to drop a piece, such as whitespace between two flex items.
+    // Returns an array usable as $.make children or with $.fn.append.
+    interpolate_nodes: function (message, nodes, wrap_text) {
+        var parts = [];
+        _.each(message.split(/(%\([a-z_]+\)s)/), function (part) {
+            var match = part.match(/^%\(([a-z_]+)\)s$/);
+            var node;
+            if (match && _.has(nodes, match[1])) {
+                node = nodes[match[1]];
+                if (_.isString(node) || _.isNumber(node)) {
+                    node = document.createTextNode(String(node));
+                }
+                parts.push(node);
+            } else if (part) {
+                node = wrap_text ? wrap_text(part) : document.createTextNode(part);
+                if (node) parts.push(node);
+            }
+        });
+        return parts;
+    },
+
     // reader_utils.js: Shared Premium Archive callout — a light strip with the
     // archive badge and a one-line message that opens the upgrade modal. Used by
     // the briefing views and the related stories upsell. Pass
@@ -92,6 +118,17 @@ NEWSBLUR.utils = {
             }
         });
         return $callout;
+    },
+
+    // reader_utils.js: "[Upgrade to Premium] for up to 14 days" as one plural
+    // message, with the upgrade badge as a placeholder so translations can put
+    // it anywhere. Shown under the mark-as-unread sliders in reader_mark_read.js
+    // and reader_feed_exception.js when the reader picks more days than their
+    // plan keeps.
+    make_upgrade_days_notice: function ($badge, days) {
+        return NEWSBLUR.utils.interpolate_nodes(
+            ngettext("%(badge)s for up to %(count)s day", "%(badge)s for up to %(count)s days", days),
+            { badge: $badge, count: days });
     },
 
     service_name: function (service) {

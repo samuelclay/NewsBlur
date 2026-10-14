@@ -99,10 +99,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 }),
                                 $.make('div', { className: 'NB-daysofunread-slider-value' })
                             ]),
-                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#', 'data-feature': 'stay-unread' }, [
-                                $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive')),
-                                gettext(' Customize days of unreads')
-                            ]))
+                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#', 'data-feature': 'stay-unread' },
+                                NEWSBLUR.utils.interpolate_nodes(gettext('%(badge)s Customize days of unreads'), {
+                                    badge: $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
+                                })))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             gettext('Days of unreads')
@@ -770,10 +770,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-2', type: 'radio', name: 'read_story_delay', value: '1' }),
+                                // reader_preferences.js: slide_read_story_delay_slider fills the
+                                // text on both sides of the slider from one translated sentence.
                                 $.make('label', { 'for': 'NB-preference-readstorydelay-2' }, [
-                                    gettext('After '),
+                                    $.make('span', { className: 'NB-preference-slider-before' }),
                                     $.make('span', { className: 'NB-tangle-readstorydelay', 'data-var': 'delay' }),
-                                    $.make('span', { className: 'NB-tangle-seconds' }, gettext(' second'))
+                                    $.make('span', { className: 'NB-preference-slider-after NB-tangle-seconds' })
                                 ])
                             ]),
                             $.make('div', [
@@ -784,22 +786,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-readstorydelay-0', type: 'radio', name: 'read_story_delay', value: "-1" }),
-                                $.make('label', { 'for': 'NB-preference-readstorydelay-0' }, [
-                                    gettext('Manually by hitting '),
-                                    $.make('div', {
-                                        className: 'NB-keyboard-shortcut-key',
-                                        style: 'display: inline; float: none;margin: 0 4px'
-                                    }, [
-                                        'u'
-                                    ]),
-                                    gettext('or'),
-                                    $.make('div', {
-                                        className: 'NB-keyboard-shortcut-key',
-                                        style: 'display: inline; float: none;margin: 0 4px'
-                                    }, [
-                                        'm'
-                                    ])
-                                ])
+                                $.make('label', { 'for': 'NB-preference-readstorydelay-0' },
+                                    NEWSBLUR.utils.interpolate_nodes(gettext('Manually by hitting %(first_key)s or %(second_key)s'), {
+                                        first_key: $.make('div', {
+                                            className: 'NB-keyboard-shortcut-key',
+                                            style: 'display: inline; float: none;margin: 0 4px'
+                                        }, [
+                                            'u'
+                                        ]),
+                                        second_key: $.make('div', {
+                                            className: 'NB-keyboard-shortcut-key',
+                                            style: 'display: inline; float: none;margin: 0 4px'
+                                        }, [
+                                            'm'
+                                        ])
+                                    }))
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -1017,11 +1018,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
-                    (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' }, [
-                        gettext('You must have a '),
-                        $.make('span', { className: 'NB-splash-link NB-premium-link' }, gettext('premium account')),
-                        gettext(' to change keyboard shortcuts.')
-                    ])),
+                    (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' },
+                        interpolate(_.escape(gettext('You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts.')), {
+                            link_start: '<span class="NB-splash-link NB-premium-link">',
+                            link_end: '</span>'
+                        }, true))),
                     $.make('div', { className: 'NB-preference NB-preference-keyboard-horizontalarrows' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -1074,11 +1075,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     value: 'scroll',
                                     disabled: !NEWSBLUR.Globals.is_premium
                                 }),
+                                // reader_preferences.js: slide_arrow_scroll_spacing_slider fills the
+                                // text on both sides of the slider from one translated sentence.
                                 $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-2' }, [
-                                    gettext('Scroll up/down in story by '),
+                                    $.make('span', { className: 'NB-preference-slider-before' }),
                                     $.make('span', { className: 'NB-tangle-arrowscrollspacing-control NB-preference-slider', 'data-var': 'arrow' }),
-                                    $.make('span', { className: 'NB-tangle-arrowscrollspacing' }, '100'),
-                                    gettext('px.'),
+                                    $.make('span', { className: 'NB-preference-slider-after NB-tangle-arrowscrollspacing' }),
                                     $.make('input', { name: 'arrow_scroll_spacing', value: NEWSBLUR.Preferences.arrow_scroll_spacing, type: 'hidden' })
                                 ])
                             ])
@@ -1094,12 +1096,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-keyboard-spacebar' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
+                            // reader_preferences.js: slide_space_scroll_spacing_slider fills the
+                            // text on both sides of the slider from one translated sentence.
                             $.make('div', [
-                                gettext('Page down by '),
+                                $.make('span', { className: 'NB-preference-slider-before' }),
                                 $.make('span', { className: 'NB-tangle-spacescrollspacing-control NB-preference-slider', 'data-var': 'space' }),
-                                ' ',
-                                $.make('span', { className: 'NB-tangle-spacescrollspacing' }, '40%'),
-                                gettext(' of the screen'),
+                                $.make('span', { className: 'NB-preference-slider-after NB-tangle-spacescrollspacing' }),
                                 $.make('input', { name: 'space_scroll_spacing', value: NEWSBLUR.Preferences.space_scroll_spacing, type: 'hidden' })
                             ]),
                             $.make('div', { className: 'NB-preference-keyboard-spacebaraction' }, [
@@ -1648,10 +1650,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         }, 600);
     },
 
+    // reader_preferences.js: Fills the text on both sides of a slider from one
+    // translated sentence, such as "After %(slider)s %(count)s seconds.", so a
+    // translation can put the slider anywhere. The slider element itself never
+    // moves, which keeps a drag in progress working while the numbers change.
+    set_slider_sentence: function ($slider, message, values) {
+        var parts = message.split('%(slider)s');
+        $slider.siblings('.NB-preference-slider-before').text(interpolate(parts[0], values, true));
+        $slider.siblings('.NB-preference-slider-after').text(interpolate(parts.slice(1).join(''), values, true));
+    },
+
     slide_read_story_delay_slider: function (e, ui) {
         var value = (ui && ui.value) ||
             (NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1);
-        $(".NB-tangle-seconds", this.$modal).text(interpolate(ngettext("%(count)s second.", "%(count)s seconds.", value), {count: value}, true));
+        this.set_slider_sentence($(".NB-tangle-readstorydelay", this.$modal),
+            ngettext("After %(slider)s %(count)s second.", "After %(slider)s %(count)s seconds.", value), {count: value});
         if (NEWSBLUR.Preferences.read_story_delay > 0 || ui) {
             $("#NB-preference-readstorydelay-2", this.$modal).prop('checked', true).val(value);
             if (ui) {
@@ -1665,7 +1678,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         if (!NEWSBLUR.Globals.is_premium) {
             value = NEWSBLUR.Preferences.arrow_scroll_spacing;
         }
-        $(".NB-tangle-arrowscrollspacing", this.$modal).text(value);
+        this.set_slider_sentence($(".NB-tangle-arrowscrollspacing-control", this.$modal),
+            gettext("Scroll up/down in story by %(slider)s %(pixels)spx."), {pixels: value});
         $("input[name=arrow_scroll_spacing]", this.$modal).val(value);
         if (NEWSBLUR.Preferences.keyboard_verticalarrows == 'scroll' || ui) {
             $("#NB-preference-keyboard-verticalarrows-2", this.$modal).prop('checked', true);
@@ -1680,7 +1694,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         if (!NEWSBLUR.Globals.is_premium) {
             value = NEWSBLUR.Preferences.space_scroll_spacing;
         }
-        $(".NB-tangle-spacescrollspacing", this.$modal).text(value + "%");
+        this.set_slider_sentence($(".NB-tangle-spacescrollspacing-control", this.$modal),
+            gettext("Page down by %(slider)s %(percent)s of the screen"), {percent: value + "%"});
         $("input[name=space_scroll_spacing]", this.$modal).val(value);
         if (ui) {
             this.enable_save();

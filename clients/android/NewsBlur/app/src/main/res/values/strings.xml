@@ -154,25 +154,8 @@ people together to talk about the world.</string>
     <string name="profile_ago">ago</string>
     <string name="profile_recent_actvity">Activities</string>
     <string name="profile_recent_interactions">Interactions</string>
-    <string name="profile_started_following">followed</string>
-    <string name="profile_you">You</string>
-    <string name="profile_you_lower">you</string>
-    <string name="profile_your">your</string>
-    <string name="profile_now_following">is now following %1$s</string>
-    <string name="profile_replied_to">Replied to</string>
-    <string name="profile_replied_to_your">replied to %1$s</string>
-    <string name="profile_shared_story">shared</string>
-    <string name="profile_comment">comment</string>
-    <string name="profile_reply">reply</string>
     <string name="profile_button_follow">Follow</string>
     <string name="profile_button_unfollow">Unfollow</string>
-    <string name="profile_subscribed_to">subscribed to</string>
-    <string name="profile_saved">saved</string>
-    <string name="profile_reshared">re-shared</string>
-    <string name="profile_favorited">favorited</string>
-    <string name="profile_favorited_comments">favorited %1$s comments on</string>
-    <string name="profile_signup">signed up for Newsblur</string>
-    <string name="profile_comments_on">comments on</string>
     <string name="profile_feed_not_available">You are no longer subscribed to this feed</string>
     <string name="profile_do_not_follow">You do not follow this user</string>
     <string name="profile_no_interactions">No interactions</string>
@@ -1357,4 +1340,29 @@ people together to talk about the world.</string>
         <item quantity="one">%dmo ago</item>
         <item quantity="other">%dmo ago</item>
     </plurals>
+    <!-- ActivitiesAdapter.java: a profile's own activity. "you" forms have their own strings so the verb can agree. -->
+    <string name="profile_activity_you_subscribed">You subscribed to %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s subscribed to %2$s</string>
+    <string name="profile_activity_you_saved">You saved %1$s</string>
+    <string name="profile_activity_user_saved">%1$s saved %2$s</string>
+    <string name="profile_activity_you_signed_up">You signed up for Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s signed up for Newsblur</string>
+    <string name="profile_activity_you_followed">You followed %1$s</string>
+    <string name="profile_activity_user_followed">%1$s followed %2$s</string>
+    <string name="profile_activity_you_favorited_comments">You favorited %1$s comments on %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s favorited %2$s comments on %3$s</string>
+    <string name="profile_activity_you_replied">You Replied to %1$s</string>
+    <string name="profile_activity_user_replied">%1$s Replied to %2$s</string>
+    <string name="profile_activity_you_shared">You shared %1$s</string>
+    <string name="profile_activity_user_shared">%1$s shared %2$s</string>
+    <!-- InteractionsAdapter.java: what other people did to a profile; %1$s is always the other person. -->
+    <string name="profile_interaction_following_you">%1$s is now following you</string>
+    <string name="profile_interaction_following_user">%1$s is now following %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s favorited your comments on %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s favorited %2$s\'s comments on %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s replied to your comment</string>
+    <string name="profile_interaction_replied_your_reply">%1$s replied to your reply</string>
+    <string name="profile_interaction_replied_user_comment">%1$s replied to %2$s\'s comment</string>
+    <string name="profile_interaction_replied_user_reply">%1$s replied to %2$s\'s reply</string>
+    <string name="profile_interaction_reshared">%1$s re-shared %2$s</string>
 </resources>

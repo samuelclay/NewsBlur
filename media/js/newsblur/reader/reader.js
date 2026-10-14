@@ -8434,10 +8434,15 @@
                 breadcrumb_els.push($.make('span', { className: 'NB-tryfeed-go-back-part' }, parts[i]));
             }
 
-            var $link = $.make('div', { className: 'NB-tryfeed-go-back' }, [
-                $.make('span', { className: 'NB-tryfeed-go-back-label' }, gettext('Go back to ')),
-                $.make('span', { className: 'NB-tryfeed-go-back-breadcrumb' }, breadcrumb_els)
-            ]);
+            // reader.js: "Go back to Discover › Category" as one translated
+            // sentence with the breadcrumb as a placeholder.
+            var $link = $.make('div', { className: 'NB-tryfeed-go-back' }, NEWSBLUR.utils.interpolate_nodes(
+                gettext('Go back to %(breadcrumb)s'),
+                { breadcrumb: $.make('span', { className: 'NB-tryfeed-go-back-breadcrumb' }, breadcrumb_els) },
+                function (text) {
+                    return $.make('span', { className: 'NB-tryfeed-go-back-label' }).text(text);
+                }
+            ));
 
             $link.on('click', function (e) {
                 e.preventDefault();

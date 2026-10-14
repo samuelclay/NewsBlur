@@ -434,10 +434,15 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 }, gettext('Switch to Credit Card'))
             ]);
         }
-        return $.make('div', { className: 'NB-provider-alternate' }, [
-            $.make('span', { className: 'NB-provider-text' }, gettext('or subscribe with ')),
-            $.make('div', { className: 'NB-splash-link NB-paypal-button', 'data-plan': plan }, '')
-        ]);
+        // reader_premium_upgrade.js: "or subscribe with [PayPal]" as one translated
+        // sentence with the PayPal button as a placeholder.
+        return $.make('div', { className: 'NB-provider-alternate' }, NEWSBLUR.utils.interpolate_nodes(
+            gettext('or subscribe with %(paypal_button)s'),
+            { paypal_button: $.make('div', { className: 'NB-splash-link NB-paypal-button', 'data-plan': plan }, '') },
+            function (text) {
+                return $.trim(text) ? $.make('span', { className: 'NB-provider-text' }).text(text) : null;
+            }
+        ));
     },
 
     make_prorate_message: function (plan) {
