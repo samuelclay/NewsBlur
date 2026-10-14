@@ -5848,6 +5848,8 @@
             }
             var toplevel = options.toplevel || $item.hasClass("NB-toplevel") ||
                 $item.children('.folder_title').hasClass("NB-toplevel");
+            // reader.js: remembers what the menu is aligned to, so RTL can mirror it around that anchor.
+            var $menu_anchor = $item;
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
@@ -5869,8 +5871,6 @@
                 }
 
                 if ($item.hasClass('NB-task-manage')) {
-            // reader.js: remembers what the menu is aligned to, so RTL can mirror it around that anchor.
-            var $menu_anchor = $item;
                     $manage_menu_container.align($item, 'top -left', {
                         'top': 0,
                         'left': -2
@@ -5919,6 +5919,7 @@
                         }
                     }
 
+                    $menu_anchor = $align;
                     $manage_menu_container.align($align, 'top -left', {
                         'top': -1 * top,
                         'left': left
@@ -5941,7 +5942,6 @@
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'socialfeed' || type == 'starred' || type == 'search') {
                         left = toplevel ? 0 : -18;
-                    $menu_anchor = $align;
                         top = toplevel ? 20 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'folder') {
@@ -5955,6 +5955,7 @@
                             $align = $('.NB-storytitles-sentiment,.NB-feed-story-sentiment', $item);
                         }
                     }
+                    $menu_anchor = $align;
                     $manage_menu_container.align($align, '-bottom -left', {
                         'top': top,
                         'left': left
@@ -5964,6 +5965,8 @@
                 }
             }
             $manage_menu_container.stop().css({ 'display': 'block', 'opacity': 1 });
+            // reader.js: $.fn.align only knows LTR placements, so flip the menu around its anchor in RTL.
+            NEWSBLUR.utils.mirror_aligned_element($manage_menu_container, $menu_anchor);
 
             // Constrain menu height to viewport and enable scrolling if needed
             _.defer(function () {
@@ -5977,7 +5980,6 @@
                 if (container_offset.top < margin) {
                     // Menu extends above viewport (inverse/upward menus)
                     max_height = container_height + container_offset.top - margin;
-                    $menu_anchor = $align;
                     $manage_menu_container.css('top', margin);
                     needs_scroll = true;
                 } else if (container_offset.top + container_height > window_height - margin) {
@@ -5986,8 +5988,6 @@
                     needs_scroll = true;
                 }
 
-            // reader.js: $.fn.align only knows LTR placements, so flip the menu around its anchor in RTL.
-            NEWSBLUR.utils.mirror_aligned_element($manage_menu_container, $menu_anchor);
                 if (needs_scroll && max_height > 0) {
                     $manage_menu_container.css({
                         'max-height': max_height,
