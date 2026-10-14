@@ -803,7 +803,6 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     font-weight: 600;
     color: #2d261a;
     cursor: pointer;
-    text-transform: capitalize;
     transition: background 0.2s ease;
     box-sizing: border-box;
     margin: 4px 0 0;
