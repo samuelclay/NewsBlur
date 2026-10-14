@@ -154,12 +154,10 @@ def format_story_link_date__short(date, now=None):
         return time
     elif date >= midnight_yesterday(midnight):
         return gettext("Yesterday, %(time)s") % {"time": time}
-    day = (
-        date.strftime("%d %b %Y")
-        if english
-        else formats.date_format(date, "SHORT_DATE_FORMAT", use_l10n=True)
-    )
-    return "%s, %s" % (day, time)
+    if english:
+        return "%s, %s" % (date.strftime("%d %b %Y"), time)
+    day = formats.date_format(date, "SHORT_DATE_FORMAT", use_l10n=True)
+    return gettext("%(date)s, %(time)s") % {"date": day, "time": time}
 
 
 def format_story_link_date__long(date, now=None):

@@ -166,7 +166,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             } else if (date > midnight_yesterday(midnight) && date <= midnight) {
                 return interpolate(gettext("Yesterday, %(time)s"), parts, true);
             }
-            return parts.short_date + ", " + parts.time;
+            return interpolate(gettext("%(date)s, %(time)s"), { date: parts.short_date, time: parts.time }, true);
         }
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
 
