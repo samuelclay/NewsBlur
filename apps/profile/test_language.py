@@ -1,8 +1,9 @@
+import datetime
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from django.conf import settings
-from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase
 from django.utils import translation
@@ -18,6 +19,7 @@ from apps.profile.language import (
     language_preference,
 )
 from utils import json_functions as json
+from utils.story_functions import format_story_link_date__long, format_story_link_date__short, relative_date
 
 
 class Test_Language(SimpleTestCase):
@@ -25,29 +27,27 @@ class Test_Language(SimpleTestCase):
         self.factory = RequestFactory()
         self.addCleanup(translation.deactivate)
 
-    def test_welcome_language_form_can_submit_on_first_visit(self):
-        from apps.reader.views import index, welcome_req
+    def test_footer_language_form_works_without_a_csrf_cookie(self):
+        # Static pages render the footer selector without ever setting a CSRF cookie.
+        request = self.factory.post("/profile/language", {"language": "es", "next": "/about"})
+        request.user = SimpleNamespace(is_authenticated=False)
+        response = language_preference(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/about")
+        self.assertEqual(response.cookies["newsblur_language"].value, "es")
 
-        for view in (index, welcome_req):
-            with self.subTest(view=view.__name__):
-                request = self.factory.get("/welcome")
-                request.user = SimpleNamespace(is_authenticated=False, is_anonymous=True)
+    def test_footer_selector_lists_automatic_in_the_detected_language(self):
+        request = self.factory.get("/about", HTTP_ACCEPT_LANGUAGE="de")
+        request.user = SimpleNamespace(is_authenticated=False)
+        NewsBlurLocaleMiddleware(lambda request: None).process_request(request)
+        html = render_to_string("reader/footer.xhtml", {"show_language": True}, request=request)
+        self.assertIn('lang="de"', html)
+        self.assertIn("· Deutsch", html)
 
-                def welcome_form(request, **kwargs):
-                    return HttpResponse(render_to_string("includes/language_selector.html", request=request))
-
-                with patch("apps.reader.views.welcome", side_effect=welcome_form), patch(
-                    "apps.reader.views.get_subdomain", return_value=None
-                ):
-                    response = view(request)
-                self.assertIn(settings.CSRF_COOKIE_NAME, response.cookies)
-                token = response.cookies[settings.CSRF_COOKIE_NAME].value
-                post = self.factory.post(
-                    "/profile/language", {"language": "es", "csrfmiddlewaretoken": token}
-                )
-                post.user = request.user
-                post.COOKIES[settings.CSRF_COOKIE_NAME] = token
-                self.assertEqual(language_preference(post).status_code, 200)
+    def test_raw_served_pages_have_no_template_tags(self):
+        # nginx serves 502.html as a file and ansible renders maintenance_off.html with Jinja2.
+        for name in ("502.html", "maintenance_off.html"):
+            self.assertNotIn("{%", (Path(settings.NEWSBLUR_DIR) / "templates" / name).read_text())
 
     def request(self, language=None, authenticated=False, header="en", cookie=None):
         request = self.factory.post(
@@ -168,3 +168,57 @@ class Test_Language(SimpleTestCase):
         request = self.request("fr", authenticated=True, cookie="ja")
         adopt_login_language(None, request, request.user)
         request.user.profile.save.assert_not_called()
+
+    def test_automatic_is_labeled_in_the_detected_language(self):
+        request = self.request("es", authenticated=True, header="ja")
+        NewsBlurLocaleMiddleware(lambda request: None).process_request(request)
+        context = language_context(request)
+        self.assertEqual(request.LANGUAGE_CODE, "es")
+        self.assertEqual(context["ui_detected_language"], "ja")
+        self.assertEqual(context["ui_detected_language_name"], "日本語")
+        with translation.override("ja"):
+            self.assertEqual(context["ui_language_auto_short"], translation.gettext("Auto"))
+            self.assertEqual(
+                context["ui_language_auto_label"], translation.gettext("Automatic (device language)")
+            )
+        self.assertNotEqual(context["ui_language_auto_short"], "Auto")
+        self.assertNotEqual(context["ui_language_auto_label"], "Automatic (device language)")
+
+    def test_english_story_dates_keep_their_format(self):
+        now = datetime.datetime(2026, 10, 14, 12, 0)
+        with translation.override("en"):
+            self.assertEqual(
+                format_story_link_date__short(datetime.datetime(2026, 10, 14, 9, 5), now), "9:05am"
+            )
+            self.assertEqual(
+                format_story_link_date__short(datetime.datetime(2026, 10, 13, 21, 5), now),
+                "Yesterday, 9:05pm",
+            )
+            self.assertEqual(
+                format_story_link_date__short(datetime.datetime(2025, 9, 2, 9, 5), now), "02 Sep 2025, 9:05am"
+            )
+            self.assertEqual(
+                format_story_link_date__long(datetime.datetime(2026, 10, 14, 9, 5), now),
+                "Today, October 14th 9:05am",
+            )
+            self.assertEqual(
+                format_story_link_date__long(datetime.datetime(2025, 9, 2, 9, 5), now),
+                "Tuesday, September 2nd, 2025 9:05am",
+            )
+            self.assertEqual(
+                relative_date(datetime.datetime.utcnow() - datetime.timedelta(hours=3)), "3 hours ago"
+            )
+
+    def test_story_dates_use_the_active_language(self):
+        now = datetime.datetime(2026, 10, 14, 12, 0)
+        with translation.override("es"):
+            self.assertEqual(
+                format_story_link_date__short(datetime.datetime(2025, 9, 2, 9, 5), now), "02/09/2025, 09:05"
+            )
+            yesterday = format_story_link_date__long(datetime.datetime(2026, 10, 13, 9, 5), now)
+            older = format_story_link_date__long(datetime.datetime(2025, 9, 2, 9, 5), now)
+            ago = relative_date(datetime.datetime.utcnow() - datetime.timedelta(hours=3))
+        self.assertNotIn("Yesterday", yesterday)
+        self.assertIn("13 de octubre de 2026 09:05", yesterday.lower())
+        self.assertEqual(older.lower(), "martes, 2 de septiembre de 2025 09:05")
+        self.assertNotIn("hours ago", ago)

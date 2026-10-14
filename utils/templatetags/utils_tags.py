@@ -9,12 +9,7 @@ from django import template
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.utils.safestring import mark_safe
-from pipeline.templatetags.pipeline import (
-    JavascriptNode,
-    StylesheetNode,
-    javascript,
-    stylesheet,
-)
+from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode, javascript, stylesheet
 
 from apps.ask_ai.prompts import get_prompts_for_frontend
 from apps.ask_ai.providers import get_models_for_frontend
@@ -22,6 +17,7 @@ from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
 from utils import log as logging
+from utils.story_functions import localized_date
 from utils.user_functions import get_user
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -44,6 +40,13 @@ def localdatetime(context, date, date_format):
     user = get_user(context["user"])
     date = localtime_for_timezone(date, user.profile.timezone).strftime(date_format)
     return date
+
+
+@register.simple_tag(takes_context=True)
+def localdate(context, date, english_format):
+    """utils_tags.py shows a calendar date in the viewer's timezone and language."""
+    user = get_user(context["user"])
+    return localized_date(localtime_for_timezone(date, user.profile.timezone), english_format)
 
 
 @register.inclusion_tag("reader/feeds_skeleton.xhtml", takes_context=True)
@@ -205,10 +208,8 @@ def render_footer(context, page=None, show_language=True):
         "MEDIA_URL": settings.MEDIA_URL,
         "request": context.get("request"),
         "user": context.get("user"),
-        "csrf_token": context.get("csrf_token"),
-        "ui_languages": context.get("ui_languages", []),
-        "ui_language": context.get("ui_language", "en"),
-        "ui_language_preference": context.get("ui_language_preference", "auto"),
+        # utils_tags.py hands every language_context value to the footer's language selector.
+        **{key: value for key, value in context.flatten().items() if key.startswith("ui_")},
     }
 
 

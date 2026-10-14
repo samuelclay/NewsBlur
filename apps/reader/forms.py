@@ -6,7 +6,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
-from django.utils.translation import gettext_lazy
 from django.utils.translation import gettext_lazy as _
 from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, NoResolverConfiguration, query
 
@@ -22,15 +21,13 @@ class LoginForm(forms.Form):
         label=_("Username or Email"),
         max_length=30,
         widget=forms.TextInput(
-            attrs={"tabindex": 1, "class": "NB-input", "placeholder": gettext_lazy("Username or email")}
+            attrs={"tabindex": 1, "class": "NB-input", "placeholder": _("Username or email")}
         ),
         error_messages={"required": "Please enter a username."},
     )
     password = forms.CharField(
         label=_("Password"),
-        widget=forms.PasswordInput(
-            attrs={"tabindex": 2, "class": "NB-input", "placeholder": gettext_lazy("Password")}
-        ),
+        widget=forms.PasswordInput(attrs={"tabindex": 2, "class": "NB-input", "placeholder": _("Password")}),
         required=False,
     )
     # error_messages={'required': 'Please enter a password.'})
@@ -98,7 +95,7 @@ class SignupForm(forms.Form):
     username = forms.RegexField(
         regex=r"^\w+$",
         max_length=30,
-        widget=forms.TextInput(attrs={"class": "NB-input", "placeholder": gettext_lazy("Username")}),
+        widget=forms.TextInput(attrs={"class": "NB-input", "placeholder": _("Username")}),
         label=_("Username"),
         error_messages={
             "required": "Please enter a username.",
@@ -107,7 +104,7 @@ class SignupForm(forms.Form):
     )
     email = forms.EmailField(
         widget=forms.TextInput(
-            attrs={"maxlength": 75, "class": "NB-input", "placeholder": gettext_lazy("Email address")}
+            attrs={"maxlength": 75, "class": "NB-input", "placeholder": _("Email address")}
         ),
         label=_("Email"),
         required=True,
@@ -115,7 +112,7 @@ class SignupForm(forms.Form):
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={"class": "NB-input", "placeholder": gettext_lazy("Password (optional)")},
+            attrs={"class": "NB-input", "placeholder": _("Password (optional)")},
             render_value=True,
         ),
         label=_("Password"),
@@ -152,13 +149,13 @@ class SignupForm(forms.Form):
                         email,
                     )
                 )
-                raise forms.ValidationError(gettext_lazy("Seriously, fuck off spammer."))
+                raise forms.ValidationError(_("Seriously, fuck off spammer."))
             try:
                 domain = email.rsplit("@", 1)[-1]
                 if not query(domain, "MX"):
-                    raise forms.ValidationError(gettext_lazy("Sorry, that email is invalid."))
+                    raise forms.ValidationError(_("Sorry, that email is invalid."))
             except (NXDOMAIN, NoNameservers, NoAnswer):
-                raise forms.ValidationError(gettext_lazy("Sorry, that email is invalid."))
+                raise forms.ValidationError(_("Sorry, that email is invalid."))
             except NoResolverConfiguration as e:
                 logging.info(f" ***> ~FRFailed to check spamminess of domain: ~FY{domain} ~FR{e}")
                 pass

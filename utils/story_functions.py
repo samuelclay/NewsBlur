@@ -23,8 +23,10 @@ import dateutil
 import feedparser
 import lxml.etree
 import lxml.html
+from django.utils import formats, translation
 from django.utils.dateformat import DateFormat
 from django.utils.html import strip_tags as strip_tags_django
+from django.utils.translation import gettext, ngettext
 from lxml.etree import ParserError, SerialisationError, XMLSyntaxError
 from lxml.html.clean import Cleaner
 from lxml.html.diff import fixup_ins_del_tags, htmldiff_tokens, tokenize
@@ -128,17 +130,36 @@ def beginning_of_this_month():
     return datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
+def uses_english_dates():
+    """utils/story_functions.py keeps NewsBlur's English date style; other languages use Django's locale formats."""
+    return (translation.get_language() or "en").startswith("en")
+
+
+def localized_date(date, english_format):
+    if uses_english_dates():
+        return date.strftime(english_format)
+    return formats.date_format(date, "DATE_FORMAT", use_l10n=True)
+
+
 def format_story_link_date__short(date, now=None):
     if not now:
         now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
     midnight = midnight_today(now)
+    english = uses_english_dates()
+    time = (
+        date.strftime("%I:%M%p").lstrip("0").lower() if english else formats.time_format(date, use_l10n=True)
+    )
     if date >= midnight:
-        return date.strftime("%I:%M%p").lstrip("0").lower()
+        return time
     elif date >= midnight_yesterday(midnight):
-        return "Yesterday, " + date.strftime("%I:%M%p").lstrip("0").lower()
-    else:
-        return date.strftime("%d %b %Y, ") + date.strftime("%I:%M%p").lstrip("0").lower()
+        return gettext("Yesterday, %(time)s") % {"time": time}
+    day = (
+        date.strftime("%d %b %Y")
+        if english
+        else formats.date_format(date, "SHORT_DATE_FORMAT", use_l10n=True)
+    )
+    return "%s, %s" % (day, time)
 
 
 def format_story_link_date__long(date, now=None):
@@ -146,35 +167,43 @@ def format_story_link_date__long(date, now=None):
         now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
     midnight = midnight_today(now)
-    parsed_date = DateFormat(date)
 
+    if uses_english_dates():
+        parsed_date = DateFormat(date)
+        if date >= midnight:
+            return "Today, " + parsed_date.format("F jS ") + date.strftime("%I:%M%p").lstrip("0").lower()
+        elif date >= midnight_yesterday(midnight):
+            return "Yesterday, " + parsed_date.format("F jS g:ia").replace(".", "")
+        elif date >= beginning_of_this_month():
+            return parsed_date.format("l, F jS g:ia").replace(".", "")
+        else:
+            return parsed_date.format("l, F jS, Y g:ia").replace(".", "")
+
+    # utils/story_functions.py uses the full DATE_FORMAT because some locales' month-day format
+    # has the wrong grammatical case (Russian "2 Октябрь" instead of "2 октября").
+    values = {
+        "date": formats.date_format(date, "DATE_FORMAT", use_l10n=True),
+        "time": formats.time_format(date, use_l10n=True),
+        "weekday": formats.date_format(date, "l", use_l10n=True),
+    }
     if date >= midnight:
-        return "Today, " + parsed_date.format("F jS ") + date.strftime("%I:%M%p").lstrip("0").lower()
+        return gettext("Today, %(date)s %(time)s") % values
     elif date >= midnight_yesterday(midnight):
-        return "Yesterday, " + parsed_date.format("F jS g:ia").replace(".", "")
-    elif date >= beginning_of_this_month():
-        return parsed_date.format("l, F jS g:ia").replace(".", "")
-    else:
-        return parsed_date.format("l, F jS, Y g:ia").replace(".", "")
+        return gettext("Yesterday, %(date)s %(time)s") % values
+    return gettext("%(weekday)s, %(date)s %(time)s") % values
 
 
 def relative_date(d):
     diff = datetime.datetime.utcnow() - d
     s = diff.seconds
-    if diff.days == 1:
-        return "1 day ago"
-    elif diff.days > 1:
-        return "{} days ago".format(diff.days)
+    if diff.days >= 1:
+        return ngettext("%(count)d day ago", "%(count)d days ago", diff.days) % {"count": diff.days}
     elif s < 60:
-        return "just now"
-    elif s < 120:
-        return "1 minute ago"
+        return gettext("just now")
     elif s < 3600:
-        return "{} minutes ago".format(s // 60)
-    elif s < 7200:
-        return "1 hour ago"
+        return ngettext("%(count)d minute ago", "%(count)d minutes ago", s // 60) % {"count": s // 60}
     else:
-        return "{} hours ago".format(s // 3600)
+        return ngettext("%(count)d hour ago", "%(count)d hours ago", s // 3600) % {"count": s // 3600}
 
 
 def _extract_date_tuples(date):

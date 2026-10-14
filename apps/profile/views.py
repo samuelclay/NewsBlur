@@ -65,6 +65,7 @@ from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
 from apps.social.models import MActivity, MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
 from utils import json_functions as json
 from utils import log as logging
+from utils.languages import normalize_language
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import is_true, render_to
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -94,11 +95,8 @@ def set_preference(request):
     code = 1
     message = ""
     new_preferences = request.POST
-    if "language" in new_preferences:
-        from utils.languages import normalize_language
-
-        if normalize_language(new_preferences["language"]) is None:
-            return dict(code=-1, message=gettext("Unsupported language"))
+    if "language" in new_preferences and normalize_language(new_preferences["language"]) is None:
+        return dict(code=-1, message=gettext("Unsupported language"))
 
     preferences = json.decode(request.user.profile.preferences)
     for preference_name, preference_value in list(new_preferences.items()):
