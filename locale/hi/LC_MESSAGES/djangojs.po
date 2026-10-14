@@ -30,9 +30,6 @@ msgstr " अच्छी चीज़ें ढूँढ़ना जितन�
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Premium, Archive या Pro चुनें और चेकआउट करें।"
 
-msgid " Customize days of unreads"
-msgstr " अपठित दिनों की संख्या अनुकूलित करें"
-
 msgid " Gift for free (staff)"
 msgstr " मुफ़्त उपहार (स्टाफ़)"
 
@@ -50,34 +47,6 @@ msgstr " पढ़ते समय आप अलग-अलग कहानिय
 
 msgid " You get a full refund, automatically."
 msgstr " आपको पूरा रिफ़ंड अपने आप मिल जाएगा।"
-
-msgid " are stories you don't like"
-msgstr " वे लेख हैं जो आपको पसंद नहीं हैं"
-
-msgid " are stories you have not yet rated"
-msgstr " वे कहानियाँ हैं जिन्हें आपने अभी तक रेट नहीं किया है"
-
-msgid " are stories you like"
-msgstr " वे कहानियाँ हैं जो आपको पसंद हैं"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " अधिकतम %(value_1)s दिनों तक"
-
-msgid " for up to 365 days"
-msgstr " 365 दिनों तक के लिए"
-
-msgid " of the screen"
-msgstr " स्क्रीन का"
-
-msgid " or "
-msgstr " या "
-
-msgid " second"
-msgstr " सेकंड"
-
-msgid " to change keyboard shortcuts."
-msgstr " कीबोर्ड शॉर्टकट बदलने के लिए।"
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -167,6 +136,16 @@ msgstr "$99/वर्ष"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s का कनेक्शन टूट गया।"
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "अपठित दिनों की अवधि अनुकूलित करें: %(badge)s"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s अधिकतम %(count)s दिन तक"
+msgstr[1] "%(badge)s अधिकतम %(count)s दिन तक"
 
 #, python-format
 msgid "%(category)s topics"
@@ -361,12 +340,6 @@ msgstr[0] "%(count)s जवाब"
 msgstr[1] "%(count)s जवाब"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s सेकंड।"
-msgstr[1] "%(count)s सेकंड।"
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "%(count)s चयनित"
@@ -521,12 +494,28 @@ msgstr[0] "%(count)s सप्ताह पहले"
 msgstr[1] "%(count)s सप्ताह पहले"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s सूचनाएँ सेट अप हो गई हैं"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s ऐसी कहानियाँ हैं जो आपको पसंद नहीं हैं"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s ऐसी कहानियाँ हैं जिन्हें आपने अभी तक रेट नहीं किया है"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s ऐसी कहानियाँ हैं जो आपको पसंद हैं"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -583,6 +572,10 @@ msgstr[1] "%(start)s से %(end)s मिनट"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s या %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1148,8 +1141,11 @@ msgstr "साइट जोड़ी जा रही है..."
 msgid "Adding..."
 msgstr "जोड़ा जा रहा है..."
 
-msgid "After "
-msgstr "इसके बाद "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "%(slider)s %(count)s सेकंड बाद।"
+msgstr[1] "%(slider)s %(count)s सेकंड बाद।"
 
 msgid "After marking feed/folder read"
 msgstr "फ़ीड/फ़ोल्डर को पढ़ा हुआ चिह्नित करने के बाद"
@@ -1471,6 +1467,9 @@ msgstr "समय-सारणी के अनुसार अपने आप 
 msgid "Automatically play next item in queue"
 msgstr "कतार में अगला आइटम अपने आप चलाएँ"
 
+msgid "Back"
+msgstr "वापस"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1767,6 +1766,9 @@ msgstr "अपनी साइटें चुनें"
 msgid "Choose a story pattern"
 msgstr "स्टोरी पैटर्न चुनें"
 
+msgid "Choose another language"
+msgstr "कोई दूसरी भाषा चुनें"
+
 msgid "Choose categories"
 msgstr "श्रेणियाँ चुनें"
 
@@ -1797,6 +1799,9 @@ msgstr "चुनें कि आपकी ब्रीफ़िंग मे�
 msgid "Choose your browser"
 msgstr "अपना ब्राउज़र चुनें"
 
+msgid "Choose your language"
+msgstr "अपनी भाषा चुनें"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "अपना पसंदीदा AI मॉडल चुनें: Claude, GPT, Gemini या Grok"
 
@@ -1806,8 +1811,9 @@ msgstr "अपनी साइटें चुनें"
 msgid "Classifier filter scope"
 msgstr "क्लासिफ़ायर फ़िल्टर का दायरा"
 
-msgid "Classifier scope requires "
-msgstr "क्लासिफ़ायर का दायरा आवश्यक है "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "क्लासिफ़ायर के दायरे के लिए %(tier_link)s आवश्यक है"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) और Grok (xAI)। इनके बीच कभी भी स्विच करें।"
@@ -3276,8 +3282,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "प्रीमियम लें — $36/वर्ष"
 
-msgid "Go back to "
-msgstr "वापस जाएँ "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "%(breadcrumb)s पर वापस जाएँ"
 
 msgid "Good Reads"
 msgstr "अच्छी पढ़ाई"
@@ -3789,8 +3796,9 @@ msgstr "Stripe पर बिलिंग प्रबंधित करें"
 msgid "Manage email settings"
 msgstr "ईमेल सेटिंग प्रबंधित करें"
 
-msgid "Manually by hitting "
-msgstr "मैन्युअल रूप से, दबाकर "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "%(first_key)s या %(second_key)s दबाकर मैन्युअल रूप से"
 
 msgid "Manually or by clicking in the story"
 msgstr "मैन्युअल रूप से या स्टोरी पर क्लिक करके"
@@ -4177,6 +4185,10 @@ msgstr "NewsBlur बदलावों की जाँच करता है �
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur अन्य सेवाओं से जुड़ा"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur ने आपके ब्राउज़र से %(language)s का पता लगाया।"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur अभी काम नहीं कर रहा है। <br> थोड़ी देर बाद फिर कोशिश करें।"
 
@@ -4458,8 +4470,9 @@ msgstr "सूचनाएँ"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "प्रशिक्षित इंटेलिजेंस क्लासिफ़ायर पर सूचनाएँ"
 
-msgid "Notifications require "
-msgstr "सूचनाओं के लिए आवश्यक है "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "सूचनाओं के लिए %(tier_link)s आवश्यक है"
 
 msgid "Notify on"
 msgstr "सूचित करें:"
@@ -4515,8 +4528,9 @@ msgstr "अरे नहीं, उस URL को प्राप्त कर�
 msgid "Old password"
 msgstr "पुराना पासवर्ड"
 
-msgid "Older than: "
-msgstr "इससे पुराना: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "इससे पुराना: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "पुराने:"
@@ -4744,8 +4758,9 @@ msgstr "पेज फ़ेच"
 msgid "Page down"
 msgstr "पृष्ठ नीचे करें"
 
-msgid "Page down by "
-msgstr "पेज नीचे करें "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "स्क्रीन के %(percent)s हिस्से से पेज नीचे करें: %(slider)s"
 
 msgid "Page up"
 msgstr "पृष्ठ ऊपर"
@@ -4809,6 +4824,9 @@ msgstr "हर फ़ीड के लिए अलग सूचना सेट
 
 msgid "Pick a tier & pay."
 msgstr "एक प्लान चुनें और भुगतान करें।"
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "चुनें कि NewsBlur कौन-सी भाषा इस्तेमाल करे। आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।"
 
 msgid "Places"
 msgstr "स्थान"
@@ -5073,8 +5091,9 @@ msgstr "उद्धरण"
 msgid "RSS Feed"
 msgstr "RSS फ़ीड"
 
-msgid "RSS feeds for folders is a "
-msgstr "फ़ोल्डर के लिए RSS फ़ीड एक "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "फ़ोल्डरों के RSS फ़ीड एक %(link_start)sप्रीमियम सुविधा%(link_end)s हैं।"
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5233,8 +5252,9 @@ msgstr "ब्रीफ़िंग फिर से बनाएँ"
 msgid "Regex"
 msgstr "रेगेक्स"
 
-msgid "Regex requires "
-msgstr "रेगेक्स के लिए आवश्यक है "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "रेगेक्स के लिए %(tier_link)s आवश्यक है"
 
 msgid "Related"
 msgstr "संबंधित"
@@ -5312,8 +5332,9 @@ msgstr "अनुरोधित"
 msgid "Requests to Follow You"
 msgstr "आपको फ़ॉलो करने के अनुरोध"
 
-msgid "Requires "
-msgstr "इसके लिए आवश्यक है "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "इसके लिए %(tier_link)s आवश्यक है"
 
 msgid "Requires Premium Archive"
 msgstr "प्रीमियम आर्काइव आवश्यक है"
@@ -5523,8 +5544,9 @@ msgstr "स्कोप्ड क्लासिफ़ायर केवल %(p
 msgid "Scroll to comments"
 msgstr "टिप्पणियों तक स्क्रॉल करें"
 
-msgid "Scroll up/down in story by "
-msgstr "स्टोरी में ऊपर/नीचे स्क्रॉल करें: "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "कहानी में %(slider)s %(pixels)spx ऊपर/नीचे स्क्रॉल करें।"
 
 msgid "Search"
 msgstr "खोजें"
@@ -7223,6 +7245,10 @@ msgstr "उपयोग बिलिंग इतिहास"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "प्राकृतिक भाषा वर्गीकरणकर्ताओं के लिए उपयोग-आधारित बिलिंग सक्षम है।"
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "%(language)s इस्तेमाल करें"
+
 msgid "Use 12-hour clock"
 msgstr "12-घंटे वाली घड़ी इस्तेमाल करें"
 
@@ -7591,6 +7617,9 @@ msgstr ""
 msgid "You can also filter out stories you don't want to read."
 msgstr "आप उन कहानियों को भी फ़िल्टर कर सकते हैं जिन्हें आप पढ़ना नहीं चाहते।"
 
+msgid "You can change this anytime in Preferences."
+msgstr "आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।"
+
 msgid "You can change your opinions."
 msgstr "आप अपनी राय बदल सकते हैं।"
 
@@ -7641,8 +7670,9 @@ msgstr "जवाब देने के लिए आपको %(value_1)s क�
 msgid "You must be logged in to send a story over email."
 msgstr "ईमेल से स्टोरी भेजने के लिए आपको लॉग इन होना होगा।"
 
-msgid "You must have a "
-msgstr "आपके पास एक होना चाहिए "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "कीबोर्ड शॉर्टकट बदलने के लिए आपके पास %(link_start)sप्रीमियम खाता%(link_end)s होना चाहिए।"
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7910,11 +7940,9 @@ msgstr "ओपन सोर्स"
 msgid "optional, appears above the story"
 msgstr "वैकल्पिक, कहानी के ऊपर दिखाई देता है"
 
-msgid "or"
-msgstr "या"
-
-msgid "or subscribe with "
-msgstr "या इनके साथ सदस्यता लें "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "या %(paypal_button)s के साथ सदस्यता लें"
 
 msgid "pending"
 msgstr "लंबित"
@@ -7925,17 +7953,8 @@ msgstr "पॉडकास्ट उद्योग"
 msgid "premium"
 msgstr "प्रीमियम"
 
-msgid "premium account"
-msgstr "प्रीमियम खाता"
-
-msgid "premium feature"
-msgstr "प्रीमियम सुविधा"
-
 msgid "public transit"
 msgstr "सार्वजनिक परिवहन"
-
-msgid "px."
-msgstr "पिक्सेल।"
 
 msgid "quantum computing"
 msgstr "क्वांटम कंप्यूटिंग"

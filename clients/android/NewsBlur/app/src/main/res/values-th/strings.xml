@@ -174,25 +174,8 @@
     <string name="profile_ago">ที่แล้ว</string>
     <string name="profile_recent_actvity">กิจกรรม</string>
     <string name="profile_recent_interactions">การโต้ตอบ</string>
-    <string name="profile_started_following">ติดตามแล้ว</string>
-    <string name="profile_you">คุณ</string>
-    <string name="profile_you_lower">คุณ</string>
-    <string name="profile_your">ของคุณ</string>
-    <string name="profile_now_following">กำลังติดตาม %1$s</string>
-    <string name="profile_replied_to">ตอบกลับถึง</string>
-    <string name="profile_replied_to_your">ตอบกลับ %1$s</string>
-    <string name="profile_shared_story">แชร์แล้ว</string>
-    <string name="profile_comment">ความคิดเห็น</string>
-    <string name="profile_reply">ตอบกลับ</string>
     <string name="profile_button_follow">ติดตาม</string>
     <string name="profile_button_unfollow">เลิกติดตาม</string>
-    <string name="profile_subscribed_to">ติดตาม</string>
-    <string name="profile_saved">บันทึกแล้ว</string>
-    <string name="profile_reshared">แชร์ซ้ำ</string>
-    <string name="profile_favorited">ถูกเพิ่มในรายการโปรด</string>
-    <string name="profile_favorited_comments">ถูกใจความคิดเห็น %1$s รายการใน</string>
-    <string name="profile_signup">สมัคร Newsblur</string>
-    <string name="profile_comments_on">ความคิดเห็นเกี่ยวกับ</string>
     <string name="profile_feed_not_available">คุณไม่ได้สมัครรับฟีดนี้อีกต่อไป</string>
     <string name="profile_do_not_follow">คุณไม่ได้ติดตามผู้ใช้นี้</string>
     <string name="profile_no_interactions">ไม่มีการโต้ตอบ</string>
@@ -1012,7 +995,7 @@
         <item quantity="other">%1$d เรื่อง/เดือน</item>
     </plurals>
     <string name="setup_feed_stale_last_story">ข้อมูลล้าสมัย · เรื่องล่าสุด %1$s</string>
-    <string name="add_site_url_or_search">https:// หรือค้นหา</string>
+    <string name="add_site_url_or_search">%1$s หรือค้นหา</string>
     <string name="add_site_choose_folder">เลือกโฟลเดอร์</string>
     <string name="add_site_top_level">— ระดับบนสุด —</string>
     <string name="add_site_adding_site">กำลังเพิ่มเว็บไซต์</string>
@@ -1102,4 +1085,55 @@
     <plurals name="briefing_group_story_count">
         <item quantity="other">%d เรื่อง</item>
     </plurals>
+    <string name="language_dialog_title">เลือกภาษาของคุณ</string>
+    <string name="language_dialog_detected">NewsBlur ตรวจพบว่าอุปกรณ์ของคุณใช้ %1$s</string>
+    <string name="language_dialog_note">คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในค่ากำหนด</string>
+    <string name="language_dialog_use">ใช้ %1$s</string>
+    <string name="language_dialog_choose_another">เลือกภาษาอื่น</string>
+    <string name="language_dialog_pick">เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในค่ากำหนด</string>
+    <string name="main_menu_import_feed_bundles">นำเข้าและชุดฟีด</string>
+    <string name="main_menu_export_feeds">ส่งออกฟีด</string>
+    <string name="discover_open">เปิด</string>
+    <string name="discover_folder_top_level">ระดับบนสุด</string>
+    <string name="discover_add_to_folder">เพิ่มลงในโฟลเดอร์</string>
+    <string name="add_site_shortcut_trending">กำลังเป็นที่นิยม</string>
+    <string name="add_site_freshness_stale">%1$s ล้าสมัย</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="other">%d นาทีที่แล้ว</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="other">%d ชั่วโมงที่แล้ว</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="other">%d วันที่แล้ว</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="other">%d สัปดาห์ที่แล้ว</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="other">%d เดือนที่แล้ว</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">คุณสมัครรับข้อมูลจาก %1$s แล้ว</string>
+    <string name="profile_activity_user_subscribed">%1$s สมัครรับข้อมูลจาก %2$s</string>
+    <string name="profile_activity_you_saved">คุณบันทึก %1$s แล้ว</string>
+    <string name="profile_activity_user_saved">%1$s บันทึก %2$s</string>
+    <string name="profile_activity_you_signed_up">คุณสมัครใช้งาน Newsblur แล้ว</string>
+    <string name="profile_activity_user_signed_up">%1$s สมัครใช้งาน Newsblur แล้ว</string>
+    <string name="profile_activity_you_followed">คุณติดตาม %1$s แล้ว</string>
+    <string name="profile_activity_user_followed">%1$s ติดตาม %2$s</string>
+    <string name="profile_activity_you_favorited_comments">คุณถูกใจ %1$s ความคิดเห็นใน %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s ถูกใจความคิดเห็นของ %2$s รายการเกี่ยวกับ %3$s</string>
+    <string name="profile_activity_you_replied">คุณตอบกลับ %1$s</string>
+    <string name="profile_activity_user_replied">%1$s ตอบกลับ %2$s</string>
+    <string name="profile_activity_you_shared">คุณแชร์ %1$s</string>
+    <string name="profile_activity_user_shared">%1$s แชร์ %2$s</string>
+    <string name="profile_interaction_following_you">ตอนนี้ %1$s ติดตามคุณแล้ว</string>
+    <string name="profile_interaction_following_user">ตอนนี้ %1$s กำลังติดตาม %2$s แล้ว</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s ถูกใจความคิดเห็นของคุณเกี่ยวกับ %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s ถูกใจความคิดเห็นของ %2$s เกี่ยวกับ %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s ตอบกลับความคิดเห็นของคุณ</string>
+    <string name="profile_interaction_replied_your_reply">%1$s ตอบกลับการตอบกลับของคุณ</string>
+    <string name="profile_interaction_replied_user_comment">%1$s ตอบกลับความคิดเห็นของ %2$s</string>
+    <string name="profile_interaction_replied_user_reply">%1$s ตอบกลับข้อความตอบกลับของ %2$s</string>
+    <string name="profile_interaction_reshared">%1$s แชร์ต่อ %2$s</string>
 </resources>

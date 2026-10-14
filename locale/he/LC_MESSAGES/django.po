@@ -103,6 +103,10 @@ msgstr[0] "לפני %(count)d דקה"
 msgstr[1] "לפני %(count)d דקות"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d יום"
@@ -1197,6 +1201,9 @@ msgid ""
 msgstr ""
 "קרייג הוקנברי צולל לעומק הסיבות לכך שמדפסות Canon מופיעות כל הזמן כ״לא מקוונות״ ב־Mac &mdash; קושחת "
 "Bonjour/mDNS פגומה &mdash; ומציג פתרון קבוע."
+
+msgid "Create Account"
+msgstr "יצירת חשבון"
 
 msgid "Create a new account instead"
 msgstr "במקום זאת, יצירת חשבון חדש"
@@ -5812,9 +5819,6 @@ msgstr "מאת %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "נדרשים classifier_type ו-classifier_value"
 
-msgid "create account"
-msgstr "יצירת חשבון"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers חייב להיות רשימה"
 
@@ -5858,9 +5862,6 @@ msgstr "רק רגע"
 
 msgid "just now"
 msgstr "הרגע"
-
-msgid "log in"
-msgstr "התחבר"
 
 msgid "logout"
 msgstr "התנתקות"

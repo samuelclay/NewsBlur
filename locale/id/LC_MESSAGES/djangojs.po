@@ -30,9 +30,6 @@ msgstr " Sebagus apa pun menemukan hal menarik, Anda juga bisa dengan mudah meng
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Pilih Premium, Archive, atau Pro lalu lanjutkan ke pembayaran."
 
-msgid " Customize days of unreads"
-msgstr " Sesuaikan jumlah hari untuk artikel belum dibaca"
-
 msgid " Gift for free (staff)"
 msgstr " Hadiah gratis (staf)"
 
@@ -50,34 +47,6 @@ msgstr " Anda dapat dengan mudah melatih cerita satu per satu saat membacanya."
 
 msgid " You get a full refund, automatically."
 msgstr " Anda akan mendapat pengembalian dana penuh secara otomatis."
-
-msgid " are stories you don't like"
-msgstr " adalah cerita yang tidak Anda sukai"
-
-msgid " are stories you have not yet rated"
-msgstr " adalah artikel yang belum Anda beri nilai"
-
-msgid " are stories you like"
-msgstr " adalah artikel yang Anda sukai"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " hingga %(value_1)s hari"
-
-msgid " for up to 365 days"
-msgstr " hingga 365 hari"
-
-msgid " of the screen"
-msgstr " di layar"
-
-msgid " or "
-msgstr " atau "
-
-msgid " second"
-msgstr " detik"
-
-msgid " to change keyboard shortcuts."
-msgstr " untuk mengubah pintasan keyboard."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -167,6 +136,16 @@ msgstr "$99/tahun"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s terputus."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s Sesuaikan jumlah hari artikel belum dibaca"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s berlaku hingga %(count)s hari"
+msgstr[1] "%(badge)s berlaku hingga %(count)s hari"
 
 #, python-format
 msgid "%(category)s topics"
@@ -361,12 +340,6 @@ msgstr[0] "%(count)s balasan"
 msgstr[1] "%(count)s balasan"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s detik."
-msgstr[1] "%(count)s detik."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "%(count)s dipilih"
@@ -521,12 +494,28 @@ msgstr[0] "%(count)sm lalu"
 msgstr[1] "%(count)s minggu lalu"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Notifikasi %(feed_title)s telah disiapkan"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s adalah artikel yang tidak Anda sukai"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s adalah artikel yang belum Anda beri nilai"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s adalah artikel yang Anda sukai"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -587,6 +576,10 @@ msgstr[1] "%(start)s hingga %(end)s menit"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s atau %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1152,8 +1145,11 @@ msgstr "Menambahkan situs..."
 msgid "Adding..."
 msgstr "Menambahkan..."
 
-msgid "After "
-msgstr "Setelah "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "Setelah %(slider)s %(count)s detik."
+msgstr[1] "Setelah %(slider)s %(count)s detik."
 
 msgid "After marking feed/folder read"
 msgstr "Setelah menandai feed/folder sebagai telah dibaca"
@@ -1475,6 +1471,9 @@ msgstr "Buat rangkuman secara otomatis sesuai jadwal"
 msgid "Automatically play next item in queue"
 msgstr "Putar item berikutnya dalam antrean secara otomatis"
 
+msgid "Back"
+msgstr "Kembali"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1771,6 +1770,9 @@ msgstr "Pilih situs Anda"
 msgid "Choose a story pattern"
 msgstr "Pilih pola artikel"
 
+msgid "Choose another language"
+msgstr "Pilih bahasa lain"
+
 msgid "Choose categories"
 msgstr "Pilih kategori"
 
@@ -1801,6 +1803,9 @@ msgstr "Pilih bagian yang ditampilkan dalam ringkasan Anda"
 msgid "Choose your browser"
 msgstr "Pilih browser Anda"
 
+msgid "Choose your language"
+msgstr "Pilih bahasa Anda"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Pilih model AI yang Anda inginkan: Claude, GPT, Gemini, atau Grok"
 
@@ -1810,8 +1815,9 @@ msgstr "Pilih situs Anda"
 msgid "Classifier filter scope"
 msgstr "Cakupan filter pengklasifikasi"
 
-msgid "Classifier scope requires "
-msgstr "Cakupan pengklasifikasi memerlukan "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "Cakupan pengklasifikasi memerlukan %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google), dan Grok (xAI). Beralih di antara mereka kapan saja."
@@ -3287,8 +3293,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "Dapatkan Premium — $36/tahun"
 
-msgid "Go back to "
-msgstr "Kembali ke "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "Kembali ke %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "Bacaan bagus"
@@ -3802,8 +3809,9 @@ msgstr "Kelola penagihan di Stripe"
 msgid "Manage email settings"
 msgstr "Kelola pengaturan email"
 
-msgid "Manually by hitting "
-msgstr "Secara manual dengan menekan "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "Secara manual dengan menekan %(first_key)s atau %(second_key)s"
 
 msgid "Manually or by clicking in the story"
 msgstr "Secara manual atau dengan mengeklik artikel"
@@ -4190,6 +4198,10 @@ msgstr "NewsBlur memeriksa pembaruan dan mengirimkan artikel baru ke feed Anda."
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur terhubung ke layanan lain"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur mendeteksi %(language)s dari browser Anda."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur sedang tidak berfungsi. <br> Coba lagi nanti."
 
@@ -4471,8 +4483,9 @@ msgstr "Notifikasi"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "Notifikasi untuk pengklasifikasi kecerdasan yang telah dilatih"
 
-msgid "Notifications require "
-msgstr "Notifikasi memerlukan "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "Notifikasi memerlukan %(tier_link)s"
 
 msgid "Notify on"
 msgstr "Beri tahu tentang"
@@ -4528,8 +4541,9 @@ msgstr "Waduh, terjadi masalah saat mengambil URL tersebut dan tidak ada penjela
 msgid "Old password"
 msgstr "Kata sandi lama"
 
-msgid "Older than: "
-msgstr "Lebih lama dari: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "Lebih lama dari: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "Lebih lama:"
@@ -4759,8 +4773,9 @@ msgstr "Pengambilan Halaman"
 msgid "Page down"
 msgstr "Halaman ke bawah"
 
-msgid "Page down by "
-msgstr "Gulir halaman ke bawah sebanyak "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "Gulir layar ke bawah sebesar %(slider)s %(percent)s layar"
 
 msgid "Page up"
 msgstr "Gulir ke atas"
@@ -4822,6 +4837,9 @@ msgstr "Pengaturan notifikasi per feed"
 
 msgid "Pick a tier & pay."
 msgstr "Pilih paket & bayar."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "Pilih bahasa yang ingin digunakan NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi."
 
 msgid "Places"
 msgstr "Tempat"
@@ -5088,8 +5106,9 @@ msgstr "Kutipan"
 msgid "RSS Feed"
 msgstr "Feed RSS"
 
-msgid "RSS feeds for folders is a "
-msgstr "Feed RSS untuk folder adalah "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "Feed RSS untuk folder adalah fitur %(link_start)spremium%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5248,8 +5267,9 @@ msgstr "Buat Ulang Briefing"
 msgid "Regex"
 msgstr "Regex"
 
-msgid "Regex requires "
-msgstr "Regex memerlukan "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "Regex memerlukan %(tier_link)s"
 
 msgid "Related"
 msgstr "Terkait"
@@ -5327,8 +5347,9 @@ msgstr "Diminta"
 msgid "Requests to Follow You"
 msgstr "Permintaan untuk Mengikuti Anda"
 
-msgid "Requires "
-msgstr "Memerlukan "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "Memerlukan %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "Memerlukan Arsip Premium"
@@ -5538,8 +5559,9 @@ msgstr "Pengklasifikasi terbatas hanya tersedia bagi pelanggan %(plan)s."
 msgid "Scroll to comments"
 msgstr "Gulir ke komentar"
 
-msgid "Scroll up/down in story by "
-msgstr "Gulir cerita ke atas/bawah sebesar "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "Gulir ke atas/bawah dalam artikel sebanyak %(slider)s %(pixels)spx."
 
 msgid "Search"
 msgstr "Cari"
@@ -7249,6 +7271,10 @@ msgstr "Riwayat tagihan penggunaan"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "Penagihan berdasarkan penggunaan diaktifkan untuk pengklasifikasi bahasa alami."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "Gunakan %(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "Gunakan format waktu 12 jam"
 
@@ -7619,6 +7645,9 @@ msgstr ""
 msgid "You can also filter out stories you don't want to read."
 msgstr "Anda juga dapat menyaring cerita yang tidak ingin dibaca."
 
+msgid "You can change this anytime in Preferences."
+msgstr "Anda dapat mengubahnya kapan saja di Preferensi."
+
 msgid "You can change your opinions."
 msgstr "Anda dapat mengubah pendapat Anda."
 
@@ -7667,8 +7696,9 @@ msgstr "Anda harus mengikuti %(value_1)s untuk membalas"
 msgid "You must be logged in to send a story over email."
 msgstr "Anda harus masuk untuk mengirim berita melalui email."
 
-msgid "You must have a "
-msgstr "Anda harus memiliki "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "Anda harus memiliki akun %(link_start)spremium%(link_end)s untuk mengubah pintasan keyboard."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7936,11 +7966,9 @@ msgstr "sumber terbuka"
 msgid "optional, appears above the story"
 msgstr "opsional, ditampilkan di atas artikel"
 
-msgid "or"
-msgstr "atau"
-
-msgid "or subscribe with "
-msgstr "atau berlangganan dengan "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "atau berlangganan dengan %(paypal_button)s"
 
 msgid "pending"
 msgstr "tertunda"
@@ -7951,17 +7979,8 @@ msgstr "industri podcast"
 msgid "premium"
 msgstr "premium"
 
-msgid "premium account"
-msgstr "akun premium"
-
-msgid "premium feature"
-msgstr "fitur premium"
-
 msgid "public transit"
 msgstr "transportasi umum"
-
-msgid "px."
-msgstr "px."
 
 msgid "quantum computing"
 msgstr "komputasi kuantum"

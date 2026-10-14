@@ -27,7 +27,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>注目記事%@件</string>
+			<string>フォーカス記事%@件</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ 回開く</string>
+			<string>%@ 回開かれました</string>
 		</dict>
 	</dict>
 	<key>%@ searches</key>
@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>これら%@件のストーリーを既読にする</string>
+			<string>これら%@件の記事を既読にする</string>
 		</dict>
 	</dict>
 	<key>Mute %@ Sites</key>
@@ -223,7 +223,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>過去%@日分を保存</string>
+			<string>過去%@日分を保存中</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ hours</key>
@@ -237,7 +237,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>過去%@時間分を保存</string>
+			<string>過去%@時間分を保存中</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

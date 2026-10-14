@@ -32,9 +32,6 @@ msgstr ""
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Scegli Premium, Archive o Pro e completa l'acquisto."
 
-msgid " Customize days of unreads"
-msgstr " Personalizza i giorni di elementi non letti"
-
 msgid " Gift for free (staff)"
 msgstr " Regalo gratuito (staff)"
 
@@ -52,34 +49,6 @@ msgstr " Puoi addestrare facilmente i singoli articoli mentre li leggi."
 
 msgid " You get a full refund, automatically."
 msgstr " Riceverai automaticamente un rimborso completo."
-
-msgid " are stories you don't like"
-msgstr " sono articoli che non ti piacciono"
-
-msgid " are stories you have not yet rated"
-msgstr " sono notizie che non hai ancora valutato"
-
-msgid " are stories you like"
-msgstr " sono storie che ti piacciono"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " per un massimo di %(value_1)s giorni"
-
-msgid " for up to 365 days"
-msgstr " per un massimo di 365 giorni"
-
-msgid " of the screen"
-msgstr " dello schermo"
-
-msgid " or "
-msgstr " o "
-
-msgid " second"
-msgstr " secondo"
-
-msgid " to change keyboard shortcuts."
-msgstr " per modificare le scorciatoie da tastiera."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -169,6 +138,16 @@ msgstr "99 $/anno"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s si è disconnesso."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s Personalizza i giorni di contenuti non letti"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s per un massimo di %(count)s giorno"
+msgstr[1] "%(badge)s per un massimo di %(count)s giorni"
 
 #, python-format
 msgid "%(category)s topics"
@@ -363,12 +342,6 @@ msgstr[0] "%(count)s risposta"
 msgstr[1] "%(count)s risposte"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s secondo."
-msgstr[1] "%(count)s secondi."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "%(count)s selezionato"
@@ -523,12 +496,28 @@ msgstr[0] "%(count)s sett. fa"
 msgstr[1] "%(count)s sett. fa"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Le notifiche di %(feed_title)s sono configurate"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s sono notizie che non ti piacciono"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s sono articoli che non hai ancora valutato"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s sono articoli che ti piacciono"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -585,6 +574,10 @@ msgstr[1] "Da %(start)s a %(end)s minuti"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s o %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1154,8 +1147,11 @@ msgstr "Aggiunta del sito..."
 msgid "Adding..."
 msgstr "Aggiunta..."
 
-msgid "After "
-msgstr "Dopo "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "Dopo %(slider)s %(count)s secondo."
+msgstr[1] "Dopo %(slider)s %(count)s secondi."
 
 msgid "After marking feed/folder read"
 msgstr "Dopo aver segnato come letto il feed/la cartella"
@@ -1477,6 +1473,9 @@ msgstr "Genera automaticamente riepiloghi secondo una pianificazione"
 msgid "Automatically play next item in queue"
 msgstr "Riproduci automaticamente l'elemento successivo nella coda"
 
+msgid "Back"
+msgstr "Indietro"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1773,6 +1772,9 @@ msgstr "Scegli i tuoi siti"
 msgid "Choose a story pattern"
 msgstr "Scegli uno schema per gli articoli"
 
+msgid "Choose another language"
+msgstr "Scegli un'altra lingua"
+
 msgid "Choose categories"
 msgstr "Scegli le categorie"
 
@@ -1803,6 +1805,9 @@ msgstr "Scegli le sezioni da mostrare nel tuo briefing"
 msgid "Choose your browser"
 msgstr "Scegli il tuo browser"
 
+msgid "Choose your language"
+msgstr "Scegli la tua lingua"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Scegli il modello IA che preferisci: Claude, GPT, Gemini o Grok"
 
@@ -1812,8 +1817,9 @@ msgstr "Scegli i tuoi siti"
 msgid "Classifier filter scope"
 msgstr "Ambito del filtro del classificatore"
 
-msgid "Classifier scope requires "
-msgstr "L’ambito del classificatore richiede "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "L'ambito del classificatore richiede %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr ""
@@ -3291,8 +3297,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "Passa a Premium — 36 $/anno"
 
-msgid "Go back to "
-msgstr "Torna a "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "Torna a %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "Letture consigliate"
@@ -3810,8 +3817,9 @@ msgstr "Gestisci la fatturazione su Stripe"
 msgid "Manage email settings"
 msgstr "Gestisci le impostazioni email"
 
-msgid "Manually by hitting "
-msgstr "Manualmente, premendo "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "Manualmente premendo %(first_key)s o %(second_key)s"
 
 msgid "Manually or by clicking in the story"
 msgstr "Manualmente o facendo clic sull’articolo"
@@ -4198,6 +4206,10 @@ msgstr "NewsBlur verifica la presenza di aggiornamenti e invia i nuovi articoli 
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur connesso ad altri servizi"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur ha rilevato %(language)s nel tuo browser."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur al momento non è raggiungibile. <br> Riprova tra poco."
 
@@ -4479,8 +4491,9 @@ msgstr "Notifiche"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "Notifiche sui classificatori di intelligenza addestrati"
 
-msgid "Notifications require "
-msgstr "Le notifiche richiedono "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "Per le notifiche è necessario %(tier_link)s"
 
 msgid "Notify on"
 msgstr "Invia notifiche su"
@@ -4538,8 +4551,9 @@ msgstr ""
 msgid "Old password"
 msgstr "Vecchia password"
 
-msgid "Older than: "
-msgstr "Più vecchi di: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "Più vecchie di: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "Più vecchi:"
@@ -4773,8 +4787,9 @@ msgstr "Recupero pagina"
 msgid "Page down"
 msgstr "Pagina giù"
 
-msgid "Page down by "
-msgstr "Scorri la pagina verso il basso di "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "Scorri la pagina verso il basso di %(slider)s %(percent)s dello schermo"
 
 msgid "Page up"
 msgstr "Pagina su"
@@ -4838,6 +4853,9 @@ msgstr "Impostazioni di notifica per ogni feed"
 
 msgid "Pick a tier & pay."
 msgstr "Scegli un piano e paga."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "Scegli la lingua che NewsBlur dovrà usare. Puoi modificarla in qualsiasi momento nelle Preferenze."
 
 msgid "Places"
 msgstr "Luoghi"
@@ -5108,8 +5126,9 @@ msgstr "Citazione"
 msgid "RSS Feed"
 msgstr "Feed RSS"
 
-msgid "RSS feeds for folders is a "
-msgstr "I feed RSS per le cartelle sono un "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "I feed RSS delle cartelle sono una funzionalità %(link_start)spremium%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5268,8 +5287,9 @@ msgstr "Rigenera il briefing"
 msgid "Regex"
 msgstr "Espressione regolare"
 
-msgid "Regex requires "
-msgstr "L'espressione regolare richiede "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "L'espressione regolare richiede %(tier_link)s"
 
 msgid "Related"
 msgstr "Correlati"
@@ -5347,8 +5367,9 @@ msgstr "Richiesto"
 msgid "Requests to Follow You"
 msgstr "Richieste per seguirti"
 
-msgid "Requires "
-msgstr "Richiede "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "Richiede %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "Richiede l'archivio Premium"
@@ -5560,8 +5581,9 @@ msgstr "I classificatori con ambito limitato sono disponibili solo per gli abbon
 msgid "Scroll to comments"
 msgstr "Scorri fino ai commenti"
 
-msgid "Scroll up/down in story by "
-msgstr "Scorri la notizia verso l’alto/il basso di "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "Scorri la notizia verso l'alto/il basso di %(slider)s %(pixels)spx."
 
 msgid "Search"
 msgstr "Cerca"
@@ -7273,6 +7295,10 @@ msgstr "Cronologia di fatturazione dell’utilizzo"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "La fatturazione a consumo è attiva per i classificatori del linguaggio naturale."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "Usa %(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "Usa il formato a 12 ore"
 
@@ -7643,6 +7669,9 @@ msgstr ""
 msgid "You can also filter out stories you don't want to read."
 msgstr "Puoi anche filtrare le storie che non vuoi leggere."
 
+msgid "You can change this anytime in Preferences."
+msgstr "Puoi modificarlo in qualsiasi momento nelle Preferenze."
+
 msgid "You can change your opinions."
 msgstr "Puoi cambiare le tue opinioni."
 
@@ -7691,8 +7720,9 @@ msgstr "Devi seguire %(value_1)s per poter rispondere"
 msgid "You must be logged in to send a story over email."
 msgstr "Devi aver effettuato l’accesso per inviare una storia via email."
 
-msgid "You must have a "
-msgstr "Devi avere un "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "Devi avere un account %(link_start)spremium%(link_end)s per modificare le scorciatoie da tastiera."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7960,11 +7990,9 @@ msgstr "open source"
 msgid "optional, appears above the story"
 msgstr "facoltativo, appare sopra l'articolo"
 
-msgid "or"
-msgstr "o"
-
-msgid "or subscribe with "
-msgstr "oppure abbonati con "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "oppure abbonati con %(paypal_button)s"
 
 msgid "pending"
 msgstr "in sospeso"
@@ -7975,17 +8003,8 @@ msgstr "settore dei podcast"
 msgid "premium"
 msgstr "premium"
 
-msgid "premium account"
-msgstr "account premium"
-
-msgid "premium feature"
-msgstr "funzionalità premium"
-
 msgid "public transit"
 msgstr "trasporto pubblico"
-
-msgid "px."
-msgstr "px."
 
 msgid "quantum computing"
 msgstr "informatica quantistica"

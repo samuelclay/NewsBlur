@@ -124,6 +124,10 @@ msgstr[4] "قبل %(count)d دقيقة"
 msgstr[5] "قبل %(count)d دقيقة"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s، %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d يوم"
@@ -1271,6 +1275,9 @@ msgid ""
 msgstr ""
 "يتعمق Craig Hockenberry في سبب ظهور طابعات Canon باستمرار بحالة «غير متصلة» على Mac &mdash;، بسبب خلل في "
 "البرنامج الثابت لـ Bonjour/mDNS &mdash;، ويقدم حلًا دائمًا."
+
+msgid "Create Account"
+msgstr "إنشاء حساب"
 
 msgid "Create a new account instead"
 msgstr "إنشاء حساب جديد بدلاً من ذلك"
@@ -5952,9 +5959,6 @@ msgstr "بواسطة %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "يلزم تحديد classifier_type وclassifier_value"
 
-msgid "create account"
-msgstr "إنشاء حساب"
-
 msgid "dashboard_rivers must be a list"
 msgstr "يجب أن تكون dashboard_rivers قائمة"
 
@@ -5998,9 +6002,6 @@ msgstr "لحظة واحدة"
 
 msgid "just now"
 msgstr "الآن"
-
-msgid "log in"
-msgstr "تسجيل الدخول"
 
 msgid "logout"
 msgstr "تسجيل الخروج"

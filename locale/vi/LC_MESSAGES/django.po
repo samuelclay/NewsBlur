@@ -98,6 +98,10 @@ msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d phút trước"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d ngày"
@@ -1212,6 +1216,9 @@ msgid ""
 msgstr ""
 "Craig Hockenberry tìm hiểu sâu lý do máy in Canon liên tục chuyển sang trạng thái \"Ngoại tuyến\" trên Mac "
 "&mdash; do firmware Bonjour/mDNS bị lỗi &mdash; và đưa ra cách khắc phục vĩnh viễn."
+
+msgid "Create Account"
+msgstr "Tạo tài khoản"
 
 msgid "Create a new account instead"
 msgstr "Thay vào đó, tạo tài khoản mới"
@@ -5963,9 +5970,6 @@ msgstr "bởi %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "Cần có classifier_type và classifier_value"
 
-msgid "create account"
-msgstr "tạo tài khoản"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers phải là một danh sách"
 
@@ -6009,9 +6013,6 @@ msgstr "chỉ một giây"
 
 msgid "just now"
 msgstr "vừa xong"
-
-msgid "log in"
-msgstr "đăng nhập"
 
 msgid "logout"
 msgstr "đăng xuất"

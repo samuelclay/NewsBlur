@@ -174,25 +174,8 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="profile_ago">önce</string>
     <string name="profile_recent_actvity">Etkinlikler</string>
     <string name="profile_recent_interactions">Etkileşimler</string>
-    <string name="profile_started_following">takip etti</string>
-    <string name="profile_you">Siz</string>
-    <string name="profile_you_lower">siz</string>
-    <string name="profile_your">sizin</string>
-    <string name="profile_now_following">artık %1$s hesabını takip ediyor</string>
-    <string name="profile_replied_to">Yanıt verdiği kişi</string>
-    <string name="profile_replied_to_your">%1$s adlı kullanıcıya yanıt verdi</string>
-    <string name="profile_shared_story">paylaşıldı</string>
-    <string name="profile_comment">yorum</string>
-    <string name="profile_reply">yanıtla</string>
     <string name="profile_button_follow">Takip et</string>
     <string name="profile_button_unfollow">Takibi bırak</string>
-    <string name="profile_subscribed_to">şuna abone oldu</string>
-    <string name="profile_saved">kaydedildi</string>
-    <string name="profile_reshared">yeniden paylaşıldı</string>
-    <string name="profile_favorited">favorilere eklendi</string>
-    <string name="profile_favorited_comments">şu gönderideki %1$s yorumu favorilerine ekledi</string>
-    <string name="profile_signup">Newsblur’a kaydoldu</string>
-    <string name="profile_comments_on">hakkında yorumlar</string>
     <string name="profile_feed_not_available">Artık bu akışa abone değilsiniz</string>
     <string name="profile_do_not_follow">Bu kullanıcıyı takip etmiyorsunuz</string>
     <string name="profile_no_interactions">Etkileşim yok</string>
@@ -1024,7 +1007,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
         <item quantity="other">Ayda %1$d haber</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Güncel değil · son haber %1$s</string>
-    <string name="add_site_url_or_search">https:// veya ara</string>
+    <string name="add_site_url_or_search">%1$s veya ara</string>
     <string name="add_site_choose_folder">Klasör seç</string>
     <string name="add_site_top_level">— En Üst Düzey —</string>
     <string name="add_site_adding_site">Site ekleniyor</string>
@@ -1116,4 +1099,60 @@ bir araya getiren kişisel haber okuyucusu.</string>
         <item quantity="one">%d haber</item>
         <item quantity="other">%d haber</item>
     </plurals>
+    <string name="language_dialog_title">Dilinizi seçin</string>
+    <string name="language_dialog_detected">NewsBlur, cihazınızda %1$s dilini algıladı.</string>
+    <string name="language_dialog_note">Bunu istediğiniz zaman Tercihler\'den değiştirebilirsiniz.</string>
+    <string name="language_dialog_use">%1$s kullan</string>
+    <string name="language_dialog_choose_another">Başka bir dil seçin</string>
+    <string name="language_dialog_pick">NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler\'den değiştirebilirsiniz.</string>
+    <string name="main_menu_import_feed_bundles">İçe aktar ve akış paketleri</string>
+    <string name="main_menu_export_feeds">Akışları dışa aktar</string>
+    <string name="discover_open">Aç</string>
+    <string name="discover_folder_top_level">En Üst Düzey</string>
+    <string name="discover_add_to_folder">Klasöre ekle</string>
+    <string name="add_site_shortcut_trending">Trend olan</string>
+    <string name="add_site_freshness_stale">Eski %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="one">%d dk önce</item>
+        <item quantity="other">%d dk önce</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="one">%d sa önce</item>
+        <item quantity="other">%d sa önce</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="one">%d gün önce</item>
+        <item quantity="other">%d gün önce</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="one">%d hafta önce</item>
+        <item quantity="other">%d hafta önce</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="one">%d ay önce</item>
+        <item quantity="other">%d ay önce</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">%1$s akışına abone oldunuz</string>
+    <string name="profile_activity_user_subscribed">%1$s, %2$s akışına abone oldu</string>
+    <string name="profile_activity_you_saved">%1$s kaydettiniz</string>
+    <string name="profile_activity_user_saved">%1$s, %2$s kaydetti</string>
+    <string name="profile_activity_you_signed_up">Newsblur\'a kaydoldunuz</string>
+    <string name="profile_activity_user_signed_up">%1$s, Newsblur\'a kaydoldu</string>
+    <string name="profile_activity_you_followed">%1$s kişisini takip ettiniz</string>
+    <string name="profile_activity_user_followed">%1$s, %2$s kişisini takip etmeye başladı</string>
+    <string name="profile_activity_you_favorited_comments">%2$s üzerindeki %1$s yorumu favorilerinize eklediniz</string>
+    <string name="profile_activity_user_favorited_comments">%1$s, %3$s üzerindeki %2$s yorumunu favorilerine ekledi</string>
+    <string name="profile_activity_you_replied">%1$s kişisine yanıt verdiniz</string>
+    <string name="profile_activity_user_replied">%1$s, %2$s yanıt verdi</string>
+    <string name="profile_activity_you_shared">%1$s öğesini paylaştınız</string>
+    <string name="profile_activity_user_shared">%1$s, %2$s öğesini paylaştı</string>
+    <string name="profile_interaction_following_you">%1$s artık sizi takip ediyor</string>
+    <string name="profile_interaction_following_user">%1$s artık %2$s kişisini takip ediyor</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s, %2$s hakkındaki yorumlarınızı favorilerine ekledi</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s, %3$s üzerindeki %2$s kullanıcısının yorumlarını favorilerine ekledi</string>
+    <string name="profile_interaction_replied_your_comment">%1$s, yorumunuza yanıt verdi</string>
+    <string name="profile_interaction_replied_your_reply">%1$s, yanıtınıza yanıt verdi</string>
+    <string name="profile_interaction_replied_user_comment">%1$s, %2$s kullanıcısının yorumuna yanıt verdi</string>
+    <string name="profile_interaction_replied_user_reply">%1$s, %2$s kullanıcısının yanıtına yanıt verdi</string>
+    <string name="profile_interaction_reshared">%1$s yeniden paylaştı: %2$s</string>
 </resources>

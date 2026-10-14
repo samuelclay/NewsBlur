@@ -174,25 +174,8 @@
     <string name="profile_ago">前</string>
     <string name="profile_recent_actvity">動態</string>
     <string name="profile_recent_interactions">互動</string>
-    <string name="profile_started_following">已追蹤</string>
-    <string name="profile_you">你</string>
-    <string name="profile_you_lower">你</string>
-    <string name="profile_your">你的</string>
-    <string name="profile_now_following">目前正在追蹤 %1$s</string>
-    <string name="profile_replied_to">回覆給</string>
-    <string name="profile_replied_to_your">回覆了 %1$s</string>
-    <string name="profile_shared_story">已分享</string>
-    <string name="profile_comment">留言</string>
-    <string name="profile_reply">回覆</string>
     <string name="profile_button_follow">追蹤</string>
     <string name="profile_button_unfollow">取消追蹤</string>
-    <string name="profile_subscribed_to">已訂閱</string>
-    <string name="profile_saved">已儲存</string>
-    <string name="profile_reshared">再次分享</string>
-    <string name="profile_favorited">已加入最愛</string>
-    <string name="profile_favorited_comments">收藏了 %1$s 則留言，對象是</string>
-    <string name="profile_signup">註冊了 Newsblur</string>
-    <string name="profile_comments_on">對其留言</string>
     <string name="profile_feed_not_available">你已取消訂閱此動態消息</string>
     <string name="profile_do_not_follow">您沒有追蹤此使用者</string>
     <string name="profile_no_interactions">沒有互動</string>
@@ -1012,7 +995,7 @@
         <item quantity="other">每月 %1$d 篇文章</item>
     </plurals>
     <string name="setup_feed_stale_last_story">過期 · 上次更新於 %1$s</string>
-    <string name="add_site_url_or_search">https:// 或搜尋</string>
+    <string name="add_site_url_or_search">%1$s 或搜尋</string>
     <string name="add_site_choose_folder">選擇資料夾</string>
     <string name="add_site_top_level">— 頂層 —</string>
     <string name="add_site_adding_site">正在新增網站</string>
@@ -1102,4 +1085,55 @@
     <plurals name="briefing_group_story_count">
         <item quantity="other">%d 篇文章</item>
     </plurals>
+    <string name="language_dialog_title">選擇語言</string>
+    <string name="language_dialog_detected">NewsBlur 偵測到您的裝置使用 %1$s。</string>
+    <string name="language_dialog_note">您隨時可以在「偏好設定」中變更。</string>
+    <string name="language_dialog_use">使用 %1$s</string>
+    <string name="language_dialog_choose_another">選擇其他語言</string>
+    <string name="language_dialog_pick">選擇您希望 NewsBlur 使用的語言。您隨時可以在「偏好設定」中變更。</string>
+    <string name="main_menu_import_feed_bundles">匯入與訂閱來源套件</string>
+    <string name="main_menu_export_feeds">匯出訂閱來源</string>
+    <string name="discover_open">開啟</string>
+    <string name="discover_folder_top_level">最上層</string>
+    <string name="discover_add_to_folder">加入資料夾</string>
+    <string name="add_site_shortcut_trending">熱門趨勢</string>
+    <string name="add_site_freshness_stale">過時的 %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="other">%d 分鐘前</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="other">%d 小時前</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="other">%d 天前</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="other">%d 週前</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="other">%d 個月前</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">你訂閱了 %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s 訂閱了 %2$s</string>
+    <string name="profile_activity_you_saved">你已儲存 %1$s</string>
+    <string name="profile_activity_user_saved">%1$s 儲存了 %2$s</string>
+    <string name="profile_activity_you_signed_up">你已註冊 Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s 已註冊 Newsblur</string>
+    <string name="profile_activity_you_followed">你追蹤了 %1$s</string>
+    <string name="profile_activity_user_followed">%1$s 追蹤了 %2$s</string>
+    <string name="profile_activity_you_favorited_comments">你收藏了 %2$s 上的 %1$s 則留言</string>
+    <string name="profile_activity_user_favorited_comments">%1$s 將 %2$s 則留言在 %3$s 加上最愛</string>
+    <string name="profile_activity_you_replied">你回覆了 %1$s</string>
+    <string name="profile_activity_user_replied">%1$s 回覆了 %2$s</string>
+    <string name="profile_activity_you_shared">你分享了 %1$s</string>
+    <string name="profile_activity_user_shared">%1$s 分享了 %2$s</string>
+    <string name="profile_interaction_following_you">%1$s 現在開始追蹤你</string>
+    <string name="profile_interaction_following_user">%1$s 現在開始追蹤 %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s 為你在 %2$s 的留言加上最愛</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s 將 %2$s\ 的留言在 %3$s 加上最愛</string>
+    <string name="profile_interaction_replied_your_comment">%1$s 回覆了你的留言</string>
+    <string name="profile_interaction_replied_your_reply">%1$s 回覆了你的回覆</string>
+    <string name="profile_interaction_replied_user_comment">%1$s 回覆了 %2$s 的留言</string>
+    <string name="profile_interaction_replied_user_reply">%1$s 回覆了 %2$s 的回覆</string>
+    <string name="profile_interaction_reshared">%1$s 重新分享了 %2$s</string>
 </resources>

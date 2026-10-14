@@ -174,25 +174,8 @@
     <string name="profile_ago">पहले</string>
     <string name="profile_recent_actvity">गतिविधियाँ</string>
     <string name="profile_recent_interactions">गतिविधियाँ</string>
-    <string name="profile_started_following">फ़ॉलो किया</string>
-    <string name="profile_you">आप</string>
-    <string name="profile_you_lower">आप</string>
-    <string name="profile_your">आपका</string>
-    <string name="profile_now_following">अब %1$s को फ़ॉलो कर रहे हैं</string>
-    <string name="profile_replied_to">को जवाब दिया</string>
-    <string name="profile_replied_to_your">ने %1$s को जवाब दिया</string>
-    <string name="profile_shared_story">साझा किया गया</string>
-    <string name="profile_comment">टिप्पणी</string>
-    <string name="profile_reply">जवाब दें</string>
     <string name="profile_button_follow">फ़ॉलो करें</string>
     <string name="profile_button_unfollow">अनफ़ॉलो करें</string>
-    <string name="profile_subscribed_to">की सदस्यता ली</string>
-    <string name="profile_saved">सहेजा गया</string>
-    <string name="profile_reshared">फिर से साझा किया</string>
-    <string name="profile_favorited">पसंदीदा</string>
-    <string name="profile_favorited_comments">%1$s टिप्पणियों को पसंद किया</string>
-    <string name="profile_signup">Newsblur पर साइन अप किया</string>
-    <string name="profile_comments_on">पर टिप्पणियाँ</string>
     <string name="profile_feed_not_available">अब आपने इस फ़ीड की सदस्यता नहीं ली है</string>
     <string name="profile_do_not_follow">आप इस उपयोगकर्ता को फ़ॉलो नहीं करते हैं</string>
     <string name="profile_no_interactions">कोई गतिविधि नहीं</string>
@@ -1024,7 +1007,7 @@
         <item quantity="other">%1$d कहानियाँ/महीना</item>
     </plurals>
     <string name="setup_feed_stale_last_story">पुराना · आख़िरी स्टोरी %1$s</string>
-    <string name="add_site_url_or_search">https:// या खोजें</string>
+    <string name="add_site_url_or_search">%1$s या खोजें</string>
     <string name="add_site_choose_folder">फ़ोल्डर चुनें</string>
     <string name="add_site_top_level">— शीर्ष स्तर —</string>
     <string name="add_site_adding_site">साइट जोड़ी जा रही है</string>
@@ -1116,4 +1099,60 @@
         <item quantity="one">%d कहानी</item>
         <item quantity="other">%d कहानियाँ</item>
     </plurals>
+    <string name="language_dialog_title">अपनी भाषा चुनें</string>
+    <string name="language_dialog_detected">NewsBlur ने आपके डिवाइस से %1$s का पता लगाया।</string>
+    <string name="language_dialog_note">आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।</string>
+    <string name="language_dialog_use">%1$s का उपयोग करें</string>
+    <string name="language_dialog_choose_another">कोई दूसरी भाषा चुनें</string>
+    <string name="language_dialog_pick">वह भाषा चुनें जिसका उपयोग आप NewsBlur से करवाना चाहते हैं। आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।</string>
+    <string name="main_menu_import_feed_bundles">फ़ीड बंडल आयात करें</string>
+    <string name="main_menu_export_feeds">फ़ीड निर्यात करें</string>
+    <string name="discover_open">खोलें</string>
+    <string name="discover_folder_top_level">शीर्ष स्तर</string>
+    <string name="discover_add_to_folder">फ़ोल्डर में जोड़ें</string>
+    <string name="add_site_shortcut_trending">रुझान में</string>
+    <string name="add_site_freshness_stale">पुराना %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="one">%d मिनट पहले</item>
+        <item quantity="other">%d मिनट पहले</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="one">%d घंटे पहले</item>
+        <item quantity="other">%d घंटे पहले</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="one">%d दिन पहले</item>
+        <item quantity="other">%d दिन पहले</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="one">%d सप्ताह पहले</item>
+        <item quantity="other">%d सप्ताह पहले</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="one">%d महीने पहले</item>
+        <item quantity="other">%d माह पहले</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">आपने %1$s की सदस्यता ली</string>
+    <string name="profile_activity_user_subscribed">%1$s ने %2$s की सदस्यता ली</string>
+    <string name="profile_activity_you_saved">आपने %1$s सहेजा</string>
+    <string name="profile_activity_user_saved">%1$s ने %2$s सहेजा</string>
+    <string name="profile_activity_you_signed_up">आपने Newsblur पर साइन अप किया</string>
+    <string name="profile_activity_user_signed_up">%1$s ने Newsblur पर साइन अप किया</string>
+    <string name="profile_activity_you_followed">आपने %1$s को फ़ॉलो किया</string>
+    <string name="profile_activity_user_followed">%1$s ने %2$s को फ़ॉलो किया</string>
+    <string name="profile_activity_you_favorited_comments">आपने %2$s पर %1$s टिप्पणियों को पसंदीदा बनाया</string>
+    <string name="profile_activity_user_favorited_comments">%1$s को %3$s पर %2$s टिप्पणियाँ पसंद आईं</string>
+    <string name="profile_activity_you_replied">आपने %1$s को जवाब दिया</string>
+    <string name="profile_activity_user_replied">%1$s ने %2$s को जवाब दिया</string>
+    <string name="profile_activity_you_shared">आपने %1$s साझा किया</string>
+    <string name="profile_activity_user_shared">%1$s ने %2$s साझा किया</string>
+    <string name="profile_interaction_following_you">%1$s अब आपको फ़ॉलो कर रहे हैं</string>
+    <string name="profile_interaction_following_user">%1$s अब %2$s को फ़ॉलो कर रहे हैं</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s को %2$s पर आपकी टिप्पणियाँ पसंद आईं</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s को %3$s पर %2$s की टिप्पणियाँ पसंद आईं</string>
+    <string name="profile_interaction_replied_your_comment">%1$s ने आपकी टिप्पणी का जवाब दिया</string>
+    <string name="profile_interaction_replied_your_reply">%1$s ने आपके जवाब का जवाब दिया</string>
+    <string name="profile_interaction_replied_user_comment">%1$s ने %2$s की टिप्पणी का जवाब दिया</string>
+    <string name="profile_interaction_replied_user_reply">%1$s ने %2$s के जवाब का जवाब दिया</string>
+    <string name="profile_interaction_reshared">%1$s ने %2$s फिर से साझा किया</string>
 </resources>

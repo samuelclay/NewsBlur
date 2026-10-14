@@ -103,6 +103,10 @@ msgstr[0] "%(count)d minuut geleden"
 msgstr[1] "%(count)d minuten geleden"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d dag"
@@ -1228,6 +1232,9 @@ msgid ""
 msgstr ""
 "Craig Hockenberry gaat diep in op de reden waarom Canon-printers op de Mac voortdurend \"Offline\" zijn "
 "door defecte Bonjour/mDNS-firmware &mdash;&mdash; en presenteert een permanente oplossing."
+
+msgid "Create Account"
+msgstr "Account aanmaken"
 
 msgid "Create a new account instead"
 msgstr "In plaats daarvan een nieuw account aanmaken"
@@ -5990,9 +5997,6 @@ msgstr "door %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "classifier_type en classifier_value zijn vereist"
 
-msgid "create account"
-msgstr "account aanmaken"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers moet een lijst zijn"
 
@@ -6036,9 +6040,6 @@ msgstr "heel even"
 
 msgid "just now"
 msgstr "zojuist"
-
-msgid "log in"
-msgstr "inloggen"
 
 msgid "logout"
 msgstr "afmelden"

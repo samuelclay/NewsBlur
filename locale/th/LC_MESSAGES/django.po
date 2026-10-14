@@ -98,6 +98,10 @@ msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d นาทีที่แล้ว"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d วัน"
@@ -1208,6 +1212,9 @@ msgid ""
 msgstr ""
 "Craig Hockenberry เจาะลึกสาเหตุที่เครื่องพิมพ์ Canon แสดงสถานะ \"ออฟไลน์\" บน Mac อยู่เสมอ &mdash; "
 "เฟิร์มแวร์ Bonjour/mDNS ที่มีปัญหา &mdash; พร้อมแนะนำวิธีแก้ถาวร"
+
+msgid "Create Account"
+msgstr "สร้างบัญชี"
 
 msgid "Create a new account instead"
 msgstr "สร้างบัญชีใหม่แทน"
@@ -5884,9 +5891,6 @@ msgstr "โดย %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "ต้องระบุ classifier_type และ classifier_value"
 
-msgid "create account"
-msgstr "สร้างบัญชี"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers ต้องเป็นรายการ"
 
@@ -5930,9 +5934,6 @@ msgstr "แป๊บเดียว"
 
 msgid "just now"
 msgstr "เมื่อสักครู่"
-
-msgid "log in"
-msgstr "เข้าสู่ระบบ"
 
 msgid "logout"
 msgstr "ออกจากระบบ"

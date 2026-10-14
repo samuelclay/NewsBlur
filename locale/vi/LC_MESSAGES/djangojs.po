@@ -29,9 +29,6 @@ msgstr " Dù tìm thấy nội dung hay thật tuyệt, bạn cũng có thể d�
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Chọn Premium, Archive hoặc Pro rồi tiến hành thanh toán."
 
-msgid " Customize days of unreads"
-msgstr " Tùy chỉnh số ngày của bài chưa đọc"
-
 msgid " Gift for free (staff)"
 msgstr " Tặng miễn phí (nhân viên)"
 
@@ -49,34 +46,6 @@ msgstr " Bạn có thể dễ dàng huấn luyện từng tin khi đọc."
 
 msgid " You get a full refund, automatically."
 msgstr " Bạn sẽ tự động được hoàn tiền đầy đủ."
-
-msgid " are stories you don't like"
-msgstr " là những bài viết bạn không thích"
-
-msgid " are stories you have not yet rated"
-msgstr " là những bài viết bạn chưa đánh giá"
-
-msgid " are stories you like"
-msgstr " là những bài viết bạn thích"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " trong tối đa %(value_1)s ngày"
-
-msgid " for up to 365 days"
-msgstr " trong tối đa 365 ngày"
-
-msgid " of the screen"
-msgstr " của màn hình"
-
-msgid " or "
-msgstr " hoặc "
-
-msgid " second"
-msgstr " giây"
-
-msgid " to change keyboard shortcuts."
-msgstr " để thay đổi phím tắt."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -164,6 +133,15 @@ msgstr "99 USD/năm"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s đã ngắt kết nối."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s Tùy chỉnh số ngày chưa đọc"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s tối đa %(count)s ngày"
 
 #, python-format
 msgid "%(category)s topics"
@@ -330,11 +308,6 @@ msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s câu trả lời"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s giây."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "Đã chọn %(count)s"
@@ -464,12 +437,28 @@ msgid_plural "%(count)sw ago"
 msgstr[0] "%(count)s tuần trước"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Đã thiết lập thông báo %(feed_title)s"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s là những bài viết bạn không thích"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s là những bài viết bạn chưa đánh giá"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s là những bài viết bạn thích"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -524,6 +513,10 @@ msgstr[0] "%(start)s đến %(end)s phút"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s hoặc %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1085,8 +1078,10 @@ msgstr "Đang thêm trang web..."
 msgid "Adding..."
 msgstr "Đang thêm..."
 
-msgid "After "
-msgstr "Sau "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "Sau %(slider)s %(count)s giây."
 
 msgid "After marking feed/folder read"
 msgstr "Sau khi đánh dấu nguồn cấp dữ liệu/thư mục là đã đọc"
@@ -1400,6 +1395,9 @@ msgstr "Tự động tạo bản tóm tắt theo lịch"
 msgid "Automatically play next item in queue"
 msgstr "Tự động phát mục tiếp theo trong hàng đợi"
 
+msgid "Back"
+msgstr "Quay lại"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1692,6 +1690,9 @@ msgstr "Chọn các trang của bạn"
 msgid "Choose a story pattern"
 msgstr "Chọn mẫu bài viết"
 
+msgid "Choose another language"
+msgstr "Chọn ngôn ngữ khác"
+
 msgid "Choose categories"
 msgstr "Chọn danh mục"
 
@@ -1722,6 +1723,9 @@ msgstr "Chọn những mục sẽ xuất hiện trong bản tin tóm tắt của
 msgid "Choose your browser"
 msgstr "Chọn trình duyệt"
 
+msgid "Choose your language"
+msgstr "Chọn ngôn ngữ của bạn"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Chọn mô hình AI bạn muốn dùng: Claude, GPT, Gemini hoặc Grok"
 
@@ -1731,8 +1735,9 @@ msgstr "Chọn các trang của bạn"
 msgid "Classifier filter scope"
 msgstr "Phạm vi bộ lọc phân loại"
 
-msgid "Classifier scope requires "
-msgstr "Phạm vi bộ phân loại yêu cầu "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "Phạm vi bộ phân loại yêu cầu %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr ""
@@ -3201,8 +3206,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "Nâng cấp Premium — $36/năm"
 
-msgid "Go back to "
-msgstr "Quay lại "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "Quay lại %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "Tin đọc hay"
@@ -3715,8 +3721,9 @@ msgstr "Quản lý thanh toán trên Stripe"
 msgid "Manage email settings"
 msgstr "Quản lý cài đặt email"
 
-msgid "Manually by hitting "
-msgstr "Thủ công bằng cách nhấn "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "Thủ công bằng cách nhấn %(first_key)s hoặc %(second_key)s"
 
 msgid "Manually or by clicking in the story"
 msgstr "Thủ công hoặc bằng cách nhấp vào bài viết"
@@ -4095,6 +4102,10 @@ msgstr "NewsBlur kiểm tra các thay đổi và gửi bài viết mới đến 
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur kết nối với các dịch vụ khác"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur phát hiện %(language)s từ trình duyệt của bạn."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur hiện không hoạt động. <br> Hãy thử lại sau."
 
@@ -4375,8 +4386,9 @@ msgstr "Thông báo"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "Thông báo về bộ phân loại trí tuệ đã huấn luyện"
 
-msgid "Notifications require "
-msgstr "Thông báo yêu cầu "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "Thông báo cần %(tier_link)s"
 
 msgid "Notify on"
 msgstr "Bật thông báo cho"
@@ -4432,8 +4444,9 @@ msgstr "Ôi không, đã xảy ra sự cố khi lấy URL đó và không có l�
 msgid "Old password"
 msgstr "Mật khẩu cũ"
 
-msgid "Older than: "
-msgstr "Cũ hơn: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "Cũ hơn: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "Cũ hơn:"
@@ -4659,8 +4672,9 @@ msgstr "Tải trang"
 msgid "Page down"
 msgstr "Trang xuống"
 
-msgid "Page down by "
-msgstr "Cuộn xuống trang "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "Cuộn trang xuống %(slider)s %(percent)s màn hình"
 
 msgid "Page up"
 msgstr "Lên đầu trang"
@@ -4722,6 +4736,9 @@ msgstr "Cài đặt thông báo cho từng nguồn tin"
 
 msgid "Pick a tier & pay."
 msgstr "Chọn gói và thanh toán."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi điều này bất cứ lúc nào trong phần Tùy chọn."
 
 msgid "Places"
 msgstr "Địa điểm"
@@ -4981,8 +4998,9 @@ msgstr "Trích dẫn"
 msgid "RSS Feed"
 msgstr "Nguồn cấp RSS"
 
-msgid "RSS feeds for folders is a "
-msgstr "Nguồn cấp RSS cho thư mục là một "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "Nguồn cấp RSS cho thư mục là một %(link_start)stính năng cao cấp%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5141,8 +5159,9 @@ msgstr "Tạo lại bản tin tóm tắt"
 msgid "Regex"
 msgstr "Regex"
 
-msgid "Regex requires "
-msgstr "Biểu thức chính quy cần có "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "Biểu thức chính quy cần %(tier_link)s"
 
 msgid "Related"
 msgstr "Liên quan"
@@ -5219,8 +5238,9 @@ msgstr "Đã yêu cầu"
 msgid "Requests to Follow You"
 msgstr "Yêu cầu theo dõi bạn"
 
-msgid "Requires "
-msgstr "Yêu cầu "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "Yêu cầu %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "Yêu cầu Premium Archive"
@@ -5428,8 +5448,9 @@ msgstr "Bộ phân loại theo phạm vi chỉ dành cho người đăng ký %(p
 msgid "Scroll to comments"
 msgstr "Cuộn đến phần bình luận"
 
-msgid "Scroll up/down in story by "
-msgstr "Cuộn lên/xuống trong bài viết bằng "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "Cuộn lên/xuống trong bài viết theo %(slider)s %(pixels)spx."
 
 msgid "Search"
 msgstr "Tìm kiếm"
@@ -7118,6 +7139,10 @@ msgstr "Lịch sử thanh toán theo mức sử dụng"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "Tính phí theo mức sử dụng được bật cho các bộ phân loại ngôn ngữ tự nhiên."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "Sử dụng %(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "Dùng đồng hồ 12 giờ"
 
@@ -7486,6 +7511,9 @@ msgstr "Bạn đã hủy đăng ký nhận tất cả email từ NewsBlur. Chọ
 msgid "You can also filter out stories you don't want to read."
 msgstr "Bạn cũng có thể lọc bỏ những bài viết không muốn đọc."
 
+msgid "You can change this anytime in Preferences."
+msgstr "Bạn có thể thay đổi điều này bất cứ lúc nào trong phần Tùy chọn."
+
 msgid "You can change your opinions."
 msgstr "Bạn có thể thay đổi ý kiến."
 
@@ -7535,8 +7563,9 @@ msgstr "Bạn phải theo dõi %(value_1)s mới có thể trả lời"
 msgid "You must be logged in to send a story over email."
 msgstr "Bạn phải đăng nhập để gửi bài viết qua email."
 
-msgid "You must have a "
-msgstr "Bạn phải có một "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "Bạn cần có %(link_start)stài khoản premium%(link_end)s để thay đổi phím tắt."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7803,11 +7832,9 @@ msgstr "mã nguồn mở"
 msgid "optional, appears above the story"
 msgstr "không bắt buộc, hiển thị phía trên bài viết"
 
-msgid "or"
-msgstr "hoặc"
-
-msgid "or subscribe with "
-msgstr "hoặc đăng ký bằng "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "hoặc đăng ký bằng %(paypal_button)s"
 
 msgid "pending"
 msgstr "đang chờ xử lý"
@@ -7818,17 +7845,8 @@ msgstr "ngành podcast"
 msgid "premium"
 msgstr "cao cấp"
 
-msgid "premium account"
-msgstr "tài khoản cao cấp"
-
-msgid "premium feature"
-msgstr "tính năng cao cấp"
-
 msgid "public transit"
 msgstr "giao thông công cộng"
-
-msgid "px."
-msgstr "px."
 
 msgid "quantum computing"
 msgstr "điện toán lượng tử"

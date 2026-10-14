@@ -32,9 +32,6 @@ msgstr " Хоча знаходити цікаве — це чудово, ви т
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Виберіть Premium, Archive або Pro та перейдіть до оплати."
 
-msgid " Customize days of unreads"
-msgstr " Налаштувати кількість днів для непрочитаних"
-
 msgid " Gift for free (staff)"
 msgstr " Подарунок безкоштовно (для співробітників)"
 
@@ -52,34 +49,6 @@ msgstr " Ви можете легко навчати окремі матеріа
 
 msgid " You get a full refund, automatically."
 msgstr " Ви автоматично отримаєте повне відшкодування."
-
-msgid " are stories you don't like"
-msgstr " — це статті, які вам не подобаються"
-
-msgid " are stories you have not yet rated"
-msgstr " — це статті, яким ви ще не поставили оцінку"
-
-msgid " are stories you like"
-msgstr " — це новини, які вам подобаються"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " протягом %(value_1)s днів"
-
-msgid " for up to 365 days"
-msgstr " на строк до 365 днів"
-
-msgid " of the screen"
-msgstr " екрана"
-
-msgid " or "
-msgstr " або "
-
-msgid " second"
-msgstr " секунда"
-
-msgid " to change keyboard shortcuts."
-msgstr " щоб змінити комбінації клавіш."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -171,6 +140,17 @@ msgstr "99 $/рік"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s від’єднано."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s Налаштувати кількість днів непрочитаних"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s на строк до %(count)s дня"
+msgstr[1] "%(badge)s на строк до %(count)s днів"
+msgstr[2] "%(badge)s на строк до %(count)s днів"
 
 #, python-format
 msgid "%(category)s topics"
@@ -393,13 +373,6 @@ msgstr[1] "%(count)s відповіді"
 msgstr[2] "%(count)s відповідей"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s секунда."
-msgstr[1] "%(count)s секунди."
-msgstr[2] "%(count)s секунд."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "Вибрано: %(count)s"
@@ -579,12 +552,28 @@ msgstr[1] "%(count)s тижні тому"
 msgstr[2] "%(count)s тижнів тому"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Сповіщення %(feed_title)s налаштовано"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s — це статті, які вам не подобаються"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s — це статті, які ви ще не оцінили"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s — це статті, які вам подобаються"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -649,6 +638,10 @@ msgstr[2] "%(start)s–%(end)s хвилин"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s або %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1222,8 +1215,12 @@ msgstr "Додавання сайту..."
 msgid "Adding..."
 msgstr "Додавання..."
 
-msgid "After "
-msgstr "Після "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "Через %(slider)s %(count)s секунду"
+msgstr[1] "Через %(slider)s %(count)s секунди"
+msgstr[2] "Через %(slider)s %(count)s секунд"
 
 msgid "After marking feed/folder read"
 msgstr "Після позначення стрічки/папки як прочитаної"
@@ -1551,6 +1548,9 @@ msgstr "Автоматично створювати короткі зведен�
 msgid "Automatically play next item in queue"
 msgstr "Автоматично відтворювати наступний елемент у черзі"
 
+msgid "Back"
+msgstr "Назад"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1853,6 +1853,9 @@ msgstr "Виберіть свої сайти"
 msgid "Choose a story pattern"
 msgstr "Виберіть шаблон статті"
 
+msgid "Choose another language"
+msgstr "Вибрати іншу мову"
+
 msgid "Choose categories"
 msgstr "Виберіть категорії"
 
@@ -1883,6 +1886,9 @@ msgstr "Виберіть розділи для показу у вашому ог
 msgid "Choose your browser"
 msgstr "Виберіть браузер"
 
+msgid "Choose your language"
+msgstr "Виберіть мову"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Оберіть бажану модель ШІ: Claude, GPT, Gemini або Grok"
 
@@ -1892,8 +1898,9 @@ msgstr "Виберіть сайти"
 msgid "Classifier filter scope"
 msgstr "Область дії фільтра класифікатора"
 
-msgid "Classifier scope requires "
-msgstr "Для області дії класифікатора потрібно "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "Для області класифікатора потрібен %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) і Grok (xAI). Перемикайтеся між ними будь-коли."
@@ -3374,8 +3381,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "Перейти на Premium — $36 на рік"
 
-msgid "Go back to "
-msgstr "Повернутися до "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "Повернутися до %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "Цікаве"
@@ -3892,8 +3900,9 @@ msgstr "Керувати оплатою у Stripe"
 msgid "Manage email settings"
 msgstr "Керувати налаштуваннями електронної пошти"
 
-msgid "Manually by hitting "
-msgstr "Вручну, натиснувши "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "Вручну, натиснувши %(first_key)s або %(second_key)s"
 
 msgid "Manually or by clicking in the story"
 msgstr "Вручну або натиснувши на публікацію"
@@ -4288,6 +4297,10 @@ msgstr "NewsBlur перевіряє наявність змін і додає н
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur, підключений до інших сервісів"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur визначив %(language)s у вашому браузері."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur наразі не працює. <br> Спробуйте незабаром."
 
@@ -4568,8 +4581,9 @@ msgstr "Сповіщення"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "Сповіщення про навчені інтелектуальні класифікатори"
 
-msgid "Notifications require "
-msgstr "Для сповіщень потрібен "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "Для сповіщень потрібен %(tier_link)s"
 
 msgid "Notify on"
 msgstr "Сповіщати про"
@@ -4625,8 +4639,9 @@ msgstr "О ні, не вдалося отримати цю URL-адресу, і 
 msgid "Old password"
 msgstr "Старий пароль"
 
-msgid "Older than: "
-msgstr "Старіші за: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "Старіші за: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "Старіші:"
@@ -4866,8 +4881,9 @@ msgstr "Завантаження сторінки"
 msgid "Page down"
 msgstr "Сторінка вниз"
 
-msgid "Page down by "
-msgstr "Прокрутити сторінку вниз на "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "Прокрутити вниз на %(slider)s %(percent)s екрана"
 
 msgid "Page up"
 msgstr "На сторінку вгору"
@@ -4929,6 +4945,9 @@ msgstr "Налаштування сповіщень для кожної стрі
 
 msgid "Pick a tier & pay."
 msgstr "Виберіть тариф і сплатіть."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "Виберіть мову, якою має користуватися NewsBlur. Її можна будь-коли змінити в налаштуваннях."
 
 msgid "Places"
 msgstr "Місця"
@@ -5202,8 +5221,9 @@ msgstr "Цитата"
 msgid "RSS Feed"
 msgstr "RSS-стрічка"
 
-msgid "RSS feeds for folders is a "
-msgstr "RSS-стрічки для папок — це "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "RSS-стрічки для папок — це %(link_start)sпреміум-функція%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5362,8 +5382,9 @@ msgstr "Створити зведення знову"
 msgid "Regex"
 msgstr "Регулярний вираз"
 
-msgid "Regex requires "
-msgstr "Регулярний вираз має містити "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "Регулярний вираз потребує %(tier_link)s"
 
 msgid "Related"
 msgstr "Пов’язані"
@@ -5442,8 +5463,9 @@ msgstr "Запит надіслано"
 msgid "Requests to Follow You"
 msgstr "Запити на підписку на вас"
 
-msgid "Requires "
-msgstr "Потрібно "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "Потрібен %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "Потребує Premium Archive"
@@ -5655,8 +5677,9 @@ msgstr "Класифікатори з обмеженою сферою дії д�
 msgid "Scroll to comments"
 msgstr "Прокрутити до коментарів"
 
-msgid "Scroll up/down in story by "
-msgstr "Прокручувати статтю вгору/вниз на "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "Прокрутити статтю вгору/вниз на %(slider)s %(pixels)s пікселів."
 
 msgid "Search"
 msgstr "Пошук"
@@ -7374,6 +7397,10 @@ msgstr "Історія оплати за використання"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "Для класифікаторів природної мови ввімкнено тарифікацію за використанням."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "Використовувати %(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "Використовувати 12-годинний формат часу"
 
@@ -7752,6 +7779,9 @@ msgstr ""
 msgid "You can also filter out stories you don't want to read."
 msgstr "Також можна відфільтрувати історії, які ви не хочете читати."
 
+msgid "You can change this anytime in Preferences."
+msgstr "Це можна будь-коли змінити в налаштуваннях."
+
 msgid "You can change your opinions."
 msgstr "Ви можете змінити свою думку."
 
@@ -7801,8 +7831,9 @@ msgstr "Щоб відповісти, ви маєте стежити за %(value
 msgid "You must be logged in to send a story over email."
 msgstr "Щоб надіслати історію електронною поштою, потрібно увійти."
 
-msgid "You must have a "
-msgstr "Ви повинні мати "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "Щоб змінити клавіатурні скорочення, потрібен %(link_start)sпреміум-акаунт%(link_end)s."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -8071,11 +8102,9 @@ msgstr "відкритий код"
 msgid "optional, appears above the story"
 msgstr "необов’язково, відображається над статтею"
 
-msgid "or"
-msgstr "або"
-
-msgid "or subscribe with "
-msgstr "або оформіть підписку через "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "або підпишіться за допомогою %(paypal_button)s"
 
 msgid "pending"
 msgstr "очікує"
@@ -8086,17 +8115,8 @@ msgstr "індустрія подкастів"
 msgid "premium"
 msgstr "преміум"
 
-msgid "premium account"
-msgstr "преміум-акаунт"
-
-msgid "premium feature"
-msgstr "преміумфункція"
-
 msgid "public transit"
 msgstr "громадський транспорт"
-
-msgid "px."
-msgstr "пікс."
 
 msgid "quantum computing"
 msgstr "квантові обчислення"

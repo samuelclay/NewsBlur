@@ -174,25 +174,8 @@
     <string name="profile_ago">منذ</string>
     <string name="profile_recent_actvity">الأنشطة</string>
     <string name="profile_recent_interactions">التفاعلات</string>
-    <string name="profile_started_following">بدأ بمتابعة</string>
-    <string name="profile_you">أنت</string>
-    <string name="profile_you_lower">أنت</string>
-    <string name="profile_your">لك</string>
-    <string name="profile_now_following">يتابع الآن %1$s</string>
-    <string name="profile_replied_to">ردّ على</string>
-    <string name="profile_replied_to_your">ردّ على %1$s</string>
-    <string name="profile_shared_story">مشاركة</string>
-    <string name="profile_comment">تعليق</string>
-    <string name="profile_reply">رد</string>
     <string name="profile_button_follow">متابعة</string>
     <string name="profile_button_unfollow">إلغاء المتابعة</string>
-    <string name="profile_subscribed_to">اشترك في</string>
-    <string name="profile_saved">محفوظ</string>
-    <string name="profile_reshared">أُعيدت مشاركته</string>
-    <string name="profile_favorited">أُضيف إلى المفضلة</string>
-    <string name="profile_favorited_comments">أُعجِب بـ %1$s تعليقًا على</string>
-    <string name="profile_signup">أنشأ حسابًا في Newsblur</string>
-    <string name="profile_comments_on">تعليقات على</string>
     <string name="profile_feed_not_available">لم تعد مشتركًا في هذا الموجز</string>
     <string name="profile_do_not_follow">أنت لا تتابع هذا المستخدم</string>
     <string name="profile_no_interactions">لا توجد تفاعلات</string>
@@ -1072,7 +1055,7 @@
         <item quantity="zero">%1$d قصة/شهر</item>
     </plurals>
     <string name="setup_feed_stale_last_story">قديم · آخر قصة %1$s</string>
-    <string name="add_site_url_or_search">https:// أو ابحث</string>
+    <string name="add_site_url_or_search">%1$s أو ابحث</string>
     <string name="add_site_choose_folder">اختر مجلدًا</string>
     <string name="add_site_top_level">— المستوى الأعلى —</string>
     <string name="add_site_adding_site">جارٍ إضافة الموقع</string>
@@ -1172,4 +1155,80 @@
         <item quantity="two">%d قصتين</item>
         <item quantity="zero">%d من القصص</item>
     </plurals>
+    <string name="language_dialog_title">اختر لغتك</string>
+    <string name="language_dialog_detected">اكتشف NewsBlur %1$s من جهازك.</string>
+    <string name="language_dialog_note">يمكنك تغيير ذلك في أي وقت من التفضيلات.</string>
+    <string name="language_dialog_use">استخدم %1$s</string>
+    <string name="language_dialog_choose_another">اختر لغة أخرى</string>
+    <string name="language_dialog_pick">اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من التفضيلات.</string>
+    <string name="main_menu_import_feed_bundles">استيراد حزم الخلاصات</string>
+    <string name="main_menu_export_feeds">تصدير الخلاصات</string>
+    <string name="discover_open">فتح</string>
+    <string name="discover_folder_top_level">المستوى الأعلى</string>
+    <string name="discover_add_to_folder">أضف إلى مجلد</string>
+    <string name="add_site_shortcut_trending">رائج</string>
+    <string name="add_site_freshness_stale">قديم %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="few">قبل %d دقائق</item>
+        <item quantity="many">قبل %d دقيقة</item>
+        <item quantity="one">قبل %d دقيقة</item>
+        <item quantity="other">قبل %d دقيقة</item>
+        <item quantity="two">قبل %d دقيقتين</item>
+        <item quantity="zero">قبل %d دقيقة</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="few">قبل %d ساعات</item>
+        <item quantity="many">قبل %d ساعة</item>
+        <item quantity="one">قبل %d ساعة</item>
+        <item quantity="other">قبل %d ساعة</item>
+        <item quantity="two">قبل %d ساعتين</item>
+        <item quantity="zero">قبل %d ساعة</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="few">قبل %d أيام</item>
+        <item quantity="many">قبل %d يومًا</item>
+        <item quantity="one">قبل %d يوم</item>
+        <item quantity="other">قبل %d أيام</item>
+        <item quantity="two">قبل %d يومين</item>
+        <item quantity="zero">قبل %d يوم</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="few">قبل %d أسابيع</item>
+        <item quantity="many">قبل %d أسبوعًا</item>
+        <item quantity="one">قبل %d أسبوع</item>
+        <item quantity="other">قبل %d أسابيع</item>
+        <item quantity="two">قبل %d أسبوعين</item>
+        <item quantity="zero">قبل %d أسبوع</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="few">قبل %d أشهر</item>
+        <item quantity="many">قبل %d شهرًا</item>
+        <item quantity="one">قبل %d شهر</item>
+        <item quantity="other">قبل %d شهر</item>
+        <item quantity="two">قبل %d شهرين</item>
+        <item quantity="zero">قبل %d شهر</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">اشتركتَ في %1$s</string>
+    <string name="profile_activity_user_subscribed">اشترك %1$s في %2$s</string>
+    <string name="profile_activity_you_saved">حفظتَ %1$s</string>
+    <string name="profile_activity_user_saved">%1$s حفظ %2$s</string>
+    <string name="profile_activity_you_signed_up">أنشأتَ حسابًا في Newsblur</string>
+    <string name="profile_activity_user_signed_up">أنشأ %1$s حسابًا في Newsblur</string>
+    <string name="profile_activity_you_followed">بدأتَ بمتابعة %1$s</string>
+    <string name="profile_activity_user_followed">تابع %1$s %2$s</string>
+    <string name="profile_activity_you_favorited_comments">أضفتَ %1$s تعليقًا إلى المفضلة على %2$s</string>
+    <string name="profile_activity_user_favorited_comments">أضاف %1$s تعليقات %2$s على %3$s إلى المفضلة</string>
+    <string name="profile_activity_you_replied">رددتَ على %1$s</string>
+    <string name="profile_activity_user_replied">ردّ %1$s على %2$s</string>
+    <string name="profile_activity_you_shared">شاركتَ %1$s</string>
+    <string name="profile_activity_user_shared">شارك %1$s ‏%2$s</string>
+    <string name="profile_interaction_following_you">%1$s يتابعك الآن</string>
+    <string name="profile_interaction_following_user">أصبح %1$s يتابع %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">أضاف %1$s تعليقاتك على %2$s إلى المفضلة</string>
+    <string name="profile_interaction_favorited_user_comments">أضاف %1$s تعليقات %2$s على %3$s إلى المفضلة</string>
+    <string name="profile_interaction_replied_your_comment">ردّ %1$s على تعليقك</string>
+    <string name="profile_interaction_replied_your_reply">%1$s ردّ على ردك</string>
+    <string name="profile_interaction_replied_user_comment">ردّ %1$s على تعليق %2$s\'s</string>
+    <string name="profile_interaction_replied_user_reply">ردّ %1$s على ردّ %2$s</string>
+    <string name="profile_interaction_reshared">أعاد %1$s مشاركة %2$s</string>
 </resources>

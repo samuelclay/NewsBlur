@@ -103,6 +103,10 @@ msgstr[0] "%(count)d menit yang lalu"
 msgstr[1] "%(count)d menit yang lalu"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d hari"
@@ -1228,6 +1232,9 @@ msgid ""
 msgstr ""
 "Craig Hockenberry mengulas secara mendalam alasan printer Canon terus-menerus berstatus \"Offline\" di Mac "
 "&mdash; firmware Bonjour/mDNS yang bermasalah &mdash; serta memberikan solusi permanen."
+
+msgid "Create Account"
+msgstr "Buat Akun"
 
 msgid "Create a new account instead"
 msgstr "Buat akun baru saja"
@@ -6000,9 +6007,6 @@ msgstr "oleh %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "classifier_type dan classifier_value wajib diisi"
 
-msgid "create account"
-msgstr "buat akun"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers harus berupa daftar"
 
@@ -6046,9 +6050,6 @@ msgstr "sebentar saja"
 
 msgid "just now"
 msgstr "baru saja"
-
-msgid "log in"
-msgstr "masuk"
 
 msgid "logout"
 msgstr "keluar"

@@ -98,6 +98,10 @@ msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d 分钟前"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s，%(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d 天"
@@ -1132,6 +1136,9 @@ msgid ""
 "Craig Hockenberry deep-dives into why Canon printers constantly go \"Offline\" on Mac &mdash; broken "
 "Bonjour/mDNS firmware &mdash; and presents a permanent workaround."
 msgstr "Craig Hockenberry 深入探究 Canon 打印机为何在 Mac 上总是显示“离线”：&mdash; Bonjour/mDNS 固件存在缺陷 &mdash;，并提出了永久解决方案。"
+
+msgid "Create Account"
+msgstr "创建账户"
 
 msgid "Create a new account instead"
 msgstr "改为创建新账号"
@@ -5498,9 +5505,6 @@ msgstr "作者：%(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "classifier_type 和 classifier_value 均为必填项"
 
-msgid "create account"
-msgstr "创建账户"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers 必须是列表"
 
@@ -5544,9 +5548,6 @@ msgstr "稍等片刻"
 
 msgid "just now"
 msgstr "刚刚"
-
-msgid "log in"
-msgstr "登录"
 
 msgid "logout"
 msgstr "退出登录"

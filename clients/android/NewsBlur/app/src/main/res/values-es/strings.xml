@@ -174,25 +174,8 @@ personas para hablar sobre el mundo.</string>
     <string name="profile_ago">hace</string>
     <string name="profile_recent_actvity">Actividades</string>
     <string name="profile_recent_interactions">Interacciones</string>
-    <string name="profile_started_following">seguido</string>
-    <string name="profile_you">Tú</string>
-    <string name="profile_you_lower">tú</string>
-    <string name="profile_your">tu</string>
-    <string name="profile_now_following">ahora sigue a %1$s</string>
-    <string name="profile_replied_to">Respondido a</string>
-    <string name="profile_replied_to_your">respondió a %1$s</string>
-    <string name="profile_shared_story">compartido</string>
-    <string name="profile_comment">comentario</string>
-    <string name="profile_reply">responder</string>
     <string name="profile_button_follow">Seguir</string>
     <string name="profile_button_unfollow">Dejar de seguir</string>
-    <string name="profile_subscribed_to">suscrito a</string>
-    <string name="profile_saved">guardado</string>
-    <string name="profile_reshared">recompartido</string>
-    <string name="profile_favorited">favoritos</string>
-    <string name="profile_favorited_comments">comentarios favoritos de %1$s en</string>
-    <string name="profile_signup">se registró en Newsblur</string>
-    <string name="profile_comments_on">comentarios en</string>
     <string name="profile_feed_not_available">Ya no estás suscrito a esta fuente</string>
     <string name="profile_do_not_follow">No sigues a este usuario</string>
     <string name="profile_no_interactions">Sin interacciones</string>
@@ -1036,7 +1019,7 @@ personas para hablar sobre el mundo.</string>
         <item quantity="other">%1$d artículos al mes</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Desactualizado · última noticia %1$s</string>
-    <string name="add_site_url_or_search">https:// o buscar</string>
+    <string name="add_site_url_or_search">%1$s o buscar</string>
     <string name="add_site_choose_folder">Elegir carpeta</string>
     <string name="add_site_top_level">— Nivel superior —</string>
     <string name="add_site_adding_site">Añadiendo sitio</string>
@@ -1130,4 +1113,65 @@ personas para hablar sobre el mundo.</string>
         <item quantity="one">%d artículo</item>
         <item quantity="other">%d artículos</item>
     </plurals>
+    <string name="language_dialog_title">Elige tu idioma</string>
+    <string name="language_dialog_detected">NewsBlur detectó %1$s en tu dispositivo.</string>
+    <string name="language_dialog_note">Puedes cambiarlo cuando quieras en Preferencias.</string>
+    <string name="language_dialog_use">Usar %1$s</string>
+    <string name="language_dialog_choose_another">Elige otro idioma</string>
+    <string name="language_dialog_pick">Elige el idioma que quieres que use NewsBlur. Puedes cambiarlo cuando quieras en Preferencias.</string>
+    <string name="main_menu_import_feed_bundles">Importar paquetes de feeds</string>
+    <string name="main_menu_export_feeds">Exportar feeds</string>
+    <string name="discover_open">Abrir</string>
+    <string name="discover_folder_top_level">Nivel superior</string>
+    <string name="discover_add_to_folder">Añadir a la carpeta</string>
+    <string name="add_site_shortcut_trending">Tendencias</string>
+    <string name="add_site_freshness_stale">%1$s desactualizado</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="many">hace %d min</item>
+        <item quantity="one">hace %d min</item>
+        <item quantity="other">Hace %d min</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="many">Hace %d h</item>
+        <item quantity="one">Hace %d h</item>
+        <item quantity="other">Hace %d h</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="many">hace %d días</item>
+        <item quantity="one">Hace %d d</item>
+        <item quantity="other">Hace %d d</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="many">Hace %d sem</item>
+        <item quantity="one">Hace %d sem</item>
+        <item quantity="other">Hace %d sem</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="many">Hace %d мес</item>
+        <item quantity="one">Hace %d мес</item>
+        <item quantity="other">Hace %d meses</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">Te has suscrito a %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s se suscribió a %2$s</string>
+    <string name="profile_activity_you_saved">Guardaste %1$s</string>
+    <string name="profile_activity_user_saved">%1$s guardó %2$s</string>
+    <string name="profile_activity_you_signed_up">Te registraste en Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s se registró en Newsblur</string>
+    <string name="profile_activity_you_followed">Has empezado a seguir a %1$s</string>
+    <string name="profile_activity_user_followed">%1$s siguió a %2$s</string>
+    <string name="profile_activity_you_favorited_comments">Has marcado como favoritos %1$s comentarios en %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s marcó como favoritos los comentarios de %2$s sobre %3$s</string>
+    <string name="profile_activity_you_replied">Has respondido a %1$s</string>
+    <string name="profile_activity_user_replied">%1$s respondió a %2$s</string>
+    <string name="profile_activity_you_shared">Has compartido %1$s</string>
+    <string name="profile_activity_user_shared">%1$s compartió %2$s</string>
+    <string name="profile_interaction_following_you">%1$s ahora te sigue</string>
+    <string name="profile_interaction_following_user">%1$s ahora sigue a %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s marcó como favoritos tus comentarios sobre %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s marcó como favoritos los comentarios de %2$s sobre %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s respondió a tu comentario</string>
+    <string name="profile_interaction_replied_your_reply">%1$s respondió a tu respuesta</string>
+    <string name="profile_interaction_replied_user_comment">%1$s respondió al comentario de %2$s\'s</string>
+    <string name="profile_interaction_replied_user_reply">%1$s respondió a la respuesta de %2$s\'s</string>
+    <string name="profile_interaction_reshared">%1$s volvió a compartir %2$s</string>
 </resources>

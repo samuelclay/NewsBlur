@@ -30,9 +30,6 @@ msgstr " עד כמה שכיף למצוא דברים טובים, קל לא פחו
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " בחרו Premium, Archive או Pro והמשיכו לתשלום."
 
-msgid " Customize days of unreads"
-msgstr " התאמה אישית של מספר ימי הפריטים שלא נקראו"
-
 msgid " Gift for free (staff)"
 msgstr " מתנה בחינם (צוות)"
 
@@ -50,34 +47,6 @@ msgstr " אפשר לאמן בקלות כתבות בודדות תוך כדי קר
 
 msgid " You get a full refund, automatically."
 msgstr " תקבלו החזר מלא באופן אוטומטי."
-
-msgid " are stories you don't like"
-msgstr " הם סיפורים שלא מוצאים חן בעיניכם"
-
-msgid " are stories you have not yet rated"
-msgstr " הן כתבות שעדיין לא דירגת"
-
-msgid " are stories you like"
-msgstr " הן כתבות שאהבת"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " למשך עד %(value_1)s ימים"
-
-msgid " for up to 365 days"
-msgstr " עד 365 ימים"
-
-msgid " of the screen"
-msgstr " של המסך"
-
-msgid " or "
-msgstr " או "
-
-msgid " second"
-msgstr " שנייה"
-
-msgid " to change keyboard shortcuts."
-msgstr " כדי לשנות את קיצורי המקלדת."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -167,6 +136,16 @@ msgstr "$99 לשנה"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "החיבור אל %(account)s נותק."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s התאמה אישית של ימי הפריטים שלא נקראו"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s למשך עד %(count)s יום"
+msgstr[1] "%(badge)s למשך עד %(count)s ימים"
 
 #, python-format
 msgid "%(category)s topics"
@@ -361,12 +340,6 @@ msgstr[0] "%(count)s תגובה"
 msgstr[1] "%(count)s תגובות"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s שנייה."
-msgstr[1] "%(count)s שניות."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "%(count)s נבחרו"
@@ -521,12 +494,28 @@ msgstr[0] "לפני %(count)s שבועות"
 msgstr[1] "לפני %(count)s שבועות"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "ההתראות של %(feed_title)s הוגדרו"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s הן כתבות שאינך אוהב/ת"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s הן כתבות שעדיין לא דירגת"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s הן כתבות שאהבת"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -583,6 +572,10 @@ msgstr[1] "%(start)s עד %(end)s דקות"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s או %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1148,8 +1141,11 @@ msgstr "מוסיף אתר..."
 msgid "Adding..."
 msgstr "מוסיף..."
 
-msgid "After "
-msgstr "אחרי "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "לאחר %(slider)s %(count)s שנייה."
+msgstr[1] "לאחר %(slider)s %(count)s שניות."
 
 msgid "After marking feed/folder read"
 msgstr "לאחר סימון הפיד/התיקייה כנקראו"
@@ -1469,6 +1465,9 @@ msgstr "יצירה אוטומטית של תקצירים לפי לוח זמנים
 msgid "Automatically play next item in queue"
 msgstr "הפעל אוטומטית את הפריט הבא בתור"
 
+msgid "Back"
+msgstr "חזרה"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1765,6 +1764,9 @@ msgstr "בחירת האתרים שלך"
 msgid "Choose a story pattern"
 msgstr "בחרו תבנית כתבה"
 
+msgid "Choose another language"
+msgstr "בחירת שפה אחרת"
+
 msgid "Choose categories"
 msgstr "בחירת קטגוריות"
 
@@ -1795,6 +1797,9 @@ msgstr "בחר אילו מקטעים יופיעו בתדריך שלך"
 msgid "Choose your browser"
 msgstr "בחרו את הדפדפן שלכם"
 
+msgid "Choose your language"
+msgstr "בחירת השפה שלכם"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "בחרו את מודל ה-AI המועדף עליכם: Claude, GPT, Gemini או Grok"
 
@@ -1804,8 +1809,9 @@ msgstr "בחירת האתרים שלך"
 msgid "Classifier filter scope"
 msgstr "היקף מסנן המסווג"
 
-msgid "Classifier scope requires "
-msgstr "היקף הסיווג דורש "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "הגדרת תחום המסווג דורשת %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic),‏ GPT (OpenAI),‏ Gemini (Google) ו-Grok (xAI). אפשר לעבור ביניהם בכל עת."
@@ -3262,8 +3268,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "שדרגו לפרימיום — $36 לשנה"
 
-msgid "Go back to "
-msgstr "חזרה אל "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "חזרה אל %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "קריאות מומלצות"
@@ -3777,8 +3784,9 @@ msgstr "נהל את החיוב ב-Stripe"
 msgid "Manage email settings"
 msgstr "ניהול הגדרות דוא״ל"
 
-msgid "Manually by hitting "
-msgstr "ידנית על ידי לחיצה על "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "ידנית, בלחיצה על %(first_key)s או %(second_key)s"
 
 msgid "Manually or by clicking in the story"
 msgstr "ידנית או בלחיצה על הכתבה"
@@ -4163,6 +4171,10 @@ msgstr "NewsBlur בודק אם יש שינויים ומעביר כתבות חד�
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur מחובר לשירותים אחרים"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur זיהה את %(language)s בדפדפן שלכם."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur לא זמין כרגע. <br> כדאי לנסות שוב בקרוב."
 
@@ -4442,8 +4454,9 @@ msgstr "התראות"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "התראות על מסווגי מערכת חכמה שאומנו"
 
-msgid "Notifications require "
-msgstr "ההתראות דורשות "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "התראות דורשות %(tier_link)s"
 
 msgid "Notify on"
 msgstr "להפעיל התראות עבור"
@@ -4499,8 +4512,9 @@ msgstr "אוי לא, הייתה בעיה בשליפת כתובת ה-URL הזו �
 msgid "Old password"
 msgstr "סיסמה ישנה"
 
-msgid "Older than: "
-msgstr "ישן יותר מ: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "ישן יותר מ: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "ישן יותר:"
@@ -4726,8 +4740,9 @@ msgstr "אחזור דף"
 msgid "Page down"
 msgstr "עמוד למטה"
 
-msgid "Page down by "
-msgstr "דפדף למטה ב- "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "גלילה מטה בעזרת %(slider)s %(percent)s מהמסך"
 
 msgid "Page up"
 msgstr "עמוד למעלה"
@@ -4789,6 +4804,9 @@ msgstr "הגדרות התראות לכל פיד"
 
 msgid "Pick a tier & pay."
 msgstr "בחרו מסלול ושלמו."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "בחרו את השפה שבה תרצו ש־NewsBlur יפעל. אפשר לשנות זאת בכל עת בהעדפות."
 
 msgid "Places"
 msgstr "מקומות"
@@ -5049,8 +5067,9 @@ msgstr "ציטוט"
 msgid "RSS Feed"
 msgstr "הזנת RSS"
 
-msgid "RSS feeds for folders is a "
-msgstr "הזנות RSS לתיקיות הן "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "הזנות RSS של תיקיות הן תכונת %(link_start)sפרימיום%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5209,8 +5228,9 @@ msgstr "יצירת תדרוך מחדש"
 msgid "Regex"
 msgstr "ביטוי רגולרי"
 
-msgid "Regex requires "
-msgstr "ביטוי רגולרי חייב לכלול "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "ביטוי רגולרי דורש %(tier_link)s"
 
 msgid "Related"
 msgstr "קשורות"
@@ -5288,8 +5308,9 @@ msgstr "התבקש"
 msgid "Requests to Follow You"
 msgstr "בקשות לעקוב אחריך"
 
-msgid "Requires "
-msgstr "דורש "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "נדרשת %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "נדרש ארכיון פרימיום"
@@ -5499,8 +5520,9 @@ msgstr "מסווגים ממוקדים זמינים רק למנויי %(plan)s."
 msgid "Scroll to comments"
 msgstr "גלילה לתגובות"
 
-msgid "Scroll up/down in story by "
-msgstr "גלילה מעלה/מטה בתוך הכתבה ב־ "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "גלילה מעלה/מטה בכתבה באמצעות %(slider)s %(pixels)s פיקסלים."
 
 msgid "Search"
 msgstr "חיפוש"
@@ -7179,6 +7201,10 @@ msgstr "היסטוריית חיובים לפי שימוש"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "חיוב לפי שימוש מופעל עבור מסווגי שפה טבעית."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "שימוש ב־%(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "שימוש בשעון של 12 שעות"
 
@@ -7539,6 +7565,9 @@ msgstr "הסרת את ההרשמה מכל הודעות האימייל של NewsB
 msgid "You can also filter out stories you don't want to read."
 msgstr "אפשר גם לסנן סיפורים שאינך רוצה לקרוא."
 
+msgid "You can change this anytime in Preferences."
+msgstr "אפשר לשנות זאת בכל עת בהעדפות."
+
 msgid "You can change your opinions."
 msgstr "אפשר לשנות את הדעות שלכם."
 
@@ -7587,8 +7616,9 @@ msgstr "עליך לעקוב אחרי %(value_1)s כדי להשיב"
 msgid "You must be logged in to send a story over email."
 msgstr "עליך להתחבר כדי לשלוח סיפור בדוא״ל."
 
-msgid "You must have a "
-msgstr "חייב להיות לך "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "נדרש %(link_start)sחשבון פרימיום%(link_end)s כדי לשנות קיצורי מקלדת."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7854,11 +7884,9 @@ msgstr "קוד פתוח"
 msgid "optional, appears above the story"
 msgstr "אופציונלי, מופיע מעל הכתבה"
 
-msgid "or"
-msgstr "או"
-
-msgid "or subscribe with "
-msgstr "או להירשם כמנוי באמצעות "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "או להירשם באמצעות %(paypal_button)s"
 
 msgid "pending"
 msgstr "בהמתנה"
@@ -7869,17 +7897,8 @@ msgstr "תעשיית הפודקאסטים"
 msgid "premium"
 msgstr "פרימיום"
 
-msgid "premium account"
-msgstr "חשבון פרימיום"
-
-msgid "premium feature"
-msgstr "תכונת פרימיום"
-
 msgid "public transit"
 msgstr "תחבורה ציבורית"
-
-msgid "px."
-msgstr "פיקסלים."
 
 msgid "quantum computing"
 msgstr "מחשוב קוונטי"

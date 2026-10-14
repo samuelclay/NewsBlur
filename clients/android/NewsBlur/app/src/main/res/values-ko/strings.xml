@@ -174,25 +174,8 @@
     <string name="profile_ago">전</string>
     <string name="profile_recent_actvity">활동</string>
     <string name="profile_recent_interactions">활동</string>
-    <string name="profile_started_following">팔로우함</string>
-    <string name="profile_you">나</string>
-    <string name="profile_you_lower">나</string>
-    <string name="profile_your">내</string>
-    <string name="profile_now_following">이제 %1$s님을 팔로우합니다</string>
-    <string name="profile_replied_to">답글 대상</string>
-    <string name="profile_replied_to_your">%1$s님에게 답글을 남겼습니다</string>
-    <string name="profile_shared_story">공유됨</string>
-    <string name="profile_comment">댓글</string>
-    <string name="profile_reply">답글</string>
     <string name="profile_button_follow">팔로우</string>
     <string name="profile_button_unfollow">팔로우 취소</string>
-    <string name="profile_subscribed_to">구독 중</string>
-    <string name="profile_saved">저장됨</string>
-    <string name="profile_reshared">다시 공유함</string>
-    <string name="profile_favorited">즐겨찾기됨</string>
-    <string name="profile_favorited_comments">%1$s개의 댓글을 즐겨찾기했습니다:</string>
-    <string name="profile_signup">Newsblur에 가입함</string>
-    <string name="profile_comments_on">님의 댓글</string>
     <string name="profile_feed_not_available">이 피드 구독이 취소되었습니다</string>
     <string name="profile_do_not_follow">이 사용자를 팔로우하고 있지 않습니다</string>
     <string name="profile_no_interactions">상호작용 없음</string>
@@ -1012,7 +995,7 @@
         <item quantity="other">%1$d개 스토리/월</item>
     </plurals>
     <string name="setup_feed_stale_last_story">오래됨 · 마지막 스토리 %1$s</string>
-    <string name="add_site_url_or_search">https:// 또는 검색</string>
+    <string name="add_site_url_or_search">%1$s 또는 검색</string>
     <string name="add_site_choose_folder">폴더 선택</string>
     <string name="add_site_top_level">— 최상위 —</string>
     <string name="add_site_adding_site">사이트 추가 중</string>
@@ -1102,4 +1085,55 @@
     <plurals name="briefing_group_story_count">
         <item quantity="other">%d개 스토리</item>
     </plurals>
+    <string name="language_dialog_title">언어 선택</string>
+    <string name="language_dialog_detected">NewsBlur에서 기기의 %1$s 언어를 감지했습니다.</string>
+    <string name="language_dialog_note">이 설정은 언제든지 환경설정에서 변경할 수 있습니다.</string>
+    <string name="language_dialog_use">%1$s 사용</string>
+    <string name="language_dialog_choose_another">다른 언어 선택</string>
+    <string name="language_dialog_pick">NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 환경설정에서 언제든지 변경할 수 있습니다.</string>
+    <string name="main_menu_import_feed_bundles">가져오기 및 피드 번들</string>
+    <string name="main_menu_export_feeds">피드 내보내기</string>
+    <string name="discover_open">열기</string>
+    <string name="discover_folder_top_level">최상위</string>
+    <string name="discover_add_to_folder">폴더에 추가</string>
+    <string name="add_site_shortcut_trending">인기 급상승</string>
+    <string name="add_site_freshness_stale">오래된 %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="other">%d분 전</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="other">%d시간 전</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="other">%d일 전</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="other">%d주 전</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="other">%d개월 전</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">%1$s을(를) 구독했습니다</string>
+    <string name="profile_activity_user_subscribed">%1$s님이 %2$s을(를) 구독했습니다</string>
+    <string name="profile_activity_you_saved">회원님이 %1$s을(를) 저장했습니다</string>
+    <string name="profile_activity_user_saved">%1$s님이 %2$s을(를) 저장했습니다</string>
+    <string name="profile_activity_you_signed_up">Newsblur에 가입했습니다</string>
+    <string name="profile_activity_user_signed_up">%1$s님이 Newsblur에 가입했습니다</string>
+    <string name="profile_activity_you_followed">%1$s님을 팔로우했습니다</string>
+    <string name="profile_activity_user_followed">%1$s님이 %2$s님을 팔로우했습니다</string>
+    <string name="profile_activity_you_favorited_comments">%2$s의 댓글 %1$s개를 즐겨찾기에 추가했습니다</string>
+    <string name="profile_activity_user_favorited_comments">%1$s님이 %3$s에서 댓글 %2$s개를 즐겨찾기에 추가했습니다</string>
+    <string name="profile_activity_you_replied">%1$s님에게 답글을 남겼습니다</string>
+    <string name="profile_activity_user_replied">%1$s님이 %2$s님에게 답글을 남겼습니다</string>
+    <string name="profile_activity_you_shared">%1$s을(를) 공유했습니다</string>
+    <string name="profile_activity_user_shared">%1$s님이 %2$s을(를) 공유했습니다</string>
+    <string name="profile_interaction_following_you">%1$s님이 회원님을 팔로우하기 시작했습니다</string>
+    <string name="profile_interaction_following_user">%1$s님이 이제 %2$s님을 팔로우합니다</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s님이 %2$s에 작성한 회원님의 댓글을 즐겨찾기에 추가했습니다</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s님이 %3$s에서 %2$s님의 댓글을 즐겨찾기에 추가했습니다</string>
+    <string name="profile_interaction_replied_your_comment">%1$s님이 회원님의 댓글에 답글을 남겼습니다</string>
+    <string name="profile_interaction_replied_your_reply">%1$s님이 회원님의 답글에 답했습니다</string>
+    <string name="profile_interaction_replied_user_comment">%1$s님이 %2$s님의 댓글에 답글을 남겼습니다</string>
+    <string name="profile_interaction_replied_user_reply">%1$s님이 %2$s님의 답글에 답글을 남겼습니다</string>
+    <string name="profile_interaction_reshared">%1$s님이 %2$s을(를) 다시 공유했습니다</string>
 </resources>

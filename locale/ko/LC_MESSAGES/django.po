@@ -98,6 +98,10 @@ msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d분 전"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d일"
@@ -1158,6 +1162,9 @@ msgid ""
 msgstr ""
 "Craig Hockenberry가 Canon 프린터가 Mac에서 계속 \"오프라인\" 상태가 되는 이유인 &mdash; 잘못된 Bonjour/mDNS 펌웨어 &mdash;를 심층 분석하고 "
 "영구적인 해결 방법을 제시합니다."
+
+msgid "Create Account"
+msgstr "계정 만들기"
 
 msgid "Create a new account instead"
 msgstr "대신 새 계정 만들기"
@@ -5615,9 +5622,6 @@ msgstr "%(authors)s 작성"
 msgid "classifier_type and classifier_value are required"
 msgstr "classifier_type 및 classifier_value가 필요합니다"
 
-msgid "create account"
-msgstr "계정 만들기"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers는 목록이어야 합니다"
 
@@ -5661,9 +5665,6 @@ msgstr "잠시만요"
 
 msgid "just now"
 msgstr "방금"
-
-msgid "log in"
-msgstr "로그인"
 
 msgid "logout"
 msgstr "로그아웃"
