@@ -160,7 +160,6 @@
     <string name="edit_reply_update">返信を更新</string>
     <string name="edit_reply_delete">返信Yを削除</string>
     <string name="alert_dialog_ok">OK</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">完了</string>
     <string name="alert_dialog_openlink">リンクを開く</string>
     <string name="alert_dialog_openimage">画像を開く</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">サブスクリプションは%sに更新されます</string>
     <string name="premium_subscription_expiration">サブスクリプションは%sに期限切れになります</string>
     <string name="premium_subscription_no_expiration">サブスクリプションは期限なしに設定されています。すごい！</string>
-    <string name="premium_policies">詳細はNewsBlurの <a href="https://newsblur.com/privacy">プライバシーポリシー</a> と <a href="https://newsblur.com/tos">利用規約</a>をご覧ください。</string>
+    <string name="premium_policies">詳細はNewsBlurの &lt;a href=\"https://newsblur.com/privacy\"&gt;プライバシーポリシー&lt;/a&gt; と &lt;a href=\"https://newsblur.com/tos\"&gt;利用規約&lt;/a&gt;をご覧ください。</string>
     <string name="premium_subscription_header">プレミアムサブスクリプション</string>
     <string name="archive_subscription_header">プレミアムアーカイブ</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -586,7 +585,7 @@
         <item quantity="other">%s 件/月</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="other">%d サイトでも公開</item>
+        <item quantity="other">ほか%dサイトでも公開</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="other">+ %d 件のサイト</item>
@@ -819,7 +818,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">新着記事</string>
     <string name="go_to_feed">フィードに移動</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -902,8 +900,6 @@
     <string name="ui_690910f6ed17">OPMLをインポート</string>
     <string name="ui_244fd5e426f0">OPMLをエクスポート</string>
     <string name="ui_768e0c1c6957">タイトル</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">保存済みタグ</string>
     <string name="ui_6e914f494515">記事のタグ</string>
     <string name="ui_e912ab619a72">その他のタグ</string>
@@ -931,7 +927,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">アカウントを削除すると、フィード、保存した記事、アカウントデータが完全に削除されます。この操作は取り消せません。</string>
     <string name="onboarding_confirm_your_password">パスワードを確認</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">アカウントを完全に削除するには、%1$s と入力してください。</string>
-    <string name="onboarding_delete">削除</string>
     <string name="onboarding_permanently_delete_account">アカウントを完全に削除</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">世界について語り合う人々をつなぐ\nパーソナルニュースリーダー。</string>
     <string name="onboarding_or">または</string>
@@ -956,4 +951,155 @@
     <string name="onboarding_you_re_all_set_up">設定が完了しました。</string>
     <string name="onboarding_your_reading_list">リーディングリスト</string>
     <string name="onboarding_stay_connected">接続を維持</string>
+    <string name="onboarding_connect_your_account">アカウントを接続</string>
+    <string name="onboarding_choose_your_username">ユーザー名を選択</string>
+    <string name="onboarding_create_an_account">アカウントを作成</string>
+    <string name="onboarding_welcome_back">おかえりなさい</string>
+    <string name="onboarding_signing_in_with_provider">%1$sでサインイン中</string>
+    <string name="onboarding_sign_in_with_provider">%1$sでログイン</string>
+    <string name="onboarding_email">メール</string>
+    <string name="onboarding_username">ユーザー名</string>
+    <string name="onboarding_username_or_email">ユーザー名またはメールアドレス</string>
+    <string name="onboarding_password">パスワード</string>
+    <string name="onboarding_continue">続ける</string>
+    <string name="onboarding_create_account">アカウントを作成</string>
+    <string name="onboarding_sign_in">サインイン</string>
+    <string name="onboarding_already_have_an_account_sign_in">すでにアカウントをお持ちですか？ログイン</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">NewsBlurを初めてご利用ですか？アカウントを作成</string>
+    <string name="onboarding_use_a_custom_server">カスタムサーバーを使用</string>
+    <string name="onboarding_verify_with_provider">%1$sで認証</string>
+    <string name="setup_close_setup">設定を閉じる</string>
+    <string name="setup_start_reading">読み始める</string>
+    <string name="setup_continue">続行</string>
+    <string name="setup_a_little_of_everything">幅広くいろいろ</string>
+    <string name="setup_bundle_folder_name">バンドルフォルダー名</string>
+    <string name="setup_added">追加済み</string>
+    <string name="setup_queued">キューに追加済み</string>
+    <string name="setup_loading_feeds_to_choose_from">選択できるフィードを読み込み中…</string>
+    <string name="setup_loading_more_feeds">フィードをさらに読み込み中…</string>
+    <string name="setup_select_feeds_to_add">追加するフィードを選択</string>
+    <string name="setup_name_your_folder_to_continue">続けるにはフォルダー名を入力してください</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="other">%1$d件のフィードを「%2$s」フォルダーに追加</item>
+    </plurals>
+    <string name="setup_importing">インポート中…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="other">選択できるカテゴリは %1$d 件</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">興味・関心やサイトを検索</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="other">%1$d件のフィードを選択中</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="other">%1$d 件のフィードを追加しました</item>
+    </plurals>
+    <string name="setup_included_in_bundle">バンドルに含まれています</string>
+    <string name="setup_include_in_bundle">バンドルに含める</string>
+    <string name="setup_reader_ready_add_feeds_anytime">リーダーの準備ができました。「追加 + サイトを探す」からいつでもフィードを追加できます。</string>
+    <string name="setup_reading_list_yours">自分だけの読書リスト。選んだものをすべて、ひとつの場所に。</string>
+    <plurals name="setup_feed_count">
+        <item quantity="other">%1$d件のフィード</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlurフォーラム</string>
+    <string name="setup_newsblur_forum_description">質問やアイデアを共有</string>
+    <string name="setup_handle_on_x">Xでの%1$s</string>
+    <string name="setup_samuelclay_on_x_description">NewsBlur の開発者が提供</string>
+    <string name="setup_newsblur_on_x_description">ニュースと最新情報</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="other">%2$sに%1$d件のフィードを追加できませんでした。%3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="other">月 %1$d 件の記事</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">古い · 最後の記事 %1$s</string>
+    <string name="add_site_url_or_search">https:// または検索</string>
+    <string name="add_site_choose_folder">フォルダーを選択</string>
+    <string name="add_site_top_level">— 最上位 —</string>
+    <string name="add_site_adding_site">サイトを追加中</string>
+    <string name="add_site_add_folder">フォルダーを追加</string>
+    <string name="add_site_cancel_new_folder">新しいフォルダーの作成をキャンセル</string>
+    <string name="add_site_create_new_folder">新しいフォルダを作成</string>
+    <string name="add_site_new_folder_name">新しいフォルダー名</string>
+    <string name="add_site_searching_sites">サイトを検索中</string>
+    <string name="discover_quick_add">サイトまたはフォルダーをクイック追加</string>
+    <string name="discover_tab_search">検索</string>
+    <string name="discover_tab_web_feed">ウェブフィード</string>
+    <string name="discover_tab_popular">人気</string>
+    <string name="discover_tab_newsletters">ニュースレター</string>
+    <string name="discover_tab_podcasts">ポッドキャスト</string>
+    <string name="discover_tab_heading">%1$sを見つける</string>
+    <string name="discover_hint_search">サイトを検索するか、URLを貼り付け</string>
+    <string name="discover_hint_popular">人気のサイトを検索</string>
+    <string name="discover_hint_youtube">チャンネルを検索、またはURLを貼り付け</string>
+    <string name="discover_hint_reddit">サブレディットを検索</string>
+    <string name="discover_hint_newsletters">ニュースレターを検索、またはURLを貼り付け</string>
+    <string name="discover_hint_podcasts">ポッドキャストを検索</string>
+    <string name="discover_platform">プラットフォーム</string>
+    <string name="discover_all_platforms">すべて</string>
+    <string name="discover_category">カテゴリ</string>
+    <string name="discover_all_categories">すべてのカテゴリー</string>
+    <string name="discover_topic">トピック</string>
+    <string name="discover_all_topics">すべてのトピック</string>
+    <string name="discover_trending_this_week">今週のトレンド</string>
+    <string name="discover_search_results">検索結果</string>
+    <string name="discover_add_this_url">このURLを追加</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">%1$sを選択</string>
+    <string name="discover_clear_input">%1$sをクリア</string>
+    <string name="discover_web_page_url">ウェブページのURL</string>
+    <string name="discover_which_stories_optional">どの記事ですか？（任意）</string>
+    <string name="discover_analyze_page">ページを分析</string>
+    <string name="discover_refine_analysis">分析を調整</string>
+    <string name="discover_add_rss_feed">RSSフィードを追加</string>
+    <string name="discover_added">追加済み</string>
+    <string name="discover_web_pattern">パターン %1$d</string>
+    <string name="discover_feed_title">フィードのタイトル</string>
+    <string name="discover_keep_stories">記事を保存</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="other">%d日間</item>
+    </plurals>
+    <string name="discover_create_web_feed">ウェブフィードを作成</string>
+    <string name="discover_search_news_topic">ニュースのトピックを検索</string>
+    <string name="discover_top_stories">注目の記事</string>
+    <string name="discover_choose_a_topic">トピックを選択</string>
+    <string name="discover_choose_a_category">カテゴリを選択</string>
+    <string name="discover_add_google_news_feed">Googleニュースのフィードを追加</string>
+    <string name="discover_news_topic_world">世界</string>
+    <string name="discover_news_topic_nation">国</string>
+    <string name="discover_news_topic_business">ビジネス</string>
+    <string name="discover_news_topic_technology">テクノロジー</string>
+    <string name="discover_news_topic_entertainment">エンターテインメント</string>
+    <string name="discover_news_topic_sports">スポーツ</string>
+    <string name="discover_news_topic_science">科学</string>
+    <string name="discover_news_topic_health">健康</string>
+    <string name="briefing_frequency">頻度</string>
+    <string name="briefing_frequency_thrice_daily">1日3回</string>
+    <string name="briefing_frequency_twice_daily">1日2回</string>
+    <string name="briefing_frequency_daily">毎日</string>
+    <string name="briefing_frequency_weekly">毎週</string>
+    <string name="briefing_preferred_time">希望時刻</string>
+    <string name="briefing_time_morning">朝</string>
+    <string name="briefing_time_afternoon">午後</string>
+    <string name="briefing_time_evening">夕方</string>
+    <string name="briefing_preferred_day">希望する曜日</string>
+    <string name="briefing_day_sunday">日曜日</string>
+    <string name="briefing_day_monday">月曜日</string>
+    <string name="briefing_day_tuesday">火曜日</string>
+    <string name="briefing_day_wednesday">水曜日</string>
+    <string name="briefing_day_thursday">木曜日</string>
+    <string name="briefing_day_friday">金曜日</string>
+    <string name="briefing_day_saturday">土曜日</string>
+    <string name="briefing_story_count">記事数</string>
+    <string name="briefing_writing_style">文章のスタイル</string>
+    <string name="briefing_style_bullets">箇条書き</string>
+    <string name="briefing_style_editorial">編集記事</string>
+    <string name="briefing_style_headlines">見出し</string>
+    <string name="briefing_filter">フィルター</string>
+    <string name="briefing_keyword_section">キーワードセクション %1$d</string>
+    <string name="briefing_remove_keyword_section">削除</string>
+    <string name="briefing_generate_now">今すぐ生成</string>
+    <string name="briefing_saving_settings">デイリーブリーフィングの設定を保存中…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="other">%d 件の記事</item>
+    </plurals>
 </resources>

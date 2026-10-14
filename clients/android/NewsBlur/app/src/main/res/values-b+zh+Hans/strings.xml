@@ -160,7 +160,6 @@
     <string name="edit_reply_update">更新回复</string>
     <string name="edit_reply_delete">删除回复Y</string>
     <string name="alert_dialog_ok">确定</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">完成</string>
     <string name="alert_dialog_openlink">打开链接</string>
     <string name="alert_dialog_openimage">打开图片</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">你的订阅将于 %s 续订</string>
     <string name="premium_subscription_expiration">你的订阅将于 %s 到期</string>
     <string name="premium_subscription_no_expiration">你的订阅已设为永不过期。哇！</string>
-    <string name="premium_policies">详情请查看 NewsBlur\'s <a href="https://newsblur.com/privacy">隐私政策</a> 和 <a href="https://newsblur.com/tos">使用条款</a>。</string>
+    <string name="premium_policies">详情请查看 NewsBlur\'s &lt;a href=\"https://newsblur.com/privacy\"&gt;隐私政策&lt;/a&gt; 和 &lt;a href=\"https://newsblur.com/tos\"&gt;使用条款&lt;/a&gt;。</string>
     <string name="premium_subscription_header">高级订阅</string>
     <string name="archive_subscription_header">高级归档</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -586,7 +585,7 @@
         <item quantity="other">每月 %s 篇文章</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="other">也由 %d 个网站发布</item>
+        <item quantity="other">还有 %d 个网站也发布了此内容</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="other">+ 另外 %d 个网站</item>
@@ -819,7 +818,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">新文章</string>
     <string name="go_to_feed">前往订阅源</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -902,8 +900,6 @@
     <string name="ui_690910f6ed17">导入 OPML</string>
     <string name="ui_244fd5e426f0">导出 OPML</string>
     <string name="ui_768e0c1c6957">标题</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">已保存的标签</string>
     <string name="ui_6e914f494515">文章标签</string>
     <string name="ui_e912ab619a72">其他标签</string>
@@ -931,7 +927,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">删除账户会永久移除你的订阅源、已保存的文章和账户数据。此操作无法撤销。</string>
     <string name="onboarding_confirm_your_password">确认密码</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">输入 %1$s 以永久删除你的账户。</string>
-    <string name="onboarding_delete">删除</string>
     <string name="onboarding_permanently_delete_account">永久删除账号</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">一款个人新闻阅读器，让人们\n相聚畅谈世界。</string>
     <string name="onboarding_or">或</string>
@@ -956,4 +951,155 @@
     <string name="onboarding_you_re_all_set_up">一切就绪。</string>
     <string name="onboarding_your_reading_list">你的阅读清单</string>
     <string name="onboarding_stay_connected">保持联系</string>
+    <string name="onboarding_connect_your_account">连接您的账户</string>
+    <string name="onboarding_choose_your_username">选择用户名</string>
+    <string name="onboarding_create_an_account">创建账户</string>
+    <string name="onboarding_welcome_back">欢迎回来</string>
+    <string name="onboarding_signing_in_with_provider">正在通过 %1$s 登录</string>
+    <string name="onboarding_sign_in_with_provider">使用 %1$s 登录</string>
+    <string name="onboarding_email">电子邮件</string>
+    <string name="onboarding_username">用户名</string>
+    <string name="onboarding_username_or_email">用户名或电子邮件</string>
+    <string name="onboarding_password">密码</string>
+    <string name="onboarding_continue">继续</string>
+    <string name="onboarding_create_account">创建账户</string>
+    <string name="onboarding_sign_in">登录</string>
+    <string name="onboarding_already_have_an_account_sign_in">已有账户？登录</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">刚开始使用 NewsBlur？创建账户</string>
+    <string name="onboarding_use_a_custom_server">使用自定义服务器</string>
+    <string name="onboarding_verify_with_provider">使用 %1$s 验证</string>
+    <string name="setup_close_setup">关闭设置</string>
+    <string name="setup_start_reading">开始阅读</string>
+    <string name="setup_continue">继续</string>
+    <string name="setup_a_little_of_everything">各种内容都有一点</string>
+    <string name="setup_bundle_folder_name">合集文件夹名称</string>
+    <string name="setup_added">已添加</string>
+    <string name="setup_queued">已排队</string>
+    <string name="setup_loading_feeds_to_choose_from">正在加载可供选择的订阅源…</string>
+    <string name="setup_loading_more_feeds">正在加载更多订阅源…</string>
+    <string name="setup_select_feeds_to_add">选择要添加的订阅源</string>
+    <string name="setup_name_your_folder_to_continue">命名文件夹以继续</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="other">将 %1$d 个订阅源添加到“%2$s”文件夹</item>
+    </plurals>
+    <string name="setup_importing">正在导入…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="other">可供选择的类别：%1$d 个</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">搜索兴趣和网站</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="other">已选择%1$d个订阅源</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="other">已添加 %1$d 个订阅源</item>
+    </plurals>
+    <string name="setup_included_in_bundle">包含在捆绑包中</string>
+    <string name="setup_include_in_bundle">包含在捆绑包中</string>
+    <string name="setup_reader_ready_add_feeds_anytime">阅读器已就绪。你可以随时通过“添加 + 发现网站”添加订阅源。</string>
+    <string name="setup_reading_list_yours">专属你的阅读清单。你选择的所有内容，尽在一处。</string>
+    <plurals name="setup_feed_count">
+        <item quantity="other">%1$d 个订阅源</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur 论坛</string>
+    <string name="setup_newsblur_forum_description">提问并分享想法</string>
+    <string name="setup_handle_on_x">X 上的 %1$s</string>
+    <string name="setup_samuelclay_on_x_description">由 NewsBlur 的创作者打造</string>
+    <string name="setup_newsblur_on_x_description">新闻与动态</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="other">无法将 %1$d 个源添加到 %2$s。%3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="other">每月 %1$d 篇文章</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">已过期 · 上次更新于 %1$s</string>
+    <string name="add_site_url_or_search">https:// 或搜索</string>
+    <string name="add_site_choose_folder">选择文件夹</string>
+    <string name="add_site_top_level">— 顶级 —</string>
+    <string name="add_site_adding_site">正在添加网站</string>
+    <string name="add_site_add_folder">添加文件夹</string>
+    <string name="add_site_cancel_new_folder">取消新建文件夹</string>
+    <string name="add_site_create_new_folder">创建新文件夹</string>
+    <string name="add_site_new_folder_name">新文件夹名称</string>
+    <string name="add_site_searching_sites">正在搜索网站</string>
+    <string name="discover_quick_add">快速添加网站或文件夹</string>
+    <string name="discover_tab_search">搜索</string>
+    <string name="discover_tab_web_feed">网页订阅源</string>
+    <string name="discover_tab_popular">热门</string>
+    <string name="discover_tab_newsletters">新闻简报</string>
+    <string name="discover_tab_podcasts">播客</string>
+    <string name="discover_tab_heading">发现 %1$s</string>
+    <string name="discover_hint_search">搜索网站或粘贴网址</string>
+    <string name="discover_hint_popular">搜索热门网站</string>
+    <string name="discover_hint_youtube">搜索频道或粘贴网址</string>
+    <string name="discover_hint_reddit">搜索 Reddit 子版块</string>
+    <string name="discover_hint_newsletters">搜索新闻简报或粘贴网址</string>
+    <string name="discover_hint_podcasts">搜索播客</string>
+    <string name="discover_platform">平台</string>
+    <string name="discover_all_platforms">全部</string>
+    <string name="discover_category">分类</string>
+    <string name="discover_all_categories">所有类别</string>
+    <string name="discover_topic">主题</string>
+    <string name="discover_all_topics">所有主题</string>
+    <string name="discover_trending_this_week">本周热门趋势</string>
+    <string name="discover_search_results">搜索结果</string>
+    <string name="discover_add_this_url">添加此网址</string>
+    <string name="discover_choice_label">%1$s：</string>
+    <string name="discover_choose_option">选择 %1$s</string>
+    <string name="discover_clear_input">清除 %1$s</string>
+    <string name="discover_web_page_url">网页网址</string>
+    <string name="discover_which_stories_optional">哪些文章？（可选）</string>
+    <string name="discover_analyze_page">分析页面</string>
+    <string name="discover_refine_analysis">优化分析</string>
+    <string name="discover_add_rss_feed">添加 RSS 源</string>
+    <string name="discover_added">已添加</string>
+    <string name="discover_web_pattern">模式 %1$d</string>
+    <string name="discover_feed_title">订阅源标题</string>
+    <string name="discover_keep_stories">保留文章</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="other">%d 天</item>
+    </plurals>
+    <string name="discover_create_web_feed">创建网页源</string>
+    <string name="discover_search_news_topic">搜索新闻主题</string>
+    <string name="discover_top_stories">热门文章</string>
+    <string name="discover_choose_a_topic">选择一个主题</string>
+    <string name="discover_choose_a_category">选择一个类别</string>
+    <string name="discover_add_google_news_feed">添加 Google 新闻源</string>
+    <string name="discover_news_topic_world">世界</string>
+    <string name="discover_news_topic_nation">国家</string>
+    <string name="discover_news_topic_business">商业</string>
+    <string name="discover_news_topic_technology">科技</string>
+    <string name="discover_news_topic_entertainment">娱乐</string>
+    <string name="discover_news_topic_sports">体育</string>
+    <string name="discover_news_topic_science">科学</string>
+    <string name="discover_news_topic_health">健康</string>
+    <string name="briefing_frequency">频率</string>
+    <string name="briefing_frequency_thrice_daily">每天 3 次</string>
+    <string name="briefing_frequency_twice_daily">每天 2 次</string>
+    <string name="briefing_frequency_daily">每天</string>
+    <string name="briefing_frequency_weekly">每周</string>
+    <string name="briefing_preferred_time">首选时间</string>
+    <string name="briefing_time_morning">早上</string>
+    <string name="briefing_time_afternoon">下午</string>
+    <string name="briefing_time_evening">傍晚</string>
+    <string name="briefing_preferred_day">首选日期</string>
+    <string name="briefing_day_sunday">星期日</string>
+    <string name="briefing_day_monday">星期一</string>
+    <string name="briefing_day_tuesday">星期二</string>
+    <string name="briefing_day_wednesday">星期三</string>
+    <string name="briefing_day_thursday">星期四</string>
+    <string name="briefing_day_friday">星期五</string>
+    <string name="briefing_day_saturday">星期六</string>
+    <string name="briefing_story_count">文章数量</string>
+    <string name="briefing_writing_style">写作风格</string>
+    <string name="briefing_style_bullets">项目符号</string>
+    <string name="briefing_style_editorial">编辑</string>
+    <string name="briefing_style_headlines">标题</string>
+    <string name="briefing_filter">筛选</string>
+    <string name="briefing_keyword_section">关键词分区 %1$d</string>
+    <string name="briefing_remove_keyword_section">移除</string>
+    <string name="briefing_generate_now">立即生成</string>
+    <string name="briefing_saving_settings">正在保存每日简报设置…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="other">%d 篇文章</item>
+    </plurals>
 </resources>

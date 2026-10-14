@@ -160,7 +160,6 @@
     <string name="edit_reply_update">อัปเดตคำตอบ</string>
     <string name="edit_reply_delete">ลบคำตอบY</string>
     <string name="alert_dialog_ok">ตกลง</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">เสร็จสิ้น</string>
     <string name="alert_dialog_openlink">เปิดลิงก์</string>
     <string name="alert_dialog_openimage">เปิดรูปภาพ</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">การสมัครสมาชิกของคุณจะต่ออายุในวันที่ %s</string>
     <string name="premium_subscription_expiration">การสมัครสมาชิกของคุณจะหมดอายุวันที่ %s</string>
     <string name="premium_subscription_no_expiration">การสมัครสมาชิกของคุณตั้งค่าให้ไม่มีวันหมดอายุ ว้าว!</string>
-    <string name="premium_policies">ดู<a href="https://newsblur.com/privacy">นโยบายความเป็นส่วนตัว</a>และ<a href="https://newsblur.com/tos">ข้อกำหนดการใช้งาน</a>ของ NewsBlur เพื่อดูรายละเอียด</string>
+    <string name="premium_policies">ดู&lt;a href=\"https://newsblur.com/privacy\"&gt;นโยบายความเป็นส่วนตัว&lt;/a&gt;และ&lt;a href=\"https://newsblur.com/tos\"&gt;ข้อกำหนดการใช้งาน&lt;/a&gt;ของ NewsBlur เพื่อดูรายละเอียด</string>
     <string name="premium_subscription_header">การสมัครสมาชิก Premium</string>
     <string name="archive_subscription_header">คลังพรีเมียม</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -586,7 +585,7 @@
         <item quantity="other">%s เรื่อง/เดือน</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="other">เผยแพร่โดยเว็บไซต์ %d แห่งด้วย</item>
+        <item quantity="other">เผยแพร่บนเว็บไซต์อื่นอีก %d แห่ง</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="other">+ อีก %d เว็บไซต์</item>
@@ -819,7 +818,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">เรื่องราวใหม่</string>
     <string name="go_to_feed">ไปที่ฟีด</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -902,8 +900,6 @@
     <string name="ui_690910f6ed17">นำเข้า OPML</string>
     <string name="ui_244fd5e426f0">ส่งออก OPML</string>
     <string name="ui_768e0c1c6957">ชื่อเรื่อง</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">แท็กที่บันทึกไว้</string>
     <string name="ui_6e914f494515">แท็กเรื่อง</string>
     <string name="ui_e912ab619a72">แท็กอื่นๆ</string>
@@ -931,7 +927,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">การลบบัญชีจะลบฟีด เรื่องราวที่บันทึกไว้ และข้อมูลบัญชีของคุณอย่างถาวร และไม่สามารถยกเลิกได้</string>
     <string name="onboarding_confirm_your_password">ยืนยันรหัสผ่านของคุณ</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">พิมพ์ %1$s เพื่อลบบัญชีของคุณอย่างถาวร</string>
-    <string name="onboarding_delete">ลบ</string>
     <string name="onboarding_permanently_delete_account">ลบบัญชีอย่างถาวร</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">โปรแกรมอ่านข่าวส่วนตัวที่พา\nผู้คนมาพูดคุยเกี่ยวกับโลก</string>
     <string name="onboarding_or">หรือ</string>
@@ -956,4 +951,155 @@
     <string name="onboarding_you_re_all_set_up">ตั้งค่าทุกอย่างเรียบร้อยแล้ว</string>
     <string name="onboarding_your_reading_list">รายการเรื่องราวที่อ่าน</string>
     <string name="onboarding_stay_connected">เชื่อมต่ออยู่เสมอ</string>
+    <string name="onboarding_connect_your_account">เชื่อมต่อบัญชีของคุณ</string>
+    <string name="onboarding_choose_your_username">เลือกชื่อผู้ใช้</string>
+    <string name="onboarding_create_an_account">สร้างบัญชี</string>
+    <string name="onboarding_welcome_back">ยินดีต้อนรับกลับมา</string>
+    <string name="onboarding_signing_in_with_provider">กำลังลงชื่อเข้าใช้ด้วย %1$s</string>
+    <string name="onboarding_sign_in_with_provider">ลงชื่อเข้าใช้ด้วย %1$s</string>
+    <string name="onboarding_email">อีเมล</string>
+    <string name="onboarding_username">ชื่อผู้ใช้</string>
+    <string name="onboarding_username_or_email">ชื่อผู้ใช้หรืออีเมล</string>
+    <string name="onboarding_password">รหัสผ่าน</string>
+    <string name="onboarding_continue">ดำเนินการต่อ</string>
+    <string name="onboarding_create_account">สร้างบัญชี</string>
+    <string name="onboarding_sign_in">เข้าสู่ระบบ</string>
+    <string name="onboarding_already_have_an_account_sign_in">มีบัญชีอยู่แล้วใช่ไหม? เข้าสู่ระบบ</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">เพิ่งรู้จัก NewsBlur? สร้างบัญชี</string>
+    <string name="onboarding_use_a_custom_server">ใช้เซิร์ฟเวอร์ที่กำหนดเอง</string>
+    <string name="onboarding_verify_with_provider">ยืนยันด้วย %1$s</string>
+    <string name="setup_close_setup">ปิดการตั้งค่า</string>
+    <string name="setup_start_reading">เริ่มอ่าน</string>
+    <string name="setup_continue">ดำเนินการต่อ</string>
+    <string name="setup_a_little_of_everything">หลากหลายเรื่องราว</string>
+    <string name="setup_bundle_folder_name">ชื่อโฟลเดอร์ชุดรวม</string>
+    <string name="setup_added">เพิ่มแล้ว</string>
+    <string name="setup_queued">เข้าคิวแล้ว</string>
+    <string name="setup_loading_feeds_to_choose_from">กำลังโหลดฟีดให้เลือก…</string>
+    <string name="setup_loading_more_feeds">กำลังโหลดฟีดเพิ่มเติม…</string>
+    <string name="setup_select_feeds_to_add">เลือกฟีดที่จะเพิ่ม</string>
+    <string name="setup_name_your_folder_to_continue">ตั้งชื่อโฟลเดอร์เพื่อดำเนินการต่อ</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="other">เพิ่มฟีด %1$d รายการไปยังโฟลเดอร์ “%2$s”</item>
+    </plurals>
+    <string name="setup_importing">กำลังนำเข้า…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="other">มีหมวดหมู่ให้เลือก %1$d หมวด</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">ค้นหาความสนใจและเว็บไซต์</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="other">เลือกฟีดแล้ว %1$d รายการ</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="other">เพิ่มฟีดแล้ว %1$d รายการ</item>
+    </plurals>
+    <string name="setup_included_in_bundle">รวมอยู่ในแพ็กเกจ</string>
+    <string name="setup_include_in_bundle">รวมไว้ในชุด</string>
+    <string name="setup_reader_ready_add_feeds_anytime">ตัวอ่านของคุณพร้อมแล้ว เพิ่มฟีดได้ทุกเมื่อจาก เพิ่ม + ค้นพบเว็บไซต์</string>
+    <string name="setup_reading_list_yours">รายการอ่านที่เป็นของคุณ ทุกสิ่งที่คุณเลือกอยู่ในที่เดียว</string>
+    <plurals name="setup_feed_count">
+        <item quantity="other">ฟีด %1$d รายการ</item>
+    </plurals>
+    <string name="setup_newsblur_forum">ฟอรัม NewsBlur</string>
+    <string name="setup_newsblur_forum_description">ถามคำถามและแบ่งปันไอเดีย</string>
+    <string name="setup_handle_on_x">%1$s บน X</string>
+    <string name="setup_samuelclay_on_x_description">จากผู้สร้าง NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">ข่าวสารและอัปเดต</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="other">ไม่สามารถเพิ่มฟีด %1$d รายการไปยัง %2$s ได้ %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="other">%1$d เรื่อง/เดือน</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">ข้อมูลล้าสมัย · เรื่องล่าสุด %1$s</string>
+    <string name="add_site_url_or_search">https:// หรือค้นหา</string>
+    <string name="add_site_choose_folder">เลือกโฟลเดอร์</string>
+    <string name="add_site_top_level">— ระดับบนสุด —</string>
+    <string name="add_site_adding_site">กำลังเพิ่มเว็บไซต์</string>
+    <string name="add_site_add_folder">เพิ่มโฟลเดอร์</string>
+    <string name="add_site_cancel_new_folder">ยกเลิกการสร้างโฟลเดอร์ใหม่</string>
+    <string name="add_site_create_new_folder">สร้างโฟลเดอร์ใหม่</string>
+    <string name="add_site_new_folder_name">ชื่อโฟลเดอร์ใหม่</string>
+    <string name="add_site_searching_sites">กำลังค้นหาเว็บไซต์</string>
+    <string name="discover_quick_add">เพิ่มเว็บไซต์หรือโฟลเดอร์ด่วน</string>
+    <string name="discover_tab_search">ค้นหา</string>
+    <string name="discover_tab_web_feed">ฟีดเว็บ</string>
+    <string name="discover_tab_popular">ยอดนิยม</string>
+    <string name="discover_tab_newsletters">จดหมายข่าว</string>
+    <string name="discover_tab_podcasts">พอดแคสต์</string>
+    <string name="discover_tab_heading">ค้นพบ %1$s</string>
+    <string name="discover_hint_search">ค้นหาเว็บไซต์หรือวาง URL</string>
+    <string name="discover_hint_popular">ค้นหาเว็บไซต์ยอดนิยม</string>
+    <string name="discover_hint_youtube">ค้นหาช่องหรือวาง URL</string>
+    <string name="discover_hint_reddit">ค้นหา subreddit</string>
+    <string name="discover_hint_newsletters">ค้นหาจดหมายข่าวหรือวาง URL</string>
+    <string name="discover_hint_podcasts">ค้นหาพอดแคสต์</string>
+    <string name="discover_platform">แพลตฟอร์ม</string>
+    <string name="discover_all_platforms">ทั้งหมด</string>
+    <string name="discover_category">หมวดหมู่</string>
+    <string name="discover_all_categories">หมวดหมู่ทั้งหมด</string>
+    <string name="discover_topic">หัวข้อ</string>
+    <string name="discover_all_topics">ทุกหัวข้อ</string>
+    <string name="discover_trending_this_week">กำลังเป็นกระแสในสัปดาห์นี้</string>
+    <string name="discover_search_results">ผลการค้นหา</string>
+    <string name="discover_add_this_url">เพิ่ม URL นี้</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">เลือก %1$s</string>
+    <string name="discover_clear_input">ล้าง %1$s</string>
+    <string name="discover_web_page_url">URL ของหน้าเว็บ</string>
+    <string name="discover_which_stories_optional">เรื่องราวใด (ไม่บังคับ)</string>
+    <string name="discover_analyze_page">วิเคราะห์หน้าเว็บ</string>
+    <string name="discover_refine_analysis">ปรับแต่งการวิเคราะห์</string>
+    <string name="discover_add_rss_feed">เพิ่มฟีด RSS</string>
+    <string name="discover_added">เพิ่มแล้ว</string>
+    <string name="discover_web_pattern">รูปแบบ %1$d</string>
+    <string name="discover_feed_title">ชื่อฟีด</string>
+    <string name="discover_keep_stories">เก็บเรื่องราว</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="other">%d วัน</item>
+    </plurals>
+    <string name="discover_create_web_feed">สร้างฟีดเว็บ</string>
+    <string name="discover_search_news_topic">ค้นหาหัวข้อข่าว</string>
+    <string name="discover_top_stories">เรื่องเด่น</string>
+    <string name="discover_choose_a_topic">เลือกหัวข้อ</string>
+    <string name="discover_choose_a_category">เลือกหมวดหมู่</string>
+    <string name="discover_add_google_news_feed">เพิ่มฟีด Google News</string>
+    <string name="discover_news_topic_world">โลก</string>
+    <string name="discover_news_topic_nation">ประเทศ</string>
+    <string name="discover_news_topic_business">ธุรกิจ</string>
+    <string name="discover_news_topic_technology">เทคโนโลยี</string>
+    <string name="discover_news_topic_entertainment">บันเทิง</string>
+    <string name="discover_news_topic_sports">กีฬา</string>
+    <string name="discover_news_topic_science">วิทยาศาสตร์</string>
+    <string name="discover_news_topic_health">สุขภาพ</string>
+    <string name="briefing_frequency">ความถี่</string>
+    <string name="briefing_frequency_thrice_daily">วันละ 3 ครั้ง</string>
+    <string name="briefing_frequency_twice_daily">วันละ 2 ครั้ง</string>
+    <string name="briefing_frequency_daily">รายวัน</string>
+    <string name="briefing_frequency_weekly">รายสัปดาห์</string>
+    <string name="briefing_preferred_time">เวลาที่ต้องการ</string>
+    <string name="briefing_time_morning">เช้า</string>
+    <string name="briefing_time_afternoon">ช่วงบ่าย</string>
+    <string name="briefing_time_evening">ตอนเย็น</string>
+    <string name="briefing_preferred_day">วันที่ต้องการ</string>
+    <string name="briefing_day_sunday">วันอาทิตย์</string>
+    <string name="briefing_day_monday">วันจันทร์</string>
+    <string name="briefing_day_tuesday">วันอังคาร</string>
+    <string name="briefing_day_wednesday">วันพุธ</string>
+    <string name="briefing_day_thursday">วันพฤหัสบดี</string>
+    <string name="briefing_day_friday">วันศุกร์</string>
+    <string name="briefing_day_saturday">วันเสาร์</string>
+    <string name="briefing_story_count">จำนวนข่าว</string>
+    <string name="briefing_writing_style">รูปแบบการเขียน</string>
+    <string name="briefing_style_bullets">หัวข้อย่อย</string>
+    <string name="briefing_style_editorial">บทบรรณาธิการ</string>
+    <string name="briefing_style_headlines">พาดหัวข่าว</string>
+    <string name="briefing_filter">ตัวกรอง</string>
+    <string name="briefing_keyword_section">ส่วนคำหลัก %1$d</string>
+    <string name="briefing_remove_keyword_section">นำออก</string>
+    <string name="briefing_generate_now">สร้างเลย</string>
+    <string name="briefing_saving_settings">กำลังบันทึกการตั้งค่าสรุปข่าวประจำวัน…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="other">%d เรื่อง</item>
+    </plurals>
 </resources>

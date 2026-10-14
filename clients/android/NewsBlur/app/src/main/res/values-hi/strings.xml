@@ -160,7 +160,6 @@
     <string name="edit_reply_update">जवाब अपडेट करें</string>
     <string name="edit_reply_delete">replyY हटाएँ</string>
     <string name="alert_dialog_ok">ठीक है</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">हो गया</string>
     <string name="alert_dialog_openlink">लिंक खोलें</string>
     <string name="alert_dialog_openimage">छवि खोलें</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">आपकी सदस्यता का नवीनीकरण %s को होगा</string>
     <string name="premium_subscription_expiration">आपकी सदस्यता %s को समाप्त हो जाएगी</string>
     <string name="premium_subscription_no_expiration">आपकी सदस्यता कभी समाप्त नहीं होगी। वाह!</string>
-    <string name="premium_policies">विवरण के लिए NewsBlur\'की <a href="https://newsblur.com/privacy">गोपनीयता नीति</a> और <a href="https://newsblur.com/tos">उपयोग की शर्तें</a> देखें।</string>
+    <string name="premium_policies">विवरण के लिए NewsBlur\'की &lt;a href=\"https://newsblur.com/privacy\"&gt;गोपनीयता नीति&lt;/a&gt; और &lt;a href=\"https://newsblur.com/tos\"&gt;उपयोग की शर्तें&lt;/a&gt; देखें।</string>
     <string name="premium_subscription_header">प्रीमियम सदस्यता</string>
     <string name="archive_subscription_header">प्रीमियम संग्रह</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -589,8 +588,8 @@
         <item quantity="other">%s खबरें/माह</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="one">%d साइट द्वारा भी प्रकाशित</item>
-        <item quantity="other">%d साइटों द्वारा भी प्रकाशित</item>
+        <item quantity="one">%d अन्य साइट ने भी प्रकाशित किया</item>
+        <item quantity="other">%d अन्य साइटों पर भी प्रकाशित</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="one">+ %d और साइट</item>
@@ -824,7 +823,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">नई खबरें</string>
     <string name="go_to_feed">फ़ीड पर जाएँ</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -907,8 +905,6 @@
     <string name="ui_690910f6ed17">OPML आयात करें</string>
     <string name="ui_244fd5e426f0">OPML निर्यात करें</string>
     <string name="ui_768e0c1c6957">शीर्षक</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">सहेजे गए टैग</string>
     <string name="ui_6e914f494515">कहानी टैग</string>
     <string name="ui_e912ab619a72">अन्य टैग</string>
@@ -936,7 +932,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">खाता हटाने से आपके फ़ीड, सहेजी गई स्टोरीज़ और खाते का डेटा हमेशा के लिए मिट जाएगा। इसे वापस नहीं किया जा सकता।</string>
     <string name="onboarding_confirm_your_password">अपने पासवर्ड की पुष्टि करें</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">अपना खाता स्थायी रूप से हटाने के लिए %1$s टाइप करें।</string>
-    <string name="onboarding_delete">हटाएँ</string>
     <string name="onboarding_permanently_delete_account">खाता हमेशा के लिए हटाएँ</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">एक निजी समाचार रीडर, जो\nलोगों को दुनिया के बारे में बातचीत करने के लिए जोड़ता है।</string>
     <string name="onboarding_or">या</string>
@@ -961,4 +956,164 @@
     <string name="onboarding_you_re_all_set_up">आपका सेटअप पूरा हो गया है।</string>
     <string name="onboarding_your_reading_list">आपकी पठन सूची</string>
     <string name="onboarding_stay_connected">जुड़े रहें</string>
+    <string name="onboarding_connect_your_account">अपना खाता कनेक्ट करें</string>
+    <string name="onboarding_choose_your_username">अपना उपयोगकर्ता नाम चुनें</string>
+    <string name="onboarding_create_an_account">खाता बनाएँ</string>
+    <string name="onboarding_welcome_back">वापसी पर स्वागत है</string>
+    <string name="onboarding_signing_in_with_provider">%1$s से साइन इन हो रहा है</string>
+    <string name="onboarding_sign_in_with_provider">%1$s से साइन इन करें</string>
+    <string name="onboarding_email">ईमेल</string>
+    <string name="onboarding_username">उपयोगकर्ता नाम</string>
+    <string name="onboarding_username_or_email">उपयोगकर्ता नाम या ईमेल</string>
+    <string name="onboarding_password">पासवर्ड</string>
+    <string name="onboarding_continue">जारी रखें</string>
+    <string name="onboarding_create_account">खाता बनाएँ</string>
+    <string name="onboarding_sign_in">साइन इन करें</string>
+    <string name="onboarding_already_have_an_account_sign_in">पहले से खाता है? साइन इन करें</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">NewsBlur पर नए हैं? खाता बनाएँ</string>
+    <string name="onboarding_use_a_custom_server">कस्टम सर्वर का उपयोग करें</string>
+    <string name="onboarding_verify_with_provider">%1$s से सत्यापित करें</string>
+    <string name="setup_close_setup">सेटअप बंद करें</string>
+    <string name="setup_start_reading">पढ़ना शुरू करें</string>
+    <string name="setup_continue">जारी रखें</string>
+    <string name="setup_a_little_of_everything">हर चीज़ का थोड़ा-थोड़ा</string>
+    <string name="setup_bundle_folder_name">बंडल फ़ोल्डर का नाम</string>
+    <string name="setup_added">जोड़ा गया</string>
+    <string name="setup_queued">कतार में जोड़ा गया</string>
+    <string name="setup_loading_feeds_to_choose_from">चुनने के लिए फ़ीड लोड हो रही हैं…</string>
+    <string name="setup_loading_more_feeds">और फ़ीड लोड हो रही हैं…</string>
+    <string name="setup_select_feeds_to_add">जोड़ने के लिए फ़ीड चुनें</string>
+    <string name="setup_name_your_folder_to_continue">जारी रखने के लिए अपने फ़ोल्डर का नाम दें</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="one">“%2$s” फ़ोल्डर में %1$d फ़ीड जोड़ें</item>
+        <item quantity="other">“%2$s” फ़ोल्डर में %1$d फ़ीड जोड़ें</item>
+    </plurals>
+    <string name="setup_importing">आयात हो रहा है…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="one">चुनने के लिए %1$d श्रेणी</item>
+        <item quantity="other">चुनने के लिए %1$d श्रेणियाँ</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">रुचियाँ और साइटें खोजें</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="one">%1$d फ़ीड चुनी गई</item>
+        <item quantity="other">%1$d फ़ीड चुने गए</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="one">%1$d फ़ीड जोड़ी गई</item>
+        <item quantity="other">%1$d फ़ीड जोड़े गए</item>
+    </plurals>
+    <string name="setup_included_in_bundle">बंडल में शामिल</string>
+    <string name="setup_include_in_bundle">बंडल में शामिल करें</string>
+    <string name="setup_reader_ready_add_feeds_anytime">आपका रीडर तैयार है। फ़ीड कभी भी Add + Discover Sites से जोड़ें।</string>
+    <string name="setup_reading_list_yours">आपकी अपनी पठन सूची। आपकी चुनी हुई हर चीज़, एक ही जगह।</string>
+    <plurals name="setup_feed_count">
+        <item quantity="one">%1$d फ़ीड</item>
+        <item quantity="other">%1$d फ़ीड</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur फ़ोरम</string>
+    <string name="setup_newsblur_forum_description">सवाल पूछें और विचार साझा करें</string>
+    <string name="setup_handle_on_x">X पर %1$s</string>
+    <string name="setup_samuelclay_on_x_description">NewsBlur के निर्माता की ओर से</string>
+    <string name="setup_newsblur_on_x_description">समाचार और अपडेट</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="one">%1$d फ़ीड को %2$s में नहीं जोड़ा जा सका। %3$s</item>
+        <item quantity="other">%1$d फ़ीड को %2$s में नहीं जोड़ा जा सका। %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="one">%1$d स्टोरी/महीना</item>
+        <item quantity="other">%1$d कहानियाँ/महीना</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">पुराना · आख़िरी स्टोरी %1$s</string>
+    <string name="add_site_url_or_search">https:// या खोजें</string>
+    <string name="add_site_choose_folder">फ़ोल्डर चुनें</string>
+    <string name="add_site_top_level">— शीर्ष स्तर —</string>
+    <string name="add_site_adding_site">साइट जोड़ी जा रही है</string>
+    <string name="add_site_add_folder">फ़ोल्डर जोड़ें</string>
+    <string name="add_site_cancel_new_folder">नया फ़ोल्डर रद्द करें</string>
+    <string name="add_site_create_new_folder">नया फ़ोल्डर बनाएँ</string>
+    <string name="add_site_new_folder_name">नए फ़ोल्डर का नाम</string>
+    <string name="add_site_searching_sites">साइटें खोजी जा रही हैं</string>
+    <string name="discover_quick_add">साइट या फ़ोल्डर जल्दी जोड़ें</string>
+    <string name="discover_tab_search">खोजें</string>
+    <string name="discover_tab_web_feed">वेब फ़ीड</string>
+    <string name="discover_tab_popular">लोकप्रिय</string>
+    <string name="discover_tab_newsletters">न्यूज़लेटर</string>
+    <string name="discover_tab_podcasts">पॉडकास्ट</string>
+    <string name="discover_tab_heading">%1$s खोजें</string>
+    <string name="discover_hint_search">साइटें खोजें या URL पेस्ट करें</string>
+    <string name="discover_hint_popular">लोकप्रिय साइटें खोजें</string>
+    <string name="discover_hint_youtube">चैनल खोजें या URL पेस्ट करें</string>
+    <string name="discover_hint_reddit">सबरेडिट खोजें</string>
+    <string name="discover_hint_newsletters">न्यूज़लेटर खोजें या URL पेस्ट करें</string>
+    <string name="discover_hint_podcasts">पॉडकास्ट खोजें</string>
+    <string name="discover_platform">प्लेटफ़ॉर्म</string>
+    <string name="discover_all_platforms">सभी</string>
+    <string name="discover_category">श्रेणी</string>
+    <string name="discover_all_categories">सभी श्रेणियाँ</string>
+    <string name="discover_topic">विषय</string>
+    <string name="discover_all_topics">सभी विषय</string>
+    <string name="discover_trending_this_week">इस सप्ताह के ट्रेंड</string>
+    <string name="discover_search_results">खोज परिणाम</string>
+    <string name="discover_add_this_url">यह URL जोड़ें</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">%1$s चुनें</string>
+    <string name="discover_clear_input">%1$s साफ़ करें</string>
+    <string name="discover_web_page_url">वेब पेज URL</string>
+    <string name="discover_which_stories_optional">कौन-सी कहानियाँ? (वैकल्पिक)</string>
+    <string name="discover_analyze_page">पेज का विश्लेषण करें</string>
+    <string name="discover_refine_analysis">विश्लेषण को बेहतर बनाएँ</string>
+    <string name="discover_add_rss_feed">RSS फ़ीड जोड़ें</string>
+    <string name="discover_added">जोड़ा गया</string>
+    <string name="discover_web_pattern">पैटर्न %1$d</string>
+    <string name="discover_feed_title">फ़ीड का शीर्षक</string>
+    <string name="discover_keep_stories">कहानियाँ रखें</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="one">%d दिन</item>
+        <item quantity="other">%d दिन</item>
+    </plurals>
+    <string name="discover_create_web_feed">वेब फ़ीड बनाएँ</string>
+    <string name="discover_search_news_topic">किसी समाचार विषय को खोजें</string>
+    <string name="discover_top_stories">शीर्ष कहानियाँ</string>
+    <string name="discover_choose_a_topic">कोई विषय चुनें</string>
+    <string name="discover_choose_a_category">कोई श्रेणी चुनें</string>
+    <string name="discover_add_google_news_feed">Google News फ़ीड जोड़ें</string>
+    <string name="discover_news_topic_world">दुनिया</string>
+    <string name="discover_news_topic_nation">राष्ट्र</string>
+    <string name="discover_news_topic_business">व्यापार</string>
+    <string name="discover_news_topic_technology">प्रौद्योगिकी</string>
+    <string name="discover_news_topic_entertainment">मनोरंजन</string>
+    <string name="discover_news_topic_sports">खेल</string>
+    <string name="discover_news_topic_science">विज्ञान</string>
+    <string name="discover_news_topic_health">स्वास्थ्य</string>
+    <string name="briefing_frequency">आवृत्ति</string>
+    <string name="briefing_frequency_thrice_daily">दिन में 3 बार</string>
+    <string name="briefing_frequency_twice_daily">दिन में 2 बार</string>
+    <string name="briefing_frequency_daily">दैनिक</string>
+    <string name="briefing_frequency_weekly">साप्ताहिक</string>
+    <string name="briefing_preferred_time">पसंदीदा समय</string>
+    <string name="briefing_time_morning">सुबह</string>
+    <string name="briefing_time_afternoon">दोपहर</string>
+    <string name="briefing_time_evening">शाम</string>
+    <string name="briefing_preferred_day">पसंदीदा दिन</string>
+    <string name="briefing_day_sunday">रविवार</string>
+    <string name="briefing_day_monday">सोमवार</string>
+    <string name="briefing_day_tuesday">मंगलवार</string>
+    <string name="briefing_day_wednesday">बुधवार</string>
+    <string name="briefing_day_thursday">गुरुवार</string>
+    <string name="briefing_day_friday">शुक्रवार</string>
+    <string name="briefing_day_saturday">शनिवार</string>
+    <string name="briefing_story_count">स्टोरी की संख्या</string>
+    <string name="briefing_writing_style">लेखन शैली</string>
+    <string name="briefing_style_bullets">बुलेट पॉइंट</string>
+    <string name="briefing_style_editorial">संपादकीय</string>
+    <string name="briefing_style_headlines">शीर्षक</string>
+    <string name="briefing_filter">फ़िल्टर</string>
+    <string name="briefing_keyword_section">कीवर्ड अनुभाग %1$d</string>
+    <string name="briefing_remove_keyword_section">हटाएँ</string>
+    <string name="briefing_generate_now">अभी बनाएँ</string>
+    <string name="briefing_saving_settings">दैनिक ब्रीफ़िंग सेटिंग सहेजी जा रही हैं…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="one">%d कहानी</item>
+        <item quantity="other">%d कहानियाँ</item>
+    </plurals>
 </resources>

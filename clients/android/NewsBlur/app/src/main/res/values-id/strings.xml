@@ -160,7 +160,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="edit_reply_update">Perbarui balasan</string>
     <string name="edit_reply_delete">Hapus balasanY</string>
     <string name="alert_dialog_ok">Oke</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Selesai</string>
     <string name="alert_dialog_openlink">Buka tautan</string>
     <string name="alert_dialog_openimage">Buka Gambar</string>
@@ -412,7 +411,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="premium_subscription_renewal">Langganan Anda akan diperpanjang pada %s</string>
     <string name="premium_subscription_expiration">Langganan Anda akan berakhir pada %s</string>
     <string name="premium_subscription_no_expiration">Langganan Anda tidak akan pernah kedaluwarsa. Wah!</string>
-    <string name="premium_policies">Lihat <a href="https://newsblur.com/privacy">kebijakan privasi</a> dan <a href="https://newsblur.com/tos">ketentuan penggunaan</a> NewsBlur untuk detailnya.</string>
+    <string name="premium_policies">Lihat &lt;a href=\"https://newsblur.com/privacy\"&gt;kebijakan privasi&lt;/a&gt; dan &lt;a href=\"https://newsblur.com/tos\"&gt;ketentuan penggunaan&lt;/a&gt; NewsBlur untuk detailnya.</string>
     <string name="premium_subscription_header">Langganan Premium</string>
     <string name="archive_subscription_header">Arsip Premium</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -586,7 +585,7 @@ orang-orang untuk membicarakan dunia.</string>
         <item quantity="other">%s cerita/bln</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="other">Juga diterbitkan oleh %d situs</item>
+        <item quantity="other">Juga diterbitkan oleh %d situs lainnya</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="other">+ %d situs lainnya</item>
@@ -819,7 +818,6 @@ orang-orang untuk membicarakan dunia.</string>
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Artikel baru</string>
     <string name="go_to_feed">Buka feed</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -902,8 +900,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="ui_690910f6ed17">Impor OPML</string>
     <string name="ui_244fd5e426f0">Ekspor OPML</string>
     <string name="ui_768e0c1c6957">Judul</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Tag Tersimpan</string>
     <string name="ui_6e914f494515">Tag Cerita</string>
     <string name="ui_e912ab619a72">Tag Lainnya</string>
@@ -931,7 +927,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Menghapus akun akan menghapus feed, cerita tersimpan, dan data akun Anda secara permanen. Tindakan ini tidak dapat dibatalkan.</string>
     <string name="onboarding_confirm_your_password">Konfirmasi kata sandi Anda</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Ketik %1$s untuk menghapus akun Anda secara permanen.</string>
-    <string name="onboarding_delete">Hapus</string>
     <string name="onboarding_permanently_delete_account">Hapus akun secara permanen</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Pembaca berita pribadi yang mempertemukan\norang untuk membicarakan dunia.</string>
     <string name="onboarding_or">atau</string>
@@ -956,4 +951,155 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="onboarding_you_re_all_set_up">Penyiapan selesai.</string>
     <string name="onboarding_your_reading_list">Daftar bacaan Anda</string>
     <string name="onboarding_stay_connected">Tetap terhubung</string>
+    <string name="onboarding_connect_your_account">Hubungkan akun Anda</string>
+    <string name="onboarding_choose_your_username">Pilih nama pengguna Anda</string>
+    <string name="onboarding_create_an_account">Buat akun</string>
+    <string name="onboarding_welcome_back">Selamat datang kembali</string>
+    <string name="onboarding_signing_in_with_provider">Masuk dengan %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Masuk dengan %1$s</string>
+    <string name="onboarding_email">Email</string>
+    <string name="onboarding_username">Nama pengguna</string>
+    <string name="onboarding_username_or_email">Nama pengguna atau email</string>
+    <string name="onboarding_password">Kata sandi</string>
+    <string name="onboarding_continue">Lanjutkan</string>
+    <string name="onboarding_create_account">Buat akun</string>
+    <string name="onboarding_sign_in">Masuk</string>
+    <string name="onboarding_already_have_an_account_sign_in">Sudah punya akun? Masuk</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">Baru mengenal NewsBlur? Buat akun</string>
+    <string name="onboarding_use_a_custom_server">Gunakan server khusus</string>
+    <string name="onboarding_verify_with_provider">Verifikasi dengan %1$s</string>
+    <string name="setup_close_setup">Tutup penyiapan</string>
+    <string name="setup_start_reading">Mulai membaca</string>
+    <string name="setup_continue">Lanjutkan</string>
+    <string name="setup_a_little_of_everything">Sedikit dari semuanya</string>
+    <string name="setup_bundle_folder_name">Nama folder bundel</string>
+    <string name="setup_added">Ditambahkan</string>
+    <string name="setup_queued">Diantrekan</string>
+    <string name="setup_loading_feeds_to_choose_from">Memuat feed untuk dipilih…</string>
+    <string name="setup_loading_more_feeds">Memuat feed lainnya…</string>
+    <string name="setup_select_feeds_to_add">Pilih feed untuk ditambahkan</string>
+    <string name="setup_name_your_folder_to_continue">Beri nama folder untuk melanjutkan</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="other">Tambahkan %1$d feed ke folder “%2$s”</item>
+    </plurals>
+    <string name="setup_importing">Mengimpor…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="other">%1$d kategori yang dapat dipilih</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Cari minat dan situs</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="other">%1$d feed dipilih</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="other">%1$d feed ditambahkan</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Termasuk dalam paket</string>
+    <string name="setup_include_in_bundle">Sertakan dalam bundel</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Pembaca Anda siap. Tambahkan feed kapan saja melalui Tambah + Temukan Situs.</string>
+    <string name="setup_reading_list_yours">Daftar bacaan milik Anda. Semua pilihan Anda, di satu tempat.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="other">%1$d feed</item>
+    </plurals>
+    <string name="setup_newsblur_forum">Forum NewsBlur</string>
+    <string name="setup_newsblur_forum_description">Ajukan pertanyaan dan bagikan ide</string>
+    <string name="setup_handle_on_x">%1$s di X</string>
+    <string name="setup_samuelclay_on_x_description">Dari kreator NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">Berita dan pembaruan</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="other">%1$d feed tidak dapat ditambahkan ke %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="other">%1$d artikel/bulan</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Usang · artikel terakhir %1$s</string>
+    <string name="add_site_url_or_search">https:// atau cari</string>
+    <string name="add_site_choose_folder">Pilih folder</string>
+    <string name="add_site_top_level">— Tingkat Teratas —</string>
+    <string name="add_site_adding_site">Menambahkan situs</string>
+    <string name="add_site_add_folder">Tambah folder</string>
+    <string name="add_site_cancel_new_folder">Batalkan folder baru</string>
+    <string name="add_site_create_new_folder">Buat folder baru</string>
+    <string name="add_site_new_folder_name">Nama folder baru</string>
+    <string name="add_site_searching_sites">Mencari situs</string>
+    <string name="discover_quick_add">Tambah situs atau folder dengan cepat</string>
+    <string name="discover_tab_search">Cari</string>
+    <string name="discover_tab_web_feed">Feed Web</string>
+    <string name="discover_tab_popular">Populer</string>
+    <string name="discover_tab_newsletters">Buletin</string>
+    <string name="discover_tab_podcasts">Podcast</string>
+    <string name="discover_tab_heading">Temukan %1$s</string>
+    <string name="discover_hint_search">Cari situs atau tempel URL</string>
+    <string name="discover_hint_popular">Cari situs populer</string>
+    <string name="discover_hint_youtube">Cari kanal atau tempel URL</string>
+    <string name="discover_hint_reddit">Cari subreddit</string>
+    <string name="discover_hint_newsletters">Cari buletin atau tempel URL</string>
+    <string name="discover_hint_podcasts">Cari podcast</string>
+    <string name="discover_platform">Platform</string>
+    <string name="discover_all_platforms">Semua</string>
+    <string name="discover_category">Kategori</string>
+    <string name="discover_all_categories">Semua kategori</string>
+    <string name="discover_topic">Topik</string>
+    <string name="discover_all_topics">Semua topik</string>
+    <string name="discover_trending_this_week">Tren minggu ini</string>
+    <string name="discover_search_results">Hasil pencarian</string>
+    <string name="discover_add_this_url">Tambahkan URL ini</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">Pilih %1$s</string>
+    <string name="discover_clear_input">Hapus %1$s</string>
+    <string name="discover_web_page_url">URL halaman web</string>
+    <string name="discover_which_stories_optional">Cerita yang mana? (opsional)</string>
+    <string name="discover_analyze_page">Analisis halaman</string>
+    <string name="discover_refine_analysis">Sempurnakan analisis</string>
+    <string name="discover_add_rss_feed">Tambahkan feed RSS</string>
+    <string name="discover_added">Ditambahkan</string>
+    <string name="discover_web_pattern">Pola %1$d</string>
+    <string name="discover_feed_title">Judul feed</string>
+    <string name="discover_keep_stories">Simpan cerita</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="other">%d hari</item>
+    </plurals>
+    <string name="discover_create_web_feed">Buat umpan web</string>
+    <string name="discover_search_news_topic">Cari topik berita</string>
+    <string name="discover_top_stories">Cerita teratas</string>
+    <string name="discover_choose_a_topic">Pilih topik</string>
+    <string name="discover_choose_a_category">Pilih kategori</string>
+    <string name="discover_add_google_news_feed">Tambahkan feed Google News</string>
+    <string name="discover_news_topic_world">Dunia</string>
+    <string name="discover_news_topic_nation">Nasional</string>
+    <string name="discover_news_topic_business">Bisnis</string>
+    <string name="discover_news_topic_technology">Teknologi</string>
+    <string name="discover_news_topic_entertainment">Hiburan</string>
+    <string name="discover_news_topic_sports">Olahraga</string>
+    <string name="discover_news_topic_science">Sains</string>
+    <string name="discover_news_topic_health">Kesehatan</string>
+    <string name="briefing_frequency">Frekuensi</string>
+    <string name="briefing_frequency_thrice_daily">3 kali sehari</string>
+    <string name="briefing_frequency_twice_daily">2 kali sehari</string>
+    <string name="briefing_frequency_daily">Harian</string>
+    <string name="briefing_frequency_weekly">Mingguan</string>
+    <string name="briefing_preferred_time">Waktu yang diinginkan</string>
+    <string name="briefing_time_morning">Pagi</string>
+    <string name="briefing_time_afternoon">Siang</string>
+    <string name="briefing_time_evening">Malam</string>
+    <string name="briefing_preferred_day">Hari yang disukai</string>
+    <string name="briefing_day_sunday">Minggu</string>
+    <string name="briefing_day_monday">Senin</string>
+    <string name="briefing_day_tuesday">Selasa</string>
+    <string name="briefing_day_wednesday">Rabu</string>
+    <string name="briefing_day_thursday">Kamis</string>
+    <string name="briefing_day_friday">Jumat</string>
+    <string name="briefing_day_saturday">Sabtu</string>
+    <string name="briefing_story_count">Jumlah cerita</string>
+    <string name="briefing_writing_style">Gaya penulisan</string>
+    <string name="briefing_style_bullets">Poin-poin</string>
+    <string name="briefing_style_editorial">Editorial</string>
+    <string name="briefing_style_headlines">Judul utama</string>
+    <string name="briefing_filter">Filter</string>
+    <string name="briefing_keyword_section">Bagian kata kunci %1$d</string>
+    <string name="briefing_remove_keyword_section">Hapus</string>
+    <string name="briefing_generate_now">Buat Sekarang</string>
+    <string name="briefing_saving_settings">Menyimpan pengaturan Ringkasan Harian…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="other">%d cerita</item>
+    </plurals>
 </resources>

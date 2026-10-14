@@ -160,7 +160,6 @@
     <string name="edit_reply_update">답글 업데이트</string>
     <string name="edit_reply_delete">답글 삭제</string>
     <string name="alert_dialog_ok">확인</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">완료</string>
     <string name="alert_dialog_openlink">링크 열기</string>
     <string name="alert_dialog_openimage">이미지 열기</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">구독이 %s에 갱신됩니다</string>
     <string name="premium_subscription_expiration">구독이 %s에 만료됩니다</string>
     <string name="premium_subscription_no_expiration">구독이 만료되지 않도록 설정되어 있습니다. 와우!</string>
-    <string name="premium_policies">자세한 내용은 NewsBlur의 \'<a href="https://newsblur.com/privacy">개인정보 처리방침</a>\' 및 \'<a href="https://newsblur.com/tos">이용 약관</a>\'을 참조하세요.</string>
+    <string name="premium_policies">자세한 내용은 NewsBlur의 \'&lt;a href=\"https://newsblur.com/privacy\"&gt;개인정보 처리방침&lt;/a&gt;\' 및 \'&lt;a href=\"https://newsblur.com/tos\"&gt;이용 약관&lt;/a&gt;\'을 참조하세요.</string>
     <string name="premium_subscription_header">프리미엄 구독</string>
     <string name="archive_subscription_header">프리미엄 아카이브</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -586,7 +585,7 @@
         <item quantity="other">월 %s개 스토리</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="other">%d개 사이트에서도 게시됨</item>
+        <item quantity="other">그 외 %d개 사이트에도 게시됨</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="other">+ %d개 사이트 더 보기</item>
@@ -819,7 +818,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">새 기사</string>
     <string name="go_to_feed">피드로 이동</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -902,8 +900,6 @@
     <string name="ui_690910f6ed17">OPML 가져오기</string>
     <string name="ui_244fd5e426f0">OPML 내보내기</string>
     <string name="ui_768e0c1c6957">제목</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">저장된 태그</string>
     <string name="ui_6e914f494515">스토리 태그</string>
     <string name="ui_e912ab619a72">기타 태그</string>
@@ -931,7 +927,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">계정을 삭제하면 피드, 저장한 스토리, 계정 데이터가 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.</string>
     <string name="onboarding_confirm_your_password">비밀번호 확인</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">계정을 영구적으로 삭제하려면 %1$s을 입력하세요.</string>
-    <string name="onboarding_delete">삭제</string>
     <string name="onboarding_permanently_delete_account">계정 영구 삭제</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">사람들을 \n 하나로 모아 세상에 대해 이야기하는 개인 뉴스 리더입니다.</string>
     <string name="onboarding_or">또는</string>
@@ -956,4 +951,155 @@
     <string name="onboarding_you_re_all_set_up">설정이 완료되었습니다.</string>
     <string name="onboarding_your_reading_list">읽기 목록</string>
     <string name="onboarding_stay_connected">계속 연결 상태 유지</string>
+    <string name="onboarding_connect_your_account">계정 연결</string>
+    <string name="onboarding_choose_your_username">사용자 이름 선택</string>
+    <string name="onboarding_create_an_account">계정 만들기</string>
+    <string name="onboarding_welcome_back">다시 오신 것을 환영합니다</string>
+    <string name="onboarding_signing_in_with_provider">%1$s 계정으로 로그인 중</string>
+    <string name="onboarding_sign_in_with_provider">%1$s 계정으로 로그인</string>
+    <string name="onboarding_email">이메일</string>
+    <string name="onboarding_username">사용자 이름</string>
+    <string name="onboarding_username_or_email">사용자 이름 또는 이메일</string>
+    <string name="onboarding_password">비밀번호</string>
+    <string name="onboarding_continue">계속</string>
+    <string name="onboarding_create_account">계정 만들기</string>
+    <string name="onboarding_sign_in">로그인</string>
+    <string name="onboarding_already_have_an_account_sign_in">이미 계정이 있으신가요? 로그인</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">NewsBlur을(를) 처음 이용하시나요? 계정 만들기</string>
+    <string name="onboarding_use_a_custom_server">사용자 지정 서버 사용</string>
+    <string name="onboarding_verify_with_provider">%1$s으로 인증</string>
+    <string name="setup_close_setup">설정 닫기</string>
+    <string name="setup_start_reading">읽기 시작</string>
+    <string name="setup_continue">계속</string>
+    <string name="setup_a_little_of_everything">다양한 주제</string>
+    <string name="setup_bundle_folder_name">묶음 폴더 이름</string>
+    <string name="setup_added">추가됨</string>
+    <string name="setup_queued">대기열에 추가됨</string>
+    <string name="setup_loading_feeds_to_choose_from">선택할 피드를 불러오는 중…</string>
+    <string name="setup_loading_more_feeds">피드를 더 불러오는 중…</string>
+    <string name="setup_select_feeds_to_add">추가할 피드 선택</string>
+    <string name="setup_name_your_folder_to_continue">계속하려면 폴더 이름을 지정하세요</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="other">“%2$s” 폴더에 피드 %1$d개 추가</item>
+    </plurals>
+    <string name="setup_importing">가져오는 중…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="other">선택할 수 있는 카테고리 %1$d개</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">관심사 및 사이트 검색</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="other">%1$d개 피드 선택됨</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="other">피드 %1$d개 추가됨</item>
+    </plurals>
+    <string name="setup_included_in_bundle">번들에 포함됨</string>
+    <string name="setup_include_in_bundle">번들에 포함</string>
+    <string name="setup_reader_ready_add_feeds_anytime">리더가 준비되었습니다. 언제든지 피드 추가에서 사이트 둘러보기를 통해 피드를 추가하세요.</string>
+    <string name="setup_reading_list_yours">나만의 읽기 목록. 내가 선택한 모든 항목을 한곳에.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="other">피드 %1$d개</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur 포럼</string>
+    <string name="setup_newsblur_forum_description">질문하고 아이디어를 나누세요</string>
+    <string name="setup_handle_on_x">X에서 %1$s</string>
+    <string name="setup_samuelclay_on_x_description">NewsBlur의 제작자가 만든</string>
+    <string name="setup_newsblur_on_x_description">뉴스 및 업데이트</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="other">%1$d개의 피드를 %2$s에 추가할 수 없습니다. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="other">%1$d개 스토리/월</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">오래됨 · 마지막 스토리 %1$s</string>
+    <string name="add_site_url_or_search">https:// 또는 검색</string>
+    <string name="add_site_choose_folder">폴더 선택</string>
+    <string name="add_site_top_level">— 최상위 —</string>
+    <string name="add_site_adding_site">사이트 추가 중</string>
+    <string name="add_site_add_folder">폴더 추가</string>
+    <string name="add_site_cancel_new_folder">새 폴더 만들기 취소</string>
+    <string name="add_site_create_new_folder">새 폴더 만들기</string>
+    <string name="add_site_new_folder_name">새 폴더 이름</string>
+    <string name="add_site_searching_sites">사이트 검색 중</string>
+    <string name="discover_quick_add">사이트 또는 폴더 빠르게 추가</string>
+    <string name="discover_tab_search">검색</string>
+    <string name="discover_tab_web_feed">웹 피드</string>
+    <string name="discover_tab_popular">인기</string>
+    <string name="discover_tab_newsletters">뉴스레터</string>
+    <string name="discover_tab_podcasts">팟캐스트</string>
+    <string name="discover_tab_heading">%1$s 발견하기</string>
+    <string name="discover_hint_search">사이트 검색 또는 URL 붙여넣기</string>
+    <string name="discover_hint_popular">인기 사이트 검색</string>
+    <string name="discover_hint_youtube">채널을 검색하거나 URL 붙여넣기</string>
+    <string name="discover_hint_reddit">서브레딧 검색</string>
+    <string name="discover_hint_newsletters">뉴스레터를 검색하거나 URL 붙여넣기</string>
+    <string name="discover_hint_podcasts">팟캐스트 검색</string>
+    <string name="discover_platform">플랫폼</string>
+    <string name="discover_all_platforms">전체</string>
+    <string name="discover_category">카테고리</string>
+    <string name="discover_all_categories">모든 카테고리</string>
+    <string name="discover_topic">주제</string>
+    <string name="discover_all_topics">모든 주제</string>
+    <string name="discover_trending_this_week">이번 주 인기 급상승</string>
+    <string name="discover_search_results">검색 결과</string>
+    <string name="discover_add_this_url">이 URL 추가</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">%1$s 선택</string>
+    <string name="discover_clear_input">%1$s 지우기</string>
+    <string name="discover_web_page_url">웹페이지 URL</string>
+    <string name="discover_which_stories_optional">어떤 스토리인가요? (선택 사항)</string>
+    <string name="discover_analyze_page">페이지 분석</string>
+    <string name="discover_refine_analysis">분석 세부 조정</string>
+    <string name="discover_add_rss_feed">RSS 피드 추가</string>
+    <string name="discover_added">추가됨</string>
+    <string name="discover_web_pattern">패턴 %1$d</string>
+    <string name="discover_feed_title">피드 제목</string>
+    <string name="discover_keep_stories">스토리 유지</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="other">%d일</item>
+    </plurals>
+    <string name="discover_create_web_feed">웹 피드 만들기</string>
+    <string name="discover_search_news_topic">뉴스 주제 검색</string>
+    <string name="discover_top_stories">주요 스토리</string>
+    <string name="discover_choose_a_topic">주제 선택</string>
+    <string name="discover_choose_a_category">카테고리 선택</string>
+    <string name="discover_add_google_news_feed">Google 뉴스 피드 추가</string>
+    <string name="discover_news_topic_world">세계</string>
+    <string name="discover_news_topic_nation">국가</string>
+    <string name="discover_news_topic_business">비즈니스</string>
+    <string name="discover_news_topic_technology">기술</string>
+    <string name="discover_news_topic_entertainment">엔터테인먼트</string>
+    <string name="discover_news_topic_sports">스포츠</string>
+    <string name="discover_news_topic_science">과학</string>
+    <string name="discover_news_topic_health">건강</string>
+    <string name="briefing_frequency">빈도</string>
+    <string name="briefing_frequency_thrice_daily">하루 3회</string>
+    <string name="briefing_frequency_twice_daily">하루 2회</string>
+    <string name="briefing_frequency_daily">매일</string>
+    <string name="briefing_frequency_weekly">매주</string>
+    <string name="briefing_preferred_time">선호 시간</string>
+    <string name="briefing_time_morning">아침</string>
+    <string name="briefing_time_afternoon">오후</string>
+    <string name="briefing_time_evening">저녁</string>
+    <string name="briefing_preferred_day">선호하는 요일</string>
+    <string name="briefing_day_sunday">일요일</string>
+    <string name="briefing_day_monday">월요일</string>
+    <string name="briefing_day_tuesday">화요일</string>
+    <string name="briefing_day_wednesday">수요일</string>
+    <string name="briefing_day_thursday">목요일</string>
+    <string name="briefing_day_friday">금요일</string>
+    <string name="briefing_day_saturday">토요일</string>
+    <string name="briefing_story_count">스토리 수</string>
+    <string name="briefing_writing_style">글쓰기 스타일</string>
+    <string name="briefing_style_bullets">글머리 기호</string>
+    <string name="briefing_style_editorial">편집</string>
+    <string name="briefing_style_headlines">헤드라인</string>
+    <string name="briefing_filter">필터</string>
+    <string name="briefing_keyword_section">키워드 섹션 %1$d</string>
+    <string name="briefing_remove_keyword_section">삭제</string>
+    <string name="briefing_generate_now">지금 생성</string>
+    <string name="briefing_saving_settings">데일리 브리핑 설정 저장 중…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="other">%d개 스토리</item>
+    </plurals>
 </resources>

@@ -160,7 +160,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="edit_reply_update">Antwort aktualisieren</string>
     <string name="edit_reply_delete">AntwortY löschen</string>
     <string name="alert_dialog_ok">Okay</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Fertig</string>
     <string name="alert_dialog_openlink">Link öffnen</string>
     <string name="alert_dialog_openimage">Bild öffnen</string>
@@ -412,7 +411,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="premium_subscription_renewal">Dein Abonnement verlängert sich am %s</string>
     <string name="premium_subscription_expiration">Dein Abonnement läuft am %s ab</string>
     <string name="premium_subscription_no_expiration">Dein Abonnement läuft nie ab. Wow!</string>
-    <string name="premium_policies">Weitere Informationen findest du in der NewsBlur\'s <a href="https://newsblur.com/privacy">Datenschutzerklärung</a> und den <a href="https://newsblur.com/tos">Nutzungsbedingungen</a>.</string>
+    <string name="premium_policies">Weitere Informationen findest du in der NewsBlur\'s &lt;a href=\"https://newsblur.com/privacy\"&gt;Datenschutzerklärung&lt;/a&gt; und den &lt;a href=\"https://newsblur.com/tos\"&gt;Nutzungsbedingungen&lt;/a&gt;.</string>
     <string name="premium_subscription_header">Premium-Abo</string>
     <string name="archive_subscription_header">Premium-Archiv</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -589,8 +588,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item quantity="other">%s Artikel/Monat</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="one">Ebenfalls veröffentlicht auf der Website %d</item>
-        <item quantity="other">Ebenfalls veröffentlicht von %d Websites</item>
+        <item quantity="one">Ebenfalls veröffentlicht von %d weiterer Website</item>
+        <item quantity="other">Ebenfalls veröffentlicht von %d weiteren Websites</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="one">+ %d weitere Website</item>
@@ -824,7 +823,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Neue Artikel</string>
     <string name="go_to_feed">Zum Feed wechseln</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -907,8 +905,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="ui_690910f6ed17">OPML importieren</string>
     <string name="ui_244fd5e426f0">OPML exportieren</string>
     <string name="ui_768e0c1c6957">Titel</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Gespeicherte Tags</string>
     <string name="ui_6e914f494515">Beitrags-Tags</string>
     <string name="ui_e912ab619a72">Weitere Tags</string>
@@ -936,7 +932,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Wenn du dein Konto löschst, werden deine Feeds, gespeicherten Artikel und Kontodaten dauerhaft entfernt. Dieser Vorgang kann nicht rückgängig gemacht werden.</string>
     <string name="onboarding_confirm_your_password">Passwort bestätigen</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Gib %1$s ein, um dein Konto endgültig zu löschen.</string>
-    <string name="onboarding_delete">Löschen</string>
     <string name="onboarding_permanently_delete_account">Konto dauerhaft löschen</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Ein persönlicher Newsreader, der\nMenschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="onboarding_or">oder</string>
@@ -961,4 +956,164 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="onboarding_you_re_all_set_up">Alles ist eingerichtet.</string>
     <string name="onboarding_your_reading_list">Deine Leseliste</string>
     <string name="onboarding_stay_connected">In Verbindung bleiben</string>
+    <string name="onboarding_connect_your_account">Konto verbinden</string>
+    <string name="onboarding_choose_your_username">Wähle deinen Benutzernamen</string>
+    <string name="onboarding_create_an_account">Konto erstellen</string>
+    <string name="onboarding_welcome_back">Willkommen zurück</string>
+    <string name="onboarding_signing_in_with_provider">Anmeldung mit %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Mit %1$s anmelden</string>
+    <string name="onboarding_email">E-Mail</string>
+    <string name="onboarding_username">Benutzername</string>
+    <string name="onboarding_username_or_email">Benutzername oder E-Mail-Adresse</string>
+    <string name="onboarding_password">Passwort</string>
+    <string name="onboarding_continue">Weiter</string>
+    <string name="onboarding_create_account">Konto erstellen</string>
+    <string name="onboarding_sign_in">Anmelden</string>
+    <string name="onboarding_already_have_an_account_sign_in">Du hast bereits ein Konto? Anmelden</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">Neu bei NewsBlur? Konto erstellen</string>
+    <string name="onboarding_use_a_custom_server">Benutzerdefinierten Server verwenden</string>
+    <string name="onboarding_verify_with_provider">Mit %1$s verifizieren</string>
+    <string name="setup_close_setup">Einrichtung schließen</string>
+    <string name="setup_start_reading">Mit dem Lesen beginnen</string>
+    <string name="setup_continue">Weiter</string>
+    <string name="setup_a_little_of_everything">Von allem etwas</string>
+    <string name="setup_bundle_folder_name">Name des Bundle-Ordners</string>
+    <string name="setup_added">Hinzugefügt</string>
+    <string name="setup_queued">In Warteschlange</string>
+    <string name="setup_loading_feeds_to_choose_from">Feeds werden geladen, aus denen du auswählen kannst …</string>
+    <string name="setup_loading_more_feeds">Weitere Feeds werden geladen…</string>
+    <string name="setup_select_feeds_to_add">Feeds zum Hinzufügen auswählen</string>
+    <string name="setup_name_your_folder_to_continue">Gib deinem Ordner einen Namen, um fortzufahren</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="one">%1$d Feed zum Ordner „%2$s“ hinzufügen</item>
+        <item quantity="other">%1$d Feeds zum Ordner „%2$s“ hinzufügen</item>
+    </plurals>
+    <string name="setup_importing">Wird importiert …</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="one">%1$d Kategorie zur Auswahl</item>
+        <item quantity="other">%1$d Kategorien zur Auswahl</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Interessen und Websites durchsuchen</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="one">%1$d Feed ausgewählt</item>
+        <item quantity="other">%1$d Feeds ausgewählt</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="one">%1$d Feed hinzugefügt</item>
+        <item quantity="other">%1$d Feeds hinzugefügt</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Im Paket enthalten</string>
+    <string name="setup_include_in_bundle">Ins Paket aufnehmen</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Dein Reader ist bereit. Füge jederzeit Feeds über „Hinzufügen + Websites entdecken“ hinzu.</string>
+    <string name="setup_reading_list_yours">Eine Leseliste ganz nach Ihrem Geschmack. Alles, was Sie ausgewählt haben, an einem Ort.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="one">%1$d Feed</item>
+        <item quantity="other">%1$d Feeds</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur-Forum</string>
+    <string name="setup_newsblur_forum_description">Fragen stellen und Ideen austauschen</string>
+    <string name="setup_handle_on_x">%1$s auf X</string>
+    <string name="setup_samuelclay_on_x_description">Vom Ersteller von NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">Neuigkeiten und Updates</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="one">Feed %1$d konnte nicht zu %2$s hinzugefügt werden. %3$s</item>
+        <item quantity="other">%1$d Feeds konnten nicht zu %2$s hinzugefügt werden. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="one">%1$d Story/Monat</item>
+        <item quantity="other">%1$d Artikel/Monat</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Veraltet · letzte Story %1$s</string>
+    <string name="add_site_url_or_search">https:// oder suchen</string>
+    <string name="add_site_choose_folder">Ordner auswählen</string>
+    <string name="add_site_top_level">— Oberste Ebene —</string>
+    <string name="add_site_adding_site">Website wird hinzugefügt</string>
+    <string name="add_site_add_folder">Ordner hinzufügen</string>
+    <string name="add_site_cancel_new_folder">Neuen Ordner abbrechen</string>
+    <string name="add_site_create_new_folder">Neuen Ordner erstellen</string>
+    <string name="add_site_new_folder_name">Neuer Ordnername</string>
+    <string name="add_site_searching_sites">Websites werden gesucht</string>
+    <string name="discover_quick_add">Website oder Ordner schnell hinzufügen</string>
+    <string name="discover_tab_search">Suchen</string>
+    <string name="discover_tab_web_feed">Web-Feed</string>
+    <string name="discover_tab_popular">Beliebt</string>
+    <string name="discover_tab_newsletters">Newsletter</string>
+    <string name="discover_tab_podcasts">Podcasts</string>
+    <string name="discover_tab_heading">%1$s entdecken</string>
+    <string name="discover_hint_search">Websites suchen oder URL einfügen</string>
+    <string name="discover_hint_popular">Beliebte Websites durchsuchen</string>
+    <string name="discover_hint_youtube">Kanäle durchsuchen oder URL einfügen</string>
+    <string name="discover_hint_reddit">Subreddits durchsuchen</string>
+    <string name="discover_hint_newsletters">Newsletter suchen oder URL einfügen</string>
+    <string name="discover_hint_podcasts">Podcasts suchen</string>
+    <string name="discover_platform">Plattform</string>
+    <string name="discover_all_platforms">Alle</string>
+    <string name="discover_category">Kategorie</string>
+    <string name="discover_all_categories">Alle Kategorien</string>
+    <string name="discover_topic">Thema</string>
+    <string name="discover_all_topics">Alle Themen</string>
+    <string name="discover_trending_this_week">Diese Woche im Trend</string>
+    <string name="discover_search_results">Suchergebnisse</string>
+    <string name="discover_add_this_url">Diese URL hinzufügen</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">%1$s auswählen</string>
+    <string name="discover_clear_input">%1$s leeren</string>
+    <string name="discover_web_page_url">URL der Webseite</string>
+    <string name="discover_which_stories_optional">Welche Artikel? (optional)</string>
+    <string name="discover_analyze_page">Seite analysieren</string>
+    <string name="discover_refine_analysis">Analyse verfeinern</string>
+    <string name="discover_add_rss_feed">RSS-Feed hinzufügen</string>
+    <string name="discover_added">Hinzugefügt</string>
+    <string name="discover_web_pattern">Muster %1$d</string>
+    <string name="discover_feed_title">Feed-Titel</string>
+    <string name="discover_keep_stories">Artikel behalten</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="one">%d Tag</item>
+        <item quantity="other">%d Tage</item>
+    </plurals>
+    <string name="discover_create_web_feed">Webfeed erstellen</string>
+    <string name="discover_search_news_topic">Nach einem Nachrichtenthema suchen</string>
+    <string name="discover_top_stories">Top-Artikel</string>
+    <string name="discover_choose_a_topic">Thema auswählen</string>
+    <string name="discover_choose_a_category">Kategorie auswählen</string>
+    <string name="discover_add_google_news_feed">Google-News-Feed hinzufügen</string>
+    <string name="discover_news_topic_world">Welt</string>
+    <string name="discover_news_topic_nation">Land</string>
+    <string name="discover_news_topic_business">Wirtschaft</string>
+    <string name="discover_news_topic_technology">Technologie</string>
+    <string name="discover_news_topic_entertainment">Unterhaltung</string>
+    <string name="discover_news_topic_sports">Sport</string>
+    <string name="discover_news_topic_science">Wissenschaft</string>
+    <string name="discover_news_topic_health">Gesundheit</string>
+    <string name="briefing_frequency">Häufigkeit</string>
+    <string name="briefing_frequency_thrice_daily">3-mal täglich</string>
+    <string name="briefing_frequency_twice_daily">2-mal täglich</string>
+    <string name="briefing_frequency_daily">Täglich</string>
+    <string name="briefing_frequency_weekly">Wöchentlich</string>
+    <string name="briefing_preferred_time">Bevorzugte Uhrzeit</string>
+    <string name="briefing_time_morning">Morgen</string>
+    <string name="briefing_time_afternoon">Nachmittag</string>
+    <string name="briefing_time_evening">Abend</string>
+    <string name="briefing_preferred_day">Bevorzugter Tag</string>
+    <string name="briefing_day_sunday">Sonntag</string>
+    <string name="briefing_day_monday">Montag</string>
+    <string name="briefing_day_tuesday">Dienstag</string>
+    <string name="briefing_day_wednesday">Mittwoch</string>
+    <string name="briefing_day_thursday">Donnerstag</string>
+    <string name="briefing_day_friday">Freitag</string>
+    <string name="briefing_day_saturday">Samstag</string>
+    <string name="briefing_story_count">Artikelanzahl</string>
+    <string name="briefing_writing_style">Schreibstil</string>
+    <string name="briefing_style_bullets">Stichpunkte</string>
+    <string name="briefing_style_editorial">Redaktionell</string>
+    <string name="briefing_style_headlines">Schlagzeilen</string>
+    <string name="briefing_filter">Filter</string>
+    <string name="briefing_keyword_section">Schlüsselwortabschnitt %1$d</string>
+    <string name="briefing_remove_keyword_section">Entfernen</string>
+    <string name="briefing_generate_now">Jetzt erstellen</string>
+    <string name="briefing_saving_settings">Einstellungen des Tagesbriefings werden gespeichert …</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="one">%d Beitrag</item>
+        <item quantity="other">%d Artikel</item>
+    </plurals>
 </resources>

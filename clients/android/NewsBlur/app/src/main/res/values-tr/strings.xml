@@ -160,7 +160,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="edit_reply_update">Yanıtı güncelle</string>
     <string name="edit_reply_delete">replyY yanıtını sil</string>
     <string name="alert_dialog_ok">Tamam</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Tamam</string>
     <string name="alert_dialog_openlink">Bağlantıyı aç</string>
     <string name="alert_dialog_openimage">Görseli Aç</string>
@@ -412,7 +411,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="premium_subscription_renewal">Aboneliğiniz %s tarihinde yenilenecek</string>
     <string name="premium_subscription_expiration">Aboneliğiniz %s tarihinde sona erecek</string>
     <string name="premium_subscription_no_expiration">Aboneliğinizin süresi hiç dolmayacak şekilde ayarlanmış. Vay!</string>
-    <string name="premium_policies">Ayrıntılar için NewsBlur\'ın <a href="https://newsblur.com/privacy">gizlilik politikasına</a> ve <a href="https://newsblur.com/tos">kullanım koşullarına</a> göz atın.</string>
+    <string name="premium_policies">Ayrıntılar için NewsBlur\'ın &lt;a href=\"https://newsblur.com/privacy\"&gt;gizlilik politikasına&lt;/a&gt; ve &lt;a href=\"https://newsblur.com/tos\"&gt;kullanım koşullarına&lt;/a&gt; göz atın.</string>
     <string name="premium_subscription_header">Premium Abonelik</string>
     <string name="archive_subscription_header">Premium Arşiv</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -589,8 +588,8 @@ bir araya getiren kişisel haber okuyucusu.</string>
         <item quantity="other">%s haber/ay</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="one">%d sitesi tarafından da yayımlandı</item>
-        <item quantity="other">Ayrıca %d site tarafından yayımlandı</item>
+        <item quantity="one">Ayrıca %d başka sitede yayımlandı</item>
+        <item quantity="other">Ayrıca %d başka sitede yayımlandı</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="one">+ %d site daha</item>
@@ -824,7 +823,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Yeni haberler</string>
     <string name="go_to_feed">Akışa git</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -907,8 +905,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="ui_690910f6ed17">OPML\'yi içe aktar</string>
     <string name="ui_244fd5e426f0">OPML\'yi dışa aktar</string>
     <string name="ui_768e0c1c6957">Başlık</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Kaydedilen Etiketler</string>
     <string name="ui_6e914f494515">Haber etiketleri</string>
     <string name="ui_e912ab619a72">Diğer etiketler</string>
@@ -936,7 +932,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Hesabınızı silmek; akışlarınızı, kaydedilmiş haberlerinizi ve hesap verilerinizi kalıcı olarak siler. Bu işlem geri alınamaz.</string>
     <string name="onboarding_confirm_your_password">Parolanızı doğrulayın</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Hesabınızı kalıcı olarak silmek için %1$s yazın.</string>
-    <string name="onboarding_delete">Sil</string>
     <string name="onboarding_permanently_delete_account">Hesabı kalıcı olarak sil</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Dünyayı konuşmak için\ninsanları bir araya getiren kişisel bir haber okuyucu.</string>
     <string name="onboarding_or">veya</string>
@@ -961,4 +956,164 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="onboarding_you_re_all_set_up">Her şey hazır.</string>
     <string name="onboarding_your_reading_list">Okuma listeniz</string>
     <string name="onboarding_stay_connected">Bağlantıda kal</string>
+    <string name="onboarding_connect_your_account">Hesabını bağla</string>
+    <string name="onboarding_choose_your_username">Kullanıcı adınızı seçin</string>
+    <string name="onboarding_create_an_account">Hesap oluştur</string>
+    <string name="onboarding_welcome_back">Tekrar hoş geldiniz</string>
+    <string name="onboarding_signing_in_with_provider">%1$s ile oturum açılıyor</string>
+    <string name="onboarding_sign_in_with_provider">%1$s ile oturum aç</string>
+    <string name="onboarding_email">E-posta</string>
+    <string name="onboarding_username">Kullanıcı adı</string>
+    <string name="onboarding_username_or_email">Kullanıcı adı veya e-posta</string>
+    <string name="onboarding_password">Şifre</string>
+    <string name="onboarding_continue">Devam et</string>
+    <string name="onboarding_create_account">Hesap oluştur</string>
+    <string name="onboarding_sign_in">Oturum aç</string>
+    <string name="onboarding_already_have_an_account_sign_in">Zaten hesabınız var mı? Giriş yapın</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">NewsBlur\'a yeni misiniz? Hesap oluşturun</string>
+    <string name="onboarding_use_a_custom_server">Özel sunucu kullan</string>
+    <string name="onboarding_verify_with_provider">Şununla doğrula: %1$s</string>
+    <string name="setup_close_setup">Kurulumu kapat</string>
+    <string name="setup_start_reading">Okumaya başlayın</string>
+    <string name="setup_continue">Devam et</string>
+    <string name="setup_a_little_of_everything">Her şeyden biraz</string>
+    <string name="setup_bundle_folder_name">Paket klasörünün adı</string>
+    <string name="setup_added">Eklendi</string>
+    <string name="setup_queued">Kuyruğa alındı</string>
+    <string name="setup_loading_feeds_to_choose_from">Seçilebilecek akışlar yükleniyor…</string>
+    <string name="setup_loading_more_feeds">Daha fazla akış yükleniyor…</string>
+    <string name="setup_select_feeds_to_add">Eklenecek akışları seçin</string>
+    <string name="setup_name_your_folder_to_continue">Devam etmek için klasörünüze bir ad verin</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="one">“%2$s” klasörüne %1$d akış ekle</item>
+        <item quantity="other">“%2$s” klasörüne %1$d akış ekle</item>
+    </plurals>
+    <string name="setup_importing">İçe aktarılıyor…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="one">Seçilebilecek %1$d kategori</item>
+        <item quantity="other">Aralarından seçim yapabileceğiniz %1$d kategori</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">İlgi alanlarını ve siteleri ara</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="one">%1$d akış seçildi</item>
+        <item quantity="other">%1$d akış seçildi</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="one">%1$d akış eklendi</item>
+        <item quantity="other">%1$d akış eklendi</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Pakete dahil</string>
+    <string name="setup_include_in_bundle">Pakete dahil et</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Okuyucunuz hazır. Akışları istediğiniz zaman Siteler Ekle + Keşfet bölümünden ekleyebilirsiniz.</string>
+    <string name="setup_reading_list_yours">Sana özel bir okuma listesi. Seçtiğin her şey tek bir yerde.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="one">%1$d akışı</item>
+        <item quantity="other">%1$d akış</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur Forumu</string>
+    <string name="setup_newsblur_forum_description">Sorular sorun ve fikirlerinizi paylaşın</string>
+    <string name="setup_handle_on_x">X\'te %1$s</string>
+    <string name="setup_samuelclay_on_x_description">NewsBlur\'ın yaratıcısından</string>
+    <string name="setup_newsblur_on_x_description">Haberler ve güncellemeler</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="one">%1$d akış %2$s öğesine eklenemedi. %3$s</item>
+        <item quantity="other">%1$d akış %2$s konumuna eklenemedi. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="one">Ayda %1$d haber</item>
+        <item quantity="other">Ayda %1$d haber</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Güncel değil · son haber %1$s</string>
+    <string name="add_site_url_or_search">https:// veya ara</string>
+    <string name="add_site_choose_folder">Klasör seç</string>
+    <string name="add_site_top_level">— En Üst Düzey —</string>
+    <string name="add_site_adding_site">Site ekleniyor</string>
+    <string name="add_site_add_folder">Klasör ekle</string>
+    <string name="add_site_cancel_new_folder">Yeni klasör oluşturmayı iptal et</string>
+    <string name="add_site_create_new_folder">Yeni klasör oluştur</string>
+    <string name="add_site_new_folder_name">Yeni klasör adı</string>
+    <string name="add_site_searching_sites">Siteler aranıyor</string>
+    <string name="discover_quick_add">Site veya klasör hızlıca ekle</string>
+    <string name="discover_tab_search">Ara</string>
+    <string name="discover_tab_web_feed">Web Akışı</string>
+    <string name="discover_tab_popular">Popüler</string>
+    <string name="discover_tab_newsletters">Bültenler</string>
+    <string name="discover_tab_podcasts">Podcast\'ler</string>
+    <string name="discover_tab_heading">%1$s\'ı keşfet</string>
+    <string name="discover_hint_search">Site ara veya URL yapıştır</string>
+    <string name="discover_hint_popular">Popüler sitelerde ara</string>
+    <string name="discover_hint_youtube">Kanalları arayın veya URL yapıştırın</string>
+    <string name="discover_hint_reddit">Subreddit ara</string>
+    <string name="discover_hint_newsletters">Bültenlerde ara veya URL yapıştır</string>
+    <string name="discover_hint_podcasts">Podcast ara</string>
+    <string name="discover_platform">Platform</string>
+    <string name="discover_all_platforms">Tümü</string>
+    <string name="discover_category">Kategori</string>
+    <string name="discover_all_categories">Tüm kategoriler</string>
+    <string name="discover_topic">Konu</string>
+    <string name="discover_all_topics">Tüm konular</string>
+    <string name="discover_trending_this_week">Bu haftanın trendleri</string>
+    <string name="discover_search_results">Arama sonuçları</string>
+    <string name="discover_add_this_url">Bu URL\'yi ekle</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">%1$s seçin</string>
+    <string name="discover_clear_input">%1$s temizle</string>
+    <string name="discover_web_page_url">Web sayfası URL\'si</string>
+    <string name="discover_which_stories_optional">Hangi haberler? (isteğe bağlı)</string>
+    <string name="discover_analyze_page">Sayfayı analiz et</string>
+    <string name="discover_refine_analysis">Analizi iyileştir</string>
+    <string name="discover_add_rss_feed">RSS akışı ekle</string>
+    <string name="discover_added">Eklendi</string>
+    <string name="discover_web_pattern">Desen %1$d</string>
+    <string name="discover_feed_title">Akış başlığı</string>
+    <string name="discover_keep_stories">Haberleri tut</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="one">%d gün</item>
+        <item quantity="other">%d gün</item>
+    </plurals>
+    <string name="discover_create_web_feed">Web akışı oluştur</string>
+    <string name="discover_search_news_topic">Bir haber konusu ara</string>
+    <string name="discover_top_stories">Öne çıkan haberler</string>
+    <string name="discover_choose_a_topic">Bir konu seçin</string>
+    <string name="discover_choose_a_category">Bir kategori seçin</string>
+    <string name="discover_add_google_news_feed">Google Haberler akışı ekle</string>
+    <string name="discover_news_topic_world">Dünya</string>
+    <string name="discover_news_topic_nation">Ülke</string>
+    <string name="discover_news_topic_business">İş dünyası</string>
+    <string name="discover_news_topic_technology">Teknoloji</string>
+    <string name="discover_news_topic_entertainment">Eğlence</string>
+    <string name="discover_news_topic_sports">Spor</string>
+    <string name="discover_news_topic_science">Bilim</string>
+    <string name="discover_news_topic_health">Sağlık</string>
+    <string name="briefing_frequency">Sıklık</string>
+    <string name="briefing_frequency_thrice_daily">Günde 3 kez</string>
+    <string name="briefing_frequency_twice_daily">Günde 2 kez</string>
+    <string name="briefing_frequency_daily">Günlük</string>
+    <string name="briefing_frequency_weekly">Haftalık</string>
+    <string name="briefing_preferred_time">Tercih edilen saat</string>
+    <string name="briefing_time_morning">Sabah</string>
+    <string name="briefing_time_afternoon">Öğleden sonra</string>
+    <string name="briefing_time_evening">Akşam</string>
+    <string name="briefing_preferred_day">Tercih edilen gün</string>
+    <string name="briefing_day_sunday">Pazar</string>
+    <string name="briefing_day_monday">Pazartesi</string>
+    <string name="briefing_day_tuesday">Salı</string>
+    <string name="briefing_day_wednesday">Çarşamba</string>
+    <string name="briefing_day_thursday">Perşembe</string>
+    <string name="briefing_day_friday">Cuma</string>
+    <string name="briefing_day_saturday">Cumartesi</string>
+    <string name="briefing_story_count">Haber sayısı</string>
+    <string name="briefing_writing_style">Yazım tarzı</string>
+    <string name="briefing_style_bullets">Madde işaretleri</string>
+    <string name="briefing_style_editorial">Editoryal</string>
+    <string name="briefing_style_headlines">Başlıklar</string>
+    <string name="briefing_filter">Filtrele</string>
+    <string name="briefing_keyword_section">Anahtar kelime bölümü %1$d</string>
+    <string name="briefing_remove_keyword_section">Kaldır</string>
+    <string name="briefing_generate_now">Şimdi oluştur</string>
+    <string name="briefing_saving_settings">Günlük Özet ayarları kaydediliyor…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="one">%d haber</item>
+        <item quantity="other">%d haber</item>
+    </plurals>
 </resources>

@@ -160,7 +160,6 @@ om over de wereld te praten.</string>
     <string name="edit_reply_update">Reactie bijwerken</string>
     <string name="edit_reply_delete">ReactieY verwijderen</string>
     <string name="alert_dialog_ok">Oké</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Gereed</string>
     <string name="alert_dialog_openlink">Link openen</string>
     <string name="alert_dialog_openimage">Afbeelding openen</string>
@@ -412,7 +411,7 @@ om over de wereld te praten.</string>
     <string name="premium_subscription_renewal">Je abonnement wordt verlengd op %s</string>
     <string name="premium_subscription_expiration">Je abonnement verloopt op %s</string>
     <string name="premium_subscription_no_expiration">Je abonnement verloopt nooit. Wauw!</string>
-    <string name="premium_policies">Raadpleeg NewsBlur\'s <a href="https://newsblur.com/privacy">privacybeleid</a> en <a href="https://newsblur.com/tos">gebruiksvoorwaarden</a> voor meer informatie.</string>
+    <string name="premium_policies">Raadpleeg NewsBlur\'s &lt;a href=\"https://newsblur.com/privacy\"&gt;privacybeleid&lt;/a&gt; en &lt;a href=\"https://newsblur.com/tos\"&gt;gebruiksvoorwaarden&lt;/a&gt; voor meer informatie.</string>
     <string name="premium_subscription_header">Premiumabonnement</string>
     <string name="archive_subscription_header">Premiumarchief</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -589,8 +588,8 @@ om over de wereld te praten.</string>
         <item quantity="other">%s artikelen/maand</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="one">Ook gepubliceerd door de site %d</item>
-        <item quantity="other">Ook gepubliceerd door sites van %d</item>
+        <item quantity="one">Ook gepubliceerd door %d andere site</item>
+        <item quantity="other">Ook gepubliceerd door %d andere sites</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="one">+ %d extra site</item>
@@ -824,7 +823,6 @@ om over de wereld te praten.</string>
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Nieuwe artikelen</string>
     <string name="go_to_feed">Naar feed gaan</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -907,8 +905,6 @@ om over de wereld te praten.</string>
     <string name="ui_690910f6ed17">OPML importeren</string>
     <string name="ui_244fd5e426f0">OPML exporteren</string>
     <string name="ui_768e0c1c6957">Titel</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Opgeslagen tags</string>
     <string name="ui_6e914f494515">Artikel-tags</string>
     <string name="ui_e912ab619a72">Overige tags</string>
@@ -936,7 +932,6 @@ om over de wereld te praten.</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Als je je account verwijdert, worden je feeds, opgeslagen artikelen en accountgegevens definitief verwijderd. Dit kan niet ongedaan worden gemaakt.</string>
     <string name="onboarding_confirm_your_password">Bevestig je wachtwoord</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Typ %1$s om je account permanent te verwijderen.</string>
-    <string name="onboarding_delete">Verwijderen</string>
     <string name="onboarding_permanently_delete_account">Account definitief verwijderen</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Een persoonlijke nieuwslezer die\nmensen samenbrengt om over de wereld te praten.</string>
     <string name="onboarding_or">of</string>
@@ -961,4 +956,164 @@ om over de wereld te praten.</string>
     <string name="onboarding_you_re_all_set_up">Je bent helemaal klaar.</string>
     <string name="onboarding_your_reading_list">Je leeslijst</string>
     <string name="onboarding_stay_connected">Blijf verbonden</string>
+    <string name="onboarding_connect_your_account">Koppel je account</string>
+    <string name="onboarding_choose_your_username">Kies je gebruikersnaam</string>
+    <string name="onboarding_create_an_account">Account aanmaken</string>
+    <string name="onboarding_welcome_back">Welkom terug</string>
+    <string name="onboarding_signing_in_with_provider">Aanmelden met %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Inloggen met %1$s</string>
+    <string name="onboarding_email">E-mail</string>
+    <string name="onboarding_username">Gebruikersnaam</string>
+    <string name="onboarding_username_or_email">Gebruikersnaam of e-mailadres</string>
+    <string name="onboarding_password">Wachtwoord</string>
+    <string name="onboarding_continue">Doorgaan</string>
+    <string name="onboarding_create_account">Account aanmaken</string>
+    <string name="onboarding_sign_in">Aanmelden</string>
+    <string name="onboarding_already_have_an_account_sign_in">Heb je al een account? Aanmelden</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">Nieuw bij NewsBlur? Maak een account aan</string>
+    <string name="onboarding_use_a_custom_server">Aangepaste server gebruiken</string>
+    <string name="onboarding_verify_with_provider">Verifiëren met %1$s</string>
+    <string name="setup_close_setup">Installatie sluiten</string>
+    <string name="setup_start_reading">Begin met lezen</string>
+    <string name="setup_continue">Doorgaan</string>
+    <string name="setup_a_little_of_everything">Van alles wat</string>
+    <string name="setup_bundle_folder_name">Bundelmapnaam</string>
+    <string name="setup_added">Toegevoegd</string>
+    <string name="setup_queued">In de wachtrij</string>
+    <string name="setup_loading_feeds_to_choose_from">Feeds laden om uit te kiezen…</string>
+    <string name="setup_loading_more_feeds">Meer feeds laden…</string>
+    <string name="setup_select_feeds_to_add">Selecteer feeds om toe te voegen</string>
+    <string name="setup_name_your_folder_to_continue">Geef je map een naam om door te gaan</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="one">Voeg de feed %1$d toe aan de map ‘%2$s’</item>
+        <item quantity="other">%1$d feeds toevoegen aan map ‘%2$s’</item>
+    </plurals>
+    <string name="setup_importing">Importeren…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="one">%1$d categorie om uit te kiezen</item>
+        <item quantity="other">%1$d categorieën om uit te kiezen</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Zoek interesses en sites</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="one">%1$d feed geselecteerd</item>
+        <item quantity="other">%1$d feeds geselecteerd</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="one">%1$d feed toegevoegd</item>
+        <item quantity="other">%1$d feeds toegevoegd</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Inbegrepen in bundel</string>
+    <string name="setup_include_in_bundle">Opnemen in bundel</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Je reader is klaar. Voeg op elk moment feeds toe via Sites toevoegen + ontdekken.</string>
+    <string name="setup_reading_list_yours">Een leeslijst die helemaal van jou is. Alles wat je hebt gekozen, op één plek.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="one">%1$d feed</item>
+        <item quantity="other">%1$d feeds</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur-forum</string>
+    <string name="setup_newsblur_forum_description">Stel vragen en deel ideeën</string>
+    <string name="setup_handle_on_x">%1$s op X</string>
+    <string name="setup_samuelclay_on_x_description">Van de maker van NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">Nieuws en updates</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="one">Feed %1$d kon niet worden toegevoegd aan %2$s. %3$s</item>
+        <item quantity="other">%1$d feeds konden niet worden toegevoegd aan %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="one">%1$d verhaal/maand</item>
+        <item quantity="other">%1$d artikelen/maand</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Verouderd · laatste artikel %1$s</string>
+    <string name="add_site_url_or_search">https:// of zoeken</string>
+    <string name="add_site_choose_folder">Map kiezen</string>
+    <string name="add_site_top_level">— Hoofdniveau —</string>
+    <string name="add_site_adding_site">Site toevoegen</string>
+    <string name="add_site_add_folder">Map toevoegen</string>
+    <string name="add_site_cancel_new_folder">Nieuwe map annuleren</string>
+    <string name="add_site_create_new_folder">Nieuwe map maken</string>
+    <string name="add_site_new_folder_name">Naam van nieuwe map</string>
+    <string name="add_site_searching_sites">Sites zoeken</string>
+    <string name="discover_quick_add">Site of map snel toevoegen</string>
+    <string name="discover_tab_search">Zoeken</string>
+    <string name="discover_tab_web_feed">Webfeed</string>
+    <string name="discover_tab_popular">Populair</string>
+    <string name="discover_tab_newsletters">Nieuwsbrieven</string>
+    <string name="discover_tab_podcasts">Podcasts</string>
+    <string name="discover_tab_heading">Ontdek %1$s</string>
+    <string name="discover_hint_search">Zoek sites of plak een URL</string>
+    <string name="discover_hint_popular">Populaire sites zoeken</string>
+    <string name="discover_hint_youtube">Zoek kanalen of plak een URL</string>
+    <string name="discover_hint_reddit">Subreddits zoeken</string>
+    <string name="discover_hint_newsletters">Zoek nieuwsbrieven of plak een URL</string>
+    <string name="discover_hint_podcasts">Podcasts zoeken</string>
+    <string name="discover_platform">Platform</string>
+    <string name="discover_all_platforms">Alles</string>
+    <string name="discover_category">Categorie</string>
+    <string name="discover_all_categories">Alle categorieën</string>
+    <string name="discover_topic">Onderwerp</string>
+    <string name="discover_all_topics">Alle onderwerpen</string>
+    <string name="discover_trending_this_week">Trending deze week</string>
+    <string name="discover_search_results">Zoekresultaten</string>
+    <string name="discover_add_this_url">Deze URL toevoegen</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">Kies %1$s</string>
+    <string name="discover_clear_input">%1$s wissen</string>
+    <string name="discover_web_page_url">URL van webpagina</string>
+    <string name="discover_which_stories_optional">Welke artikelen? (optioneel)</string>
+    <string name="discover_analyze_page">Pagina analyseren</string>
+    <string name="discover_refine_analysis">Analyse verfijnen</string>
+    <string name="discover_add_rss_feed">RSS-feed toevoegen</string>
+    <string name="discover_added">Toegevoegd</string>
+    <string name="discover_web_pattern">Patroon %1$d</string>
+    <string name="discover_feed_title">Feedtitel</string>
+    <string name="discover_keep_stories">Verhalen bewaren</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dagen</item>
+    </plurals>
+    <string name="discover_create_web_feed">Webfeed maken</string>
+    <string name="discover_search_news_topic">Zoek een nieuwsonderwerp</string>
+    <string name="discover_top_stories">Topverhalen</string>
+    <string name="discover_choose_a_topic">Kies een onderwerp</string>
+    <string name="discover_choose_a_category">Kies een categorie</string>
+    <string name="discover_add_google_news_feed">Google Nieuws-feed toevoegen</string>
+    <string name="discover_news_topic_world">Wereld</string>
+    <string name="discover_news_topic_nation">Land</string>
+    <string name="discover_news_topic_business">Zakelijk</string>
+    <string name="discover_news_topic_technology">Technologie</string>
+    <string name="discover_news_topic_entertainment">Entertainment</string>
+    <string name="discover_news_topic_sports">Sport</string>
+    <string name="discover_news_topic_science">Wetenschap</string>
+    <string name="discover_news_topic_health">Gezondheid</string>
+    <string name="briefing_frequency">Frequentie</string>
+    <string name="briefing_frequency_thrice_daily">3× per dag</string>
+    <string name="briefing_frequency_twice_daily">2 keer per dag</string>
+    <string name="briefing_frequency_daily">Dagelijks</string>
+    <string name="briefing_frequency_weekly">Wekelijks</string>
+    <string name="briefing_preferred_time">Voorkeurstijd</string>
+    <string name="briefing_time_morning">Ochtend</string>
+    <string name="briefing_time_afternoon">Middag</string>
+    <string name="briefing_time_evening">Avond</string>
+    <string name="briefing_preferred_day">Voorkeursdag</string>
+    <string name="briefing_day_sunday">zondag</string>
+    <string name="briefing_day_monday">maandag</string>
+    <string name="briefing_day_tuesday">dinsdag</string>
+    <string name="briefing_day_wednesday">Woensdag</string>
+    <string name="briefing_day_thursday">donderdag</string>
+    <string name="briefing_day_friday">Vrijdag</string>
+    <string name="briefing_day_saturday">zaterdag</string>
+    <string name="briefing_story_count">Aantal verhalen</string>
+    <string name="briefing_writing_style">Schrijfstijl</string>
+    <string name="briefing_style_bullets">Opsommingstekens</string>
+    <string name="briefing_style_editorial">Redactioneel</string>
+    <string name="briefing_style_headlines">Koppen</string>
+    <string name="briefing_filter">Filter</string>
+    <string name="briefing_keyword_section">Trefwoordsectie %1$d</string>
+    <string name="briefing_remove_keyword_section">Verwijderen</string>
+    <string name="briefing_generate_now">Nu genereren</string>
+    <string name="briefing_saving_settings">Instellingen van de dagelijkse briefing opslaan…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="one">%d verhaal</item>
+        <item quantity="other">%d artikelen</item>
+    </plurals>
 </resources>
